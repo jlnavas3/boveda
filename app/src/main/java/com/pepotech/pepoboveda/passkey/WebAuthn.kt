@@ -11,6 +11,7 @@ import java.security.Signature
 import java.security.interfaces.ECPublicKey
 import java.security.spec.ECGenParameterSpec
 import java.security.spec.PKCS8EncodedKeySpec
+import java.util.UUID
 
 /**
  * Implementación local del autenticador WebAuthn: genera pares ES256,
@@ -23,6 +24,10 @@ object WebAuthn {
 
     private const val B64 = Base64.URL_SAFE or Base64.NO_PADDING or Base64.NO_WRAP
 
+    // Identifica este autenticador local de forma estable. No es el ID de una
+    // passkey concreta: cada credencial sigue teniendo su propio credId aleatorio.
+    private val AAGUID = uuidBytes("7d8c6f2a-4b1e-4f65-9a31-2c7e8d5b1046")
+
     fun aB64Url(datos: ByteArray): String = Base64.encodeToString(datos, B64)
 
     fun deB64Url(texto: String): ByteArray = Base64.decode(texto, B64)
@@ -31,6 +36,17 @@ object WebAuthn {
 
     /** 16 bytes aleatorios, como manda el formato de credencial. */
     fun nuevoCredId(): ByteArray = ByteArray(16).also { SecureRandom().nextBytes(it) }
+
+    fun credIdValido(credId: ByteArray): Boolean =
+        credId.isNotEmpty() && credId.any { it.toInt() != 0 }
+
+    private fun uuidBytes(texto: String): ByteArray {
+        val uuid = UUID.fromString(texto)
+        return ByteArray(16).also { bytes ->
+            for (i in 0 until 8) bytes[i] = (uuid.mostSignificantBits shr (56 - i * 8)).toByte()
+            for (i in 0 until 8) bytes[8 + i] = (uuid.leastSignificantBits shr (56 - i * 8)).toByte()
+        }
+    }
 
     class ParDeClaves(val privadaPkcs8: ByteArray, val x: ByteArray, val y: ByteArray)
 
@@ -79,7 +95,7 @@ object WebAuthn {
 
     fun authenticatorDataRegistro(rpId: String, credId: ByteArray, x: ByteArray, y: ByteArray): ByteArray {
         val cose = Cbor.clavePublicaCose(x, y)
-        val aaguid = ByteArray(16)
+        val aaguid = AAGUID.copyOf()
         val longitud = byteArrayOf(
             ((credId.size shr 8) and 0xFF).toByte(),
             (credId.size and 0xFF).toByte()

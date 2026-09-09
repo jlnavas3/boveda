@@ -71,6 +71,10 @@ class PasskeyCreateActivity : FragmentActivity() {
         try {
             val par = WebAuthn.generarPar()
             val credId = WebAuthn.nuevoCredId()
+            if (!WebAuthn.credIdValido(credId)) {
+                fallar("El autenticador generó un identificador de passkey inválido")
+                return
+            }
             val info = peticion?.callingAppInfo
             // Si quien pide es un navegador, el origen que hay que firmar es el de la
             // web, no el de la app. Viene en callingAppInfo.origin y solo lo rellena
