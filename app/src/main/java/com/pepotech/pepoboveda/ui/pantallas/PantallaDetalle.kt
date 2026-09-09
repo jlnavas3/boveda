@@ -46,6 +46,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.pepotech.pepoboveda.crypto.Totp
+import com.pepotech.pepoboveda.passkey.WebAuthn
 import com.pepotech.pepoboveda.ui.Pantalla
 import com.pepotech.pepoboveda.ui.VaultViewModel
 import com.pepotech.pepoboveda.ui.componentes.AnilloTotp
@@ -288,12 +289,19 @@ fun PantallaDetalle(vm: VaultViewModel, id: String) {
                 }
                 Text("Algoritmo: ${passkey.algoritmo} (P-256)", color = TextoSecundario, style = MaterialTheme.typography.bodyMedium)
                 val identificador = passkey.credId
-                val identificadorVisible = if (identificador.length > 20) {
-                    "${identificador.take(10)}…${identificador.takeLast(10)}"
-                } else {
-                    identificador
+                val identificadorHex = runCatching { WebAuthn.credIdHex(identificador) }.getOrNull()
+                val identificadorUuid = WebAuthn.credIdUuid(identificador)
+                Text("ID Base64URL: ${identificador.resumirId()}", color = TextoSecundario, style = EstiloMono)
+                identificadorHex?.let {
+                    Text("ID hexadecimal: ${it.resumirId()}", color = TextoSecundario, style = EstiloMono)
                 }
-                Text("ID de credencial: $identificadorVisible", color = TextoSecundario, style = EstiloMono)
+                identificadorUuid?.let {
+                    Text("UUID equivalente: $it", color = TextoSecundario, style = EstiloMono)
+                }
+                TextButton(onClick = {
+                    haptica.toque()
+                    vm.copiar("ID de credencial", identificador, sensible = false)
+                }) { Text("Copiar ID Base64URL completo", color = Ambar) }
                 Spacer(Modifier.height(4.dp))
                 Text("La clave privada permanece cifrada dentro de la bóveda y nunca se muestra.", color = Menta, style = MaterialTheme.typography.bodyMedium)
             }
@@ -327,6 +335,12 @@ fun PantallaDetalle(vm: VaultViewModel, id: String) {
             }
         )
     }
+}
+
+private fun String.resumirId(): String = if (length > 24) {
+    "${take(12)}…${takeLast(12)}"
+} else {
+    this
 }
 
 @Composable
