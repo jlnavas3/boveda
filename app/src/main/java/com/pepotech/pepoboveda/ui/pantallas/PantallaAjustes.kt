@@ -726,7 +726,7 @@ private fun FilaAjuste(
 private fun TarjetaAjuste(
     titulo: String,
     icono: ImageVector,
-    inicialmenteAbierta: Boolean = true,
+    inicialmenteAbierta: Boolean = false,
     contenido: @Composable androidx.compose.foundation.layout.ColumnScope.() -> Unit
 ) {
     var abierta by remember { mutableStateOf(inicialmenteAbierta) }
