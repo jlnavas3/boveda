@@ -1,0 +1,19 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- Candado en blanco fijo: el color que cambia es el fondo, no esta forma. -->
+    <group
+        android:pivotX="54"
+        android:pivotY="53"
+        android:scaleX="0.8"
+        android:scaleY="0.8">
+        <path
+            android:pathData="M54,26a20,20 0,0 1,20 20a20,20 0,0 1,-40 0a20,20 0,0 1,20 -20zM54,36a10,10 0,0 0,-10 10a10,10 0,0 0,10 10a10,10 0,0 0,10 -10a10,10 0,0 0,-10 -10z"
+            android:fillColor="#FFFFFFFF" />
+        <path
+            android:pathData="M48,54h12l4,26h-20z"
+            android:fillColor="#FFFFFFFF" />
+    </group>
+</vector>
