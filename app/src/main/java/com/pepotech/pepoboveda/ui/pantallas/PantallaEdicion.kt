@@ -194,15 +194,22 @@ fun PantallaEdicion(vm: VaultViewModel, id: String?, contrasenaInicial: String) 
         }
         Row(verticalAlignment = Alignment.CenterVertically) {
             Box(modifier = Modifier.weight(1f)) {
-                CampoPepo(valor = nuevaEtiqueta, etiqueta = "Nueva etiqueta", alCambiar = { nuevaEtiqueta = it })
+                CampoPepo(
+                    valor = nuevaEtiqueta,
+                    etiqueta = "Nueva etiqueta",
+                    alCambiar = { nuevaEtiqueta = it },
+                    modifier = Modifier.height(56.dp)
+                )
             }
             Spacer(Modifier.width(10.dp))
-            BotonBorde("Añadir") {
-                val limpia = nuevaEtiqueta.trim()
-                if (limpia.isNotEmpty() && !etiquetas.contains(limpia)) {
-                    etiquetas = etiquetas + limpia
+            Box(modifier = Modifier.width(96.dp)) {
+                BotonBorde("Añadir") {
+                    val limpia = nuevaEtiqueta.trim()
+                    if (limpia.isNotEmpty() && !etiquetas.contains(limpia)) {
+                        etiquetas = etiquetas + limpia
+                    }
+                    nuevaEtiqueta = ""
                 }
-                nuevaEtiqueta = ""
             }
         }
         val sugerenciasRestantes = etiquetasSugeridas.filterNot { etiquetas.contains(it) }
