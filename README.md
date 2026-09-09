@@ -122,6 +122,11 @@ El autenticador local usa un AAGUID estable para nuevas passkeys, mientras que c
 credencial conserva su propio identificador aleatorio. Las passkeys ya creadas no cambian
 retroactivamente.
 
+La agrupación de sitios usa la Public Suffix List mediante Guava para calcular el dominio
+registrable en cualquier país (`.co.za`, `.com.au`, `.edu.ec`, etc.), sin depender de una
+lista manual cerrada. Las actualizaciones futuras de Guava incorporan nuevos sufijos cuando
+la Public Suffix List los reconoce.
+
 ### Importar desde CSV
 
 En Ajustes > Copia de seguridad > "Importar desde CSV" puedes traer las contraseñas

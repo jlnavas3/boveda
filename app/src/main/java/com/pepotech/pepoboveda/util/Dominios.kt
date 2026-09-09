@@ -1,13 +1,8 @@
 package com.pepotech.pepoboveda.util
 
-object Dominios {
+import com.google.common.net.InternetDomainName
 
-    private val SUFIJOS_COMPUESTOS = setOf(
-        "co.uk", "org.uk", "ac.uk", "gov.uk", "com.ar", "com.br", "com.mx", "com.co",
-        "com.au", "com.tr", "co.jp", "co.kr", "co.nz", "com.es", "gob.es", "com.pe",
-        "com.cl", "com.ve", "com.uy", "com.py", "com.ec", "com.bo", "com.pa", "com.do",
-        "edu.ec", "gob.ec", "mil.ec", "org.ec", "net.ec", "fin.ec"
-    )
+object Dominios {
 
     fun host(entrada: String): String {
         val texto = entrada.trim().lowercase()
@@ -22,14 +17,10 @@ object Dominios {
     fun raiz(entrada: String): String {
         val h = host(entrada)
         if (h.isEmpty() || !h.contains('.')) return h
-        val partes = h.split('.')
-        if (partes.size <= 2) return h
-        val ultimosDos = partes.takeLast(2).joinToString(".")
-        return if (ultimosDos in SUFIJOS_COMPUESTOS && partes.size >= 3) {
-            partes.takeLast(3).joinToString(".")
-        } else {
-            ultimosDos
-        }
+        if (h.split('.').all { it.toIntOrNull() != null }) return h
+        return runCatching {
+            InternetDomainName.from(h).topPrivateDomain().toString()
+        }.getOrDefault(h)
     }
 
     /**

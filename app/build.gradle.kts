@@ -110,6 +110,7 @@ dependencies {
 
     implementation("androidx.biometric:biometric:1.1.0")
     implementation("androidx.credentials:credentials:1.5.0")
+    implementation("com.google.guava:guava:33.4.8-android")
 
     // Cámara solo para leer QR de 2FA. ZXing es Java puro: no habla con ninguna red.
     implementation("androidx.camera:camera-core:1.4.2")
