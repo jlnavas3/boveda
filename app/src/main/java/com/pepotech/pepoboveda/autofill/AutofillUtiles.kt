@@ -33,23 +33,45 @@ object AutofillUtiles {
         fun recorrer(nodo: AssistStructure.ViewNode) {
             nodo.webDomain?.takeIf { it.isNotBlank() }?.let { if (dominio == null) dominio = it }
             val id = nodo.autofillId
-            if (id != null && nodo.autofillType == View.AUTOFILL_TYPE_TEXT) {
+            
+            // Permitir AUTOFILL_TYPE_NONE para no descartar los nodos de WebView
+            val tipoValido = nodo.autofillType == View.AUTOFILL_TYPE_TEXT || nodo.autofillType == View.AUTOFILL_TYPE_NONE
+            
+            if (id != null && tipoValido) {
+                var esContrasenaWeb = false
+                var esUsuarioWeb = false
+
                 val pistasSistema = nodo.autofillHints?.map { it.lowercase() } ?: emptyList()
                 val textoPistas = buildList {
                     addAll(pistasSistema)
                     nodo.hint?.lowercase()?.let { add(it) }
                     nodo.idEntry?.lowercase()?.let { add(it) }
                     nodo.text?.toString()?.lowercase()?.let { add(it) }
+                    
+                    // Evaluación selectiva de atributos HTML
                     nodo.htmlInfo?.attributes?.forEach { par ->
-                        par.second?.lowercase()?.let { add(it) }
+                        val nombreAtributo = par.first.lowercase()
+                        val valorAtributo = par.second?.lowercase() ?: ""
+
+                        if (nombreAtributo == "type" && valorAtributo == "password") {
+                            esContrasenaWeb = true
+                        } else if (nombreAtributo == "autocomplete" && (valorAtributo == "username" || valorAtributo == "email")) {
+                            esUsuarioWeb = true
+                        } else if ((nombreAtributo == "name" || nombreAtributo == "id") && valorAtributo.isNotBlank()) {
+                            // Añadir a pistas heurísticas como respaldo
+                            add(valorAtributo)
+                        }
                     }
                 }
+                
                 val esContrasenaPorTipo = (nodo.inputType and InputType.TYPE_MASK_VARIATION) ==
                     InputType.TYPE_TEXT_VARIATION_PASSWORD
-                val esContrasena = esContrasenaPorTipo || textoPistas.any { pista ->
+                    
+                val esContrasena = esContrasenaWeb || esContrasenaPorTipo || textoPistas.any { pista ->
                     PISTAS_CONTRASENA.any { pista.contains(it) }
                 }
-                val esUsuario = textoPistas.any { pista -> PISTAS_USUARIO.any { pista.contains(it) } }
+                val esUsuario = esUsuarioWeb || textoPistas.any { pista -> PISTAS_USUARIO.any { pista.contains(it) } }
+                
                 if (esContrasena && contrasena == null) {
                     contrasena = id
                 } else if (esUsuario && usuario == null) {
@@ -79,16 +101,37 @@ object AutofillUtiles {
         }
 
         fun recorrer(nodo: AssistStructure.ViewNode) {
-            if (nodo.autofillType == View.AUTOFILL_TYPE_TEXT) {
+            val tipoValido = nodo.autofillType == View.AUTOFILL_TYPE_TEXT || nodo.autofillType == View.AUTOFILL_TYPE_NONE
+            
+            if (tipoValido) {
+                var esContrasenaWeb = false
+                var esUsuarioWeb = false
+
                 val pistas = buildList {
                     nodo.autofillHints?.forEach { add(it.lowercase()) }
                     nodo.hint?.lowercase()?.let { add(it) }
                     nodo.idEntry?.lowercase()?.let { add(it) }
+                    
+                    nodo.htmlInfo?.attributes?.forEach { par ->
+                        val nombreAtributo = par.first.lowercase()
+                        val valorAtributo = par.second?.lowercase() ?: ""
+
+                        if (nombreAtributo == "type" && valorAtributo == "password") {
+                            esContrasenaWeb = true
+                        } else if (nombreAtributo == "autocomplete" && (valorAtributo == "username" || valorAtributo == "email")) {
+                            esUsuarioWeb = true
+                        } else if ((nombreAtributo == "name" || nombreAtributo == "id") && valorAtributo.isNotBlank()) {
+                            add(valorAtributo)
+                        }
+                    }
                 }
+                
                 val esContrasenaPorTipo = (nodo.inputType and InputType.TYPE_MASK_VARIATION) ==
                     InputType.TYPE_TEXT_VARIATION_PASSWORD
-                val esContrasena = esContrasenaPorTipo || pistas.any { p -> PISTAS_CONTRASENA.any { p.contains(it) } }
-                val esUsuario = pistas.any { p -> PISTAS_USUARIO.any { p.contains(it) } }
+                    
+                val esContrasena = esContrasenaWeb || esContrasenaPorTipo || pistas.any { p -> PISTAS_CONTRASENA.any { p.contains(it) } }
+                val esUsuario = esUsuarioWeb || pistas.any { p -> PISTAS_USUARIO.any { p.contains(it) } }
+                
                 if (esContrasena && contrasena == null) contrasena = texto(nodo)
                 else if (esUsuario && usuario == null) usuario = texto(nodo)
             }
@@ -131,10 +174,6 @@ object AutofillUtiles {
 
     fun entradasCompatibles(entradas: List<Entrada>, paquete: String, dominioWeb: String?): List<Entrada> {
         val objetivo = contextoSolicitante(paquete, dominioWeb)
-        // Antes también se comparaba contra Dominios.dominioDePaquete(paquete), que convierte
-        // com.netflix.loquesea en "netflix.com". Cualquier APK instalada a mano podía llamarse
-        // com.netflix.timoso y se le ofrecían las credenciales de Netflix. Fuera: solo vale lo
-        // que el usuario haya guardado explícitamente en "Sitios o paquetes".
         return entradas.filter { entrada ->
             entrada.contrasena.isNotBlank() && entrada.urls.any { guardado ->
                 Dominios.coincide(guardado, objetivo)
