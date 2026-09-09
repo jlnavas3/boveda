@@ -54,6 +54,7 @@ import com.pepotech.pepoboveda.ui.theme.DegradadoAmbar
 import com.pepotech.pepoboveda.ui.theme.Obsidiana
 import com.pepotech.pepoboveda.ui.theme.Peligro
 import com.pepotech.pepoboveda.ui.theme.Superficie
+import com.pepotech.pepoboveda.ui.theme.SuperficieAlta
 import com.pepotech.pepoboveda.ui.theme.TextoPrincipal
 import com.pepotech.pepoboveda.ui.theme.TextoSecundario
 import com.pepotech.pepoboveda.util.Haptica
@@ -130,7 +131,7 @@ fun PantallaEdicion(vm: VaultViewModel, id: String?, contrasenaInicial: String) 
                     modifier = Modifier.clickable { mostrarContrasena = !mostrarContrasena }
                 )
                 Text(
-                    "Generar ahora",
+                    "Generar",
                     color = Ambar,
                     style = MaterialTheme.typography.labelLarge,
                     modifier = Modifier.clickable {
@@ -139,7 +140,7 @@ fun PantallaEdicion(vm: VaultViewModel, id: String?, contrasenaInicial: String) 
                     }
                 )
                 Text(
-                    "Abrir generador",
+                    "Generador",
                     color = Ambar,
                     style = MaterialTheme.typography.labelLarge,
                     modifier = Modifier.clickable { vm.ir(Pantalla.Generador) }
@@ -252,7 +253,10 @@ fun PantallaEdicion(vm: VaultViewModel, id: String?, contrasenaInicial: String) 
                 colors = SwitchDefaults.colors(
                     checkedThumbColor = Obsidiana,
                     checkedTrackColor = Ambar,
-                    uncheckedTrackColor = Borde
+                    checkedBorderColor = Ambar,
+                    uncheckedThumbColor = TextoSecundario,
+                    uncheckedTrackColor = SuperficieAlta,
+                    uncheckedBorderColor = TextoSecundario
                 )
             )
         }

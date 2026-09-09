@@ -49,6 +49,7 @@ import com.pepotech.pepoboveda.ui.theme.DegradadoAmbar
 import com.pepotech.pepoboveda.ui.theme.Menta
 import com.pepotech.pepoboveda.ui.theme.Obsidiana
 import com.pepotech.pepoboveda.ui.theme.Superficie
+import com.pepotech.pepoboveda.ui.theme.SuperficieAlta
 import com.pepotech.pepoboveda.ui.theme.TextoPrincipal
 import com.pepotech.pepoboveda.ui.theme.TextoSecundario
 import com.pepotech.pepoboveda.util.Haptica
@@ -195,7 +196,10 @@ private fun FilaInterruptor(texto: String, activo: Boolean, alCambiar: (Boolean)
             colors = SwitchDefaults.colors(
                 checkedThumbColor = Obsidiana,
                 checkedTrackColor = Ambar,
-                uncheckedTrackColor = Borde
+                checkedBorderColor = Ambar,
+                uncheckedThumbColor = TextoSecundario,
+                uncheckedTrackColor = SuperficieAlta,
+                uncheckedBorderColor = TextoSecundario
             )
         )
     }

@@ -716,7 +716,10 @@ private fun FilaAjuste(
             colors = SwitchDefaults.colors(
                 checkedThumbColor = Obsidiana,
                 checkedTrackColor = Ambar,
-                uncheckedTrackColor = Borde
+                checkedBorderColor = Ambar,
+                uncheckedThumbColor = TextoSecundario,
+                uncheckedTrackColor = SuperficieAlta,
+                uncheckedBorderColor = TextoSecundario
             )
         )
     }
