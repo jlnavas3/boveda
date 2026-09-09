@@ -11,7 +11,6 @@ import java.security.Signature
 import java.security.interfaces.ECPublicKey
 import java.security.spec.ECGenParameterSpec
 import java.security.spec.PKCS8EncodedKeySpec
-import java.nio.ByteBuffer
 import java.util.UUID
 
 /**
@@ -32,17 +31,6 @@ object WebAuthn {
     fun aB64Url(datos: ByteArray): String = Base64.encodeToString(datos, B64)
 
     fun deB64Url(texto: String): ByteArray = Base64.decode(texto, B64)
-
-    fun credIdHex(texto: String): String = deB64Url(texto).joinToString("") { byte ->
-        "%02x".format(byte.toInt() and 0xFF)
-    }
-
-    fun credIdUuid(texto: String): String? {
-        val bytes = runCatching { deB64Url(texto) }.getOrNull() ?: return null
-        if (bytes.size != 16) return null
-        val buffer = ByteBuffer.wrap(bytes)
-        return UUID(buffer.long, buffer.long).toString()
-    }
 
     fun sha256(datos: ByteArray): ByteArray = MessageDigest.getInstance("SHA-256").digest(datos)
 
