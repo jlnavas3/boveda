@@ -33,45 +33,34 @@ object AutofillUtiles {
         fun recorrer(nodo: AssistStructure.ViewNode) {
             nodo.webDomain?.takeIf { it.isNotBlank() }?.let { if (dominio == null) dominio = it }
             val id = nodo.autofillId
-            
-            // Permitir AUTOFILL_TYPE_NONE para no descartar los nodos de WebView
             val tipoValido = nodo.autofillType == View.AUTOFILL_TYPE_TEXT || nodo.autofillType == View.AUTOFILL_TYPE_NONE
-            
             if (id != null && tipoValido) {
                 var esContrasenaWeb = false
                 var esUsuarioWeb = false
-
                 val pistasSistema = nodo.autofillHints?.map { it.lowercase() } ?: emptyList()
                 val textoPistas = buildList {
                     addAll(pistasSistema)
                     nodo.hint?.lowercase()?.let { add(it) }
                     nodo.idEntry?.lowercase()?.let { add(it) }
                     nodo.text?.toString()?.lowercase()?.let { add(it) }
-                    
-                    // Evaluación selectiva de atributos HTML
                     nodo.htmlInfo?.attributes?.forEach { par ->
                         val nombreAtributo = par.first.lowercase()
                         val valorAtributo = par.second?.lowercase() ?: ""
-
                         if (nombreAtributo == "type" && valorAtributo == "password") {
                             esContrasenaWeb = true
                         } else if (nombreAtributo == "autocomplete" && (valorAtributo == "username" || valorAtributo == "email")) {
                             esUsuarioWeb = true
                         } else if ((nombreAtributo == "name" || nombreAtributo == "id") && valorAtributo.isNotBlank()) {
-                            // Añadir a pistas heurísticas como respaldo
                             add(valorAtributo)
                         }
                     }
                 }
-                
                 val esContrasenaPorTipo = (nodo.inputType and InputType.TYPE_MASK_VARIATION) ==
                     InputType.TYPE_TEXT_VARIATION_PASSWORD
-                    
                 val esContrasena = esContrasenaWeb || esContrasenaPorTipo || textoPistas.any { pista ->
                     PISTAS_CONTRASENA.any { pista.contains(it) }
                 }
                 val esUsuario = esUsuarioWeb || textoPistas.any { pista -> PISTAS_USUARIO.any { pista.contains(it) } }
-                
                 if (esContrasena && contrasena == null) {
                     contrasena = id
                 } else if (esUsuario && usuario == null) {
@@ -102,20 +91,16 @@ object AutofillUtiles {
 
         fun recorrer(nodo: AssistStructure.ViewNode) {
             val tipoValido = nodo.autofillType == View.AUTOFILL_TYPE_TEXT || nodo.autofillType == View.AUTOFILL_TYPE_NONE
-            
             if (tipoValido) {
                 var esContrasenaWeb = false
                 var esUsuarioWeb = false
-
                 val pistas = buildList {
                     nodo.autofillHints?.forEach { add(it.lowercase()) }
                     nodo.hint?.lowercase()?.let { add(it) }
                     nodo.idEntry?.lowercase()?.let { add(it) }
-                    
                     nodo.htmlInfo?.attributes?.forEach { par ->
                         val nombreAtributo = par.first.lowercase()
                         val valorAtributo = par.second?.lowercase() ?: ""
-
                         if (nombreAtributo == "type" && valorAtributo == "password") {
                             esContrasenaWeb = true
                         } else if (nombreAtributo == "autocomplete" && (valorAtributo == "username" || valorAtributo == "email")) {
@@ -125,13 +110,10 @@ object AutofillUtiles {
                         }
                     }
                 }
-                
                 val esContrasenaPorTipo = (nodo.inputType and InputType.TYPE_MASK_VARIATION) ==
                     InputType.TYPE_TEXT_VARIATION_PASSWORD
-                    
                 val esContrasena = esContrasenaWeb || esContrasenaPorTipo || pistas.any { p -> PISTAS_CONTRASENA.any { p.contains(it) } }
                 val esUsuario = esUsuarioWeb || pistas.any { p -> PISTAS_USUARIO.any { p.contains(it) } }
-                
                 if (esContrasena && contrasena == null) contrasena = texto(nodo)
                 else if (esUsuario && usuario == null) usuario = texto(nodo)
             }

@@ -72,12 +72,16 @@ class PepoAutofillService : AutofillService() {
         }
 
         if (ids.isNotEmpty()) {
-            val tipos = SaveInfo.SAVE_DATA_TYPE_USERNAME or SaveInfo.SAVE_DATA_TYPE_PASSWORD
-            respuesta.setSaveInfo(
-                SaveInfo.Builder(tipos, ids)
-                    .setFlags(SaveInfo.FLAG_SAVE_ON_ALL_VIEWS_INVISIBLE)
-                    .build()
-            )
+            var tipos = 0
+            if (campos.usuario != null) tipos = tipos or SaveInfo.SAVE_DATA_TYPE_USERNAME
+            if (campos.contrasena != null) tipos = tipos or SaveInfo.SAVE_DATA_TYPE_PASSWORD
+            if (tipos != 0) {
+                respuesta.setSaveInfo(
+                    SaveInfo.Builder(tipos, ids)
+                        .setFlags(SaveInfo.FLAG_SAVE_ON_ALL_VIEWS_INVISIBLE)
+                        .build()
+                )
+            }
         }
 
         callback.onSuccess(respuesta.build())
