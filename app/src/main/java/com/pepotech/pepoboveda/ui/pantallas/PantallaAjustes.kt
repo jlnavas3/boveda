@@ -470,7 +470,7 @@ fun PantallaAjustes(vm: VaultViewModel, actividad: FragmentActivity) {
 
         TarjetaAjuste("Zona peligrosa", Icons.Filled.Warning, "Borra de forma irreversible la bóveda de este dispositivo.", inicialmenteAbierta = false) {
             Spacer(Modifier.height(10.dp))
-            BotonBorde("Borrar la bóveda de este dispositivo", color = Peligro) { dialogoBorrar = true }
+            BotonBorde("Borrar bóveda", color = Peligro) { dialogoBorrar = true }
         }
 
         Spacer(Modifier.height(20.dp))

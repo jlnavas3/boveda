@@ -151,7 +151,13 @@ fun BotonBorde(
             .clickable { alPulsar() },
         contentAlignment = Alignment.Center
     ) {
-        Text(text = texto, color = color, style = MaterialTheme.typography.labelLarge)
+        Text(
+            text = texto,
+            color = color,
+            style = MaterialTheme.typography.labelLarge,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.fillMaxWidth()
+        )
     }
 }
 
