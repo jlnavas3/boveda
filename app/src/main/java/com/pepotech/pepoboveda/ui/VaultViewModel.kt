@@ -392,14 +392,9 @@ class VaultViewModel(app: Application) : AndroidViewModel(app) {
         val contexto = getApplication<Application>()
         Portapapeles.copiarSensible(contexto, etiqueta, valor)
         trabajoPortapapeles?.cancel()
-        // Cancelar el job anterior no ejecuta su límpieza final: sin este reset, una copia
-        // no sensible justo después de una sensible dejaba la cuenta atrás congelada en
-        // pantalla para siempre (y el portapapeles nunca llegaba a borrarse).
+        // Todas las copias de datos de la bóveda usan la misma barra y limpieza automática.
+        // Cancelar el job anterior no ejecuta su limpieza final: primero se resetea la barra.
         _cuentaAtrasPortapapeles.value = 0
-        if (!sensible) {
-            _aviso.value = "$etiqueta copiado"
-            return
-        }
         val segundos = repositorio.ajustes.actual.portapapelesSegundos
         trabajoPortapapeles = viewModelScope.launch {
             for (restante in segundos downTo 1) {
