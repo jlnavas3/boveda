@@ -4,14 +4,16 @@ import com.pepotech.pepoboveda.data.Entrada
 import com.pepotech.pepoboveda.data.TipoEntrada
 
 /**
- * El sitio por el que se agrupan varias entradas: dominio raíz en claves y rpId en passkeys.
- * Así, www.amazon.com, login.amazon.com y amazon.com comparten grupo.
+ * El sitio por el que se agrupan varias entradas: marca derivada del dominio en claves
+ * y passkeys. Así, amazon.com, amazon.com.mx y amazon.co.uk comparten grupo.
  */
 fun claveAgrupacionSitio(entrada: Entrada): String? = when (entrada.tipo) {
     TipoEntrada.LOGIN -> entrada.urls.asSequence()
-        .map { Dominios.raiz(it) }
+        .map { Dominios.marca(it) }
         .firstOrNull { it.isNotBlank() }
-    TipoEntrada.PASSKEY -> entrada.passkey?.rpId?.takeIf { it.isNotBlank() }
+    TipoEntrada.PASSKEY -> entrada.passkey?.rpId
+        ?.let { Dominios.marca(it) }
+        ?.takeIf { it.isNotBlank() }
     TipoEntrada.NOTA -> null
 }
 

@@ -23,6 +23,14 @@ class DominiosTest {
     }
 
     @Test
+    fun `calcula la marca para agrupar dominios con distinto tld`() {
+        assertEquals("amazon", Dominios.marca("https://www.amazon.com"))
+        assertEquals("amazon", Dominios.marca("https://amazon.com.mx"))
+        assertEquals("amazon", Dominios.marca("https://login.amazon.co.uk"))
+        assertEquals("amazonaws", Dominios.marca("https://console.amazonaws.com"))
+    }
+
+    @Test
     fun `coincide entre subdominios del mismo sitio`() {
         assertTrue(Dominios.coincide("ejemplo.com", "cuentas.ejemplo.com"))
         assertTrue(Dominios.coincide("https://ejemplo.com/entrar", "ejemplo.com"))

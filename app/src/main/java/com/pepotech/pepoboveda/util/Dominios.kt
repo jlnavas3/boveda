@@ -31,6 +31,15 @@ object Dominios {
         }
     }
 
+    /**
+     * Nombre base de una marca para agrupar dominios equivalentes con distinto TLD:
+     * amazon.com, amazon.com.mx y amazon.co.uk producen "amazon".
+     */
+    fun marca(entrada: String): String {
+        val raiz = raiz(entrada)
+        return raiz.substringBefore('.').ifBlank { raiz }
+    }
+
     /** Coincidencia conservadora: mismo dominio raíz o mismo paquete de aplicación. */
     fun coincide(guardado: String, solicitado: String): Boolean {
         if (guardado.isBlank() || solicitado.isBlank()) return false
