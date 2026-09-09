@@ -279,8 +279,23 @@ fun PantallaDetalle(vm: VaultViewModel, id: String) {
                 Spacer(Modifier.height(8.dp))
                 Text("Servicio: ${passkey.rpName.ifBlank { passkey.rpId }}", color = TextoPrincipal, style = MaterialTheme.typography.bodyLarge)
                 Text("Dominio: ${passkey.rpId}", color = TextoSecundario, style = MaterialTheme.typography.bodyMedium)
+                if (passkey.usuario.isNotBlank() || entrada.usuario.isNotBlank()) {
+                    Text(
+                        "Cuenta: ${passkey.usuario.ifBlank { entrada.usuario }}",
+                        color = TextoSecundario,
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                }
                 Text("Algoritmo: ${passkey.algoritmo} (P-256)", color = TextoSecundario, style = MaterialTheme.typography.bodyMedium)
-                Text("La clave privada vive dentro del JSON cifrado de la bóveda.", color = Menta, style = MaterialTheme.typography.bodyMedium)
+                val identificador = passkey.credId
+                val identificadorVisible = if (identificador.length > 20) {
+                    "${identificador.take(10)}…${identificador.takeLast(10)}"
+                } else {
+                    identificador
+                }
+                Text("ID de credencial: $identificadorVisible", color = TextoSecundario, style = EstiloMono)
+                Spacer(Modifier.height(4.dp))
+                Text("La clave privada permanece cifrada dentro de la bóveda y nunca se muestra.", color = Menta, style = MaterialTheme.typography.bodyMedium)
             }
             Spacer(Modifier.height(12.dp))
         }
