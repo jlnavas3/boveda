@@ -44,6 +44,7 @@ import com.pepotech.pepoboveda.ui.theme.Menta
 import com.pepotech.pepoboveda.ui.theme.Obsidiana
 import com.pepotech.pepoboveda.ui.theme.Peligro
 import com.pepotech.pepoboveda.ui.theme.Superficie
+import com.pepotech.pepoboveda.ui.theme.SuperficieAlta
 import com.pepotech.pepoboveda.ui.theme.TextoPrincipal
 import com.pepotech.pepoboveda.ui.theme.TextoSecundario
 import com.pepotech.pepoboveda.util.Dominios
@@ -96,7 +97,7 @@ fun TarjetaPepo(
         modifier = modifier
             .fillMaxWidth()
             .clip(forma)
-            .background(Superficie)
+            .background(SuperficieAlta)
             .border(1.dp, Borde, forma)
             .then(if (alPulsar != null) Modifier.clickable { alPulsar() } else Modifier)
             .padding(16.dp)

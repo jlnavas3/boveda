@@ -648,8 +648,21 @@ private fun CampoBusquedaLista(valor: String, alCambiar: (String) -> Unit) {
             singleLine = true,
             textStyle = MaterialTheme.typography.bodyMedium.copy(color = TextoPrincipal),
             cursorBrush = SolidColor(Ambar),
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.weight(1f)
         )
+        if (valor.isNotBlank()) {
+            IconButton(
+                onClick = { alCambiar("") },
+                modifier = Modifier.size(32.dp)
+            ) {
+                Icon(
+                    Icons.Filled.Close,
+                    contentDescription = "Limpiar búsqueda",
+                    tint = TextoSecundario,
+                    modifier = Modifier.size(18.dp)
+                )
+            }
+        }
     }
 }
 
