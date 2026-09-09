@@ -1,4 +1,4 @@
-# Pepo Bóveda
+# Bóveda local
 
 Gestor de contraseñas para Android. Sin cuentas, sin nube, sin permiso de internet.
 
@@ -148,7 +148,7 @@ Para una build de release firmada, copia `keystore.properties.ejemplo` a
 `keystore.properties`, crea tu propio keystore y rellena tus valores:
 
 ```bash
-keytool -genkeypair -v -keystore pepo-boveda.jks -alias pepoboveda \
+keytool -genkeypair -v -keystore boveda-local.jks -alias bovedalocal \
         -keyalg RSA -keysize 4096 -validity 10000
 ./gradlew :app:assembleRelease
 ```
