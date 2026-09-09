@@ -6,8 +6,8 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.biometric.BiometricManager
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,13 +18,29 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Backup
+import androidx.compose.material.icons.filled.CameraAlt
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.ExpandLess
+import androidx.compose.material.icons.filled.ExpandMore
+import androidx.compose.material.icons.filled.Fingerprint
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Key
+import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.Palette
+import androidx.compose.material.icons.filled.Security
+import androidx.compose.material.icons.filled.Timer
+import androidx.compose.material.icons.filled.Tune
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
@@ -39,8 +55,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentActivity
@@ -61,7 +77,6 @@ import com.pepotech.pepoboveda.ui.componentes.EtiquetaSeccion
 import com.pepotech.pepoboveda.ui.componentes.TarjetaPepo
 import com.pepotech.pepoboveda.ui.theme.Ambar
 import com.pepotech.pepoboveda.ui.theme.Borde
-import com.pepotech.pepoboveda.ui.theme.DegradadoAmbar
 import com.pepotech.pepoboveda.ui.theme.Obsidiana
 import com.pepotech.pepoboveda.ui.theme.Peligro
 import com.pepotech.pepoboveda.ui.theme.Superficie
@@ -175,8 +190,7 @@ fun PantallaAjustes(vm: VaultViewModel, actividad: FragmentActivity) {
         Text("Ajustes", style = MaterialTheme.typography.headlineMedium, color = TextoPrincipal)
         Spacer(Modifier.height(18.dp))
 
-        TarjetaPepo {
-            EtiquetaSeccion("Seguridad")
+        TarjetaAjuste("Seguridad", Icons.Filled.Security) {
             Spacer(Modifier.height(10.dp))
             FilaAjuste(
                 titulo = "Abrir con huella",
@@ -226,50 +240,30 @@ fun PantallaAjustes(vm: VaultViewModel, actividad: FragmentActivity) {
                     }
             }
             Spacer(Modifier.height(14.dp))
-            EtiquetaSeccion("Bloqueo automático")
-            Spacer(Modifier.height(8.dp))
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.horizontalScroll(rememberScrollState())) {
-                AlmacenAjustes.OPCIONES_AUTO_BLOQUEO.forEach { (segundos, etiqueta) ->
-                    ChipOpcion(etiqueta, ajustes.autoBloqueoSegundos == segundos) {
-                        haptica.tic()
-                        vm.ajustarAutoBloqueo(segundos)
-                    }
-                }
-            }
-            Spacer(Modifier.height(14.dp))
-            EtiquetaSeccion("Borrado del portapapeles")
-            Spacer(Modifier.height(8.dp))
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.horizontalScroll(rememberScrollState())) {
-                AlmacenAjustes.OPCIONES_PORTAPAPELES.forEach { (segundos, etiqueta) ->
-                    ChipOpcion(etiqueta, ajustes.portapapelesSegundos == segundos) {
-                        haptica.tic()
-                        vm.ajustarPortapapeles(segundos)
-                    }
-                }
-            }
-            Spacer(Modifier.height(14.dp))
-            EtiquetaSeccion("Densidad de lista")
-            Spacer(Modifier.height(8.dp))
-            Text(
-                "Predeterminada tiene la altura normal, cómoda la reduce algo y compacta hace las filas mucho más estrechas para ver más entradas a la vez.",
-                color = TextoSecundario,
-                style = MaterialTheme.typography.bodyMedium
+            SelectorAjuste(
+                titulo = "Bloqueo automático",
+                icono = Icons.Filled.Lock,
+                seleccionado = AlmacenAjustes.OPCIONES_AUTO_BLOQUEO.first { it.first == ajustes.autoBloqueoSegundos }.second,
+                opciones = AlmacenAjustes.OPCIONES_AUTO_BLOQUEO.map { (valor, etiqueta) ->
+                    OpcionAjuste(valor.toString(), etiqueta, Icons.Filled.Lock)
+                },
+                alSeleccionar = { valor -> haptica.tic(); vm.ajustarAutoBloqueo(valor.toInt()) }
             )
-            Spacer(Modifier.height(8.dp))
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.horizontalScroll(rememberScrollState())) {
-                AlmacenAjustes.OPCIONES_DENSIDAD_LISTA.forEach { (clave, etiqueta) ->
-                    ChipOpcion(etiqueta, ajustes.densidadLista == clave) {
-                        haptica.tic()
-                        vm.ajustarDensidadLista(clave)
-                    }
-                }
-            }
+            Spacer(Modifier.height(14.dp))
+            SelectorAjuste(
+                titulo = "Borrado del portapapeles",
+                icono = Icons.Filled.Backup,
+                seleccionado = AlmacenAjustes.OPCIONES_PORTAPAPELES.first { it.first == ajustes.portapapelesSegundos }.second,
+                opciones = AlmacenAjustes.OPCIONES_PORTAPAPELES.map { (valor, etiqueta) ->
+                    OpcionAjuste(valor.toString(), etiqueta, Icons.Filled.Timer)
+                },
+                alSeleccionar = { valor -> haptica.tic(); vm.ajustarPortapapeles(valor.toInt()) }
+            )
         }
 
         Spacer(Modifier.height(16.dp))
 
-        TarjetaPepo {
-            EtiquetaSeccion("Cámara del escáner")
+        TarjetaAjuste("Cámara del escáner", Icons.Filled.CameraAlt) {
             Spacer(Modifier.height(8.dp))
             Text(
                 "Automático prueba CameraX y, si falla, pasa solo al motor compatible. Si la imagen sale negra o no lee nada, fuerza el compatible: usa la API antigua de cámara, que funciona hasta en los móviles más raros. Y si nada va, siempre puedes leer el QR desde una captura.",
@@ -277,20 +271,20 @@ fun PantallaAjustes(vm: VaultViewModel, actividad: FragmentActivity) {
                 style = MaterialTheme.typography.bodyMedium
             )
             Spacer(Modifier.height(10.dp))
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.horizontalScroll(rememberScrollState())) {
-                MotorCamara.entries.forEach { motor ->
-                    ChipOpcion(motor.etiqueta, ajustes.motorCamara == motor.clave) {
-                        haptica.tic()
-                        vm.ajustarMotorCamara(motor.clave)
-                    }
-                }
-            }
+            SelectorAjuste(
+                titulo = "Motor de cámara",
+                icono = Icons.Filled.CameraAlt,
+                seleccionado = MotorCamara.entries.first { it.clave == ajustes.motorCamara }.etiqueta,
+                opciones = MotorCamara.entries.map { motor ->
+                    OpcionAjuste(motor.clave, motor.etiqueta, Icons.Filled.CameraAlt)
+                },
+                alSeleccionar = { valor -> haptica.tic(); vm.ajustarMotorCamara(valor) }
+            )
         }
 
         Spacer(Modifier.height(16.dp))
 
-        TarjetaPepo {
-            EtiquetaSeccion("Copia de seguridad")
+        TarjetaAjuste("Copia de seguridad", Icons.Filled.Backup) {
             Spacer(Modifier.height(8.dp))
             Text(
                 "El archivo exportado va cifrado con su propia contraseña y con Argon2id. Sin esa contraseña es ruido.",
@@ -322,20 +316,20 @@ fun PantallaAjustes(vm: VaultViewModel, actividad: FragmentActivity) {
                 style = MaterialTheme.typography.bodyMedium
             )
             Spacer(Modifier.height(8.dp))
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.horizontalScroll(rememberScrollState())) {
-                AlmacenAjustes.OPCIONES_RECORDATORIO_EXPORTACION.forEach { (dias, etiqueta) ->
-                    ChipOpcion(etiqueta, ajustes.recordatorioExportacionDias == dias) {
-                        haptica.tic()
-                        vm.ajustarRecordatorioExportacion(dias)
-                    }
-                }
-            }
+            SelectorAjuste(
+                titulo = "Frecuencia del recordatorio",
+                icono = Icons.Filled.Backup,
+                seleccionado = AlmacenAjustes.OPCIONES_RECORDATORIO_EXPORTACION.first { it.first == ajustes.recordatorioExportacionDias }.second,
+                opciones = AlmacenAjustes.OPCIONES_RECORDATORIO_EXPORTACION.map { (valor, etiqueta) ->
+                    OpcionAjuste(valor.toString(), etiqueta, Icons.Filled.Backup)
+                },
+                alSeleccionar = { valor -> haptica.tic(); vm.ajustarRecordatorioExportacion(valor.toInt()) }
+            )
         }
 
         Spacer(Modifier.height(16.dp))
 
-        TarjetaPepo {
-            EtiquetaSeccion("Passwords de Google")
+        TarjetaAjuste("Passwords de Google", Icons.Filled.Key, inicialmenteAbierta = false) {
             Spacer(Modifier.height(8.dp))
             Text(
                 "Importar archivo CSV 'Google Passwords.csv' exportado y descargado desde 'https://passwords.google.com/'.",
@@ -348,8 +342,7 @@ fun PantallaAjustes(vm: VaultViewModel, actividad: FragmentActivity) {
 
         Spacer(Modifier.height(16.dp))
 
-        TarjetaPepo {
-            EtiquetaSeccion("Apariencia")
+        TarjetaAjuste("Apariencia", Icons.Filled.Palette) {
             Spacer(Modifier.height(8.dp))
             Text(
                 "Tema",
@@ -357,14 +350,15 @@ fun PantallaAjustes(vm: VaultViewModel, actividad: FragmentActivity) {
                 style = MaterialTheme.typography.titleMedium
             )
             Spacer(Modifier.height(8.dp))
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.horizontalScroll(rememberScrollState())) {
-                com.pepotech.pepoboveda.data.AlmacenAjustes.OPCIONES_TEMA.forEach { (clave, etiqueta) ->
-                    ChipOpcion(etiqueta, ajustes.temaApp == clave) {
-                        haptica.tic()
-                        vm.ajustarTema(clave)
-                    }
-                }
-            }
+            SelectorAjuste(
+                titulo = "Tema",
+                icono = Icons.Filled.Palette,
+                seleccionado = AlmacenAjustes.OPCIONES_TEMA.first { it.first == ajustes.temaApp }.second,
+                opciones = AlmacenAjustes.OPCIONES_TEMA.map { (valor, etiqueta) ->
+                    OpcionAjuste(valor, etiqueta, Icons.Filled.Palette)
+                },
+                alSeleccionar = { valor -> haptica.tic(); vm.ajustarTema(valor) }
+            )
             Spacer(Modifier.height(16.dp))
             Text(
                 "Nombre dentro de la app",
@@ -416,20 +410,37 @@ fun PantallaAjustes(vm: VaultViewModel, actividad: FragmentActivity) {
                     }
                 }
             }
+
+            Spacer(Modifier.height(14.dp))
+            EtiquetaSeccion("Densidad de lista")
+            Spacer(Modifier.height(8.dp))
+            Text(
+                "Predeterminada tiene la altura normal, cómoda la reduce algo y compacta hace las filas mucho más estrechas para ver más entradas a la vez.",
+                color = TextoSecundario,
+                style = MaterialTheme.typography.bodyMedium
+            )
+            Spacer(Modifier.height(8.dp))
+            SelectorAjuste(
+                titulo = "Densidad de lista",
+                icono = Icons.Filled.Tune,
+                seleccionado = AlmacenAjustes.OPCIONES_DENSIDAD_LISTA.first { it.first == ajustes.densidadLista }.second,
+                opciones = AlmacenAjustes.OPCIONES_DENSIDAD_LISTA.map { (valor, etiqueta) ->
+                    OpcionAjuste(valor, etiqueta, Icons.Filled.Tune)
+                },
+                alSeleccionar = { valor -> haptica.tic(); vm.ajustarDensidadLista(valor) }
+            )
         }
 
         Spacer(Modifier.height(16.dp))
 
-        TarjetaPepo {
-            EtiquetaSeccion("Contraseña maestra")
+        TarjetaAjuste("Contraseña maestra", Icons.Filled.Lock, inicialmenteAbierta = false) {
             Spacer(Modifier.height(10.dp))
             BotonBorde("Cambiar contraseña maestra") { dialogoCambio = true }
         }
 
         Spacer(Modifier.height(16.dp))
 
-        TarjetaPepo {
-            EtiquetaSeccion("Passkeys")
+        TarjetaAjuste("Passkeys", Icons.Filled.Fingerprint, inicialmenteAbierta = false) {
             Spacer(Modifier.height(10.dp))
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
                 Text(
@@ -450,16 +461,14 @@ fun PantallaAjustes(vm: VaultViewModel, actividad: FragmentActivity) {
 
         Spacer(Modifier.height(16.dp))
 
-        TarjetaPepo {
-            EtiquetaSeccion("Transparencia")
+        TarjetaAjuste("Transparencia", Icons.Filled.Info, inicialmenteAbierta = false) {
             Spacer(Modifier.height(10.dp))
             BotonBorde("Audítame") { vm.ir(Pantalla.AcercaDe) }
         }
 
         Spacer(Modifier.height(16.dp))
 
-        TarjetaPepo {
-            EtiquetaSeccion("Zona peligrosa")
+        TarjetaAjuste("Zona peligrosa", Icons.Filled.Warning, inicialmenteAbierta = false) {
             Spacer(Modifier.height(10.dp))
             BotonBorde("Borrar la bóveda de este dispositivo", color = Peligro) { dialogoBorrar = true }
         }
@@ -714,16 +723,112 @@ private fun FilaAjuste(
 }
 
 @Composable
-private fun ChipOpcion(texto: String, activo: Boolean, alPulsar: () -> Unit) {
-    val forma = RoundedCornerShape(14.dp)
-    Box(
-        modifier = Modifier
-            .clip(forma)
-            .background(if (activo) DegradadoAmbar else Brush.horizontalGradient(listOf(Superficie, Superficie)))
-            .clickable { alPulsar() }
-            .padding(horizontal = 12.dp, vertical = 8.dp)
-    ) {
-        Text(texto, color = if (activo) Obsidiana else TextoSecundario, style = MaterialTheme.typography.bodyMedium)
+private fun TarjetaAjuste(
+    titulo: String,
+    icono: ImageVector,
+    inicialmenteAbierta: Boolean = true,
+    contenido: @Composable androidx.compose.foundation.layout.ColumnScope.() -> Unit
+) {
+    var abierta by remember { mutableStateOf(inicialmenteAbierta) }
+    TarjetaPepo {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(12.dp))
+                .clickable { abierta = !abierta }
+                .padding(vertical = 2.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(titulo, color = TextoPrincipal, style = MaterialTheme.typography.titleMedium, modifier = Modifier.weight(1f))
+            Icon(icono, contentDescription = titulo, tint = Ambar, modifier = Modifier.size(20.dp))
+            Spacer(Modifier.size(8.dp))
+            Icon(
+                if (abierta) Icons.Filled.ExpandLess else Icons.Filled.ExpandMore,
+                contentDescription = if (abierta) "Contraer" else "Expandir",
+                tint = TextoSecundario
+            )
+        }
+        if (abierta) {
+            Spacer(Modifier.height(10.dp))
+            contenido()
+        }
+    }
+}
+
+private data class OpcionAjuste(
+    val valor: String,
+    val texto: String,
+    val icono: ImageVector
+)
+
+@Composable
+private fun SelectorAjuste(
+    titulo: String,
+    icono: ImageVector,
+    seleccionado: String,
+    opciones: List<OpcionAjuste>,
+    alSeleccionar: (String) -> Unit
+) {
+    var abierto by remember { mutableStateOf(false) }
+    val forma = RoundedCornerShape(16.dp)
+    Box(modifier = Modifier.fillMaxWidth()) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(52.dp)
+                .clip(forma)
+                .background(Superficie)
+                .border(1.dp, if (abierto) Ambar else Borde, forma)
+                .clickable { abierto = true }
+                .padding(horizontal = 12.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(icono, contentDescription = null, tint = if (abierto) Ambar else TextoSecundario, modifier = Modifier.size(20.dp))
+            Spacer(Modifier.width(8.dp))
+            Column(modifier = Modifier.weight(1f)) {
+                Text(titulo, color = if (abierto) Ambar else TextoSecundario, style = MaterialTheme.typography.labelMedium)
+                Text(seleccionado, color = TextoPrincipal, style = MaterialTheme.typography.bodyMedium, maxLines = 1)
+            }
+            Icon(
+                if (abierto) Icons.Filled.ExpandLess else Icons.Filled.ExpandMore,
+                contentDescription = "Abrir $titulo",
+                tint = TextoSecundario
+            )
+        }
+        DropdownMenu(
+            expanded = abierto,
+            onDismissRequest = { abierto = false },
+            modifier = Modifier.background(SuperficieAlta)
+        ) {
+            opciones.forEach { opcion ->
+                DropdownMenuItem(
+                    leadingIcon = {
+                        Icon(
+                            opcion.icono,
+                            contentDescription = null,
+                            tint = if (opcion.texto == seleccionado) Ambar else TextoSecundario,
+                            modifier = Modifier.size(20.dp)
+                        )
+                    },
+                    text = {
+                        Text(
+                            opcion.texto,
+                            color = if (opcion.texto == seleccionado) Ambar else TextoPrincipal,
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                    },
+                    trailingIcon = {
+                        if (opcion.texto == seleccionado) {
+                            Icon(Icons.Filled.Check, contentDescription = null, tint = Ambar, modifier = Modifier.size(18.dp))
+                        }
+                    },
+                    onClick = {
+                        alSeleccionar(opcion.valor)
+                        abierto = false
+                    }
+                )
+            }
+        }
     }
 }
 
