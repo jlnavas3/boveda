@@ -117,7 +117,7 @@ fun HojaPasskey(
     }
 
     // Con la bóveda ya abierta, la huella es la confirmación: pones el dedo y
-    // firma. No hace falta pasear por dentro de Pepo Bóveda para nada.
+    // firma. No hace falta pasear por dentro de Bóveda local para nada.
     var firmaLanzada by remember { mutableStateOf(false) }
     LaunchedEffect(abierta, yaConfirmado, huellaDisponible) {
         if (!abierta || firmaLanzada) return@LaunchedEffect

@@ -17,6 +17,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import com.pepotech.pepoboveda.ui.Pantalla
 import com.pepotech.pepoboveda.ui.VaultViewModel
@@ -56,12 +60,22 @@ fun PantallaPasskeys(vm: VaultViewModel) {
             EtiquetaSeccion("Cómo activarlas")
             Spacer(Modifier.height(8.dp))
             Text(
-                "Android tiene que saber que Pepo Bóveda es tu gestor. El botón te deja en la pantalla de \"Contraseñas y llaves de acceso\": ahí marca Pepo Bóveda.",
+                buildAnnotatedString {
+                    append("Android tiene que saber que ")
+                    withStyle(SpanStyle(fontWeight = FontWeight.Bold)) {
+                        append("'Bóveda local'")
+                    }
+                    append(" es tu gestor. El botón te deja en la pantalla de \"Contraseñas y llaves de acceso\": ahí marca ")
+                    withStyle(SpanStyle(fontWeight = FontWeight.Bold)) {
+                        append("Bóveda local")
+                    }
+                    append(".")
+                },
                 color = TextoPrincipal,
                 style = MaterialTheme.typography.bodyMedium
             )
             Spacer(Modifier.height(12.dp))
-            BotonBorde("Abrir contraseñas y llaves de acceso") {
+            BotonBorde("Contraseñas y llaves de acceso") {
                 if (!AjustesSistema.abrirProveedorCredenciales(contexto)) {
                     vm.avisar("Tu móvil no deja abrirla directa: Ajustes › Contraseñas y cuentas › Contraseñas y llaves de acceso")
                 }
@@ -81,7 +95,11 @@ fun PantallaPasskeys(vm: VaultViewModel) {
                 Text("Todavía no hay passkeys", color = TextoPrincipal, style = MaterialTheme.typography.titleMedium)
                 Spacer(Modifier.height(6.dp))
                 Text(
-                    "Cuando una web o app te pida crear una passkey y elijas Pepo Bóveda, aparecerá en esta lista.",
+                    buildAnnotatedString {
+                        append("Cuando una web o app te pida crear una passkey y elijas ")
+                        withStyle(SpanStyle(fontWeight = FontWeight.Bold)) { append("Bóveda local") }
+                        append(", aparecerá en esta lista.")
+                    },
                     color = TextoSecundario,
                     style = MaterialTheme.typography.bodyMedium
                 )

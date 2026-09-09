@@ -154,7 +154,7 @@ class PepoCredentialProviderService : CredentialProviderService() {
                 constructor.addCredentialEntry(
                     PublicKeyCredentialEntry(
                         context = this,
-                        username = "Desbloquear Pepo Bóveda",
+                        username = "Desbloquear Bóveda local",
                         pendingIntent = pendiente,
                         beginGetPublicKeyCredentialOption = opcion
                     )

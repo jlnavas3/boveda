@@ -71,6 +71,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -221,7 +222,7 @@ fun PantallaLista(vm: VaultViewModel, estado: EstadoBoveda) {
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
                         ajustes.nombrePersonalizado.ifBlank { "Bóveda local" },
-                        style = MaterialTheme.typography.headlineMedium,
+                        style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
                         color = TextoPrincipal
                     )
                     Text(

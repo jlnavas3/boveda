@@ -357,7 +357,13 @@ class VaultViewModel(app: Application) : AndroidViewModel(app) {
      * Devuelve false si el texto no sirve, para que la pantalla lo diga sin salir.
      */
     fun altaTotp(texto: String, entradaDestino: String? = null): Boolean {
-        val semilla = OtpAuth.leer(texto) ?: return false
+        val ajustes = repositorio.ajustes.actual
+        val semilla = OtpAuth.leer(
+            texto = texto,
+            digitosManual = ajustes.totpManualDigitos,
+            periodoManual = ajustes.totpManualPeriodo,
+            algoritmoManual = ajustes.totpManualAlgoritmo
+        ) ?: return false
         val destino = entradaDestino?.let { repositorio.entrada(it) }
         if (destino != null) {
             guardar(
@@ -365,7 +371,8 @@ class VaultViewModel(app: Application) : AndroidViewModel(app) {
                     secretoTotp = semilla.secreto,
                     totpEmisor = semilla.emisor.ifBlank { destino.totpEmisor },
                     totpDigitos = semilla.digitos,
-                    totpPeriodo = semilla.periodo
+                    totpPeriodo = semilla.periodo,
+                    totpAlgoritmo = semilla.algoritmo
                 )
             )
             ir(Pantalla.Detalle(destino.id))
@@ -379,7 +386,8 @@ class VaultViewModel(app: Application) : AndroidViewModel(app) {
             secretoTotp = semilla.secreto,
             totpEmisor = semilla.emisor,
             totpDigitos = semilla.digitos,
-            totpPeriodo = semilla.periodo
+            totpPeriodo = semilla.periodo,
+            totpAlgoritmo = semilla.algoritmo
         )
         guardar(entrada)
         ir(Pantalla.Autenticador)
@@ -434,6 +442,18 @@ class VaultViewModel(app: Application) : AndroidViewModel(app) {
     fun ajustarDensidadLista(clave: String) =
         repositorio.ajustes.actualizar { it.copy(densidadLista = clave) }
 
+    fun ajustarTotpManualDigitos(digitos: Int) =
+        repositorio.ajustes.actualizar { it.copy(totpManualDigitos = digitos) }
+
+    fun ajustarTotpManualPeriodo(periodo: Int) =
+        repositorio.ajustes.actualizar { it.copy(totpManualPeriodo = periodo) }
+
+    fun ajustarTotpManualAlgoritmo(algoritmo: String) =
+        repositorio.ajustes.actualizar { it.copy(totpManualAlgoritmo = algoritmo) }
+
+    fun ajustarTotpSepararDigitos(separar: Boolean) =
+        repositorio.ajustes.actualizar { it.copy(totpSepararDigitos = separar) }
+
     /** Días sin exportar la bóveda; null si nunca se exportó o el recordatorio está apagado. */
     fun diasSinExportar(): Long? {
         val ajustes = repositorio.ajustes.actual
@@ -454,7 +474,7 @@ class VaultViewModel(app: Application) : AndroidViewModel(app) {
         _ofrecerGestor.value = true
     }
 
-    /** Oferta, una sola vez, de activar Pepo Bóveda como gestor del sistema. */
+    /** Oferta, una sola vez, de activar Bóveda local como gestor del sistema. */
     private val _ofrecerGestor = MutableStateFlow(false)
     val ofrecerGestor: StateFlow<Boolean> = _ofrecerGestor
 

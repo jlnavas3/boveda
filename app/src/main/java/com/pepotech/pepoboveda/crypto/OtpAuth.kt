@@ -13,19 +13,32 @@ object OtpAuth {
         val cuenta: String,
         val secreto: String,
         val digitos: Int = 6,
-        val periodo: Int = 30
+        val periodo: Int = 30,
+        val algoritmo: String = "HmacSHA1"
     ) {
         val titulo: String get() = emisor.ifBlank { cuenta.ifBlank { "2FA" } }
     }
 
     /** Devuelve null si el texto no es un otpauth de TOTP utilizable. */
-    fun leer(texto: String): Semilla? {
+    fun leer(
+        texto: String,
+        digitosManual: Int = 6,
+        periodoManual: Int = 30,
+        algoritmoManual: String = "HmacSHA1"
+    ): Semilla? {
         val limpio = texto.trim()
         if (!limpio.startsWith("otpauth://totp/", ignoreCase = true)) {
             // También aceptamos un secreto Base32 pegado a pelo.
             val soloSecreto = limpio.replace(" ", "").uppercase()
             return if (soloSecreto.isNotEmpty() && Base32.esValido(soloSecreto)) {
-                Semilla(emisor = "", cuenta = "", secreto = soloSecreto)
+                Semilla(
+                    emisor = "",
+                    cuenta = "",
+                    secreto = soloSecreto,
+                    digitos = digitosManual.coerceIn(6, 8),
+                    periodo = periodoManual.coerceIn(10, 300),
+                    algoritmo = algoritmoManual
+                )
             } else {
                 null
             }
@@ -54,7 +67,12 @@ object OtpAuth {
             cuenta = cuenta,
             secreto = secreto,
             digitos = parametros["digits"]?.toIntOrNull()?.coerceIn(6, 8) ?: 6,
-            periodo = parametros["period"]?.toIntOrNull()?.coerceIn(10, 300) ?: 30
+            periodo = parametros["period"]?.toIntOrNull()?.coerceIn(10, 300) ?: 30,
+            algoritmo = when (parametros["algorithm"]?.uppercase()) {
+                "SHA256", "HMAC-SHA256" -> "HmacSHA256"
+                "SHA512", "HMAC-SHA512" -> "HmacSHA512"
+                else -> "HmacSHA1"
+            }
         )
     }
 

@@ -45,6 +45,7 @@ import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.pepotech.pepoboveda.crypto.Totp
 import com.pepotech.pepoboveda.ui.Pantalla
 import com.pepotech.pepoboveda.ui.VaultViewModel
@@ -70,6 +71,7 @@ fun PantallaDetalle(vm: VaultViewModel, id: String) {
     val contexto = LocalContext.current
     val haptica = remember { Haptica(contexto) }
     val entrada = vm.entrada(id)
+    val ajustes by vm.ajustes.collectAsStateWithLifecycle()
     var revelada by remember { mutableStateOf(false) }
     var confirmarBorrado by remember { mutableStateOf(false) }
     var ultimaCopia by remember { mutableStateOf<String?>(null) }
@@ -163,6 +165,7 @@ fun PantallaDetalle(vm: VaultViewModel, id: String) {
         }
 
         entrada.secretoTotp?.takeIf { it.isNotBlank() }?.let { secreto ->
+            val periodo = entrada.totpPeriodo.toLong().coerceAtLeast(10L)
             var ahora by remember { mutableLongStateOf(System.currentTimeMillis() / 1000) }
             LaunchedEffect(secreto) {
                 while (true) {
@@ -170,9 +173,15 @@ fun PantallaDetalle(vm: VaultViewModel, id: String) {
                     delay(500)
                 }
             }
-            val codigo = remember(ahora / Totp.PERIODO_SEGUNDOS, secreto) {
+            val codigo = remember(ahora / periodo, secreto, entrada.totpDigitos, entrada.totpAlgoritmo) {
                 try {
-                    Totp.codigoDesdeBase32(secreto, ahora)
+                    Totp.codigo(
+                        secreto = com.pepotech.pepoboveda.crypto.Base32.decodificar(secreto),
+                        segundosUnix = ahora,
+                        digitos = entrada.totpDigitos,
+                        periodo = periodo,
+                        algoritmo = entrada.totpAlgoritmo
+                    )
                 } catch (e: Exception) {
                     "------"
                 }
@@ -181,10 +190,14 @@ fun PantallaDetalle(vm: VaultViewModel, id: String) {
                 EtiquetaSeccion("Código de verificación (TOTP)")
                 Spacer(Modifier.height(10.dp))
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    AnilloTotp(codigo = codigo, segundosRestantes = Totp.segundosRestantes(ahora))
+                    AnilloTotp(
+                        codigo = if (ajustes.totpSepararDigitos && codigo.length == 6) "${codigo.take(3)} ${codigo.drop(3)}" else codigo,
+                        segundosRestantes = Totp.segundosRestantes(ahora, periodo),
+                        periodo = periodo
+                    )
                     Spacer(Modifier.width(16.dp))
                     Column(modifier = Modifier.weight(1f)) {
-                        Text("Se renueva cada 30 s", color = TextoSecundario, style = MaterialTheme.typography.bodyMedium)
+                        Text("Se renueva cada ${periodo} s · ${entrada.totpDigitos} dígitos", color = TextoSecundario, style = MaterialTheme.typography.bodyMedium)
                         Spacer(Modifier.height(8.dp))
                         BotonBorde("Copiar código", color = Menta) {
                             haptica.toque()

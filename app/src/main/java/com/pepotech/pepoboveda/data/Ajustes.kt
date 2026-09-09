@@ -30,7 +30,12 @@ data class AjustesApp(
     /** Días entre avisos de "haz una copia"; 0 = recordatorio apagado. */
     val recordatorioExportacionDias: Int = 30,
     /** "predeterminada", "comoda" o "compacta". */
-    val densidadLista: String = "predeterminada"
+    val densidadLista: String = "predeterminada",
+    /** Defaults for manually entered TOTP secrets; otpauth QR parameters override them. */
+    val totpManualDigitos: Int = 6,
+    val totpManualPeriodo: Int = 30,
+    val totpManualAlgoritmo: String = "HmacSHA1",
+    val totpSepararDigitos: Boolean = true
 )
 
 class AlmacenAjustes(contexto: Context) {
@@ -60,7 +65,11 @@ class AlmacenAjustes(contexto: Context) {
             temaApp = prefs.getString("tema_app", "sistema") ?: "sistema",
             ultimaExportacionEn = prefs.getLong("ultima_exportacion", 0L),
             recordatorioExportacionDias = prefs.getInt("recordatorio_exportacion_dias", 30),
-            densidadLista = prefs.getString("densidad_lista", "predeterminada") ?: "predeterminada"
+            densidadLista = prefs.getString("densidad_lista", "predeterminada") ?: "predeterminada",
+            totpManualDigitos = prefs.getInt("totp_manual_digitos", 6),
+            totpManualPeriodo = prefs.getInt("totp_manual_periodo", 30),
+            totpManualAlgoritmo = prefs.getString("totp_manual_algoritmo", "HmacSHA1") ?: "HmacSHA1",
+            totpSepararDigitos = prefs.getBoolean("totp_separar_digitos", true)
         )
     }
 
@@ -79,6 +88,10 @@ class AlmacenAjustes(contexto: Context) {
             .putLong("ultima_exportacion", nuevo.ultimaExportacionEn)
             .putInt("recordatorio_exportacion_dias", nuevo.recordatorioExportacionDias)
             .putString("densidad_lista", nuevo.densidadLista)
+            .putInt("totp_manual_digitos", nuevo.totpManualDigitos)
+            .putInt("totp_manual_periodo", nuevo.totpManualPeriodo)
+            .putString("totp_manual_algoritmo", nuevo.totpManualAlgoritmo)
+            .putBoolean("totp_separar_digitos", nuevo.totpSepararDigitos)
             .apply()
         _ajustes.value = nuevo
     }

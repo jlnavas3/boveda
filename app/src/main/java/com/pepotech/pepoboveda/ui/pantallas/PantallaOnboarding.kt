@@ -30,6 +30,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentActivity
@@ -78,7 +79,7 @@ fun PantallaOnboarding(vm: VaultViewModel, actividad: FragmentActivity) {
                 Spacer(Modifier.height(28.dp))
                 Text(
                     "Bóveda local",
-                    style = MaterialTheme.typography.displaySmall,
+                    style = MaterialTheme.typography.displaySmall.copy(fontWeight = FontWeight.Bold),
                     color = TextoPrincipal
                 )
                 Spacer(Modifier.height(12.dp))

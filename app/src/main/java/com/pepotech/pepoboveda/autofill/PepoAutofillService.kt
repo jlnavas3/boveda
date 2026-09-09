@@ -90,7 +90,7 @@ class PepoAutofillService : AutofillService() {
     override fun onSaveRequest(request: SaveRequest, callback: SaveCallback) {
         val repositorio = VaultRepository.obtener(this)
         if (!repositorio.estaDesbloqueada) {
-            callback.onFailure("Abre Pepo Bóveda para guardar esta contraseña")
+            callback.onFailure("Abre Bóveda local para guardar esta contraseña")
             return
         }
         val contexto = request.fillContexts.lastOrNull()

@@ -37,6 +37,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -262,12 +266,11 @@ fun PantallaEscaner(
                 Text("Ese QR es de una llave de acceso, no de un 2FA", color = Peligro, style = MaterialTheme.typography.titleMedium)
                 Spacer(Modifier.height(6.dp))
                 Text(
-                    "Ese código lo enseña el navegador de tu ordenador para pasar la llave al móvil, " +
-                        "y para eso hace falta internet y Bluetooth. Yo no tengo permiso de red, así que " +
-                        "no puedo leerlo, y prefiero decírtelo a fingir que funciona.\n\n" +
-                        "Las llaves de acceso no se escanean aquí. Abre la web en el navegador del propio " +
-                        "móvil y, cuando te pregunte dónde guardar la llave, elige Pepo Bóveda. Si no aparezco " +
-                        "en esa lista, actívame en Ajustes.",
+                    buildAnnotatedString {
+                        append("Ese código lo enseña el navegador de tu ordenador para pasar la llave al móvil, y para eso hace falta internet y Bluetooth. Yo no tengo permiso de red, así que no puedo leerlo, y prefiero decírtelo a fingir que funciona.\n\nLas llaves de acceso no se escanean aquí. Abre la web en el navegador del propio móvil y, cuando te pregunte dónde guardar la llave, elige ")
+                        withStyle(SpanStyle(fontWeight = FontWeight.Bold)) { append("Bóveda local") }
+                        append(". Si no aparezco en esa lista, actívame en Ajustes.")
+                    },
                     color = TextoSecundario,
                     style = MaterialTheme.typography.bodyMedium
                 )

@@ -67,7 +67,7 @@ fun PantallaDesbloqueo(vm: VaultViewModel, actividad: FragmentActivity) {
         mensajeBiometria = null
         val compatible = flujo.modoActivo == BiometricKeyStore.Modo.COMPATIBLE
         flujo.desbloquear(
-            titulo = "Abrir Pepo Bóveda",
+            titulo = "Abrir Bóveda local",
             subtitulo = if (compatible) "Confirma con tu huella o con el PIN del móvil" else "Usa tu huella para descifrar la clave maestra",
             alClave = { clave ->
                 abriendo = true

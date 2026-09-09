@@ -2,6 +2,7 @@ package com.pepotech.pepoboveda
 
 import com.pepotech.pepoboveda.crypto.Base32
 import com.pepotech.pepoboveda.crypto.Totp
+import com.pepotech.pepoboveda.crypto.OtpAuth
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -46,5 +47,16 @@ class TotpTest {
     fun `acepta secretos en base32`() {
         val base32 = Base32.codificar(secreto)
         assertEquals(Totp.codigo(secreto, 59L), Totp.codigoDesdeBase32(base32, 59L))
+    }
+
+    @Test
+    fun `conserva algoritmo digitos y periodo del QR otpauth`() {
+        val semilla = OtpAuth.leer(
+            "otpauth://totp/Servicio:cuenta?secret=JBSWY3DPEHPK3PXP&algorithm=SHA256&digits=8&period=60"
+        )
+
+        assertEquals("HmacSHA256", semilla?.algoritmo)
+        assertEquals(8, semilla?.digitos)
+        assertEquals(60, semilla?.periodo)
     }
 }

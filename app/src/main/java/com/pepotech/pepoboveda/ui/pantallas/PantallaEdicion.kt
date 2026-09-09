@@ -18,8 +18,13 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.material3.Slider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
@@ -60,6 +65,7 @@ import com.pepotech.pepoboveda.ui.theme.TextoSecundario
 import com.pepotech.pepoboveda.util.Haptica
 import com.pepotech.pepoboveda.util.ContrasenasComunes
 import com.pepotech.pepoboveda.util.MedidorFuerza
+import kotlin.math.roundToInt
 
 @Composable
 fun PantallaEdicion(vm: VaultViewModel, id: String?, contrasenaInicial: String) {
@@ -78,6 +84,7 @@ fun PantallaEdicion(vm: VaultViewModel, id: String?, contrasenaInicial: String) 
     var favorito by remember { mutableStateOf(original?.favorito ?: false) }
     var etiquetas by remember { mutableStateOf(original?.etiquetas ?: emptyList()) }
     var nuevaEtiqueta by remember { mutableStateOf("") }
+    var opcionesGenerador by remember { mutableStateOf(OpcionesGenerador()) }
     val etiquetasSugeridas = remember { vm.etiquetasUsadas() }
 
     val totpValido = totp.isBlank() || Base32.esValido(totp)
@@ -123,28 +130,61 @@ fun PantallaEdicion(vm: VaultViewModel, id: String?, contrasenaInicial: String) 
                 monoespaciada = true
             )
             Spacer(Modifier.height(8.dp))
-            Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                Text(
-                    if (mostrarContrasena) "Ocultar" else "Mostrar",
-                    color = Ambar,
-                    style = MaterialTheme.typography.labelLarge,
-                    modifier = Modifier.clickable { mostrarContrasena = !mostrarContrasena }
-                )
-                Text(
-                    "Generar",
-                    color = Ambar,
-                    style = MaterialTheme.typography.labelLarge,
-                    modifier = Modifier.clickable {
+            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                IconButton(
+                    onClick = { mostrarContrasena = !mostrarContrasena },
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Icon(
+                        if (mostrarContrasena) Icons.Filled.VisibilityOff else Icons.Filled.Visibility,
+                        contentDescription = if (mostrarContrasena) "Ocultar contraseña" else "Mostrar contraseña",
+                        tint = Ambar,
+                        modifier = Modifier.size(28.dp)
+                    )
+                }
+                IconButton(
+                    onClick = {
                         haptica.toque()
-                        contrasena = PasswordGenerator.generar(OpcionesGenerador())
-                    }
+                        contrasena = PasswordGenerator.generar(opcionesGenerador)
+                    },
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Icon(
+                        Icons.Filled.AutoAwesome,
+                        contentDescription = "Generar contraseña",
+                        tint = Ambar,
+                        modifier = Modifier.size(28.dp)
+                    )
+                }
+                IconButton(
+                    onClick = { vm.ir(Pantalla.Generador) },
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Icon(
+                        Icons.Filled.AutoAwesome,
+                        contentDescription = "Abrir generador completo",
+                        tint = Ambar,
+                        modifier = Modifier.size(28.dp)
+                    )
+                }
+            }
+            Spacer(Modifier.height(10.dp))
+            EtiquetaSeccion("Ajuste rápido: ${opcionesGenerador.longitud} caracteres")
+            Slider(
+                value = opcionesGenerador.longitud.toFloat(),
+                onValueChange = { opcionesGenerador = opcionesGenerador.copy(longitud = it.roundToInt().coerceIn(8, 64)) },
+                valueRange = 8f..64f,
+                colors = androidx.compose.material3.SliderDefaults.colors(
+                    thumbColor = Ambar,
+                    activeTrackColor = Ambar,
+                    inactiveTrackColor = Borde
                 )
-                Text(
-                    "Generador",
-                    color = Ambar,
-                    style = MaterialTheme.typography.labelLarge,
-                    modifier = Modifier.clickable { vm.ir(Pantalla.Generador) }
-                )
+            )
+            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                OpcionGeneradorCompacta("A-Z", opcionesGenerador.mayusculas) { opcionesGenerador = opcionesGenerador.copy(mayusculas = it) }
+                OpcionGeneradorCompacta("a-z", opcionesGenerador.minusculas) { opcionesGenerador = opcionesGenerador.copy(minusculas = it) }
+                OpcionGeneradorCompacta("0-9", opcionesGenerador.digitos) { opcionesGenerador = opcionesGenerador.copy(digitos = it) }
+                OpcionGeneradorCompacta("Símbolos", opcionesGenerador.simbolos) { opcionesGenerador = opcionesGenerador.copy(simbolos = it) }
             }
             if (contrasena.isNotEmpty()) {
                 Spacer(Modifier.height(12.dp))
@@ -304,6 +344,29 @@ private fun ChipEtiqueta(texto: String, sugerida: Boolean = false, alPulsar: () 
             Spacer(Modifier.width(6.dp))
             Icon(Icons.Filled.Close, contentDescription = "Quitar etiqueta", tint = TextoSecundario, modifier = Modifier.size(16.dp))
         }
+    }
+}
+
+@Composable
+private fun OpcionGeneradorCompacta(
+    texto: String,
+    activo: Boolean,
+    alCambiar: (Boolean) -> Unit
+) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.width(78.dp)) {
+        Text(texto, color = TextoSecundario, style = MaterialTheme.typography.labelSmall, maxLines = 1)
+        Switch(
+            checked = activo,
+            onCheckedChange = alCambiar,
+            colors = SwitchDefaults.colors(
+                checkedThumbColor = Obsidiana,
+                checkedTrackColor = Ambar,
+                checkedBorderColor = Ambar,
+                uncheckedThumbColor = TextoSecundario,
+                uncheckedTrackColor = SuperficieAlta,
+                uncheckedBorderColor = TextoSecundario
+            )
+        )
     }
 }
 

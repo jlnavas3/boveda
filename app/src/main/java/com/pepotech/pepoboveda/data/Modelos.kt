@@ -47,6 +47,7 @@ data class Entrada(
     val totpEmisor: String = "",
     val totpDigitos: Int = 6,
     val totpPeriodo: Int = 30,
+    val totpAlgoritmo: String = "HmacSHA1",
     val favorito: Boolean = false,
     val creadaEn: Long = 0L,
     val modificadaEn: Long = 0L,

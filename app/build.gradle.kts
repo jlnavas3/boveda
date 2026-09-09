@@ -23,8 +23,8 @@ android {
         applicationId = "com.pepotech.pepoboveda"
         minSdk = 29
         targetSdk = 35
-        versionCode = 10
-        versionName = "0.78-beta"
+        versionCode = 11
+        versionName = "0.79-beta"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 

@@ -21,6 +21,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.pepotech.pepoboveda.crypto.Totp
 import com.pepotech.pepoboveda.data.EstadoBoveda
 import com.pepotech.pepoboveda.ui.Pantalla
@@ -36,6 +37,7 @@ import kotlinx.coroutines.delay
 
 @Composable
 fun PantallaAutenticador(vm: VaultViewModel, estado: EstadoBoveda) {
+    val ajustes by vm.ajustes.collectAsStateWithLifecycle()
     val entradas = (estado as? EstadoBoveda.Desbloqueada)?.entradas ?: emptyList()
     val conTotp = vm.entradasConTotp(entradas)
 
@@ -110,7 +112,9 @@ fun PantallaAutenticador(vm: VaultViewModel, estado: EstadoBoveda) {
                                 style = MaterialTheme.typography.bodyMedium
                             )
                             Text(
-                                if (codigo.length == 6) "${codigo.take(3)} ${codigo.drop(3)}" else codigo,
+                                if (ajustes.totpSepararDigitos && codigo.length == 6) {
+                                    "${codigo.take(3)} ${codigo.drop(3)}"
+                                } else codigo,
                                 color = Ambar,
                                 style = MaterialTheme.typography.headlineMedium
                             )

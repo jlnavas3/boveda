@@ -37,6 +37,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -304,10 +308,11 @@ private fun DialogoOfrecerGestor(vm: VaultViewModel, actividad: FragmentActivity
         title = { Text("¿Me pones como gestor?", color = TextoPrincipal) },
         text = {
             Text(
-                "Android no deja que una app se ponga sola: lo tienes que activar tú. " +
-                    "Te abro la pantalla de \"Contraseñas y llaves de acceso\" y marcas " +
-                    "Bóveda local.\n\nSin esto no aparezco al rellenar contraseñas ni al " +
-                    "crear una llave de acceso. Lo puedes hacer más tarde desde Ajustes.",
+                buildAnnotatedString {
+                    append("Android no deja que una app se ponga sola: lo tienes que activar tú. Te abro la pantalla de \"Contraseñas y llaves de acceso\" y marcas ")
+                    withStyle(SpanStyle(fontWeight = FontWeight.Bold)) { append("Bóveda local") }
+                    append(".\n\nSin esto no aparezco al rellenar contraseñas ni al crear una llave de acceso. Lo puedes hacer más tarde desde Ajustes.")
+                },
                 color = TextoSecundario
             )
         },

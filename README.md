@@ -89,7 +89,6 @@ Las etiquetas no contienen espacios: al guardar, `# trabajo` se normaliza como `
 La normalización también se aplica a etiquetas antiguas al mostrarlas, tanto en la lista
 principal como en la edición y el detalle de cada entrada.
 
-### Personalización
 
 En Ajustes > Apariencia:
 
@@ -110,6 +109,20 @@ En Ajustes > Apariencia:
 - **Selectores compactos**: las opciones de bloqueo automático, portapapeles, cámara,
   recordatorio de exportación, tema y densidad se eligen desde menús desplegables con
   iconos y una marca en la opción activa.
+
+### Generación en la edición
+
+Al editar una entrada se puede generar una contraseña sin abandonar el formulario. Hay
+controles compactos para longitud, mayúsculas, minúsculas, dígitos y símbolos.
+
+### Autenticador 2FA
+
+En Ajustes > Autenticador 2FA se configuran valores predeterminados para claves Base32
+manuales: SHA1/SHA256/SHA512, 6/7/8 dígitos y períodos de 30/60/90 segundos. Los QR
+`otpauth://` conservan sus propios parámetros. También se puede elegir mostrar `123 456`
+o `123456`.
+
+La versión beta actual es `0.79-beta`.
 
 ### Passkeys
 
