@@ -20,6 +20,7 @@ class DominiosTest {
         assertEquals("ejemplo.com", Dominios.raiz("https://cuentas.ejemplo.com/login"))
         assertEquals("ejemplo.co.uk", Dominios.raiz("https://login.ejemplo.co.uk"))
         assertEquals("ejemplo.com.ar", Dominios.raiz("tienda.ejemplo.com.ar"))
+        assertEquals("cedia.edu.ec", Dominios.raiz("https://login.cedia.edu.ec"))
     }
 
     @Test
@@ -28,6 +29,8 @@ class DominiosTest {
         assertEquals("amazon", Dominios.marca("https://amazon.com.mx"))
         assertEquals("amazon", Dominios.marca("https://login.amazon.co.uk"))
         assertEquals("amazonaws", Dominios.marca("https://console.amazonaws.com"))
+        assertEquals("cedia", Dominios.marca("cedia.edu.ec"))
+        assertEquals("utpl", Dominios.marca("utpl.edu.ec"))
     }
 
     @Test

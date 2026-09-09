@@ -8,9 +8,15 @@ import com.pepotech.pepoboveda.data.TipoEntrada
  * y passkeys. Así, amazon.com, amazon.com.mx y amazon.co.uk comparten grupo.
  */
 fun claveAgrupacionSitio(entrada: Entrada): String? = when (entrada.tipo) {
-    TipoEntrada.LOGIN -> entrada.urls.asSequence()
-        .map { Dominios.marca(it) }
-        .firstOrNull { it.isNotBlank() }
+    TipoEntrada.LOGIN -> {
+        val web = entrada.urls.asSequence()
+            .filterNot { it.trim().lowercase().startsWith("android://") }
+            .map { Dominios.marca(it) }
+            .firstOrNull { it.isNotBlank() }
+        web ?: entrada.titulo
+            .takeIf { it.isNotBlank() }
+            ?.let { Dominios.marca(it).ifBlank { it.trim().lowercase() } }
+    }
     TipoEntrada.PASSKEY -> entrada.passkey?.rpId
         ?.let { Dominios.marca(it) }
         ?.takeIf { it.isNotBlank() }

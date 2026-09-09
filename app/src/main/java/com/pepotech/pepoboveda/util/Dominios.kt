@@ -5,7 +5,8 @@ object Dominios {
     private val SUFIJOS_COMPUESTOS = setOf(
         "co.uk", "org.uk", "ac.uk", "gov.uk", "com.ar", "com.br", "com.mx", "com.co",
         "com.au", "com.tr", "co.jp", "co.kr", "co.nz", "com.es", "gob.es", "com.pe",
-        "com.cl", "com.ve", "com.uy", "com.py", "com.ec", "com.bo", "com.pa", "com.do"
+        "com.cl", "com.ve", "com.uy", "com.py", "com.ec", "com.bo", "com.pa", "com.do",
+        "edu.ec", "gob.ec", "mil.ec", "org.ec", "net.ec", "fin.ec"
     )
 
     fun host(entrada: String): String {
