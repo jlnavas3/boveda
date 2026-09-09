@@ -37,9 +37,9 @@ private class PaletaBase(
 
 private val paletaOscura = PaletaBase(
     fondo = Color(0xFF0E0F13),
-    superficie = Color(0xFF161922),
-    superficieAlta = Color(0xFF1C2130),
-    borde = Color(0xFF232838),
+    superficie = Color(0xFF1B1F2A),
+    superficieAlta = Color(0xFF252B3A),
+    borde = Color(0xFF3A4356),
     // Gris claro, no blanco puro: de noche, el blanco a #FFF brilla y molesta a la vista.
     textoPrincipal = Color(0xFFD6DAE2),
     textoSecundario = Color(0xFF9AA3B8),

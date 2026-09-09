@@ -190,7 +190,7 @@ fun PantallaAjustes(vm: VaultViewModel, actividad: FragmentActivity) {
         Text("Ajustes", style = MaterialTheme.typography.headlineMedium, color = TextoPrincipal)
         Spacer(Modifier.height(18.dp))
 
-        TarjetaAjuste("Seguridad", Icons.Filled.Security) {
+        TarjetaAjuste("Seguridad", Icons.Filled.Security, "Huella, bloqueo automático y borrado del portapapeles.") {
             Spacer(Modifier.height(10.dp))
             FilaAjuste(
                 titulo = "Abrir con huella",
@@ -263,7 +263,7 @@ fun PantallaAjustes(vm: VaultViewModel, actividad: FragmentActivity) {
 
         Spacer(Modifier.height(16.dp))
 
-        TarjetaAjuste("Cámara del escáner", Icons.Filled.CameraAlt) {
+        TarjetaAjuste("Cámara del escáner", Icons.Filled.CameraAlt, "Elige cómo se leen los códigos QR de autenticación.") {
             Spacer(Modifier.height(8.dp))
             Text(
                 "Automático prueba CameraX y, si falla, pasa solo al motor compatible. Si la imagen sale negra o no lee nada, fuerza el compatible: usa la API antigua de cámara, que funciona hasta en los móviles más raros. Y si nada va, siempre puedes leer el QR desde una captura.",
@@ -284,7 +284,7 @@ fun PantallaAjustes(vm: VaultViewModel, actividad: FragmentActivity) {
 
         Spacer(Modifier.height(16.dp))
 
-        TarjetaAjuste("Copia de seguridad", Icons.Filled.Backup) {
+        TarjetaAjuste("Copia de seguridad", Icons.Filled.Backup, "Exporta, importa y configura avisos para no olvidar tus copias.") {
             Spacer(Modifier.height(8.dp))
             Text(
                 "El archivo exportado va cifrado con su propia contraseña y con Argon2id. Sin esa contraseña es ruido.",
@@ -329,7 +329,7 @@ fun PantallaAjustes(vm: VaultViewModel, actividad: FragmentActivity) {
 
         Spacer(Modifier.height(16.dp))
 
-        TarjetaAjuste("Passwords de Google", Icons.Filled.Key, inicialmenteAbierta = false) {
+        TarjetaAjuste("Passwords de Google", Icons.Filled.Key, "Importa un CSV exportado desde Google Password Manager.", inicialmenteAbierta = false) {
             Spacer(Modifier.height(8.dp))
             Text(
                 "Importar archivo CSV 'Google Passwords.csv' exportado y descargado desde 'https://passwords.google.com/'.",
@@ -342,7 +342,7 @@ fun PantallaAjustes(vm: VaultViewModel, actividad: FragmentActivity) {
 
         Spacer(Modifier.height(16.dp))
 
-        TarjetaAjuste("Apariencia", Icons.Filled.Palette) {
+        TarjetaAjuste("Apariencia", Icons.Filled.Palette, "Tema, color, nombre, densidad y organización de la lista.") {
             Spacer(Modifier.height(8.dp))
             Text(
                 "Tema",
@@ -433,14 +433,14 @@ fun PantallaAjustes(vm: VaultViewModel, actividad: FragmentActivity) {
 
         Spacer(Modifier.height(16.dp))
 
-        TarjetaAjuste("Contraseña maestra", Icons.Filled.Lock, inicialmenteAbierta = false) {
+        TarjetaAjuste("Contraseña maestra", Icons.Filled.Lock, "Cambia la clave que protege toda la bóveda.", inicialmenteAbierta = false) {
             Spacer(Modifier.height(10.dp))
             BotonBorde("Cambiar contraseña maestra") { dialogoCambio = true }
         }
 
         Spacer(Modifier.height(16.dp))
 
-        TarjetaAjuste("Passkeys", Icons.Filled.Fingerprint, inicialmenteAbierta = false) {
+        TarjetaAjuste("Passkeys", Icons.Filled.Fingerprint, "Gestiona el proveedor de llaves de acceso de Android.", inicialmenteAbierta = false) {
             Spacer(Modifier.height(10.dp))
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
                 Text(
@@ -461,14 +461,14 @@ fun PantallaAjustes(vm: VaultViewModel, actividad: FragmentActivity) {
 
         Spacer(Modifier.height(16.dp))
 
-        TarjetaAjuste("Transparencia", Icons.Filled.Info, inicialmenteAbierta = false) {
+        TarjetaAjuste("Transparencia", Icons.Filled.Info, "Consulta el diagnóstico local y cómo funciona la aplicación.", inicialmenteAbierta = false) {
             Spacer(Modifier.height(10.dp))
             BotonBorde("Audítame") { vm.ir(Pantalla.AcercaDe) }
         }
 
         Spacer(Modifier.height(16.dp))
 
-        TarjetaAjuste("Zona peligrosa", Icons.Filled.Warning, inicialmenteAbierta = false) {
+        TarjetaAjuste("Zona peligrosa", Icons.Filled.Warning, "Borra de forma irreversible la bóveda de este dispositivo.", inicialmenteAbierta = false) {
             Spacer(Modifier.height(10.dp))
             BotonBorde("Borrar la bóveda de este dispositivo", color = Peligro) { dialogoBorrar = true }
         }
@@ -729,6 +729,7 @@ private fun FilaAjuste(
 private fun TarjetaAjuste(
     titulo: String,
     icono: ImageVector,
+    descripcion: String,
     inicialmenteAbierta: Boolean = false,
     contenido: @Composable androidx.compose.foundation.layout.ColumnScope.() -> Unit
 ) {
@@ -751,6 +752,12 @@ private fun TarjetaAjuste(
                 tint = TextoSecundario
             )
         }
+        Text(
+            descripcion,
+            color = TextoSecundario,
+            style = MaterialTheme.typography.bodyMedium,
+            maxLines = if (abierta) 2 else 2
+        )
         if (abierta) {
             Spacer(Modifier.height(10.dp))
             contenido()
