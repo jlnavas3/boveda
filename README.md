@@ -2,6 +2,12 @@
 
 Gestor de contraseñas para Android. Sin cuentas, sin nube, sin permiso de internet.
 
+## Origen
+
+Este proyecto es un **fork** de [pepo-boveda](https://github.com/pepitolas13/pepo-boveda),
+que he editado y personalizado para adaptarlo a mis necesidades. Se mantiene el crédito
+al proyecto original y se conserva su licencia MIT.
+
 No te pido que confíes en mí: te pido que lo compruebes. Abre
 [`app/src/main/AndroidManifest.xml`](app/src/main/AndroidManifest.xml) y mira los permisos.
 Son tres, y ninguno es `INTERNET`:
@@ -56,7 +62,9 @@ Para usuario y contraseña hay dos caminos, porque Android también los tiene:
 - **Autofill clásico**: detecta campos de usuario/contraseña en webs y apps, ofrece las
   entradas que coinciden con el dominio o paquete guardado y, si la bóveda está cerrada,
   abre una hoja de desbloqueo antes de rellenar. También puede guardar formularios cuando
-  Android dispara el flujo de guardado.
+  Android dispara el flujo de guardado. Los tipos de datos declarados para guardar se
+  ajustan dinámicamente a los campos detectados, por lo que también admite formularios
+  parciales o inicios de sesión divididos.
 - **Credential Manager en Android 14+**: la app se declara como proveedor de passkeys y
   también de contraseñas (`TYPE_PUBLIC_KEY_CREDENTIAL` y `TYPE_PASSWORD_CREDENTIAL`). Las
   apps modernas que pidan credenciales por esta API pueden recibir una contraseña guardada
@@ -77,6 +85,10 @@ juntas en vez de una por una. La cabecera de la lista usa un buscador compacto y
 selector de filtros en la misma fila: mitad búsqueda, mitad filtro, con iconos y opciones
 desplegables para Todo, Claves, Passkeys, Notas y Favoritos.
 
+Las etiquetas no contienen espacios: al guardar, `# trabajo` se normaliza como `#trabajo`.
+La normalización también se aplica a etiquetas antiguas al mostrarlas, tanto en la lista
+principal como en la edición y el detalle de cada entrada.
+
 ### Personalización
 
 En Ajustes > Apariencia:
@@ -93,6 +105,22 @@ En Ajustes > Apariencia:
   de hacerlo.
 - **Densidad de lista**: predeterminada, cómoda o compacta. La compacta reduce altura,
   monogramas y separación entre filas para ver más entradas de la bóveda a la vez.
+- **Tarjetas plegables**: las secciones de Ajustes empiezan cerradas para reducir el
+  desplazamiento. Cada cabecera tiene un icono y un chevron para abrirla o cerrarla.
+- **Selectores compactos**: las opciones de bloqueo automático, portapapeles, cámara,
+  recordatorio de exportación, tema y densidad se eligen desde menús desplegables con
+  iconos y una marca en la opción activa.
+
+### Passkeys
+
+Las passkeys se guardan como entradas propias: la clave privada queda cifrada dentro de
+la bóveda y la pantalla muestra solo el servicio, dominio, cuenta y algoritmo. El
+identificador interno de la credencial no se muestra para evitar confundirlo con los
+identificadores que presentan los administradores de cada servicio.
+
+El autenticador local usa un AAGUID estable para nuevas passkeys, mientras que cada
+credencial conserva su propio identificador aleatorio. Las passkeys ya creadas no cambian
+retroactivamente.
 
 ### Importar desde CSV
 
