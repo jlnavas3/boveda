@@ -40,6 +40,7 @@ import com.pepotech.pepoboveda.crypto.OpcionesGenerador
 import com.pepotech.pepoboveda.crypto.PasswordGenerator
 import com.pepotech.pepoboveda.data.Entrada
 import com.pepotech.pepoboveda.data.TipoEntrada
+import com.pepotech.pepoboveda.data.normalizarEtiqueta
 import com.pepotech.pepoboveda.ui.Pantalla
 import com.pepotech.pepoboveda.ui.VaultViewModel
 import com.pepotech.pepoboveda.ui.componentes.BarraFuerza
@@ -204,7 +205,7 @@ fun PantallaEdicion(vm: VaultViewModel, id: String?, contrasenaInicial: String) 
             Spacer(Modifier.width(10.dp))
             Box(modifier = Modifier.width(96.dp)) {
                 BotonBorde("Añadir") {
-                    val limpia = nuevaEtiqueta.trim()
+                    val limpia = normalizarEtiqueta(nuevaEtiqueta)
                     if (limpia.isNotEmpty() && !etiquetas.contains(limpia)) {
                         etiquetas = etiquetas + limpia
                     }
@@ -222,7 +223,12 @@ fun PantallaEdicion(vm: VaultViewModel, id: String?, contrasenaInicial: String) 
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 sugerenciasRestantes.forEach { etiqueta ->
-                    ChipEtiqueta(etiqueta, sugerida = true) { etiquetas = etiquetas + etiqueta }
+                    ChipEtiqueta(etiqueta, sugerida = true) {
+                        val normalizada = normalizarEtiqueta(etiqueta)
+                        if (normalizada.isNotEmpty() && !etiquetas.contains(normalizada)) {
+                            etiquetas = etiquetas + normalizada
+                        }
+                    }
                 }
             }
         }
@@ -265,7 +271,7 @@ fun PantallaEdicion(vm: VaultViewModel, id: String?, contrasenaInicial: String) 
                 secretoTotp = totp.trim().ifBlank { null },
                 favorito = favorito,
                 creadaEn = original?.creadaEn ?: 0L,
-                etiquetas = etiquetas,
+                etiquetas = etiquetas.map(::normalizarEtiqueta).filter { it.isNotEmpty() }.distinct(),
                 passkey = original?.passkey
             )
             vm.guardar(entrada)
@@ -289,7 +295,7 @@ private fun ChipEtiqueta(texto: String, sugerida: Boolean = false, alPulsar: () 
             .padding(horizontal = 10.dp, vertical = 6.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text("# $texto", color = TextoPrincipal, style = MaterialTheme.typography.bodyMedium)
+        Text("#${normalizarEtiqueta(texto)}", color = TextoPrincipal, style = MaterialTheme.typography.bodyMedium)
         if (!sugerida) {
             Spacer(Modifier.width(6.dp))
             Icon(Icons.Filled.Close, contentDescription = "Quitar etiqueta", tint = TextoSecundario, modifier = Modifier.size(16.dp))

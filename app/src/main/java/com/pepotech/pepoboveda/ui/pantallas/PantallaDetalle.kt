@@ -48,6 +48,7 @@ import androidx.compose.ui.unit.dp
 import com.pepotech.pepoboveda.crypto.Totp
 import com.pepotech.pepoboveda.ui.Pantalla
 import com.pepotech.pepoboveda.ui.VaultViewModel
+import com.pepotech.pepoboveda.data.normalizarEtiqueta
 import com.pepotech.pepoboveda.ui.componentes.AnilloTotp
 import com.pepotech.pepoboveda.ui.componentes.BotonBorde
 import com.pepotech.pepoboveda.ui.componentes.EtiquetaSeccion
@@ -234,7 +235,7 @@ fun PantallaDetalle(vm: VaultViewModel, id: String) {
                                 }
                                 .padding(horizontal = 10.dp, vertical = 6.dp)
                         ) {
-                            Text("# $etiqueta", color = TextoPrincipal, style = MaterialTheme.typography.bodyMedium)
+                            Text("#${normalizarEtiqueta(etiqueta)}", color = TextoPrincipal, style = MaterialTheme.typography.bodyMedium)
                         }
                     }
                 }

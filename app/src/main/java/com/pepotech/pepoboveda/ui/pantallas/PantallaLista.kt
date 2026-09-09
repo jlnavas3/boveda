@@ -78,6 +78,7 @@ import com.pepotech.pepoboveda.BuildConfig
 import com.pepotech.pepoboveda.data.Entrada
 import com.pepotech.pepoboveda.data.EstadoBoveda
 import com.pepotech.pepoboveda.data.TipoEntrada
+import com.pepotech.pepoboveda.data.normalizarEtiqueta
 import com.pepotech.pepoboveda.ui.Pantalla
 import com.pepotech.pepoboveda.ui.VaultViewModel
 import com.pepotech.pepoboveda.crypto.Base32
@@ -278,7 +279,7 @@ fun PantallaLista(vm: VaultViewModel, estado: EstadoBoveda) {
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     etiquetasDisponibles.forEach { etiqueta ->
-                        ChipFiltro("# $etiqueta", filtroEtiqueta == etiqueta) {
+                        ChipFiltro("#${normalizarEtiqueta(etiqueta)}", filtroEtiqueta == etiqueta) {
                             vm.filtrarPorEtiqueta(if (filtroEtiqueta == etiqueta) null else etiqueta)
                         }
                     }

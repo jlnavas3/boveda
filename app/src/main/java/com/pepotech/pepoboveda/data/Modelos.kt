@@ -2,6 +2,11 @@ package com.pepotech.pepoboveda.data
 
 import kotlinx.serialization.Serializable
 
+fun normalizarEtiqueta(valor: String): String = valor
+    .trim()
+    .removePrefix("#")
+    .filterNot { it.isWhitespace() }
+
 @Serializable
 enum class TipoEntrada {
     LOGIN, PASSKEY, NOTA;
