@@ -34,6 +34,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
@@ -209,16 +210,24 @@ fun RaizPepoBoveda(vm: VaultViewModel, actividad: FragmentActivity) {
                 Box(
                     modifier = Modifier
                         .align(Alignment.BottomCenter)
-                        .fillMaxWidth()
-                        .height(4.dp)
+                        .fillMaxWidth(0.75f)
+                        .height(6.dp)
+                        .clip(RoundedCornerShape(50))
                         .background(SuperficieAlta)
                 ) {
                     val duracion = ajustes.portapapelesSegundos.coerceAtLeast(1)
+                    val progreso = (cuentaAtras.toFloat() / duracion).coerceIn(0f, 1f)
+                    val colorProgreso = Color(
+                        red = 1f - progreso,
+                        green = progreso,
+                        blue = 0.12f,
+                        alpha = 1f
+                    )
                     Box(
                         modifier = Modifier
-                            .fillMaxWidth((cuentaAtras.toFloat() / duracion).coerceIn(0f, 1f))
+                            .fillMaxWidth(progreso)
                             .fillMaxSize()
-                            .background(if (cuentaAtras <= 5) Ambar else Ambar.copy(alpha = 0.85f))
+                            .background(colorProgreso)
                     )
                 }
             }
