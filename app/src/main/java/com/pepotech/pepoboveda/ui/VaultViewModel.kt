@@ -38,6 +38,7 @@ sealed interface Pantalla {
     ) : Pantalla
     object Ajustes : Pantalla
     object AcercaDe : Pantalla
+    object Registro : Pantalla
     object SaludBoveda : Pantalla
     object Papelera : Pantalla
 }
@@ -194,6 +195,7 @@ class VaultViewModel(app: Application) : AndroidViewModel(app) {
             val chars = password.toCharArray()
             try {
                 withContext(Dispatchers.Default) { repositorio.crear(chars) }
+                Diagnostico.apuntar("bóveda", "Bóveda creada y desbloqueada")
                 registrarInteraccion()
                 irRaiz(Pantalla.Lista)
                 // Mucha gente no llega nunca a Ajustes: se lo ofrecemos aquí, una vez.
@@ -217,11 +219,13 @@ class VaultViewModel(app: Application) : AndroidViewModel(app) {
             try {
                 withContext(Dispatchers.Default) { repositorio.desbloquear(chars) }
                 limpiarFallos()
+                Diagnostico.apuntar("bóveda", "Desbloqueada con contraseña maestra")
                 registrarInteraccion()
                 irRaiz(Pantalla.Lista)
                 alTerminar(true)
             } catch (e: Exception) {
                 apuntarFallo()
+                Diagnostico.apuntar("bóveda", "Desbloqueo con contraseña rechazado")
                 _error.value = "Contraseña incorrecta"
                 alTerminar(false)
             } finally {
@@ -235,6 +239,7 @@ class VaultViewModel(app: Application) : AndroidViewModel(app) {
             try {
                 withContext(Dispatchers.Default) { repositorio.desbloquearConClaveMaestra(clave) }
                 limpiarFallos()
+                Diagnostico.apuntar("bóveda", "Desbloqueada con huella")
                 registrarInteraccion()
                 irRaiz(Pantalla.Lista)
                 alTerminar(true)
@@ -249,7 +254,9 @@ class VaultViewModel(app: Application) : AndroidViewModel(app) {
     }
 
     fun bloquear() {
+        val estabaDesbloqueada = repositorio.estaDesbloqueada
         repositorio.bloquear()
+        if (estabaDesbloqueada) Diagnostico.apuntar("bóveda", "Bloqueada manualmente")
         // El rato que pase bloqueada no cuenta como inactividad.
         registrarInteraccion()
         irRaiz(if (repositorio.existeBoveda) Pantalla.Desbloqueo else Pantalla.Onboarding)

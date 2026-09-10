@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.service.autofill.FillResponse
+import android.service.autofill.SaveInfo
 import android.view.WindowManager
 import android.view.autofill.AutofillId
 import android.view.autofill.AutofillManager
@@ -229,8 +230,19 @@ class AutofillAuthActivity : FragmentActivity() {
                 alguno = true
             }
         }
+        val ids = listOfNotNull(usuarioId, contrasenaId).toTypedArray()
+        var tipos = 0
+        if (usuarioId != null) tipos = tipos or SaveInfo.SAVE_DATA_TYPE_USERNAME
+        if (contrasenaId != null) tipos = tipos or SaveInfo.SAVE_DATA_TYPE_PASSWORD
+        if (ids.isNotEmpty() && tipos != 0) {
+            respuesta.setSaveInfo(
+                SaveInfo.Builder(tipos, ids)
+                    .setFlags(SaveInfo.FLAG_SAVE_ON_ALL_VIEWS_INVISIBLE)
+                    .build()
+            )
+        }
         val datos = Intent()
-        if (alguno) {
+        if (alguno || tipos != 0) {
             datos.putExtra(AutofillManager.EXTRA_AUTHENTICATION_RESULT, respuesta.build())
         }
         setResult(Activity.RESULT_OK, datos)

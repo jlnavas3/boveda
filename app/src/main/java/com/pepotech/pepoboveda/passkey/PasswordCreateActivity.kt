@@ -17,6 +17,7 @@ import com.pepotech.pepoboveda.data.Entrada
 import com.pepotech.pepoboveda.data.TipoEntrada
 import com.pepotech.pepoboveda.data.VaultRepository
 import com.pepotech.pepoboveda.ui.theme.PepoBovedaTheme
+import com.pepotech.pepoboveda.util.Diagnostico
 import com.pepotech.pepoboveda.util.Dominios
 
 /** Confirma y guarda una contraseña pedida por Android Credential Manager. */
@@ -34,13 +35,16 @@ class PasswordCreateActivity : FragmentActivity() {
         }
 
         peticion = PendingIntentHandler.retrieveProviderCreateCredentialRequest(intent)
+        Diagnostico.apuntar("credential", "Confirmación de guardado abierta")
         val solicitud = peticion?.callingRequest as? CreatePasswordRequest
         if (solicitud == null) {
+            Diagnostico.apuntar("credential", "Guardado rechazado: petición sin contraseña")
             fallar("Bóveda local solo guarda contraseñas y passkeys")
             return
         }
-        if (solicitud.id.isBlank() || solicitud.password.isBlank()) {
-            fallar("La solicitud no trae usuario o contraseña")
+        if (solicitud.password.isBlank()) {
+            Diagnostico.apuntar("credential", "Guardado rechazado: petición sin contraseña")
+            fallar("La solicitud no trae una contraseña")
             return
         }
 
@@ -80,9 +84,11 @@ class PasswordCreateActivity : FragmentActivity() {
 
             val respuesta = Intent()
             PendingIntentHandler.setCreateCredentialResponse(respuesta, CreatePasswordResponse())
+            Diagnostico.apuntar("credential", "Contraseña guardada correctamente")
             setResult(Activity.RESULT_OK, respuesta)
             finish()
         } catch (e: Exception) {
+            Diagnostico.apuntar("credential", "Guardado falló: ${e.javaClass.simpleName}")
             fallar("No se pudo guardar la contraseña")
         }
     }

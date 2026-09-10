@@ -44,6 +44,7 @@ class PepoBovedaApp : Application(), Application.ActivityLifecycleCallbacks {
         super.onCreate()
         Diagnostico.iniciar(File(filesDir, "diagnostico.log"))
         VaultRepository.obtener(this)
+        Diagnostico.apuntar("app", "Bóveda local iniciada")
         registerActivityLifecycleCallbacks(this)
     }
 
@@ -80,6 +81,7 @@ class PepoBovedaApp : Application(), Application.ActivityLifecycleCallbacks {
             val porTiempo = ajustes.autoBloqueoSegundos > 0 && transcurrido >= limite
             if (porCierre || porTiempo) {
                 repositorio.bloquear()
+                Diagnostico.apuntar("bóveda", "Bloqueada al volver a la aplicación")
             }
         }
         actividadesVisibles++
@@ -92,6 +94,7 @@ class PepoBovedaApp : Application(), Application.ActivityLifecycleCallbacks {
             momentoAlFondo = System.currentTimeMillis()
             if (repositorio.ajustes.actual.autoBloqueoSegundos == 0 && !salidaPermitida) {
                 repositorio.bloquear()
+                Diagnostico.apuntar("bóveda", "Bloqueada al salir de la aplicación")
             }
         }
     }

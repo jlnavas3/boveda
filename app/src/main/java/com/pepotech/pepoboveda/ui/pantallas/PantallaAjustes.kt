@@ -523,9 +523,11 @@ fun PantallaAjustes(vm: VaultViewModel, actividad: FragmentActivity) {
 
         Spacer(Modifier.height(16.dp))
 
-        TarjetaAjuste("Transparencia", Icons.Filled.Info, "Consulta el diagnóstico local y cómo funciona la aplicación.", inicialmenteAbierta = false) {
+        TarjetaAjuste("Transparencia", Icons.Filled.Info, "Consulta cómo funciona la aplicación y su registro técnico local.", inicialmenteAbierta = false) {
             Spacer(Modifier.height(10.dp))
             BotonBorde("Audítame") { vm.ir(Pantalla.AcercaDe) }
+            Spacer(Modifier.height(10.dp))
+            BotonBorde("Registro") { vm.ir(Pantalla.Registro) }
         }
 
         Spacer(Modifier.height(16.dp))

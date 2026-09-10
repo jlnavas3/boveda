@@ -26,6 +26,7 @@ import androidx.credentials.provider.ProviderClearCredentialStateRequest
 import androidx.credentials.provider.PublicKeyCredentialEntry
 import com.pepotech.pepoboveda.data.VaultRepository
 import com.pepotech.pepoboveda.data.TipoEntrada
+import com.pepotech.pepoboveda.util.Diagnostico
 import com.pepotech.pepoboveda.util.Dominios
 import java.time.Instant
 
@@ -52,6 +53,7 @@ class PepoCredentialProviderService : CredentialProviderService() {
         callback: OutcomeReceiver<BeginCreateCredentialResponse, CreateCredentialException>
     ) {
         if (request is BeginCreatePasswordCredentialRequest) {
+            Diagnostico.apuntar("credential", "Android solicitó guardar una contraseña")
             val intent = Intent(this, PasswordCreateActivity::class.java)
             val pendiente = PendingIntent.getActivity(
                 this,

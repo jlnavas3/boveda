@@ -60,6 +60,7 @@ import com.pepotech.pepoboveda.ui.pantallas.PantallaOnboarding
 import com.pepotech.pepoboveda.ui.pantallas.PantallaPasskeys
 import com.pepotech.pepoboveda.ui.pantallas.PantallaSaludBoveda
 import com.pepotech.pepoboveda.ui.pantallas.PantallaPapelera
+import com.pepotech.pepoboveda.ui.pantallas.PantallaRegistro
 import com.pepotech.pepoboveda.ui.theme.Ambar
 import com.pepotech.pepoboveda.ui.theme.Obsidiana
 import com.pepotech.pepoboveda.ui.theme.PepoBovedaTheme
@@ -205,6 +206,7 @@ fun RaizPepoBoveda(vm: VaultViewModel, actividad: FragmentActivity) {
                     is Pantalla.Escaner -> PantallaEscaner(vm, actividad, destino.entradaDestino, destino.soloManual)
                     Pantalla.Ajustes -> PantallaAjustes(vm, actividad)
                     Pantalla.AcercaDe -> PantallaAcercaDe(vm)
+                    Pantalla.Registro -> PantallaRegistro(vm)
                     Pantalla.SaludBoveda -> PantallaSaludBoveda(vm, estado)
                     Pantalla.Papelera -> PantallaPapelera(vm, estado)
                 }

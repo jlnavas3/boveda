@@ -55,8 +55,9 @@ object AutofillUtiles {
                         }
                     }
                 }
-                val esContrasenaPorTipo = (nodo.inputType and InputType.TYPE_MASK_VARIATION) ==
-                    InputType.TYPE_TEXT_VARIATION_PASSWORD
+                val variacion = nodo.inputType and InputType.TYPE_MASK_VARIATION
+                val esContrasenaPorTipo = variacion == InputType.TYPE_TEXT_VARIATION_PASSWORD ||
+                    variacion == InputType.TYPE_NUMBER_VARIATION_PASSWORD
                 val esContrasena = esContrasenaWeb || esContrasenaPorTipo || textoPistas.any { pista ->
                     PISTAS_CONTRASENA.any { pista.contains(it) }
                 }
@@ -110,8 +111,9 @@ object AutofillUtiles {
                         }
                     }
                 }
-                val esContrasenaPorTipo = (nodo.inputType and InputType.TYPE_MASK_VARIATION) ==
-                    InputType.TYPE_TEXT_VARIATION_PASSWORD
+                val variacion = nodo.inputType and InputType.TYPE_MASK_VARIATION
+                val esContrasenaPorTipo = variacion == InputType.TYPE_TEXT_VARIATION_PASSWORD ||
+                    variacion == InputType.TYPE_NUMBER_VARIATION_PASSWORD
                 val esContrasena = esContrasenaWeb || esContrasenaPorTipo || pistas.any { p -> PISTAS_CONTRASENA.any { p.contains(it) } }
                 val esUsuario = esUsuarioWeb || pistas.any { p -> PISTAS_USUARIO.any { p.contains(it) } }
                 if (esContrasena && contrasena == null) contrasena = texto(nodo)

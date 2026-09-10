@@ -14,6 +14,7 @@ import android.view.autofill.AutofillId
 import com.pepotech.pepoboveda.data.Entrada
 import com.pepotech.pepoboveda.data.TipoEntrada
 import com.pepotech.pepoboveda.data.VaultRepository
+import com.pepotech.pepoboveda.util.Diagnostico
 import com.pepotech.pepoboveda.util.Dominios
 
 class PepoAutofillService : AutofillService() {
@@ -41,6 +42,10 @@ class PepoAutofillService : AutofillService() {
             callback.onSuccess(null)
             return
         }
+        Diagnostico.apuntar(
+            "autofill",
+            "Formulario reconocido: ${if (campos.usuario != null) "usuario" else ""}${if (campos.usuario != null && campos.contrasena != null) " y " else ""}${if (campos.contrasena != null) "contraseña" else ""}"
+        )
         val paquete = estructura.activityComponent?.packageName ?: ""
         val repositorio = VaultRepository.obtener(this)
         val respuesta = FillResponse.Builder()
@@ -76,6 +81,7 @@ class PepoAutofillService : AutofillService() {
             if (campos.usuario != null) tipos = tipos or SaveInfo.SAVE_DATA_TYPE_USERNAME
             if (campos.contrasena != null) tipos = tipos or SaveInfo.SAVE_DATA_TYPE_PASSWORD
             if (tipos != 0) {
+                Diagnostico.apuntar("autofill", "Android recibió la opción de guardar")
                 respuesta.setSaveInfo(
                     SaveInfo.Builder(tipos, ids)
                         .setFlags(SaveInfo.FLAG_SAVE_ON_ALL_VIEWS_INVISIBLE)
@@ -90,11 +96,13 @@ class PepoAutofillService : AutofillService() {
     override fun onSaveRequest(request: SaveRequest, callback: SaveCallback) {
         val repositorio = VaultRepository.obtener(this)
         if (!repositorio.estaDesbloqueada) {
+            Diagnostico.apuntar("autofill", "Guardado rechazado: bóveda bloqueada")
             callback.onFailure("Abre Bóveda local para guardar esta contraseña")
             return
         }
         val contexto = request.fillContexts.lastOrNull()
         if (contexto == null) {
+            Diagnostico.apuntar("autofill", "Guardado rechazado: Android no entregó el formulario")
             callback.onFailure("No se pudo leer el formulario")
             return
         }
@@ -102,6 +110,7 @@ class PepoAutofillService : AutofillService() {
         val campos = AutofillUtiles.detectar(estructura)
         val (usuario, contrasena) = AutofillUtiles.leerValores(estructura)
         if (contrasena.isNullOrBlank()) {
+            Diagnostico.apuntar("autofill", "Guardado rechazado: Android no expuso una contraseña")
             callback.onFailure("No se encontró ninguna contraseña que guardar")
             return
         }
@@ -125,8 +134,10 @@ class PepoAutofillService : AutofillService() {
         )
         try {
             repositorio.guardarEntrada(entrada)
+            Diagnostico.apuntar("autofill", "Contraseña guardada correctamente")
             callback.onSuccess()
         } catch (e: Exception) {
+            Diagnostico.apuntar("autofill", "Guardado falló: ${e.javaClass.simpleName}")
             callback.onFailure("No se pudo guardar en la bóveda")
         }
     }

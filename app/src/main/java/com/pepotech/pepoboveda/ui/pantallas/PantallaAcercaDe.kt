@@ -3,7 +3,6 @@ package com.pepotech.pepoboveda.ui.pantallas
 import android.content.Intent
 import android.content.pm.PackageManager
 import androidx.compose.foundation.background
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -13,7 +12,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -26,11 +24,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import com.pepotech.pepoboveda.crypto.VaultCrypto
 import com.pepotech.pepoboveda.crypto.Wordlist
@@ -40,14 +35,11 @@ import com.pepotech.pepoboveda.ui.componentes.EtiquetaSeccion
 import com.pepotech.pepoboveda.ui.componentes.TarjetaPepo
 import com.pepotech.pepoboveda.ui.theme.Ambar
 import com.pepotech.pepoboveda.ui.theme.Menta
-import com.pepotech.pepoboveda.ui.theme.Obsidiana
 import com.pepotech.pepoboveda.ui.theme.Peligro
 import com.pepotech.pepoboveda.ui.theme.TextoPrincipal
 import com.pepotech.pepoboveda.ui.theme.TextoSecundario
 import com.pepotech.pepoboveda.util.AjustesSistema
-import com.pepotech.pepoboveda.util.Diagnostico
 import com.pepotech.pepoboveda.util.InformeDiagnostico
-import com.pepotech.pepoboveda.util.Portapapeles
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -68,14 +60,12 @@ fun PantallaAcercaDe(vm: VaultViewModel) {
     // Estado en vivo y últimos pasos: se refrescan cada vez que se vuelve a esta pantalla.
     // El sondeo habla con los servicios de biometría y cámara, así que va fuera del hilo principal.
     var estadoDispositivo by remember { mutableStateOf<List<InformeDiagnostico.Linea>>(emptyList()) }
-    var registro by remember { mutableStateOf<List<String>>(emptyList()) }
     var refresco by remember { mutableIntStateOf(0) }
     LifecycleResumeEffect(Unit) {
         refresco++
         onPauseOrDispose { }
     }
     LaunchedEffect(refresco) {
-        registro = Diagnostico.ultimas(30)
         estadoDispositivo = withContext(Dispatchers.IO) { InformeDiagnostico.estado(contexto, vm.repositorio) }
     }
 
@@ -174,47 +164,6 @@ fun PantallaAcercaDe(vm: VaultViewModel) {
             }
             estadoDispositivo.forEach { linea -> LineaEstado(linea) }
             Spacer(Modifier.height(10.dp))
-            Text("Últimos pasos", color = TextoSecundario, style = MaterialTheme.typography.labelLarge)
-            Spacer(Modifier.height(6.dp))
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(12.dp))
-                    .background(Obsidiana)
-                    .padding(10.dp)
-                    .horizontalScroll(rememberScrollState())
-            ) {
-                if (registro.isEmpty()) {
-                    Text("(nada registrado todavía)", color = TextoSecundario, fontFamily = FontFamily.Monospace, fontSize = 11.sp)
-                } else {
-                    registro.forEach { linea ->
-                        Text(linea, color = TextoPrincipal, fontFamily = FontFamily.Monospace, fontSize = 11.sp, maxLines = 1)
-                    }
-                }
-            }
-            Spacer(Modifier.height(12.dp))
-            BotonBorde("Copiar informe") {
-                Portapapeles.copiar(contexto, "Diagnóstico Bóveda local", informe())
-                vm.avisar("Informe copiado. Pégalo donde me lo quieras mandar.")
-            }
-            Spacer(Modifier.height(10.dp))
-            BotonBorde("Compartir informe") {
-                // Compartir no devuelve resultado, así que no se exime al auto-bloqueo: si el
-                // ajuste es "Al cerrar la app", al volver toca abrirla otra vez. Es lo correcto.
-                val intent = Intent(Intent.ACTION_SEND)
-                    .setType("text/plain")
-                    .putExtra(Intent.EXTRA_SUBJECT, "Diagnóstico Bóveda local")
-                    .putExtra(Intent.EXTRA_TEXT, informe())
-                if (!AjustesSistema.abrir(contexto, Intent.createChooser(intent, "Compartir informe"))) {
-                    vm.avisar("No hay ninguna app con la que compartirlo. Usa Copiar informe.")
-                }
-            }
-            Spacer(Modifier.height(10.dp))
-            BotonBorde("Borrar registro") {
-                Diagnostico.borrar()
-                registro = emptyList()
-                vm.avisar("Registro borrado")
-            }
         }
 
         Spacer(Modifier.height(20.dp))
