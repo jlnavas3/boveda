@@ -64,7 +64,10 @@ Para usuario y contraseña hay dos caminos, porque Android también los tiene:
   abre una hoja de desbloqueo antes de rellenar. También puede guardar formularios cuando
   Android dispara el flujo de guardado. Los tipos de datos declarados para guardar se
   ajustan dinámicamente a los campos detectados, por lo que también admite formularios
-  parciales o inicios de sesión divididos.
+  parciales, inicios de sesión divididos y PINes numéricos. Para guardar, la bóveda debe
+  seguir desbloqueada hasta que Android entregue el formulario: con el bloqueo "Al cerrar
+  la app" se cierra al volver a la otra aplicación; usa un intervalo de bloqueo temporal
+  si quieres guardar una contraseña o PIN desde otra app.
 - **Credential Manager en Android 14+**: la app se declara como proveedor de passkeys y
   también de contraseñas (`TYPE_PUBLIC_KEY_CREDENTIAL` y `TYPE_PASSWORD_CREDENTIAL`). Las
   apps modernas que pidan credenciales por esta API pueden recibir una contraseña guardada
@@ -170,11 +173,13 @@ un motor compatible con la API antigua de cámara (la que funciona hasta en los 
 viejos); y siempre, leer el QR desde una imagen o captura, o escribir la clave a mano.
 El motor se puede forzar desde Ajustes.
 
-En Ajustes > Audítame hay un **diagnóstico local**: lo que Android dice de la huella y de
-la cámara de ese móvil y los últimos pasos que dio la app con ellas, con botón de copiar
-y compartir. No registra nada tuyo (ni claves, ni contraseñas, ni el contenido de ningún
-QR): solo qué paso se dio y qué excepción saltó. Es lo que necesito para arreglar un
-fallo en un móvil que no tengo.
+En Ajustes > Transparencia > Audítame hay un **diagnóstico local**: lo que Android dice de
+la huella y de la cámara de ese móvil. El historial técnico está separado en Ajustes >
+Transparencia > Registro, desde donde se puede copiar, compartir o borrar. Registra
+inicios, bloqueos y desbloqueos de la bóveda, además de eventos técnicos de Autofill,
+Credential Manager, cámara y huella. No registra nada tuyo: ni claves, contraseñas, PINes,
+títulos, dominios ni el contenido de ningún QR. Es lo que necesito para arreglar un fallo
+en un móvil que no tengo.
 
 ## Compilar y validar
 
@@ -216,8 +221,8 @@ Esto es importante y no lo voy a esconder:
   todos los fabricantes ni en todas las versiones de Android.
 - **Aquí es donde me vienes bien tú.** Si la pruebas y algo se rompe, me vendrá
   fenomenal que me lo digas: qué móvil, qué versión de Android, qué hiciste y qué pasó.
-  Lo más útil es el informe de Ajustes > Audítame > "Copiar informe", que lleva justo eso
-  y ningún dato tuyo. Un fallo que encuentres es un fallo que dejo de tener. Abre un
+  Lo más útil es el Registro en Ajustes > Transparencia > Registro, que lleva los eventos
+  técnicos y ningún dato tuyo. Un fallo que encuentres es un fallo que dejo de tener. Abre un
   issue sin miedo, y si te sabes buscar la vida, mira el código y dime qué está mal.
 - **El primer aviso de la gente ya está atendido.** En un Redmi 6 con DotOS (ROM
   personalizada) no funcionaban ni la cámara del escáner ni la huella. No tengo ese
