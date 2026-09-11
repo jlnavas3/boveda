@@ -1,0 +1,329 @@
+package com.jlnavas3.bovedalocal.ui
+
+import android.os.Bundle
+import android.view.WindowManager
+import androidx.activity.compose.BackHandler
+import androidx.activity.compose.setContent
+import androidx.activity.viewModels
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.PointerEventPass
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.unit.dp
+import androidx.fragment.app.FragmentActivity
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.lifecycleScope
+import com.jlnavas3.bovedalocal.crypto.BiometricKeyStore
+import com.jlnavas3.bovedalocal.data.EstadoBoveda
+import com.jlnavas3.bovedalocal.ui.pantallas.PantallaAcercaDe
+import com.jlnavas3.bovedalocal.ui.pantallas.PantallaAjustes
+import com.jlnavas3.bovedalocal.ui.pantallas.PantallaAutenticador
+import com.jlnavas3.bovedalocal.ui.pantallas.PantallaDesbloqueo
+import com.jlnavas3.bovedalocal.ui.pantallas.PantallaEscaner
+import com.jlnavas3.bovedalocal.ui.pantallas.PantallaDetalle
+import com.jlnavas3.bovedalocal.ui.pantallas.PantallaEdicion
+import com.jlnavas3.bovedalocal.ui.pantallas.PantallaGenerador
+import com.jlnavas3.bovedalocal.ui.pantallas.PantallaLista
+import com.jlnavas3.bovedalocal.ui.pantallas.PantallaOnboarding
+import com.jlnavas3.bovedalocal.ui.pantallas.PantallaPasskeys
+import com.jlnavas3.bovedalocal.ui.pantallas.PantallaSaludBoveda
+import com.jlnavas3.bovedalocal.ui.pantallas.PantallaPapelera
+import com.jlnavas3.bovedalocal.ui.pantallas.PantallaRegistro
+import com.jlnavas3.bovedalocal.ui.theme.Ambar
+import com.jlnavas3.bovedalocal.ui.theme.Obsidiana
+import com.jlnavas3.bovedalocal.ui.theme.PepoBovedaTheme
+import com.jlnavas3.bovedalocal.ui.theme.SuperficieAlta
+import com.jlnavas3.bovedalocal.ui.theme.TextoPrincipal
+import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
+import com.jlnavas3.bovedalocal.util.AjustesSistema
+import com.jlnavas3.bovedalocal.util.Biometria
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
+
+class MainActivity : FragmentActivity() {
+
+    private val vm: VaultViewModel by viewModels()
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        // FLAG_SECURE permanente e incondicional: protección anti-captura y anti-recientes siempre activa
+        window.setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE)
+        com.jlnavas3.bovedalocal.ui.theme.aplicarPersonalizacionTemaCompleto(vm.repositorio.ajustes.actual)
+        setContent {
+            val ajustes by vm.ajustes.collectAsStateWithLifecycle()
+            LaunchedEffect(ajustes) {
+                com.jlnavas3.bovedalocal.ui.theme.aplicarPersonalizacionTemaCompleto(ajustes)
+            }
+            PepoBovedaTheme(temaApp = ajustes.temaApp) {
+                RaizPepoBoveda(vm, this)
+            }
+        }
+    }
+}
+
+@Composable
+fun RaizPepoBoveda(vm: VaultViewModel, actividad: FragmentActivity) {
+    val pantalla by vm.pantalla.collectAsStateWithLifecycle()
+    val estado by vm.estado.collectAsStateWithLifecycle()
+    val error by vm.error.collectAsStateWithLifecycle()
+    val aviso by vm.aviso.collectAsStateWithLifecycle()
+    val cuentaAtras by vm.cuentaAtrasPortapapeles.collectAsStateWithLifecycle()
+    val ajustes by vm.ajustes.collectAsStateWithLifecycle()
+    val anfitrion = remember { SnackbarHostState() }
+
+    // Sin esto, atrás cerraba la app desde generador, passkeys o ajustes.
+    // En lista, desbloqueo y onboarding no lo tocamos: ahí atrás sí sale de la app
+    // (y desde el desbloqueo jamás debe entrar a la bóveda).
+    val esRaiz = pantalla is Pantalla.Lista ||
+        pantalla is Pantalla.Desbloqueo ||
+        pantalla is Pantalla.Onboarding
+    BackHandler(enabled = !esRaiz) {
+        vm.volverAtras()
+    }
+
+    LaunchedEffect(Unit) { vm.vigilarInactividad() }
+
+    val ofrecerBiometria by vm.ofrecerBiometria.collectAsStateWithLifecycle()
+    // Se pregunta cuando toca ofrecerla, no al arrancar la app: así cuenta una huella
+    // registrada hace un minuto, y un sensor ocupado en el arranque no la esconde para siempre.
+    val modoOfrecido = remember(ofrecerBiometria) {
+        if (ofrecerBiometria) FlujoBiometria.modoRecomendado(Biometria.capacidad(actividad)) else null
+    }
+    if (ofrecerBiometria && modoOfrecido != null) {
+        DialogoOfrecerBiometria(vm, actividad, modoOfrecido)
+    }
+    // Sin huella ni PIN utilizables no hay nada que ofrecer: pasamos directo al
+    // siguiente paso en vez de dejar la oferta colgada para siempre.
+    LaunchedEffect(ofrecerBiometria, modoOfrecido) {
+        if (ofrecerBiometria && modoOfrecido == null) vm.cerrarOfertaBiometria()
+    }
+
+    val ofrecerGestor by vm.ofrecerGestor.collectAsStateWithLifecycle()
+    if (ofrecerGestor) {
+        DialogoOfrecerGestor(vm, actividad)
+    }
+
+    LaunchedEffect(estado) {
+        if (estado is EstadoBoveda.Bloqueada && pantalla !is Pantalla.Desbloqueo) {
+            vm.ir(Pantalla.Desbloqueo)
+        }
+    }
+
+    LaunchedEffect(error) {
+        error?.let {
+            anfitrion.showSnackbar(it)
+            vm.limpiarError()
+        }
+    }
+
+    LaunchedEffect(aviso) {
+        aviso?.let {
+            anfitrion.showSnackbar(it)
+            vm.limpiarAviso()
+        }
+    }
+
+    Scaffold(
+        containerColor = Obsidiana,
+        snackbarHost = { SnackbarHost(anfitrion) }
+    ) { relleno ->
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(relleno)
+                .pointerInput(Unit) {
+                    awaitPointerEventScope {
+                        while (true) {
+                            awaitPointerEvent(PointerEventPass.Initial)
+                            vm.registrarInteraccion()
+                        }
+                    }
+                }
+        ) {
+            AnimatedContent(
+                targetState = pantalla,
+                transitionSpec = {
+                    val entrada = slideInHorizontally(
+                        animationSpec = spring(dampingRatio = 0.6f, stiffness = Spring.StiffnessLow)
+                    ) { ancho -> ancho / 4 } + fadeIn(spring(dampingRatio = 0.6f))
+                    val salida = slideOutHorizontally(
+                        animationSpec = spring(dampingRatio = 0.6f, stiffness = Spring.StiffnessLow)
+                    ) { ancho -> -ancho / 6 } + fadeOut(spring(dampingRatio = 0.6f))
+                    entrada togetherWith salida
+                },
+                label = "navegacion"
+            ) { destino ->
+                when (destino) {
+                    Pantalla.Onboarding -> PantallaOnboarding(vm, actividad)
+                    Pantalla.Desbloqueo -> PantallaDesbloqueo(vm, actividad)
+                    Pantalla.Lista -> PantallaLista(vm, estado)
+                    is Pantalla.Detalle -> PantallaDetalle(vm, destino.id)
+                    is Pantalla.Editar -> PantallaEdicion(vm, destino.id, destino.contrasenaInicial)
+                    Pantalla.Generador -> PantallaGenerador(vm)
+                    Pantalla.Passkeys -> PantallaPasskeys(vm)
+                    Pantalla.Autenticador -> PantallaAutenticador(vm, estado)
+                    is Pantalla.Escaner -> PantallaEscaner(vm, actividad, destino.entradaDestino, destino.soloManual)
+                    Pantalla.Ajustes -> PantallaAjustes(vm, actividad)
+                    Pantalla.Tema -> com.jlnavas3.bovedalocal.ui.pantallas.PantallaTema(vm)
+                    Pantalla.Formas -> com.jlnavas3.bovedalocal.ui.pantallas.PantallaFormas(vm)
+                    Pantalla.Tipografia -> com.jlnavas3.bovedalocal.ui.pantallas.PantallaTipografia(vm)
+                    Pantalla.AcercaDe -> PantallaAcercaDe(vm)
+                    Pantalla.Registro -> PantallaRegistro(vm)
+                    Pantalla.SaludBoveda -> PantallaSaludBoveda(vm, estado)
+                    Pantalla.Papelera -> PantallaPapelera(vm, estado)
+                }
+            }
+
+            if (cuentaAtras > 0) {
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.BottomCenter)
+                        .fillMaxWidth(0.75f)
+                        .height(6.dp)
+                        .clip(RoundedCornerShape(50))
+                        .background(SuperficieAlta)
+                ) {
+                    val duracion = ajustes.portapapelesSegundos.coerceAtLeast(1)
+                    val progreso = (cuentaAtras.toFloat() / duracion).coerceIn(0f, 1f)
+                    val colorProgreso = Color(
+                        red = 1f - progreso,
+                        green = progreso,
+                        blue = 0.12f,
+                        alpha = 1f
+                    )
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth(progreso)
+                            .fillMaxSize()
+                            .background(colorProgreso)
+                    )
+                }
+            }
+        }
+    }
+}
+
+/**
+ * Se ofrece una sola vez, justo al crear la bóveda. Si dice no, no vuelve a salir:
+ * queda el interruptor de siempre en Ajustes.
+ */
+@Composable
+private fun DialogoOfrecerBiometria(vm: VaultViewModel, actividad: FragmentActivity, modo: BiometricKeyStore.Modo) {
+    val flujo = remember { FlujoBiometria(actividad, vm.repositorio) }
+    val compatible = modo == BiometricKeyStore.Modo.COMPATIBLE
+
+    fun activar() {
+        flujo.activar(modo) { resultado ->
+            when (resultado) {
+                is FlujoBiometria.ResultadoActivacion.Activada ->
+                    vm.avisar("Listo: la próxima vez entras con la huella")
+                FlujoBiometria.ResultadoActivacion.Cancelada ->
+                    vm.avisar("Huella cancelada. Puedes activarla en Ajustes.")
+                is FlujoBiometria.ResultadoActivacion.FuerteRota ->
+                    vm.avisar("Android acepta tu huella pero el Keystore la rechaza. En Ajustes > Seguridad puedes activar el modo compatible.")
+                is FlujoBiometria.ResultadoActivacion.Error ->
+                    vm.avisar(resultado.texto)
+            }
+            vm.cerrarOfertaBiometria()
+        }
+    }
+
+    AlertDialog(
+        onDismissRequest = { vm.cerrarOfertaBiometria() },
+        containerColor = SuperficieAlta,
+        title = { Text(if (compatible) "¿Abrir con tu huella o tu PIN?" else "¿Abrir con tu huella?", color = TextoPrincipal) },
+        text = {
+            Text(
+                if (compatible) {
+                    "Este móvil no ofrece huella de Clase 3, así que iría en modo compatible: Android comprueba " +
+                        "tu huella o el PIN y la app abre la bóveda. La clave maestra queda envuelta por el Keystore " +
+                        "y no sale del móvil, pero no queda atada al chip como en el modo fuerte. Tu contraseña " +
+                        "maestra sigue siendo la única llave real."
+                } else {
+                    "Tu contraseña maestra seguirá siendo la única llave: la huella solo la desenvuelve, " +
+                        "guardada por el Keystore de Android y atada a este móvil. Si cambias la biometría del " +
+                        "dispositivo, deja de valer y toca escribir la contraseña."
+                },
+                color = TextoSecundario,
+                style = MaterialTheme.typography.bodyMedium
+            )
+        },
+        confirmButton = {
+            TextButton(onClick = { activar() }) { Text("Activar", color = Ambar) }
+        },
+        dismissButton = {
+            TextButton(onClick = { vm.cerrarOfertaBiometria() }) {
+                Text("Ahora no", color = TextoSecundario)
+            }
+        }
+    )
+}
+
+/**
+ * Segunda oferta de bienvenida: activarme como gestor del sistema. Sin esto no
+ * salgo al rellenar contraseñas ni al crear una llave de acceso, y nadie
+ * encuentra solo el ajuste.
+ */
+@Composable
+private fun DialogoOfrecerGestor(vm: VaultViewModel, actividad: FragmentActivity) {
+    AlertDialog(
+        onDismissRequest = { vm.cerrarOfertaGestor() },
+        containerColor = SuperficieAlta,
+        title = { Text("¿Me pones como gestor?", color = TextoPrincipal) },
+        text = {
+            Text(
+                buildAnnotatedString {
+                    append("Android no deja que una app se ponga sola: lo tienes que activar tú. Te abro la pantalla de \"Contraseñas y llaves de acceso\" y marcas ")
+                    withStyle(SpanStyle(fontWeight = FontWeight.Bold)) { append("Bóveda local") }
+                    append(".\n\nSin esto no aparezco al rellenar contraseñas ni al crear una llave de acceso. Lo puedes hacer más tarde desde Ajustes.")
+                },
+                color = TextoSecundario
+            )
+        },
+        confirmButton = {
+            TextButton(onClick = {
+                if (!AjustesSistema.abrirProveedorCredenciales(actividad)) {
+                    vm.avisar("No encuentro esa pantalla en este móvil")
+                }
+                vm.cerrarOfertaGestor()
+            }) { Text("Abrir ajustes", color = Ambar) }
+        },
+        dismissButton = {
+            TextButton(onClick = { vm.cerrarOfertaGestor() }) {
+                Text("Ahora no", color = TextoSecundario)
+            }
+        }
+    )
+}

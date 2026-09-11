@@ -14,5 +14,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "PepoBoveda"
+rootProject.name = "BovedaLocal"
 include(":app")

@@ -15,16 +15,37 @@ val propsFirma = Properties().apply {
 }
 val hayFirma = propsFirma.getProperty("storeFile") != null
 
+// Sistema de versionado automático
+val versionProps = Properties().apply {
+    val versionFile = rootProject.file("version.properties")
+    if (versionFile.exists()) versionFile.inputStream().use { load(it) }
+}
+val vMajor = versionProps.getProperty("major", "1").toInt()
+val vMinor = versionProps.getProperty("minor", "0").toInt()
+val vPatch = versionProps.getProperty("patch", "0").toInt()
+val vBuildManual = versionProps.getProperty("build", "1").toInt()
+val gitCommits = try {
+    ProcessBuilder("git", "rev-list", "--count", "HEAD")
+        .redirectOutput(ProcessBuilder.Redirect.PIPE)
+        .start()
+        .inputStream.bufferedReader().readText().trim().toInt()
+} catch (e: Exception) {
+    vBuildManual
+}
+val vBuild = if (gitCommits > 0) gitCommits else vBuildManual
+val codigoVersion = vMajor * 100000 + vMinor * 10000 + vPatch * 1000 + vBuild
+val nombreVersion = "$vMajor.$vMinor.$vPatch"
+
 android {
-    namespace = "com.pepotech.pepoboveda"
+    namespace = "com.jlnavas3.bovedalocal"
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.pepotech.pepoboveda"
+        applicationId = "com.jlnavas3.bovedalocal"
         minSdk = 29
         targetSdk = 35
-        versionCode = 11
-        versionName = "0.79-beta"
+        versionCode = codigoVersion
+        versionName = nombreVersion
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -90,6 +111,12 @@ android {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
+
+    testOptions {
+        unitTests {
+            isReturnDefaultValues = true
+        }
+    }
 }
 
 dependencies {
@@ -128,4 +155,59 @@ dependencies {
 
     androidTestImplementation("androidx.test.ext:junit:1.2.1")
     androidTestImplementation("androidx.test:runner:1.6.2")
+}
+
+tasks.register("mostrarVersion") {
+    description = "Muestra la versión actual calculada para la aplicación"
+    doLast {
+        println("=========================================")
+        println("Bóveda Local - Versión Actual")
+        println("Version Name: $nombreVersion")
+        println("Version Code: $codigoVersion")
+        println("Componentes: Major=$vMajor, Minor=$vMinor, Patch=$vPatch, Build=$vBuild (Commits=$gitCommits)")
+        println("Application ID: com.jlnavas3.bovedalocal")
+        println("=========================================")
+    }
+}
+
+tasks.register("bumpPatch") {
+    description = "Incrementa la versión PATCH (ej. 1.0.0 -> 1.0.1) en version.properties"
+    doLast {
+        val versionFile = rootProject.file("version.properties")
+        val p = Properties()
+        if (versionFile.exists()) versionFile.inputStream().use { p.load(it) }
+        val nuevoPatch = p.getProperty("patch", "0").toInt() + 1
+        p.setProperty("patch", nuevoPatch.toString())
+        versionFile.outputStream().use { p.store(it, "Versionado Semantico Boveda Local") }
+        println("Versión PATCH incrementada a $nuevoPatch -> ${p.getProperty("major")}.${p.getProperty("minor")}.$nuevoPatch")
+    }
+}
+
+tasks.register("bumpMinor") {
+    description = "Incrementa la versión MINOR (ej. 1.0.0 -> 1.1.0) y reinicia PATCH en version.properties"
+    doLast {
+        val versionFile = rootProject.file("version.properties")
+        val p = Properties()
+        if (versionFile.exists()) versionFile.inputStream().use { p.load(it) }
+        val nuevoMinor = p.getProperty("minor", "0").toInt() + 1
+        p.setProperty("minor", nuevoMinor.toString())
+        p.setProperty("patch", "0")
+        versionFile.outputStream().use { p.store(it, "Versionado Semantico Boveda Local") }
+        println("Versión MINOR incrementada a $nuevoMinor -> ${p.getProperty("major")}.$nuevoMinor.0")
+    }
+}
+
+tasks.register("bumpMajor") {
+    description = "Incrementa la versión MAJOR (ej. 1.0.0 -> 2.0.0) y reinicia MINOR/PATCH en version.properties"
+    doLast {
+        val versionFile = rootProject.file("version.properties")
+        val p = Properties()
+        if (versionFile.exists()) versionFile.inputStream().use { p.load(it) }
+        val nuevoMajor = p.getProperty("major", "1").toInt() + 1
+        p.setProperty("major", nuevoMajor.toString())
+        p.setProperty("minor", "0")
+        p.setProperty("patch", "0")
+        versionFile.outputStream().use { p.store(it, "Versionado Semantico Boveda Local") }
+        println("Versión MAJOR incrementada a $nuevoMajor -> $nuevoMajor.0.0")
+    }
 }

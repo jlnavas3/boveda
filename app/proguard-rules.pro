@@ -8,11 +8,11 @@
 # asi que R8 los rastrea solo. Lo unico que hay que sujetar son los serializadores
 # generados de los modelos, que si se pierden se lleva por delante la boveda.
 -keepattributes *Annotation*, InnerClasses
--keep,includedescriptorclasses class com.pepotech.pepoboveda.data.**$$serializer { *; }
--keepclassmembers class com.pepotech.pepoboveda.data.** {
+-keep,includedescriptorclasses class com.jlnavas3.bovedalocal.data.**$$serializer { *; }
+-keepclassmembers class com.jlnavas3.bovedalocal.data.** {
     *** Companion;
 }
--keepclasseswithmembers class com.pepotech.pepoboveda.data.** {
+-keepclasseswithmembers class com.jlnavas3.bovedalocal.data.** {
     kotlinx.serialization.KSerializer serializer(...);
 }
 
