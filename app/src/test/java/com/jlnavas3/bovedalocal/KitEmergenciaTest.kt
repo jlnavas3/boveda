@@ -56,5 +56,34 @@ class KitEmergenciaTest {
         assertTrue(html.contains("<!DOCTYPE html>"))
         assertTrue(html.contains("Banco Santander"))
         assertTrue(html.contains("Netflix"))
+        assertTrue(html.contains("[Anote manualmente]"))
+        assertFalse(html.contains("ClaveSecreta9!"))
+    }
+
+    @Test
+    fun `generarHtml incluye contrasenas visibles cuando se solicita`() {
+        val html = GeneradorKitEmergencia.generarHtml(entradas, OpcionesKit(incluirContrasenas = true))
+        assertTrue(html.contains("<code>ClaveSecreta9!</code>"))
+        assertTrue(html.contains("<code>Peliculas2026</code>"))
+        assertFalse(html.contains("[Anote manualmente]"))
+    }
+
+    @Test
+    fun `generarHtml escapa correctamente caracteres especiales HTML en contrasenas y titulos`() {
+        val entradasEspeciales = listOf(
+            Entrada(
+                id = "3",
+                titulo = "Sitio <Seguro> & Co",
+                usuario = "user\"1\"@mail.com",
+                contrasena = "P@ss<w0rd>&99'!",
+                notas = "Nota con <etiqueta> & detalle"
+            )
+        )
+        val html = GeneradorKitEmergencia.generarHtml(entradasEspeciales, OpcionesKit(incluirContrasenas = true, incluirNotas = true))
+        assertTrue(html.contains("Sitio &lt;Seguro&gt; &amp; Co"))
+        assertTrue(html.contains("user&quot;1&quot;@mail.com"))
+        assertTrue(html.contains("<code>P@ss&lt;w0rd&gt;&amp;99&#39;!</code>"))
+        assertTrue(html.contains("Nota con &lt;etiqueta&gt; &amp; detalle"))
+        assertFalse(html.contains("<w0rd>"))
     }
 }

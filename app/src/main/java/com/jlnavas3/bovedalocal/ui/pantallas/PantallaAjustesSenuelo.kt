@@ -39,6 +39,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
+import androidx.compose.foundation.layout.width
+import androidx.compose.material.icons.filled.Fingerprint
+import androidx.compose.material.icons.filled.Warning
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.jlnavas3.bovedalocal.data.BovedaSenuelo
 import com.jlnavas3.bovedalocal.ui.VaultViewModel
 import com.jlnavas3.bovedalocal.ui.componentes.BotonColorido
@@ -60,6 +64,7 @@ import com.jlnavas3.bovedalocal.util.Haptica
 fun PantallaAjustesSenuelo(vm: VaultViewModel) {
     val contexto = LocalContext.current
     val haptica = remember { Haptica(contexto) }
+    val ajustes by vm.ajustes.collectAsStateWithLifecycle()
 
     var datosSenuelo by remember { mutableStateOf(BovedaSenuelo.cargar(contexto)) }
     var activo by remember { mutableStateOf(datosSenuelo.activo) }
@@ -184,6 +189,75 @@ fun PantallaAjustesSenuelo(vm: VaultViewModel) {
                         datosSenuelo = BovedaSenuelo.cargar(contexto)
                         pinCoaccion = ""
                         vm.avisar("Bóveda señuelo configurada correctamente")
+                    }
+                }
+            }
+        }
+
+        // Alerta de Biometría si la bóveda señuelo está activada
+        if (activo) {
+            Spacer(Modifier.height(14.dp))
+            if (ajustes.biometriaActiva) {
+                androidx.compose.material3.Surface(
+                    color = Peligro.copy(alpha = 0.10f),
+                    shape = com.jlnavas3.bovedalocal.ui.theme.FormaTarjeta,
+                    border = androidx.compose.foundation.BorderStroke(1.dp, Peligro.copy(alpha = 0.5f))
+                ) {
+                    Column(modifier = Modifier.fillMaxWidth().padding(14.dp)) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(
+                                Icons.Filled.Warning,
+                                contentDescription = null,
+                                tint = Peligro,
+                                modifier = Modifier.size(26.dp)
+                            )
+                            Spacer(Modifier.width(10.dp))
+                            Text(
+                                text = "Riesgo de coacción: Huella activada",
+                                color = Peligro,
+                                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
+                            )
+                        }
+                        Spacer(Modifier.height(8.dp))
+                        Text(
+                            text = "El sensor biométrico de Android abrirá SIEMPRE tu bóveda ORIGINAL (el hardware del móvil no distingue situaciones de coacción física). Si un atacante te fuerza a poner el dedo, se revelarán tus claves reales.\n\nPara garantizar la máxima protección de la Bóveda Señuelo, te recomendamos encarecidamente desactivar el acceso por huella.",
+                            color = TextoPrincipal,
+                            style = MaterialTheme.typography.bodySmall
+                        )
+                        Spacer(Modifier.height(12.dp))
+                        BotonColorido(
+                            texto = "Desactivar acceso por huella dactilar",
+                            color = Peligro,
+                            icono = Icons.Filled.Fingerprint
+                        ) {
+                            haptica.exito()
+                            vm.repositorio.desactivarBiometria()
+                            vm.avisar("Acceso por huella desactivado")
+                        }
+                    }
+                }
+            } else {
+                androidx.compose.material3.Surface(
+                    color = ColorSeguridad.copy(alpha = 0.08f),
+                    shape = com.jlnavas3.bovedalocal.ui.theme.FormaTarjeta,
+                    border = androidx.compose.foundation.BorderStroke(1.dp, ColorSeguridad.copy(alpha = 0.25f))
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth().padding(12.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            Icons.Filled.Check,
+                            contentDescription = null,
+                            tint = ColorSeguridad,
+                            modifier = Modifier.size(24.dp)
+                        )
+                        Spacer(Modifier.width(10.dp))
+                        Text(
+                            text = "Huella desactivada: Seguridad óptima. Solo se puede acceder mediante contraseña/PIN.",
+                            color = TextoPrincipal,
+                            style = MaterialTheme.typography.bodySmall
+                        )
                     }
                 }
             }

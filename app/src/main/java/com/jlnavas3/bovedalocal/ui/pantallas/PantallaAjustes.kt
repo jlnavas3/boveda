@@ -254,60 +254,70 @@ fun PantallaAjustes(vm: VaultViewModel, actividad: FragmentActivity) {
             alVolver = { vm.volverAtras() }
         )
 
-        TarjetaAjuste("Seguridad", Icons.Filled.Security, "Huella, bloqueo automático y borrado del portapapeles.") {
-            Spacer(Modifier.height(10.dp))
-            FilaAjuste(
-                titulo = "Abrir con huella",
-                descripcion = when {
-                    modoActivo != null -> "Activa en modo ${modoActivo.etiqueta}."
-                    nivel == Biometria.Nivel.FUERTE ->
-                        "La clave maestra se guarda envuelta por el Keystore, atada a tu huella de Clase 3."
-                    nivel == Biometria.Nivel.COMPATIBLE ->
-                        "${Biometria.explicarFaltaDeFuerte(capacidad)} Hay un modo compatible: Android comprueba la huella o el PIN y la app abre la bóveda."
-                    else ->
-                        "Sin huella ni PIN utilizables ahora mismo: ${Biometria.explicar(capacidad.compatible)}."
-                },
-                activo = ajustes.biometriaActiva,
-                habilitado = nivel != Biometria.Nivel.NINGUNO || ajustes.biometriaActiva,
-                alCambiar = { activar ->
-                    if (activar) {
-                        when (nivel) {
-                            Biometria.Nivel.FUERTE -> activarFuerte()
-                            Biometria.Nivel.COMPATIBLE -> ofrecerCompatible(Biometria.explicarFaltaDeFuerte(capacidad))
-                            Biometria.Nivel.NINGUNO -> vm.avisar("Este móvil no ofrece huella ni PIN utilizables ahora mismo")
-                        }
-                    } else {
-                        flujo.desactivar()
-                        haptica.tic()
-                        vm.avisar("Huella desactivada")
-                    }
-                }
-            )
-            if (capacidad.fuerte == BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED &&
-                capacidad.debil != BiometricManager.BIOMETRIC_SUCCESS
-            ) {
+        val esSenuelo = vm.repositorio.esModoSenuelo
+
+        TarjetaAjuste(
+            titulo = "Seguridad",
+            icono = Icons.Filled.Security,
+            descripcion = if (esSenuelo) "Bloqueo automático y borrado del portapapeles." else "Huella, bloqueo automático y borrado del portapapeles."
+        ) {
+            if (!esSenuelo) {
                 Spacer(Modifier.height(10.dp))
-                BotonColorido(
-                    texto = "Registrar una huella en Android",
-                    color = ColorSeguridad,
-                    icono = Icons.Filled.Fingerprint
+                FilaAjuste(
+                    titulo = "Abrir con huella",
+                    descripcion = when {
+                        modoActivo != null -> "Activa en modo ${modoActivo.etiqueta}."
+                        nivel == Biometria.Nivel.FUERTE ->
+                            "La clave maestra se guarda envuelta por el Keystore, atada a tu huella de Clase 3."
+                        nivel == Biometria.Nivel.COMPATIBLE ->
+                            "${Biometria.explicarFaltaDeFuerte(capacidad)} Hay un modo compatible: Android comprueba la huella o el PIN y la app abre la bóveda."
+                        else ->
+                            "Sin huella ni PIN utilizables ahora mismo: ${Biometria.explicar(capacidad.compatible)}."
+                    },
+                    activo = ajustes.biometriaActiva,
+                    habilitado = nivel != Biometria.Nivel.NINGUNO || ajustes.biometriaActiva,
+                    alCambiar = { activar ->
+                        if (activar) {
+                            when (nivel) {
+                                Biometria.Nivel.FUERTE -> activarFuerte()
+                                Biometria.Nivel.COMPATIBLE -> ofrecerCompatible(Biometria.explicarFaltaDeFuerte(capacidad))
+                                Biometria.Nivel.NINGUNO -> vm.avisar("Este móvil no ofrece huella ni PIN utilizables ahora mismo")
+                            }
+                        } else {
+                            flujo.desactivar()
+                            haptica.tic()
+                            vm.avisar("Huella desactivada")
+                        }
+                    }
+                )
+                if (capacidad.fuerte == BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED &&
+                    capacidad.debil != BiometricManager.BIOMETRIC_SUCCESS
                 ) {
-                    if (!AjustesSistema.abrirRegistroHuella(contexto)) vm.avisar("No encuentro esa pantalla en este móvil")
+                    Spacer(Modifier.height(10.dp))
+                    BotonColorido(
+                        texto = "Registrar una huella en Android",
+                        color = ColorSeguridad,
+                        icono = Icons.Filled.Fingerprint
+                    ) {
+                        if (!AjustesSistema.abrirRegistroHuella(contexto)) vm.avisar("No encuentro esa pantalla en este móvil")
+                    }
                 }
+                when {
+                    ajustes.biometriaActiva && modoActivo == BiometricKeyStore.Modo.FUERTE && Biometria.hayCompatible(capacidad) ->
+                        EnlaceAjuste("Cambiar a modo compatible") {
+                            ofrecerCompatible("Si la huella te falla en este móvil aunque Android la acepte, el modo compatible suele funcionar.")
+                        }
+                    ajustes.biometriaActiva && modoActivo == BiometricKeyStore.Modo.COMPATIBLE && Biometria.hayFuerte(capacidad) ->
+                        EnlaceAjuste("Volver al modo fuerte") { activarFuerte() }
+                    !ajustes.biometriaActiva && nivel == Biometria.Nivel.FUERTE && Biometria.hayCompatible(capacidad) ->
+                        EnlaceAjuste("Activar en modo compatible") {
+                            ofrecerCompatible("Para quien ya sabe que la huella de Clase 3 le falla en este móvil.")
+                        }
+                }
+                Spacer(Modifier.height(8.dp))
+            } else {
+                Spacer(Modifier.height(10.dp))
             }
-            when {
-                ajustes.biometriaActiva && modoActivo == BiometricKeyStore.Modo.FUERTE && Biometria.hayCompatible(capacidad) ->
-                    EnlaceAjuste("Cambiar a modo compatible") {
-                        ofrecerCompatible("Si la huella te falla en este móvil aunque Android la acepte, el modo compatible suele funcionar.")
-                    }
-                ajustes.biometriaActiva && modoActivo == BiometricKeyStore.Modo.COMPATIBLE && Biometria.hayFuerte(capacidad) ->
-                    EnlaceAjuste("Volver al modo fuerte") { activarFuerte() }
-                !ajustes.biometriaActiva && nivel == Biometria.Nivel.FUERTE && Biometria.hayCompatible(capacidad) ->
-                    EnlaceAjuste("Activar en modo compatible") {
-                        ofrecerCompatible("Para quien ya sabe que la huella de Clase 3 le falla en este móvil.")
-                    }
-            }
-            Spacer(Modifier.height(8.dp))
             androidx.compose.material3.Surface(
                 color = MaterialTheme.colorScheme.primary.copy(alpha = 0.08f),
                 shape = com.jlnavas3.bovedalocal.ui.theme.FormaTarjeta,
@@ -360,14 +370,16 @@ fun PantallaAjustes(vm: VaultViewModel, actividad: FragmentActivity) {
                 },
                 alSeleccionar = { valor -> haptica.tic(); vm.ajustarPortapapeles(valor.toInt()) }
             )
-            Spacer(Modifier.height(14.dp))
-            BotonColorido(
-                texto = "Bóveda señuelo (PIN de coacción)",
-                color = ColorSeguridad,
-                icono = Icons.Filled.Shield
-            ) {
-                haptica.toque()
-                vm.ir(Pantalla.AjustesSenuelo)
+            if (!esSenuelo) {
+                Spacer(Modifier.height(14.dp))
+                BotonColorido(
+                    texto = "Bóveda señuelo (PIN de coacción)",
+                    color = ColorSeguridad,
+                    icono = Icons.Filled.Shield
+                ) {
+                    haptica.toque()
+                    vm.ir(Pantalla.AjustesSenuelo)
+                }
             }
         }
 
