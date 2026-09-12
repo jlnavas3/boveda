@@ -22,6 +22,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.Delete
@@ -34,16 +35,11 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.ui.text.font.FontWeight
-import com.jlnavas3.bovedalocal.data.CampoPersonalizado
-import com.jlnavas3.bovedalocal.data.EstadoBoveda
-import com.jlnavas3.bovedalocal.data.TipoCampo
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -52,24 +48,30 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.jlnavas3.bovedalocal.crypto.Totp
+import com.jlnavas3.bovedalocal.data.EstadoBoveda
+import com.jlnavas3.bovedalocal.data.normalizarEtiqueta
 import com.jlnavas3.bovedalocal.ui.Pantalla
 import com.jlnavas3.bovedalocal.ui.VaultViewModel
-import com.jlnavas3.bovedalocal.data.normalizarEtiqueta
-import com.jlnavas3.bovedalocal.ui.componentes.AnilloTotp
-import com.jlnavas3.bovedalocal.ui.componentes.BotonBorde
+import com.jlnavas3.bovedalocal.ui.componentes.BotonColorido
 import com.jlnavas3.bovedalocal.ui.componentes.DialogoCompartirQr
 import com.jlnavas3.bovedalocal.ui.componentes.EtiquetaSeccion
 import com.jlnavas3.bovedalocal.ui.componentes.Monograma
 import com.jlnavas3.bovedalocal.ui.componentes.TarjetaPepo
 import com.jlnavas3.bovedalocal.ui.componentes.contrasenaColoreada
+import com.jlnavas3.bovedalocal.ui.pantallas.detalle.TarjetaCamposDetalle
+import com.jlnavas3.bovedalocal.ui.pantallas.detalle.TarjetaHistorialDetalle
+import com.jlnavas3.bovedalocal.ui.pantallas.detalle.TarjetaPasskeyDetalle
+import com.jlnavas3.bovedalocal.ui.pantallas.detalle.TarjetaTotpDetalle
 import com.jlnavas3.bovedalocal.ui.theme.Ambar
 import com.jlnavas3.bovedalocal.ui.theme.Borde
+import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
 import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
+import com.jlnavas3.bovedalocal.ui.theme.ColorPapelera
 import com.jlnavas3.bovedalocal.ui.theme.ColorTitulos
 import com.jlnavas3.bovedalocal.ui.theme.EstiloMono
 import com.jlnavas3.bovedalocal.ui.theme.EstiloMonoGrande
@@ -81,10 +83,6 @@ import com.jlnavas3.bovedalocal.ui.theme.TextoPrincipal
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
 import com.jlnavas3.bovedalocal.util.Haptica
 import kotlinx.coroutines.delay
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import com.jlnavas3.bovedalocal.ui.componentes.BotonColorido
-import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
-import com.jlnavas3.bovedalocal.ui.theme.ColorPapelera
 
 @Composable
 fun PantallaDetalle(vm: VaultViewModel, id: String) {
@@ -120,6 +118,7 @@ fun PantallaDetalle(vm: VaultViewModel, id: String) {
             .verticalScroll(rememberScrollState())
             .padding(20.dp)
     ) {
+        // Cabecera con título, monograma y acciones rápidas
         Row(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
@@ -166,6 +165,7 @@ fun PantallaDetalle(vm: VaultViewModel, id: String) {
 
         Spacer(Modifier.height(20.dp))
 
+        // Usuario / Correo
         if (entrada.usuario.isNotBlank()) {
             TarjetaPepo {
                 EtiquetaSeccion("Usuario o correo")
@@ -192,6 +192,7 @@ fun PantallaDetalle(vm: VaultViewModel, id: String) {
             Spacer(Modifier.height(12.dp))
         }
 
+        // Contraseña principal
         if (entrada.contrasena.isNotBlank()) {
             TarjetaPepo {
                 EtiquetaSeccion("Contraseña")
@@ -244,71 +245,32 @@ fun PantallaDetalle(vm: VaultViewModel, id: String) {
             Spacer(Modifier.height(12.dp))
         }
 
-        entrada.secretoTotp?.takeIf { it.isNotBlank() }?.let { secreto ->
-            val periodo = entrada.totpPeriodo.toLong().coerceAtLeast(10L)
-            var ahora by remember { mutableLongStateOf(System.currentTimeMillis() / 1000) }
-            LaunchedEffect(secreto) {
-                while (true) {
-                    ahora = System.currentTimeMillis() / 1000
-                    delay(500)
-                }
+        // 2FA / TOTP modular
+        TarjetaTotpDetalle(
+            entrada = entrada,
+            ajustes = ajustes,
+            haptica = haptica,
+            alCopiarTotp = { codigo ->
+                vm.copiar("Código TOTP", codigo, sensible = true)
             }
-            val codigo = remember(ahora / periodo, secreto, entrada.totpDigitos, entrada.totpAlgoritmo) {
-                try {
-                    Totp.codigo(
-                        secreto = com.jlnavas3.bovedalocal.crypto.Base32.decodificar(secreto),
-                        segundosUnix = ahora,
-                        digitos = entrada.totpDigitos,
-                        periodo = periodo,
-                        algoritmo = entrada.totpAlgoritmo
-                    )
-                } catch (e: Exception) {
-                    "------"
-                }
-            }
-            TarjetaPepo {
-                EtiquetaSeccion("Código de verificación (TOTP)")
-                Spacer(Modifier.height(10.dp))
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    AnilloTotp(
-                        codigo = if (ajustes.totpSepararDigitos && codigo.length == 6) "${codigo.take(3)} ${codigo.drop(3)}" else codigo,
-                        segundosRestantes = Totp.segundosRestantes(ahora, periodo),
-                        periodo = periodo
-                    )
-                    Spacer(Modifier.width(16.dp))
-                    Column(modifier = Modifier.weight(1f)) {
-                        Text("Se renueva cada ${periodo} s · ${entrada.totpDigitos} dígitos", color = TextoSecundario, style = MaterialTheme.typography.bodyMedium)
-                        Spacer(Modifier.height(8.dp))
-                        BotonBorde("Copiar código", color = Menta) {
-                            haptica.toque()
-                            vm.copiar("Código TOTP", codigo, sensible = true)
-                        }
-                    }
-                }
-            }
+        )
+        if (!entrada.secretoTotp.isNullOrBlank()) {
             Spacer(Modifier.height(12.dp))
         }
 
+        // Campos personalizados modulares
+        TarjetaCamposDetalle(
+            campos = entrada.camposPersonalizados,
+            vm = vm,
+            haptica = haptica,
+            ultimaCopia = ultimaCopia,
+            alCopiarCampo = { idCampo -> ultimaCopia = idCampo }
+        )
         if (entrada.camposPersonalizados.isNotEmpty()) {
-            TarjetaPepo {
-                EtiquetaSeccion("Campos personalizados")
-                Spacer(Modifier.height(8.dp))
-                entrada.camposPersonalizados.forEachIndexed { index, campo ->
-                    if (index > 0) {
-                        Spacer(Modifier.height(10.dp))
-                    }
-                    FilaCampoPersonalizadoDetalle(
-                        campo = campo,
-                        vm = vm,
-                        haptica = haptica,
-                        copiado = ultimaCopia == "campo_${campo.id}",
-                        alCopiar = { ultimaCopia = "campo_${campo.id}" }
-                    )
-                }
-            }
             Spacer(Modifier.height(12.dp))
         }
 
+        // URLs y sitios asociados
         if (entrada.urls.isNotEmpty()) {
             TarjetaPepo {
                 EtiquetaSeccion("Sitios y apps asociados")
@@ -320,6 +282,7 @@ fun PantallaDetalle(vm: VaultViewModel, id: String) {
             Spacer(Modifier.height(12.dp))
         }
 
+        // Notas
         if (entrada.notas.isNotBlank()) {
             TarjetaPepo {
                 EtiquetaSeccion("Notas")
@@ -329,6 +292,7 @@ fun PantallaDetalle(vm: VaultViewModel, id: String) {
             Spacer(Modifier.height(12.dp))
         }
 
+        // Etiquetas
         if (entrada.etiquetas.isNotEmpty()) {
             TarjetaPepo {
                 EtiquetaSeccion("Etiquetas")
@@ -362,54 +326,19 @@ fun PantallaDetalle(vm: VaultViewModel, id: String) {
             Spacer(Modifier.height(12.dp))
         }
 
+        // Historial de contraseñas modular con visor y restauración
+        TarjetaHistorialDetalle(
+            entrada = entrada,
+            vm = vm,
+            haptica = haptica
+        )
         if (entrada.historialContrasenas.isNotEmpty()) {
-            TarjetaPepo {
-                EtiquetaSeccion("Contraseñas anteriores")
-                Spacer(Modifier.height(6.dp))
-                Text(
-                    "No se muestran en pantalla, solo se pueden copiar por si te hace falta recordar una.",
-                    color = TextoSecundario,
-                    style = MaterialTheme.typography.bodyMedium
-                )
-                Spacer(Modifier.height(10.dp))
-                entrada.historialContrasenas.forEach { cambio ->
-                    Row(
-                        modifier = Modifier.fillMaxWidth().padding(vertical = 6.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            formatearFecha(cambio.cambiadaEn),
-                            color = TextoPrincipal,
-                            style = MaterialTheme.typography.bodyMedium,
-                            modifier = Modifier.weight(1f)
-                        )
-                        TextButton(onClick = {
-                            haptica.toque()
-                            vm.copiar("Contraseña anterior", cambio.contrasena, sensible = true)
-                        }) { Text("Copiar", color = ColorIconosInternos) }
-                    }
-                }
-            }
             Spacer(Modifier.height(12.dp))
         }
 
+        // Passkey modular
         entrada.passkey?.let { passkey ->
-            TarjetaPepo {
-                EtiquetaSeccion("Passkey")
-                Spacer(Modifier.height(8.dp))
-                Text("Servicio: ${passkey.rpName.ifBlank { passkey.rpId }}", color = TextoPrincipal, style = MaterialTheme.typography.bodyLarge)
-                Text("Dominio: ${passkey.rpId}", color = TextoSecundario, style = MaterialTheme.typography.bodyMedium)
-                if (passkey.usuario.isNotBlank() || entrada.usuario.isNotBlank()) {
-                    Text(
-                        "Cuenta: ${passkey.usuario.ifBlank { entrada.usuario }}",
-                        color = TextoSecundario,
-                        style = MaterialTheme.typography.bodyMedium
-                    )
-                }
-                Text("Algoritmo: ${passkey.algoritmo} (P-256)", color = TextoSecundario, style = MaterialTheme.typography.bodyMedium)
-                Spacer(Modifier.height(4.dp))
-                Text("La clave privada permanece cifrada dentro de la bóveda y nunca se muestra.", color = Menta, style = MaterialTheme.typography.bodyMedium)
-            }
+            TarjetaPasskeyDetalle(passkey = passkey, usuarioEntrada = entrada.usuario)
             Spacer(Modifier.height(12.dp))
         }
 
@@ -473,104 +402,6 @@ private fun BotonCopiar(copiado: Boolean, alPulsar: () -> Unit) {
             exit = scaleOut(spring(dampingRatio = 0.6f))
         ) {
             Icon(Icons.Filled.ContentCopy, contentDescription = "Copiar", tint = ColorIconosInternos)
-        }
-    }
-}
-
-@Composable
-private fun IconoEditar() {
-    Icon(Icons.Filled.Edit, contentDescription = "Editar", tint = ColorIconosInternos)
-}
-
-@Composable
-private fun IconoBorrar() {
-    Icon(Icons.Filled.Delete, contentDescription = "Borrar", tint = Peligro)
-}
-
-private fun formatearFecha(momento: Long): String {
-    if (momento <= 0L) return "fecha desconocida"
-    val formato = java.text.SimpleDateFormat("d MMM yyyy", java.util.Locale("es"))
-    return formato.format(java.util.Date(momento))
-}
-
-@Composable
-private fun FilaCampoPersonalizadoDetalle(
-    campo: CampoPersonalizado,
-    vm: VaultViewModel,
-    haptica: com.jlnavas3.bovedalocal.util.Haptica,
-    copiado: Boolean,
-    alCopiar: () -> Unit
-) {
-    var revelado by remember { mutableStateOf(false) }
-    val esOculto = campo.tipo != TipoCampo.TEXTO
-
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clip(com.jlnavas3.bovedalocal.ui.theme.FormaTarjeta)
-            .background(com.jlnavas3.bovedalocal.ui.theme.SuperficieAlta)
-            .padding(12.dp)
-    ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                campo.etiqueta.ifBlank { "Campo adicional" },
-                style = MaterialTheme.typography.bodySmall,
-                color = com.jlnavas3.bovedalocal.ui.theme.TextoSecundario,
-                fontWeight = FontWeight.Medium
-            )
-            Box(
-                modifier = Modifier
-                    .clip(com.jlnavas3.bovedalocal.ui.theme.FormaPequena)
-                    .background(Ambar.copy(alpha = 0.15f))
-                    .padding(horizontal = 6.dp, vertical = 2.dp)
-            ) {
-                Text(
-                    campo.tipo.etiqueta,
-                    style = MaterialTheme.typography.labelSmall,
-                    color = Ambar
-                )
-            }
-        }
-        Spacer(Modifier.height(6.dp))
-        Text(
-            text = when {
-                !esOculto -> campo.valor
-                revelado -> campo.valor
-                campo.tipo == TipoCampo.PIN -> "• ".repeat(campo.valor.length).trim()
-                else -> "•".repeat(campo.valor.length.coerceIn(8, 20))
-            },
-            style = if (esOculto && !revelado) EstiloMonoGrande.copy(letterSpacing = 2.sp) else if (esOculto) EstiloMono else MaterialTheme.typography.bodyLarge,
-            color = if (esOculto && !revelado) TextoSecundario else TextoPrincipal,
-            modifier = Modifier.fillMaxWidth()
-        )
-        Spacer(Modifier.height(4.dp))
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.End,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            if (esOculto) {
-                IconButton(onClick = {
-                    haptica.toque()
-                    revelado = !revelado
-                }) {
-                    Icon(
-                        imageVector = if (revelado) Icons.Filled.VisibilityOff else Icons.Filled.Visibility,
-                        contentDescription = if (revelado) "Ocultar" else "Revelar",
-                        tint = ColorIconosInternos,
-                        modifier = Modifier.size(24.dp)
-                    )
-                }
-            }
-            BotonCopiar(copiado = copiado) {
-                haptica.exito()
-                vm.copiar(campo.etiqueta.ifBlank { "Campo personalizado" }, campo.valor, sensible = esOculto)
-                alCopiar()
-            }
         }
     }
 }
