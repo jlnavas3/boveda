@@ -1,6 +1,8 @@
 package com.jlnavas3.bovedalocal.ui
 
 import android.app.Application
+import com.jlnavas3.bovedalocal.data.GestorPlantillasCampos
+import com.jlnavas3.bovedalocal.data.PlantillaCampos
 import com.jlnavas3.bovedalocal.data.VaultRepository
 import com.jlnavas3.bovedalocal.ui.theme.PaletaAcento
 import com.jlnavas3.bovedalocal.ui.theme.aplicarPaletaAcento
@@ -344,5 +346,28 @@ interface VaultAjustesDelegate {
                 indiceResaltarSoloPrimera = true
             )
         }
+    }
+
+    fun guardarPlantillaPersonalizada(plantilla: PlantillaCampos) {
+        repositorio.ajustes.actualizar { ajustes ->
+            val actuales = GestorPlantillasCampos.decodificarPersonalizadas(ajustes.plantillasPersonalizadasJson).toMutableList()
+            val index = actuales.indexOfFirst { it.id == plantilla.id }
+            if (index >= 0) {
+                actuales[index] = plantilla
+            } else {
+                actuales.add(plantilla)
+            }
+            ajustes.copy(plantillasPersonalizadasJson = GestorPlantillasCampos.codificarPersonalizadas(actuales))
+        }
+        Diagnostico.apuntar("plantillas", "Plantilla personalizada \"${plantilla.nombre}\" guardada")
+    }
+
+    fun eliminarPlantillaPersonalizada(id: String) {
+        repositorio.ajustes.actualizar { ajustes ->
+            val actuales = GestorPlantillasCampos.decodificarPersonalizadas(ajustes.plantillasPersonalizadasJson)
+                .filterNot { it.id == id }
+            ajustes.copy(plantillasPersonalizadasJson = GestorPlantillasCampos.codificarPersonalizadas(actuales))
+        }
+        Diagnostico.apuntar("plantillas", "Plantilla personalizada eliminada")
     }
 }

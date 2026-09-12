@@ -1,5 +1,6 @@
 package com.jlnavas3.bovedalocal.ui.pantallas
 
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
@@ -65,6 +66,7 @@ import com.jlnavas3.bovedalocal.util.MedidorFuerza
 fun PantallaEdicion(vm: VaultViewModel, id: String?, contrasenaInicial: String) {
     val contexto = LocalContext.current
     val haptica = remember { Haptica(contexto) }
+    val ajustes by vm.ajustes.collectAsStateWithLifecycle()
     val original = remember(id) { id?.let { vm.entrada(it) } }
 
     var tipo by remember { mutableStateOf(original?.tipo ?: TipoEntrada.LOGIN) }
@@ -170,6 +172,9 @@ fun PantallaEdicion(vm: VaultViewModel, id: String?, contrasenaInicial: String) 
         SeccionCamposPersonalizados(
             camposPersonalizados = camposPersonalizados,
             alCambiarCampos = { camposPersonalizados = it },
+            plantillasPersonalizadasRaw = ajustes.plantillasPersonalizadasJson,
+            alGuardarPlantillaNueva = { vm.guardarPlantillaPersonalizada(it) },
+            alEliminarPlantilla = { vm.eliminarPlantillaPersonalizada(it) },
             haptica = haptica
         )
         Spacer(Modifier.height(16.dp))

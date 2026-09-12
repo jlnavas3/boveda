@@ -12,12 +12,16 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.BookmarkAdd
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Layers
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -30,11 +34,15 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.jlnavas3.bovedalocal.data.CampoPersonalizado
+import com.jlnavas3.bovedalocal.data.CampoPlantilla
+import com.jlnavas3.bovedalocal.data.PlantillaCampos
 import com.jlnavas3.bovedalocal.data.TipoCampo
 import com.jlnavas3.bovedalocal.ui.componentes.BotonBorde
+import com.jlnavas3.bovedalocal.ui.componentes.BotonColorido
 import com.jlnavas3.bovedalocal.ui.componentes.CampoPepo
 import com.jlnavas3.bovedalocal.ui.componentes.EtiquetaSeccion
 import com.jlnavas3.bovedalocal.ui.theme.Ambar
+import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
 import com.jlnavas3.bovedalocal.ui.theme.ColorSobreAcento
 import com.jlnavas3.bovedalocal.ui.theme.ColorTitulos
@@ -134,13 +142,19 @@ fun TarjetaCampoPersonalizadoEdicion(
 fun SeccionCamposPersonalizados(
     camposPersonalizados: List<CampoPersonalizado>,
     alCambiarCampos: (List<CampoPersonalizado>) -> Unit,
+    plantillasPersonalizadasRaw: String = "",
+    alGuardarPlantillaNueva: ((PlantillaCampos) -> Unit)? = null,
+    alEliminarPlantilla: ((String) -> Unit)? = null,
     haptica: Haptica
 ) {
+    var mostrandoDialogoPlantillas by remember { mutableStateOf(false) }
+    var mostrandoGuardarComoPlantilla by remember { mutableStateOf(false) }
+
     EtiquetaSeccion("Campos personalizados")
     Spacer(Modifier.height(8.dp))
     if (camposPersonalizados.isEmpty()) {
         Text(
-            "Añade datos extra como PIN secundario, preguntas de seguridad o claves de recuperación.",
+            "Añade datos extra como tarjetas, redes Wi-Fi, cuentas bancarias o preguntas de seguridad.",
             style = MaterialTheme.typography.bodyMedium,
             color = TextoSecundario
         )
@@ -166,12 +180,86 @@ fun SeccionCamposPersonalizados(
         }
     }
 
-    BotonBorde("+ Añadir campo personalizado") {
-        haptica.tic()
-        alCambiarCampos(camposPersonalizados + CampoPersonalizado(
-            etiqueta = "",
-            valor = "",
-            tipo = TipoCampo.TEXTO
-        ))
+    // Botones de acción: Añadir campo manual y Abrir plantillas
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        BotonBorde(
+            texto = "+ Añadir campo",
+            modifier = Modifier.weight(1f),
+            alPulsar = {
+                haptica.tic()
+                alCambiarCampos(camposPersonalizados + CampoPersonalizado(
+                    etiqueta = "",
+                    valor = "",
+                    tipo = TipoCampo.TEXTO
+                ))
+            }
+        )
+        BotonColorido(
+            texto = "Plantillas",
+            icono = Icons.Filled.Layers,
+            color = ColorAcento,
+            modifier = Modifier.weight(1f),
+            alPulsar = {
+                haptica.tic()
+                mostrandoDialogoPlantillas = true
+            }
+        )
+    }
+
+    // Opción para guardar los campos actuales como una nueva plantilla
+    if (camposPersonalizados.isNotEmpty() && alGuardarPlantillaNueva != null) {
+        Spacer(Modifier.height(6.dp))
+        Box(
+            modifier = Modifier.fillMaxWidth(),
+            contentAlignment = Alignment.Center
+        ) {
+            TextButton(
+                onClick = {
+                    haptica.tic()
+                    mostrandoGuardarComoPlantilla = true
+                }
+            ) {
+                Icon(
+                    Icons.Filled.BookmarkAdd,
+                    contentDescription = null,
+                    tint = Ambar,
+                    modifier = Modifier.size(18.dp)
+                )
+                Spacer(Modifier.width(6.dp))
+                Text(
+                    "Guardar campos como plantilla reutilizable",
+                    color = Ambar,
+                    style = MaterialTheme.typography.labelMedium
+                )
+            }
+        }
+    }
+
+    if (mostrandoDialogoPlantillas) {
+        DialogoPlantillasCampos(
+            plantillasPersonalizadasRaw = plantillasPersonalizadasRaw,
+            haptica = haptica,
+            alSeleccionarPlantilla = { nuevos ->
+                alCambiarCampos(camposPersonalizados + nuevos)
+            },
+            alGuardarPlantillaNueva = { alGuardarPlantillaNueva?.invoke(it) },
+            alEliminarPlantilla = { alEliminarPlantilla?.invoke(it) },
+            alCerrar = { mostrandoDialogoPlantillas = false }
+        )
+    }
+
+    if (mostrandoGuardarComoPlantilla && alGuardarPlantillaNueva != null) {
+        DialogoCrearPlantilla(
+            camposIniciales = camposPersonalizados.map { CampoPlantilla(it.etiqueta.ifBlank { "Campo" }, it.tipo) },
+            haptica = haptica,
+            alGuardar = { nueva ->
+                mostrandoGuardarComoPlantilla = false
+                alGuardarPlantillaNueva(nueva)
+            },
+            alCerrar = { mostrandoGuardarComoPlantilla = false }
+        )
     }
 }
