@@ -77,7 +77,7 @@ class PepoBovedaApp : Application(), Application.ActivityLifecycleCallbacks {
             val ajustes = repositorio.ajustes.actual
             val transcurrido = System.currentTimeMillis() - momentoAlFondo
             val limite = (if (ajustes.autoBloqueoSegundos < 5) 30 else ajustes.autoBloqueoSegundos) * 1000L
-            if (transcurrido >= limite && !salidaPermitida) {
+            if (transcurrido >= limite && !salidaPermitida && repositorio.estaDesbloqueada) {
                 repositorio.bloquear()
                 Diagnostico.apuntar("bóveda", "Bloqueada por inactividad tras ${transcurrido / 1000}s en segundo plano")
             }

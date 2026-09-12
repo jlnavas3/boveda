@@ -193,7 +193,7 @@ class VaultViewModel(app: Application) : AndroidViewModel(app) {
                 if (limite > 0 && desbloqueada && !_ofrecerBiometria.value) {
                     val quieto = System.currentTimeMillis() - _ultimaInteraccion.value
                     if (quieto >= limite * 1000L) {
-                        bloquear()
+                        bloquear(porInactividad = true)
                         _aviso.value = "Bóveda cerrada por inactividad"
                     }
                 }
@@ -278,10 +278,14 @@ class VaultViewModel(app: Application) : AndroidViewModel(app) {
         }
     }
 
-    fun bloquear() {
+    fun bloquear(porInactividad: Boolean = false) {
         val estabaDesbloqueada = repositorio.estaDesbloqueada
         repositorio.bloquear()
-        if (estabaDesbloqueada) Diagnostico.apuntar("bóveda", "Bloqueada manualmente")
+        if (estabaDesbloqueada) {
+            val limite = repositorio.ajustes.actual.autoBloqueoSegundos
+            val mensaje = if (porInactividad) "Bloqueada por caducidad de tiempo (${limite}s de inactividad)" else "Bloqueada manualmente"
+            Diagnostico.apuntar("bóveda", mensaje)
+        }
         // El rato que pase bloqueada no cuenta como inactividad.
         registrarInteraccion()
         irRaiz(if (repositorio.existeBoveda) Pantalla.Desbloqueo else Pantalla.Onboarding)
@@ -499,11 +503,17 @@ class VaultViewModel(app: Application) : AndroidViewModel(app) {
         }
     }
 
-    // --------------------------------------------------------------- ajustes
+    fun ajustarAutoBloqueo(segundos: Int) {
+        repositorio.ajustes.actualizar { it.copy(autoBloqueoSegundos = segundos) }
+        val desc = if (segundos == 0) "desactivado" else "${segundos}s"
+        Diagnostico.apuntar("seguridad", "Tiempo de auto-bloqueo configurado en $desc")
+    }
 
-    fun ajustarAutoBloqueo(segundos: Int) = repositorio.ajustes.actualizar { it.copy(autoBloqueoSegundos = segundos) }
-
-    fun ajustarPortapapeles(segundos: Int) = repositorio.ajustes.actualizar { it.copy(portapapelesSegundos = segundos) }
+    fun ajustarPortapapeles(segundos: Int) {
+        repositorio.ajustes.actualizar { it.copy(portapapelesSegundos = segundos) }
+        val desc = if (segundos == 0) "desactivado" else "${segundos}s"
+        Diagnostico.apuntar("seguridad", "Tiempo de limpieza de portapapeles configurado en $desc")
+    }
 
     fun ajustarTileModo(modo: String) = repositorio.ajustes.actualizar { it.copy(tileModo = modo) }
 

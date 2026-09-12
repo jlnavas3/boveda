@@ -289,7 +289,7 @@ fun PantallaRegistro(vm: VaultViewModel) {
                                 ) {
                                     val badgeColor = when {
                                         ev.esError -> Peligro
-                                        ev.area.contains("huella", true) || ev.area.contains("keystore", true) -> ColorSeguridad
+                                        ev.area.contains("huella", true) || ev.area.contains("keystore", true) || ev.area.contains("seguridad", true) -> ColorSeguridad
                                         ev.area.contains("camara", true) -> ColorAcento
                                         ev.area.contains("autofill", true) || ev.area.contains("passkey", true) || ev.area.contains("credential", true) -> ColorPasskeys
                                         ev.area.contains("portapapeles", true) -> Ambar

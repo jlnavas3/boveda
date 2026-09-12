@@ -46,7 +46,10 @@ class TileGeneradorRapido : TileService() {
             if (cm != null) {
                 val clip = ClipData.newPlainText("Contraseña generada", clave)
                 cm.setPrimaryClip(clip)
+                com.jlnavas3.bovedalocal.util.Diagnostico.apuntar("portapapeles", "Contraseña generada desde Quick Settings Tile")
             }
+        } else {
+            com.jlnavas3.bovedalocal.util.Diagnostico.apuntar("bóveda", "Contraseña generada desde Quick Settings Tile")
         }
 
         if (ajustes.tileHaptica) {
