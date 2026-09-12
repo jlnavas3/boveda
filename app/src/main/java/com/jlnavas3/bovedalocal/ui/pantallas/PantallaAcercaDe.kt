@@ -199,12 +199,22 @@ fun PantallaAcercaDe(vm: VaultViewModel) {
                 ContenedorTarjeta(paddingInterno = 16.dp) {
                     datos.lineasBiometria.forEach { linea ->
                         if (linea.ok != null) {
-                            FilaAuditoria(ok = linea.ok, titulo = linea.texto, detalle = if (linea.ok) "Soportado y verificado" else "No disponible", indentada = linea.indentada)
+                            FilaAuditoria(
+                                ok = linea.ok,
+                                titulo = linea.texto,
+                                detalle = linea.detalle ?: if (linea.ok) "Soportado y verificado" else "No disponible",
+                                indentada = linea.indentada
+                            )
                         } else {
-                            Row(modifier = Modifier.padding(vertical = 2.dp).padding(start = if (linea.indentada) 16.dp else 0.dp)) {
+                            Row(modifier = Modifier.padding(vertical = 3.dp).padding(start = if (linea.indentada) 16.dp else 0.dp)) {
                                 Text("•", color = ColorIconosInternos)
                                 Spacer(Modifier.width(8.dp))
-                                Text(linea.texto, color = TextoPrincipal, style = MaterialTheme.typography.bodyMedium)
+                                Column {
+                                    Text(linea.texto, color = TextoPrincipal, style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Medium))
+                                    if (!linea.detalle.isNullOrBlank()) {
+                                        Text(linea.detalle, color = TextoSecundario, style = MaterialTheme.typography.bodySmall)
+                                    }
+                                }
                             }
                         }
                     }
@@ -220,12 +230,22 @@ fun PantallaAcercaDe(vm: VaultViewModel) {
                 ContenedorTarjeta(paddingInterno = 16.dp) {
                     datos.lineasCamara.forEach { linea ->
                         if (linea.ok != null) {
-                            FilaAuditoria(ok = linea.ok, titulo = linea.texto, detalle = if (linea.ok) "Activo" else "No concedido / inactivo", indentada = linea.indentada)
+                            FilaAuditoria(
+                                ok = linea.ok,
+                                titulo = linea.texto,
+                                detalle = linea.detalle ?: if (linea.ok) "Activo" else "No concedido / inactivo",
+                                indentada = linea.indentada
+                            )
                         } else {
-                            Row(modifier = Modifier.padding(vertical = 2.dp).padding(start = if (linea.indentada) 16.dp else 0.dp)) {
+                            Row(modifier = Modifier.padding(vertical = 3.dp).padding(start = if (linea.indentada) 16.dp else 0.dp)) {
                                 Text("•", color = ColorIconosInternos)
                                 Spacer(Modifier.width(8.dp))
-                                Text(linea.texto, color = TextoPrincipal, style = MaterialTheme.typography.bodyMedium)
+                                Column {
+                                    Text(linea.texto, color = TextoPrincipal, style = MaterialTheme.typography.bodyMedium)
+                                    if (!linea.detalle.isNullOrBlank()) {
+                                        Text(linea.detalle, color = TextoSecundario, style = MaterialTheme.typography.bodySmall)
+                                    }
+                                }
                             }
                         }
                     }

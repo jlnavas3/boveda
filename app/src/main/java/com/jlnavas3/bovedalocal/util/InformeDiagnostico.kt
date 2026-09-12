@@ -7,6 +7,7 @@ import android.hardware.camera2.CameraManager
 import android.os.Build
 import com.jlnavas3.bovedalocal.camara.MotorCamara
 import com.jlnavas3.bovedalocal.camara.PermisoCamara
+import com.jlnavas3.bovedalocal.data.BovedaSenuelo
 import com.jlnavas3.bovedalocal.data.VaultRepository
 import com.jlnavas3.bovedalocal.data.modoBiometriaActivo
 
@@ -28,7 +29,12 @@ object InformeDiagnostico {
      * motor ajustado...) y true/false para lo que sí es un sí-o-no comprobable ahora mismo,
      * así la pantalla pinta ✔ o ✖ en vez de dejar que el usuario lo adivine leyendo texto.
      */
-    data class Linea(val texto: String, val ok: Boolean? = null, val indentada: Boolean = false)
+    data class Linea(
+        val texto: String,
+        val ok: Boolean? = null,
+        val indentada: Boolean = false,
+        val detalle: String? = null
+    )
 
     data class DatosAuditoria(
         val fabricante: String,
@@ -96,10 +102,75 @@ object InformeDiagnostico {
         lineasBio += Linea("Clase 2 (débil): ${Biometria.explicar(c.debil)}", ok = c.debil == BiometricManager.BIOMETRIC_SUCCESS, indentada = true)
         lineasBio += Linea("PIN/Credencial: ${Biometria.explicar(c.credencial)}", ok = c.credencial == BiometricManager.BIOMETRIC_SUCCESS, indentada = true)
         val modo = ajustes.modoBiometriaActivo
-        lineasBio += Linea("Modo en app: ${modo?.etiqueta ?: "ninguno"}", ok = modo != null, indentada = true)
-        if (modo != null) {
-            val presente = repositorio.biometria.estaConfigurada(modo)
-            lineasBio += Linea("Keystore hardware-backed: ${if (presente) "configurado" else "no configurado"}", ok = presente, indentada = true)
+        val esSenuelo = repositorio.esModoSenuelo
+        val senueloConfig = if (!esSenuelo) BovedaSenuelo.cargar(contexto) else null
+        val senueloActivo = senueloConfig?.activo == true
+
+        if (esSenuelo) {
+            lineasBio += Linea(
+                texto = "Modo en app: desactivado",
+                ok = false,
+                indentada = true,
+                detalle = "No configurado en los ajustes de la bóveda"
+            )
+        } else {
+            if (senueloActivo) {
+                if (modo == null) {
+                    lineasBio += Linea(
+                        texto = "Modo en app: desactivado (Protección Bóveda Señuelo)",
+                        ok = true,
+                        indentada = true,
+                        detalle = "Desactivada para impedir bypass por coacción física"
+                    )
+                } else {
+                    lineasBio += Linea(
+                        texto = "Modo en app: ${modo.etiqueta}",
+                        ok = false,
+                        indentada = true,
+                        detalle = "Advertencia: abrirá siempre la bóveda real, debilitando la señuelo"
+                    )
+                    val presente = repositorio.biometria.estaConfigurada(modo)
+                    lineasBio += Linea(
+                        texto = "Keystore hardware-backed: ${if (presente) "configurado" else "no configurado"}",
+                        ok = presente,
+                        indentada = true
+                    )
+                }
+                lineasBio += Linea(
+                    texto = "Bóveda señuelo (PIN coacción): activa",
+                    ok = true,
+                    indentada = true,
+                    detalle = "PIN configurado con ${senueloConfig?.entradas?.size ?: 0} cuentas simuladas"
+                )
+            } else {
+                if (modo != null) {
+                    lineasBio += Linea(
+                        texto = "Modo en app: ${modo.etiqueta}",
+                        ok = true,
+                        indentada = true,
+                        detalle = "Activo y vinculado a clave de bóveda"
+                    )
+                    val presente = repositorio.biometria.estaConfigurada(modo)
+                    lineasBio += Linea(
+                        texto = "Keystore hardware-backed: ${if (presente) "configurado" else "no configurado"}",
+                        ok = presente,
+                        indentada = true
+                    )
+                } else {
+                    lineasBio += Linea(
+                        texto = "Modo en app: desactivado",
+                        ok = false,
+                        indentada = true,
+                        detalle = "Desactivado voluntariamente en Ajustes > Seguridad"
+                    )
+                }
+                lineasBio += Linea(
+                    texto = "Bóveda señuelo (PIN coacción): desactivada",
+                    ok = null,
+                    indentada = true,
+                    detalle = "Protección opcional contra extorsión (Ajustes > Seguridad)"
+                )
+            }
         }
 
         val camConcedida = PermisoCamara.concedido(contexto)
@@ -167,10 +238,67 @@ object InformeDiagnostico {
         lineas += Linea("PIN del móvil: ${Biometria.explicar(c.credencial)}", ok = c.credencial == BiometricManager.BIOMETRIC_SUCCESS, indentada = true)
         lineas += Linea("Clase 2 o PIN: ${Biometria.explicar(c.compatible)}", ok = c.compatible == BiometricManager.BIOMETRIC_SUCCESS, indentada = true)
         val modo = ajustes.modoBiometriaActivo
-        lineas += Linea("Modo activo en la app: ${modo?.etiqueta ?: "ninguno"}", ok = modo != null, indentada = true)
-        if (modo != null) {
-            val presente = repositorio.biometria.estaConfigurada(modo)
-            lineas += Linea("Clave del modo en el Keystore: ${if (presente) "presente" else "ausente"}", ok = presente, indentada = true)
+        val esSenuelo = repositorio.esModoSenuelo
+        val senueloConfig = if (!esSenuelo) BovedaSenuelo.cargar(contexto) else null
+        val senueloActivo = senueloConfig?.activo == true
+
+        if (esSenuelo) {
+            lineas += Linea(
+                texto = "Modo activo en la app: desactivado",
+                ok = false,
+                indentada = true,
+                detalle = "No configurado en los ajustes de la bóveda"
+            )
+        } else {
+            if (senueloActivo) {
+                if (modo == null) {
+                    lineas += Linea(
+                        texto = "Modo activo en la app: desactivado (Protección Bóveda Señuelo)",
+                        ok = true,
+                        indentada = true,
+                        detalle = "Desactivada para impedir bypass por coacción física"
+                    )
+                } else {
+                    lineas += Linea(
+                        texto = "Modo activo en la app: ${modo.etiqueta}",
+                        ok = false,
+                        indentada = true,
+                        detalle = "Advertencia: abrirá siempre la bóveda real, debilitando la señuelo"
+                    )
+                    val presente = repositorio.biometria.estaConfigurada(modo)
+                    lineas += Linea("Clave del modo en el Keystore: ${if (presente) "presente" else "ausente"}", ok = presente, indentada = true)
+                }
+                lineas += Linea(
+                    texto = "Bóveda señuelo (PIN coacción): activa",
+                    ok = true,
+                    indentada = true,
+                    detalle = "PIN configurado con ${senueloConfig?.entradas?.size ?: 0} cuentas simuladas"
+                )
+            } else {
+                if (modo != null) {
+                    lineas += Linea(
+                        texto = "Modo activo en la app: ${modo.etiqueta}",
+                        ok = true,
+                        indentada = true,
+                        detalle = "Activo y vinculado a clave de bóveda"
+                    )
+                    val presente = repositorio.biometria.estaConfigurada(modo)
+                    lineas += Linea("Clave del modo en el Keystore: ${if (presente) "presente" else "ausente"}", ok = presente, indentada = true)
+                } else {
+                    lineas += Linea(
+                        texto = "Modo activo en la app: desactivado",
+                        ok = false,
+                        indentada = true,
+                        detalle = "Desactivado voluntariamente en Ajustes > Seguridad"
+                    )
+                }
+                lineas += Linea(
+                    texto = "Bóveda señuelo (PIN coacción): desactivada",
+                    ok = null,
+                    indentada = true,
+                    detalle = "Protección opcional contra extorsión (Ajustes > Seguridad)"
+                )
+            }
         }
 
         val camaraConcedida = PermisoCamara.concedido(contexto)
