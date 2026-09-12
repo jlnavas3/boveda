@@ -185,10 +185,15 @@ class VaultRepository private constructor(contexto: Context) {
                 // Solo queda constancia si la contraseña de verdad cambió: editar el
                 // usuario o las notas no debería llenar el historial de ruido.
                 val historial = if (previa.contrasena.isNotBlank() && previa.contrasena != entrada.contrasena) {
-                    (listOf(CambioContrasena(previa.contrasena, previa.modificadaEn.takeIf { it > 0 } ?: ahora)) + previa.historialContrasenas)
+                    val previaSinDuplicados = previa.historialContrasenas
+                        .distinctBy { it.contrasena }
+                        .filterNot { it.contrasena == previa.contrasena || it.contrasena == entrada.contrasena }
+                    (listOf(CambioContrasena(previa.contrasena, previa.modificadaEn.takeIf { it > 0 } ?: ahora)) + previaSinDuplicados)
                         .take(MAX_HISTORIAL_CONTRASENAS)
                 } else {
                     previa.historialContrasenas
+                        .distinctBy { it.contrasena }
+                        .filterNot { it.contrasena == entrada.contrasena }
                 }
                 lista[existente] = entrada.copy(modificadaEn = ahora, creadaEn = previa.creadaEn, historialContrasenas = historial)
             } else {
