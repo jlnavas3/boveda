@@ -104,10 +104,10 @@ Para listas con 5 o más entradas (cuando la ordenación activa es alfabética A
   Al tocar o deslizar el dedo por el lateral, las letras forman un arco dinámico que sigue de forma tridimensional y orgánica el movimiento del pulgar, mediante una ventana de curvatura de medio coseno de orden $1.15$ que garantiza una transición suave y continua ($C^1$) con la columna vertical.
 - **Escala Progresiva Acelerada por GPU (120 FPS)**:
   Las letras que entran en la ola aumentan progresivamente de tamaño a medida que ascienden por la curva hasta alcanzar su tamaño máximo en la cresta (configurable hasta 3.5x), encogiéndose armónicamente al descender hasta restablecer su escala base. La traslación y el escalado se procesan a nivel de RenderNode con `Modifier.graphicsLayer`, garantizando 120 FPS constantes sin recomposiciones de UI.
-- **Círculo Flotante de Gran Formato en la Cresta**:
-  Un globo indicador de 78 dp de diámetro, sin bordes, con fondo en degradado ámbar, sombra suave (`elevation = 14.dp`) y letra tipográfica en 38 sp proyectada hacia el centro de la pantalla.
+- **Círculo Flotante Configurable en la Cresta**:
+  Un globo indicador sin bordes, con fondo en degradado ámbar, sombra suave (`elevation = 14.dp`), tamaño regulable de 50 a 110 dp (78 dp por defecto) y proyección hacia el centro de la pantalla ajustable independientemente de la zona táctil.
 - **Zona de Arrastre Táctil Cómoda**:
-  El área de captura táctil se extiende 45 dp de forma predeterminada (configurable de 26 a 90 dp) hacia el interior desde el píxel 0 del borde físico, permitiendo iniciar el desplazamiento con total naturalidad sin tener que apuntar con precisión milimétrica sobre las letras. Las tarjetas de la lista disponen de un margen adaptativo de 36 dp para que el abecedario nunca tape los controles.
+  El área de captura táctil se extiende 45 dp de forma predeterminada (configurable de 26 a 90 dp) hacia el interior desde el píxel 0 del borde físico, permitiendo iniciar el desplazamiento con total naturalidad sin alterar la posición ni el tamaño del círculo de cresta. Las tarjetas de la lista disponen de un margen adaptativo de 36 dp para que el abecedario nunca tape los controles.
 - **Resaltado Visual en Tiempo Real en la Lista**:
   Al deslizar el dedo por el abecedario lateral en la lista principal, los elementos que comienzan por la letra activa se destacan instantáneamente con un borde ámbar y un fondo sutil semitransparente, ofreciendo una respuesta visual inmediata idéntica a la pantalla de configuración.
 - **Integración Inteligente con la Ordenación y Favoritos**:
@@ -117,9 +117,9 @@ Para listas con 5 o más entradas (cuando la ordenación activa es alfabética A
 - **Control de Color y Luminosidad del Abecedario**:
   Control deslizante dedicado para regular la tonalidad y brillo de las letras de 10% a 100%, interpolando suavemente desde un tono oscuro y discreto (`#38404E`) hasta un blanco puro de alto contraste (`#FFFFFF`), adaptándose al gusto visual del usuario sin saturaciones estridentes.
 - **Valores Predeterminados Optimizados y Persistencia Automática**:
-  Amplitud de curvatura en 110 dp, alcance vertical en 250 dp, aumento de letras en cresta en 1.6x, zona táctil de arrastre en 45 dp y tono al 55%. Migración transparente de preferencias previas y botón de un solo toque para restablecer estos valores en cualquier momento.
-- **Pantalla Dedicada de Configuración (`PantallaAjustesIndice`)**:
-  Para aligerar la pantalla principal de Ajustes, esta solo incluye el interruptor general y un botón para acceder a una pantalla de personalización dedicada con controles deslizantes (amplitud, radio de curvatura, escala de letras, burbuja flotante, zona táctil, luminosidad), interruptores (ola, círculo, vibración háptica, inclusión de Ñ), tarjetas de demostración interactivas y la **barra lateral real anclada al extremo derecho de la pantalla completa** para comprobar los ajustes en vivo al instante.
+  Amplitud de curvatura en 110 dp, alcance vertical en 250 dp, aumento de letras en cresta en 1.6x, tamaño de círculo en 78 dp, zona táctil de arrastre en 45 dp y tono al 55%. Migración transparente de preferencias previas y botón de un solo toque para restablecer estos valores en cualquier momento.
+- **Pantalla Dedicada de Configuración (`PantallaAjustesIndice`) con Altura Unificada**:
+  Para aligerar la pantalla principal de Ajustes, esta solo incluye el interruptor general y un botón para acceder a una pantalla de personalización dedicada con controles deslizantes (amplitud, radio de curvatura, escala de letras, tamaño del círculo, proyección del círculo, zona táctil, luminosidad), interruptores (ola, círculo, vibración háptica reactiva, inclusión de Ñ), tarjetas de demostración interactivas y la **barra lateral real con la misma altura que en la pantalla principal** (márgenes idénticos de 150 dp superior y 100 dp inferior) para una calibración 1:1 exacta.
 
 ### Arquitectura Visual, Botones Normalizados y Navegación Universal
 

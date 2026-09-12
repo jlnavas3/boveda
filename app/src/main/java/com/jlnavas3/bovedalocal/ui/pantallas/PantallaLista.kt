@@ -506,6 +506,7 @@ fun PantallaLista(vm: VaultViewModel, estado: EstadoBoveda) {
                             radioOlaDp = ajustes.indiceRadioOlaDp,
                             escalaMaximaLetras = ajustes.indiceEscalaLetras,
                             mostrarCirculo = ajustes.indiceMostrarCirculo,
+                            tamanoCirculoDp = ajustes.indiceTamanoCirculoDp,
                             offsetCirculoDp = ajustes.indiceOffsetCirculoDp,
                             hapticaActiva = ajustes.indiceHaptica,
                             anchoZonaTactilDp = ajustes.indiceAnchoTactilDp,

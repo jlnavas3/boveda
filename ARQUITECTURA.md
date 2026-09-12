@@ -314,7 +314,7 @@ La aplicación implementa un motor de diseño visual en tiempo real parametrizad
   - `colorExportacion`: Respaldos y transferencias.
 - **Geometría y Espaciado:** `curvaturaEsquinasDp` (radio de bordes), `grosorBordeDp`, `estiloBorde`, `espaciadoComponentesDp`.
 - **Tipografía Dinámica:** `escalaTexto`, `pesoTexto`, `cursivaTexto`, `familiaFuente` (sans, serif, mono, redonda), `espaciadoLetrasSp`, `interlineadoFactor`.
-- **Abecedario Lateral (Fast-Scroller Niagara):** `mostrarIndiceAlfabetico`, `indiceEfectoOla`, `indiceAmplitudOlaDp` (110 dp), `indiceRadioOlaDp` (250 dp), `indiceEscalaLetras` (1.6x), `indiceMostrarCirculo`, `indiceOffsetCirculoDp` (145 dp), `indiceHaptica`, `indiceAnchoTactilDp` (45 dp), `indiceTonoLetras` (55%), `indiceIncluirEnie` (true).
+- **Abecedario Lateral (Fast-Scroller Niagara):** `mostrarIndiceAlfabetico`, `indiceEfectoOla`, `indiceAmplitudOlaDp` (110 dp), `indiceRadioOlaDp` (250 dp), `indiceEscalaLetras` (1.6x), `indiceMostrarCirculo`, `indiceTamanoCirculoDp` (78 dp), `indiceOffsetCirculoDp` (145 dp), `indiceHaptica`, `indiceAnchoTactilDp` (45 dp), `indiceTonoLetras` (55%), `indiceIncluirEnie` (true).
 
 ### Componentes Normalizados (`com.jlnavas3.bovedalocal.ui.componentes.*`)
 - `TarjetaConBorde`: Contenedor estándar con borde sutil o marcado, respetando el radio de esquinas global.
@@ -329,7 +329,7 @@ La aplicación implementa un motor de diseño visual en tiempo real parametrizad
   - **Captura Gestual de Área Amplia y Resaltado en Tiempo Real:** El contenedor `Box` define un ancho `anchoZonaTactilDp` (45 dp por defecto, configurable de 26 a 90 dp) y consume el evento inicial (`down.consume()`). Emite la letra activa mediante `alCambiarLetraActiva(letra)` durante el arrastre, provocando el resaltado con borde ámbar y fondo tintado de todas las tarjetas y grupos de la lista coincidentes.
   - **Integración con Criterios de Ordenación y Favoritos:** Se visualiza condicionado a `criterioOrdenacion == CriterioOrdenacion.NOMBRE_AZ`. La función `encontrarIndiceParaLetra` prioriza el cuerpo de la lista alfabética sobre los elementos destacados/favoritos fijados en la parte superior, evitando bloqueos en el índice 0 al tocar letras avanzadas.
   - **Soporte Dinámico para 'Ñ':** El abecedario genera su catálogo de caracteres con `obtenerLetrasIndice(incluirEnie)`. Si se desactiva, la 'Ñ' se normaliza automáticamente hacia la 'N' en `normalizarCaracterIndice` y `letraInicialIndice`.
-  - **Burbuja Flotante de Cresta:** Diámetro de 78 dp sin bordes, fondo con degradado ámbar, elevación de 14 dp y letra en 38 sp proyectada hacia el centro de la pantalla.
+  - **Burbuja Flotante de Cresta Configurable:** Diámetro personalizable (`indiceTamanoCirculoDp`, 50 a 110 dp, 78 dp por defecto) sin bordes, fondo con degradado ámbar, elevación de 14 dp, escala proporcional de tipografía y proyección hacia el centro de la pantalla (`indiceOffsetCirculoDp`) completamente desacoplada del ancho de arrastre táctil.
 - `Animaciones.kt (AnimacionBoveda)`: Motor de renderizado con 4 anillos concéntricos independientes animados mediante reloj de fotogramas por hardware (`withFrameMillis`). Garantiza velocidad angular constante sin tirones ni reinicios periódicos y opera de forma indestructible incluso si las animaciones del sistema operativo se encuentran desactivadas (`animator_duration_scale = 0`).
 
 ### Normalización de Pantallas Principales

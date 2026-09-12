@@ -255,6 +255,21 @@ fun PantallaAjustesIndice(vm: VaultViewModel) {
 
             if (ajustes.indiceMostrarCirculo) {
                 Spacer(Modifier.height(10.dp))
+                val tamanoCirculo = ajustes.indiceTamanoCirculoDp
+                val textoTamano = when {
+                    tamanoCirculo < 65f -> "Compacto y discreto"
+                    tamanoCirculo <= 85f -> "Estándar equilibrado (predeterminado)"
+                    else -> "Grande y vistoso"
+                }
+                SliderAjusteIndice(
+                    titulo = "Tamaño del círculo: ${tamanoCirculo.toInt()} dp",
+                    subtitulo = textoTamano,
+                    valor = tamanoCirculo,
+                    rango = 50f..110f,
+                    alCambiar = { vm.ajustarIndiceTamanoCirculoDp(it) }
+                )
+
+                Spacer(Modifier.height(10.dp))
                 val offset = ajustes.indiceOffsetCirculoDp
                 val textoOffset = when {
                     offset < 80f -> "Cerca de la franja"
@@ -340,7 +355,7 @@ fun PantallaAjustesIndice(vm: VaultViewModel) {
             )
         }
 
-        // Barra lateral real en vivo montada en el extremo derecho a pantalla completa
+        // Barra lateral real en vivo con la misma altura que en la pantalla principal (PantallaLista)
         IndiceAlfabetico(
             alSeleccionarLetra = { },
             alCambiarLetraActiva = { letraArrastrada = it },
@@ -350,12 +365,14 @@ fun PantallaAjustesIndice(vm: VaultViewModel) {
             radioOlaDp = ajustes.indiceRadioOlaDp,
             escalaMaximaLetras = ajustes.indiceEscalaLetras,
             mostrarCirculo = ajustes.indiceMostrarCirculo,
+            tamanoCirculoDp = ajustes.indiceTamanoCirculoDp,
             offsetCirculoDp = ajustes.indiceOffsetCirculoDp,
             hapticaActiva = ajustes.indiceHaptica,
             anchoZonaTactilDp = ajustes.indiceAnchoTactilDp,
             tonoLetras = ajustes.indiceTonoLetras,
             modifier = Modifier
                 .align(Alignment.CenterEnd)
+                .padding(top = 150.dp, bottom = 100.dp)
                 .fillMaxHeight()
         )
     }

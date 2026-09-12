@@ -28,6 +28,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -153,6 +154,7 @@ fun IndiceAlfabetico(
     radioOlaDp: Float = 250f,
     escalaMaximaLetras: Float = 1.6f,
     mostrarCirculo: Boolean = true,
+    tamanoCirculoDp: Float = 78f,
     offsetCirculoDp: Float = 145f,
     hapticaActiva: Boolean = true,
     anchoZonaTactilDp: Float = 45f,
@@ -162,6 +164,10 @@ fun IndiceAlfabetico(
 ) {
     val contexto = LocalContext.current
     val haptica = remember { Haptica(contexto) }
+    val hapticaActivaActual by rememberUpdatedState(hapticaActiva)
+    val alSeleccionarLetraActual by rememberUpdatedState(alSeleccionarLetra)
+    val alCambiarLetraActivaActual by rememberUpdatedState(alCambiarLetraActiva)
+
     var arrastrando by remember { mutableStateOf(false) }
     var letraActual by remember { mutableStateOf<Char?>(null) }
     var touchY by remember { mutableFloatStateOf(0f) }
@@ -204,9 +210,9 @@ fun IndiceAlfabetico(
                     touchY = down.position.y
                     val letraNueva = calcularLetra(down.position.y, alturaTotalPx, letras)
                     letraActual = letraNueva
-                    alCambiarLetraActiva(letraNueva)
-                    if (hapticaActiva) haptica.tic()
-                    alSeleccionarLetra(letraNueva)
+                    alCambiarLetraActivaActual(letraNueva)
+                    if (hapticaActivaActual) haptica.tic()
+                    alSeleccionarLetraActual(letraNueva)
 
                     val pointerId = down.id
                     while (true) {
@@ -219,15 +225,15 @@ fun IndiceAlfabetico(
                         val l = calcularLetra(change.position.y, alturaTotalPx, letras)
                         if (l != letraActual) {
                             letraActual = l
-                            alCambiarLetraActiva(l)
-                            if (hapticaActiva) haptica.tic()
-                            alSeleccionarLetra(l)
+                            alCambiarLetraActivaActual(l)
+                            if (hapticaActivaActual) haptica.tic()
+                            alSeleccionarLetraActual(l)
                         }
                         change.consume()
                     }
                     arrastrando = false
                     letraActual = null
-                    alCambiarLetraActiva(null)
+                    alCambiarLetraActivaActual(null)
                 }
             },
         contentAlignment = Alignment.CenterEnd
@@ -290,15 +296,15 @@ fun IndiceAlfabetico(
                 modifier = Modifier
                     .align(Alignment.TopEnd)
                     .offset {
-                        val diametroPx = with(densidad) { 78.dp.roundToPx() }
-                        val yPx = (touchY - diametroPx / 2f).coerceIn(0f, alturaTotalPx - diametroPx).roundToInt()
+                        val diametroPx = with(densidad) { tamanoCirculoDp.dp.roundToPx() }
+                        val yPx = (touchY - diametroPx / 2f).coerceIn(0f, (alturaTotalPx - diametroPx).coerceAtLeast(0f)).roundToInt()
                         val xPx = with(densidad) { (-offsetCirculoDp).dp.roundToPx() }
                         IntOffset(xPx, yPx)
                     }
             ) {
                 Box(
                     modifier = Modifier
-                        .size(78.dp)
+                        .size(tamanoCirculoDp.dp)
                         .shadow(elevation = 14.dp, shape = CircleShape)
                         .clip(CircleShape)
                         .background(DegradadoAmbar),
@@ -309,7 +315,7 @@ fun IndiceAlfabetico(
                         color = ColorSobreAcento,
                         style = MaterialTheme.typography.headlineLarge.copy(
                             fontWeight = FontWeight.Black,
-                            fontSize = 38.sp
+                            fontSize = (tamanoCirculoDp * 0.48f).sp
                         )
                     )
                 }

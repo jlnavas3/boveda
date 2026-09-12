@@ -47,6 +47,7 @@ class AjustesTest {
         assertEquals(250f, ajustes.indiceRadioOlaDp, 0.01f)
         assertEquals(1.6f, ajustes.indiceEscalaLetras, 0.01f)
         assertTrue(ajustes.indiceMostrarCirculo)
+        assertEquals(78f, ajustes.indiceTamanoCirculoDp, 0.01f)
         assertEquals(145f, ajustes.indiceOffsetCirculoDp, 0.01f)
         assertTrue(ajustes.indiceHaptica)
         assertEquals(45f, ajustes.indiceAnchoTactilDp, 0.01f)

@@ -778,6 +778,9 @@ class VaultViewModel(app: Application) : AndroidViewModel(app) {
     fun ajustarIndiceMostrarCirculo(activo: Boolean) =
         repositorio.ajustes.actualizar { it.copy(indiceMostrarCirculo = activo) }
 
+    fun ajustarIndiceTamanoCirculoDp(tamano: Float) =
+        repositorio.ajustes.actualizar { it.copy(indiceTamanoCirculoDp = tamano) }
+
     fun ajustarIndiceOffsetCirculoDp(offset: Float) =
         repositorio.ajustes.actualizar { it.copy(indiceOffsetCirculoDp = offset) }
 
@@ -802,6 +805,7 @@ class VaultViewModel(app: Application) : AndroidViewModel(app) {
                 indiceRadioOlaDp = 250f,
                 indiceEscalaLetras = 1.6f,
                 indiceMostrarCirculo = true,
+                indiceTamanoCirculoDp = 78f,
                 indiceOffsetCirculoDp = 145f,
                 indiceHaptica = true,
                 indiceAnchoTactilDp = 45f,

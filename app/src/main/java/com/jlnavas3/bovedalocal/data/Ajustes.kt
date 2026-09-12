@@ -89,6 +89,7 @@ data class AjustesApp(
     val indiceRadioOlaDp: Float = 250f,
     val indiceEscalaLetras: Float = 1.6f,
     val indiceMostrarCirculo: Boolean = true,
+    val indiceTamanoCirculoDp: Float = 78f,
     val indiceOffsetCirculoDp: Float = 145f,
     val indiceHaptica: Boolean = true,
     val indiceAnchoTactilDp: Float = 45f,
@@ -203,6 +204,7 @@ class AlmacenAjustes(contexto: Context) {
             indiceRadioOlaDp = prefs.getFloat("indice_radio_ola_dp", 250f),
             indiceEscalaLetras = prefs.getFloat("indice_escala_letras", 1.6f),
             indiceMostrarCirculo = prefs.getBoolean("indice_mostrar_circulo", true),
+            indiceTamanoCirculoDp = prefs.getFloat("indice_tamano_circulo_dp", 78f),
             indiceOffsetCirculoDp = prefs.getFloat("indice_offset_circulo_dp", 145f),
             indiceHaptica = prefs.getBoolean("indice_haptica", true),
             indiceAnchoTactilDp = prefs.getFloat("indice_ancho_tactil_dp", 45f),
@@ -270,6 +272,7 @@ class AlmacenAjustes(contexto: Context) {
             .putFloat("indice_radio_ola_dp", nuevo.indiceRadioOlaDp)
             .putFloat("indice_escala_letras", nuevo.indiceEscalaLetras)
             .putBoolean("indice_mostrar_circulo", nuevo.indiceMostrarCirculo)
+            .putFloat("indice_tamano_circulo_dp", nuevo.indiceTamanoCirculoDp)
             .putFloat("indice_offset_circulo_dp", nuevo.indiceOffsetCirculoDp)
             .putBoolean("indice_haptica", nuevo.indiceHaptica)
             .putFloat("indice_ancho_tactil_dp", nuevo.indiceAnchoTactilDp)
