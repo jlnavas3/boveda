@@ -98,7 +98,7 @@ principal como en la edición y el detalle de cada entrada.
 
 ### Abecedario Lateral y Desplazamiento Rápido con Ola Estilo Niagara Launcher
 
-Para listas con 5 o más entradas, el extremo derecho de la pantalla incorpora un índice alfabético táctil con localización completa en español (`#`, `A` a `Z` y `Ñ` en su posición alfabética correcta):
+Para listas con 5 o más entradas (cuando la ordenación activa es alfabética A-Z), el extremo derecho de la pantalla incorpora un índice alfabético táctil con localización completa en español (`#`, `A` a `Z` y opcionalmente `Ñ` en su posición alfabética correcta):
 
 - **Efecto de Ola Fluida Continua (Niagara Launcher Wave)**:
   Al tocar o deslizar el dedo por el lateral, las letras forman un arco dinámico que sigue de forma tridimensional y orgánica el movimiento del pulgar, mediante una ventana de curvatura de medio coseno de orden $1.15$ que garantiza una transición suave y continua ($C^1$) con la columna vertical.
@@ -108,12 +108,18 @@ Para listas con 5 o más entradas, el extremo derecho de la pantalla incorpora u
   Un globo indicador de 78 dp de diámetro, sin bordes, con fondo en degradado ámbar, sombra suave (`elevation = 14.dp`) y letra tipográfica en 38 sp proyectada hacia el centro de la pantalla.
 - **Zona de Arrastre Táctil Cómoda**:
   El área de captura táctil se extiende 45 dp de forma predeterminada (configurable de 26 a 90 dp) hacia el interior desde el píxel 0 del borde físico, permitiendo iniciar el desplazamiento con total naturalidad sin tener que apuntar con precisión milimétrica sobre las letras. Las tarjetas de la lista disponen de un margen adaptativo de 36 dp para que el abecedario nunca tape los controles.
+- **Resaltado Visual en Tiempo Real en la Lista**:
+  Al deslizar el dedo por el abecedario lateral en la lista principal, los elementos que comienzan por la letra activa se destacan instantáneamente con un borde ámbar y un fondo sutil semitransparente, ofreciendo una respuesta visual inmediata idéntica a la pantalla de configuración.
+- **Integración Inteligente con la Ordenación y Favoritos**:
+  El índice se muestra exclusivamente cuando la lista está ordenada alfabéticamente (A-Z), ocultándose de manera limpia al ordenar por fecha o cronología donde no existe un orden alfabético. Además, la búsqueda de posición prioriza el cuerpo de la lista sobre los favoritos fijados arriba, garantizando que pulsar cualquier letra (como la 'Z') desplace la lista a las entradas correspondientes sin quedar bloqueado en el índice 0.
+- **Interruptor Opcional para la Letra 'Ñ'**:
+  Control configurable para incluir o excluir la letra 'Ñ' del abecedario según la preferencia del usuario. Al desactivarse, las palabras que inician con 'Ñ' se agrupan automáticamente bajo la 'N'.
 - **Control de Color y Luminosidad del Abecedario**:
   Control deslizante dedicado para regular la tonalidad y brillo de las letras de 10% a 100%, interpolando suavemente desde un tono oscuro y discreto (`#38404E`) hasta un blanco puro de alto contraste (`#FFFFFF`), adaptándose al gusto visual del usuario sin saturaciones estridentes.
 - **Valores Predeterminados Optimizados y Persistencia Automática**:
   Amplitud de curvatura en 110 dp, alcance vertical en 250 dp, aumento de letras en cresta en 1.6x, zona táctil de arrastre en 45 dp y tono al 55%. Migración transparente de preferencias previas y botón de un solo toque para restablecer estos valores en cualquier momento.
-- **Sección en Ajustes > "Abecedario lateral" con Vista Previa en Vivo**:
-  Tarjeta de configuración completa con controles deslizantes (amplitud de ola, alcance vertical, escala de letras, proyección de burbuja, zona táctil y luminosidad de las letras), textos de ayuda multilínea, interruptores para activar/desactivar la ola o la vibración háptica, una **vista previa interactiva en vivo** donde probar los cambios en tiempo real, y un botón para **restablecer los valores por defecto**.
+- **Pantalla Dedicada de Configuración (`PantallaAjustesIndice`)**:
+  Para aligerar la pantalla principal de Ajustes, esta solo incluye el interruptor general y un botón para acceder a una pantalla de personalización dedicada con controles deslizantes (amplitud, radio de curvatura, escala de letras, burbuja flotante, zona táctil, luminosidad), interruptores (ola, círculo, vibración háptica, inclusión de Ñ), tarjetas de demostración interactivas y la **barra lateral real anclada al extremo derecho de la pantalla completa** para comprobar los ajustes en vivo al instante.
 
 ### Arquitectura Visual, Botones Normalizados y Navegación Universal
 

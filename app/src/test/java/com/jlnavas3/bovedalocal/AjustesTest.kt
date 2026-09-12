@@ -51,6 +51,7 @@ class AjustesTest {
         assertTrue(ajustes.indiceHaptica)
         assertEquals(45f, ajustes.indiceAnchoTactilDp, 0.01f)
         assertEquals(55f, ajustes.indiceTonoLetras, 0.01f)
+        assertTrue(ajustes.indiceIncluirEnie)
     }
 
     @Test

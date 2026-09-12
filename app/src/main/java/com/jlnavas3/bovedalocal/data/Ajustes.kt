@@ -92,7 +92,8 @@ data class AjustesApp(
     val indiceOffsetCirculoDp: Float = 145f,
     val indiceHaptica: Boolean = true,
     val indiceAnchoTactilDp: Float = 45f,
-    val indiceTonoLetras: Float = 55f
+    val indiceTonoLetras: Float = 55f,
+    val indiceIncluirEnie: Boolean = true
 )
 
 
@@ -205,7 +206,8 @@ class AlmacenAjustes(contexto: Context) {
             indiceOffsetCirculoDp = prefs.getFloat("indice_offset_circulo_dp", 145f),
             indiceHaptica = prefs.getBoolean("indice_haptica", true),
             indiceAnchoTactilDp = prefs.getFloat("indice_ancho_tactil_dp", 45f),
-            indiceTonoLetras = prefs.getFloat("indice_tono_letras", 55f)
+            indiceTonoLetras = prefs.getFloat("indice_tono_letras", 55f),
+            indiceIncluirEnie = prefs.getBoolean("indice_incluir_enie", true)
         )
     }
 
@@ -272,6 +274,7 @@ class AlmacenAjustes(contexto: Context) {
             .putBoolean("indice_haptica", nuevo.indiceHaptica)
             .putFloat("indice_ancho_tactil_dp", nuevo.indiceAnchoTactilDp)
             .putFloat("indice_tono_letras", nuevo.indiceTonoLetras)
+            .putBoolean("indice_incluir_enie", nuevo.indiceIncluirEnie)
             .apply()
         _ajustes.value = nuevo
     }

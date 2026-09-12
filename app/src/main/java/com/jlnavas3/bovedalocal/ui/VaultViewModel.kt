@@ -37,6 +37,7 @@ sealed interface Pantalla {
         val soloManual: Boolean = false
     ) : Pantalla
     object Ajustes : Pantalla
+    object AjustesIndice : Pantalla
     object Tema : Pantalla
     object Formas : Pantalla
     object Tipografia : Pantalla
@@ -789,6 +790,9 @@ class VaultViewModel(app: Application) : AndroidViewModel(app) {
     fun ajustarIndiceTonoLetras(tono: Float) =
         repositorio.ajustes.actualizar { it.copy(indiceTonoLetras = tono) }
 
+    fun ajustarIndiceIncluirEnie(activo: Boolean) =
+        repositorio.ajustes.actualizar { it.copy(indiceIncluirEnie = activo) }
+
     fun restablecerAjustesIndiceAlfabetico() {
         repositorio.ajustes.actualizar {
             it.copy(
@@ -801,7 +805,8 @@ class VaultViewModel(app: Application) : AndroidViewModel(app) {
                 indiceOffsetCirculoDp = 145f,
                 indiceHaptica = true,
                 indiceAnchoTactilDp = 45f,
-                indiceTonoLetras = 55f
+                indiceTonoLetras = 55f,
+                indiceIncluirEnie = true
             )
         }
     }

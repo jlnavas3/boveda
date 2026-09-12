@@ -49,6 +49,7 @@ import com.jlnavas3.bovedalocal.crypto.BiometricKeyStore
 import com.jlnavas3.bovedalocal.data.EstadoBoveda
 import com.jlnavas3.bovedalocal.ui.pantallas.PantallaAcercaDe
 import com.jlnavas3.bovedalocal.ui.pantallas.PantallaAjustes
+import com.jlnavas3.bovedalocal.ui.pantallas.PantallaAjustesIndice
 import com.jlnavas3.bovedalocal.ui.pantallas.PantallaAutenticador
 import com.jlnavas3.bovedalocal.ui.pantallas.PantallaDesbloqueo
 import com.jlnavas3.bovedalocal.ui.pantallas.PantallaEscaner
@@ -196,6 +197,7 @@ fun RaizPepoBoveda(vm: VaultViewModel, actividad: FragmentActivity) {
                     Pantalla.Autenticador -> PantallaAutenticador(vm, estado)
                     is Pantalla.Escaner -> PantallaEscaner(vm, actividad, destino.entradaDestino, destino.soloManual)
                     Pantalla.Ajustes -> PantallaAjustes(vm, actividad)
+                    Pantalla.AjustesIndice -> PantallaAjustesIndice(vm)
                     Pantalla.Tema -> com.jlnavas3.bovedalocal.ui.pantallas.PantallaTema(vm)
                     Pantalla.Formas -> com.jlnavas3.bovedalocal.ui.pantallas.PantallaFormas(vm)
                     Pantalla.Tipografia -> com.jlnavas3.bovedalocal.ui.pantallas.PantallaTipografia(vm)

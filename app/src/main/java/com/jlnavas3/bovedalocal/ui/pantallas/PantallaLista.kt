@@ -383,7 +383,21 @@ fun PantallaLista(vm: VaultViewModel, estado: EstadoBoveda) {
                 }
 
                 val estadoLista = rememberLazyListState()
-                val mostrarIndice = ajustes.mostrarIndiceAlfabetico && itemsAMostrar.size >= 5
+                val mostrarIndice = ajustes.mostrarIndiceAlfabetico &&
+                    itemsAMostrar.size >= 5 &&
+                    criterioOrdenacion == CriterioOrdenacion.NOMBRE_AZ
+
+                var letraArrastrada by remember { mutableStateOf<Char?>(null) }
+
+                fun itemCoincideConLetra(item: com.jlnavas3.bovedalocal.util.ItemAgrupado, letra: Char?, incluirEnie: Boolean): Boolean {
+                    if (letra == null) return false
+                    val titulo = when (item) {
+                        is com.jlnavas3.bovedalocal.util.ItemAgrupado.Suelto -> item.entrada.titulo
+                        is com.jlnavas3.bovedalocal.util.ItemAgrupado.Grupo -> item.clave.removePrefix("www.")
+                        is com.jlnavas3.bovedalocal.util.ItemAgrupado.Hijo -> item.entrada.titulo
+                    }
+                    return com.jlnavas3.bovedalocal.ui.componentes.letraInicialIndice(titulo, incluirEnie) == letra
+                }
 
                 Box(modifier = Modifier.fillMaxSize()) {
                     LazyColumn(
@@ -403,6 +417,7 @@ fun PantallaLista(vm: VaultViewModel, estado: EstadoBoveda) {
                                 is com.jlnavas3.bovedalocal.util.ItemAgrupado.Hijo -> "hijo-${item.entrada.id}"
                             }
                         }) { item ->
+                            val coincideLetra = itemCoincideConLetra(item, letraArrastrada, ajustes.indiceIncluirEnie)
                             when (item) {
                                 is com.jlnavas3.bovedalocal.util.ItemAgrupado.Grupo -> FilaGrupoSitio(
                                     clave = item.clave,
@@ -410,6 +425,7 @@ fun PantallaLista(vm: VaultViewModel, estado: EstadoBoveda) {
                                     expandido = expandidoEnLista(item.clave),
                                     alturaFila = densidadAltura,
                                     tamanoMonograma = densidadMonograma,
+                                    resaltado = coincideLetra,
                                     alAlternar = {
                                         haptica.tic()
                                         gruposExpandidos = if (gruposExpandidos.contains(item.clave)) {
@@ -440,7 +456,8 @@ fun PantallaLista(vm: VaultViewModel, estado: EstadoBoveda) {
                                     alPulsarLargo = { entrarEnSeleccion(item.entrada.id) },
                                     alAlternarSeleccion = { alternarSeleccion(item.entrada.id) },
                                     alturaFila = densidadAltura,
-                                    tamanoMonograma = densidadMonograma
+                                    tamanoMonograma = densidadMonograma,
+                                    resaltado = coincideLetra
                                 )
                                 is com.jlnavas3.bovedalocal.util.ItemAgrupado.Hijo -> Box(modifier = Modifier.padding(start = 16.dp)) {
                                     FilaEntrada(
@@ -464,7 +481,8 @@ fun PantallaLista(vm: VaultViewModel, estado: EstadoBoveda) {
                                         alPulsarLargo = { entrarEnSeleccion(item.entrada.id) },
                                         alAlternarSeleccion = { alternarSeleccion(item.entrada.id) },
                                         alturaFila = densidadAltura,
-                                        tamanoMonograma = densidadMonograma
+                                        tamanoMonograma = densidadMonograma,
+                                        resaltado = coincideLetra
                                     )
                                 }
                             }
@@ -474,13 +492,15 @@ fun PantallaLista(vm: VaultViewModel, estado: EstadoBoveda) {
                     if (mostrarIndice) {
                         IndiceAlfabetico(
                             alSeleccionarLetra = { letra ->
-                                val indice = encontrarIndiceParaLetra(itemsAMostrar, letra)
+                                val indice = encontrarIndiceParaLetra(itemsAMostrar, letra, ajustes.indiceIncluirEnie)
                                 if (indice != null && indice in itemsAMostrar.indices) {
                                     ambitoCorutina.launch {
                                         estadoLista.scrollToItem(indice)
                                     }
                                 }
                             },
+                            alCambiarLetraActiva = { letraArrastrada = it },
+                            incluirEnie = ajustes.indiceIncluirEnie,
                             efectoOla = ajustes.indiceEfectoOla,
                             amplitudOlaDp = ajustes.indiceAmplitudOlaDp,
                             radioOlaDp = ajustes.indiceRadioOlaDp,
@@ -1104,6 +1124,7 @@ private fun FilaGrupoSitio(
     expandido: Boolean,
     alturaFila: androidx.compose.ui.unit.Dp = 74.dp,
     tamanoMonograma: Int = 46,
+    resaltado: Boolean = false,
     alAlternar: () -> Unit
 ) {
     val forma = FormaTarjeta
@@ -1112,9 +1133,11 @@ private fun FilaGrupoSitio(
             .fillMaxWidth()
             .height(alturaFila)
             .clip(forma)
-            .background(ColorTarjetas)
+            .background(if (resaltado) Ambar.copy(alpha = 0.16f) else ColorTarjetas)
             .then(
-                if (GrosorBorde > 0.dp && ColorBordeActual != Color.Transparent) {
+                if (resaltado) {
+                    Modifier.border(1.5.dp, Ambar, forma)
+                } else if (GrosorBorde > 0.dp && ColorBordeActual != Color.Transparent) {
                     Modifier.border(GrosorBorde, ColorBordeActual, forma)
                 } else {
                     Modifier
@@ -1130,7 +1153,7 @@ private fun FilaGrupoSitio(
             Text(
                 clave,
                 style = if (alturaFila.value <= 48f) MaterialTheme.typography.bodyMedium else MaterialTheme.typography.titleMedium,
-                color = TextoPrincipal,
+                color = if (resaltado) Ambar else TextoPrincipal,
                 maxLines = 1
             )
             Text(
@@ -1142,7 +1165,7 @@ private fun FilaGrupoSitio(
         Icon(
             if (expandido) Icons.Filled.ExpandLess else Icons.Filled.ExpandMore,
             contentDescription = if (expandido) "Contraer" else "Expandir",
-            tint = ColorIconosInternos
+            tint = if (resaltado) Ambar else ColorIconosInternos
         )
     }
 }
@@ -1161,7 +1184,8 @@ private fun FilaEntrada(
     alPulsarLargo: () -> Unit,
     alAlternarSeleccion: () -> Unit,
     alturaFila: androidx.compose.ui.unit.Dp = 74.dp,
-    tamanoMonograma: Int = 46
+    tamanoMonograma: Int = 46,
+    resaltado: Boolean = false
 ) {
     val compacta = alturaFila.value <= 48f
     val forma = FormaTarjeta
@@ -1171,9 +1195,11 @@ private fun FilaEntrada(
                 .fillMaxWidth()
                 .height(alturaFila)
                 .clip(forma)
-                .background(if (seleccionado) Ambar.copy(alpha = 0.22f) else ColorTarjetas)
+                .background(if (seleccionado) Ambar.copy(alpha = 0.22f) else if (resaltado) Ambar.copy(alpha = 0.16f) else ColorTarjetas)
                 .then(
-                    if (GrosorBorde > 0.dp && ColorBordeActual != Color.Transparent) {
+                    if (resaltado) {
+                        Modifier.border(1.5.dp, Ambar, forma)
+                    } else if (GrosorBorde > 0.dp && ColorBordeActual != Color.Transparent) {
                         Modifier.border(GrosorBorde, ColorBordeActual, forma)
                     } else {
                         Modifier
@@ -1210,7 +1236,7 @@ private fun FilaEntrada(
                 Text(
                     entrada.titulo.ifBlank { "Sin título" },
                     style = if (compacta) MaterialTheme.typography.bodyMedium else MaterialTheme.typography.titleMedium,
-                    color = TextoPrincipal,
+                    color = if (resaltado) Ambar else TextoPrincipal,
                     maxLines = 1
                 )
                 Text(

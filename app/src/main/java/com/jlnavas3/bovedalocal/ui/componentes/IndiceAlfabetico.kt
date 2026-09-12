@@ -57,12 +57,15 @@ import kotlin.math.pow
 import kotlin.math.roundToInt
 
 /**
- * Lista de caracteres del abecedario ordenado con localización en español ('Ñ' incluida)
+ * Lista de caracteres del abecedario ordenado con localización en español ('Ñ' opcional)
  * y símbolo '#' al inicio para números y caracteres especiales.
  */
-val LETRAS_INDICE: List<Char> = listOf('#') + ('A'..'N').toList() + listOf('Ñ') + ('O'..'Z').toList()
+fun obtenerLetrasIndice(incluirEnie: Boolean = true): List<Char> =
+    listOf('#') + ('A'..'N').toList() + (if (incluirEnie) listOf('Ñ') else emptyList()) + ('O'..'Z').toList()
 
-fun normalizarCaracterIndice(c: Char): Char {
+val LETRAS_INDICE: List<Char> get() = obtenerLetrasIndice(true)
+
+fun normalizarCaracterIndice(c: Char, incluirEnie: Boolean = true): Char {
     val mayus = c.uppercaseChar()
     return when (mayus) {
         'Á', 'À', 'Ä', 'Â', 'Ã' -> 'A'
@@ -70,16 +73,16 @@ fun normalizarCaracterIndice(c: Char): Char {
         'Í', 'Ì', 'Ï', 'Î' -> 'I'
         'Ó', 'Ò', 'Ö', 'Ô', 'Õ' -> 'O'
         'Ú', 'Ù', 'Ü', 'Û' -> 'U'
-        'Ñ' -> 'Ñ'
+        'Ñ' -> if (incluirEnie) 'Ñ' else 'N'
         in 'A'..'Z' -> mayus
         else -> '#'
     }
 }
 
-fun letraInicialIndice(texto: String): Char {
+fun letraInicialIndice(texto: String, incluirEnie: Boolean = true): Char {
     val limpia = texto.trim()
     if (limpia.isEmpty()) return '#'
-    return normalizarCaracterIndice(limpia.first())
+    return normalizarCaracterIndice(limpia.first(), incluirEnie)
 }
 
 fun ItemAgrupado.tituloParaIndice(): String = when (this) {
@@ -88,41 +91,58 @@ fun ItemAgrupado.tituloParaIndice(): String = when (this) {
     is ItemAgrupado.Hijo -> entrada.titulo
 }
 
+fun ItemAgrupado.esFavorito(): Boolean = when (this) {
+    is ItemAgrupado.Suelto -> entrada.favorito
+    is ItemAgrupado.Grupo -> entradas.any { it.favorito }
+    is ItemAgrupado.Hijo -> entrada.favorito
+}
+
 /**
- * Encuentra el índice más cercano del elemento en la lista correspondiente a la letra solicitada.
- * Si no existe ningún elemento que comience por esa letra, avanza a la siguiente letra disponible en el abecedario.
+ * Encuentra el índice del elemento en la lista correspondiente a la letra solicitada.
+ * Prioriza los elementos de la sección alfabética general para no quedar atrapado
+ * en elementos favoritos fijados arriba, y avanza a la siguiente letra disponible si no hay coincidencia directa.
  */
-fun encontrarIndiceParaLetra(items: List<ItemAgrupado>, letra: Char): Int? {
+fun encontrarIndiceParaLetra(items: List<ItemAgrupado>, letra: Char, incluirEnie: Boolean = true): Int? {
     if (items.isEmpty()) return null
+    val listaLetras = obtenerLetrasIndice(incluirEnie)
+
     if (letra == '#') {
-        val primeroSimbolo = items.indexOfFirst { letraInicialIndice(it.tituloParaIndice()) == '#' }
-        return if (primeroSimbolo >= 0) primeroSimbolo else 0
+        val exactoNoFav = items.indexOfFirst { !it.esFavorito() && letraInicialIndice(it.tituloParaIndice(), incluirEnie) == '#' }
+        if (exactoNoFav >= 0) return exactoNoFav
+        val exactoCualquiera = items.indexOfFirst { letraInicialIndice(it.tituloParaIndice(), incluirEnie) == '#' }
+        return if (exactoCualquiera >= 0) exactoCualquiera else 0
     }
 
-    // 1. Coincidencia directa
-    val exacto = items.indexOfFirst { letraInicialIndice(it.tituloParaIndice()) == letra }
-    if (exacto >= 0) return exacto
+    // 1. Coincidencia directa en sección alfabética general (no favoritos)
+    val exactoNoFav = items.indexOfFirst { !it.esFavorito() && letraInicialIndice(it.tituloParaIndice(), incluirEnie) == letra }
+    if (exactoNoFav >= 0) return exactoNoFav
+
+    // Coincidencia directa si solo está en favoritos
+    val exactoFav = items.indexOfFirst { letraInicialIndice(it.tituloParaIndice(), incluirEnie) == letra }
+    if (exactoFav >= 0) return exactoFav
 
     // 2. Si no existe, buscar la siguiente letra disponible en el orden alfabético
-    val pos = LETRAS_INDICE.indexOf(letra)
+    val pos = listaLetras.indexOf(letra)
     if (pos >= 0) {
-        for (i in (pos + 1)..LETRAS_INDICE.lastIndex) {
-            val sigLetra = LETRAS_INDICE[i]
-            val siguiente = items.indexOfFirst { letraInicialIndice(it.tituloParaIndice()) == sigLetra }
-            if (siguiente >= 0) return siguiente
+        for (i in (pos + 1)..listaLetras.lastIndex) {
+            val sigLetra = listaLetras[i]
+            val siguienteNoFav = items.indexOfFirst { !it.esFavorito() && letraInicialIndice(it.tituloParaIndice(), incluirEnie) == sigLetra }
+            if (siguienteNoFav >= 0) return siguienteNoFav
+            val siguienteFav = items.indexOfFirst { letraInicialIndice(it.tituloParaIndice(), incluirEnie) == sigLetra }
+            if (siguienteFav >= 0) return siguienteFav
         }
     }
     return items.lastIndex
 }
 
 /**
- * Componente modular de índice alfabético vertical para navegación y desplazamiento rápido
- * con efecto de ola fluida estilo Niagara Launcher.
- * Al tocar o arrastrar el dedo:
- * - Toda la columna de letras se curva hacia la izquierda formando una ola interactiva continua.
- * - Emite retroalimentación háptica en cada cambio de letra.
- * - En la cresta de la ola se sitúa la letra principal en un círculo grande sin borde que llega casi a media pantalla.
- * - Notifica la letra seleccionada para desplazar el listado.
+ * Índice alfabético lateral estilo Niagara Launcher:
+ * - Detección táctil a lo largo del borde derecho.
+ * - Efecto de curvatura suave ("ola") que se adapta al dedo del usuario.
+ * - Letras escaladas en tamaño a medida que suben por la pendiente de la ola hasta la cresta.
+ * - Globo flotante aumentado proyectado hacia el centro de la pantalla.
+ * - Respuesta háptica al cambiar de letra.
+ * - Notificación en tiempo real de la letra arrastrada para resaltado de tarjetas.
  */
 @Composable
 fun IndiceAlfabetico(
@@ -136,7 +156,9 @@ fun IndiceAlfabetico(
     offsetCirculoDp: Float = 145f,
     hapticaActiva: Boolean = true,
     anchoZonaTactilDp: Float = 45f,
-    tonoLetras: Float = 55f
+    tonoLetras: Float = 55f,
+    incluirEnie: Boolean = true,
+    alCambiarLetraActiva: (Char?) -> Unit = {}
 ) {
     val contexto = LocalContext.current
     val haptica = remember { Haptica(contexto) }
@@ -146,6 +168,7 @@ fun IndiceAlfabetico(
     var alturaTotalPx by remember { mutableFloatStateOf(1f) }
 
     val densidad = LocalDensity.current
+    val letras = remember(incluirEnie) { obtenerLetrasIndice(incluirEnie) }
 
     // Amplitud de la ola con física de resorte (spring) para entrada y retorno orgánico
     val amplitudOla by animateFloatAsState(
@@ -173,18 +196,17 @@ fun IndiceAlfabetico(
             .onGloballyPositioned { coordinates ->
                 alturaTotalPx = coordinates.size.height.toFloat().coerceAtLeast(1f)
             }
-            .pointerInput(Unit) {
+            .pointerInput(letras) {
                 awaitEachGesture {
                     val down = awaitFirstDown(requireUnconsumed = false)
                     down.consume()
                     arrastrando = true
                     touchY = down.position.y
-                    val letraNueva = calcularLetra(down.position.y, alturaTotalPx)
-                    if (letraNueva != letraActual) {
-                        letraActual = letraNueva
-                        if (hapticaActiva) haptica.tic()
-                        alSeleccionarLetra(letraNueva)
-                    }
+                    val letraNueva = calcularLetra(down.position.y, alturaTotalPx, letras)
+                    letraActual = letraNueva
+                    alCambiarLetraActiva(letraNueva)
+                    if (hapticaActiva) haptica.tic()
+                    alSeleccionarLetra(letraNueva)
 
                     val pointerId = down.id
                     while (true) {
@@ -194,15 +216,18 @@ fun IndiceAlfabetico(
                             break
                         }
                         touchY = change.position.y
-                        val l = calcularLetra(change.position.y, alturaTotalPx)
+                        val l = calcularLetra(change.position.y, alturaTotalPx, letras)
                         if (l != letraActual) {
                             letraActual = l
+                            alCambiarLetraActiva(l)
                             if (hapticaActiva) haptica.tic()
                             alSeleccionarLetra(l)
                         }
                         change.consume()
                     }
                     arrastrando = false
+                    letraActual = null
+                    alCambiarLetraActiva(null)
                 }
             },
         contentAlignment = Alignment.CenterEnd
@@ -217,8 +242,8 @@ fun IndiceAlfabetico(
             verticalArrangement = Arrangement.SpaceEvenly,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            LETRAS_INDICE.forEachIndexed { indice, letra ->
-                val fraccionVertical = (indice + 0.5f) / LETRAS_INDICE.size
+            letras.forEachIndexed { indice, letra ->
+                val fraccionVertical = (indice + 0.5f) / letras.size
                 val esActiva = arrastrando && letraActual == letra
 
                 Text(
@@ -293,8 +318,8 @@ fun IndiceAlfabetico(
     }
 }
 
-private fun calcularLetra(posicionY: Float, alturaTotal: Float): Char {
+private fun calcularLetra(posicionY: Float, alturaTotal: Float, letras: List<Char>): Char {
     val fraccion = (posicionY / alturaTotal).coerceIn(0f, 0.999f)
-    val indice = (fraccion * LETRAS_INDICE.size).toInt().coerceIn(0, LETRAS_INDICE.lastIndex)
-    return LETRAS_INDICE[indice]
+    val indice = (fraccion * letras.size).toInt().coerceIn(0, letras.lastIndex)
+    return letras[indice]
 }
