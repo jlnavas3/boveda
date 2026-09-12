@@ -11,24 +11,37 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ExpandLess
+import androidx.compose.material.icons.filled.ExpandMore
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -36,6 +49,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.jlnavas3.bovedalocal.util.IconosMarcas
@@ -43,6 +57,10 @@ import com.jlnavas3.bovedalocal.ui.theme.Ambar
 import com.jlnavas3.bovedalocal.ui.theme.AmbarFuerte
 import com.jlnavas3.bovedalocal.ui.theme.Borde
 import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
+import com.jlnavas3.bovedalocal.ui.theme.ColorBordeDropdown
+import com.jlnavas3.bovedalocal.ui.theme.ColorEncabezadoTarjeta
+import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
+import com.jlnavas3.bovedalocal.ui.theme.ColorSeparadorDropdown
 import com.jlnavas3.bovedalocal.ui.theme.ColorSobreAcento
 import com.jlnavas3.bovedalocal.ui.theme.ColorTarjetas
 import com.jlnavas3.bovedalocal.ui.theme.ColorTitulos
@@ -145,11 +163,115 @@ fun TarjetaPepo(
     }
 }
 
+/**
+ * Tarjeta desplegable con encabezado distinguido (tono más oscuro, icono grande a la izquierda,
+ * textos verticalmente centrados, borde separador inferior y chevron a la derecha).
+ * Completamente plana: sin sombras ni blur, gobernada por el borde y curvatura configurados.
+ */
+@Composable
+fun TarjetaPepoDesplegable(
+    titulo: String,
+    icono: ImageVector,
+    descripcion: String = "",
+    inicialmenteAbierta: Boolean = false,
+    modifier: Modifier = Modifier,
+    colorIcono: Color = ColorIconosInternos,
+    contenido: @Composable androidx.compose.foundation.layout.ColumnScope.() -> Unit
+) {
+    var abierta by remember { mutableStateOf(inicialmenteAbierta) }
+    val forma = FormaTarjeta
+
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .clip(forma)
+            .background(if (abierta) ColorTarjetas else ColorEncabezadoTarjeta)
+            .then(
+                if (GrosorBorde > 0.dp && ColorBordeActual != Color.Transparent) {
+                    Modifier.border(GrosorBorde, ColorBordeActual, forma)
+                } else {
+                    Modifier
+                }
+            )
+    ) {
+        // Encabezado holgado con tono sutilmente más oscuro
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(ColorEncabezadoTarjeta)
+                .clickable { abierta = !abierta }
+                .padding(horizontal = 16.dp, vertical = 14.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            // Icono a la izquierda y más grande
+            Icon(
+                imageVector = icono,
+                contentDescription = null,
+                tint = colorIcono,
+                modifier = Modifier.size(28.dp)
+            )
+
+            Spacer(Modifier.width(14.dp))
+
+            // Textos centrados verticalmente
+            Column(
+                modifier = Modifier.weight(1f),
+                verticalArrangement = Arrangement.Center
+            ) {
+                Text(
+                    text = titulo,
+                    color = ColorTitulos,
+                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
+                )
+                if (descripcion.isNotBlank()) {
+                    Spacer(Modifier.height(2.dp))
+                    Text(
+                        text = descripcion,
+                        color = TextoSecundario,
+                        style = MaterialTheme.typography.bodySmall,
+                        lineHeight = 16.sp
+                    )
+                }
+            }
+
+            Spacer(Modifier.width(10.dp))
+
+            // Indicador de desplegado a la derecha
+            Icon(
+                imageVector = if (abierta) Icons.Filled.ExpandLess else Icons.Filled.ExpandMore,
+                contentDescription = if (abierta) "Contraer" else "Expandir",
+                tint = TextoSecundario,
+                modifier = Modifier.size(24.dp)
+            )
+        }
+
+        // Borde separador entre encabezado y cuerpo cuando está desplegada
+        if (abierta) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(if (GrosorBorde > 0.dp) GrosorBorde else 1.dp)
+                    .background(if (ColorBordeActual != Color.Transparent) ColorBordeActual else Borde)
+            )
+
+            // Cuerpo de la tarjeta con padding holgado
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(ColorTarjetas)
+                    .padding(16.dp),
+                content = contenido
+            )
+        }
+    }
+}
+
 @Composable
 fun BotonAmbar(
     texto: String,
     modifier: Modifier = Modifier,
     activo: Boolean = true,
+    icono: ImageVector? = null,
     alPulsar: () -> Unit
 ) {
     val escala by animateFloatAsState(
@@ -158,10 +280,11 @@ fun BotonAmbar(
         label = "escalaBoton"
     )
     val forma = FormaBoton
+    val colorTexto = if (activo) ColorSobreAcento else TextoSecundario
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .height(56.dp)
+            .height(52.dp)
             .clip(forma)
             .background(if (activo) DegradadoAmbar else Brush.horizontalGradient(listOf(Borde, Borde)))
             .then(
@@ -174,11 +297,49 @@ fun BotonAmbar(
             .clickable(enabled = activo) { alPulsar() },
         contentAlignment = Alignment.Center
     ) {
-        Text(
-            text = texto,
-            color = if (activo) ColorSobreAcento else TextoSecundario,
-            style = MaterialTheme.typography.labelLarge.copy(fontSize = (16 * escala * EscalaTexto).sp)
-        )
+        if (icono != null) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 12.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    imageVector = icono,
+                    contentDescription = null,
+                    tint = colorTexto,
+                    modifier = Modifier.size(26.dp)
+                )
+                Spacer(Modifier.width(8.dp))
+                Text(
+                    text = texto,
+                    color = colorTexto,
+                    style = MaterialTheme.typography.labelLarge.copy(
+                        fontSize = (15 * escala * EscalaTexto).sp,
+                        fontWeight = FontWeight.SemiBold
+                    ),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.weight(1f)
+                )
+            }
+        } else {
+            Text(
+                text = texto,
+                color = colorTexto,
+                style = MaterialTheme.typography.labelLarge.copy(
+                    fontSize = (15 * escala * EscalaTexto).sp,
+                    fontWeight = FontWeight.SemiBold
+                ),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                textAlign = TextAlign.Center,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
+            )
+        }
     }
 }
 
@@ -187,13 +348,14 @@ fun BotonBorde(
     texto: String,
     modifier: Modifier = Modifier,
     color: Color = TextoPrincipal,
+    icono: ImageVector? = null,
     alPulsar: () -> Unit
 ) {
     val forma = FormaBoton
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .height(54.dp)
+            .height(52.dp)
             .clip(forma)
             .then(
                 if (GrosorBorde > 0.dp) {
@@ -205,13 +367,49 @@ fun BotonBorde(
             .clickable { alPulsar() },
         contentAlignment = Alignment.Center
     ) {
-        Text(
-            text = texto,
-            color = color,
-            style = MaterialTheme.typography.labelLarge,
-            textAlign = TextAlign.Center,
-            modifier = Modifier.fillMaxWidth()
-        )
+        if (icono != null) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 12.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    imageVector = icono,
+                    contentDescription = null,
+                    tint = color,
+                    modifier = Modifier.size(26.dp)
+                )
+                Spacer(Modifier.width(8.dp))
+                Text(
+                    text = texto,
+                    color = color,
+                    style = MaterialTheme.typography.labelLarge.copy(
+                        fontSize = (15 * EscalaTexto).sp,
+                        fontWeight = FontWeight.SemiBold
+                    ),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.weight(1f)
+                )
+            }
+        } else {
+            Text(
+                text = texto,
+                color = color,
+                style = MaterialTheme.typography.labelLarge.copy(
+                    fontSize = (15 * EscalaTexto).sp,
+                    fontWeight = FontWeight.SemiBold
+                ),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                textAlign = TextAlign.Center,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
+            )
+        }
     }
 }
 
@@ -223,6 +421,7 @@ fun CampoPepo(
     modifier: Modifier = Modifier,
     esContrasena: Boolean = false,
     mostrarContrasena: Boolean = false,
+    alAlternarMostrarContrasena: (() -> Unit)? = null,
     monoespaciada: Boolean = false,
     varias: Boolean = false,
     tecladoNumerico: Boolean = false
@@ -241,6 +440,18 @@ fun CampoPepo(
             MaterialTheme.typography.bodyLarge
         },
         visualTransformation = if (esContrasena && !mostrarContrasena) PasswordVisualTransformation() else VisualTransformation.None,
+        trailingIcon = if (esContrasena && alAlternarMostrarContrasena != null) {
+            {
+                IconButton(onClick = alAlternarMostrarContrasena) {
+                    Icon(
+                        imageVector = if (mostrarContrasena) Icons.Filled.VisibilityOff else Icons.Filled.Visibility,
+                        contentDescription = if (mostrarContrasena) "Ocultar contraseña" else "Mostrar contraseña",
+                        tint = TextoSecundario,
+                        modifier = Modifier.size(26.dp)
+                    )
+                }
+            }
+        } else null,
         keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(
             keyboardType = when {
                 tecladoNumerico -> KeyboardType.Number
@@ -304,7 +515,7 @@ fun BarraFuerza(fraccion: Float, etiqueta: String, tiempo: String) {
         ) {
             Text(etiqueta, color = color, style = MaterialTheme.typography.labelLarge)
             Text(
-                "crackearla costaría $tiempo",
+                tiempo,
                 color = TextoSecundario,
                 style = MaterialTheme.typography.bodyMedium,
                 textAlign = TextAlign.End
@@ -320,5 +531,49 @@ fun EtiquetaSeccion(texto: String, modifier: Modifier = Modifier) {
         color = ColorTitulos,
         style = TextStyle(fontSize = 12.sp, fontWeight = FontWeight.SemiBold, letterSpacing = 1.5.sp),
         modifier = modifier
+    )
+}
+
+/**
+ * Menú desplegable estándar con contenedor delimitado por borde exterior adaptativo
+ * y esquinas consistentes con el diseño de la aplicación.
+ */
+@Composable
+fun MenuDesplegablePepo(
+    expanded: Boolean,
+    onDismissRequest: () -> Unit,
+    modifier: Modifier = Modifier,
+    offset: androidx.compose.ui.unit.DpOffset = androidx.compose.ui.unit.DpOffset(0.dp, 0.dp),
+    properties: androidx.compose.ui.window.PopupProperties = androidx.compose.ui.window.PopupProperties(focusable = true),
+    content: @Composable androidx.compose.foundation.layout.ColumnScope.() -> Unit
+) {
+    val forma = FormaTarjeta
+    val grosor = if (GrosorBorde > 0.dp) GrosorBorde else 0.8.dp
+
+    DropdownMenu(
+        expanded = expanded,
+        onDismissRequest = onDismissRequest,
+        offset = offset,
+        properties = properties,
+        modifier = modifier
+            .clip(forma)
+            .background(SuperficieAlta)
+            .border(grosor, ColorBordeDropdown, forma)
+    ) {
+        content()
+    }
+}
+
+/**
+ * Divisor / separador sutil entre opciones de un menú desplegable, adaptado dinámicamente
+ * al tema claro u oscuro para no resaltar excesivamente ni quedar invisible.
+ */
+@Composable
+fun SeparadorOpcionMenu(modifier: Modifier = Modifier) {
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .height(0.8.dp)
+            .background(ColorSeparadorDropdown)
     )
 }

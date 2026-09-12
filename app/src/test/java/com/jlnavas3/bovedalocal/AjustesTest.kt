@@ -27,9 +27,9 @@ class AjustesTest {
         assertEquals("XXXXX-XXXXX-XXXXX-XXXXX", ajustes.tilePatron)
 
         // Formas y geometría
-        assertEquals(18f, ajustes.curvaturaEsquinasDp, 0.01f)
-        assertEquals(1f, ajustes.grosorBordeDp, 0.01f)
-        assertEquals("sutil", ajustes.estiloBorde)
+        assertEquals(6f, ajustes.curvaturaEsquinasDp, 0.01f)
+        assertEquals(0.8f, ajustes.grosorBordeDp, 0.01f)
+        assertEquals("marcado", ajustes.estiloBorde)
         assertEquals(14f, ajustes.espaciadoComponentesDp, 0.01f)
 
         // Tipografía

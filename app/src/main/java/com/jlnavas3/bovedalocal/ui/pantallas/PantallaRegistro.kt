@@ -2,8 +2,8 @@ package com.jlnavas3.bovedalocal.ui.pantallas
 
 import android.content.Intent
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,15 +17,27 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Sort
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.ExpandLess
+import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.FilterList
+import androidx.compose.material.icons.filled.Fingerprint
+import androidx.compose.material.icons.filled.Key
+import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.PhotoCamera
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Share
+import androidx.compose.material.icons.filled.Timer
+import androidx.compose.material.icons.filled.Tune
+import androidx.compose.material.icons.filled.Warning
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -41,6 +53,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -52,22 +65,40 @@ import com.jlnavas3.bovedalocal.ui.componentes.BotonColorido
 import com.jlnavas3.bovedalocal.ui.componentes.CabeceraPantalla
 import com.jlnavas3.bovedalocal.ui.componentes.CampoPepo
 import com.jlnavas3.bovedalocal.ui.componentes.ContenedorTarjeta
+import com.jlnavas3.bovedalocal.ui.componentes.MenuDesplegablePepo
+import com.jlnavas3.bovedalocal.ui.componentes.SeparadorOpcionMenu
+import com.jlnavas3.bovedalocal.ui.theme.Ambar
+import com.jlnavas3.bovedalocal.ui.theme.Color2FA
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
+import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
 import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
 import com.jlnavas3.bovedalocal.ui.theme.ColorPapelera
 import com.jlnavas3.bovedalocal.ui.theme.ColorPasskeys
+import com.jlnavas3.bovedalocal.ui.theme.ColorSalud
 import com.jlnavas3.bovedalocal.ui.theme.ColorSeguridad
 import com.jlnavas3.bovedalocal.ui.theme.ColorTarjetas
 import com.jlnavas3.bovedalocal.ui.theme.ColorTitulos
 import com.jlnavas3.bovedalocal.ui.theme.CurvaturaEsquinas
+import com.jlnavas3.bovedalocal.ui.theme.FormaCampo
+import com.jlnavas3.bovedalocal.ui.theme.GrosorBorde
 import com.jlnavas3.bovedalocal.ui.theme.Menta
 import com.jlnavas3.bovedalocal.ui.theme.Obsidiana
 import com.jlnavas3.bovedalocal.ui.theme.Peligro
+import com.jlnavas3.bovedalocal.ui.theme.Superficie
+import com.jlnavas3.bovedalocal.ui.theme.SuperficieAlta
 import com.jlnavas3.bovedalocal.ui.theme.TextoPrincipal
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
 import com.jlnavas3.bovedalocal.util.AjustesSistema
 import com.jlnavas3.bovedalocal.util.Diagnostico
+import com.jlnavas3.bovedalocal.util.Haptica
 import com.jlnavas3.bovedalocal.util.Portapapeles
+
+enum class CriterioOrdenRegistro(val etiqueta: String) {
+    RECIENTES("Más recientes"),
+    ANTIGUOS("Más antiguos"),
+    AREA_AZ("Área (A - Z)"),
+    AREA_ZA("Área (Z - A)")
+}
 
 private data class EventoRegistro(
     val timestamp: String,
@@ -80,12 +111,14 @@ private data class EventoRegistro(
 @Composable
 fun PantallaRegistro(vm: VaultViewModel) {
     val contexto = LocalContext.current
+    val haptica = remember { Haptica(contexto) }
     var registro by remember { mutableStateOf<List<String>>(emptyList()) }
     var refresco by remember { mutableIntStateOf(0) }
     var filtroTexto by remember { mutableStateOf("") }
     var categoriaSeleccionada by remember { mutableStateOf("Todos") }
+    var criterioOrden by remember { mutableStateOf(CriterioOrdenRegistro.RECIENTES) }
 
-    val categorias = listOf("Todos", "Bóveda", "Huella", "Cámara", "Autofill", "Errores")
+    val categorias = listOf("Todos", "Bóveda", "Papelera", "Portapapeles", "2FA", "Huella", "Cámara", "Autofill", "Errores")
 
     LifecycleResumeEffect(Unit) {
         refresco++
@@ -119,10 +152,35 @@ fun PantallaRegistro(vm: VaultViewModel) {
         eventosParseados.filter { ev ->
             val coincideCategoria = when (categoriaSeleccionada) {
                 "Todos" -> true
-                "Bóveda" -> ev.area.contains("boveda", ignoreCase = true) || ev.mensaje.contains("bóveda", ignoreCase = true) || ev.mensaje.contains("cifrado", ignoreCase = true)
-                "Huella" -> ev.area.contains("huella", ignoreCase = true) || ev.area.contains("keystore", ignoreCase = true) || ev.mensaje.contains("biometr", ignoreCase = true)
-                "Cámara" -> ev.area.contains("camara", ignoreCase = true) || ev.area.contains("qr", ignoreCase = true) || ev.mensaje.contains("motor", ignoreCase = true)
-                "Autofill" -> ev.area.contains("autofill", ignoreCase = true) || ev.mensaje.contains("relleno", ignoreCase = true)
+                "Bóveda" -> ev.area.contains("bóveda", ignoreCase = true) ||
+                    ev.area.contains("boveda", ignoreCase = true) ||
+                    ev.area.contains("salud", ignoreCase = true) ||
+                    ev.area.contains("seguridad", ignoreCase = true) ||
+                    ev.mensaje.contains("bóveda", ignoreCase = true) ||
+                    ev.mensaje.contains("entrada", ignoreCase = true) ||
+                    ev.mensaje.contains("cifrad", ignoreCase = true) ||
+                    ev.mensaje.contains("csv", ignoreCase = true)
+                "Papelera" -> ev.area.contains("papelera", ignoreCase = true) ||
+                    ev.mensaje.contains("papelera", ignoreCase = true)
+                "Portapapeles" -> ev.area.contains("portapapeles", ignoreCase = true) ||
+                    ev.mensaje.contains("copiad", ignoreCase = true) ||
+                    ev.mensaje.contains("portapapeles", ignoreCase = true)
+                "2FA" -> ev.area.contains("2fa", ignoreCase = true) ||
+                    ev.area.contains("totp", ignoreCase = true) ||
+                    ev.mensaje.contains("2fa", ignoreCase = true) ||
+                    ev.mensaje.contains("totp", ignoreCase = true) ||
+                    ev.mensaje.contains("doble factor", ignoreCase = true)
+                "Huella" -> ev.area.contains("huella", ignoreCase = true) ||
+                    ev.area.contains("keystore", ignoreCase = true) ||
+                    ev.mensaje.contains("biometr", ignoreCase = true)
+                "Cámara" -> ev.area.contains("camara", ignoreCase = true) ||
+                    ev.area.contains("qr", ignoreCase = true) ||
+                    ev.mensaje.contains("motor", ignoreCase = true)
+                "Autofill" -> ev.area.contains("autofill", ignoreCase = true) ||
+                    ev.area.contains("credential", ignoreCase = true) ||
+                    ev.area.contains("passkey", ignoreCase = true) ||
+                    ev.mensaje.contains("relleno", ignoreCase = true) ||
+                    ev.mensaje.contains("passkey", ignoreCase = true)
                 "Errores" -> ev.esError
                 else -> true
             }
@@ -133,7 +191,20 @@ fun PantallaRegistro(vm: VaultViewModel) {
         }
     }
 
-    fun textoRegistroFiltrado(): String = eventosFiltrados.joinToString("\n") { it.textoCompleto }
+    val eventosOrdenados = remember(eventosFiltrados, criterioOrden) {
+        when (criterioOrden) {
+            CriterioOrdenRegistro.RECIENTES -> eventosFiltrados.reversed()
+            CriterioOrdenRegistro.ANTIGUOS -> eventosFiltrados
+            CriterioOrdenRegistro.AREA_AZ -> eventosFiltrados.sortedWith(
+                compareBy({ it.area.lowercase() }, { it.timestamp })
+            )
+            CriterioOrdenRegistro.AREA_ZA -> eventosFiltrados.sortedWith(
+                compareByDescending<EventoRegistro> { it.area.lowercase() }.thenByDescending { it.timestamp }
+            )
+        }
+    }
+
+    fun textoRegistroFiltrado(): String = eventosOrdenados.joinToString("\n") { it.textoCompleto }
 
     Column(
         modifier = Modifier
@@ -150,45 +221,35 @@ fun PantallaRegistro(vm: VaultViewModel) {
         // Buscador
         CampoPepo(
             valor = filtroTexto,
-            etiqueta = "Buscar en eventos (${eventosFiltrados.size} de ${registro.size})…",
+            etiqueta = "Buscar en eventos (${eventosOrdenados.size} de ${registro.size})…",
             alCambiar = { filtroTexto = it }
         )
 
         Spacer(Modifier.height(10.dp))
 
-        // Fila de Chips de Categorías
+        // Fila de Filtro de Categoría y Ordenación
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .horizontalScroll(rememberScrollState()),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            categorias.forEach { cat ->
-                val activa = cat == categoriaSeleccionada
-                val colorChip = when (cat) {
-                    "Errores" -> Peligro
-                    "Huella" -> ColorSeguridad
-                    "Cámara" -> ColorAcento
-                    "Bóveda" -> Menta
-                    "Autofill" -> ColorPasskeys
-                    else -> ColorTitulos
-                }
-                Box(
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(CurvaturaEsquinas))
-                        .background(if (activa) colorChip.copy(alpha = 0.22f) else ColorTarjetas)
-                        .clickable { categoriaSeleccionada = cat }
-                        .padding(horizontal = 14.dp, vertical = 7.dp)
-                ) {
-                    Text(
-                        text = cat,
-                        color = if (activa) colorChip else TextoSecundario,
-                        style = MaterialTheme.typography.labelMedium.copy(
-                            fontWeight = if (activa) FontWeight.Bold else FontWeight.Normal
-                        )
-                    )
-                }
+            Box(modifier = Modifier.weight(1f)) {
+                SelectorCategoriaRegistro(
+                    categoriaSeleccionada = categoriaSeleccionada,
+                    categorias = categorias,
+                    alSeleccionar = {
+                        haptica.tic()
+                        categoriaSeleccionada = it
+                    }
+                )
             }
+            SelectorOrdenRegistro(
+                criterio = criterioOrden,
+                alCambiar = {
+                    haptica.tic()
+                    criterioOrden = it
+                }
+            )
         }
 
         Spacer(Modifier.height(12.dp))
@@ -199,7 +260,7 @@ fun PantallaRegistro(vm: VaultViewModel) {
                 .weight(1f)
                 .fillMaxWidth()
         ) {
-            if (eventosFiltrados.isEmpty()) {
+            if (eventosOrdenados.isEmpty()) {
                 ContenedorTarjeta(
                     modifier = Modifier.align(Alignment.Center),
                     paddingInterno = 24.dp
@@ -215,7 +276,7 @@ fun PantallaRegistro(vm: VaultViewModel) {
                     modifier = Modifier.fillMaxSize(),
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    items(eventosFiltrados) { ev ->
+                    items(eventosOrdenados) { ev ->
                         ContenedorTarjeta(paddingInterno = 12.dp) {
                             Row(
                                 modifier = Modifier.fillMaxWidth(),
@@ -230,7 +291,11 @@ fun PantallaRegistro(vm: VaultViewModel) {
                                         ev.esError -> Peligro
                                         ev.area.contains("huella", true) || ev.area.contains("keystore", true) -> ColorSeguridad
                                         ev.area.contains("camara", true) -> ColorAcento
-                                        ev.area.contains("autofill", true) -> ColorPasskeys
+                                        ev.area.contains("autofill", true) || ev.area.contains("passkey", true) || ev.area.contains("credential", true) -> ColorPasskeys
+                                        ev.area.contains("portapapeles", true) -> Ambar
+                                        ev.area.contains("papelera", true) -> ColorPapelera
+                                        ev.area.contains("salud", true) -> ColorSalud
+                                        ev.area.contains("2fa", true) || ev.area.contains("totp", true) -> Color2FA
                                         else -> Menta
                                     }
                                     Box(
@@ -316,4 +381,206 @@ fun PantallaRegistro(vm: VaultViewModel) {
             }
         }
     }
+}
+
+@Composable
+private fun SelectorCategoriaRegistro(
+    categoriaSeleccionada: String,
+    categorias: List<String>,
+    alSeleccionar: (String) -> Unit
+) {
+    var desplegado by remember { mutableStateOf(false) }
+    val esTodos = categoriaSeleccionada == "Todos"
+    val colorActivo = if (esTodos) Ambar else colorCategoriaRegistro(categoriaSeleccionada)
+    val forma = FormaCampo
+
+    Box(modifier = Modifier.fillMaxWidth()) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(46.dp)
+                .clip(forma)
+                .background(Superficie)
+                .then(
+                    if (GrosorBorde > 0.dp) {
+                        Modifier.border(
+                            GrosorBorde,
+                            if (desplegado || !esTodos) colorActivo else ColorBordeActual,
+                            forma
+                        )
+                    } else {
+                        Modifier
+                    }
+                )
+                .clickable { desplegado = true }
+                .padding(horizontal = 12.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                iconoCategoriaRegistro(categoriaSeleccionada),
+                contentDescription = null,
+                tint = if (desplegado || !esTodos) colorActivo else TextoSecundario,
+                modifier = Modifier.size(20.dp)
+            )
+            Spacer(Modifier.width(8.dp))
+            Text(
+                text = if (esTodos) "Categorías" else categoriaSeleccionada,
+                color = if (!esTodos) colorActivo else TextoPrincipal,
+                style = MaterialTheme.typography.bodyMedium,
+                maxLines = 1,
+                modifier = Modifier.weight(1f)
+            )
+            Icon(
+                if (desplegado) Icons.Filled.ExpandLess else Icons.Filled.ExpandMore,
+                contentDescription = "Abrir categorías",
+                tint = TextoSecundario
+            )
+        }
+
+        MenuDesplegablePepo(
+            expanded = desplegado,
+            onDismissRequest = { desplegado = false }
+        ) {
+            categorias.forEachIndexed { index, cat ->
+                if (index > 0) {
+                    SeparadorOpcionMenu()
+                }
+                val activo = cat == categoriaSeleccionada
+                val colorCat = if (cat == "Todos") ColorAcento else colorCategoriaRegistro(cat)
+                DropdownMenuItem(
+                    leadingIcon = {
+                        Icon(
+                            iconoCategoriaRegistro(cat),
+                            contentDescription = null,
+                            tint = if (activo) colorCat else TextoSecundario,
+                            modifier = Modifier.size(20.dp)
+                        )
+                    },
+                    trailingIcon = if (activo) {
+                        {
+                            Icon(
+                                Icons.Filled.Check,
+                                contentDescription = null,
+                                tint = colorCat,
+                                modifier = Modifier.size(18.dp)
+                            )
+                        }
+                    } else null,
+                    text = {
+                        Text(
+                            cat,
+                            color = if (activo) colorCat else TextoPrincipal,
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                    },
+                    onClick = {
+                        alSeleccionar(cat)
+                        desplegado = false
+                    }
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun SelectorOrdenRegistro(
+    criterio: CriterioOrdenRegistro,
+    alCambiar: (CriterioOrdenRegistro) -> Unit
+) {
+    var desplegado by remember { mutableStateOf(false) }
+    val forma = FormaCampo
+
+    Box {
+        Row(
+            modifier = Modifier
+                .height(46.dp)
+                .clip(forma)
+                .background(Superficie)
+                .then(
+                    if (GrosorBorde > 0.dp) {
+                        Modifier.border(GrosorBorde, if (desplegado) ColorAcento else ColorBordeActual, forma)
+                    } else {
+                        Modifier
+                    }
+                )
+                .clickable { desplegado = true }
+                .padding(horizontal = 12.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                Icons.AutoMirrored.Filled.Sort,
+                contentDescription = "Ordenar eventos",
+                tint = if (desplegado) ColorAcento else TextoSecundario,
+                modifier = Modifier.size(20.dp)
+            )
+        }
+
+        MenuDesplegablePepo(
+            expanded = desplegado,
+            onDismissRequest = { desplegado = false }
+        ) {
+            CriterioOrdenRegistro.entries.forEachIndexed { index, op ->
+                if (index > 0) {
+                    SeparadorOpcionMenu()
+                }
+                val activo = op == criterio
+                DropdownMenuItem(
+                    leadingIcon = {
+                        Icon(
+                            Icons.AutoMirrored.Filled.Sort,
+                            contentDescription = null,
+                            tint = if (activo) ColorAcento else TextoSecundario
+                        )
+                    },
+                    trailingIcon = if (activo) {
+                        {
+                            Icon(
+                                Icons.Filled.Check,
+                                contentDescription = null,
+                                tint = ColorAcento,
+                                modifier = Modifier.size(18.dp)
+                            )
+                        }
+                    } else null,
+                    text = {
+                        Text(
+                            op.etiqueta,
+                            color = if (activo) ColorTitulos else TextoPrincipal,
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                    },
+                    onClick = {
+                        alCambiar(op)
+                        desplegado = false
+                    }
+                )
+            }
+        }
+    }
+}
+
+private fun iconoCategoriaRegistro(cat: String): ImageVector = when (cat) {
+    "Todos" -> Icons.Filled.Tune
+    "Bóveda" -> Icons.Filled.Lock
+    "Papelera" -> Icons.Filled.Delete
+    "Portapapeles" -> Icons.Filled.ContentCopy
+    "2FA" -> Icons.Filled.Timer
+    "Huella" -> Icons.Filled.Fingerprint
+    "Cámara" -> Icons.Filled.PhotoCamera
+    "Autofill" -> Icons.Filled.Key
+    "Errores" -> Icons.Filled.Warning
+    else -> Icons.Filled.FilterList
+}
+
+private fun colorCategoriaRegistro(cat: String): Color = when (cat) {
+    "Errores" -> Peligro
+    "Huella" -> ColorSeguridad
+    "Cámara" -> ColorAcento
+    "Bóveda" -> Menta
+    "Autofill" -> ColorPasskeys
+    "Papelera" -> ColorPapelera
+    "2FA" -> Color2FA
+    "Portapapeles" -> Ambar
+    else -> Ambar
 }

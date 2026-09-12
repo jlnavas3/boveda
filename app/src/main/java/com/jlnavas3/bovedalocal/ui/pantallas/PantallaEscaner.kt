@@ -114,9 +114,16 @@ fun PantallaEscaner(
     /** Devuelve true si el texto valía y el 2FA se guardó. Deja [qrPasskey] al día en todos los casos. */
     fun procesarTexto(texto: String, origen: String): Boolean {
         qrPasskey = LectorQr.esQrDePasskey(texto)
-        if (qrPasskey) return false
-        if (!vm.altaTotp(texto, entradaDestino)) return false
-        Diagnostico.apuntar("camara", "QR válido leído desde $origen")
+        if (qrPasskey) {
+            Diagnostico.apuntar("2fa", "Escaneo detectó un QR de Passkey en lugar de TOTP")
+            return false
+        }
+        if (!vm.altaTotp(texto, entradaDestino)) {
+            Diagnostico.apuntar("2fa", "Formato de clave 2FA no reconocido ($origen)")
+            return false
+        }
+        val detalle = if (origen == "el teclado") "escrito a mano desde teclado" else "escaneado desde $origen"
+        Diagnostico.apuntar("2fa", "Doble factor (TOTP) añadido exitosamente ($detalle)")
         vm.avisar("Doble factor añadido")
         return true
     }

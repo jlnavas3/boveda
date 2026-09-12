@@ -17,6 +17,7 @@ import androidx.fragment.app.FragmentActivity
 import com.jlnavas3.bovedalocal.data.Entrada
 import com.jlnavas3.bovedalocal.data.VaultRepository
 import com.jlnavas3.bovedalocal.ui.theme.PepoBovedaTheme
+import com.jlnavas3.bovedalocal.util.Diagnostico
 
 /** Confirma y firma una aserción con una passkey ya guardada. */
 @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
@@ -104,6 +105,7 @@ class PasskeyGetActivity : FragmentActivity() {
                 firma = firma,
                 userHandle = passkey.userHandle.takeIf { it.isNotBlank() }?.let { WebAuthn.deB64Url(it) }
             )
+            Diagnostico.apuntar("passkey", "Autenticación con passkey completada con éxito")
             val respuesta = Intent()
             PendingIntentHandler.setGetCredentialResponse(
                 respuesta,
@@ -112,11 +114,12 @@ class PasskeyGetActivity : FragmentActivity() {
             setResult(Activity.RESULT_OK, respuesta)
             finish()
         } catch (e: Exception) {
-            fallar("No se pudo firmar con la passkey")
+            fallar("No se pudo firmar con la passkey: ${e.javaClass.simpleName}")
         }
     }
 
     private fun fallar(mensaje: String) {
+        Diagnostico.apuntar("passkey", "Fallo al autenticar con passkey: $mensaje")
         val respuesta = Intent()
         PendingIntentHandler.setGetCredentialException(
             respuesta,

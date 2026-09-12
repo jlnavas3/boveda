@@ -18,6 +18,7 @@ import com.jlnavas3.bovedalocal.data.DatosPasskey
 import com.jlnavas3.bovedalocal.data.TipoEntrada
 import com.jlnavas3.bovedalocal.data.VaultRepository
 import com.jlnavas3.bovedalocal.ui.theme.PepoBovedaTheme
+import com.jlnavas3.bovedalocal.util.Diagnostico
 
 /** Confirma y crea una passkey nueva pedida por una web o app. */
 @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
@@ -107,6 +108,7 @@ class PasskeyCreateActivity : FragmentActivity() {
                     passkey = passkey
                 )
             )
+            Diagnostico.apuntar("passkey", "Nueva passkey creada y almacenada en la bóveda")
 
             val respuesta = Intent()
             PendingIntentHandler.setCreateCredentialResponse(
@@ -121,6 +123,7 @@ class PasskeyCreateActivity : FragmentActivity() {
     }
 
     private fun fallar(mensaje: String) {
+        Diagnostico.apuntar("passkey", "Fallo al crear passkey: $mensaje")
         val respuesta = Intent()
         PendingIntentHandler.setCreateCredentialException(
             respuesta,

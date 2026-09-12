@@ -16,21 +16,38 @@ class Haptica(contexto: Context) {
         contexto.getSystemService(Context.VIBRATOR_SERVICE) as? Vibrator
     }
 
-    fun tic() = efecto(12, 60)
+    fun tic() {
+        efecto(25, 120)
+    }
 
-    fun toque() = efecto(20, 120)
+    fun toque() {
+        efecto(45, 200)
+    }
 
-    fun exito() = patron(longArrayOf(0, 18, 60, 30), intArrayOf(0, 120, 0, 200))
+    fun exito() = patron(longArrayOf(0, 25, 60, 45), intArrayOf(0, 150, 0, 220))
 
-    fun error() = patron(longArrayOf(0, 40, 80, 40), intArrayOf(0, 180, 0, 180))
+    fun error() = patron(longArrayOf(0, 50, 80, 50), intArrayOf(0, 200, 0, 200))
 
     private fun efecto(duracion: Long, amplitud: Int) {
         val v = vibrador ?: return
         if (!v.hasVibrator()) return
         try {
-            v.vibrate(VibrationEffect.createOneShot(duracion, amplitud.coerceIn(1, 255)))
-        } catch (e: Exception) {
-            // sin vibración disponible
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                val efecto = if (v.hasAmplitudeControl()) {
+                    VibrationEffect.createOneShot(duracion, amplitud.coerceIn(1, 255))
+                } else {
+                    VibrationEffect.createOneShot(duracion, VibrationEffect.DEFAULT_AMPLITUDE)
+                }
+                v.vibrate(efecto)
+            } else {
+                @Suppress("DEPRECATION")
+                v.vibrate(duracion)
+            }
+        } catch (_: Exception) {
+            try {
+                @Suppress("DEPRECATION")
+                v.vibrate(duracion)
+            } catch (_: Exception) { }
         }
     }
 
@@ -38,9 +55,25 @@ class Haptica(contexto: Context) {
         val v = vibrador ?: return
         if (!v.hasVibrator()) return
         try {
-            v.vibrate(VibrationEffect.createWaveform(tiempos, amplitudes, -1))
-        } catch (e: Exception) {
-            // sin vibración disponible
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                if (v.hasAmplitudeControl()) {
+                    v.vibrate(VibrationEffect.createWaveform(tiempos, amplitudes, -1))
+                } else {
+                    val defaultAmplitudes = IntArray(amplitudes.size) { i ->
+                        if (amplitudes[i] > 0) VibrationEffect.DEFAULT_AMPLITUDE else 0
+                    }
+                    v.vibrate(VibrationEffect.createWaveform(tiempos, defaultAmplitudes, -1))
+                }
+            } else {
+                @Suppress("DEPRECATION")
+                v.vibrate(tiempos, -1)
+            }
+        } catch (_: Exception) {
+            try {
+                @Suppress("DEPRECATION")
+                v.vibrate(tiempos, -1)
+            } catch (_: Exception) { }
         }
     }
+
 }

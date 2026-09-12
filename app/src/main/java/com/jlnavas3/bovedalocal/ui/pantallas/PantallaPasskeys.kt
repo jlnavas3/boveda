@@ -5,8 +5,10 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -38,7 +40,10 @@ import java.util.Date
 import java.util.Locale
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowForwardIos
+import androidx.compose.material.icons.filled.Fingerprint
 import androidx.compose.material.icons.filled.Key
+import androidx.compose.material3.Icon
 import com.jlnavas3.bovedalocal.ui.componentes.BotonColorido
 import com.jlnavas3.bovedalocal.ui.componentes.CabeceraPantalla
 import com.jlnavas3.bovedalocal.ui.theme.ColorPasskeys
@@ -66,11 +71,11 @@ fun PantallaPasskeys(vm: VaultViewModel) {
             Spacer(Modifier.height(8.dp))
             Text(
                 buildAnnotatedString {
-                    append("Android tiene que saber que ")
+                    append("Android requiere registrar a ")
                     withStyle(SpanStyle(fontWeight = FontWeight.Bold)) {
                         append("'Bóveda local'")
                     }
-                    append(" es tu gestor. El botón te deja en la pantalla de \"Contraseñas y llaves de acceso\": ahí marca ")
+                    append(" como tu proveedor. En \"Contraseñas y llaves de acceso\" activa ")
                     withStyle(SpanStyle(fontWeight = FontWeight.Bold)) {
                         append("Bóveda local")
                     }
@@ -79,9 +84,9 @@ fun PantallaPasskeys(vm: VaultViewModel) {
                 color = TextoPrincipal,
                 style = MaterialTheme.typography.bodyMedium
             )
-            Spacer(Modifier.height(12.dp))
+            Spacer(Modifier.height(14.dp))
             BotonColorido(
-                texto = "Abrir proveedor en ajustes del sistema",
+                texto = "Configurar proveedor",
                 color = ColorPasskeys,
                 icono = Icons.Filled.Key
             ) {
@@ -91,9 +96,9 @@ fun PantallaPasskeys(vm: VaultViewModel) {
             }
             Spacer(Modifier.height(8.dp))
             Text(
-                "Cada fabricante la coloca en un sitio distinto. Si el botón te deja en un menú de ajustes, busca \"Contraseñas\" en su buscador.",
+                "Si tu fabricante personalizó el menú, busca \"Contraseñas\" en los ajustes de tu teléfono.",
                 color = TextoSecundario,
-                style = MaterialTheme.typography.bodyMedium
+                style = MaterialTheme.typography.bodySmall
             )
         }
 
@@ -101,24 +106,42 @@ fun PantallaPasskeys(vm: VaultViewModel) {
 
         if (passkeys.isEmpty()) {
             TarjetaPepo {
-                Text("Todavía no hay passkeys", color = ColorTitulos, style = MaterialTheme.typography.titleMedium)
-                Spacer(Modifier.height(6.dp))
-                Text(
-                    buildAnnotatedString {
-                        append("Cuando una web o app te pida crear una passkey y elijas ")
-                        withStyle(SpanStyle(fontWeight = FontWeight.Bold)) { append("Bóveda local") }
-                        append(", aparecerá en esta lista.")
-                    },
-                    color = TextoSecundario,
-                    style = MaterialTheme.typography.bodyMedium
-                )
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 12.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.Fingerprint,
+                        contentDescription = null,
+                        tint = ColorPasskeys,
+                        modifier = Modifier.size(48.dp)
+                    )
+                    Spacer(Modifier.height(10.dp))
+                    Text(
+                        "Todavía no hay passkeys",
+                        color = ColorTitulos,
+                        style = MaterialTheme.typography.titleMedium
+                    )
+                    Spacer(Modifier.height(6.dp))
+                    Text(
+                        "Cuando una web o app te pida crear una llave de acceso (Passkey) y elijas Bóveda local, aparecerá guardada aquí.",
+                        color = TextoSecundario,
+                        style = MaterialTheme.typography.bodyMedium,
+                        textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                    )
+                }
             }
         } else {
             passkeys.forEach { entrada ->
                 val datos = entrada.passkey ?: return@forEach
                 TarjetaPepo(alPulsar = { vm.ir(Pantalla.Detalle(entrada.id)) }) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Monograma(titulo = datos.rpName.ifBlank { datos.rpId }, semilla = datos.rpId, tamano = 42)
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Monograma(titulo = datos.rpName.ifBlank { datos.rpId }, semilla = datos.rpId, tamano = 44)
                         Spacer(Modifier.width(12.dp))
                         Column(modifier = Modifier.weight(1f)) {
                             Text(datos.rpName.ifBlank { datos.rpId }, color = ColorTitulos, style = MaterialTheme.typography.titleMedium)
@@ -130,9 +153,15 @@ fun PantallaPasskeys(vm: VaultViewModel) {
                             Text(
                                 "Creada el ${formato.format(Date(entrada.creadaEn))}",
                                 color = Menta,
-                                style = MaterialTheme.typography.bodyMedium
+                                style = MaterialTheme.typography.bodySmall
                             )
                         }
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowForwardIos,
+                            contentDescription = null,
+                            tint = TextoSecundario.copy(alpha = 0.4f),
+                            modifier = Modifier.size(14.dp)
+                        )
                     }
                 }
                 Spacer(Modifier.height(10.dp))

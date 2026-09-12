@@ -195,15 +195,15 @@ fun PantallaTema(vm: VaultViewModel) {
             icono = Icons.Filled.Security
         ) {
             ContenedorTarjeta {
-                val usaAcento = ajustes.colorIconosInternos.isBlank()
+                val esAdaptativo = ajustes.colorIconosInternos.isBlank()
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text("Seguir color de acento", color = TextoPrincipal, style = MaterialTheme.typography.bodyMedium)
+                    Text("Color adaptativo del tema", color = TextoPrincipal, style = MaterialTheme.typography.bodyMedium)
                     BotonBorde(
-                        texto = if (usaAcento) "Activo" else "Usar acento",
+                        texto = if (esAdaptativo) "Activo" else "Restablecer",
                         modifier = Modifier.width(130.dp)
                     ) {
                         haptica.tic()
@@ -227,15 +227,15 @@ fun PantallaTema(vm: VaultViewModel) {
             icono = Icons.Filled.Key
         ) {
             ContenedorTarjeta {
-                val usaAcento = ajustes.colorTitulos.isBlank()
+                val esAdaptativo = ajustes.colorTitulos.isBlank()
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text("Seguir color de acento", color = TextoPrincipal, style = MaterialTheme.typography.bodyMedium)
+                    Text("Color adaptativo del tema", color = TextoPrincipal, style = MaterialTheme.typography.bodyMedium)
                     BotonBorde(
-                        texto = if (usaAcento) "Activo" else "Usar acento",
+                        texto = if (esAdaptativo) "Activo" else "Restablecer",
                         modifier = Modifier.width(130.dp)
                     ) {
                         haptica.tic()
@@ -259,16 +259,16 @@ fun PantallaTema(vm: VaultViewModel) {
             icono = Icons.Filled.Palette
         ) {
             ContenedorTarjeta {
-                val usaPredeterminado = ajustes.colorTarjetas.isBlank()
+                val esAdaptativo = ajustes.colorTarjetas.isBlank()
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text("Fondo predeterminado del tema", color = TextoPrincipal, style = MaterialTheme.typography.bodyMedium)
+                    Text("Fondo adaptativo del tema", color = TextoPrincipal, style = MaterialTheme.typography.bodyMedium)
                     BotonBorde(
-                        texto = if (usaPredeterminado) "Activo" else "Predeterminado",
-                        modifier = Modifier.width(140.dp)
+                        texto = if (esAdaptativo) "Activo" else "Restablecer",
+                        modifier = Modifier.width(130.dp)
                     ) {
                         haptica.tic()
                         vm.ajustarColorTarjetas("")

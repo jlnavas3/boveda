@@ -46,7 +46,7 @@ bóveda entera con **AES-256-GCM**.
 
 ## Qué hay dentro
 
-Bóveda cifrada, generador criptográfico con `SecureRandom` y medidor de entropía (contraseñas aleatorias, frases Diceware de 3 a 12 palabras y motor de patrones personalizados), campos personalizados dinámicos (texto, oculto, PIN), autenticador TOTP (RFC 6238) con lector de QR mediante ZXing, widget de escritorio para códigos 2FA en vivo, Quick Settings Tile ("Generador Rápido") en la cortina de notificaciones, servicio de autofill, proveedor de credenciales de Android 14+ para passkeys y contraseñas, exportar/importar cifrado, importar CSV desde otros gestores (Google, Chrome, Bitwarden, LastPass...), lista local de contraseñas muy comunes filtradas en la edición y en el diagnóstico de salud, recordatorio de exportación offline en la pantalla principal, menú lateral con selección múltiple para borrar varias entradas de golpe, filtros por categoría y ordenación avanzada, suite de personalización visual en tiempo real (colores, bordes, tipografía), protección incondicional con `FLAG_SECURE` permanente y bloqueo automático granular por inactividad.
+Bóveda cifrada, generador criptográfico con `SecureRandom` y medidor de entropía (contraseñas aleatorias, frases Diceware de 3 a 12 palabras y motor de patrones personalizados), campos personalizados dinámicos (texto, oculto, PIN), autenticador TOTP (RFC 6238) con lector de QR mediante ZXing, widget de escritorio para códigos 2FA en vivo, Quick Settings Tile ("Generador Rápido") en la cortina de notificaciones, servicio de autofill, proveedor de credenciales de Android 14+ para passkeys y contraseñas, exportar/importar cifrado, importar CSV desde otros gestores (Google, Chrome, Bitwarden, LastPass...), lista local de contraseñas muy comunes filtradas en la edición y en el diagnóstico de salud, recordatorio de exportación offline en la pantalla principal, menú lateral con selección múltiple para borrar varias entradas de golpe, filtros por categoría y ordenación avanzada, abecedario lateral táctil con efecto de ola curvada estilo Niagara Launcher y escala progresiva de letras en GPU (120 FPS), suite de personalización visual en tiempo real (colores, bordes, tipografía), animación de bóveda continua gobernada por reloj VSync, protección incondicional con `FLAG_SECURE` permanente y bloqueo automático granular por inactividad.
 
 ### Autofill y Credential Manager
 
@@ -96,6 +96,20 @@ Las etiquetas no contienen espacios: al guardar, `# trabajo` se normaliza como `
 La normalización también se aplica a etiquetas antiguas al mostrarlas, tanto en la lista
 principal como en la edición y el detalle de cada entrada.
 
+### Abecedario Lateral y Desplazamiento Rápido con Ola Estilo Niagara Launcher
+
+Para listas con 5 o más entradas, el extremo derecho de la pantalla incorpora un índice alfabético táctil con localización completa en español (`#`, `A` a `Z` y `Ñ` en su posición alfabética correcta):
+
+- **Efecto de Ola Fluida Continua (Niagara Launcher Wave)**:
+  Al tocar o deslizar el dedo por el lateral, las letras forman un arco dinámico que sigue de forma tridimensional y orgánica el movimiento del pulgar, mediante una ventana de curvatura de medio coseno de orden $1.15$ que garantiza una transición suave y continua ($C^1$) con la columna vertical.
+- **Escala Progresiva Acelerada por GPU (120 FPS)**:
+  Las letras que entran en la ola aumentan progresivamente de tamaño a medida que ascienden por la curva hasta alcanzar su tamaño máximo en la cresta (configurable hasta 3.5x), encogiéndose armónicamente al descender hasta restablecer su escala base. La traslación y el escalado se procesan a nivel de RenderNode con `Modifier.graphicsLayer`, garantizando 120 FPS constantes sin recomposiciones de UI.
+- **Círculo Flotante de Gran Formato en la Cresta**:
+  Un globo indicador de 78 dp de diámetro, sin bordes, con fondo en degradado ámbar, sombra suave (`elevation = 14.dp`) y letra tipográfica en 38 sp proyectada hacia el centro de la pantalla.
+- **Zona de Arrastre Táctil Cómoda**:
+  El área de captura táctil se extiende 50 dp (configurable de 26 a 90 dp) hacia el interior desde el píxel 0 del borde físico, permitiendo iniciar el desplazamiento sin tener que apuntar con precisión milimétrica sobre las letras. Las tarjetas de la lista disponen de un margen adaptativo de 36 dp para que el abecedario nunca tape los controles.
+- **Sección en Ajustes > "Abecedario lateral" con Vista Previa en Vivo**:
+  Tarjeta de configuración completa con controles deslizantes (amplitud de ola, alcance vertical, escala de letras, proyección de burbuja y zona táctil), textos de ayuda multilínea, interruptores para activar/desactivar la ola o la vibración háptica, una **vista previa interactiva en vivo** donde probar los cambios en tiempo real, y un botón de un toque para **restablecer los valores por defecto**.
 
 ### Arquitectura Visual, Botones Normalizados y Navegación Universal
 
@@ -104,7 +118,13 @@ La aplicación cuenta con un sistema de diseño modular basado en contenedores s
 - **Navegación Universal con Flecha Atrás (`volverAtras`)**:
   Todas las pantallas secundarias y modales de la aplicación cuentan con una cabecera normalizada (`CabeceraPantalla`) que incluye botón de retroceso (`ArrowBack`) conectado a la pila real de navegación del `VaultViewModel`. Se elimina el comportamiento anterior de botones "Volver" rígidos que saltaban a la pantalla de inicio, respetando ahora el flujo natural entre menús y sincronizado con el botón/gesto de retroceso de Android (`BackHandler`).
 - **Normalización de Botones Interactivos**:
-  Toda la app (Ajustes, Papelera, Salud de la bóveda, Autenticador 2FA, Passkeys, Generador, Detalle y Edición) utiliza tarjetas y botones con microinteracciones hápticas y reactivas (`BotonColorido`), vinculados a colores semánticos con significado funcional.
+  Toda la app (Ajustes, Papelera, Salud de la bóveda, Autenticador 2FA, Passkeys, Generador, Detalle y Edición) utiliza tarjetas y botones con altura normalizada a 52 dp y microinteracciones hápticas reactivas (`BotonColorido`, `BotonAmbar`, `BotonBorde`), vinculados a colores semánticos con significado funcional.
+- **Pantalla de Desbloqueo y Animación Continua de Bóveda**:
+  Mecanismo visual de 4 anillos concéntricos animados por un reloj de fotogramas por hardware (`withFrameMillis`), garantizando rotación angular fluida e ininterrumpida incluso si el sistema tiene desactivada la escala de duración de animaciones (`animator_duration_scale = 0`). Campo de contraseña con botón de visibilidad (`Icons.Filled.Visibility`) embebido y botones de acción normalizados a 52 dp.
+- **Pantalla de Detalle de Entrada**:
+  Presentación a ancho completo para evitar saltos de línea en correos o URLs largas. Reemplazo del desenfoque translúcido de contraseña por una máscara opaca y segura de puntos grandes (`•`), con fila de acciones inferior dedicada (contador de caracteres, revelado y copiado rápido) y botón de favoritos en la cabecera con actualización reactiva instantánea.
+- **Pantalla de Edición**:
+  Botón de generación de contraseña normalizado a 52 dp en división 50/50 junto a un menú desplegable para alternar directamente entre modos (Aleatoria, Diceware, Patrón) sin abandonar la pantalla ni perder los datos escritos. Selector de tipo de entrada en menú desplegable protegido (bloqueado en edición de cuentas existentes para prevenir corrupción de tipo) y unificación del cálculo de entropía y tiempo de fuerza bruta idéntico al generador dedicado.
 
 En **Ajustes > Apariencia** se dispone de una suite completa de personalización en tiempo real, donde cualquier cambio se refleja inmediatamente en toda la app sin parpadeos ni reinicios:
 
@@ -245,7 +265,7 @@ manuales: SHA1/SHA256/SHA512, 6/7/8 dígitos y períodos de 30/60/90 segundos. L
 `otpauth://` conservan sus propios parámetros. También se puede elegir mostrar `123 456`
 o `123456`.
 
-La versión actual es `1.0.0` (con versionado semántico automático en Gradle).
+La versión actual es `1.0.1` (con versionado semántico automático en Gradle).
 
 ### Passkeys
 
@@ -355,7 +375,7 @@ Esto es importante y no lo voy a esconder:
   escáner y el autenticador TOTP. El soporte de contraseñas por Credential Manager está
   implementado y compila contra `androidx.credentials:credentials:1.5.0`, pero todavía
   necesita más pruebas reales con apps que usen esa API.
-- **Batería completa de pruebas automatizadas (136 tests unitarios):** Toda la lógica de negocio,
+- **Batería completa de pruebas automatizadas (140 tests unitarios):** Toda la lógica de negocio,
   seguridad y utilidades cuenta con cobertura exhaustiva en JVM (`./gradlew testDebugUnitTest`):
   criptografía AES-256-GCM, pares EC P-256 y firmas WebAuthn, zeroización de memoria,
   importador CSV (Google, Bitwarden, LastPass, Chrome), medidor de fuerza y entropía (zxcvbn),

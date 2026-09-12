@@ -6,6 +6,8 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.ui.unit.sp
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -18,8 +20,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -52,12 +56,24 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
-import androidx.compose.material3.SwipeToDismissBox
-import androidx.compose.material3.SwipeToDismissBoxValue
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
+import androidx.compose.foundation.gestures.detectHorizontalDragGestures
+import androidx.compose.foundation.layout.offset
+import androidx.compose.material.icons.filled.Key
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberDrawerState
-import androidx.compose.material3.rememberSwipeToDismissBoxState
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.ui.draw.scale
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.unit.IntOffset
+import kotlin.math.abs
+import kotlin.math.roundToInt
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -89,11 +105,23 @@ import com.jlnavas3.bovedalocal.crypto.Base32
 import com.jlnavas3.bovedalocal.crypto.Totp
 import com.jlnavas3.bovedalocal.ui.componentes.AnilloTotp
 import com.jlnavas3.bovedalocal.ui.componentes.IlustracionVacio
+import com.jlnavas3.bovedalocal.ui.componentes.IndiceAlfabetico
+import com.jlnavas3.bovedalocal.ui.componentes.encontrarIndiceParaLetra
+import androidx.compose.ui.text.style.TextOverflow
+import com.jlnavas3.bovedalocal.ui.componentes.MenuDesplegablePepo
 import com.jlnavas3.bovedalocal.ui.componentes.Monograma
+import com.jlnavas3.bovedalocal.ui.componentes.SeparadorOpcionMenu
 import com.jlnavas3.bovedalocal.ui.theme.Ambar
 import com.jlnavas3.bovedalocal.ui.theme.Borde
+import com.jlnavas3.bovedalocal.ui.theme.Color2FA
+import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
+import com.jlnavas3.bovedalocal.ui.theme.ColorBordeDropdown
+import com.jlnavas3.bovedalocal.ui.theme.ColorGenerador
 import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
+import com.jlnavas3.bovedalocal.ui.theme.ColorPasskeys
+import com.jlnavas3.bovedalocal.ui.theme.ColorSalud
+import com.jlnavas3.bovedalocal.ui.theme.ColorSeparadorDropdown
 import com.jlnavas3.bovedalocal.ui.theme.ColorSobreAcento
 import com.jlnavas3.bovedalocal.ui.theme.ColorTarjetas
 import com.jlnavas3.bovedalocal.ui.theme.ColorTitulos
@@ -202,7 +230,15 @@ fun PantallaLista(vm: VaultViewModel, estado: EstadoBoveda) {
         drawerState = estadoCajon,
         drawerContent = {
             ModalDrawerSheet(
-                modifier = Modifier.fillMaxWidth(0.8f),
+                modifier = Modifier
+                    .fillMaxWidth(0.82f)
+                    .then(
+                        if (GrosorBorde > 0.dp) Modifier.border(
+                            width = GrosorBorde,
+                            color = ColorBordeDropdown,
+                            shape = RoundedCornerShape(topEnd = CurvaturaEsquinas, bottomEnd = CurvaturaEsquinas)
+                        ) else Modifier
+                    ),
                 drawerShape = RoundedCornerShape(topEnd = CurvaturaEsquinas, bottomEnd = CurvaturaEsquinas),
                 drawerContainerColor = Superficie
             ) {
@@ -343,59 +379,44 @@ fun PantallaLista(vm: VaultViewModel, estado: EstadoBoveda) {
                     )
                 }
 
-                LazyColumn(
-                    modifier = Modifier.fillMaxSize(),
-                    contentPadding = androidx.compose.foundation.layout.PaddingValues(start = 20.dp, end = 20.dp, bottom = 110.dp),
-                    verticalArrangement = Arrangement.spacedBy(espaciadoFilas)
-                ) {
-                    items(itemsAMostrar, key = { item ->
-                        when (item) {
-                            is com.jlnavas3.bovedalocal.util.ItemAgrupado.Suelto -> item.entrada.id
-                            is com.jlnavas3.bovedalocal.util.ItemAgrupado.Grupo -> "grupo-${item.clave}"
-                            is com.jlnavas3.bovedalocal.util.ItemAgrupado.Hijo -> "hijo-${item.entrada.id}"
-                        }
-                    }) { item ->
-                        when (item) {
-                            is com.jlnavas3.bovedalocal.util.ItemAgrupado.Grupo -> FilaGrupoSitio(
-                                clave = item.clave,
-                                cantidad = item.entradas.size,
-                                expandido = expandidoEnLista(item.clave),
-                                alturaFila = densidadAltura,
-                                tamanoMonograma = densidadMonograma,
-                                alAlternar = {
-                                    haptica.tic()
-                                    gruposExpandidos = if (gruposExpandidos.contains(item.clave)) {
-                                        gruposExpandidos - item.clave
-                                    } else {
-                                        gruposExpandidos + item.clave
+                val estadoLista = rememberLazyListState()
+                val mostrarIndice = ajustes.mostrarIndiceAlfabetico && itemsAMostrar.size >= 5
+
+                Box(modifier = Modifier.fillMaxSize()) {
+                    LazyColumn(
+                        state = estadoLista,
+                        modifier = Modifier.fillMaxSize(),
+                        contentPadding = androidx.compose.foundation.layout.PaddingValues(
+                            start = 20.dp,
+                            end = if (mostrarIndice) 36.dp else 20.dp,
+                            bottom = 110.dp
+                        ),
+                        verticalArrangement = Arrangement.spacedBy(espaciadoFilas)
+                    ) {
+                        items(itemsAMostrar, key = { item ->
+                            when (item) {
+                                is com.jlnavas3.bovedalocal.util.ItemAgrupado.Suelto -> item.entrada.id
+                                is com.jlnavas3.bovedalocal.util.ItemAgrupado.Grupo -> "grupo-${item.clave}"
+                                is com.jlnavas3.bovedalocal.util.ItemAgrupado.Hijo -> "hijo-${item.entrada.id}"
+                            }
+                        }) { item ->
+                            when (item) {
+                                is com.jlnavas3.bovedalocal.util.ItemAgrupado.Grupo -> FilaGrupoSitio(
+                                    clave = item.clave,
+                                    cantidad = item.entradas.size,
+                                    expandido = expandidoEnLista(item.clave),
+                                    alturaFila = densidadAltura,
+                                    tamanoMonograma = densidadMonograma,
+                                    alAlternar = {
+                                        haptica.tic()
+                                        gruposExpandidos = if (gruposExpandidos.contains(item.clave)) {
+                                            gruposExpandidos - item.clave
+                                        } else {
+                                            gruposExpandidos + item.clave
+                                        }
                                     }
-                                }
-                            )
-                            is com.jlnavas3.bovedalocal.util.ItemAgrupado.Suelto -> FilaEntrada(
-                                entrada = item.entrada,
-                                seleccionActiva = modoSeleccion,
-                                seleccionado = seleccionados.contains(item.entrada.id),
-                                alAbrir = { vm.ir(Pantalla.Detalle(item.entrada.id)) },
-                                alCopiarUsuario = {
-                                    haptica.toque()
-                                    vm.copiar("Usuario", item.entrada.usuario, sensible = false)
-                                },
-                                alCopiarContrasena = {
-                                    haptica.exito()
-                                    vm.copiar("Contraseña", item.entrada.contrasena, sensible = true)
-                                },
-                                alFavorito = { haptica.tic(); vm.alternarFavorito(item.entrada.id) },
-                                alCopiarCodigo = { codigo ->
-                                    haptica.exito()
-                                    vm.copiar("Código", codigo, sensible = true)
-                                },
-                                alPulsarLargo = { entrarEnSeleccion(item.entrada.id) },
-                                alAlternarSeleccion = { alternarSeleccion(item.entrada.id) },
-                                alturaFila = densidadAltura,
-                                tamanoMonograma = densidadMonograma
-                            )
-                            is com.jlnavas3.bovedalocal.util.ItemAgrupado.Hijo -> Box(modifier = Modifier.padding(start = 16.dp)) {
-                                FilaEntrada(
+                                )
+                                is com.jlnavas3.bovedalocal.util.ItemAgrupado.Suelto -> FilaEntrada(
                                     entrada = item.entrada,
                                     seleccionActiva = modoSeleccion,
                                     seleccionado = seleccionados.contains(item.entrada.id),
@@ -418,8 +439,57 @@ fun PantallaLista(vm: VaultViewModel, estado: EstadoBoveda) {
                                     alturaFila = densidadAltura,
                                     tamanoMonograma = densidadMonograma
                                 )
+                                is com.jlnavas3.bovedalocal.util.ItemAgrupado.Hijo -> Box(modifier = Modifier.padding(start = 16.dp)) {
+                                    FilaEntrada(
+                                        entrada = item.entrada,
+                                        seleccionActiva = modoSeleccion,
+                                        seleccionado = seleccionados.contains(item.entrada.id),
+                                        alAbrir = { vm.ir(Pantalla.Detalle(item.entrada.id)) },
+                                        alCopiarUsuario = {
+                                            haptica.toque()
+                                            vm.copiar("Usuario", item.entrada.usuario, sensible = false)
+                                        },
+                                        alCopiarContrasena = {
+                                            haptica.exito()
+                                            vm.copiar("Contraseña", item.entrada.contrasena, sensible = true)
+                                        },
+                                        alFavorito = { haptica.tic(); vm.alternarFavorito(item.entrada.id) },
+                                        alCopiarCodigo = { codigo ->
+                                            haptica.exito()
+                                            vm.copiar("Código", codigo, sensible = true)
+                                        },
+                                        alPulsarLargo = { entrarEnSeleccion(item.entrada.id) },
+                                        alAlternarSeleccion = { alternarSeleccion(item.entrada.id) },
+                                        alturaFila = densidadAltura,
+                                        tamanoMonograma = densidadMonograma
+                                    )
+                                }
                             }
                         }
+                    }
+
+                    if (mostrarIndice) {
+                        IndiceAlfabetico(
+                            alSeleccionarLetra = { letra ->
+                                val indice = encontrarIndiceParaLetra(itemsAMostrar, letra)
+                                if (indice != null && indice in itemsAMostrar.indices) {
+                                    ambitoCorutina.launch {
+                                        estadoLista.scrollToItem(indice)
+                                    }
+                                }
+                            },
+                            efectoOla = ajustes.indiceEfectoOla,
+                            amplitudOlaDp = ajustes.indiceAmplitudOlaDp,
+                            radioOlaDp = ajustes.indiceRadioOlaDp,
+                            escalaMaximaLetras = ajustes.indiceEscalaLetras,
+                            mostrarCirculo = ajustes.indiceMostrarCirculo,
+                            offsetCirculoDp = ajustes.indiceOffsetCirculoDp,
+                            hapticaActiva = ajustes.indiceHaptica,
+                            anchoZonaTactilDp = ajustes.indiceAnchoTactilDp,
+                            modifier = Modifier
+                                .align(Alignment.CenterEnd)
+                                .padding(top = 4.dp, bottom = 100.dp)
+                        )
                     }
                 }
             }
@@ -485,53 +555,162 @@ private fun MenuLateral(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(vertical = 24.dp)
+            .padding(vertical = 20.dp, horizontal = 12.dp)
     ) {
-        Column(modifier = Modifier.padding(horizontal = 24.dp)) {
-            Text(nombreApp, style = MaterialTheme.typography.headlineSmall, color = ColorTitulos)
-            Spacer(Modifier.height(4.dp))
-            Text(
-                "$totalEntradas ${if (totalEntradas == 1) "entrada guardada" else "entradas guardadas"}",
-                style = MaterialTheme.typography.bodyMedium.copy(fontStyle = FontStyle.Italic),
-                color = TextoSecundario
-            )
-        }
-        Spacer(Modifier.height(20.dp))
-        Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(Borde))
-        Spacer(Modifier.height(8.dp))
-
+        // Cabecera Premium
         Column(
-            modifier = Modifier.weight(1f),
-            verticalArrangement = Arrangement.Top
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 8.dp, vertical = 6.dp)
         ) {
-            ItemMenu("Generar contraseñas", Icons.Filled.AutoAwesome) { alIr(Pantalla.Generador) }
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-                ItemMenu("Passkeys", Icons.Filled.Fingerprint) { alIr(Pantalla.Passkeys) }
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                Box(
+                    modifier = Modifier
+                        .size(46.dp)
+                        .clip(FormaCampo)
+                        .background(SuperficieAlta)
+                        .then(
+                            if (GrosorBorde > 0.dp) Modifier.border(GrosorBorde, ColorBordeDropdown, FormaCampo)
+                            else Modifier
+                        ),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.Lock,
+                        contentDescription = null,
+                        tint = Ambar,
+                        modifier = Modifier.size(24.dp)
+                    )
+                }
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        nombreApp,
+                        style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
+                        color = ColorTitulos,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                    Spacer(Modifier.height(2.dp))
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(6.dp)
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .size(7.dp)
+                                .clip(CircleShape)
+                                .background(Menta)
+                        )
+                        Text(
+                            "$totalEntradas ${if (totalEntradas == 1) "entrada" else "entradas"}",
+                            style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Medium),
+                            color = TextoSecundario
+                        )
+                    }
+                }
             }
-            ItemMenu("Autenticador 2FA", Icons.Filled.Timer) { alIr(Pantalla.Autenticador) }
-            ItemMenu("Salud de la bóveda", Icons.Filled.HealthAndSafety) { alIr(Pantalla.SaludBoveda) }
-            ItemMenu(
-                if (totalPapelera > 0) "Papelera ($totalPapelera)" else "Papelera",
-                Icons.Filled.Delete
-            ) { alIr(Pantalla.Papelera) }
-            ItemMenu("Configuración", Icons.Filled.Settings) { alIr(Pantalla.Ajustes) }
-            ItemMenu("Bloquear bóveda", Icons.Filled.Lock, colorTexto = Peligro) { alBloquear() }
         }
 
-        Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(Borde))
+        Spacer(Modifier.height(14.dp))
+        Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(ColorSeparadorDropdown))
+        Spacer(Modifier.height(10.dp))
+
+        // Opciones de navegación con contenedor y feedback
+        Column(
+            modifier = Modifier
+                .weight(1f)
+                .verticalScroll(rememberScrollState()),
+            verticalArrangement = Arrangement.spacedBy(4.dp)
+        ) {
+            ItemMenu(
+                texto = "Generar contraseñas",
+                icono = Icons.Filled.AutoAwesome,
+                colorIcono = ColorGenerador
+            ) { alIr(Pantalla.Generador) }
+
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                ItemMenu(
+                    texto = "Passkeys",
+                    icono = Icons.Filled.Fingerprint,
+                    colorIcono = ColorPasskeys
+                ) { alIr(Pantalla.Passkeys) }
+            }
+
+            ItemMenu(
+                texto = "Autenticador 2FA",
+                icono = Icons.Filled.Timer,
+                colorIcono = Color2FA
+            ) { alIr(Pantalla.Autenticador) }
+
+            ItemMenu(
+                texto = "Salud de la bóveda",
+                icono = Icons.Filled.HealthAndSafety,
+                colorIcono = ColorSalud
+            ) { alIr(Pantalla.SaludBoveda) }
+
+            ItemMenu(
+                texto = "Papelera",
+                icono = Icons.Filled.Delete,
+                colorIcono = if (totalPapelera > 0) Ambar else ColorIconosInternos,
+                badge = if (totalPapelera > 0) totalPapelera.toString() else null
+            ) { alIr(Pantalla.Papelera) }
+
+            ItemMenu(
+                texto = "Configuración",
+                icono = Icons.Filled.Settings,
+                colorIcono = ColorIconosInternos
+            ) { alIr(Pantalla.Ajustes) }
+
+            Spacer(Modifier.height(6.dp))
+            Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(ColorSeparadorDropdown))
+            Spacer(Modifier.height(6.dp))
+
+            ItemMenu(
+                texto = "Bloquear bóveda",
+                icono = Icons.Filled.Lock,
+                colorIcono = Peligro,
+                colorTexto = Peligro
+            ) { alBloquear() }
+        }
+
+        // Pie de Menú estilizado
+        Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(ColorSeparadorDropdown))
         Spacer(Modifier.height(12.dp))
-        Text(
-            "Bóveda local",
-            style = MaterialTheme.typography.bodyMedium,
-            color = TextoSecundario,
-            modifier = Modifier.padding(horizontal = 24.dp)
-        )
-        Text(
-            "versión ${BuildConfig.VERSION_NAME}",
-            style = MaterialTheme.typography.bodyMedium,
-            color = TextoSecundario,
-            modifier = Modifier.padding(horizontal = 24.dp)
-        )
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Column {
+                Text(
+                    "Bóveda local",
+                    style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.SemiBold),
+                    color = ColorTitulos
+                )
+                Text(
+                    "v${BuildConfig.VERSION_NAME} · 100% offline",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = TextoSecundario
+                )
+            }
+            Box(
+                modifier = Modifier
+                    .clip(CircleShape)
+                    .background(Menta.copy(alpha = 0.15f))
+                    .padding(horizontal = 8.dp, vertical = 4.dp)
+            ) {
+                Text(
+                    "AES-256",
+                    style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
+                    color = Menta
+                )
+            }
+        }
     }
 }
 
@@ -539,19 +718,56 @@ private fun MenuLateral(
 private fun ItemMenu(
     texto: String,
     icono: androidx.compose.ui.graphics.vector.ImageVector,
+    colorIcono: androidx.compose.ui.graphics.Color = ColorIconosInternos,
     colorTexto: androidx.compose.ui.graphics.Color = TextoPrincipal,
+    badge: String? = null,
     alPulsar: () -> Unit
 ) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
+            .clip(FormaCampo)
             .clickable { alPulsar() }
-            .padding(horizontal = 24.dp, vertical = 14.dp),
+            .padding(horizontal = 10.dp, vertical = 10.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Icon(icono, contentDescription = null, tint = if (colorTexto == Peligro) Peligro else ColorIconosInternos)
-        Spacer(Modifier.width(16.dp))
-        Text(texto, style = MaterialTheme.typography.titleMedium, color = colorTexto)
+        Box(
+            modifier = Modifier
+                .size(36.dp)
+                .clip(FormaPequena)
+                .background(colorIcono.copy(alpha = 0.12f)),
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                imageVector = icono,
+                contentDescription = null,
+                tint = colorIcono,
+                modifier = Modifier.size(20.dp)
+            )
+        }
+        Spacer(Modifier.width(12.dp))
+        Text(
+            text = texto,
+            style = MaterialTheme.typography.titleMedium.copy(fontSize = 15.sp),
+            color = colorTexto,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            modifier = Modifier.weight(1f)
+        )
+        if (badge != null) {
+            Box(
+                modifier = Modifier
+                    .clip(CircleShape)
+                    .background(Ambar.copy(alpha = 0.18f))
+                    .padding(horizontal = 8.dp, vertical = 2.dp)
+            ) {
+                Text(
+                    text = badge,
+                    style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
+                    color = Ambar
+                )
+            }
+        }
     }
 }
 
@@ -752,17 +968,19 @@ private fun SelectorFiltros(
             )
         }
 
-        DropdownMenu(
+        MenuDesplegablePepo(
             expanded = desplegado,
             onDismissRequest = { desplegado = false },
-            modifier = Modifier
-                .background(SuperficieAlta)
-                .fillMaxWidth(0.5f)
+            modifier = Modifier.widthIn(min = 170.dp)
         ) {
             OpcionFiltro("Todo", Icons.Filled.SelectAll, filtro == null && !soloFavoritos) { alTodo(); desplegado = false }
+            SeparadorOpcionMenu()
             OpcionFiltro("Claves", Icons.Filled.Lock, filtro == TipoEntrada.LOGIN) { alClaves(); desplegado = false }
+            SeparadorOpcionMenu()
             OpcionFiltro("Passkeys", Icons.Filled.Fingerprint, filtro == TipoEntrada.PASSKEY) { alPasskeys(); desplegado = false }
+            SeparadorOpcionMenu()
             OpcionFiltro("Notas", Icons.Filled.Menu, filtro == TipoEntrada.NOTA) { alNotas(); desplegado = false }
+            SeparadorOpcionMenu()
             OpcionFiltro("Favoritos", Icons.Filled.Star, soloFavoritos) { alFavoritos(); desplegado = false }
         }
     }
@@ -775,19 +993,19 @@ private fun OpcionFiltro(texto: String, icono: ImageVector, activo: Boolean, alP
             Icon(
                 icono,
                 contentDescription = null,
-                tint = if (activo) Ambar else TextoSecundario,
+                tint = if (activo) ColorAcento else TextoSecundario,
                 modifier = Modifier.size(20.dp)
             )
         },
         text = {
             Text(
                 texto,
-                color = if (activo) Ambar else TextoPrincipal,
+                color = if (activo) ColorAcento else TextoPrincipal,
                 style = MaterialTheme.typography.bodyMedium
             )
         },
         trailingIcon = {
-            if (activo) Icon(Icons.Filled.Check, contentDescription = null, tint = Ambar, modifier = Modifier.size(18.dp))
+            if (activo) Icon(Icons.Filled.Check, contentDescription = null, tint = ColorAcento, modifier = Modifier.size(18.dp))
         },
         onClick = alPulsar
     )
@@ -809,7 +1027,7 @@ private fun SelectorOrdenacion(
                 .background(Superficie)
                 .then(
                     if (GrosorBorde > 0.dp) {
-                        Modifier.border(GrosorBorde, if (desplegado) Ambar else ColorBordeActual, forma)
+                        Modifier.border(GrosorBorde, if (desplegado) ColorAcento else ColorBordeActual, forma)
                     } else {
                         Modifier
                     }
@@ -821,28 +1039,30 @@ private fun SelectorOrdenacion(
             Icon(
                 Icons.AutoMirrored.Filled.Sort,
                 contentDescription = "Ordenar lista",
-                tint = if (desplegado) Ambar else TextoSecundario,
+                tint = if (desplegado) ColorAcento else TextoSecundario,
                 modifier = Modifier.size(20.dp)
             )
         }
 
-        DropdownMenu(
+        MenuDesplegablePepo(
             expanded = desplegado,
-            onDismissRequest = { desplegado = false },
-            modifier = Modifier.background(SuperficieAlta)
+            onDismissRequest = { desplegado = false }
         ) {
-            CriterioOrdenacion.entries.forEach { op ->
+            CriterioOrdenacion.entries.forEachIndexed { index, op ->
+                if (index > 0) {
+                    SeparadorOpcionMenu()
+                }
                 val activo = op == criterio
                 DropdownMenuItem(
                     leadingIcon = {
                         Icon(
                             Icons.AutoMirrored.Filled.Sort,
                             contentDescription = null,
-                            tint = if (activo) Ambar else TextoSecundario
+                            tint = if (activo) ColorAcento else TextoSecundario
                         )
                     },
                     trailingIcon = if (activo) {
-                        { Icon(Icons.Filled.Check, contentDescription = null, tint = Ambar, modifier = Modifier.size(18.dp)) }
+                        { Icon(Icons.Filled.Check, contentDescription = null, tint = ColorAcento, modifier = Modifier.size(18.dp)) }
                     } else null,
                     text = {
                         Text(
@@ -1030,7 +1250,7 @@ private fun FilaEntrada(
                     Icon(
                         Icons.Filled.Star,
                         contentDescription = "Favorito",
-                        tint = if (entrada.favorito) ColorTitulos else ColorBordeActual.copy(alpha = 0.5f)
+                        tint = if (entrada.favorito) Ambar else ColorBordeActual.copy(alpha = 0.5f)
                     )
                 }
             }
@@ -1042,35 +1262,158 @@ private fun FilaEntrada(
     if (seleccionActiva) {
         contenidoFila()
     } else {
-        val estadoSwipe = rememberSwipeToDismissBoxState(
-            confirmValueChange = { valor ->
-                when (valor) {
-                    SwipeToDismissBoxValue.StartToEnd -> alCopiarUsuario()
-                    SwipeToDismissBoxValue.EndToStart -> alCopiarContrasena()
-                    else -> Unit
-                }
-                false
-            }
-        )
-        SwipeToDismissBox(
-            state = estadoSwipe,
-            backgroundContent = {
-                Row(
+        val contexto = LocalContext.current
+        val haptica = remember { Haptica(contexto) }
+        val scope = rememberCoroutineScope()
+        val animOffset = remember { Animatable(0f) }
+        var anchoFilaPx by remember { mutableFloatStateOf(0f) }
+        var dioHapticaTope by remember { mutableStateOf(false) }
+
+        LaunchedEffect(entrada.id) {
+            animOffset.snapTo(0f)
+        }
+
+        val topeMaximo = anchoFilaPx * 0.45f
+        val topeActual by rememberUpdatedState(topeMaximo)
+
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(alturaFila)
+                .onSizeChanged { anchoFilaPx = it.width.toFloat() }
+        ) {
+            val offsetActual = animOffset.value
+            val limite = topeActual
+            val progreso = if (limite > 0f) (abs(offsetActual) / limite).coerceIn(0f, 1f) else 0f
+            val escala = 0.85f + 0.20f * progreso
+            val opacidad = 0.4f + 0.6f * progreso
+
+            // Fondo dinámico: solo se dibuja y visualiza el lado correspondiente al deslizamiento activo
+            if (offsetActual > 0f) {
+                Box(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .height(alturaFila)
+                        .fillMaxSize()
                         .clip(forma)
-                        .background(Borde)
+                        .background(Menta.copy(alpha = 0.14f + 0.10f * progreso))
                         .padding(horizontal = 20.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
+                    contentAlignment = Alignment.CenterStart
                 ) {
-                    Text("Copiar usuario", color = Menta, style = MaterialTheme.typography.bodyMedium)
-                    Text("Copiar contraseña", color = Ambar, style = MaterialTheme.typography.bodyMedium)
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.scale(escala)
+                    ) {
+                        Icon(
+                            Icons.Filled.Person,
+                            contentDescription = null,
+                            tint = Menta.copy(alpha = opacidad),
+                            modifier = Modifier.size(20.dp)
+                        )
+                        Spacer(Modifier.width(8.dp))
+                        Text(
+                            "Copiar usuario",
+                            color = Menta.copy(alpha = opacidad),
+                            style = MaterialTheme.typography.bodyMedium,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                    }
                 }
-            },
-            content = { contenidoFila() }
-        )
+            } else if (offsetActual < 0f) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .clip(forma)
+                        .background(Ambar.copy(alpha = 0.14f + 0.10f * progreso))
+                        .padding(horizontal = 20.dp),
+                    contentAlignment = Alignment.CenterEnd
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.scale(escala)
+                    ) {
+                        Text(
+                            "Copiar contraseña",
+                            color = Ambar.copy(alpha = opacidad),
+                            style = MaterialTheme.typography.bodyMedium,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                        Spacer(Modifier.width(8.dp))
+                        Icon(
+                            Icons.Filled.Key,
+                            contentDescription = null,
+                            tint = Ambar.copy(alpha = opacidad),
+                            modifier = Modifier.size(20.dp)
+                        )
+                    }
+                }
+            }
+
+            // Tarjeta superior con tope estricto al 45% y animación de retorno
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .offset { IntOffset(animOffset.value.roundToInt(), 0) }
+                    .pointerInput(Unit) {
+                        detectHorizontalDragGestures(
+                            onDragStart = {
+                                dioHapticaTope = false
+                            },
+                            onDragEnd = {
+                                val maximo = topeActual
+                                if (maximo > 0f) {
+                                    val alcanzado = abs(animOffset.value) >= maximo * 0.94f
+                                    if (alcanzado) {
+                                        if (animOffset.value > 0f) {
+                                            alCopiarUsuario()
+                                        } else {
+                                            alCopiarContrasena()
+                                        }
+                                    }
+                                }
+                                dioHapticaTope = false
+                                scope.launch {
+                                    animOffset.animateTo(
+                                        targetValue = 0f,
+                                        animationSpec = spring(
+                                            dampingRatio = Spring.DampingRatioLowBouncy,
+                                            stiffness = Spring.StiffnessMedium
+                                        )
+                                    )
+                                }
+                            },
+                            onDragCancel = {
+                                dioHapticaTope = false
+                                scope.launch {
+                                    animOffset.animateTo(
+                                        targetValue = 0f,
+                                        animationSpec = spring(
+                                            dampingRatio = Spring.DampingRatioLowBouncy,
+                                            stiffness = Spring.StiffnessMedium
+                                        )
+                                    )
+                                }
+                            },
+                            onHorizontalDrag = { change, dragAmount ->
+                                val maximo = topeActual
+                                if (maximo > 0f) {
+                                    change.consume()
+                                    val nuevoOffset = (animOffset.value + dragAmount).coerceIn(-maximo, maximo)
+                                    scope.launch { animOffset.snapTo(nuevoOffset) }
+
+                                    val enTope = abs(nuevoOffset) >= maximo * 0.96f
+                                    if (enTope && !dioHapticaTope) {
+                                        haptica.tic()
+                                        dioHapticaTope = true
+                                    } else if (!enTope && dioHapticaTope) {
+                                        dioHapticaTope = false
+                                    }
+                                }
+                            }
+                        )
+                    }
+            ) {
+                contenidoFila()
+            }
+        }
     }
 }
 

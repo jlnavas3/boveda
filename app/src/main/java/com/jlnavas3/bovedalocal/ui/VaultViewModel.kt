@@ -339,14 +339,32 @@ class VaultViewModel(app: Application) : AndroidViewModel(app) {
 
     fun guardar(entrada: Entrada) {
         ejecutar {
+            val existente = withContext(Dispatchers.IO) { repositorio.entrada(entrada.id) }
             withContext(Dispatchers.IO) { repositorio.guardarEntrada(entrada) }
+            val tipoDesc = when (entrada.tipo) {
+                TipoEntrada.LOGIN -> "login / credencial"
+                TipoEntrada.NOTA -> "nota segura"
+                TipoEntrada.PASSKEY -> "passkey"
+            }
+            if (existente == null) {
+                Diagnostico.apuntar("bóveda", "Nueva entrada creada ($tipoDesc)")
+            } else {
+                Diagnostico.apuntar("bóveda", "Entrada modificada ($tipoDesc)")
+            }
             _aviso.value = "Guardado en la bóveda"
         }
     }
 
     fun eliminar(id: String) {
         ejecutar {
+            val ent = withContext(Dispatchers.IO) { repositorio.entrada(id) }
+            val tipoDesc = when (ent?.tipo) {
+                TipoEntrada.NOTA -> "nota segura"
+                TipoEntrada.PASSKEY -> "passkey"
+                else -> "credencial"
+            }
             withContext(Dispatchers.IO) { repositorio.eliminarEntrada(id) }
+            Diagnostico.apuntar("papelera", "Entrada ($tipoDesc) enviada a la papelera")
             irRaiz(Pantalla.Lista)
             _aviso.value = "Movida a la papelera"
         }
@@ -356,6 +374,7 @@ class VaultViewModel(app: Application) : AndroidViewModel(app) {
         if (ids.isEmpty()) return
         ejecutar {
             withContext(Dispatchers.IO) { repositorio.eliminarEntradas(ids) }
+            Diagnostico.apuntar("papelera", "${ids.size} entradas enviadas a la papelera")
             _aviso.value = if (ids.size == 1) "Entrada movida a la papelera" else "${ids.size} entradas movidas a la papelera"
         }
     }
@@ -365,6 +384,7 @@ class VaultViewModel(app: Application) : AndroidViewModel(app) {
     fun restaurarDeLaPapelera(id: String) {
         ejecutar {
             withContext(Dispatchers.IO) { repositorio.restaurarDeLaPapelera(id) }
+            Diagnostico.apuntar("papelera", "Entrada restaurada desde la papelera a la bóveda")
             _aviso.value = "Entrada restaurada"
         }
     }
@@ -372,19 +392,29 @@ class VaultViewModel(app: Application) : AndroidViewModel(app) {
     fun borrarDefinitivamente(id: String) {
         ejecutar {
             withContext(Dispatchers.IO) { repositorio.borrarDefinitivamente(id) }
+            Diagnostico.apuntar("papelera", "Entrada eliminada definitivamente de la papelera")
             _aviso.value = "Borrada para siempre"
         }
     }
 
     fun vaciarPapelera() {
         ejecutar {
+            val cant = repositorio.papelera().size
             withContext(Dispatchers.IO) { repositorio.vaciarPapelera() }
+            Diagnostico.apuntar("papelera", "Papelera vaciada por completo ($cant entradas eliminadas definitivamente)")
             _aviso.value = "Papelera vaciada"
         }
     }
 
     fun alternarFavorito(id: String) {
-        ejecutar { withContext(Dispatchers.IO) { repositorio.alternarFavorito(id) } }
+        ejecutar {
+            val ent = withContext(Dispatchers.IO) {
+                repositorio.alternarFavorito(id)
+                repositorio.entrada(id)
+            }
+            val estadoFav = if (ent?.favorito == true) "marcada como favorita" else "desmarcada de favoritos"
+            Diagnostico.apuntar("bóveda", "Entrada $estadoFav")
+        }
     }
 
     fun nuevoId(): String = repositorio.nuevoId()
@@ -418,6 +448,7 @@ class VaultViewModel(app: Application) : AndroidViewModel(app) {
                     totpAlgoritmo = semilla.algoritmo
                 )
             )
+            Diagnostico.apuntar("2fa", "Doble factor (TOTP) vinculado a entrada existente")
             ir(Pantalla.Detalle(destino.id))
             return true
         }
@@ -433,6 +464,7 @@ class VaultViewModel(app: Application) : AndroidViewModel(app) {
             totpAlgoritmo = semilla.algoritmo
         )
         guardar(entrada)
+        Diagnostico.apuntar("2fa", "Nueva entrada creada con doble factor (TOTP)")
         ir(Pantalla.Autenticador)
         return true
     }
@@ -442,6 +474,14 @@ class VaultViewModel(app: Application) : AndroidViewModel(app) {
     fun copiar(etiqueta: String, valor: String, sensible: Boolean) {
         val contexto = getApplication<Application>()
         Portapapeles.copiarSensible(contexto, etiqueta, valor)
+        val accionDesc = when (etiqueta.lowercase()) {
+            "usuario" -> "Usuario copiado al portapapeles"
+            "contraseña" -> "Contraseña copiada al portapapeles"
+            "código", "código totp", "código 2fa" -> "Código 2FA copiado al portapapeles"
+            "contraseña anterior" -> "Contraseña anterior copiada al portapapeles"
+            else -> "$etiqueta copiado/a al portapapeles"
+        }
+        Diagnostico.apuntar("portapapeles", accionDesc)
         trabajoPortapapeles?.cancel()
         // Todas las copias de datos de la bóveda usan la misma barra y limpieza automática.
         // Cancelar el job anterior no ejecuta su limpieza final: primero se resetea la barra.
@@ -454,6 +494,7 @@ class VaultViewModel(app: Application) : AndroidViewModel(app) {
             }
             _cuentaAtrasPortapapeles.value = 0
             Portapapeles.limpiarSiCoincide(contexto, valor)
+            Diagnostico.apuntar("portapapeles", "Portapapeles limpiado automáticamente ($segundos s)")
         }
     }
 
@@ -608,7 +649,7 @@ class VaultViewModel(app: Application) : AndroidViewModel(app) {
     }
 
     fun restablecerFormas() {
-        aplicarPresetFormas(curvatura = 18f, grosor = 1f, estilo = "sutil", espaciado = 14f)
+        aplicarPresetFormas(curvatura = 6f, grosor = 0.8f, estilo = "marcado", espaciado = 14f)
     }
 
     // --- Personalización de Tipografía y Textos ---
@@ -674,7 +715,28 @@ class VaultViewModel(app: Application) : AndroidViewModel(app) {
         )
     }
 
-    fun ajustarTema(clave: String) = repositorio.ajustes.actualizar { it.copy(temaApp = clave) }
+    fun ajustarTema(clave: String) {
+        repositorio.ajustes.actualizar {
+            if (it.temaApp != clave) {
+                it.copy(
+                    temaApp = clave,
+                    colorIconosInternos = "",
+                    colorTitulos = "",
+                    colorTarjetas = "",
+                    colorSeguridad = "",
+                    color2FA = "",
+                    colorPasskeys = "",
+                    colorGenerador = "",
+                    colorSalud = "",
+                    colorPapelera = "",
+                    colorExportacion = ""
+                )
+            } else {
+                it.copy(temaApp = clave)
+            }
+        }
+        com.jlnavas3.bovedalocal.ui.theme.aplicarPersonalizacionTemaCompleto(repositorio.ajustes.actual)
+    }
 
     fun ajustarRecordatorioExportacion(dias: Int) =
         repositorio.ajustes.actualizar { it.copy(recordatorioExportacionDias = dias) }
@@ -696,6 +758,49 @@ class VaultViewModel(app: Application) : AndroidViewModel(app) {
 
     fun ajustarTotpSepararDigitos(separar: Boolean) =
         repositorio.ajustes.actualizar { it.copy(totpSepararDigitos = separar) }
+
+    fun ajustarMostrarIndiceAlfabetico(activo: Boolean) =
+        repositorio.ajustes.actualizar { it.copy(mostrarIndiceAlfabetico = activo) }
+
+    fun ajustarIndiceEfectoOla(activo: Boolean) =
+        repositorio.ajustes.actualizar { it.copy(indiceEfectoOla = activo) }
+
+    fun ajustarIndiceAmplitudOlaDp(amplitud: Float) =
+        repositorio.ajustes.actualizar { it.copy(indiceAmplitudOlaDp = amplitud) }
+
+    fun ajustarIndiceRadioOlaDp(radio: Float) =
+        repositorio.ajustes.actualizar { it.copy(indiceRadioOlaDp = radio) }
+
+    fun ajustarIndiceEscalaLetras(escala: Float) =
+        repositorio.ajustes.actualizar { it.copy(indiceEscalaLetras = escala) }
+
+    fun ajustarIndiceMostrarCirculo(activo: Boolean) =
+        repositorio.ajustes.actualizar { it.copy(indiceMostrarCirculo = activo) }
+
+    fun ajustarIndiceOffsetCirculoDp(offset: Float) =
+        repositorio.ajustes.actualizar { it.copy(indiceOffsetCirculoDp = offset) }
+
+    fun ajustarIndiceHaptica(activo: Boolean) =
+        repositorio.ajustes.actualizar { it.copy(indiceHaptica = activo) }
+
+    fun ajustarIndiceAnchoTactilDp(anchoDp: Float) =
+        repositorio.ajustes.actualizar { it.copy(indiceAnchoTactilDp = anchoDp) }
+
+    fun restablecerAjustesIndiceAlfabetico() {
+        repositorio.ajustes.actualizar {
+            it.copy(
+                mostrarIndiceAlfabetico = true,
+                indiceEfectoOla = true,
+                indiceAmplitudOlaDp = 95f,
+                indiceRadioOlaDp = 220f,
+                indiceEscalaLetras = 1.9f,
+                indiceMostrarCirculo = true,
+                indiceOffsetCirculoDp = 145f,
+                indiceHaptica = true,
+                indiceAnchoTactilDp = 50f
+            )
+        }
+    }
 
     /** Días sin exportar la bóveda; null si nunca se exportó o el recordatorio está apagado. */
     fun diasSinExportar(): Long? {
@@ -734,8 +839,10 @@ class VaultViewModel(app: Application) : AndroidViewModel(app) {
                 val datos = withContext(Dispatchers.Default) { repositorio.exportar(chars) }
                 withContext(Dispatchers.IO) { escritor(datos) }
                 repositorio.ajustes.actualizar { it.copy(ultimaExportacionEn = System.currentTimeMillis()) }
+                Diagnostico.apuntar("bóveda", "Copia de seguridad cifrada exportada correctamente")
                 _aviso.value = "Bóveda exportada y cifrada"
             } catch (e: Exception) {
+                Diagnostico.apuntar("bóveda", "Fallo al exportar copia de seguridad: ${e.message ?: "error desconocido"}", e)
                 _error.value = "No se pudo exportar: ${e.message ?: "error desconocido"}"
             } finally {
                 Zeroizar.borrar(chars)
@@ -749,8 +856,10 @@ class VaultViewModel(app: Application) : AndroidViewModel(app) {
             try {
                 val datos = withContext(Dispatchers.IO) { lector() }
                 val nuevas = withContext(Dispatchers.Default) { repositorio.importar(datos, chars) }
+                Diagnostico.apuntar("bóveda", "Bóveda importada desde copia cifrada ($nuevas entradas incorporadas)")
                 _aviso.value = "Importadas $nuevas entradas"
             } catch (e: Exception) {
+                Diagnostico.apuntar("bóveda", "Fallo al importar archivo cifrado: contraseña incorrecta o archivo inválido", e)
                 _error.value = "No se pudo importar: contraseña incorrecta o archivo inválido"
             } finally {
                 Zeroizar.borrar(chars)
@@ -758,17 +867,52 @@ class VaultViewModel(app: Application) : AndroidViewModel(app) {
         }
     }
 
-    fun importarCsv(lector: () -> ByteArray) {
+    fun importarCsv(lector: () -> ByteArray, onResultado: ((Int) -> Unit)? = null) {
         ejecutar {
             try {
                 val datos = withContext(Dispatchers.IO) { lector() }
                 val nuevas = withContext(Dispatchers.Default) { repositorio.importarCsv(datos) }
+                Diagnostico.apuntar("bóveda", "Importación CSV completada con éxito ($nuevas entradas incorporadas)")
                 _aviso.value = "Importadas $nuevas entradas desde CSV"
+                onResultado?.invoke(nuevas)
             } catch (e: Exception) {
+                Diagnostico.apuntar("bóveda", "Fallo al importar archivo CSV: ${e.message ?: "formato no reconocido"}", e)
                 _error.value = "No se pudo importar el CSV: ${e.message ?: "formato no reconocido"}"
             }
         }
     }
+
+    fun registrarCsvGoogleImportado(ruta: String, uri: String, cuentas: Int) {
+        repositorio.ajustes.actualizar {
+            it.copy(
+                csvGoogleRuta = ruta,
+                csvGoogleUri = uri,
+                csvGoogleCuentas = cuentas,
+                csvGoogleEliminado = false
+            )
+        }
+    }
+
+    fun marcarCsvGoogleEliminado(eliminado: Boolean) {
+        repositorio.ajustes.actualizar {
+            it.copy(csvGoogleEliminado = eliminado)
+        }
+        if (eliminado) {
+            Diagnostico.apuntar("seguridad", "Archivo CSV de Google eliminado de forma segura del almacenamiento")
+        }
+    }
+
+    fun descartarAvisoCsvGoogle() {
+        repositorio.ajustes.actualizar {
+            it.copy(
+                csvGoogleRuta = "",
+                csvGoogleUri = "",
+                csvGoogleCuentas = 0,
+                csvGoogleEliminado = false
+            )
+        }
+    }
+
 
     fun cambiarContrasenaMaestra(actual: String, nueva: String) {
         ejecutar {
@@ -777,10 +921,12 @@ class VaultViewModel(app: Application) : AndroidViewModel(app) {
             try {
                 val correcta = withContext(Dispatchers.Default) { repositorio.verificarContrasena(viejaChars) }
                 if (!correcta) {
+                    Diagnostico.apuntar("bóveda", "Intento de cambio de contraseña maestra rechazado (contraseña actual incorrecta)")
                     _error.value = "La contraseña actual no es correcta"
                     return@ejecutar
                 }
                 withContext(Dispatchers.Default) { repositorio.cambiarContrasenaMaestra(nuevaChars) }
+                Diagnostico.apuntar("bóveda", "Contraseña maestra de la bóveda modificada exitosamente")
                 _aviso.value = "Contraseña maestra cambiada. Vuelve a activar la biometría."
             } finally {
                 Zeroizar.borrar(viejaChars)

@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -34,6 +35,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.text.font.FontWeight
 import com.jlnavas3.bovedalocal.data.CampoPersonalizado
+import com.jlnavas3.bovedalocal.data.EstadoBoveda
 import com.jlnavas3.bovedalocal.data.TipoCampo
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -46,11 +48,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.jlnavas3.bovedalocal.crypto.Totp
 import com.jlnavas3.bovedalocal.ui.Pantalla
@@ -68,6 +70,7 @@ import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
 import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
 import com.jlnavas3.bovedalocal.ui.theme.ColorTitulos
 import com.jlnavas3.bovedalocal.ui.theme.EstiloMono
+import com.jlnavas3.bovedalocal.ui.theme.EstiloMonoGrande
 import com.jlnavas3.bovedalocal.ui.theme.FormaPequena
 import com.jlnavas3.bovedalocal.ui.theme.GrosorBorde
 import com.jlnavas3.bovedalocal.ui.theme.Menta
@@ -85,7 +88,8 @@ import com.jlnavas3.bovedalocal.ui.theme.ColorPapelera
 fun PantallaDetalle(vm: VaultViewModel, id: String) {
     val contexto = LocalContext.current
     val haptica = remember { Haptica(contexto) }
-    val entrada = vm.entrada(id)
+    val estado by vm.estado.collectAsStateWithLifecycle()
+    val entrada = (estado as? EstadoBoveda.Desbloqueada)?.entradas?.find { it.id == id } ?: vm.entrada(id)
     val ajustes by vm.ajustes.collectAsStateWithLifecycle()
     var revelada by remember { mutableStateOf(false) }
     var confirmarBorrado by remember { mutableStateOf(false) }
@@ -140,7 +144,12 @@ fun PantallaDetalle(vm: VaultViewModel, id: String) {
                 Text(entrada.tipo.etiqueta, style = MaterialTheme.typography.bodyMedium, color = TextoSecundario)
             }
             IconButton(onClick = { haptica.tic(); vm.alternarFavorito(entrada.id) }) {
-                Icon(Icons.Filled.Star, contentDescription = "Favorito", tint = if (entrada.favorito) ColorTitulos else Borde)
+                Icon(
+                    imageVector = Icons.Filled.Star,
+                    contentDescription = if (entrada.favorito) "Quitar de favoritos" else "Marcar como favorito",
+                    tint = if (entrada.favorito) Ambar else ColorIconosInternos.copy(alpha = 0.35f),
+                    modifier = Modifier.size(26.dp)
+                )
             }
         }
 
@@ -148,10 +157,20 @@ fun PantallaDetalle(vm: VaultViewModel, id: String) {
 
         if (entrada.usuario.isNotBlank()) {
             TarjetaPepo {
-                EtiquetaSeccion("Usuario")
+                EtiquetaSeccion("Usuario o correo")
                 Spacer(Modifier.height(8.dp))
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(entrada.usuario, style = EstiloMono, color = TextoPrincipal, modifier = Modifier.weight(1f))
+                Text(
+                    text = entrada.usuario,
+                    style = EstiloMono,
+                    color = TextoPrincipal,
+                    modifier = Modifier.fillMaxWidth()
+                )
+                Spacer(Modifier.height(4.dp))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
                     BotonCopiar(copiado = ultimaCopia == "usuario") {
                         haptica.toque()
                         vm.copiar("Usuario", entrada.usuario, sensible = false)
@@ -166,30 +185,50 @@ fun PantallaDetalle(vm: VaultViewModel, id: String) {
             TarjetaPepo {
                 EtiquetaSeccion("Contraseña")
                 Spacer(Modifier.height(8.dp))
-                Row(verticalAlignment = Alignment.CenterVertically) {
+                if (revelada) {
                     Text(
                         text = contrasenaColoreada(entrada.contrasena),
                         style = EstiloMono,
-                        modifier = Modifier
-                            .weight(1f)
-                            .then(if (revelada) Modifier else Modifier.blur(9.dp))
-                            .clickable {
-                                haptica.toque()
-                                revelada = !revelada
-                            }
+                        modifier = Modifier.fillMaxWidth()
                     )
-                    BotonCopiar(copiado = ultimaCopia == "contrasena") {
-                        haptica.exito()
-                        vm.copiar("Contraseña", entrada.contrasena, sensible = true)
-                        ultimaCopia = "contrasena"
+                } else {
+                    Text(
+                        text = "•".repeat(entrada.contrasena.length.coerceIn(8, 24)),
+                        style = EstiloMonoGrande.copy(letterSpacing = 2.sp),
+                        color = TextoSecundario,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+                Spacer(Modifier.height(4.dp))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "${entrada.contrasena.length} caracteres",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = TextoSecundario
+                    )
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        IconButton(onClick = {
+                            haptica.toque()
+                            revelada = !revelada
+                        }) {
+                            Icon(
+                                imageVector = if (revelada) Icons.Filled.VisibilityOff else Icons.Filled.Visibility,
+                                contentDescription = if (revelada) "Ocultar contraseña" else "Mostrar contraseña",
+                                tint = ColorIconosInternos,
+                                modifier = Modifier.size(26.dp)
+                            )
+                        }
+                        BotonCopiar(copiado = ultimaCopia == "contrasena") {
+                            haptica.exito()
+                            vm.copiar("Contraseña", entrada.contrasena, sensible = true)
+                            ultimaCopia = "contrasena"
+                        }
                     }
                 }
-                Spacer(Modifier.height(6.dp))
-                Text(
-                    if (revelada) "Pulsa el texto para volver a ocultarla" else "Pulsa el texto para revelarla",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = TextoSecundario
-                )
             }
             Spacer(Modifier.height(12.dp))
         }
@@ -479,32 +518,33 @@ private fun FilaCampoPersonalizadoDetalle(
             }
         }
         Spacer(Modifier.height(6.dp))
+        Text(
+            text = when {
+                !esOculto -> campo.valor
+                revelado -> campo.valor
+                campo.tipo == TipoCampo.PIN -> "• ".repeat(campo.valor.length).trim()
+                else -> "•".repeat(campo.valor.length.coerceIn(8, 20))
+            },
+            style = if (esOculto && !revelado) EstiloMonoGrande.copy(letterSpacing = 2.sp) else if (esOculto) EstiloMono else MaterialTheme.typography.bodyLarge,
+            color = if (esOculto && !revelado) TextoSecundario else TextoPrincipal,
+            modifier = Modifier.fillMaxWidth()
+        )
+        Spacer(Modifier.height(4.dp))
         Row(
             modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.End,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(
-                text = when {
-                    !esOculto -> campo.valor
-                    revelado -> campo.valor
-                    campo.tipo == TipoCampo.PIN -> "• ".repeat(campo.valor.length).trim()
-                    else -> "••••••••••••"
-                },
-                style = if (esOculto) com.jlnavas3.bovedalocal.ui.theme.EstiloMono else MaterialTheme.typography.bodyLarge,
-                color = com.jlnavas3.bovedalocal.ui.theme.TextoPrincipal,
-                modifier = Modifier
-                    .weight(1f)
-                    .then(if (!esOculto || revelado) Modifier else Modifier.clickable { revelado = true })
-            )
             if (esOculto) {
                 IconButton(onClick = {
                     haptica.toque()
                     revelado = !revelado
                 }) {
                     Icon(
-                        if (revelado) Icons.Filled.VisibilityOff else Icons.Filled.Visibility,
+                        imageVector = if (revelado) Icons.Filled.VisibilityOff else Icons.Filled.Visibility,
                         contentDescription = if (revelado) "Ocultar" else "Revelar",
-                        tint = com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
+                        tint = ColorIconosInternos,
+                        modifier = Modifier.size(24.dp)
                     )
                 }
             }

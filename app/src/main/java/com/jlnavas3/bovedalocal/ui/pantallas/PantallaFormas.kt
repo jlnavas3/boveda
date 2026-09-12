@@ -138,6 +138,14 @@ fun PantallaFormas(vm: VaultViewModel) {
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 ChipPresetForma(
+                    etiqueta = "Predeterminado",
+                    descripcion = "6 dp / 0.8 dp",
+                    activo = ajustes.curvaturaEsquinasDp == 6f && ajustes.grosorBordeDp == 0.8f && ajustes.estiloBorde == "marcado"
+                ) {
+                    haptica.tic()
+                    vm.aplicarPresetFormas(curvatura = 6f, grosor = 0.8f, estilo = "marcado", espaciado = 14f)
+                }
+                ChipPresetForma(
                     etiqueta = "Redondeado",
                     descripcion = "18 dp / 1 dp",
                     activo = ajustes.curvaturaEsquinasDp == 18f && ajustes.grosorBordeDp == 1f && ajustes.estiloBorde == "sutil"

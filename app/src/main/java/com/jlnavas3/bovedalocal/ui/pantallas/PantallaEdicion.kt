@@ -18,11 +18,20 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.MenuBook
 import androidx.compose.material.icons.filled.AutoAwesome
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Description
+import androidx.compose.material.icons.filled.ExpandLess
+import androidx.compose.material.icons.filled.ExpandMore
+import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.Pattern
+import androidx.compose.material.icons.filled.Shuffle
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -41,6 +50,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.jlnavas3.bovedalocal.crypto.Base32
 import com.jlnavas3.bovedalocal.crypto.OpcionesGenerador
@@ -59,6 +69,8 @@ import com.jlnavas3.bovedalocal.ui.componentes.BotonColorido
 import com.jlnavas3.bovedalocal.ui.componentes.CabeceraPantalla
 import com.jlnavas3.bovedalocal.ui.componentes.CampoPepo
 import com.jlnavas3.bovedalocal.ui.componentes.EtiquetaSeccion
+import com.jlnavas3.bovedalocal.ui.componentes.MenuDesplegablePepo
+import com.jlnavas3.bovedalocal.ui.componentes.SeparadorOpcionMenu
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.Ambar
 import com.jlnavas3.bovedalocal.ui.theme.Borde
@@ -70,6 +82,7 @@ import com.jlnavas3.bovedalocal.ui.theme.ColorTitulos
 import com.jlnavas3.bovedalocal.ui.theme.DegradadoAmbar
 import com.jlnavas3.bovedalocal.ui.theme.EspaciadoComponentes
 import com.jlnavas3.bovedalocal.ui.theme.FormaBoton
+import com.jlnavas3.bovedalocal.ui.theme.FormaCampo
 import com.jlnavas3.bovedalocal.ui.theme.FormaPequena
 import com.jlnavas3.bovedalocal.ui.theme.FormaTarjeta
 import com.jlnavas3.bovedalocal.ui.theme.GrosorBorde
@@ -122,13 +135,13 @@ fun PantallaEdicion(vm: VaultViewModel, id: String?, contrasenaInicial: String) 
             alVolver = { vm.volverAtras() }
         )
 
-        if (original?.passkey == null) {
+        if (original == null) {
             EtiquetaSeccion("Tipo")
             Spacer(Modifier.height(8.dp))
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                SelectorTipo("Contraseña", tipo == TipoEntrada.LOGIN) { tipo = TipoEntrada.LOGIN }
-                SelectorTipo("Nota segura", tipo == TipoEntrada.NOTA) { tipo = TipoEntrada.NOTA }
-            }
+            SelectorTipoEntrada(
+                tipoActual = tipo,
+                alSeleccionarTipo = { tipo = it; haptica.tic() }
+            )
             Spacer(Modifier.height(16.dp))
         }
 
@@ -144,66 +157,33 @@ fun PantallaEdicion(vm: VaultViewModel, id: String?, contrasenaInicial: String) 
                 alCambiar = { contrasena = it },
                 esContrasena = true,
                 mostrarContrasena = mostrarContrasena,
+                alAlternarMostrarContrasena = { mostrarContrasena = !mostrarContrasena },
                 monoespaciada = true
             )
-            Spacer(Modifier.height(8.dp))
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                IconButton(
-                    onClick = { mostrarContrasena = !mostrarContrasena },
-                    modifier = Modifier.weight(1f)
-                ) {
-                    Icon(
-                        if (mostrarContrasena) Icons.Filled.VisibilityOff else Icons.Filled.Visibility,
-                        contentDescription = if (mostrarContrasena) "Ocultar contraseña" else "Mostrar contraseña",
-                        tint = ColorIconosInternos,
-                        modifier = Modifier.size(28.dp)
-                    )
-                }
-                IconButton(
-                    onClick = {
-                        haptica.toque()
-                        contrasena = PasswordGenerator.generar(opcionesGenerador)
-                    },
-                    modifier = Modifier.weight(1f)
-                ) {
-                    Icon(
-                        Icons.Filled.AutoAwesome,
-                        contentDescription = "Generar contraseña",
-                        tint = ColorIconosInternos,
-                        modifier = Modifier.size(28.dp)
-                    )
-                }
-                IconButton(
-                    onClick = { vm.ir(Pantalla.Generador) },
-                    modifier = Modifier.weight(1f)
-                ) {
-                    Icon(
-                        Icons.Filled.AutoAwesome,
-                        contentDescription = "Abrir generador completo",
-                        tint = ColorIconosInternos,
-                        modifier = Modifier.size(28.dp)
-                    )
-                }
-            }
             Spacer(Modifier.height(10.dp))
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                horizontalArrangement = Arrangement.spacedBy(10.dp),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                BotonModoCompacto("Aleatoria", !opcionesGenerador.modoFrase && !opcionesGenerador.modoPatron) {
-                    opcionesGenerador = opcionesGenerador.copy(modoFrase = false, modoPatron = false)
+                BotonAmbar(
+                    texto = "Generar",
+                    icono = Icons.Filled.AutoAwesome,
+                    modifier = Modifier.weight(1f)
+                ) {
+                    haptica.toque()
+                    contrasena = PasswordGenerator.generar(opcionesGenerador)
                 }
-                BotonModoCompacto("Diceware (${opcionesGenerador.palabras} pal.)", opcionesGenerador.modoFrase) {
-                    opcionesGenerador = opcionesGenerador.copy(modoFrase = true, modoPatron = false)
-                }
-                BotonModoCompacto("Por patrón", opcionesGenerador.modoPatron) {
-                    opcionesGenerador = opcionesGenerador.copy(modoFrase = false, modoPatron = true)
-                }
+                SelectorModoEdicion(
+                    opciones = opcionesGenerador,
+                    alCambiarOpciones = {
+                        haptica.tic()
+                        opcionesGenerador = it
+                    },
+                    modifier = Modifier.weight(1f)
+                )
             }
-            Spacer(Modifier.height(8.dp))
+            Spacer(Modifier.height(10.dp))
 
             when {
                 opcionesGenerador.modoFrase -> {
@@ -422,8 +402,9 @@ fun PantallaEdicion(vm: VaultViewModel, id: String?, contrasenaInicial: String) 
 
         Spacer(Modifier.height(20.dp))
         BotonColorido(
-            texto = if (original == null) "Guardar en la bóveda" else "Guardar cambios",
+            texto = if (original == null) "Guardar entrada" else "Guardar cambios",
             color = ColorAcento,
+            icono = Icons.Filled.Check,
             activo = puedeGuardar
         ) {
             haptica.exito()
@@ -446,7 +427,10 @@ fun PantallaEdicion(vm: VaultViewModel, id: String?, contrasenaInicial: String) 
             if (original == null) vm.volverAtras() else vm.ir(Pantalla.Detalle(entrada.id))
         }
         Spacer(Modifier.height(12.dp))
-        BotonBorde("Cancelar") {
+        BotonBorde(
+            texto = "Cancelar",
+            icono = Icons.Filled.Close
+        ) {
             vm.volverAtras()
         }
         Spacer(Modifier.height(32.dp))
@@ -501,44 +485,217 @@ private fun OpcionGeneradorCompacta(
 }
 
 @Composable
-private fun SelectorTipo(texto: String, activo: Boolean, alPulsar: () -> Unit) {
+private fun SelectorTipoEntrada(
+    tipoActual: TipoEntrada,
+    alSeleccionarTipo: (TipoEntrada) -> Unit
+) {
+    var abierto by remember { mutableStateOf(false) }
     val forma = FormaBoton
-    Box(
-        modifier = Modifier
-            .clip(forma)
-            .background(if (activo) DegradadoAmbar else Brush.horizontalGradient(listOf(Superficie, Superficie)))
-            .then(
-                if (GrosorBorde > 0.dp && ColorBordeActual != Color.Transparent)
-                    Modifier.border(GrosorBorde, if (activo) Ambar else ColorBordeActual, forma)
-                else Modifier
+
+    val icono = when (tipoActual) {
+        TipoEntrada.NOTA -> Icons.Filled.Description
+        else -> Icons.Filled.Lock
+    }
+    val texto = when (tipoActual) {
+        TipoEntrada.NOTA -> "Nota segura"
+        else -> "Contraseña"
+    }
+
+    Box(modifier = Modifier.fillMaxWidth()) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(52.dp)
+                .clip(forma)
+                .background(Superficie)
+                .then(
+                    if (GrosorBorde > 0.dp && (abierto || ColorBordeActual != Color.Transparent))
+                        Modifier.border(GrosorBorde, if (abierto) ColorTitulos else ColorBordeActual, forma)
+                    else Modifier
+                )
+                .clickable { abierto = true }
+                .padding(horizontal = 16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                imageVector = icono,
+                contentDescription = null,
+                tint = if (abierto) ColorIconosInternos else TextoSecundario,
+                modifier = Modifier.size(24.dp)
             )
-            .clickable { alPulsar() }
-            .padding(horizontal = 16.dp, vertical = 10.dp)
-    ) {
-        Text(texto, color = if (activo) ColorSobreAcento else TextoSecundario, style = MaterialTheme.typography.bodyMedium)
+            Spacer(Modifier.width(12.dp))
+            Text(
+                text = texto,
+                color = TextoPrincipal,
+                style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold),
+                modifier = Modifier.weight(1f)
+            )
+            Icon(
+                imageVector = if (abierto) Icons.Filled.ExpandLess else Icons.Filled.ExpandMore,
+                contentDescription = "Desplegar tipos de entrada",
+                tint = TextoSecundario,
+                modifier = Modifier.size(22.dp)
+            )
+        }
+
+        MenuDesplegablePepo(
+            expanded = abierto,
+            onDismissRequest = { abierto = false }
+        ) {
+            val opciones = listOf(
+                Triple(TipoEntrada.LOGIN, "Contraseña", Icons.Filled.Lock),
+                Triple(TipoEntrada.NOTA, "Nota segura", Icons.Filled.Description)
+            )
+
+            opciones.forEachIndexed { index, (t, titulo, ic) ->
+                if (index > 0) SeparadorOpcionMenu()
+                val seleccionado = tipoActual == t
+                DropdownMenuItem(
+                    leadingIcon = {
+                        Icon(
+                            imageVector = ic,
+                            contentDescription = null,
+                            tint = if (seleccionado) ColorIconosInternos else TextoSecundario,
+                            modifier = Modifier.size(22.dp)
+                        )
+                    },
+                    text = {
+                        Text(
+                            text = titulo,
+                            color = if (seleccionado) ColorTitulos else TextoPrincipal,
+                            style = MaterialTheme.typography.bodyMedium.copy(
+                                fontWeight = if (seleccionado) FontWeight.Bold else FontWeight.Normal
+                            )
+                        )
+                    },
+                    trailingIcon = if (seleccionado) {
+                        {
+                            Icon(
+                                imageVector = Icons.Filled.Check,
+                                contentDescription = null,
+                                tint = ColorIconosInternos,
+                                modifier = Modifier.size(20.dp)
+                            )
+                        }
+                    } else null,
+                    onClick = {
+                        alSeleccionarTipo(t)
+                        abierto = false
+                    }
+                )
+            }
+        }
     }
 }
 
 @Composable
-private fun BotonModoCompacto(texto: String, activo: Boolean, alPulsar: () -> Unit) {
-    val forma = FormaPequena
-    Box(
-        modifier = Modifier
-            .clip(forma)
-            .background(if (activo) DegradadoAmbar else Brush.horizontalGradient(listOf(SuperficieAlta, SuperficieAlta)))
-            .then(
-                if (GrosorBorde > 0.dp && ColorBordeActual != Color.Transparent)
-                    Modifier.border(GrosorBorde, if (activo) Ambar else ColorBordeActual, forma)
-                else Modifier
+private fun SelectorModoEdicion(
+    opciones: OpcionesGenerador,
+    alCambiarOpciones: (OpcionesGenerador) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    var abierto by remember { mutableStateOf(false) }
+    val forma = FormaBoton
+
+    val (icono, titulo) = when {
+        opciones.modoFrase -> Icons.AutoMirrored.Filled.MenuBook to "Diceware"
+        opciones.modoPatron -> Icons.Filled.Pattern to "Por patrón"
+        else -> Icons.Filled.Shuffle to "Aleatoria"
+    }
+
+    Box(modifier = modifier) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(52.dp)
+                .clip(forma)
+                .background(Superficie)
+                .then(
+                    if (GrosorBorde > 0.dp && (abierto || ColorBordeActual != Color.Transparent))
+                        Modifier.border(GrosorBorde, if (abierto) ColorTitulos else ColorBordeActual, forma)
+                    else Modifier
+                )
+                .clickable { abierto = true }
+                .padding(horizontal = 14.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                imageVector = icono,
+                contentDescription = null,
+                tint = if (abierto) ColorIconosInternos else TextoSecundario,
+                modifier = Modifier.size(22.dp)
             )
-            .clickable { alPulsar() }
-            .padding(horizontal = 12.dp, vertical = 8.dp)
-    ) {
-        Text(
-            texto,
-            style = MaterialTheme.typography.labelMedium,
-            color = if (activo) ColorSobreAcento else TextoSecundario
-        )
+            Spacer(Modifier.width(8.dp))
+            Text(
+                text = titulo,
+                color = TextoPrincipal,
+                style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold),
+                maxLines = 1,
+                overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
+                modifier = Modifier.weight(1f)
+            )
+            Icon(
+                imageVector = if (abierto) Icons.Filled.ExpandLess else Icons.Filled.ExpandMore,
+                contentDescription = "Desplegar modos",
+                tint = TextoSecundario,
+                modifier = Modifier.size(20.dp)
+            )
+        }
+
+        MenuDesplegablePepo(
+            expanded = abierto,
+            onDismissRequest = { abierto = false }
+        ) {
+            val listaModos = listOf(
+                Triple("Aleatoria", Icons.Filled.Shuffle) {
+                    opciones.copy(modoFrase = false, modoPatron = false)
+                },
+                Triple("Diceware", Icons.AutoMirrored.Filled.MenuBook) {
+                    opciones.copy(modoFrase = true, modoPatron = false)
+                },
+                Triple("Por patrón", Icons.Filled.Pattern) {
+                    opciones.copy(modoFrase = false, modoPatron = true)
+                }
+            )
+
+            listaModos.forEachIndexed { index, (nombre, ic, fnCambio) ->
+                if (index > 0) SeparadorOpcionMenu()
+                val seleccionado = titulo == nombre
+                DropdownMenuItem(
+                    leadingIcon = {
+                        Icon(
+                            imageVector = ic,
+                            contentDescription = null,
+                            tint = if (seleccionado) ColorIconosInternos else TextoSecundario,
+                            modifier = Modifier.size(20.dp)
+                        )
+                    },
+                    text = {
+                        Text(
+                            text = nombre,
+                            color = if (seleccionado) ColorTitulos else TextoPrincipal,
+                            style = MaterialTheme.typography.bodyMedium.copy(
+                                fontWeight = if (seleccionado) FontWeight.Bold else FontWeight.Normal
+                            )
+                        )
+                    },
+                    trailingIcon = if (seleccionado) {
+                        {
+                            Icon(
+                                imageVector = Icons.Filled.Check,
+                                contentDescription = null,
+                                tint = ColorIconosInternos,
+                                modifier = Modifier.size(18.dp)
+                            )
+                        }
+                    } else null,
+                    onClick = {
+                        alCambiarOpciones(fnCambio())
+                        abierto = false
+                    }
+                )
+            }
+        }
     }
 }
 
@@ -612,26 +769,14 @@ private fun TarjetaCampoPersonalizadoEdicion(
             alCambiar = { alModificar(campo.copy(etiqueta = it)) }
         )
         Spacer(Modifier.height(8.dp))
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Box(modifier = Modifier.weight(1f)) {
-                CampoPepo(
-                    valor = campo.valor,
-                    etiqueta = if (campo.tipo == TipoCampo.PIN) "Valor del PIN" else "Valor del campo",
-                    alCambiar = { alModificar(campo.copy(valor = it)) },
-                    esContrasena = campo.tipo != TipoCampo.TEXTO,
-                    mostrarContrasena = mostrarValor,
-                    monoespaciada = campo.tipo != TipoCampo.TEXTO
-                )
-            }
-            if (campo.tipo != TipoCampo.TEXTO) {
-                IconButton(onClick = { mostrarValor = !mostrarValor }) {
-                    Icon(
-                        if (mostrarValor) Icons.Filled.VisibilityOff else Icons.Filled.Visibility,
-                        contentDescription = "Mostrar/ocultar valor",
-                        tint = ColorIconosInternos
-                    )
-                }
-            }
-        }
+        CampoPepo(
+            valor = campo.valor,
+            etiqueta = if (campo.tipo == TipoCampo.PIN) "Valor del PIN" else "Valor del campo",
+            alCambiar = { alModificar(campo.copy(valor = it)) },
+            esContrasena = campo.tipo != TipoCampo.TEXTO,
+            mostrarContrasena = mostrarValor,
+            alAlternarMostrarContrasena = if (campo.tipo != TipoCampo.TEXTO) { { mostrarValor = !mostrarValor } } else null,
+            monoespaciada = campo.tipo != TipoCampo.TEXTO
+        )
     }
 }

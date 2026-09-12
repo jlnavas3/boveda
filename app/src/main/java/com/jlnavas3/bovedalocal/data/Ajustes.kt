@@ -49,9 +49,9 @@ data class AjustesApp(
     val totpManualAlgoritmo: String = "HmacSHA1",
     val totpSepararDigitos: Boolean = true,
     // Personalización de bordes y formas
-    val curvaturaEsquinasDp: Float = 18f,
-    val grosorBordeDp: Float = 1f,
-    val estiloBorde: String = "sutil",
+    val curvaturaEsquinasDp: Float = 6f,
+    val grosorBordeDp: Float = 0.8f,
+    val estiloBorde: String = "marcado",
     val espaciadoComponentesDp: Float = 14f,
     // Personalización de tipografía y textos
     val escalaTexto: Float = 1.0f,
@@ -76,8 +76,24 @@ data class AjustesApp(
     val colorGenerador: String = "",
     val colorSalud: String = "",
     val colorPapelera: String = "",
-    val colorExportacion: String = ""
+    val colorExportacion: String = "",
+    // Registro del archivo CSV importado de Google
+    val csvGoogleRuta: String = "",
+    val csvGoogleUri: String = "",
+    val csvGoogleCuentas: Int = 0,
+    val csvGoogleEliminado: Boolean = false,
+    // Índice Alfabético Lateral (Fast-scroller con ola estilo Niagara)
+    val mostrarIndiceAlfabetico: Boolean = true,
+    val indiceEfectoOla: Boolean = true,
+    val indiceAmplitudOlaDp: Float = 95f,
+    val indiceRadioOlaDp: Float = 220f,
+    val indiceEscalaLetras: Float = 1.9f,
+    val indiceMostrarCirculo: Boolean = true,
+    val indiceOffsetCirculoDp: Float = 145f,
+    val indiceHaptica: Boolean = true,
+    val indiceAnchoTactilDp: Float = 50f
 )
+
 
 class AlmacenAjustes(contexto: Context) {
 
@@ -96,6 +112,23 @@ class AlmacenAjustes(contexto: Context) {
         if (biometriaActiva && modo.isEmpty()) modo = "fuerte"
         val rawAutoBloqueo = prefs.getInt("auto_bloqueo", 30)
         val autoBloqueo = if (rawAutoBloqueo < 5) 30 else rawAutoBloqueo
+
+        // Migración única si el usuario tenía los valores por defecto previos (18dp / 1dp / sutil)
+        if (!prefs.getBoolean("v1_formas_defecto_v2", false)) {
+            val curvaturaPrevia = prefs.getFloat("curvatura_esquinas_dp", 18f)
+            val grosorPrevio = prefs.getFloat("grosor_borde_dp", 1f)
+            val estiloPrevio = prefs.getString("estilo_borde", "sutil") ?: "sutil"
+            val nuevaCurvatura = if (curvaturaPrevia == 18f) 6f else curvaturaPrevia
+            val nuevoGrosor = if (grosorPrevio == 1f) 0.8f else grosorPrevio
+            val nuevoEstilo = if (estiloPrevio == "sutil") "marcado" else estiloPrevio
+            prefs.edit()
+                .putBoolean("v1_formas_defecto_v2", true)
+                .putFloat("curvatura_esquinas_dp", nuevaCurvatura)
+                .putFloat("grosor_borde_dp", nuevoGrosor)
+                .putString("estilo_borde", nuevoEstilo)
+                .apply()
+        }
+
         return AjustesApp(
             autoBloqueoSegundos = autoBloqueo,
             portapapelesSegundos = prefs.getInt("portapapeles", 30),
@@ -119,9 +152,9 @@ class AlmacenAjustes(contexto: Context) {
             totpManualPeriodo = prefs.getInt("totp_manual_periodo", 30),
             totpManualAlgoritmo = prefs.getString("totp_manual_algoritmo", "HmacSHA1") ?: "HmacSHA1",
             totpSepararDigitos = prefs.getBoolean("totp_separar_digitos", true),
-            curvaturaEsquinasDp = prefs.getFloat("curvatura_esquinas_dp", 18f),
-            grosorBordeDp = prefs.getFloat("grosor_borde_dp", 1f),
-            estiloBorde = prefs.getString("estilo_borde", "sutil") ?: "sutil",
+            curvaturaEsquinasDp = prefs.getFloat("curvatura_esquinas_dp", 6f),
+            grosorBordeDp = prefs.getFloat("grosor_borde_dp", 0.8f),
+            estiloBorde = prefs.getString("estilo_borde", "marcado") ?: "marcado",
             espaciadoComponentesDp = prefs.getFloat("espaciado_componentes_dp", 14f),
             escalaTexto = prefs.getFloat("escala_texto", 1.0f),
             pesoTexto = prefs.getString("peso_texto", "normal") ?: "normal",
@@ -142,12 +175,25 @@ class AlmacenAjustes(contexto: Context) {
             colorGenerador = prefs.getString("color_generador", "") ?: "",
             colorSalud = prefs.getString("color_salud", "") ?: "",
             colorPapelera = prefs.getString("color_papelera", "") ?: "",
-            colorExportacion = prefs.getString("color_exportacion", "") ?: ""
+            colorExportacion = prefs.getString("color_exportacion", "") ?: "",
+            csvGoogleRuta = prefs.getString("csv_google_ruta", "") ?: "",
+            csvGoogleUri = prefs.getString("csv_google_uri", "") ?: "",
+            csvGoogleCuentas = prefs.getInt("csv_google_cuentas", 0),
+            csvGoogleEliminado = prefs.getBoolean("csv_google_eliminado", false),
+            mostrarIndiceAlfabetico = prefs.getBoolean("mostrar_indice_alfabetico", true),
+            indiceEfectoOla = prefs.getBoolean("indice_efecto_ola", true),
+            indiceAmplitudOlaDp = prefs.getFloat("indice_amplitud_ola_dp", 95f),
+            indiceRadioOlaDp = prefs.getFloat("indice_radio_ola_dp", 220f),
+            indiceEscalaLetras = prefs.getFloat("indice_escala_letras", 1.9f),
+            indiceMostrarCirculo = prefs.getBoolean("indice_mostrar_circulo", true),
+            indiceOffsetCirculoDp = prefs.getFloat("indice_offset_circulo_dp", 145f),
+            indiceHaptica = prefs.getBoolean("indice_haptica", true),
+            indiceAnchoTactilDp = prefs.getFloat("indice_ancho_tactil_dp", 50f)
         )
     }
 
-    fun actualizar(bloque: (AjustesApp) -> AjustesApp) {
-        val nuevo = bloque(_ajustes.value)
+    fun actualizar(transformar: (AjustesApp) -> AjustesApp) {
+        val nuevo = transformar(_ajustes.value)
         prefs.edit()
             .putInt("auto_bloqueo", nuevo.autoBloqueoSegundos)
             .putInt("portapapeles", nuevo.portapapelesSegundos)
@@ -195,6 +241,19 @@ class AlmacenAjustes(contexto: Context) {
             .putString("color_salud", nuevo.colorSalud)
             .putString("color_papelera", nuevo.colorPapelera)
             .putString("color_exportacion", nuevo.colorExportacion)
+            .putString("csv_google_ruta", nuevo.csvGoogleRuta)
+            .putString("csv_google_uri", nuevo.csvGoogleUri)
+            .putInt("csv_google_cuentas", nuevo.csvGoogleCuentas)
+            .putBoolean("csv_google_eliminado", nuevo.csvGoogleEliminado)
+            .putBoolean("mostrar_indice_alfabetico", nuevo.mostrarIndiceAlfabetico)
+            .putBoolean("indice_efecto_ola", nuevo.indiceEfectoOla)
+            .putFloat("indice_amplitud_ola_dp", nuevo.indiceAmplitudOlaDp)
+            .putFloat("indice_radio_ola_dp", nuevo.indiceRadioOlaDp)
+            .putFloat("indice_escala_letras", nuevo.indiceEscalaLetras)
+            .putBoolean("indice_mostrar_circulo", nuevo.indiceMostrarCirculo)
+            .putFloat("indice_offset_circulo_dp", nuevo.indiceOffsetCirculoDp)
+            .putBoolean("indice_haptica", nuevo.indiceHaptica)
+            .putFloat("indice_ancho_tactil_dp", nuevo.indiceAnchoTactilDp)
             .apply()
         _ajustes.value = nuevo
     }

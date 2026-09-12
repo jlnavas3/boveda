@@ -2,7 +2,6 @@ package com.jlnavas3.bovedalocal.ui.pantallas
 
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.keyframes
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -12,6 +11,9 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Fingerprint
+import androidx.compose.material.icons.filled.LockOpen
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -37,7 +39,6 @@ import com.jlnavas3.bovedalocal.ui.componentes.BotonAmbar
 import com.jlnavas3.bovedalocal.ui.componentes.BotonBorde
 import com.jlnavas3.bovedalocal.ui.componentes.CampoPepo
 import com.jlnavas3.bovedalocal.ui.componentes.PuertaBoveda
-import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.ColorTitulos
 import com.jlnavas3.bovedalocal.ui.theme.TextoPrincipal
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
@@ -118,18 +119,16 @@ fun PantallaDesbloqueo(vm: VaultViewModel, actividad: FragmentActivity) {
                 alCambiar = { contrasena = it },
                 esContrasena = true,
                 mostrarContrasena = mostrar,
+                alAlternarMostrarContrasena = { mostrar = !mostrar },
                 monoespaciada = true
             )
         }
-        Spacer(Modifier.height(8.dp))
-        Text(
-            if (mostrar) "Ocultar contraseña" else "Mostrar contraseña",
-            color = ColorAcento,
-            style = MaterialTheme.typography.labelLarge,
-            modifier = Modifier.clickable { mostrar = !mostrar }
-        )
         Spacer(Modifier.height(20.dp))
-        BotonAmbar("Abrir bóveda", activo = contrasena.isNotEmpty()) {
+        BotonAmbar(
+            texto = "Abrir bóveda",
+            icono = Icons.Filled.LockOpen,
+            activo = contrasena.isNotEmpty()
+        ) {
             vm.desbloquear(contrasena) { correcto ->
                 if (correcto) {
                     abriendo = true
@@ -143,7 +142,10 @@ fun PantallaDesbloqueo(vm: VaultViewModel, actividad: FragmentActivity) {
         }
         if (biometriaUsable) {
             Spacer(Modifier.height(12.dp))
-            BotonBorde(flujo.etiquetaBoton()) { lanzarBiometria() }
+            BotonBorde(
+                texto = flujo.etiquetaBoton(),
+                icono = Icons.Filled.Fingerprint
+            ) { lanzarBiometria() }
         }
         mensajeBiometria?.let {
             Spacer(Modifier.height(14.dp))

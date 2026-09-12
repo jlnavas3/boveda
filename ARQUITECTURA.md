@@ -100,6 +100,7 @@ app/src/main/java/com/jlnavas3/bovedalocal/
 │   ├── MainActivity.kt          # Actividad principal, Scaffold raíz, inactividad y transiciones
 │   ├── VaultViewModel.kt        # ViewModel unificado: estado, navegación con pila y operaciones CRUD
 │   ├── componentes/             # Componentes reusables (botones, campos, selector de color, tarjetas)
+│   │   ├── IndiceAlfabetico.kt  # Fast-scroller táctil con ola continua Niagara y aceleración GPU
 │   ├── pantallas/               # Vistas Compose de cada sección de la app
 │   └── theme/                   # Sistema de diseño, paleta de colores y estilos dinámicos
 ├── util/                        # Utilidades auxiliares
@@ -313,12 +314,26 @@ La aplicación implementa un motor de diseño visual en tiempo real parametrizad
   - `colorExportacion`: Respaldos y transferencias.
 - **Geometría y Espaciado:** `curvaturaEsquinasDp` (radio de bordes), `grosorBordeDp`, `estiloBorde`, `espaciadoComponentesDp`.
 - **Tipografía Dinámica:** `escalaTexto`, `pesoTexto`, `cursivaTexto`, `familiaFuente` (sans, serif, mono, redonda), `espaciadoLetrasSp`, `interlineadoFactor`.
+- **Abecedario Lateral (Fast-Scroller Niagara):** `mostrarIndiceAlfabetico`, `indiceEfectoOla`, `indiceAmplitudOlaDp`, `indiceRadioOlaDp`, `indiceEscalaLetras`, `indiceMostrarCirculo`, `indiceOffsetCirculoDp`, `indiceHaptica`, `indiceAnchoTactilDp`.
 
 ### Componentes Normalizados (`com.jlnavas3.bovedalocal.ui.componentes.*`)
 - `TarjetaConBorde`: Contenedor estándar con borde sutil o marcado, respetando el radio de esquinas global.
-- `BotonAccion` / `BotonSemantico`: Botón con estilo unificado y soporte para color semántico personalizado.
+- `BotonColorido` / `BotonAmbar` / `BotonBorde`: Botones con altura normalizada de **52 dp**, tipografía centrada de alta legibilidad, soporte para iconos alineados a la izquierda y microinteracciones hápticas.
 - `BotonVolverAtras`: Botón de navegación atrás estandarizado con flecha y rótulo accesible.
 - `SelectorColorEnTiempoReal`: Diálogo emergente interactivo para seleccionar tonos HSL y previsualizar cambios en vivo.
+- `IndiceAlfabetico`: Fast-scroller táctil con curvatura fluida estilo Niagara Launcher:
+  - **Matemática de Curvatura Continua ($C^1$):** Calcula la deformación con una función de medio coseno amortiguada:
+    $$w(y) = \left(\frac{1 + \cos(\pi \Delta y / R)}{2}\right)^{1.15}$$
+    lo que produce una tangencia natural de primera derivada cero al incorporarse a la línea vertical recta.
+  - **Escalado Progresivo en GPU:** Acelerado mediante `Modifier.graphicsLayer { scaleX = escala; scaleY = escala; translationX = desplazo; alpha = opacidad }`, ejecutando las transformaciones directamente en el RenderNode de Android a **120 FPS nativos** sin desencadenar recomposiciones de layout ni relayouts.
+  - **Captura Gestual de Área Amplia:** El contenedor `Box` define un ancho `anchoZonaTactilDp` (50 dp por defecto, configurable de 26 a 90 dp) y consume el evento inicial (`down.consume()`), permitiendo iniciar el arrastre con máxima comodidad y canal despejado de 36 dp en las tarjetas.
+  - **Burbuja Flotante de Cresta:** Diámetro de 78 dp sin bordes, fondo con degradado ámbar, elevación de 14 dp y letra en 38 sp proyectada casi a media pantalla.
+- `Animaciones.kt (AnimacionBoveda)`: Motor de renderizado con 4 anillos concéntricos independientes animados mediante reloj de fotogramas por hardware (`withFrameMillis`). Garantiza velocidad angular constante sin tirones ni reinicios periódicos y opera de forma indestructible incluso si las animaciones del sistema operativo se encuentran desactivadas (`animator_duration_scale = 0`).
+
+### Normalización de Pantallas Principales
+- **`PantallaDesbloqueo`**: Integración del campo de contraseña con botón de visibilidad embebido (`Icons.Filled.Visibility` / `VisibilityOff`) de 26 dp a la derecha, botón `BotonAmbar` de 52 dp con icono de candado y botón biométrico con lectura de modo Keystore.
+- **`PantallaDetalle`**: Ancho horizontal completo para evitar saltos prematuros de línea en nombres de usuario y credenciales extensas; eliminación del `Modifier.blur` inseguro y reemplazo por enmascaramiento con puntos sólidos grandes (`•`); barra de acciones inferior dedicada con contador de caracteres y botón de favoritos reactivo.
+- **`PantallaEdicion`**: Botón de generación normalizado a 52 dp en división 50/50 junto a selector desplegable de modos (Aleatoria, Diceware, Patrón) sin navegación externa; selector de tipo de credencial en dropdown protegido contra cambios destructivos en entradas existentes; unificación del medidor de entropía y tiempo de ataque de fuerza bruta con la pantalla del generador.
 
 ---
 
@@ -389,7 +404,7 @@ Cuando implementes nuevas características o corrijas errores, cumple con esta l
 4. **[OBLIGATORIO] Usar `vm.volverAtras()`:** Para botones de retorno en pantallas secundarias, invocar siempre `vm.volverAtras()`. No reinicializar pantallas saltando arbitrariamente a `Pantalla.Lista`.
 5. **[OBLIGATORIO] Zeroizar secretos:** Cada vez que utilices un `ByteArray` o `CharArray` para contraseñas, sal, nonce o claves AES, llama a `Zeroizar.borrar(...)` en un bloque `finally`.
 6. **[OBLIGATORIO] No bloquear hilos con Argon2:** La función `VaultCrypto.derivarClave(...)` debe correr en `Dispatchers.Default` o `Dispatchers.IO`, nunca bajo sincronizaciones que puedan retrasar el hilo principal.
-7. **[OBLIGATORIO] Ejecutar pruebas unitarias:** Antes de dar por finalizada una tarea, verificar que `./gradlew testDebugUnitTest` pase al 100%.
+7. **[OBLIGATORIO] Ejecutar pruebas unitarias:** Antes de dar por finalizada una tarea, verificar que `./gradlew testDebugUnitTest` pase al 100% (140 tests unitarios automatizados).
 
 ---
 
@@ -406,8 +421,8 @@ Cuando implementes nuevas características o corrijas errores, cumple con esta l
 
 ### Gestión de Versiones Automática
 El proyecto gestiona su versionado semántico de forma dinámica mediante `version.properties` y el conteo acumulativo de commits Git:
-- **`versionName`**: derivado de `major.minor.patch` (ej. `1.0.0`).
-- **`versionCode`**: calculado estrictamente como `major * 100000 + minor * 10000 + patch * 1000 + commits` (ej. `100029`), garantizando incrementos numéricos automáticos con cada cambio.
+- **`versionName`**: derivado de `major.minor.patch` (ej. `1.0.1`).
+- **`versionCode`**: calculado estrictamente como `major * 100000 + minor * 10000 + patch * 1000 + commits` (ej. `100030`), garantizando incrementos numéricos automáticos con cada cambio.
 
 ```bash
 # Ver versión actual detallada
@@ -425,7 +440,7 @@ El proyecto gestiona su versionado semántico de forma dinámica mediante `versi
 
 
 ### Ejecución de Pruebas Automatizadas
-La suite cuenta con cobertura exhaustiva de lógica de negocio, criptografía, dominios, modelos y filtros:
+La suite cuenta con cobertura exhaustiva de lógica de negocio, criptografía, dominios, modelos, filtros y navegación alfabética (140 tests unitarios verificados al 100%):
 ```bash
 # Ejecutar todas las pruebas unitarias de JVM
 ./gradlew testDebugUnitTest

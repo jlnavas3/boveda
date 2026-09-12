@@ -41,6 +41,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.jlnavas3.bovedalocal.ui.theme.Borde
@@ -374,25 +376,47 @@ fun BotonColorido(
             .clickable(enabled = activo) { alPulsar() },
         contentAlignment = Alignment.Center
     ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            if (icono != null) {
+        if (icono != null) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 12.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
                 Icon(
                     imageVector = icono,
                     contentDescription = null,
                     tint = if (activo) colorTexto else TextoSecundario,
-                    modifier = Modifier.size(20.dp)
+                    modifier = Modifier.size(26.dp)
+                )
+                Spacer(Modifier.width(8.dp))
+                Text(
+                    text = texto,
+                    color = if (activo) colorTexto else TextoSecundario,
+                    style = MaterialTheme.typography.labelLarge.copy(
+                        fontSize = (15 * escala * EscalaTexto).sp,
+                        fontWeight = FontWeight.SemiBold
+                    ),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.weight(1f)
                 )
             }
+        } else {
             Text(
                 text = texto,
                 color = if (activo) colorTexto else TextoSecundario,
                 style = MaterialTheme.typography.labelLarge.copy(
                     fontSize = (15 * escala * EscalaTexto).sp,
                     fontWeight = FontWeight.SemiBold
-                )
+                ),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                textAlign = TextAlign.Center,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
             )
         }
     }

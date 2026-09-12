@@ -5,8 +5,10 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -37,7 +39,11 @@ import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
 import kotlinx.coroutines.delay
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ContentCopy
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.QrCodeScanner
+import androidx.compose.material.icons.filled.Timer
+import androidx.compose.material3.Icon
 import com.jlnavas3.bovedalocal.ui.componentes.BotonColorido
 import com.jlnavas3.bovedalocal.ui.componentes.CabeceraPantalla
 import com.jlnavas3.bovedalocal.ui.theme.Color2FA
@@ -69,23 +75,45 @@ fun PantallaAutenticador(vm: VaultViewModel, estado: EstadoBoveda) {
         )
 
         BotonColorido(
-            texto = "Escanear QR con la cámara",
+            texto = "Escanear código QR",
             color = Color2FA,
             icono = Icons.Filled.QrCodeScanner
         ) { vm.ir(Pantalla.Escaner()) }
         Spacer(Modifier.height(10.dp))
-        BotonBorde("Escribir el código a mano") { vm.ir(Pantalla.Escaner(soloManual = true)) }
+        BotonBorde(
+            texto = "Escribir clave a mano",
+            icono = Icons.Filled.Edit
+        ) { vm.ir(Pantalla.Escaner(soloManual = true)) }
         Spacer(Modifier.height(18.dp))
 
         if (conTotp.isEmpty()) {
             TarjetaPepo {
-                Text("Todavía no hay dobles factores", color = ColorTitulos, style = MaterialTheme.typography.titleMedium)
-                Spacer(Modifier.height(6.dp))
-                Text(
-                    "Cuando una web te ofrezca activar el 2FA, escanea su QR o pega su clave. Aquí verás el código de 6 dígitos.",
-                    color = TextoSecundario,
-                    style = MaterialTheme.typography.bodyMedium
-                )
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 12.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.Timer,
+                        contentDescription = null,
+                        tint = Color2FA,
+                        modifier = Modifier.size(48.dp)
+                    )
+                    Spacer(Modifier.height(10.dp))
+                    Text(
+                        "Todavía no hay dobles factores",
+                        color = ColorTitulos,
+                        style = MaterialTheme.typography.titleMedium
+                    )
+                    Spacer(Modifier.height(6.dp))
+                    Text(
+                        "Cuando una web te ofrezca activar el 2FA, escanea su QR o pega su clave. Aquí verás el código de 6 dígitos actualizado cada 30 segundos.",
+                        color = TextoSecundario,
+                        style = MaterialTheme.typography.bodyMedium,
+                        textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                    )
+                }
             }
         } else {
             conTotp.forEach { entrada ->
@@ -104,13 +132,14 @@ fun PantallaAutenticador(vm: VaultViewModel, estado: EstadoBoveda) {
                     }
                 }
                 TarjetaPepo(alPulsar = { vm.copiar("Código 2FA", codigo, true) }) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        // El anillo solo lleva la cuenta atras. Los 6 digitos van fuera,
-                        // grandes: dentro del circulo no caben legibles.
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
                         AnilloTotp(
                             codigo = "",
                             segundosRestantes = Totp.segundosRestantes(ahora, periodo),
-                            tamano = 56,
+                            tamano = 54,
                             periodo = periodo
                         )
                         Spacer(Modifier.width(14.dp))
@@ -128,10 +157,16 @@ fun PantallaAutenticador(vm: VaultViewModel, estado: EstadoBoveda) {
                                 style = MaterialTheme.typography.headlineMedium
                             )
                             if (entrada.usuario.isNotBlank()) {
-                                Text(entrada.usuario, color = TextoSecundario, style = MaterialTheme.typography.bodyMedium)
+                                Text(entrada.usuario, color = TextoSecundario, style = MaterialTheme.typography.bodySmall)
                             }
-                            Text("Toca para copiar", color = TextoSecundario, style = MaterialTheme.typography.bodyMedium)
+                            Text("Toca para copiar", color = TextoSecundario, style = MaterialTheme.typography.bodySmall)
                         }
+                        Icon(
+                            imageVector = Icons.Filled.ContentCopy,
+                            contentDescription = null,
+                            tint = TextoSecundario.copy(alpha = 0.5f),
+                            modifier = Modifier.size(20.dp)
+                        )
                     }
                 }
                 Spacer(Modifier.height(10.dp))

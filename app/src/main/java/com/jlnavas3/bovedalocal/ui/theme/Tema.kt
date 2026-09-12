@@ -1,5 +1,8 @@
 package com.jlnavas3.bovedalocal.ui.theme
 
+import android.app.Activity
+import android.content.Context
+import android.content.ContextWrapper
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -12,16 +15,20 @@ import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.font.FontStyle
+import androidx.core.view.WindowCompat
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.coerceAtLeast
 import androidx.compose.ui.unit.dp
@@ -67,7 +74,7 @@ private val paletaClara = PaletaBase(
 )
 
 private var paletaActiva by mutableStateOf(paletaOscura)
-private var esOscuroActivo by mutableStateOf(true)
+var esOscuroActivo by mutableStateOf(true)
 
 val Obsidiana: Color get() = paletaActiva.fondo
 val Superficie: Color get() = paletaActiva.superficie
@@ -115,35 +122,36 @@ fun Color.aHex(): String {
     return String.format("#%02X%02X%02X", r, g, b)
 }
 
-private var colorAcentoBase by mutableStateOf(Color(0xFFFFB74D))
-private var colorAcentoFuerteBase by mutableStateOf(Color(0xFFFF8A3D))
-private var colorIconosBase by mutableStateOf(Color(0xFFFFB74D))
-private var colorTitulosBase by mutableStateOf(Color(0xFFFFB74D))
-private var colorTarjetasBase by mutableStateOf(paletaOscura.superficieAlta)
+private var paletaAcentoActiva by mutableStateOf<PaletaAcento?>(PaletaAcento.AMBAR)
+private var colorAcentoManual by mutableStateOf<Color?>(null)
+private var colorAcentoFuerteManual by mutableStateOf<Color?>(null)
+private var colorIconosBase by mutableStateOf<Color?>(null)
+private var colorTitulosBase by mutableStateOf<Color?>(null)
+private var colorTarjetasBase by mutableStateOf<Color?>(null)
 
 var ColorAcento: Color
-    get() = colorAcentoBase
+    get() = colorAcentoManual ?: paletaAcentoActiva?.base ?: PaletaAcento.AMBAR.base
     set(valor) {
-        colorAcentoBase = valor
-        colorAcentoFuerteBase = valor
+        colorAcentoManual = valor
+        colorAcentoFuerteManual = valor
     }
 
 var ColorAcentoFuerte: Color
-    get() = colorAcentoFuerteBase
-    set(valor) { colorAcentoFuerteBase = valor }
+    get() = colorAcentoFuerteManual ?: paletaAcentoActiva?.fuerte ?: PaletaAcento.AMBAR.fuerte
+    set(valor) { colorAcentoFuerteManual = valor }
 
 val ColorSobreAcento: Color get() = colorContraste(ColorAcento)
 
 var ColorIconosInternos: Color
-    get() = colorIconosBase
+    get() = colorIconosBase ?: if (esOscuroActivo) Color(0xFFD6DAE2) else Color(0xFF1E232E)
     set(valor) { colorIconosBase = valor }
 
 var ColorTitulos: Color
-    get() = colorTitulosBase
+    get() = colorTitulosBase ?: if (esOscuroActivo) Color(0xFFF3F4F8) else Color(0xFF11141A)
     set(valor) { colorTitulosBase = valor }
 
 var ColorTarjetas: Color
-    get() = colorTarjetasBase
+    get() = colorTarjetasBase ?: if (esOscuroActivo) paletaOscura.superficieAlta else paletaClara.superficie
     set(valor) { colorTarjetasBase = valor }
 
 val ColorSobreTarjetas: Color get() = colorContraste(ColorTarjetas)
@@ -170,28 +178,33 @@ var ColorDinamicoSistema: Boolean
 fun aplicarPersonalizacionColores(ajustes: com.jlnavas3.bovedalocal.data.AjustesApp) {
     colorDinamicoSistemaBase = ajustes.colorDinamicoSistema
     val paleta = PaletaAcento.entries.firstOrNull { it.clave == ajustes.colorAcento }
-    val base = paleta?.base ?: parsearColorO(ajustes.colorAcento, PaletaAcento.AMBAR.base)
-    val fuerte = paleta?.fuerte ?: base
-    colorAcentoBase = base
-    colorAcentoFuerteBase = fuerte
+    if (paleta != null) {
+        paletaAcentoActiva = paleta
+        colorAcentoManual = null
+        colorAcentoFuerteManual = null
+    } else {
+        paletaAcentoActiva = null
+        val custom = parsearColorO(ajustes.colorAcento, PaletaAcento.AMBAR.base)
+        colorAcentoManual = custom
+        colorAcentoFuerteManual = custom
+    }
 
     colorIconosBase = if (ajustes.colorIconosInternos.isNotBlank()) {
-        parsearColorO(ajustes.colorIconosInternos, base)
+        parsearColorO(ajustes.colorIconosInternos, if (esOscuroActivo) Color(0xFFD6DAE2) else Color(0xFF1E232E))
     } else {
-        base
+        null
     }
 
     colorTitulosBase = if (ajustes.colorTitulos.isNotBlank()) {
-        parsearColorO(ajustes.colorTitulos, base)
+        parsearColorO(ajustes.colorTitulos, if (esOscuroActivo) Color(0xFFF3F4F8) else Color(0xFF11141A))
     } else {
-        base
+        null
     }
 
-    val tarjetaPorDefecto = if (esOscuroActivo) paletaOscura.superficieAlta else paletaClara.superficieAlta
     colorTarjetasBase = if (ajustes.colorTarjetas.isNotBlank()) {
-        parsearColorO(ajustes.colorTarjetas, tarjetaPorDefecto)
+        parsearColorO(ajustes.colorTarjetas, if (esOscuroActivo) paletaOscura.superficieAlta else paletaClara.superficie)
     } else {
-        tarjetaPorDefecto
+        null
     }
 
     // Colores semánticos de secciones funcionales
@@ -245,9 +258,9 @@ var ColorExportacion: Color
 // Tokens Dinámicos de Bordes, Formas y Espaciado (Snapshot State en tiempo real)
 // -------------------------------------------------------------------------------------------------
 
-private var curvaturaEsquinasDpBase by mutableStateOf(18f)
-private var grosorBordeDpBase by mutableStateOf(1f)
-private var estiloBordeBase by mutableStateOf("sutil")
+private var curvaturaEsquinasDpBase by mutableStateOf(6f)
+private var grosorBordeDpBase by mutableStateOf(0.8f)
+private var estiloBordeBase by mutableStateOf("marcado")
 private var espaciadoComponentesDpBase by mutableStateOf(14f)
 
 var CurvaturaEsquinasDp: Float
@@ -277,6 +290,28 @@ val ColorBordeActual: Color get() = when (estiloBordeBase) {
     "marcado" -> if (esOscuroActivo) Color(0xFF63718E) else Color(0xFF9AA3B8)
     "ninguno" -> Color.Transparent
     else -> paletaActiva.borde
+}
+
+/** Borde externo para el contenedor de menús desplegables (DropdownMenu), adaptativo y sutil. */
+val ColorBordeDropdown: Color get() = when (estiloBordeBase) {
+    "acento" -> ColorAcento.copy(alpha = if (esOscuroActivo) 0.45f else 0.55f)
+    "marcado" -> if (esOscuroActivo) Color(0xFF455066) else Color(0xFFB8BFCE)
+    "ninguno" -> if (esOscuroActivo) Color(0xFF2E3545) else Color(0xFFE2E5EC)
+    else -> if (esOscuroActivo) Color(0xFF3A4356) else Color(0xFFD4D8E2)
+}
+
+/** Separador o divisor sutil entre las opciones de un menú desplegable (DropdownMenu). */
+val ColorSeparadorDropdown: Color get() = if (esOscuroActivo) Color(0xFF2A3140) else Color(0xFFE0E3EB)
+
+/** Tono del encabezado para tarjetas desplegables: sutilmente más oscuro que el cuerpo. */
+val ColorEncabezadoTarjeta: Color get() {
+    val factor = if (esOscuroActivo) 0.72f else 0.91f
+    return Color(
+        red = (ColorTarjetas.red * factor).coerceIn(0f, 1f),
+        green = (ColorTarjetas.green * factor).coerceIn(0f, 1f),
+        blue = (ColorTarjetas.blue * factor).coerceIn(0f, 1f),
+        alpha = 1f
+    )
 }
 
 val FormaTarjeta: RoundedCornerShape get() = RoundedCornerShape(CurvaturaEsquinas)
@@ -358,28 +393,38 @@ fun aplicarPersonalizacionTemaCompleto(ajustes: com.jlnavas3.bovedalocal.data.Aj
     aplicarPersonalizacionTipografia(ajustes)
 }
 
-/** Paletas de acento que puede elegir el usuario en Ajustes > Apariencia: colorean el tema Y el icono del launcher a la vez (20 colores, como en Fossify). */
-enum class PaletaAcento(val clave: String, val etiqueta: String, val base: Color, val fuerte: Color) {
-    AMBAR("ambar", "Ámbar", Color(0xFFFFB74D), Color(0xFFFF8A3D)),
-    MENTA("menta", "Menta", Color(0xFF57E6B4), Color(0xFF23C08D)),
-    AZUL("azul", "Azul", Color(0xFF6FA8FF), Color(0xFF3D7EFF)),
-    ROSA("rosa", "Rosa", Color(0xFFFF8FCB), Color(0xFFFF5FA8)),
-    VIOLETA("violeta", "Violeta", Color(0xFFB98BFF), Color(0xFF8C5CFF)),
-    ROJO("rojo", "Rojo", Color(0xFFF44336), Color(0xFFD32F2F)),
-    PURPURA("purpura", "Púrpura", Color(0xFF9C27B0), Color(0xFF7B1FA2)),
-    PURPURA_OSCURO("purpura_oscuro", "Púrpura oscuro", Color(0xFF673AB7), Color(0xFF512DA8)),
-    INDIGO("indigo", "Índigo", Color(0xFF3F51B5), Color(0xFF303F9F)),
-    CELESTE("celeste", "Celeste", Color(0xFF03A9F4), Color(0xFF0288D1)),
-    CIAN("cian", "Cian", Color(0xFF00BCD4), Color(0xFF0097A7)),
-    VERDE("verde", "Verde", Color(0xFF4CAF50), Color(0xFF388E3C)),
-    VERDE_CLARO("verde_claro", "Verde claro", Color(0xFF8BC34A), Color(0xFF689F38)),
-    LIMA("lima", "Lima", Color(0xFFCDDC39), Color(0xFFAFB42B)),
-    AMARILLO("amarillo", "Amarillo", Color(0xFFFFEB3B), Color(0xFFFBC02D)),
-    NARANJA("naranja", "Naranja", Color(0xFFFF9800), Color(0xFFF57C00)),
-    NARANJA_OSCURO("naranja_oscuro", "Naranja oscuro", Color(0xFFFF5722), Color(0xFFE64A19)),
-    MARRON("marron", "Marrón", Color(0xFF795548), Color(0xFF5D4037)),
-    GRIS("gris", "Gris", Color(0xFF9E9E9E), Color(0xFF616161)),
-    GRIS_AZULADO("gris_azulado", "Gris azulado", Color(0xFF607D8B), Color(0xFF455A64));
+/** Paletas de acento que puede elegir el usuario en Ajustes > Apariencia: optimizadas para contraste en tema oscuro y claro. */
+enum class PaletaAcento(
+    val clave: String,
+    val etiqueta: String,
+    val baseOscura: Color,
+    val baseClara: Color,
+    val fuerteOscuro: Color,
+    val fuerteClaro: Color
+) {
+    AMBAR("ambar", "Ámbar", Color(0xFFFFB74D), Color(0xFFC05621), Color(0xFFFF8A3D), Color(0xFF9C4221)),
+    MENTA("menta", "Menta", Color(0xFF57E6B4), Color(0xFF0D9488), Color(0xFF23C08D), Color(0xFF0F766E)),
+    AZUL("azul", "Azul", Color(0xFF6FA8FF), Color(0xFF2563EB), Color(0xFF3D7EFF), Color(0xFF1D4ED8)),
+    ROSA("rosa", "Rosa", Color(0xFFFF8FCB), Color(0xFFDB2777), Color(0xFFFF5FA8), Color(0xFFBE185D)),
+    VIOLETA("violeta", "Violeta", Color(0xFFB98BFF), Color(0xFF7C3AED), Color(0xFF8C5CFF), Color(0xFF6D28D9)),
+    ROJO("rojo", "Rojo", Color(0xFFF44336), Color(0xFFDC2626), Color(0xFFD32F2F), Color(0xFFB91C1C)),
+    PURPURA("purpura", "Púrpura", Color(0xFF9C27B0), Color(0xFF7E22CE), Color(0xFF7B1FA2), Color(0xFF6B21A8)),
+    PURPURA_OSCURO("purpura_oscuro", "Púrpura oscuro", Color(0xFF673AB7), Color(0xFF5B21B6), Color(0xFF512DA8), Color(0xFF4C1D95)),
+    INDIGO("indigo", "Índigo", Color(0xFF3F51B5), Color(0xFF3730A3), Color(0xFF303F9F), Color(0xFF312E81)),
+    CELESTE("celeste", "Celeste", Color(0xFF03A9F4), Color(0xFF0284C7), Color(0xFF0288D1), Color(0xFF0369A1)),
+    CIAN("cian", "Cian", Color(0xFF00BCD4), Color(0xFF0891B2), Color(0xFF0097A7), Color(0xFF0E7490)),
+    VERDE("verde", "Verde", Color(0xFF4CAF50), Color(0xFF16A34A), Color(0xFF388E3C), Color(0xFF15803D)),
+    VERDE_CLARO("verde_claro", "Verde claro", Color(0xFF8BC34A), Color(0xFF4D7C0F), Color(0xFF689F38), Color(0xFF3F6212)),
+    LIMA("lima", "Lima", Color(0xFFCDDC39), Color(0xFF4D7C0F), Color(0xFFAFB42B), Color(0xFF3F6212)),
+    AMARILLO("amarillo", "Amarillo", Color(0xFFFFEB3B), Color(0xFFB45309), Color(0xFFFBC02D), Color(0xFF92400E)),
+    NARANJA("naranja", "Naranja", Color(0xFFFF9800), Color(0xFFC2410C), Color(0xFFF57C00), Color(0xFF9A3412)),
+    NARANJA_OSCURO("naranja_oscuro", "Naranja oscuro", Color(0xFFFF5722), Color(0xFFC2410C), Color(0xFFE64A19), Color(0xFF9A3412)),
+    MARRON("marron", "Marrón", Color(0xFF8D6E63), Color(0xFF5D4037), Color(0xFF6D4C41), Color(0xFF4E342E)),
+    GRIS("gris", "Gris", Color(0xFFB0BEC5), Color(0xFF475569), Color(0xFF90A4AE), Color(0xFF334155)),
+    GRIS_AZULADO("gris_azulado", "Gris azulado", Color(0xFF90A4AE), Color(0xFF334155), Color(0xFF78909C), Color(0xFF1E293B));
+
+    val base: Color get() = if (esOscuroActivo) baseOscura else baseClara
+    val fuerte: Color get() = if (esOscuroActivo) fuerteOscuro else fuerteClaro
 
     companion object {
         fun desde(clave: String): PaletaAcento = entries.firstOrNull { it.clave == clave } ?: AMBAR
@@ -432,7 +477,7 @@ private val esquemaActual: androidx.compose.material3.ColorScheme
 
 val FormasDinamicas: Shapes
     get() = Shapes(
-        extraSmall = RoundedCornerShape((CurvaturaEsquinas * 0.45f).coerceAtLeast(3.dp)),
+        extraSmall = FormaTarjeta,
         small = FormaPequena,
         medium = FormaCampo,
         large = FormaTarjeta,
@@ -550,6 +595,25 @@ val EstiloMono: TextStyle
 fun PepoBovedaTheme(temaApp: String = "sistema", contenido: @Composable () -> Unit) {
     aplicarTema(temaApp, isSystemInDarkTheme())
     val contexto = LocalContext.current
+    val vista = LocalView.current
+
+    if (!vista.isInEditMode) {
+        SideEffect {
+            val ventana = vista.context.encontrarActividad()?.window
+            if (ventana != null) {
+                val insetsController = WindowCompat.getInsetsController(ventana, vista)
+                // En modo claro (esOscuroActivo == false): isAppearanceLightStatusBars = true (íconos oscuros)
+                // En modo oscuro (esOscuroActivo == true): isAppearanceLightStatusBars = false (íconos blancos)
+                insetsController.isAppearanceLightStatusBars = !esOscuroActivo
+                insetsController.isAppearanceLightNavigationBars = !esOscuroActivo
+                @Suppress("DEPRECATION")
+                ventana.statusBarColor = Obsidiana.toArgb()
+                @Suppress("DEPRECATION")
+                ventana.navigationBarColor = Obsidiana.toArgb()
+            }
+        }
+    }
+
     val usarDinamico = colorDinamicoSistemaBase && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
     val esquema = if (usarDinamico) {
         val dinamico = if (esOscuroActivo) dynamicDarkColorScheme(contexto) else dynamicLightColorScheme(contexto)
@@ -575,4 +639,10 @@ fun PepoBovedaTheme(temaApp: String = "sistema", contenido: @Composable () -> Un
         shapes = FormasDinamicas,
         content = contenido
     )
+}
+
+private tailrec fun Context.encontrarActividad(): Activity? = when (this) {
+    is Activity -> this
+    is ContextWrapper -> baseContext.encontrarActividad()
+    else -> null
 }

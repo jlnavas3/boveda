@@ -55,26 +55,41 @@ class TileGeneradorRapido : TileService() {
 
         if (ajustes.tileMostrarToast) {
             val mensaje = if (ajustes.tileCopiarPortapapeles) {
-                "Contraseña generada y copiada"
+                "Contraseña generada y copiada al portapapeles"
             } else {
                 "Clave generada: $clave"
             }
-            Toast.makeText(applicationContext, mensaje, Toast.LENGTH_SHORT).show()
+            android.os.Handler(android.os.Looper.getMainLooper()).post {
+                Toast.makeText(applicationContext, mensaje, Toast.LENGTH_SHORT).show()
+            }
         }
     }
 
     private fun ejecutarVibracion() {
         try {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            val v = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                 val vm = getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as? VibratorManager
-                vm?.defaultVibrator?.vibrate(VibrationEffect.createPredefined(VibrationEffect.EFFECT_CLICK))
+                vm?.defaultVibrator
             } else {
                 @Suppress("DEPRECATION")
-                val v = getSystemService(Context.VIBRATOR_SERVICE) as? Vibrator
-                @Suppress("DEPRECATION")
-                v?.vibrate(35)
+                getSystemService(Context.VIBRATOR_SERVICE) as? Vibrator
+            } ?: return
+
+            if (v.hasVibrator()) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    val efecto = if (v.hasAmplitudeControl()) {
+                        VibrationEffect.createOneShot(45, 200)
+                    } else {
+                        VibrationEffect.createOneShot(45, VibrationEffect.DEFAULT_AMPLITUDE)
+                    }
+                    v.vibrate(efecto)
+                } else {
+                    @Suppress("DEPRECATION")
+                    v.vibrate(45)
+                }
             }
         } catch (_: Exception) {
         }
     }
 }
+

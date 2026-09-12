@@ -12,7 +12,7 @@ class MedidorFuerzaTest {
         val f = MedidorFuerza.medir("")
         assertEquals(0, f.puntuacion)
         assertEquals("Vacía", f.etiqueta)
-        assertEquals("al instante", f.tiempo)
+        assertEquals("Sin contraseña", f.tiempo)
         assertEquals(0.0, f.bits, 0.001)
     }
 
