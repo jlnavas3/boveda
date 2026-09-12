@@ -14,14 +14,18 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.BookmarkAdd
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Layers
+import androidx.compose.material.icons.filled.DynamicForm
+import androidx.compose.material.icons.filled.Security
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -30,29 +34,32 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.jlnavas3.bovedalocal.data.CampoPersonalizado
-import com.jlnavas3.bovedalocal.data.CampoPlantilla
-import com.jlnavas3.bovedalocal.data.PlantillaCampos
 import com.jlnavas3.bovedalocal.data.TipoCampo
 import com.jlnavas3.bovedalocal.ui.componentes.BotonBorde
 import com.jlnavas3.bovedalocal.ui.componentes.BotonColorido
 import com.jlnavas3.bovedalocal.ui.componentes.CampoPepo
 import com.jlnavas3.bovedalocal.ui.componentes.EtiquetaSeccion
-import com.jlnavas3.bovedalocal.ui.theme.Ambar
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
-import com.jlnavas3.bovedalocal.ui.theme.ColorSobreAcento
+import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
 import com.jlnavas3.bovedalocal.ui.theme.ColorTitulos
-import com.jlnavas3.bovedalocal.ui.theme.DegradadoAmbar
+import com.jlnavas3.bovedalocal.ui.theme.FormaBoton
 import com.jlnavas3.bovedalocal.ui.theme.FormaPequena
 import com.jlnavas3.bovedalocal.ui.theme.FormaTarjeta
 import com.jlnavas3.bovedalocal.ui.theme.GrosorBorde
 import com.jlnavas3.bovedalocal.ui.theme.Peligro
 import com.jlnavas3.bovedalocal.ui.theme.Superficie
 import com.jlnavas3.bovedalocal.ui.theme.SuperficieAlta
+import com.jlnavas3.bovedalocal.ui.theme.TextoPrincipal
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
 import com.jlnavas3.bovedalocal.util.Haptica
 
@@ -64,6 +71,9 @@ fun TarjetaCampoPersonalizadoEdicion(
     alEliminar: () -> Unit
 ) {
     var mostrarValor by remember { mutableStateOf(false) }
+    val esSensible = campo.esSensibleEfectivo
+
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -76,65 +86,155 @@ fun TarjetaCampoPersonalizadoEdicion(
             )
             .padding(14.dp)
     ) {
+        // Cabecera del campo: Número, Badge de Tipo, Sensible y Eliminar
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(
-                "Campo #$numero",
-                style = MaterialTheme.typography.titleSmall,
-                color = ColorTitulos
-            )
-            IconButton(onClick = alEliminar, modifier = Modifier.size(32.dp)) {
-                Icon(Icons.Filled.Delete, contentDescription = "Eliminar campo", tint = Peligro, modifier = Modifier.size(20.dp))
-            }
-        }
-        Spacer(Modifier.height(8.dp))
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            TipoCampo.entries.forEach { t ->
-                val activo = campo.tipo == t
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Text(
+                    "#$numero",
+                    style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
+                    color = ColorTitulos
+                )
+
+                // Chip de tipo
                 Box(
                     modifier = Modifier
-                        .weight(1f)
                         .clip(FormaPequena)
-                        .background(if (activo) DegradadoAmbar else Brush.horizontalGradient(listOf(SuperficieAlta, SuperficieAlta)))
+                        .background(SuperficieAlta)
                         .then(
-                            if (GrosorBorde > 0.dp && ColorBordeActual != Color.Transparent)
-                                Modifier.border(GrosorBorde, if (activo) Ambar else ColorBordeActual, FormaPequena)
+                            if (GrosorBorde > 0.dp) Modifier.border(GrosorBorde, ColorBordeActual, FormaPequena)
                             else Modifier
                         )
-                        .clickable { alModificar(campo.copy(tipo = t)) }
-                        .padding(vertical = 8.dp),
-                    contentAlignment = Alignment.Center
+                        .padding(horizontal = 8.dp, vertical = 3.dp)
                 ) {
                     Text(
-                        t.etiqueta,
-                        style = MaterialTheme.typography.labelMedium,
-                        color = if (activo) ColorSobreAcento else TextoSecundario
+                        text = campo.tipo.etiqueta,
+                        style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.SemiBold),
+                        color = TextoPrincipal
                     )
                 }
+
+                // Chip de dato sensible
+                if (esSensible) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier
+                            .clip(FormaPequena)
+                            .background(ColorAcento.copy(alpha = 0.15f))
+                            .padding(horizontal = 6.dp, vertical = 3.dp)
+                    ) {
+                        Icon(
+                            Icons.Filled.Security,
+                            contentDescription = "Sensible",
+                            tint = ColorIconosInternos,
+                            modifier = Modifier.size(13.dp)
+                        )
+                        Spacer(Modifier.width(4.dp))
+                        Text(
+                            "Sensible",
+                            style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.SemiBold),
+                            color = ColorIconosInternos
+                        )
+                    }
+                }
+            }
+
+            IconButton(onClick = alEliminar, modifier = Modifier.size(32.dp)) {
+                Icon(
+                    Icons.Filled.Delete,
+                    contentDescription = "Eliminar campo",
+                    tint = Peligro,
+                    modifier = Modifier.size(18.dp)
+                )
             }
         }
+
         Spacer(Modifier.height(10.dp))
+
+        // Etiqueta del campo
         CampoPepo(
             valor = campo.etiqueta,
-            etiqueta = "Nombre (ej. PIN Cajero, Pregunta de seguridad)",
+            etiqueta = "Nombre del campo",
             alCambiar = { alModificar(campo.copy(etiqueta = it)) }
         )
+
         Spacer(Modifier.height(8.dp))
-        CampoPepo(
-            valor = campo.valor,
-            etiqueta = if (campo.tipo == TipoCampo.PIN) "Valor del PIN" else "Valor del campo",
-            alCambiar = { alModificar(campo.copy(valor = it)) },
-            esContrasena = campo.tipo != TipoCampo.TEXTO,
-            mostrarContrasena = mostrarValor,
-            alAlternarMostrarContrasena = if (campo.tipo != TipoCampo.TEXTO) { { mostrarValor = !mostrarValor } } else null,
-            monoespaciada = campo.tipo != TipoCampo.TEXTO
-        )
+
+        // Valor del campo
+        if (campo.tipo == TipoCampo.NOTAS) {
+            OutlinedTextField(
+                value = campo.valor,
+                onValueChange = { alModificar(campo.copy(valor = it)) },
+                label = { Text("Notas / Contenido", color = TextoSecundario) },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(110.dp),
+                shape = FormaBoton,
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = ColorTitulos,
+                    unfocusedBorderColor = ColorBordeActual,
+                    focusedTextColor = TextoPrincipal,
+                    unfocusedTextColor = TextoPrincipal,
+                    focusedContainerColor = SuperficieAlta,
+                    unfocusedContainerColor = SuperficieAlta
+                ),
+                textStyle = TextStyle(
+                    fontSize = 15.sp,
+                    fontFamily = if (esSensible && !mostrarValor) FontFamily.Monospace else FontFamily.Default
+                ),
+                visualTransformation = if (esSensible && !mostrarValor) PasswordVisualTransformation() else VisualTransformation.None,
+                trailingIcon = if (esSensible) {
+                    {
+                        IconButton(onClick = { mostrarValor = !mostrarValor }) {
+                            Icon(
+                                imageVector = if (mostrarValor) Icons.Filled.VisibilityOff else Icons.Filled.Visibility,
+                                contentDescription = if (mostrarValor) "Ocultar" else "Mostrar",
+                                tint = ColorIconosInternos
+                            )
+                        }
+                    }
+                } else null
+            )
+        } else {
+            CampoPepo(
+                valor = campo.valor,
+                etiqueta = if (campo.tipo == TipoCampo.PIN) "Valor del PIN" else "Valor del campo",
+                alCambiar = { alModificar(campo.copy(valor = it)) },
+                esContrasena = esSensible,
+                mostrarContrasena = mostrarValor,
+                alAlternarMostrarContrasena = if (esSensible) { { mostrarValor = !mostrarValor } } else null,
+                tecladoNumerico = campo.tipo == TipoCampo.NUMERO || campo.tipo == TipoCampo.PIN
+            )
+        }
+
+        // Toggle rápido de sensibilidad
+        Spacer(Modifier.height(6.dp))
+        Row(
+            modifier = Modifier
+                .clip(FormaPequena)
+                .clickable { alModificar(campo.copy(esSensible = !campo.esSensible)) }
+                .padding(horizontal = 6.dp, vertical = 4.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                imageVector = Icons.Filled.Security,
+                contentDescription = null,
+                tint = if (campo.esSensible) ColorIconosInternos else TextoSecundario,
+                modifier = Modifier.size(14.dp)
+            )
+            Spacer(Modifier.width(6.dp))
+            Text(
+                text = if (campo.esSensible) "Marcado como secreto (toca para desmarcar)" else "Marcar como secreto / sensible",
+                style = MaterialTheme.typography.labelSmall,
+                color = if (campo.esSensible) ColorIconosInternos else TextoSecundario
+            )
+        }
     }
 }
 
@@ -142,19 +242,17 @@ fun TarjetaCampoPersonalizadoEdicion(
 fun SeccionCamposPersonalizados(
     camposPersonalizados: List<CampoPersonalizado>,
     alCambiarCampos: (List<CampoPersonalizado>) -> Unit,
-    plantillasPersonalizadasRaw: String = "",
-    alGuardarPlantillaNueva: ((PlantillaCampos) -> Unit)? = null,
-    alEliminarPlantilla: ((String) -> Unit)? = null,
     haptica: Haptica
 ) {
-    var mostrandoDialogoPlantillas by remember { mutableStateOf(false) }
-    var mostrandoGuardarComoPlantilla by remember { mutableStateOf(false) }
+    var mostrandoDialogoNuevoCampo by remember { mutableStateOf(false) }
+    var mostrandoDialogoPresets by remember { mutableStateOf(false) }
 
     EtiquetaSeccion("Campos personalizados")
     Spacer(Modifier.height(8.dp))
+
     if (camposPersonalizados.isEmpty()) {
         Text(
-            "Añade datos extra como tarjetas, redes Wi-Fi, cuentas bancarias o preguntas de seguridad.",
+            "Añade datos extra como tarjetas, redes Wi-Fi, cuentas bancarias, preguntas de seguridad o cualquier campo a tu medida.",
             style = MaterialTheme.typography.bodyMedium,
             color = TextoSecundario
         )
@@ -180,86 +278,47 @@ fun SeccionCamposPersonalizados(
         }
     }
 
-    // Botones de acción: Añadir campo manual y Abrir plantillas
+    // Botones de acción: + Añadir campo y + Conjunto rápido
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         BotonBorde(
             texto = "+ Añadir campo",
+            icono = Icons.Filled.Add,
             modifier = Modifier.weight(1f),
             alPulsar = {
                 haptica.tic()
-                alCambiarCampos(camposPersonalizados + CampoPersonalizado(
-                    etiqueta = "",
-                    valor = "",
-                    tipo = TipoCampo.TEXTO
-                ))
+                mostrandoDialogoNuevoCampo = true
             }
         )
         BotonColorido(
-            texto = "Plantillas",
-            icono = Icons.Filled.Layers,
+            texto = "Conjunto rápido",
+            icono = Icons.Filled.DynamicForm,
             color = ColorAcento,
             modifier = Modifier.weight(1f),
             alPulsar = {
                 haptica.tic()
-                mostrandoDialogoPlantillas = true
+                mostrandoDialogoPresets = true
             }
         )
     }
 
-    // Opción para guardar los campos actuales como una nueva plantilla
-    if (camposPersonalizados.isNotEmpty() && alGuardarPlantillaNueva != null) {
-        Spacer(Modifier.height(6.dp))
-        Box(
-            modifier = Modifier.fillMaxWidth(),
-            contentAlignment = Alignment.Center
-        ) {
-            TextButton(
-                onClick = {
-                    haptica.tic()
-                    mostrandoGuardarComoPlantilla = true
-                }
-            ) {
-                Icon(
-                    Icons.Filled.BookmarkAdd,
-                    contentDescription = null,
-                    tint = Ambar,
-                    modifier = Modifier.size(18.dp)
-                )
-                Spacer(Modifier.width(6.dp))
-                Text(
-                    "Guardar campos como plantilla reutilizable",
-                    color = Ambar,
-                    style = MaterialTheme.typography.labelMedium
-                )
+    if (mostrandoDialogoNuevoCampo) {
+        DialogoNuevoCampo(
+            alDescartar = { mostrandoDialogoNuevoCampo = false },
+            alCrearCampo = { nuevoCampo ->
+                alCambiarCampos(camposPersonalizados + nuevoCampo)
             }
-        }
-    }
-
-    if (mostrandoDialogoPlantillas) {
-        DialogoPlantillasCampos(
-            plantillasPersonalizadasRaw = plantillasPersonalizadasRaw,
-            haptica = haptica,
-            alSeleccionarPlantilla = { nuevos ->
-                alCambiarCampos(camposPersonalizados + nuevos)
-            },
-            alGuardarPlantillaNueva = { alGuardarPlantillaNueva?.invoke(it) },
-            alEliminarPlantilla = { alEliminarPlantilla?.invoke(it) },
-            alCerrar = { mostrandoDialogoPlantillas = false }
         )
     }
 
-    if (mostrandoGuardarComoPlantilla && alGuardarPlantillaNueva != null) {
-        DialogoCrearPlantilla(
-            camposIniciales = camposPersonalizados.map { CampoPlantilla(it.etiqueta.ifBlank { "Campo" }, it.tipo) },
-            haptica = haptica,
-            alGuardar = { nueva ->
-                mostrandoGuardarComoPlantilla = false
-                alGuardarPlantillaNueva(nueva)
-            },
-            alCerrar = { mostrandoGuardarComoPlantilla = false }
+    if (mostrandoDialogoPresets) {
+        DialogoPresetsRapidos(
+            alDescartar = { mostrandoDialogoPresets = false },
+            alSeleccionarPreset = { camposPreset ->
+                alCambiarCampos(camposPersonalizados + camposPreset)
+            }
         )
     }
 }

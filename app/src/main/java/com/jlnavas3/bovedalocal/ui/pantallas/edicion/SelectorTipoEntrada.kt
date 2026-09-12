@@ -12,11 +12,18 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountBalance
+import androidx.compose.material.icons.filled.AccountBalanceWallet
+import androidx.compose.material.icons.filled.Badge
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.CreditCard
 import androidx.compose.material.icons.filled.Description
+import androidx.compose.material.icons.filled.Dns
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
+import androidx.compose.material.icons.filled.Fingerprint
 import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.Wifi
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -53,13 +60,17 @@ fun SelectorTipoEntrada(
     val forma = FormaBoton
 
     val icono = when (tipoActual) {
+        TipoEntrada.LOGIN -> Icons.Filled.Lock
         TipoEntrada.NOTA -> Icons.Filled.Description
-        else -> Icons.Filled.Lock
+        TipoEntrada.TARJETA -> Icons.Filled.CreditCard
+        TipoEntrada.WIFI -> Icons.Filled.Wifi
+        TipoEntrada.CUENTA_BANCARIA -> Icons.Filled.AccountBalance
+        TipoEntrada.IDENTIDAD -> Icons.Filled.Badge
+        TipoEntrada.SERVIDOR -> Icons.Filled.Dns
+        TipoEntrada.WALLET -> Icons.Filled.AccountBalanceWallet
+        TipoEntrada.PASSKEY -> Icons.Filled.Fingerprint
     }
-    val texto = when (tipoActual) {
-        TipoEntrada.NOTA -> "Nota segura"
-        else -> "Contraseña"
-    }
+    val texto = tipoActual.etiqueta
 
     Box(modifier = Modifier.fillMaxWidth()) {
         Row(
@@ -104,7 +115,13 @@ fun SelectorTipoEntrada(
         ) {
             val opciones = listOf(
                 Triple(TipoEntrada.LOGIN, "Contraseña", Icons.Filled.Lock),
-                Triple(TipoEntrada.NOTA, "Nota segura", Icons.Filled.Description)
+                Triple(TipoEntrada.NOTA, "Nota segura", Icons.Filled.Description),
+                Triple(TipoEntrada.TARJETA, "Tarjeta bancaria", Icons.Filled.CreditCard),
+                Triple(TipoEntrada.WIFI, "Red Wi-Fi", Icons.Filled.Wifi),
+                Triple(TipoEntrada.CUENTA_BANCARIA, "Cuenta bancaria", Icons.Filled.AccountBalance),
+                Triple(TipoEntrada.IDENTIDAD, "Documento de identidad", Icons.Filled.Badge),
+                Triple(TipoEntrada.SERVIDOR, "Servidor / SSH", Icons.Filled.Dns),
+                Triple(TipoEntrada.WALLET, "Cripto Wallet", Icons.Filled.AccountBalanceWallet)
             )
 
             opciones.forEachIndexed { index, (t, titulo, ic) ->

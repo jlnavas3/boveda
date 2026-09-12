@@ -21,7 +21,7 @@ fun claveAgrupacionSitio(entrada: Entrada): String? = when (entrada.tipo) {
     TipoEntrada.PASSKEY -> entrada.passkey?.rpId
         ?.let { Dominios.sitioAgrupacion(it) }
         ?.takeIf { it.isNotBlank() }
-    TipoEntrada.NOTA -> null
+    else -> null
 }
 
 sealed interface ItemAgrupado {

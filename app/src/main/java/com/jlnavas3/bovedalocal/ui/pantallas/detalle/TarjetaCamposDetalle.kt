@@ -14,9 +14,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.ContentCopy
+import androidx.compose.material.icons.filled.Security
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Icon
@@ -39,6 +41,7 @@ import com.jlnavas3.bovedalocal.data.TipoCampo
 import com.jlnavas3.bovedalocal.ui.VaultViewModel
 import com.jlnavas3.bovedalocal.ui.componentes.EtiquetaSeccion
 import com.jlnavas3.bovedalocal.ui.componentes.TarjetaPepo
+import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.Ambar
 import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
 import com.jlnavas3.bovedalocal.ui.theme.EstiloMono
@@ -88,7 +91,7 @@ private fun FilaCampoPersonalizadoDetalle(
     alCopiar: () -> Unit
 ) {
     var revelado by remember { mutableStateOf(false) }
-    val esOculto = campo.tipo != TipoCampo.TEXTO
+    val esSensible = campo.esSensibleEfectivo
 
     Column(
         modifier = Modifier
@@ -108,29 +111,58 @@ private fun FilaCampoPersonalizadoDetalle(
                 color = TextoSecundario,
                 fontWeight = FontWeight.Medium
             )
-            Box(
-                modifier = Modifier
-                    .clip(FormaPequena)
-                    .background(Ambar.copy(alpha = 0.15f))
-                    .padding(horizontal = 6.dp, vertical = 2.dp)
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(6.dp)
             ) {
-                Text(
-                    campo.tipo.etiqueta,
-                    style = MaterialTheme.typography.labelSmall,
-                    color = Ambar
-                )
+                if (esSensible) {
+                    Box(
+                        modifier = Modifier
+                            .clip(FormaPequena)
+                            .background(ColorAcento.copy(alpha = 0.15f))
+                            .padding(horizontal = 6.dp, vertical = 2.dp)
+                    ) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(
+                                Icons.Filled.Security,
+                                contentDescription = "Sensible",
+                                tint = ColorIconosInternos,
+                                modifier = Modifier.size(12.dp)
+                            )
+                            Spacer(Modifier.width(3.dp))
+                            Text(
+                                "Sensible",
+                                style = MaterialTheme.typography.labelSmall,
+                                color = ColorIconosInternos
+                            )
+                        }
+                    }
+                }
+
+                Box(
+                    modifier = Modifier
+                        .clip(FormaPequena)
+                        .background(Ambar.copy(alpha = 0.15f))
+                        .padding(horizontal = 6.dp, vertical = 2.dp)
+                ) {
+                    Text(
+                        campo.tipo.etiqueta,
+                        style = MaterialTheme.typography.labelSmall,
+                        color = Ambar
+                    )
+                }
             }
         }
         Spacer(Modifier.height(6.dp))
         Text(
             text = when {
-                !esOculto -> campo.valor
+                !esSensible -> campo.valor
                 revelado -> campo.valor
                 campo.tipo == TipoCampo.PIN -> "• ".repeat(campo.valor.length).trim()
                 else -> "•".repeat(campo.valor.length.coerceIn(8, 20))
             },
-            style = if (esOculto && !revelado) EstiloMonoGrande.copy(letterSpacing = 2.sp) else if (esOculto) EstiloMono else MaterialTheme.typography.bodyLarge,
-            color = if (esOculto && !revelado) TextoSecundario else TextoPrincipal,
+            style = if (esSensible && !revelado) EstiloMonoGrande.copy(letterSpacing = 2.sp) else if (esSensible) EstiloMono else MaterialTheme.typography.bodyLarge,
+            color = if (esSensible && !revelado) TextoSecundario else TextoPrincipal,
             modifier = Modifier.fillMaxWidth()
         )
         Spacer(Modifier.height(4.dp))
@@ -139,7 +171,7 @@ private fun FilaCampoPersonalizadoDetalle(
             horizontalArrangement = Arrangement.End,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            if (esOculto) {
+            if (esSensible) {
                 IconButton(onClick = {
                     haptica.toque()
                     revelado = !revelado
@@ -154,7 +186,7 @@ private fun FilaCampoPersonalizadoDetalle(
             }
             IconButton(onClick = {
                 haptica.exito()
-                vm.copiar(campo.etiqueta.ifBlank { "Campo personalizado" }, campo.valor, sensible = esOculto)
+                vm.copiar(campo.etiqueta.ifBlank { "Campo personalizado" }, campo.valor, sensible = esSensible)
                 alCopiar()
             }) {
                 AnimatedVisibility(

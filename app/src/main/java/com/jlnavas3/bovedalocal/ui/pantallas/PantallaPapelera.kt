@@ -13,13 +13,19 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountBalance
+import androidx.compose.material.icons.filled.AccountBalanceWallet
+import androidx.compose.material.icons.filled.Badge
+import androidx.compose.material.icons.filled.CreditCard
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.DeleteForever
 import androidx.compose.material.icons.filled.Description
+import androidx.compose.material.icons.filled.Dns
 import androidx.compose.material.icons.filled.Fingerprint
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Restore
 import androidx.compose.material.icons.filled.Schedule
+import androidx.compose.material.icons.filled.Wifi
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -169,10 +175,16 @@ private fun FilaPapeleraDesplegable(
         TipoEntrada.LOGIN -> Icons.Filled.Lock
         TipoEntrada.PASSKEY -> Icons.Filled.Fingerprint
         TipoEntrada.NOTA -> Icons.Filled.Description
+        TipoEntrada.TARJETA -> Icons.Filled.CreditCard
+        TipoEntrada.WIFI -> Icons.Filled.Wifi
+        TipoEntrada.CUENTA_BANCARIA -> Icons.Filled.AccountBalance
+        TipoEntrada.IDENTIDAD -> Icons.Filled.Badge
+        TipoEntrada.SERVIDOR -> Icons.Filled.Dns
+        TipoEntrada.WALLET -> Icons.Filled.AccountBalanceWallet
     }
 
     val subtitulo = entrada.usuario.ifBlank {
-        entrada.urls.firstOrNull() ?: if (entrada.tipo == TipoEntrada.NOTA) "Nota segura" else "Sin credencial"
+        entrada.urls.firstOrNull() ?: entrada.tipo.etiqueta
     }
 
     TarjetaPepoDesplegable(

@@ -204,6 +204,10 @@ fun FilaEntrada(
                         TipoEntrada.PASSKEY -> "Passkey · ${entrada.passkey?.rpId ?: ""}"
                         TipoEntrada.NOTA -> "Nota segura"
                         TipoEntrada.LOGIN -> entrada.usuario.ifBlank { entrada.urls.firstOrNull() ?: "Sin usuario" }
+                        else -> entrada.usuario.ifBlank {
+                            entrada.camposPersonalizados.firstOrNull { it.valor.isNotBlank() }?.let { "${it.etiqueta}: ${if (it.esSensibleEfectivo) "••••" else it.valor}" }
+                                ?: entrada.tipo.etiqueta
+                        }
                     },
                     style = if (compacta) MaterialTheme.typography.labelMedium else MaterialTheme.typography.bodyMedium,
                     color = TextoSecundario,

@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.dp
 import com.jlnavas3.bovedalocal.crypto.Base32
 import com.jlnavas3.bovedalocal.crypto.OpcionesGenerador
 import com.jlnavas3.bovedalocal.data.Entrada
+import com.jlnavas3.bovedalocal.data.PresetsCampos
 import com.jlnavas3.bovedalocal.data.TipoEntrada
 import com.jlnavas3.bovedalocal.data.normalizarEtiqueta
 import com.jlnavas3.bovedalocal.ui.Pantalla
@@ -45,12 +46,18 @@ import com.jlnavas3.bovedalocal.ui.componentes.CampoPepo
 import com.jlnavas3.bovedalocal.ui.componentes.EtiquetaSeccion
 import com.jlnavas3.bovedalocal.ui.pantallas.edicion.GeneradorEnLineaEdicion
 import com.jlnavas3.bovedalocal.ui.pantallas.edicion.SeccionCamposPersonalizados
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.width
+import androidx.compose.ui.text.font.FontWeight
 import com.jlnavas3.bovedalocal.ui.pantallas.edicion.SeccionEtiquetasEdicion
 import com.jlnavas3.bovedalocal.ui.pantallas.edicion.SelectorTipoEntrada
 import com.jlnavas3.bovedalocal.ui.theme.Ambar
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
 import com.jlnavas3.bovedalocal.ui.theme.ColorSobreAcento
+import com.jlnavas3.bovedalocal.ui.theme.ColorTitulos
+import com.jlnavas3.bovedalocal.ui.theme.FormaBoton
 import com.jlnavas3.bovedalocal.ui.theme.FormaTarjeta
 import com.jlnavas3.bovedalocal.ui.theme.GrosorBorde
 import com.jlnavas3.bovedalocal.ui.theme.Peligro
@@ -107,6 +114,45 @@ fun PantallaEdicion(vm: VaultViewModel, id: String?, contrasenaInicial: String) 
                 tipoActual = tipo,
                 alSeleccionarTipo = { tipo = it; haptica.tic() }
             )
+            val camposSugeridos = remember(tipo) { PresetsCampos.paraTipoEntrada(tipo) }
+            if (camposSugeridos.isNotEmpty() && camposPersonalizados.isEmpty()) {
+                Spacer(Modifier.height(8.dp))
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(FormaBoton)
+                        .background(ColorAcento.copy(alpha = 0.12f))
+                        .clickable {
+                            haptica.tic()
+                            camposPersonalizados = camposSugeridos
+                        }
+                        .padding(horizontal = 14.dp, vertical = 10.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            text = "¿Agregar campos para ${tipo.etiqueta}?",
+                            color = ColorTitulos,
+                            style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold)
+                        )
+                        Text(
+                            text = "Añade los campos habituales para completar con un toque.",
+                            color = TextoSecundario,
+                            style = MaterialTheme.typography.labelSmall
+                        )
+                    }
+                    Spacer(Modifier.width(8.dp))
+                    BotonColorido(
+                        texto = "Usar",
+                        color = ColorAcento,
+                        alPulsar = {
+                            haptica.tic()
+                            camposPersonalizados = camposSugeridos
+                        }
+                    )
+                }
+            }
             Spacer(Modifier.height(16.dp))
         }
 
@@ -172,9 +218,6 @@ fun PantallaEdicion(vm: VaultViewModel, id: String?, contrasenaInicial: String) 
         SeccionCamposPersonalizados(
             camposPersonalizados = camposPersonalizados,
             alCambiarCampos = { camposPersonalizados = it },
-            plantillasPersonalizadasRaw = ajustes.plantillasPersonalizadasJson,
-            alGuardarPlantillaNueva = { vm.guardarPlantillaPersonalizada(it) },
-            alEliminarPlantilla = { vm.eliminarPlantillaPersonalizada(it) },
             haptica = haptica
         )
         Spacer(Modifier.height(16.dp))

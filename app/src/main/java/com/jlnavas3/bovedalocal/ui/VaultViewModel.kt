@@ -323,11 +323,7 @@ class VaultViewModel(app: Application) : AndroidViewModel(app), VaultAjustesDele
         ejecutar {
             val existente = withContext(Dispatchers.IO) { repositorio.entrada(entrada.id) }
             withContext(Dispatchers.IO) { repositorio.guardarEntrada(entrada) }
-            val tipoDesc = when (entrada.tipo) {
-                TipoEntrada.LOGIN -> "login / credencial"
-                TipoEntrada.NOTA -> "nota segura"
-                TipoEntrada.PASSKEY -> "passkey"
-            }
+            val tipoDesc = entrada.tipo.etiqueta.lowercase()
             if (existente == null) {
                 Diagnostico.apuntar("bóveda", "Nueva entrada creada ($tipoDesc)")
             } else {

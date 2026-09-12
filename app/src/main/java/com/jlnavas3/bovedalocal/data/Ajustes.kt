@@ -96,8 +96,7 @@ data class AjustesApp(
     val indiceTonoLetras: Float = 80f,
     val indiceIncluirEnie: Boolean = true,
     val indiceResaltarEntradas: Boolean = true,
-    val indiceResaltarSoloPrimera: Boolean = true,
-    val plantillasPersonalizadasJson: String = ""
+    val indiceResaltarSoloPrimera: Boolean = true
 )
 
 
@@ -214,8 +213,7 @@ class AlmacenAjustes(contexto: Context) {
             indiceTonoLetras = prefs.getFloat("indice_tono_letras", 80f),
             indiceIncluirEnie = prefs.getBoolean("indice_incluir_enie", true),
             indiceResaltarEntradas = prefs.getBoolean("indice_resaltar_entradas", true),
-            indiceResaltarSoloPrimera = prefs.getBoolean("indice_resaltar_solo_primera", true),
-            plantillasPersonalizadasJson = prefs.getString("plantillas_personalizadas_json", "") ?: ""
+            indiceResaltarSoloPrimera = prefs.getBoolean("indice_resaltar_solo_primera", true)
         )
     }
 
@@ -286,7 +284,6 @@ class AlmacenAjustes(contexto: Context) {
             .putBoolean("indice_incluir_enie", nuevo.indiceIncluirEnie)
             .putBoolean("indice_resaltar_entradas", nuevo.indiceResaltarEntradas)
             .putBoolean("indice_resaltar_solo_primera", nuevo.indiceResaltarSoloPrimera)
-            .putString("plantillas_personalizadas_json", nuevo.plantillasPersonalizadasJson)
             .apply()
         _ajustes.value = nuevo
     }

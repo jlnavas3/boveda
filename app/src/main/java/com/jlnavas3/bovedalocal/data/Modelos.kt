@@ -9,13 +9,27 @@ fun normalizarEtiqueta(valor: String): String = valor
 
 @Serializable
 enum class TipoEntrada {
-    LOGIN, PASSKEY, NOTA;
+    LOGIN,
+    NOTA,
+    TARJETA,
+    WIFI,
+    CUENTA_BANCARIA,
+    IDENTIDAD,
+    SERVIDOR,
+    WALLET,
+    PASSKEY;
 
     val etiqueta: String
         get() = when (this) {
             LOGIN -> "Contraseña"
-            PASSKEY -> "Passkey"
             NOTA -> "Nota segura"
+            TARJETA -> "Tarjeta bancaria"
+            WIFI -> "Red Wi-Fi"
+            CUENTA_BANCARIA -> "Cuenta bancaria"
+            IDENTIDAD -> "Documento de identidad"
+            SERVIDOR -> "Servidor / SSH"
+            WALLET -> "Cripto Wallet"
+            PASSKEY -> "Passkey"
         }
 }
 
@@ -36,13 +50,35 @@ data class CambioContrasena(val contrasena: String, val cambiadaEn: Long)
 
 @Serializable
 enum class TipoCampo {
-    TEXTO, OCULTO, PIN;
+    TEXTO,
+    NUMERO,
+    DECIMAL,
+    PIN,
+    EMAIL,
+    URL,
+    TELEFONO,
+    FECHA,
+    HORA,
+    LISTA,
+    NOTAS,
+    @Deprecated("Usar TEXTO con esSensible = true")
+    OCULTO;
 
     val etiqueta: String
         get() = when (this) {
             TEXTO -> "Texto"
-            OCULTO -> "Oculto"
+            NUMERO -> "Número"
+            DECIMAL -> "Decimal"
             PIN -> "PIN"
+            EMAIL -> "Email"
+            URL -> "URL"
+            TELEFONO -> "Teléfono"
+            FECHA -> "Fecha"
+            HORA -> "Hora"
+            LISTA -> "Lista"
+            NOTAS -> "Notas"
+            @Suppress("DEPRECATION")
+            OCULTO -> "Oculto"
         }
 }
 
@@ -51,8 +87,15 @@ data class CampoPersonalizado(
     val id: String = java.util.UUID.randomUUID().toString(),
     val etiqueta: String = "",
     val valor: String = "",
-    val tipo: TipoCampo = TipoCampo.TEXTO
-)
+    val tipo: TipoCampo = TipoCampo.TEXTO,
+    val esSensible: Boolean = false,
+    val esObligatorio: Boolean = false,
+    val formato: String? = null
+) {
+    @Suppress("DEPRECATION")
+    val esSensibleEfectivo: Boolean
+        get() = esSensible || tipo == TipoCampo.PIN || tipo == TipoCampo.OCULTO
+}
 
 @Serializable
 data class Entrada(
