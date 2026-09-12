@@ -205,6 +205,8 @@ fun RaizPepoBoveda(vm: VaultViewModel, actividad: FragmentActivity) {
                     Pantalla.Registro -> PantallaRegistro(vm)
                     Pantalla.SaludBoveda -> PantallaSaludBoveda(vm, estado)
                     Pantalla.Papelera -> PantallaPapelera(vm, estado)
+                    Pantalla.KitEmergencia -> com.jlnavas3.bovedalocal.ui.pantallas.PantallaKitEmergencia(vm, actividad)
+                    Pantalla.AjustesSenuelo -> com.jlnavas3.bovedalocal.ui.pantallas.PantallaAjustesSenuelo(vm)
                 }
             }
 

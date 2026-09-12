@@ -45,6 +45,8 @@ sealed interface Pantalla {
     object Registro : Pantalla
     object SaludBoveda : Pantalla
     object Papelera : Pantalla
+    object KitEmergencia : Pantalla
+    object AjustesSenuelo : Pantalla
 }
 
 enum class CriterioOrdenacion(val etiqueta: String) {
@@ -237,6 +239,18 @@ class VaultViewModel(app: Application) : AndroidViewModel(app) {
         if (espera > 0) {
             _error.value = "Demasiados intentos. Espera ${espera}s."
             alTerminar(false)
+            return
+        }
+        if (com.jlnavas3.bovedalocal.data.BovedaSenuelo.esPinCoaccion(contextoApp, password)) {
+            ejecutar {
+                val senuelo = com.jlnavas3.bovedalocal.data.BovedaSenuelo.cargar(contextoApp).entradas
+                repositorio.abrirSenuelo(senuelo)
+                limpiarFallos()
+                Diagnostico.apuntar("bóveda", "Desbloqueada con contraseña maestra")
+                registrarInteraccion()
+                irRaiz(Pantalla.Lista)
+                alTerminar(true)
+            }
             return
         }
         ejecutar {

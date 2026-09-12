@@ -42,7 +42,9 @@ import androidx.compose.material.icons.filled.Key
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.FileDownload
 import androidx.compose.material.icons.filled.FileUpload
+import androidx.compose.material.icons.filled.Print
 import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.icons.filled.Shield
 import androidx.compose.material.icons.filled.SquareFoot
 import androidx.compose.material.icons.filled.TextFields
 import com.jlnavas3.bovedalocal.ui.componentes.BotonColorido
@@ -358,6 +360,15 @@ fun PantallaAjustes(vm: VaultViewModel, actividad: FragmentActivity) {
                 },
                 alSeleccionar = { valor -> haptica.tic(); vm.ajustarPortapapeles(valor.toInt()) }
             )
+            Spacer(Modifier.height(14.dp))
+            BotonColorido(
+                texto = "Bóveda señuelo (PIN de coacción)",
+                color = ColorSeguridad,
+                icono = Icons.Filled.Shield
+            ) {
+                haptica.toque()
+                vm.ir(Pantalla.AjustesSenuelo)
+            }
         }
 
         Spacer(Modifier.height(16.dp))
@@ -528,6 +539,15 @@ fun PantallaAjustes(vm: VaultViewModel, actividad: FragmentActivity) {
                 },
                 alSeleccionar = { valor -> haptica.tic(); vm.ajustarRecordatorioExportacion(valor.toInt()) }
             )
+            Spacer(Modifier.height(14.dp))
+            BotonColorido(
+                texto = "Kit de emergencia físico (Imprimir / PDF)",
+                color = ColorAcento,
+                icono = Icons.Filled.Print
+            ) {
+                haptica.toque()
+                vm.ir(Pantalla.KitEmergencia)
+            }
         }
 
         Spacer(Modifier.height(16.dp))

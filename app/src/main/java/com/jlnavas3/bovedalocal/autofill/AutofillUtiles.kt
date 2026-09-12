@@ -15,9 +15,10 @@ import com.jlnavas3.bovedalocal.util.Dominios
 data class CamposDetectados(
     val usuario: AutofillId? = null,
     val contrasena: AutofillId? = null,
-    val dominioWeb: String? = null
+    val dominioWeb: String? = null,
+    val otp: AutofillId? = null
 ) {
-    val hayAlgo: Boolean get() = usuario != null || contrasena != null
+    val hayAlgo: Boolean get() = usuario != null || contrasena != null || otp != null
 }
 
 object AutofillUtiles {
@@ -28,6 +29,7 @@ object AutofillUtiles {
     fun detectar(estructura: AssistStructure): CamposDetectados {
         var usuario: AutofillId? = null
         var contrasena: AutofillId? = null
+        var otp: AutofillId? = null
         var dominio: String? = null
 
         fun recorrer(nodo: AssistStructure.ViewNode) {
@@ -37,6 +39,7 @@ object AutofillUtiles {
             if (id != null && tipoValido) {
                 var esContrasenaWeb = false
                 var esUsuarioWeb = false
+                var htmlAutocomplete: String? = null
                 val pistasSistema = nodo.autofillHints?.map { it.lowercase() } ?: emptyList()
                 val textoPistas = buildList {
                     addAll(pistasSistema)
@@ -48,13 +51,17 @@ object AutofillUtiles {
                         val valorAtributo = par.second?.lowercase() ?: ""
                         if (nombreAtributo == "type" && valorAtributo == "password") {
                             esContrasenaWeb = true
-                        } else if (nombreAtributo == "autocomplete" && (valorAtributo == "username" || valorAtributo == "email")) {
-                            esUsuarioWeb = true
+                        } else if (nombreAtributo == "autocomplete") {
+                            htmlAutocomplete = valorAtributo
+                            if (valorAtributo == "username" || valorAtributo == "email") {
+                                esUsuarioWeb = true
+                            }
                         } else if ((nombreAtributo == "name" || nombreAtributo == "id") && valorAtributo.isNotBlank()) {
                             add(valorAtributo)
                         }
                     }
                 }
+                val esOtp = AutofillOtpUtiles.esCampoOtp(pistasSistema, textoPistas, htmlAutocomplete)
                 val variacion = nodo.inputType and InputType.TYPE_MASK_VARIATION
                 val esContrasenaPorTipo = variacion == InputType.TYPE_TEXT_VARIATION_PASSWORD ||
                     variacion == InputType.TYPE_NUMBER_VARIATION_PASSWORD
@@ -62,7 +69,9 @@ object AutofillUtiles {
                     PISTAS_CONTRASENA.any { pista.contains(it) }
                 }
                 val esUsuario = esUsuarioWeb || textoPistas.any { pista -> PISTAS_USUARIO.any { pista.contains(it) } }
-                if (esContrasena && contrasena == null) {
+                if (esOtp && otp == null) {
+                    otp = id
+                } else if (esContrasena && contrasena == null) {
                     contrasena = id
                 } else if (esUsuario && usuario == null) {
                     usuario = id
@@ -74,7 +83,7 @@ object AutofillUtiles {
         for (i in 0 until estructura.windowNodeCount) {
             recorrer(estructura.getWindowNodeAt(i).rootViewNode)
         }
-        return CamposDetectados(usuario, contrasena, dominio)
+        return CamposDetectados(usuario = usuario, contrasena = contrasena, dominioWeb = dominio, otp = otp)
     }
 
     /** Devuelve el par (usuario, contraseña) escrito por la persona, para el flujo de guardado. */
@@ -145,6 +154,11 @@ object AutofillUtiles {
         val constructor = Dataset.Builder(vista)
         campos.usuario?.let { constructor.setValue(it, AutofillValue.forText(entrada.usuario)) }
         campos.contrasena?.let { constructor.setValue(it, AutofillValue.forText(entrada.contrasena)) }
+        campos.otp?.let { idOtp ->
+            AutofillOtpUtiles.obtenerCodigoTotp(entrada)?.let { codigo ->
+                constructor.setValue(idOtp, AutofillValue.forText(codigo))
+            }
+        }
         return try {
             constructor.build()
         } catch (e: IllegalArgumentException) {
@@ -159,7 +173,7 @@ object AutofillUtiles {
     fun entradasCompatibles(entradas: List<Entrada>, paquete: String, dominioWeb: String?): List<Entrada> {
         val objetivo = contextoSolicitante(paquete, dominioWeb)
         return entradas.filter { entrada ->
-            entrada.contrasena.isNotBlank() && entrada.urls.any { guardado ->
+            (entrada.contrasena.isNotBlank() || !entrada.secretoTotp.isNullOrBlank()) && entrada.urls.any { guardado ->
                 Dominios.coincide(guardado, objetivo)
             }
         }

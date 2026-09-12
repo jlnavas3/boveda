@@ -142,8 +142,22 @@ class VaultRepository private constructor(contexto: Context) {
         }
     }
 
+    var esModoSenuelo: Boolean = false
+        private set
+
+    fun abrirSenuelo(entradas: List<Entrada>) {
+        synchronized(candado) {
+            bloquear()
+            esModoSenuelo = true
+            contenido = ContenidoBoveda(entradas = entradas)
+            _estado.value = EstadoBoveda.Desbloqueada(entradas, emptyList())
+            com.jlnavas3.bovedalocal.widget.WidgetTotpFavoritos.actualizarTodos(app)
+        }
+    }
+
     fun bloquear() {
         synchronized(candado) {
+            esModoSenuelo = false
             Zeroizar.borrar(claveMaestra)
             claveMaestra = null
             contenido = ContenidoBoveda()
@@ -285,6 +299,10 @@ class VaultRepository private constructor(contexto: Context) {
 
     /** Solo se llama con el candado cogido. */
     private fun persistir() {
+        if (esModoSenuelo) {
+            BovedaSenuelo.guardarEntradasSenuelo(app, contenido.entradas)
+            return
+        }
         val clave = claveMaestra ?: throw IllegalStateException("La bóveda está bloqueada")
         val plano = json.encodeToString(ContenidoBoveda.serializer(), contenido).toByteArray(Charsets.UTF_8)
         val archivo = VaultCrypto.cifrar(plano, clave, salt, params)

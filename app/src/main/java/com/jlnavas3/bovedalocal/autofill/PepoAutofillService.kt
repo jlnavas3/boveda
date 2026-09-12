@@ -42,14 +42,16 @@ class PepoAutofillService : AutofillService() {
             callback.onSuccess(null)
             return
         }
-        Diagnostico.apuntar(
-            "autofill",
-            "Formulario reconocido: ${if (campos.usuario != null) "usuario" else ""}${if (campos.usuario != null && campos.contrasena != null) " y " else ""}${if (campos.contrasena != null) "contraseña" else ""}"
-        )
+        val descCampos = buildList {
+            if (campos.usuario != null) add("usuario")
+            if (campos.contrasena != null) add("contraseña")
+            if (campos.otp != null) add("código 2FA")
+        }.joinToString(" y ")
+        Diagnostico.apuntar("autofill", "Formulario reconocido: $descCampos")
         val paquete = estructura.activityComponent?.packageName ?: ""
         val repositorio = VaultRepository.obtener(this)
         val respuesta = FillResponse.Builder()
-        val ids: Array<AutofillId> = listOfNotNull(campos.usuario, campos.contrasena).toTypedArray()
+        val ids: Array<AutofillId> = listOfNotNull(campos.usuario, campos.contrasena, campos.otp).toTypedArray()
 
         if (!repositorio.estaDesbloqueada) {
             val intent = Intent(this, AutofillAuthActivity::class.java).apply {
@@ -73,6 +75,9 @@ class PepoAutofillService : AutofillService() {
             val compatibles = AutofillUtiles.entradasCompatibles(repositorio.entradas(), paquete, campos.dominioWeb)
             compatibles.forEach { entrada ->
                 AutofillUtiles.dataset(this, entrada, campos)?.let { respuesta.addDataset(it) }
+                if (campos.otp != null && !entrada.secretoTotp.isNullOrBlank()) {
+                    AutofillOtpUtiles.datasetTotp(this, entrada, campos.otp)?.let { respuesta.addDataset(it) }
+                }
             }
         }
 

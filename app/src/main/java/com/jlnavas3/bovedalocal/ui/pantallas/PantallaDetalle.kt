@@ -26,6 +26,7 @@ import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.QrCode
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
@@ -60,6 +61,7 @@ import com.jlnavas3.bovedalocal.ui.VaultViewModel
 import com.jlnavas3.bovedalocal.data.normalizarEtiqueta
 import com.jlnavas3.bovedalocal.ui.componentes.AnilloTotp
 import com.jlnavas3.bovedalocal.ui.componentes.BotonBorde
+import com.jlnavas3.bovedalocal.ui.componentes.DialogoCompartirQr
 import com.jlnavas3.bovedalocal.ui.componentes.EtiquetaSeccion
 import com.jlnavas3.bovedalocal.ui.componentes.Monograma
 import com.jlnavas3.bovedalocal.ui.componentes.TarjetaPepo
@@ -93,6 +95,7 @@ fun PantallaDetalle(vm: VaultViewModel, id: String) {
     val ajustes by vm.ajustes.collectAsStateWithLifecycle()
     var revelada by remember { mutableStateOf(false) }
     var confirmarBorrado by remember { mutableStateOf(false) }
+    var mostrarDialogoQr by remember { mutableStateOf(false) }
     var ultimaCopia by remember { mutableStateOf<String?>(null) }
 
     if (entrada == null) {
@@ -142,6 +145,14 @@ fun PantallaDetalle(vm: VaultViewModel, id: String) {
                     color = ColorTitulos
                 )
                 Text(entrada.tipo.etiqueta, style = MaterialTheme.typography.bodyMedium, color = TextoSecundario)
+            }
+            IconButton(onClick = { haptica.tic(); mostrarDialogoQr = true }) {
+                Icon(
+                    imageVector = Icons.Filled.QrCode,
+                    contentDescription = "Compartir por código QR",
+                    tint = ColorIconosInternos,
+                    modifier = Modifier.size(24.dp)
+                )
             }
             IconButton(onClick = { haptica.tic(); vm.alternarFavorito(entrada.id) }) {
                 Icon(
@@ -435,6 +446,13 @@ fun PantallaDetalle(vm: VaultViewModel, id: String) {
             dismissButton = {
                 TextButton(onClick = { confirmarBorrado = false }) { Text("Cancelar") }
             }
+        )
+    }
+
+    if (mostrarDialogoQr) {
+        DialogoCompartirQr(
+            entrada = entrada,
+            alCerrar = { mostrarDialogoQr = false }
         )
     }
 }
