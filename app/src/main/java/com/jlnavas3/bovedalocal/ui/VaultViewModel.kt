@@ -21,45 +21,10 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-sealed interface Pantalla {
-    object Onboarding : Pantalla
-    object Desbloqueo : Pantalla
-    object Lista : Pantalla
-    data class Detalle(val id: String) : Pantalla
-    data class Editar(val id: String?, val contrasenaInicial: String = "") : Pantalla
-    object Generador : Pantalla
-    object Passkeys : Pantalla
-    object Autenticador : Pantalla
-    /** Si [entradaDestino] es null, el QR crea una entrada nueva de 2FA. */
-    data class Escaner(
-        val entradaDestino: String? = null,
-        /** true = entrar directo a escribir la clave a mano, sin cámara. */
-        val soloManual: Boolean = false
-    ) : Pantalla
-    object Ajustes : Pantalla
-    object AjustesIndice : Pantalla
-    object Tema : Pantalla
-    object Formas : Pantalla
-    object Tipografia : Pantalla
-    object AcercaDe : Pantalla
-    object Registro : Pantalla
-    object SaludBoveda : Pantalla
-    object Papelera : Pantalla
-    object KitEmergencia : Pantalla
-    object AjustesSenuelo : Pantalla
-}
+class VaultViewModel(app: Application) : AndroidViewModel(app), VaultAjustesDelegate, VaultBackupDelegate {
 
-enum class CriterioOrdenacion(val etiqueta: String) {
-    NOMBRE_AZ("Nombre (A-Z)"),
-    NOMBRE_ZA("Nombre (Z-A)"),
-    MODIFICACION_RECIENTE("Modificado recientemente"),
-    CREACION_RECIENTE("Añadido recientemente"),
-    ANTIGUEDAD("Más antiguos primero")
-}
-
-class VaultViewModel(app: Application) : AndroidViewModel(app) {
-
-    val repositorio = VaultRepository.obtener(app)
+    override val repositorio = VaultRepository.obtener(app)
+    override fun obtenerApp(): Application = getApplication()
 
     val estado: StateFlow<EstadoBoveda> = repositorio.estado
     val ajustes: StateFlow<AjustesApp> = repositorio.ajustes.ajustes
@@ -74,9 +39,11 @@ class VaultViewModel(app: Application) : AndroidViewModel(app) {
 
     private val _error = MutableStateFlow<String?>(null)
     val error: StateFlow<String?> = _error
+    override val errorInterno: MutableStateFlow<String?> get() = _error
 
     private val _aviso = MutableStateFlow<String?>(null)
     val aviso: StateFlow<String?> = _aviso
+    override val avisoInterno: MutableStateFlow<String?> get() = _aviso
 
     private val _cuentaAtrasPortapapeles = MutableStateFlow(0)
     val cuentaAtrasPortapapeles: StateFlow<Int> = _cuentaAtrasPortapapeles
@@ -143,17 +110,11 @@ class VaultViewModel(app: Application) : AndroidViewModel(app) {
 
     // ------------------------------------------- freno a los intentos de clave
 
-    // El contador vive en disco (ver FrenoIntentos): antes eran dos campos de aquí y
-    // cerrar la app desde recientes lo reseteaba, que es justo lo que haría alguien
-    // probando claves a mano.
     private val contextoApp: Application get() = getApplication()
 
     /** Segundos que faltan para poder volver a probar. 0 si se puede probar ya. */
     fun esperaPorIntentos(): Long = FrenoIntentos.esperaSegundos(contextoApp)
 
-    // suspend y en IO: FrenoIntentos escribe con commit(), que es sincrono a
-    // proposito, y estas dos se llaman desde dentro de ejecutar{}, que corre en
-    // el hilo principal. Sin esto seria escritura a disco en el hilo de la UI.
     private suspend fun apuntarFallo() = withContext(Dispatchers.IO) {
         FrenoIntentos.apuntarFallo(contextoApp)
     }
@@ -184,13 +145,8 @@ class VaultViewModel(app: Application) : AndroidViewModel(app) {
                 delay(5_000)
                 val limite = repositorio.ajustes.actual.autoBloqueoSegundos
                 val desbloqueada = repositorio.estaDesbloqueada
-                // Al abrirse la bóveda el contador empieza de cero, venga del camino que venga
-                // (contraseña, huella o autofill). Sin esto, el tiempo que pasó bloqueada
-                // contaba como inactividad y la volvía a cerrar en el siguiente tic.
                 if (desbloqueada && !estabaDesbloqueada) registrarInteraccion()
                 estabaDesbloqueada = desbloqueada
-                // Mientras la oferta de huella está en pantalla el reloj no corre: es la primera
-                // vez que el usuario ve la app y estará leyendo, no ignorándola.
                 if (_ofrecerBiometria.value) registrarInteraccion()
                 if (limite > 0 && desbloqueada && !_ofrecerBiometria.value) {
                     val quieto = System.currentTimeMillis() - _ultimaInteraccion.value
@@ -225,7 +181,6 @@ class VaultViewModel(app: Application) : AndroidViewModel(app) {
                 Diagnostico.apuntar("bóveda", "Bóveda creada y desbloqueada")
                 registrarInteraccion()
                 irRaiz(Pantalla.Lista)
-                // Mucha gente no llega nunca a Ajustes: se lo ofrecemos aquí, una vez.
                 _ofrecerBiometria.value = true
                 alTerminar()
             } finally {
@@ -300,9 +255,17 @@ class VaultViewModel(app: Application) : AndroidViewModel(app) {
             val mensaje = if (porInactividad) "Bloqueada por caducidad de tiempo (${limite}s de inactividad)" else "Bloqueada manualmente"
             Diagnostico.apuntar("bóveda", mensaje)
         }
-        // El rato que pase bloqueada no cuenta como inactividad.
         registrarInteraccion()
         irRaiz(if (repositorio.existeBoveda) Pantalla.Desbloqueo else Pantalla.Onboarding)
+    }
+
+    /** Días sin exportar la bóveda; null si nunca se exportó o el recordatorio está apagado. */
+    fun diasSinExportar(): Long? {
+        val ajustes = repositorio.ajustes.actual
+        if (ajustes.recordatorioExportacionDias <= 0) return null
+        if (ajustes.ultimaExportacionEn <= 0L) return null
+        val transcurridos = (System.currentTimeMillis() - ajustes.ultimaExportacionEn) / (24L * 60 * 60 * 1000)
+        return if (transcurridos >= ajustes.recordatorioExportacionDias) transcurridos else null
     }
 
     // ---------------------------------------------------------------- entradas
@@ -444,10 +407,6 @@ class VaultViewModel(app: Application) : AndroidViewModel(app) {
         entradas.filter { !it.secretoTotp.isNullOrBlank() }
             .sortedBy { it.titulo.lowercase() }
 
-    /**
-     * Alta de un doble factor a partir de un QR o de un código escrito a mano.
-     * Devuelve false si el texto no sirve, para que la pantalla lo diga sin salir.
-     */
     fun altaTotp(texto: String, entradaDestino: String? = null): Boolean {
         val ajustes = repositorio.ajustes.actual
         val semilla = OtpAuth.leer(
@@ -502,8 +461,6 @@ class VaultViewModel(app: Application) : AndroidViewModel(app) {
         }
         Diagnostico.apuntar("portapapeles", accionDesc)
         trabajoPortapapeles?.cancel()
-        // Todas las copias de datos de la bóveda usan la misma barra y limpieza automática.
-        // Cancelar el job anterior no ejecuta su limpieza final: primero se resetea la barra.
         _cuentaAtrasPortapapeles.value = 0
         val segundos = repositorio.ajustes.actual.portapapelesSegundos
         trabajoPortapapeles = viewModelScope.launch {
@@ -517,357 +474,15 @@ class VaultViewModel(app: Application) : AndroidViewModel(app) {
         }
     }
 
-    fun ajustarAutoBloqueo(segundos: Int) {
-        repositorio.ajustes.actualizar { it.copy(autoBloqueoSegundos = segundos) }
-        val desc = if (segundos == 0) "desactivado" else "${segundos}s"
-        Diagnostico.apuntar("seguridad", "Tiempo de auto-bloqueo configurado en $desc")
-    }
-
-    fun ajustarPortapapeles(segundos: Int) {
-        repositorio.ajustes.actualizar { it.copy(portapapelesSegundos = segundos) }
-        val desc = if (segundos == 0) "desactivado" else "${segundos}s"
-        Diagnostico.apuntar("seguridad", "Tiempo de limpieza de portapapeles configurado en $desc")
-    }
-
-    fun ajustarTileModo(modo: String) = repositorio.ajustes.actualizar { it.copy(tileModo = modo) }
-
-    fun ajustarTileLongitud(longitud: Int) = repositorio.ajustes.actualizar { it.copy(tileLongitud = longitud) }
-
-    fun ajustarTilePatron(patron: String) = repositorio.ajustes.actualizar { it.copy(tilePatron = patron) }
-
-    fun ajustarTileCopiarPortapapeles(copiar: Boolean) = repositorio.ajustes.actualizar { it.copy(tileCopiarPortapapeles = copiar) }
-
-    fun ajustarTileMostrarToast(toast: Boolean) = repositorio.ajustes.actualizar { it.copy(tileMostrarToast = toast) }
-
-    fun ajustarTileHaptica(haptica: Boolean) = repositorio.ajustes.actualizar { it.copy(tileHaptica = haptica) }
-
-    fun ajustarMotorCamara(clave: String) = repositorio.ajustes.actualizar { it.copy(motorCamara = clave) }
-
-    fun ajustarNombrePersonalizado(nombre: String) =
-        repositorio.ajustes.actualizar { it.copy(nombrePersonalizado = nombre) }
-
-    /** Cambia el icono del launcher (las 20 variantes precompiladas de Android). */
-    fun ajustarIconoLauncher(clave: String) {
-        repositorio.ajustes.actualizar { it.copy(iconoLauncher = clave) }
-        com.jlnavas3.bovedalocal.util.CambiadorIcono.aplicar(contextoApp, clave)
-    }
-
-    /** Cambia el acento del tema Y el color del icono del launcher (mismo dibujo, otro degradado). */
-    fun ajustarColorApp(paleta: com.jlnavas3.bovedalocal.ui.theme.PaletaAcento) {
-        com.jlnavas3.bovedalocal.ui.theme.aplicarPaletaAcento(paleta)
-        repositorio.ajustes.actualizar { it.copy(colorAcento = paleta.clave, iconoLauncher = paleta.clave) }
-        com.jlnavas3.bovedalocal.util.CambiadorIcono.aplicar(contextoApp, paleta.clave)
-        com.jlnavas3.bovedalocal.ui.theme.aplicarPersonalizacionColores(repositorio.ajustes.actual)
-    }
-
-    fun ajustarColorAcento(hexOClave: String) {
-        repositorio.ajustes.actualizar { it.copy(colorAcento = hexOClave) }
-        com.jlnavas3.bovedalocal.ui.theme.aplicarPersonalizacionColores(repositorio.ajustes.actual)
-    }
-
-    fun ajustarColorIconosInternos(hex: String) {
-        repositorio.ajustes.actualizar { it.copy(colorIconosInternos = hex) }
-        com.jlnavas3.bovedalocal.ui.theme.aplicarPersonalizacionColores(repositorio.ajustes.actual)
-    }
-
-    fun ajustarColorTitulos(hex: String) {
-        repositorio.ajustes.actualizar { it.copy(colorTitulos = hex) }
-        com.jlnavas3.bovedalocal.ui.theme.aplicarPersonalizacionColores(repositorio.ajustes.actual)
-    }
-
-    fun ajustarColorTarjetas(hex: String) {
-        repositorio.ajustes.actualizar { it.copy(colorTarjetas = hex) }
-        com.jlnavas3.bovedalocal.ui.theme.aplicarPersonalizacionColores(repositorio.ajustes.actual)
-    }
-
-    fun ajustarColorSeguridad(hex: String) {
-        repositorio.ajustes.actualizar { it.copy(colorSeguridad = hex) }
-        com.jlnavas3.bovedalocal.ui.theme.aplicarPersonalizacionColores(repositorio.ajustes.actual)
-    }
-
-    fun ajustarColor2FA(hex: String) {
-        repositorio.ajustes.actualizar { it.copy(color2FA = hex) }
-        com.jlnavas3.bovedalocal.ui.theme.aplicarPersonalizacionColores(repositorio.ajustes.actual)
-    }
-
-    fun ajustarColorPasskeys(hex: String) {
-        repositorio.ajustes.actualizar { it.copy(colorPasskeys = hex) }
-        com.jlnavas3.bovedalocal.ui.theme.aplicarPersonalizacionColores(repositorio.ajustes.actual)
-    }
-
-    fun ajustarColorGenerador(hex: String) {
-        repositorio.ajustes.actualizar { it.copy(colorGenerador = hex) }
-        com.jlnavas3.bovedalocal.ui.theme.aplicarPersonalizacionColores(repositorio.ajustes.actual)
-    }
-
-    fun ajustarColorSalud(hex: String) {
-        repositorio.ajustes.actualizar { it.copy(colorSalud = hex) }
-        com.jlnavas3.bovedalocal.ui.theme.aplicarPersonalizacionColores(repositorio.ajustes.actual)
-    }
-
-    fun ajustarColorPapelera(hex: String) {
-        repositorio.ajustes.actualizar { it.copy(colorPapelera = hex) }
-        com.jlnavas3.bovedalocal.ui.theme.aplicarPersonalizacionColores(repositorio.ajustes.actual)
-    }
-
-    fun ajustarColorExportacion(hex: String) {
-        repositorio.ajustes.actualizar { it.copy(colorExportacion = hex) }
-        com.jlnavas3.bovedalocal.ui.theme.aplicarPersonalizacionColores(repositorio.ajustes.actual)
-    }
-
-    fun restablecerColoresTema() {
-        repositorio.ajustes.actualizar {
-            it.copy(
-                colorAcento = "ambar",
-                colorIconosInternos = "",
-                colorTitulos = "",
-                colorTarjetas = "",
-                colorDinamicoSistema = false,
-                colorSeguridad = "",
-                color2FA = "",
-                colorPasskeys = "",
-                colorGenerador = "",
-                colorSalud = "",
-                colorPapelera = "",
-                colorExportacion = ""
-            )
-        }
-        com.jlnavas3.bovedalocal.ui.theme.aplicarPersonalizacionColores(repositorio.ajustes.actual)
-    }
-
-    fun alternarColorDinamicoSistema(activo: Boolean) {
-        repositorio.ajustes.actualizar { it.copy(colorDinamicoSistema = activo) }
-        com.jlnavas3.bovedalocal.ui.theme.aplicarPersonalizacionTemaCompleto(repositorio.ajustes.actual)
-    }
-
-    // --- Personalización de Bordes y Formas ---
-    fun ajustarCurvaturaEsquinas(valor: Float) {
-        repositorio.ajustes.actualizar { it.copy(curvaturaEsquinasDp = valor) }
-        com.jlnavas3.bovedalocal.ui.theme.aplicarPersonalizacionFormas(repositorio.ajustes.actual)
-    }
-
-    fun ajustarGrosorBorde(valor: Float) {
-        repositorio.ajustes.actualizar { it.copy(grosorBordeDp = valor) }
-        com.jlnavas3.bovedalocal.ui.theme.aplicarPersonalizacionFormas(repositorio.ajustes.actual)
-    }
-
-    fun ajustarEstiloBorde(estilo: String) {
-        repositorio.ajustes.actualizar { it.copy(estiloBorde = estilo) }
-        com.jlnavas3.bovedalocal.ui.theme.aplicarPersonalizacionFormas(repositorio.ajustes.actual)
-    }
-
-    fun ajustarEspaciadoComponentes(valor: Float) {
-        repositorio.ajustes.actualizar { it.copy(espaciadoComponentesDp = valor) }
-        com.jlnavas3.bovedalocal.ui.theme.aplicarPersonalizacionFormas(repositorio.ajustes.actual)
-    }
-
-    fun aplicarPresetFormas(curvatura: Float, grosor: Float, estilo: String, espaciado: Float) {
-        repositorio.ajustes.actualizar {
-            it.copy(
-                curvaturaEsquinasDp = curvatura,
-                grosorBordeDp = grosor,
-                estiloBorde = estilo,
-                espaciadoComponentesDp = espaciado
-            )
-        }
-        com.jlnavas3.bovedalocal.ui.theme.aplicarPersonalizacionFormas(repositorio.ajustes.actual)
-    }
-
-    fun restablecerFormas() {
-        aplicarPresetFormas(curvatura = 6f, grosor = 0.8f, estilo = "marcado", espaciado = 14f)
-    }
-
-    // --- Personalización de Tipografía y Textos ---
-    fun ajustarEscalaTexto(escala: Float) {
-        repositorio.ajustes.actualizar { it.copy(escalaTexto = escala) }
-        com.jlnavas3.bovedalocal.ui.theme.aplicarPersonalizacionTipografia(repositorio.ajustes.actual)
-    }
-
-    fun ajustarPesoTexto(peso: String) {
-        repositorio.ajustes.actualizar { it.copy(pesoTexto = peso) }
-        com.jlnavas3.bovedalocal.ui.theme.aplicarPersonalizacionTipografia(repositorio.ajustes.actual)
-    }
-
-    fun ajustarCursivaTexto(cursiva: Boolean) {
-        repositorio.ajustes.actualizar { it.copy(cursivaTexto = cursiva) }
-        com.jlnavas3.bovedalocal.ui.theme.aplicarPersonalizacionTipografia(repositorio.ajustes.actual)
-    }
-
-    fun ajustarEspaciadoLetras(espaciado: Float) {
-        repositorio.ajustes.actualizar { it.copy(espaciadoLetrasSp = espaciado) }
-        com.jlnavas3.bovedalocal.ui.theme.aplicarPersonalizacionTipografia(repositorio.ajustes.actual)
-    }
-
-    fun ajustarInterlineadoFactor(factor: Float) {
-        repositorio.ajustes.actualizar { it.copy(interlineadoFactor = factor) }
-        com.jlnavas3.bovedalocal.ui.theme.aplicarPersonalizacionTipografia(repositorio.ajustes.actual)
-    }
-
-    fun ajustarFamiliaFuente(familia: String) {
-        repositorio.ajustes.actualizar { it.copy(familiaFuente = familia) }
-        com.jlnavas3.bovedalocal.ui.theme.aplicarPersonalizacionTipografia(repositorio.ajustes.actual)
-    }
-
-    fun aplicarPresetTipografia(
-        escala: Float,
-        peso: String,
-        cursiva: Boolean,
-        kerning: Float,
-        interlineado: Float,
-        familia: String
-    ) {
-        repositorio.ajustes.actualizar {
-            it.copy(
-                escalaTexto = escala,
-                pesoTexto = peso,
-                cursivaTexto = cursiva,
-                espaciadoLetrasSp = kerning,
-                interlineadoFactor = interlineado,
-                familiaFuente = familia
-            )
-        }
-        com.jlnavas3.bovedalocal.ui.theme.aplicarPersonalizacionTipografia(repositorio.ajustes.actual)
-    }
-
-    fun restablecerTipografia() {
-        aplicarPresetTipografia(
-            escala = 1.0f,
-            peso = "normal",
-            cursiva = false,
-            kerning = 0.0f,
-            interlineado = 1.0f,
-            familia = "sans"
-        )
-    }
-
-    fun ajustarTema(clave: String) {
-        repositorio.ajustes.actualizar {
-            if (it.temaApp != clave) {
-                it.copy(
-                    temaApp = clave,
-                    colorIconosInternos = "",
-                    colorTitulos = "",
-                    colorTarjetas = "",
-                    colorSeguridad = "",
-                    color2FA = "",
-                    colorPasskeys = "",
-                    colorGenerador = "",
-                    colorSalud = "",
-                    colorPapelera = "",
-                    colorExportacion = ""
-                )
-            } else {
-                it.copy(temaApp = clave)
-            }
-        }
-        com.jlnavas3.bovedalocal.ui.theme.aplicarPersonalizacionTemaCompleto(repositorio.ajustes.actual)
-    }
-
-    fun ajustarRecordatorioExportacion(dias: Int) =
-        repositorio.ajustes.actualizar { it.copy(recordatorioExportacionDias = dias) }
-
-    fun ajustarDensidadLista(clave: String) =
-        repositorio.ajustes.actualizar { it.copy(densidadLista = clave) }
-
-    fun ajustarAgruparPorSitio(activo: Boolean) =
-        repositorio.ajustes.actualizar { it.copy(agruparPorSitio = activo) }
-
-    fun ajustarTotpManualDigitos(digitos: Int) =
-        repositorio.ajustes.actualizar { it.copy(totpManualDigitos = digitos) }
-
-    fun ajustarTotpManualPeriodo(periodo: Int) =
-        repositorio.ajustes.actualizar { it.copy(totpManualPeriodo = periodo) }
-
-    fun ajustarTotpManualAlgoritmo(algoritmo: String) =
-        repositorio.ajustes.actualizar { it.copy(totpManualAlgoritmo = algoritmo) }
-
-    fun ajustarTotpSepararDigitos(separar: Boolean) =
-        repositorio.ajustes.actualizar { it.copy(totpSepararDigitos = separar) }
-
-    fun ajustarMostrarIndiceAlfabetico(activo: Boolean) =
-        repositorio.ajustes.actualizar { it.copy(mostrarIndiceAlfabetico = activo) }
-
-    fun ajustarIndiceEfectoOla(activo: Boolean) =
-        repositorio.ajustes.actualizar { it.copy(indiceEfectoOla = activo) }
-
-    fun ajustarIndiceAmplitudOlaDp(amplitud: Float) =
-        repositorio.ajustes.actualizar { it.copy(indiceAmplitudOlaDp = amplitud) }
-
-    fun ajustarIndiceRadioOlaDp(radio: Float) =
-        repositorio.ajustes.actualizar { it.copy(indiceRadioOlaDp = radio) }
-
-    fun ajustarIndiceEscalaLetras(escala: Float) =
-        repositorio.ajustes.actualizar { it.copy(indiceEscalaLetras = escala) }
-
-    fun ajustarIndiceMostrarCirculo(activo: Boolean) =
-        repositorio.ajustes.actualizar { it.copy(indiceMostrarCirculo = activo) }
-
-    fun ajustarIndiceTamanoCirculoDp(tamano: Float) =
-        repositorio.ajustes.actualizar { it.copy(indiceTamanoCirculoDp = tamano) }
-
-    fun ajustarIndiceOffsetCirculoDp(offset: Float) =
-        repositorio.ajustes.actualizar { it.copy(indiceOffsetCirculoDp = offset) }
-
-    fun ajustarIndiceHaptica(activo: Boolean) =
-        repositorio.ajustes.actualizar { it.copy(indiceHaptica = activo) }
-
-    fun ajustarIndiceAnchoTactilDp(anchoDp: Float) =
-        repositorio.ajustes.actualizar { it.copy(indiceAnchoTactilDp = anchoDp) }
-
-    fun ajustarIndiceTonoLetras(tono: Float) =
-        repositorio.ajustes.actualizar { it.copy(indiceTonoLetras = tono) }
-
-    fun ajustarIndiceIncluirEnie(activo: Boolean) =
-        repositorio.ajustes.actualizar { it.copy(indiceIncluirEnie = activo) }
-
-    fun ajustarIndiceResaltarEntradas(activo: Boolean) =
-        repositorio.ajustes.actualizar { it.copy(indiceResaltarEntradas = activo) }
-
-    fun ajustarIndiceResaltarSoloPrimera(activo: Boolean) =
-        repositorio.ajustes.actualizar { it.copy(indiceResaltarSoloPrimera = activo) }
-
-    fun restablecerAjustesIndiceAlfabetico() {
-        repositorio.ajustes.actualizar {
-            it.copy(
-                mostrarIndiceAlfabetico = true,
-                indiceEfectoOla = true,
-                indiceAmplitudOlaDp = 109f,
-                indiceRadioOlaDp = 169f,
-                indiceEscalaLetras = 1.5f,
-                indiceMostrarCirculo = true,
-                indiceTamanoCirculoDp = 50f,
-                indiceOffsetCirculoDp = 136f,
-                indiceHaptica = true,
-                indiceAnchoTactilDp = 45f,
-                indiceTonoLetras = 80f,
-                indiceIncluirEnie = true,
-                indiceResaltarEntradas = true,
-                indiceResaltarSoloPrimera = true
-            )
-        }
-    }
-
-    /** Días sin exportar la bóveda; null si nunca se exportó o el recordatorio está apagado. */
-    fun diasSinExportar(): Long? {
-        val ajustes = repositorio.ajustes.actual
-        if (ajustes.recordatorioExportacionDias <= 0) return null
-        if (ajustes.ultimaExportacionEn <= 0L) return null
-        val transcurridos = (System.currentTimeMillis() - ajustes.ultimaExportacionEn) / (24L * 60 * 60 * 1000)
-        return if (transcurridos >= ajustes.recordatorioExportacionDias) transcurridos else null
-    }
-
-    /** Se pone a true justo al crear la bóveda, para ofrecer la huella sin pasar por Ajustes. */
+    // Ofertas iniciales tras crear bóveda
     private val _ofrecerBiometria = MutableStateFlow(false)
     val ofrecerBiometria: StateFlow<Boolean> = _ofrecerBiometria
 
     fun cerrarOfertaBiometria() {
         _ofrecerBiometria.value = false
-        // Encadenamos con la otra cosa que hay que hacer una sola vez: ponerme
-        // como gestor de contraseñas del sistema. Si no, nadie lo encuentra.
         _ofrecerGestor.value = true
     }
 
-    /** Oferta, una sola vez, de activar Bóveda local como gestor del sistema. */
     private val _ofrecerGestor = MutableStateFlow(false)
     val ofrecerGestor: StateFlow<Boolean> = _ofrecerGestor
 
@@ -875,118 +490,12 @@ class VaultViewModel(app: Application) : AndroidViewModel(app) {
         _ofrecerGestor.value = false
     }
 
-    // ------------------------------------------------------- exportar/importar
-
-    fun exportar(password: String, escritor: (ByteArray) -> Unit) {
-        ejecutar {
-            val chars = password.toCharArray()
-            try {
-                val datos = withContext(Dispatchers.Default) { repositorio.exportar(chars) }
-                withContext(Dispatchers.IO) { escritor(datos) }
-                repositorio.ajustes.actualizar { it.copy(ultimaExportacionEn = System.currentTimeMillis()) }
-                Diagnostico.apuntar("bóveda", "Copia de seguridad cifrada exportada correctamente")
-                _aviso.value = "Bóveda exportada y cifrada"
-            } catch (e: Exception) {
-                Diagnostico.apuntar("bóveda", "Fallo al exportar copia de seguridad: ${e.message ?: "error desconocido"}", e)
-                _error.value = "No se pudo exportar: ${e.message ?: "error desconocido"}"
-            } finally {
-                Zeroizar.borrar(chars)
-            }
-        }
-    }
-
-    fun importar(password: String, lector: () -> ByteArray) {
-        ejecutar {
-            val chars = password.toCharArray()
-            try {
-                val datos = withContext(Dispatchers.IO) { lector() }
-                val nuevas = withContext(Dispatchers.Default) { repositorio.importar(datos, chars) }
-                Diagnostico.apuntar("bóveda", "Bóveda importada desde copia cifrada ($nuevas entradas incorporadas)")
-                _aviso.value = "Importadas $nuevas entradas"
-            } catch (e: Exception) {
-                Diagnostico.apuntar("bóveda", "Fallo al importar archivo cifrado: contraseña incorrecta o archivo inválido", e)
-                _error.value = "No se pudo importar: contraseña incorrecta o archivo inválido"
-            } finally {
-                Zeroizar.borrar(chars)
-            }
-        }
-    }
-
-    fun importarCsv(lector: () -> ByteArray, onResultado: ((Int) -> Unit)? = null) {
-        ejecutar {
-            try {
-                val datos = withContext(Dispatchers.IO) { lector() }
-                val nuevas = withContext(Dispatchers.Default) { repositorio.importarCsv(datos) }
-                Diagnostico.apuntar("bóveda", "Importación CSV completada con éxito ($nuevas entradas incorporadas)")
-                _aviso.value = "Importadas $nuevas entradas desde CSV"
-                onResultado?.invoke(nuevas)
-            } catch (e: Exception) {
-                Diagnostico.apuntar("bóveda", "Fallo al importar archivo CSV: ${e.message ?: "formato no reconocido"}", e)
-                _error.value = "No se pudo importar el CSV: ${e.message ?: "formato no reconocido"}"
-            }
-        }
-    }
-
-    fun registrarCsvGoogleImportado(ruta: String, uri: String, cuentas: Int) {
-        repositorio.ajustes.actualizar {
-            it.copy(
-                csvGoogleRuta = ruta,
-                csvGoogleUri = uri,
-                csvGoogleCuentas = cuentas,
-                csvGoogleEliminado = false
-            )
-        }
-    }
-
-    fun marcarCsvGoogleEliminado(eliminado: Boolean) {
-        repositorio.ajustes.actualizar {
-            it.copy(csvGoogleEliminado = eliminado)
-        }
-        if (eliminado) {
-            Diagnostico.apuntar("seguridad", "Archivo CSV de Google eliminado de forma segura del almacenamiento")
-        }
-    }
-
-    fun descartarAvisoCsvGoogle() {
-        repositorio.ajustes.actualizar {
-            it.copy(
-                csvGoogleRuta = "",
-                csvGoogleUri = "",
-                csvGoogleCuentas = 0,
-                csvGoogleEliminado = false
-            )
-        }
-    }
-
-
-    fun cambiarContrasenaMaestra(actual: String, nueva: String) {
-        ejecutar {
-            val viejaChars = actual.toCharArray()
-            val nuevaChars = nueva.toCharArray()
-            try {
-                val correcta = withContext(Dispatchers.Default) { repositorio.verificarContrasena(viejaChars) }
-                if (!correcta) {
-                    Diagnostico.apuntar("bóveda", "Intento de cambio de contraseña maestra rechazado (contraseña actual incorrecta)")
-                    _error.value = "La contraseña actual no es correcta"
-                    return@ejecutar
-                }
-                withContext(Dispatchers.Default) { repositorio.cambiarContrasenaMaestra(nuevaChars) }
-                Diagnostico.apuntar("bóveda", "Contraseña maestra de la bóveda modificada exitosamente")
-                _aviso.value = "Contraseña maestra cambiada. Vuelve a activar la biometría."
-            } finally {
-                Zeroizar.borrar(viejaChars)
-                Zeroizar.borrar(nuevaChars)
-            }
-        }
-    }
-
-    private fun ejecutar(bloque: suspend () -> Unit) {
+    override fun ejecutar(bloque: suspend () -> Unit) {
         viewModelScope.launch {
             _trabajando.value = true
             try {
                 bloque()
             } catch (e: Exception) {
-                // Solo la clase: el mensaje de estas excepciones puede llevar rutas o contenido de la bóveda.
                 Diagnostico.apuntar("app", "Operación fallida: ${e.javaClass.simpleName}")
                 _error.value = e.message ?: "Algo salió mal"
             } finally {
