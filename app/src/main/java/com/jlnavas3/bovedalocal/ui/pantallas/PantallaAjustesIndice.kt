@@ -130,6 +130,15 @@ fun PantallaAjustesIndice(vm: VaultViewModel) {
                 }
                 Spacer(Modifier.height(8.dp))
 
+                val primerIndiceCoincidente = remember(mockItems, letraArrastrada, ajustes.indiceIncluirEnie, ajustes.indiceResaltarEntradas, ajustes.indiceResaltarSoloPrimera) {
+                    if (!ajustes.indiceResaltarEntradas || letraArrastrada == null) null
+                    else if (ajustes.indiceResaltarSoloPrimera) {
+                        mockItems.indexOfFirst { (nombre, _) ->
+                            com.jlnavas3.bovedalocal.ui.componentes.letraInicialIndice(nombre, ajustes.indiceIncluirEnie) == letraArrastrada
+                        }.takeIf { it >= 0 }
+                    } else null
+                }
+
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -138,9 +147,14 @@ fun PantallaAjustesIndice(vm: VaultViewModel) {
                         .padding(8.dp),
                     verticalArrangement = Arrangement.spacedBy(6.dp)
                 ) {
-                    mockItems.forEach { (nombre, detalle) ->
-                        val primeraChar = com.jlnavas3.bovedalocal.ui.componentes.letraInicialIndice(nombre, ajustes.indiceIncluirEnie)
-                        val coincide = letraArrastrada != null && primeraChar == letraArrastrada
+                    mockItems.forEachIndexed { indice, (nombre, detalle) ->
+                        val coincide = if (!ajustes.indiceResaltarEntradas || letraArrastrada == null) {
+                            false
+                        } else if (ajustes.indiceResaltarSoloPrimera) {
+                            indice == primerIndiceCoincidente
+                        } else {
+                            com.jlnavas3.bovedalocal.ui.componentes.letraInicialIndice(nombre, ajustes.indiceIncluirEnie) == letraArrastrada
+                        }
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -342,9 +356,29 @@ fun PantallaAjustesIndice(vm: VaultViewModel) {
                 alCambiar = { haptica.tic(); vm.ajustarIndiceIncluirEnie(it) }
             )
 
+            Spacer(Modifier.height(14.dp))
+
+            // 7. Resaltado de entradas al arrastrar
+            FilaAjusteIndice(
+                titulo = "Resaltar entradas al deslizar",
+                descripcion = "Destaca visualmente con borde y fondo de acento las entradas referentes a la letra activa.",
+                activo = ajustes.indiceResaltarEntradas,
+                alCambiar = { haptica.tic(); vm.ajustarIndiceResaltarEntradas(it) }
+            )
+
+            if (ajustes.indiceResaltarEntradas) {
+                Spacer(Modifier.height(10.dp))
+                FilaAjusteIndice(
+                    titulo = "Resaltar solo la primera entrada",
+                    descripcion = "Marca únicamente la primera entrada de cada letra como ancla visual en vez de todas.",
+                    activo = ajustes.indiceResaltarSoloPrimera,
+                    alCambiar = { haptica.tic(); vm.ajustarIndiceResaltarSoloPrimera(it) }
+                )
+            }
+
             Spacer(Modifier.height(18.dp))
 
-            // 7. Botón para restablecer valores por defecto
+            // 8. Botón para restablecer valores por defecto
             BotonBorde(
                 texto = "Restablecer valores por defecto",
                 icono = Icons.Filled.Refresh,

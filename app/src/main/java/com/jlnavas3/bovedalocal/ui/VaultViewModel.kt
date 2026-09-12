@@ -796,21 +796,29 @@ class VaultViewModel(app: Application) : AndroidViewModel(app) {
     fun ajustarIndiceIncluirEnie(activo: Boolean) =
         repositorio.ajustes.actualizar { it.copy(indiceIncluirEnie = activo) }
 
+    fun ajustarIndiceResaltarEntradas(activo: Boolean) =
+        repositorio.ajustes.actualizar { it.copy(indiceResaltarEntradas = activo) }
+
+    fun ajustarIndiceResaltarSoloPrimera(activo: Boolean) =
+        repositorio.ajustes.actualizar { it.copy(indiceResaltarSoloPrimera = activo) }
+
     fun restablecerAjustesIndiceAlfabetico() {
         repositorio.ajustes.actualizar {
             it.copy(
                 mostrarIndiceAlfabetico = true,
                 indiceEfectoOla = true,
-                indiceAmplitudOlaDp = 110f,
-                indiceRadioOlaDp = 250f,
-                indiceEscalaLetras = 1.6f,
+                indiceAmplitudOlaDp = 109f,
+                indiceRadioOlaDp = 169f,
+                indiceEscalaLetras = 1.5f,
                 indiceMostrarCirculo = true,
-                indiceTamanoCirculoDp = 78f,
-                indiceOffsetCirculoDp = 145f,
+                indiceTamanoCirculoDp = 50f,
+                indiceOffsetCirculoDp = 136f,
                 indiceHaptica = true,
                 indiceAnchoTactilDp = 45f,
-                indiceTonoLetras = 55f,
-                indiceIncluirEnie = true
+                indiceTonoLetras = 80f,
+                indiceIncluirEnie = true,
+                indiceResaltarEntradas = true,
+                indiceResaltarSoloPrimera = true
             )
         }
     }

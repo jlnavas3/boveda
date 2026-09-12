@@ -43,16 +43,18 @@ class AjustesTest {
         // Índice alfabético lateral
         assertTrue(ajustes.mostrarIndiceAlfabetico)
         assertTrue(ajustes.indiceEfectoOla)
-        assertEquals(110f, ajustes.indiceAmplitudOlaDp, 0.01f)
-        assertEquals(250f, ajustes.indiceRadioOlaDp, 0.01f)
-        assertEquals(1.6f, ajustes.indiceEscalaLetras, 0.01f)
+        assertEquals(109f, ajustes.indiceAmplitudOlaDp, 0.01f)
+        assertEquals(169f, ajustes.indiceRadioOlaDp, 0.01f)
+        assertEquals(1.5f, ajustes.indiceEscalaLetras, 0.01f)
         assertTrue(ajustes.indiceMostrarCirculo)
-        assertEquals(78f, ajustes.indiceTamanoCirculoDp, 0.01f)
-        assertEquals(145f, ajustes.indiceOffsetCirculoDp, 0.01f)
+        assertEquals(50f, ajustes.indiceTamanoCirculoDp, 0.01f)
+        assertEquals(136f, ajustes.indiceOffsetCirculoDp, 0.01f)
         assertTrue(ajustes.indiceHaptica)
         assertEquals(45f, ajustes.indiceAnchoTactilDp, 0.01f)
-        assertEquals(55f, ajustes.indiceTonoLetras, 0.01f)
+        assertEquals(80f, ajustes.indiceTonoLetras, 0.01f)
         assertTrue(ajustes.indiceIncluirEnie)
+        assertTrue(ajustes.indiceResaltarEntradas)
+        assertTrue(ajustes.indiceResaltarSoloPrimera)
     }
 
     @Test

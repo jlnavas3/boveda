@@ -85,16 +85,18 @@ data class AjustesApp(
     // Índice Alfabético Lateral (Fast-scroller con ola estilo Niagara)
     val mostrarIndiceAlfabetico: Boolean = true,
     val indiceEfectoOla: Boolean = true,
-    val indiceAmplitudOlaDp: Float = 110f,
-    val indiceRadioOlaDp: Float = 250f,
-    val indiceEscalaLetras: Float = 1.6f,
+    val indiceAmplitudOlaDp: Float = 109f,
+    val indiceRadioOlaDp: Float = 169f,
+    val indiceEscalaLetras: Float = 1.5f,
     val indiceMostrarCirculo: Boolean = true,
-    val indiceTamanoCirculoDp: Float = 78f,
-    val indiceOffsetCirculoDp: Float = 145f,
+    val indiceTamanoCirculoDp: Float = 50f,
+    val indiceOffsetCirculoDp: Float = 136f,
     val indiceHaptica: Boolean = true,
     val indiceAnchoTactilDp: Float = 45f,
-    val indiceTonoLetras: Float = 55f,
-    val indiceIncluirEnie: Boolean = true
+    val indiceTonoLetras: Float = 80f,
+    val indiceIncluirEnie: Boolean = true,
+    val indiceResaltarEntradas: Boolean = true,
+    val indiceResaltarSoloPrimera: Boolean = true
 )
 
 
@@ -200,16 +202,18 @@ class AlmacenAjustes(contexto: Context) {
             csvGoogleEliminado = prefs.getBoolean("csv_google_eliminado", false),
             mostrarIndiceAlfabetico = prefs.getBoolean("mostrar_indice_alfabetico", true),
             indiceEfectoOla = prefs.getBoolean("indice_efecto_ola", true),
-            indiceAmplitudOlaDp = prefs.getFloat("indice_amplitud_ola_dp", 110f),
-            indiceRadioOlaDp = prefs.getFloat("indice_radio_ola_dp", 250f),
-            indiceEscalaLetras = prefs.getFloat("indice_escala_letras", 1.6f),
+            indiceAmplitudOlaDp = prefs.getFloat("indice_amplitud_ola_dp", 109f),
+            indiceRadioOlaDp = prefs.getFloat("indice_radio_ola_dp", 169f),
+            indiceEscalaLetras = prefs.getFloat("indice_escala_letras", 1.5f),
             indiceMostrarCirculo = prefs.getBoolean("indice_mostrar_circulo", true),
-            indiceTamanoCirculoDp = prefs.getFloat("indice_tamano_circulo_dp", 78f),
-            indiceOffsetCirculoDp = prefs.getFloat("indice_offset_circulo_dp", 145f),
+            indiceTamanoCirculoDp = prefs.getFloat("indice_tamano_circulo_dp", 50f),
+            indiceOffsetCirculoDp = prefs.getFloat("indice_offset_circulo_dp", 136f),
             indiceHaptica = prefs.getBoolean("indice_haptica", true),
             indiceAnchoTactilDp = prefs.getFloat("indice_ancho_tactil_dp", 45f),
-            indiceTonoLetras = prefs.getFloat("indice_tono_letras", 55f),
-            indiceIncluirEnie = prefs.getBoolean("indice_incluir_enie", true)
+            indiceTonoLetras = prefs.getFloat("indice_tono_letras", 80f),
+            indiceIncluirEnie = prefs.getBoolean("indice_incluir_enie", true),
+            indiceResaltarEntradas = prefs.getBoolean("indice_resaltar_entradas", true),
+            indiceResaltarSoloPrimera = prefs.getBoolean("indice_resaltar_solo_primera", true)
         )
     }
 
@@ -278,6 +282,8 @@ class AlmacenAjustes(contexto: Context) {
             .putFloat("indice_ancho_tactil_dp", nuevo.indiceAnchoTactilDp)
             .putFloat("indice_tono_letras", nuevo.indiceTonoLetras)
             .putBoolean("indice_incluir_enie", nuevo.indiceIncluirEnie)
+            .putBoolean("indice_resaltar_entradas", nuevo.indiceResaltarEntradas)
+            .putBoolean("indice_resaltar_solo_primera", nuevo.indiceResaltarSoloPrimera)
             .apply()
         _ajustes.value = nuevo
     }

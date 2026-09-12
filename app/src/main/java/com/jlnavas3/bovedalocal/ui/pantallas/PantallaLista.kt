@@ -23,6 +23,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -399,6 +400,13 @@ fun PantallaLista(vm: VaultViewModel, estado: EstadoBoveda) {
                     return com.jlnavas3.bovedalocal.ui.componentes.letraInicialIndice(titulo, incluirEnie) == letra
                 }
 
+                val primerIndiceCoincidente = remember(itemsAMostrar, letraArrastrada, ajustes.indiceIncluirEnie, ajustes.indiceResaltarEntradas, ajustes.indiceResaltarSoloPrimera) {
+                    if (!ajustes.indiceResaltarEntradas || letraArrastrada == null) null
+                    else if (ajustes.indiceResaltarSoloPrimera) {
+                        itemsAMostrar.indexOfFirst { itemCoincideConLetra(it, letraArrastrada, ajustes.indiceIncluirEnie) }.takeIf { it >= 0 }
+                    } else null
+                }
+
                 Box(modifier = Modifier.fillMaxSize()) {
                     LazyColumn(
                         state = estadoLista,
@@ -410,14 +418,20 @@ fun PantallaLista(vm: VaultViewModel, estado: EstadoBoveda) {
                         ),
                         verticalArrangement = Arrangement.spacedBy(espaciadoFilas)
                     ) {
-                        items(itemsAMostrar, key = { item ->
+                        itemsIndexed(itemsAMostrar, key = { _, item ->
                             when (item) {
                                 is com.jlnavas3.bovedalocal.util.ItemAgrupado.Suelto -> item.entrada.id
                                 is com.jlnavas3.bovedalocal.util.ItemAgrupado.Grupo -> "grupo-${item.clave}"
                                 is com.jlnavas3.bovedalocal.util.ItemAgrupado.Hijo -> "hijo-${item.entrada.id}"
                             }
-                        }) { item ->
-                            val coincideLetra = itemCoincideConLetra(item, letraArrastrada, ajustes.indiceIncluirEnie)
+                        }) { indice, item ->
+                            val coincideLetra = if (!ajustes.indiceResaltarEntradas || letraArrastrada == null) {
+                                false
+                            } else if (ajustes.indiceResaltarSoloPrimera) {
+                                indice == primerIndiceCoincidente
+                            } else {
+                                itemCoincideConLetra(item, letraArrastrada, ajustes.indiceIncluirEnie)
+                            }
                             when (item) {
                                 is com.jlnavas3.bovedalocal.util.ItemAgrupado.Grupo -> FilaGrupoSitio(
                                     clave = item.clave,
