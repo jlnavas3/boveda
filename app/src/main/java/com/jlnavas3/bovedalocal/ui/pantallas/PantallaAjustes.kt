@@ -38,12 +38,10 @@ import androidx.compose.material.icons.filled.Description
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.Fingerprint
-import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Key
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.FileDownload
 import androidx.compose.material.icons.filled.FileUpload
-import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.SquareFoot
 import androidx.compose.material.icons.filled.TextFields
@@ -51,7 +49,6 @@ import com.jlnavas3.bovedalocal.ui.componentes.BotonColorido
 import com.jlnavas3.bovedalocal.ui.componentes.CabeceraPantalla
 import com.jlnavas3.bovedalocal.ui.theme.ColorExportacion
 import com.jlnavas3.bovedalocal.ui.theme.ColorPapelera
-import com.jlnavas3.bovedalocal.ui.theme.ColorPasskeys
 import com.jlnavas3.bovedalocal.ui.theme.ColorSalud
 import com.jlnavas3.bovedalocal.ui.theme.ColorSeguridad
 
@@ -897,7 +894,7 @@ fun PantallaAjustes(vm: VaultViewModel, actividad: FragmentActivity) {
                         amplitud <= 0f -> "Recto (sin ola)"
                         amplitud < 45f -> "Curva sutil"
                         amplitud < 85f -> "Equilibrado"
-                        amplitud < 110f -> "Ola amplia"
+                        amplitud <= 115f -> "Ola amplia (predeterminado)"
                         else -> "Super exagerado"
                     }
                     SliderConEtiqueta(
@@ -912,7 +909,8 @@ fun PantallaAjustes(vm: VaultViewModel, actividad: FragmentActivity) {
                     val radio = ajustes.indiceRadioOlaDp
                     val textoRadio = when {
                         radio < 140f -> "Concentrado"
-                        radio < 230f -> "Arco amplio"
+                        radio < 220f -> "Arco medio"
+                        radio <= 265f -> "Arco amplio (predeterminado)"
                         else -> "Abarca todo el abecedario"
                     }
                     SliderConEtiqueta(
@@ -927,8 +925,9 @@ fun PantallaAjustes(vm: VaultViewModel, actividad: FragmentActivity) {
                     val escala = ajustes.indiceEscalaLetras
                     val textoEscala = when {
                         escala <= 1.05f -> "Sin aumento"
-                        escala < 1.6f -> "Crecimiento suave"
-                        escala < 2.1f -> "Letras grandes en cresta"
+                        escala < 1.45f -> "Crecimiento suave"
+                        escala <= 1.8f -> "Letras destacadas (predeterminado)"
+                        escala < 2.3f -> "Letras grandes en cresta"
                         else -> "Letras gigantescas"
                     }
                     val escalaStr = "%.1f".format(java.util.Locale.US, escala)
@@ -978,7 +977,7 @@ fun PantallaAjustes(vm: VaultViewModel, actividad: FragmentActivity) {
                 val anchoTactil = ajustes.indiceAnchoTactilDp
                 val textoAnchoTactil = when {
                     anchoTactil < 35f -> "Estrecho (solo sobre letras)"
-                    anchoTactil < 55f -> "Estándar cómodo"
+                    anchoTactil <= 55f -> "Estándar cómodo (predeterminado)"
                     anchoTactil < 75f -> "Área amplia"
                     else -> "Extremadamente amplio"
                 }
@@ -988,6 +987,23 @@ fun PantallaAjustes(vm: VaultViewModel, actividad: FragmentActivity) {
                     valor = anchoTactil,
                     rango = 26f..90f,
                     alCambiar = { vm.ajustarIndiceAnchoTactilDp(it) }
+                )
+
+                Spacer(Modifier.height(10.dp))
+                val tono = ajustes.indiceTonoLetras
+                val textoTono = when {
+                    tono < 25f -> "Muy oscuro / discreto"
+                    tono < 45f -> "Oscuro suave"
+                    tono <= 65f -> "Equilibrado (predeterminado)"
+                    tono < 85f -> "Claro y nítido"
+                    else -> "Máximo brillo / blanco puro"
+                }
+                SliderConEtiqueta(
+                    titulo = "Color de las letras: ${tono.toInt()}%",
+                    subtitulo = textoTono,
+                    valor = tono,
+                    rango = 10f..100f,
+                    alCambiar = { vm.ajustarIndiceTonoLetras(it) }
                 )
 
                 Spacer(Modifier.height(14.dp))
@@ -1011,52 +1027,6 @@ fun PantallaAjustes(vm: VaultViewModel, actividad: FragmentActivity) {
                 color = ColorSeguridad,
                 icono = Icons.Filled.Lock
             ) { dialogoCambio = true }
-        }
-
-        Spacer(Modifier.height(16.dp))
-
-        TarjetaAjuste("Passkeys", Icons.Filled.Fingerprint, "Gestiona el proveedor de llaves de acceso de Android.", inicialmenteAbierta = false) {
-            Spacer(Modifier.height(10.dp))
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-                Text(
-                    buildAnnotatedString {
-                        append("Tu Android admite passkeys. Activa ")
-                        withStyle(SpanStyle(fontWeight = FontWeight.Bold)) { append("'Bóveda local'") }
-                        append(" como proveedor de credenciales en los ajustes del sistema y gestiónalas desde la sección Passkeys.")
-                    },
-                    color = TextoPrincipal,
-                    style = MaterialTheme.typography.bodyMedium
-                )
-                Spacer(Modifier.height(10.dp))
-                BotonColorido(
-                    texto = "Ver mis passkeys",
-                    color = ColorPasskeys,
-                    icono = Icons.Filled.Key
-                ) { vm.ir(Pantalla.Passkeys) }
-            } else {
-                Text(
-                    "Esta sección está oculta porque tu Android es anterior al 14. La API que permite a una app ser proveedora de passkeys del sistema (CredentialProviderService) llegó en Android 14; sin ella nadie puede ofrecerte passkeys de verdad, así que preferimos no fingirlo. Todo lo demás funciona igual.",
-                    color = TextoSecundario,
-                    style = MaterialTheme.typography.bodyMedium
-                )
-            }
-        }
-
-        Spacer(Modifier.height(16.dp))
-
-        TarjetaAjuste("Transparencia", Icons.Filled.Info, "Consulta cómo funciona la aplicación y su registro técnico local.", inicialmenteAbierta = false) {
-            Spacer(Modifier.height(10.dp))
-            BotonColorido(
-                texto = "Audítame",
-                color = ColorSeguridad,
-                icono = Icons.Filled.Security
-            ) { vm.ir(Pantalla.AcercaDe) }
-            Spacer(Modifier.height(10.dp))
-            BotonColorido(
-                texto = "Registro técnico",
-                color = ColorIconosInternos,
-                icono = Icons.Filled.History
-            ) { vm.ir(Pantalla.Registro) }
         }
 
         Spacer(Modifier.height(16.dp))
@@ -1582,6 +1552,7 @@ private fun VistaPreviaIndice(ajustes: AjustesApp) {
                 offsetCirculoDp = ajustes.indiceOffsetCirculoDp,
                 hapticaActiva = ajustes.indiceHaptica,
                 anchoZonaTactilDp = ajustes.indiceAnchoTactilDp,
+                tonoLetras = ajustes.indiceTonoLetras,
                 modifier = Modifier
                     .align(Alignment.CenterEnd)
                     .fillMaxHeight()

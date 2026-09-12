@@ -39,6 +39,18 @@ class AjustesTest {
         assertEquals(0.0f, ajustes.espaciadoLetrasSp, 0.01f)
         assertEquals(1.0f, ajustes.interlineadoFactor, 0.01f)
         assertEquals("sans", ajustes.familiaFuente)
+
+        // Índice alfabético lateral
+        assertTrue(ajustes.mostrarIndiceAlfabetico)
+        assertTrue(ajustes.indiceEfectoOla)
+        assertEquals(110f, ajustes.indiceAmplitudOlaDp, 0.01f)
+        assertEquals(250f, ajustes.indiceRadioOlaDp, 0.01f)
+        assertEquals(1.6f, ajustes.indiceEscalaLetras, 0.01f)
+        assertTrue(ajustes.indiceMostrarCirculo)
+        assertEquals(145f, ajustes.indiceOffsetCirculoDp, 0.01f)
+        assertTrue(ajustes.indiceHaptica)
+        assertEquals(45f, ajustes.indiceAnchoTactilDp, 0.01f)
+        assertEquals(55f, ajustes.indiceTonoLetras, 0.01f)
     }
 
     @Test

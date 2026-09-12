@@ -83,8 +83,8 @@ fun PantallaAcercaDe(vm: VaultViewModel) {
 
     ContenedorPrincipal(conScroll = true, espaciado = 18.dp) {
         CabeceraPantalla(
-            titulo = "Audítame",
-            subtitulo = "Métricas y diagnóstico de seguridad leídos en tiempo real",
+            titulo = "Diagnóstico de seguridad",
+            subtitulo = "Métricas y diagnóstico técnico leídos en tiempo real",
             alVolver = { vm.volverAtras() }
         )
 

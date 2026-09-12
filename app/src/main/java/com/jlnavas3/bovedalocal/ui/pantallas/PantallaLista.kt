@@ -37,9 +37,11 @@ import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.Fingerprint
 import androidx.compose.material.icons.filled.HealthAndSafety
+import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Security
 import androidx.compose.material.icons.filled.SelectAll
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Star
@@ -121,6 +123,7 @@ import com.jlnavas3.bovedalocal.ui.theme.ColorGenerador
 import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
 import com.jlnavas3.bovedalocal.ui.theme.ColorPasskeys
 import com.jlnavas3.bovedalocal.ui.theme.ColorSalud
+import com.jlnavas3.bovedalocal.ui.theme.ColorSeguridad
 import com.jlnavas3.bovedalocal.ui.theme.ColorSeparadorDropdown
 import com.jlnavas3.bovedalocal.ui.theme.ColorSobreAcento
 import com.jlnavas3.bovedalocal.ui.theme.ColorTarjetas
@@ -486,6 +489,7 @@ fun PantallaLista(vm: VaultViewModel, estado: EstadoBoveda) {
                             offsetCirculoDp = ajustes.indiceOffsetCirculoDp,
                             hapticaActiva = ajustes.indiceHaptica,
                             anchoZonaTactilDp = ajustes.indiceAnchoTactilDp,
+                            tonoLetras = ajustes.indiceTonoLetras,
                             modifier = Modifier
                                 .align(Alignment.CenterEnd)
                                 .padding(top = 4.dp, bottom = 100.dp)
@@ -657,6 +661,18 @@ private fun MenuLateral(
                 colorIcono = if (totalPapelera > 0) Ambar else ColorIconosInternos,
                 badge = if (totalPapelera > 0) totalPapelera.toString() else null
             ) { alIr(Pantalla.Papelera) }
+
+            ItemMenu(
+                texto = "Diagnóstico de seguridad",
+                icono = Icons.Filled.Security,
+                colorIcono = ColorSeguridad
+            ) { alIr(Pantalla.AcercaDe) }
+
+            ItemMenu(
+                texto = "Registro de eventos",
+                icono = Icons.Filled.History,
+                colorIcono = ColorIconosInternos
+            ) { alIr(Pantalla.Registro) }
 
             ItemMenu(
                 texto = "Configuración",

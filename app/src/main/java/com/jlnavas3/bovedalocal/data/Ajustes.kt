@@ -85,13 +85,14 @@ data class AjustesApp(
     // Índice Alfabético Lateral (Fast-scroller con ola estilo Niagara)
     val mostrarIndiceAlfabetico: Boolean = true,
     val indiceEfectoOla: Boolean = true,
-    val indiceAmplitudOlaDp: Float = 95f,
-    val indiceRadioOlaDp: Float = 220f,
-    val indiceEscalaLetras: Float = 1.9f,
+    val indiceAmplitudOlaDp: Float = 110f,
+    val indiceRadioOlaDp: Float = 250f,
+    val indiceEscalaLetras: Float = 1.6f,
     val indiceMostrarCirculo: Boolean = true,
     val indiceOffsetCirculoDp: Float = 145f,
     val indiceHaptica: Boolean = true,
-    val indiceAnchoTactilDp: Float = 50f
+    val indiceAnchoTactilDp: Float = 45f,
+    val indiceTonoLetras: Float = 55f
 )
 
 
@@ -126,6 +127,21 @@ class AlmacenAjustes(contexto: Context) {
                 .putFloat("curvatura_esquinas_dp", nuevaCurvatura)
                 .putFloat("grosor_borde_dp", nuevoGrosor)
                 .putString("estilo_borde", nuevoEstilo)
+                .apply()
+        }
+
+        // Migración única a los valores predefinidos elegidos por el usuario (110dp / 250dp / 1.6x / 45dp)
+        if (!prefs.getBoolean("v2_indice_defecto_usuario", false)) {
+            val ampPrev = prefs.getFloat("indice_amplitud_ola_dp", 95f)
+            val radPrev = prefs.getFloat("indice_radio_ola_dp", 220f)
+            val escPrev = prefs.getFloat("indice_escala_letras", 1.9f)
+            val ancPrev = prefs.getFloat("indice_ancho_tactil_dp", 50f)
+            prefs.edit()
+                .putBoolean("v2_indice_defecto_usuario", true)
+                .putFloat("indice_amplitud_ola_dp", if (ampPrev == 95f) 110f else ampPrev)
+                .putFloat("indice_radio_ola_dp", if (radPrev == 220f) 250f else radPrev)
+                .putFloat("indice_escala_letras", if (escPrev == 1.9f) 1.6f else escPrev)
+                .putFloat("indice_ancho_tactil_dp", if (ancPrev == 50f) 45f else ancPrev)
                 .apply()
         }
 
@@ -182,13 +198,14 @@ class AlmacenAjustes(contexto: Context) {
             csvGoogleEliminado = prefs.getBoolean("csv_google_eliminado", false),
             mostrarIndiceAlfabetico = prefs.getBoolean("mostrar_indice_alfabetico", true),
             indiceEfectoOla = prefs.getBoolean("indice_efecto_ola", true),
-            indiceAmplitudOlaDp = prefs.getFloat("indice_amplitud_ola_dp", 95f),
-            indiceRadioOlaDp = prefs.getFloat("indice_radio_ola_dp", 220f),
-            indiceEscalaLetras = prefs.getFloat("indice_escala_letras", 1.9f),
+            indiceAmplitudOlaDp = prefs.getFloat("indice_amplitud_ola_dp", 110f),
+            indiceRadioOlaDp = prefs.getFloat("indice_radio_ola_dp", 250f),
+            indiceEscalaLetras = prefs.getFloat("indice_escala_letras", 1.6f),
             indiceMostrarCirculo = prefs.getBoolean("indice_mostrar_circulo", true),
             indiceOffsetCirculoDp = prefs.getFloat("indice_offset_circulo_dp", 145f),
             indiceHaptica = prefs.getBoolean("indice_haptica", true),
-            indiceAnchoTactilDp = prefs.getFloat("indice_ancho_tactil_dp", 50f)
+            indiceAnchoTactilDp = prefs.getFloat("indice_ancho_tactil_dp", 45f),
+            indiceTonoLetras = prefs.getFloat("indice_tono_letras", 55f)
         )
     }
 
@@ -254,6 +271,7 @@ class AlmacenAjustes(contexto: Context) {
             .putFloat("indice_offset_circulo_dp", nuevo.indiceOffsetCirculoDp)
             .putBoolean("indice_haptica", nuevo.indiceHaptica)
             .putFloat("indice_ancho_tactil_dp", nuevo.indiceAnchoTactilDp)
+            .putFloat("indice_tono_letras", nuevo.indiceTonoLetras)
             .apply()
         _ajustes.value = nuevo
     }

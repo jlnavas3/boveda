@@ -33,6 +33,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onGloballyPositioned
@@ -127,13 +129,14 @@ fun IndiceAlfabetico(
     alSeleccionarLetra: (Char) -> Unit,
     modifier: Modifier = Modifier,
     efectoOla: Boolean = true,
-    amplitudOlaDp: Float = 95f,
-    radioOlaDp: Float = 220f,
-    escalaMaximaLetras: Float = 1.9f,
+    amplitudOlaDp: Float = 110f,
+    radioOlaDp: Float = 250f,
+    escalaMaximaLetras: Float = 1.6f,
     mostrarCirculo: Boolean = true,
     offsetCirculoDp: Float = 145f,
     hapticaActiva: Boolean = true,
-    anchoZonaTactilDp: Float = 50f
+    anchoZonaTactilDp: Float = 45f,
+    tonoLetras: Float = 55f
 ) {
     val contexto = LocalContext.current
     val haptica = remember { Haptica(contexto) }
@@ -153,6 +156,15 @@ fun IndiceAlfabetico(
         ),
         label = "amplitudOla"
     )
+
+    // Tono y luminosidad de las letras inactivas (de tenue/oscuro discreto a blanco puro de alto contraste)
+    val factorTono = (tonoLetras / 100f).coerceIn(0.05f, 1f)
+    val colorLetraInactiva = lerp(
+        Color(0xFF38404E),
+        Color(0xFFFFFFFF),
+        factorTono
+    )
+    val alfaBase = 0.35f + 0.65f * factorTono
 
     Box(
         modifier = modifier
@@ -211,7 +223,7 @@ fun IndiceAlfabetico(
 
                 Text(
                     text = letra.toString(),
-                    color = if (esActiva) Ambar else TextoSecundario.copy(alpha = 0.7f),
+                    color = if (esActiva) Ambar else colorLetraInactiva,
                     style = MaterialTheme.typography.labelSmall.copy(
                         fontSize = 10.sp,
                         fontWeight = if (esActiva) FontWeight.ExtraBold else FontWeight.Medium
@@ -238,7 +250,7 @@ fun IndiceAlfabetico(
                         val escala = 1f + factorEscala * factor
                         scaleX = escala
                         scaleY = escala
-                        alpha = (0.55f + 0.45f * factor).coerceIn(0f, 1f)
+                        alpha = if (esActiva) 1f else (alfaBase + (1f - alfaBase) * factor).coerceIn(0f, 1f)
                     }
                 )
             }

@@ -786,18 +786,22 @@ class VaultViewModel(app: Application) : AndroidViewModel(app) {
     fun ajustarIndiceAnchoTactilDp(anchoDp: Float) =
         repositorio.ajustes.actualizar { it.copy(indiceAnchoTactilDp = anchoDp) }
 
+    fun ajustarIndiceTonoLetras(tono: Float) =
+        repositorio.ajustes.actualizar { it.copy(indiceTonoLetras = tono) }
+
     fun restablecerAjustesIndiceAlfabetico() {
         repositorio.ajustes.actualizar {
             it.copy(
                 mostrarIndiceAlfabetico = true,
                 indiceEfectoOla = true,
-                indiceAmplitudOlaDp = 95f,
-                indiceRadioOlaDp = 220f,
-                indiceEscalaLetras = 1.9f,
+                indiceAmplitudOlaDp = 110f,
+                indiceRadioOlaDp = 250f,
+                indiceEscalaLetras = 1.6f,
                 indiceMostrarCirculo = true,
                 indiceOffsetCirculoDp = 145f,
                 indiceHaptica = true,
-                indiceAnchoTactilDp = 50f
+                indiceAnchoTactilDp = 45f,
+                indiceTonoLetras = 55f
             )
         }
     }

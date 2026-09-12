@@ -107,9 +107,13 @@ Para listas con 5 o más entradas, el extremo derecho de la pantalla incorpora u
 - **Círculo Flotante de Gran Formato en la Cresta**:
   Un globo indicador de 78 dp de diámetro, sin bordes, con fondo en degradado ámbar, sombra suave (`elevation = 14.dp`) y letra tipográfica en 38 sp proyectada hacia el centro de la pantalla.
 - **Zona de Arrastre Táctil Cómoda**:
-  El área de captura táctil se extiende 50 dp (configurable de 26 a 90 dp) hacia el interior desde el píxel 0 del borde físico, permitiendo iniciar el desplazamiento sin tener que apuntar con precisión milimétrica sobre las letras. Las tarjetas de la lista disponen de un margen adaptativo de 36 dp para que el abecedario nunca tape los controles.
+  El área de captura táctil se extiende 45 dp de forma predeterminada (configurable de 26 a 90 dp) hacia el interior desde el píxel 0 del borde físico, permitiendo iniciar el desplazamiento con total naturalidad sin tener que apuntar con precisión milimétrica sobre las letras. Las tarjetas de la lista disponen de un margen adaptativo de 36 dp para que el abecedario nunca tape los controles.
+- **Control de Color y Luminosidad del Abecedario**:
+  Control deslizante dedicado para regular la tonalidad y brillo de las letras de 10% a 100%, interpolando suavemente desde un tono oscuro y discreto (`#38404E`) hasta un blanco puro de alto contraste (`#FFFFFF`), adaptándose al gusto visual del usuario sin saturaciones estridentes.
+- **Valores Predeterminados Optimizados y Persistencia Automática**:
+  Amplitud de curvatura en 110 dp, alcance vertical en 250 dp, aumento de letras en cresta en 1.6x, zona táctil de arrastre en 45 dp y tono al 55%. Migración transparente de preferencias previas y botón de un solo toque para restablecer estos valores en cualquier momento.
 - **Sección en Ajustes > "Abecedario lateral" con Vista Previa en Vivo**:
-  Tarjeta de configuración completa con controles deslizantes (amplitud de ola, alcance vertical, escala de letras, proyección de burbuja y zona táctil), textos de ayuda multilínea, interruptores para activar/desactivar la ola o la vibración háptica, una **vista previa interactiva en vivo** donde probar los cambios en tiempo real, y un botón de un toque para **restablecer los valores por defecto**.
+  Tarjeta de configuración completa con controles deslizantes (amplitud de ola, alcance vertical, escala de letras, proyección de burbuja, zona táctil y luminosidad de las letras), textos de ayuda multilínea, interruptores para activar/desactivar la ola o la vibración háptica, una **vista previa interactiva en vivo** donde probar los cambios en tiempo real, y un botón para **restablecer los valores por defecto**.
 
 ### Arquitectura Visual, Botones Normalizados y Navegación Universal
 
@@ -313,9 +317,9 @@ un motor compatible con la API antigua de cámara (la que funciona hasta en los 
 viejos); y siempre, leer el QR desde una imagen o captura, o escribir la clave a mano.
 El motor se puede forzar desde Ajustes.
 
-### Diagnóstico y Auditoría Local: Audítame
+### Diagnóstico y Auditoría Local: Diagnóstico de Seguridad
 
-En **Ajustes > Transparencia > Audítame** se presenta un panel completo de telemetría de hardware y sistema en vivo, leyendo directamente las capacidades reales del dispositivo sin permisos de red ni recolección de datos privados:
+Accesible directamente desde el **Menú lateral > Diagnóstico de seguridad**, presenta un panel completo de telemetría de hardware y sistema en vivo, leyendo directamente las capacidades reales del dispositivo sin permisos de red ni recolección de datos privados:
 
 - **Dispositivo y Procesador**: Modelo comercial, fabricante de la placa base, SoC del sistema (`ro.soc.model` / `ro.board.platform`), arquitecturas ABI compatibles y número total de núcleos de CPU detectados.
 - **Memoria y Almacenamiento**: Estado en tiempo real de la memoria RAM del sistema (RAM disponible, RAM total y porcentaje en uso), asignación máxima de memoria Heap JVM para la app y espacio libre disponible en el almacenamiento interno privado.
@@ -325,9 +329,9 @@ En **Ajustes > Transparencia > Audítame** se presenta un panel completo de tele
 - **Aislamiento de Red Offline**: Confirmación en tiempo real del Manifiesto de la app, certificando la ausencia absoluta del permiso `android.permission.INTERNET` e incapacidad física para transmitir datos.
 - **Exportación Técnica**: Botones dedicados para copiar al portapapeles o compartir mediante el selector del sistema el informe técnico de diagnóstico completo y estructurado.
 
-### Registro Técnico y Eventos en Vivo
+### Registro de Eventos en Vivo
 
-Ubicado en **Ajustes > Transparencia > Registro**, ofrece una consola técnica diseñada para auditar el funcionamiento interno de la app o diagnosticar problemas en dispositivos específicos:
+Ubicado en el **Menú lateral > Registro de eventos**, ofrece una consola técnica diseñada para auditar el funcionamiento interno de la app o diagnosticar problemas en dispositivos específicos:
 
 - **Buscador en Tiempo Real**: Filtrado dinámico e instantáneo de eventos por palabras clave, códigos o mensajes de estado.
 - **Filtro por Categorías**: Chips de acceso rápido para aislar eventos de:

@@ -314,7 +314,7 @@ La aplicación implementa un motor de diseño visual en tiempo real parametrizad
   - `colorExportacion`: Respaldos y transferencias.
 - **Geometría y Espaciado:** `curvaturaEsquinasDp` (radio de bordes), `grosorBordeDp`, `estiloBorde`, `espaciadoComponentesDp`.
 - **Tipografía Dinámica:** `escalaTexto`, `pesoTexto`, `cursivaTexto`, `familiaFuente` (sans, serif, mono, redonda), `espaciadoLetrasSp`, `interlineadoFactor`.
-- **Abecedario Lateral (Fast-Scroller Niagara):** `mostrarIndiceAlfabetico`, `indiceEfectoOla`, `indiceAmplitudOlaDp`, `indiceRadioOlaDp`, `indiceEscalaLetras`, `indiceMostrarCirculo`, `indiceOffsetCirculoDp`, `indiceHaptica`, `indiceAnchoTactilDp`.
+- **Abecedario Lateral (Fast-Scroller Niagara):** `mostrarIndiceAlfabetico`, `indiceEfectoOla`, `indiceAmplitudOlaDp` (110 dp), `indiceRadioOlaDp` (250 dp), `indiceEscalaLetras` (1.6x), `indiceMostrarCirculo`, `indiceOffsetCirculoDp` (145 dp), `indiceHaptica`, `indiceAnchoTactilDp` (45 dp), `indiceTonoLetras` (55%).
 
 ### Componentes Normalizados (`com.jlnavas3.bovedalocal.ui.componentes.*`)
 - `TarjetaConBorde`: Contenedor estándar con borde sutil o marcado, respetando el radio de esquinas global.
@@ -325,8 +325,8 @@ La aplicación implementa un motor de diseño visual en tiempo real parametrizad
   - **Matemática de Curvatura Continua ($C^1$):** Calcula la deformación con una función de medio coseno amortiguada:
     $$w(y) = \left(\frac{1 + \cos(\pi \Delta y / R)}{2}\right)^{1.15}$$
     lo que produce una tangencia natural de primera derivada cero al incorporarse a la línea vertical recta.
-  - **Escalado Progresivo en GPU:** Acelerado mediante `Modifier.graphicsLayer { scaleX = escala; scaleY = escala; translationX = desplazo; alpha = opacidad }`, ejecutando las transformaciones directamente en el RenderNode de Android a **120 FPS nativos** sin desencadenar recomposiciones de layout ni relayouts.
-  - **Captura Gestual de Área Amplia:** El contenedor `Box` define un ancho `anchoZonaTactilDp` (50 dp por defecto, configurable de 26 a 90 dp) y consume el evento inicial (`down.consume()`), permitiendo iniciar el arrastre con máxima comodidad y canal despejado de 36 dp en las tarjetas.
+  - **Escalado Progresivo y Tonalidad Dinámica en GPU:** Acelerado mediante `Modifier.graphicsLayer { scaleX = escala; scaleY = escala; translationX = desplazo; alpha = opacidad }`, con interpolación lineal de color (`lerp(Color(0xFF38404E), Color(0xFFFFFFFF), factorTono)`) para regular oscuridad/luminosidad sin saturación cromática, procesándose a **120 FPS nativos** en el RenderNode de Android.
+  - **Captura Gestual de Área Amplia:** El contenedor `Box` define un ancho `anchoZonaTactilDp` (45 dp por defecto, configurable de 26 a 90 dp) y consume el evento inicial (`down.consume()`), permitiendo iniciar el arrastre con máxima comodidad y canal despejado de 36 dp en las tarjetas.
   - **Burbuja Flotante de Cresta:** Diámetro de 78 dp sin bordes, fondo con degradado ámbar, elevación de 14 dp y letra en 38 sp proyectada casi a media pantalla.
 - `Animaciones.kt (AnimacionBoveda)`: Motor de renderizado con 4 anillos concéntricos independientes animados mediante reloj de fotogramas por hardware (`withFrameMillis`). Garantiza velocidad angular constante sin tirones ni reinicios periódicos y opera de forma indestructible incluso si las animaciones del sistema operativo se encuentran desactivadas (`animator_duration_scale = 0`).
 
