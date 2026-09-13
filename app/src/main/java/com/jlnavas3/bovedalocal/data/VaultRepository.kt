@@ -3,6 +3,7 @@ package com.jlnavas3.bovedalocal.data
 import android.content.Context
 import com.jlnavas3.bovedalocal.crypto.BiometricKeyStore
 import com.jlnavas3.bovedalocal.crypto.KdfParams
+import com.jlnavas3.bovedalocal.crypto.PerfilArgon2
 import com.jlnavas3.bovedalocal.crypto.VaultCrypto
 import com.jlnavas3.bovedalocal.crypto.Zeroizar
 import com.jlnavas3.bovedalocal.util.Diagnostico
@@ -64,12 +65,18 @@ class VaultRepository private constructor(contexto: Context) {
 
     fun saltActual(): ByteArray = salt.copyOf()
 
+    fun paramsActuales(): KdfParams = params
+
+    fun perfilArgon2Actual(): PerfilArgon2 =
+        PerfilArgon2.desdeKdfParams(params) ?: PerfilArgon2.desde(ajustes.actual.perfilArgon2)
+
     // ---------------------------------------------------------------- creación
 
     fun crear(password: CharArray) {
         // Argon2 fuera del candado.
+        val kdfParams = PerfilArgon2.desde(ajustes.actual.perfilArgon2).aKdfParams()
         val nuevoSalt = VaultCrypto.nuevoSalt()
-        val clave = VaultCrypto.derivarClave(password, nuevoSalt, KdfParams.PREDETERMINADOS)
+        val clave = VaultCrypto.derivarClave(password, nuevoSalt, kdfParams)
         synchronized(candado) {
             if (claveMaestra != null) {
                 // Ya hay una bóveda abierta (doble toque en crear, o una carrera con
@@ -78,7 +85,7 @@ class VaultRepository private constructor(contexto: Context) {
                 return
             }
             salt = nuevoSalt
-            params = KdfParams.PREDETERMINADOS
+            params = kdfParams
             claveMaestra = clave
             contenido = ContenidoBoveda()
             persistir()
@@ -403,8 +410,9 @@ class VaultRepository private constructor(contexto: Context) {
     fun cambiarContrasenaMaestra(nueva: CharArray) {
         if (claveMaestra == null) throw IllegalStateException("La bóveda está bloqueada")
         // Argon2 fuera; el cambio de clave y el reescribir el archivo, dentro.
+        val kdfParams = PerfilArgon2.desde(ajustes.actual.perfilArgon2).aKdfParams()
         val nuevoSalt = VaultCrypto.nuevoSalt()
-        val claveNueva = VaultCrypto.derivarClave(nueva, nuevoSalt, KdfParams.PREDETERMINADOS)
+        val claveNueva = VaultCrypto.derivarClave(nueva, nuevoSalt, kdfParams)
         synchronized(candado) {
             if (claveMaestra == null) {
                 Zeroizar.borrar(claveNueva)
@@ -413,8 +421,40 @@ class VaultRepository private constructor(contexto: Context) {
             Zeroizar.borrar(claveMaestra)
             claveMaestra = claveNueva
             salt = nuevoSalt
-            params = KdfParams.PREDETERMINADOS
+            params = kdfParams
             persistir()
+        }
+        desactivarBiometria()
+    }
+
+    fun reForjarBovedaConPerfil(password: CharArray, nuevoPerfil: PerfilArgon2) {
+        if (claveMaestra == null) throw IllegalStateException("La bóveda está bloqueada")
+        // 1. Verificar primero que la contraseña ingresada abre la bóveda actual
+        val bytes = archivoBoveda.readBytes()
+        val cabecera = VaultCrypto.leerCabecera(bytes)
+        val claveVerificacion = VaultCrypto.derivarClave(password, cabecera.salt, cabecera.params)
+        try {
+            VaultCrypto.descifrar(bytes, claveVerificacion)
+        } finally {
+            Zeroizar.borrar(claveVerificacion)
+        }
+
+        // 2. Derivar la nueva clave maestra con el nuevo perfil y nuevo Salt
+        val nuevoParams = nuevoPerfil.aKdfParams()
+        val nuevoSalt = VaultCrypto.nuevoSalt()
+        val claveNueva = VaultCrypto.derivarClave(password, nuevoSalt, nuevoParams)
+
+        synchronized(candado) {
+            if (claveMaestra == null) {
+                Zeroizar.borrar(claveNueva)
+                throw IllegalStateException("La bóveda está bloqueada")
+            }
+            Zeroizar.borrar(claveMaestra)
+            claveMaestra = claveNueva
+            salt = nuevoSalt
+            params = nuevoParams
+            persistir()
+            ajustes.actualizar { it.copy(perfilArgon2 = nuevoPerfil.clave) }
         }
         desactivarBiometria()
     }

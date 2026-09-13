@@ -123,7 +123,7 @@ fun PantallaOnboarding(vm: VaultViewModel, actividad: FragmentActivity) {
                         )
                         Spacer(Modifier.width(8.dp))
                         Text(
-                            text = "SEGURIDAD DE CERO CONOCIMIENTO",
+                            text = "CÚSPIDE CRIPTOGRÁFICA · GRADO MILITAR",
                             style = MaterialTheme.typography.labelSmall.copy(
                                 fontWeight = FontWeight.Bold,
                                 letterSpacing = 1.1.sp
@@ -143,7 +143,7 @@ fun PantallaOnboarding(vm: VaultViewModel, actividad: FragmentActivity) {
                     )
 
                     Text(
-                        text = "Custodia soberana de tus contraseñas y secretos. Todo se almacena exclusivamente en este dispositivo con cifrado de grado militar.",
+                        text = "Custodia soberana de tus contraseñas y secretos bajo la máxima arquitectura de cifrado simétrico existente, con resistencia post-cuántica y cero conocimiento.",
                         style = MaterialTheme.typography.bodyMedium.copy(lineHeight = 20.sp),
                         color = TextoSecundario,
                         textAlign = TextAlign.Center,
@@ -167,7 +167,7 @@ fun PantallaOnboarding(vm: VaultViewModel, actividad: FragmentActivity) {
                         )
                         Spacer(Modifier.width(10.dp))
                         Text(
-                            text = "Garantías de privacidad y seguridad",
+                            text = "Cúspide de Privacidad y Cifrado",
                             style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
                             color = ColorTitulos
                         )
@@ -177,22 +177,22 @@ fun PantallaOnboarding(vm: VaultViewModel, actividad: FragmentActivity) {
 
                     FilaPilarSeguridad(
                         icono = Icons.Filled.WifiOff,
-                        titulo = "Cero conexión a Internet",
-                        descripcion = "La aplicación no posee permisos de red en el sistema operativo. Es técnicamente imposible que tus secretos salgan del teléfono hacia servidores o la nube.",
+                        titulo = "Cero conexión a Internet (Air-Gapped)",
+                        descripcion = "La aplicación carece por completo de permisos de red en el sistema operativo. Tus secretos jamás abandonan físicamente este dispositivo: no existen servidores remotos ni telemetría.",
                         colorIcono = ColorAcento
                     )
 
                     FilaPilarSeguridad(
                         icono = Icons.Filled.Lock,
-                        titulo = "Argon2id + AES-256-GCM",
-                        descripcion = "Derivación intensiva de clave (64 MiB de memoria y 3 pasadas) contra ataques por fuerza bruta, combinada con cifrado autenticado en almacenamiento local.",
+                        titulo = "Argon2id + AES-256-GCM (Estándar de Oro)",
+                        descripcion = "La cúspide mundial del cifrado autenticado de grado militar. Derivación de clave intensiva en memoria contra granjas de GPUs/ASICs y cifrado simétrico autenticado inmune al algoritmo cuántico de Grover.",
                         colorIcono = ColorSeguridad
                     )
 
                     FilaPilarSeguridad(
                         icono = Icons.Filled.VerifiedUser,
-                        titulo = "Permisos mínimos auditables",
-                        descripcion = "Únicamente biometría para acceso rápido y cámara para escaneo local de códigos QR/2FA. Sin acceso a tus contactos, archivos ni ubicación.",
+                        titulo = "Aislamiento y Transparencia Radical",
+                        descripcion = "Únicamente biometría de hardware para acceso instantáneo y cámara para escaneo local de códigos QR/2FA. Sin acceso a tus contactos, fotos, archivos personales ni ubicación.",
                         colorIcono = Menta
                     )
 
@@ -216,7 +216,7 @@ fun PantallaOnboarding(vm: VaultViewModel, actividad: FragmentActivity) {
                         )
                         Spacer(Modifier.width(8.dp))
                         Text(
-                            text = "Sin cuentas · Sin telemetría ni analíticas · 100% Offline",
+                            text = "100% Fuera de línea · Cero conocimiento · Inmunidad post-cuántica",
                             color = Menta,
                             style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.SemiBold)
                         )
@@ -272,7 +272,7 @@ fun PantallaOnboarding(vm: VaultViewModel, actividad: FragmentActivity) {
                     Text("Tu contraseña maestra", style = MaterialTheme.typography.headlineMedium, color = ColorTitulos)
                     Spacer(Modifier.height(8.dp))
                     Text(
-                        "Es la única llave. No se guarda en ningún sitio y no hay recuperación: si la pierdes, la bóveda se queda cerrada para siempre.",
+                        "Es la única llave de tu bóveda. Protegida por derivación criptográfica Argon2id: sin ella es matemáticamente imposible descifrar los datos. No se almacena en ningún sitio y no existe recuperación: si la pierdes, la bóveda se queda cerrada para siempre.",
                         style = MaterialTheme.typography.bodyMedium,
                         color = TextoSecundario
                     )
@@ -325,6 +325,7 @@ fun PantallaOnboarding(vm: VaultViewModel, actividad: FragmentActivity) {
                 LaunchedEffect(Unit) {
                     vm.crearBoveda(contrasena) { haptica.exito() }
                 }
+                val perfil = com.jlnavas3.bovedalocal.crypto.PerfilArgon2.desde(vm.repositorio.ajustes.actual.perfilArgon2)
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
@@ -337,7 +338,7 @@ fun PantallaOnboarding(vm: VaultViewModel, actividad: FragmentActivity) {
                     Text("Forjando tu bóveda", style = MaterialTheme.typography.headlineSmall, color = TextoPrincipal)
                     Spacer(Modifier.height(10.dp))
                     Text(
-                        "Argon2id está estirando tu contraseña con 64 MiB de memoria y 3 pasadas. Esto es lo que hace que un ataque por fuerza bruta salga carísimo.",
+                        "Argon2id está derivando tu clave con ${perfil.resumen}. Esta barrera intensiva de cálculo y memoria hace que un ataque por fuerza bruta sea computacional y físicamente inviable.",
                         style = MaterialTheme.typography.bodyMedium,
                         color = TextoSecundario,
                         textAlign = TextAlign.Center

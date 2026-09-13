@@ -100,7 +100,9 @@ data class AjustesApp(
     val formatoFecha: String = "DD/MM/AAAA",
     val formatoHora: String = "24h",
     val formatoTelefono: String = "### ### ####",
-    val separadorDecimal: String = "."
+    val separadorDecimal: String = ".",
+    /** Perfil de derivación Argon2id: "estandar", "reforzado" o "ultraseguro". */
+    val perfilArgon2: String = "estandar"
 )
 
 
@@ -238,7 +240,8 @@ class AlmacenAjustes(contexto: Context) {
             formatoFecha = prefs.getString("formato_fecha", "DD/MM/AAAA") ?: "DD/MM/AAAA",
             formatoHora = prefs.getString("formato_hora", "24h") ?: "24h",
             formatoTelefono = prefs.getString("formato_telefono", "### ### ####") ?: "### ### ####",
-            separadorDecimal = prefs.getString("separador_decimal", ".") ?: "."
+            separadorDecimal = prefs.getString("separador_decimal", ".") ?: ".",
+            perfilArgon2 = prefs.getString("perfil_argon2", "estandar") ?: "estandar"
         )
     }
 
@@ -313,6 +316,7 @@ class AlmacenAjustes(contexto: Context) {
             .putString("formato_hora", nuevo.formatoHora)
             .putString("formato_telefono", nuevo.formatoTelefono)
             .putString("separador_decimal", nuevo.separadorDecimal)
+            .putString("perfil_argon2", nuevo.perfilArgon2)
             .apply()
         _ajustes.value = nuevo
     }

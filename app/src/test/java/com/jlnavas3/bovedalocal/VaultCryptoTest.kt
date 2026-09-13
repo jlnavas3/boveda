@@ -170,4 +170,31 @@ class VaultCryptoTest {
         assertArrayEquals(clave("x", salt1), clave("x", salt1))
         assertEquals(32, clave("x", salt1).size)
     }
+
+    @Test
+    fun `perfiles argon2 mapean parametros validos y reversibles`() {
+        val estandar = com.jlnavas3.bovedalocal.crypto.PerfilArgon2.ESTANDAR
+        val reforzado = com.jlnavas3.bovedalocal.crypto.PerfilArgon2.REFORZADO
+        val ultraseguro = com.jlnavas3.bovedalocal.crypto.PerfilArgon2.ULTRASEGURO
+
+        assertEquals(65_536, estandar.memoriaKiB)
+        assertEquals(3, estandar.iteraciones)
+
+        assertEquals(131_072, reforzado.memoriaKiB)
+        assertEquals(4, reforzado.iteraciones)
+
+        assertEquals(262_144, ultraseguro.memoriaKiB)
+        assertEquals(6, ultraseguro.iteraciones)
+
+        // Verificación de recuperación desde clave
+        assertEquals(estandar, com.jlnavas3.bovedalocal.crypto.PerfilArgon2.desde("estandar"))
+        assertEquals(reforzado, com.jlnavas3.bovedalocal.crypto.PerfilArgon2.desde("reforzado"))
+        assertEquals(ultraseguro, com.jlnavas3.bovedalocal.crypto.PerfilArgon2.desde("ultraseguro"))
+        assertEquals(estandar, com.jlnavas3.bovedalocal.crypto.PerfilArgon2.desde("desconocido"))
+
+        // Verificación de recuperación desde KdfParams
+        assertEquals(estandar, com.jlnavas3.bovedalocal.crypto.PerfilArgon2.desdeKdfParams(estandar.aKdfParams()))
+        assertEquals(reforzado, com.jlnavas3.bovedalocal.crypto.PerfilArgon2.desdeKdfParams(reforzado.aKdfParams()))
+        assertEquals(ultraseguro, com.jlnavas3.bovedalocal.crypto.PerfilArgon2.desdeKdfParams(ultraseguro.aKdfParams()))
+    }
 }

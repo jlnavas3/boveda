@@ -189,6 +189,27 @@ class VaultViewModel(app: Application) : AndroidViewModel(app), VaultAjustesDele
         }
     }
 
+    fun reForjarBoveda(password: String, nuevoPerfil: com.jlnavas3.bovedalocal.crypto.PerfilArgon2, alTerminar: (Boolean) -> Unit = {}) {
+        ejecutar {
+            val chars = password.toCharArray()
+            try {
+                withContext(Dispatchers.Default) {
+                    repositorio.reForjarBovedaConPerfil(chars, nuevoPerfil)
+                }
+                Diagnostico.apuntar("bóveda", "Bóveda re-forjada con perfil ${nuevoPerfil.titulo}")
+                registrarInteraccion()
+                avisar("Bóveda re-cifrada con perfil ${nuevoPerfil.titulo}")
+                alTerminar(true)
+            } catch (e: Exception) {
+                Diagnostico.apuntar("bóveda", "Fallo al re-forjar bóveda: ${e.message}")
+                _error.value = "Contraseña incorrecta o fallo al re-cifrar"
+                alTerminar(false)
+            } finally {
+                Zeroizar.borrar(chars)
+            }
+        }
+    }
+
     fun desbloquear(password: String, alTerminar: (Boolean) -> Unit = {}) {
         val espera = esperaPorIntentos()
         if (espera > 0) {

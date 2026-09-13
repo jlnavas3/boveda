@@ -3,6 +3,10 @@ package com.jlnavas3.bovedalocal.ui.pantallas.ajustes
 import android.content.Context
 import androidx.biometric.BiometricManager
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -13,29 +17,51 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Backup
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.ExpandLess
+import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.Fingerprint
 import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.Memory
 import androidx.compose.material.icons.filled.Security
 import androidx.compose.material.icons.filled.Shield
 import androidx.compose.material.icons.filled.Timer
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.jlnavas3.bovedalocal.crypto.BiometricKeyStore
+import com.jlnavas3.bovedalocal.crypto.PerfilArgon2
 import com.jlnavas3.bovedalocal.data.AjustesApp
 import com.jlnavas3.bovedalocal.data.AlmacenAjustes
 import com.jlnavas3.bovedalocal.ui.FlujoBiometria
 import com.jlnavas3.bovedalocal.ui.Pantalla
 import com.jlnavas3.bovedalocal.ui.VaultViewModel
 import com.jlnavas3.bovedalocal.ui.componentes.BotonColorido
+import com.jlnavas3.bovedalocal.ui.componentes.MenuDesplegableBoveda
+import com.jlnavas3.bovedalocal.ui.componentes.SeparadorOpcionMenu
+import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
+import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
+import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
 import com.jlnavas3.bovedalocal.ui.theme.ColorSeguridad
+import com.jlnavas3.bovedalocal.ui.theme.ColorTitulos
+import com.jlnavas3.bovedalocal.ui.theme.FormaCampo
 import com.jlnavas3.bovedalocal.ui.theme.FormaTarjeta
+import com.jlnavas3.bovedalocal.ui.theme.GrosorBorde
+import com.jlnavas3.bovedalocal.ui.theme.Superficie
 import com.jlnavas3.bovedalocal.ui.theme.TextoPrincipal
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
 import com.jlnavas3.bovedalocal.util.AjustesSistema
@@ -56,6 +82,7 @@ fun SeccionSeguridad(
     ofrecerCompatible: (String) -> Unit
 ) {
     val esSenuelo = vm.repositorio.esModoSenuelo
+    var perfilPendiente by remember { mutableStateOf<PerfilArgon2?>(null) }
 
     TarjetaAjuste(
         titulo = "Seguridad",
@@ -115,6 +142,22 @@ fun SeccionSeguridad(
                         ofrecerCompatible("Para quien ya sabe que la huella de Clase 3 le falla en este móvil.")
                     }
             }
+            Spacer(Modifier.height(8.dp))
+            Spacer(Modifier.height(4.dp))
+            val perfilActual = vm.repositorio.perfilArgon2Actual()
+            SelectorPerfilArgon2(
+                perfilActual = perfilActual,
+                alSeleccionarPerfil = { nuevo ->
+                    if (nuevo != perfilActual) {
+                        if (vm.repositorio.estaDesbloqueada) {
+                            perfilPendiente = nuevo
+                        } else {
+                            vm.repositorio.ajustes.actualizar { it.copy(perfilArgon2 = nuevo.clave) }
+                            vm.avisar("Perfil de cifrado predeterminado: ${nuevo.titulo}")
+                        }
+                    }
+                }
+            )
             Spacer(Modifier.height(8.dp))
         } else {
             Spacer(Modifier.height(10.dp))
@@ -180,6 +223,143 @@ fun SeccionSeguridad(
             ) {
                 haptica.toque()
                 vm.ir(Pantalla.AjustesSenuelo)
+            }
+        }
+    }
+
+    perfilPendiente?.let { objetivo ->
+        DialogoContrasena(
+            titulo = "Aplicar ${objetivo.titulo}",
+            descripcion = "Para re-cifrar la bóveda con ${objetivo.resumen}, introduce tu contraseña maestra. Los datos se re-cifrarán inmediatamente con este perfil de alta seguridad.",
+            textoBoton = "Re-cifrar bóveda",
+            alConfirmar = { pass ->
+                vm.reForjarBoveda(pass, objetivo) { exito ->
+                    if (exito) {
+                        haptica.exito()
+                        perfilPendiente = null
+                    }
+                }
+            },
+            alCancelar = { perfilPendiente = null }
+        )
+    }
+}
+
+@Composable
+private fun SelectorPerfilArgon2(
+    perfilActual: PerfilArgon2,
+    alSeleccionarPerfil: (PerfilArgon2) -> Unit
+) {
+    var desplegado by remember { mutableStateOf(false) }
+    val forma = FormaCampo
+
+    Column(modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)) {
+        Text(
+            text = "Perfil de cifrado Argon2id",
+            color = TextoPrincipal,
+            style = MaterialTheme.typography.titleMedium
+        )
+        Spacer(Modifier.height(2.dp))
+        Text(
+            text = "Intensidad de memoria e iteraciones contra ataques de fuerza bruta.",
+            color = TextoSecundario,
+            style = MaterialTheme.typography.bodySmall
+        )
+        Spacer(Modifier.height(8.dp))
+
+        Box(modifier = Modifier.fillMaxWidth()) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(54.dp)
+                    .clip(forma)
+                    .background(Superficie)
+                    .then(
+                        if (GrosorBorde > 0.dp && (desplegado || ColorBordeActual != Color.Transparent))
+                            Modifier.border(GrosorBorde, if (desplegado) ColorTitulos else ColorBordeActual, forma)
+                        else Modifier
+                    )
+                    .clickable { desplegado = true }
+                    .padding(horizontal = 14.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.Memory,
+                    contentDescription = null,
+                    tint = if (desplegado) ColorTitulos else ColorIconosInternos,
+                    modifier = Modifier.size(22.dp)
+                )
+                Spacer(Modifier.width(12.dp))
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = perfilActual.titulo,
+                        color = ColorTitulos,
+                        style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold)
+                    )
+                    Text(
+                        text = perfilActual.resumen,
+                        color = TextoSecundario,
+                        style = MaterialTheme.typography.labelSmall
+                    )
+                }
+                Icon(
+                    imageVector = if (desplegado) Icons.Filled.ExpandLess else Icons.Filled.ExpandMore,
+                    contentDescription = "Desplegar perfiles",
+                    tint = TextoSecundario
+                )
+            }
+
+            MenuDesplegableBoveda(
+                expanded = desplegado,
+                onDismissRequest = { desplegado = false }
+            ) {
+                PerfilArgon2.entries.forEachIndexed { index, perfil ->
+                    if (index > 0) {
+                        SeparadorOpcionMenu()
+                    }
+                    val seleccionado = perfil == perfilActual
+                    DropdownMenuItem(
+                        leadingIcon = {
+                            Icon(
+                                imageVector = if (perfil == PerfilArgon2.ULTRASEGURO) Icons.Filled.Shield else Icons.Filled.Memory,
+                                contentDescription = null,
+                                tint = if (seleccionado) ColorAcento else TextoSecundario,
+                                modifier = Modifier.size(20.dp)
+                            )
+                        },
+                        text = {
+                            Column(modifier = Modifier.padding(vertical = 4.dp)) {
+                                Text(
+                                    text = perfil.titulo,
+                                    color = if (seleccionado) ColorTitulos else TextoPrincipal,
+                                    style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold)
+                                )
+                                Text(
+                                    text = perfil.detalle,
+                                    color = TextoSecundario,
+                                    style = MaterialTheme.typography.bodySmall,
+                                    lineHeight = 16.sp
+                                )
+                            }
+                        },
+                        trailingIcon = {
+                            if (seleccionado) {
+                                Icon(
+                                    imageVector = Icons.Filled.Check,
+                                    contentDescription = null,
+                                    tint = ColorAcento,
+                                    modifier = Modifier.size(18.dp)
+                                )
+                            }
+                        },
+                        onClick = {
+                            desplegado = false
+                            if (perfil != perfilActual) {
+                                alSeleccionarPerfil(perfil)
+                            }
+                        }
+                    )
+                }
             }
         }
     }
