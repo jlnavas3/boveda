@@ -577,14 +577,14 @@ fun BarraFuerza(fraccion: Float, etiqueta: String, tiempo: String) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(10.dp)
+                .height(4.dp)
                 .clip(CircleShape)
-                .background(Borde)
+                .background(Borde.copy(alpha = 0.4f))
         ) {
             Box(
                 modifier = Modifier
                     .fillMaxWidth(anchoAnimado)
-                    .height(10.dp)
+                    .height(4.dp)
                     .clip(CircleShape)
                     .background(color)
             )
@@ -592,7 +592,7 @@ fun BarraFuerza(fraccion: Float, etiqueta: String, tiempo: String) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 8.dp),
+                .padding(top = 6.dp),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Text(etiqueta, color = color, style = MaterialTheme.typography.labelLarge)
