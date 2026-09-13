@@ -45,9 +45,12 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
+import com.jlnavas3.bovedalocal.util.FormateadorCampos
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -429,7 +432,8 @@ fun CampoBoveda(
     keyboardType: KeyboardType? = null,
     readOnly: Boolean = false,
     trailingIcon: (@Composable () -> Unit)? = null,
-    alPulsar: (() -> Unit)? = null
+    alPulsar: (() -> Unit)? = null,
+    formateadorMascara: ((String) -> String)? = null
 ) {
     val forma = FormaCampo
     val iconoFinal = trailingIcon ?: if (esContrasena && alAlternarMostrarContrasena != null) {
@@ -446,41 +450,94 @@ fun CampoBoveda(
     } else null
 
     val campoTexto = @Composable {
-        OutlinedTextField(
-            value = valor,
-            onValueChange = alCambiar,
-            label = { Text(etiqueta) },
-            modifier = modifier.fillMaxWidth(),
-            readOnly = readOnly,
-            singleLine = !varias,
-            minLines = if (varias) 3 else 1,
-            textStyle = if (monoespaciada) {
-                MaterialTheme.typography.bodyLarge.copy(fontFamily = androidx.compose.ui.text.font.FontFamily.Monospace)
-            } else {
-                MaterialTheme.typography.bodyLarge
-            },
-            visualTransformation = if (esContrasena && !mostrarContrasena) PasswordVisualTransformation() else VisualTransformation.None,
-            trailingIcon = iconoFinal,
-            keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(
-                keyboardType = keyboardType ?: when {
-                    tecladoNumerico -> KeyboardType.Number
-                    esContrasena -> KeyboardType.Password
-                    else -> KeyboardType.Text
-                }
-            ),
-            shape = forma,
-            colors = TextFieldDefaults.colors(
-                focusedContainerColor = Superficie,
-                unfocusedContainerColor = Superficie,
-                focusedIndicatorColor = Ambar,
-                unfocusedIndicatorColor = if (GrosorBorde > 0.dp) ColorBordeActual else Color.Transparent,
-                focusedLabelColor = Ambar,
-                unfocusedLabelColor = TextoSecundario,
-                cursorColor = Ambar,
-                focusedTextColor = TextoPrincipal,
-                unfocusedTextColor = TextoPrincipal
+        if (formateadorMascara != null) {
+            var tfv by remember {
+                mutableStateOf(TextFieldValue(text = valor, selection = TextRange(valor.length)))
+            }
+            if (tfv.text != valor) {
+                val nuevoCursor = tfv.selection.end.coerceIn(0, valor.length)
+                tfv = tfv.copy(text = valor, selection = TextRange(nuevoCursor))
+            }
+            OutlinedTextField(
+                value = tfv,
+                onValueChange = { nuevo ->
+                    val transformado = FormateadorCampos.transformarConMascara(
+                        nuevoTfv = nuevo,
+                        textoAnterior = tfv.text,
+                        formatear = formateadorMascara
+                    )
+                    tfv = transformado
+                    alCambiar(transformado.text)
+                },
+                label = { Text(etiqueta) },
+                modifier = modifier.fillMaxWidth(),
+                readOnly = readOnly,
+                singleLine = !varias,
+                minLines = if (varias) 3 else 1,
+                textStyle = if (monoespaciada) {
+                    MaterialTheme.typography.bodyLarge.copy(fontFamily = androidx.compose.ui.text.font.FontFamily.Monospace)
+                } else {
+                    MaterialTheme.typography.bodyLarge
+                },
+                visualTransformation = if (esContrasena && !mostrarContrasena) PasswordVisualTransformation() else VisualTransformation.None,
+                trailingIcon = iconoFinal,
+                keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(
+                    keyboardType = keyboardType ?: when {
+                        tecladoNumerico -> KeyboardType.Number
+                        esContrasena -> KeyboardType.Password
+                        else -> KeyboardType.Text
+                    }
+                ),
+                shape = forma,
+                colors = TextFieldDefaults.colors(
+                    focusedContainerColor = Superficie,
+                    unfocusedContainerColor = Superficie,
+                    focusedIndicatorColor = Ambar,
+                    unfocusedIndicatorColor = if (GrosorBorde > 0.dp) ColorBordeActual else Color.Transparent,
+                    focusedLabelColor = Ambar,
+                    unfocusedLabelColor = TextoSecundario,
+                    cursorColor = Ambar,
+                    focusedTextColor = TextoPrincipal,
+                    unfocusedTextColor = TextoPrincipal
+                )
             )
-        )
+        } else {
+            OutlinedTextField(
+                value = valor,
+                onValueChange = alCambiar,
+                label = { Text(etiqueta) },
+                modifier = modifier.fillMaxWidth(),
+                readOnly = readOnly,
+                singleLine = !varias,
+                minLines = if (varias) 3 else 1,
+                textStyle = if (monoespaciada) {
+                    MaterialTheme.typography.bodyLarge.copy(fontFamily = androidx.compose.ui.text.font.FontFamily.Monospace)
+                } else {
+                    MaterialTheme.typography.bodyLarge
+                },
+                visualTransformation = if (esContrasena && !mostrarContrasena) PasswordVisualTransformation() else VisualTransformation.None,
+                trailingIcon = iconoFinal,
+                keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(
+                    keyboardType = keyboardType ?: when {
+                        tecladoNumerico -> KeyboardType.Number
+                        esContrasena -> KeyboardType.Password
+                        else -> KeyboardType.Text
+                    }
+                ),
+                shape = forma,
+                colors = TextFieldDefaults.colors(
+                    focusedContainerColor = Superficie,
+                    unfocusedContainerColor = Superficie,
+                    focusedIndicatorColor = Ambar,
+                    unfocusedIndicatorColor = if (GrosorBorde > 0.dp) ColorBordeActual else Color.Transparent,
+                    focusedLabelColor = Ambar,
+                    unfocusedLabelColor = TextoSecundario,
+                    cursorColor = Ambar,
+                    focusedTextColor = TextoPrincipal,
+                    unfocusedTextColor = TextoPrincipal
+                )
+            )
+        }
     }
 
     if (alPulsar != null) {

@@ -1,5 +1,7 @@
 package com.jlnavas3.bovedalocal
 
+import androidx.compose.ui.text.TextRange
+import androidx.compose.ui.text.input.TextFieldValue
 import com.jlnavas3.bovedalocal.util.FormateadorCampos
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
@@ -100,5 +102,61 @@ class FormateadorCamposTest {
 
         // Sin mascara
         assertEquals("612345678", FormateadorCampos.aplicarMascaraTelefono("612345678", FormateadorCampos.TEL_SIN_MASCARA))
+    }
+
+    @Test
+    fun `transformarConMascara posiciona el cursor despues del numero al insertar separadores`() {
+        // Caso 1: Escribir el 4to dígito en '### ### ####'
+        // El texto previo era '612' (cursor en 3). Se escribe '3' -> '6123' (cursor en 4)
+        val tfv4 = TextFieldValue(text = "6123", selection = TextRange(4))
+        val res4 = FormateadorCampos.transformarConMascara(tfv4, "612") {
+            FormateadorCampos.aplicarMascaraTelefono(it, FormateadorCampos.TEL_ESPACIOS)
+        }
+        assertEquals("612 3", res4.text)
+        // El cursor debe estar en 5 (después del '3', no antes)
+        assertEquals(5, res4.selection.end)
+
+        // Caso 2: Escribir el 7mo dígito en '### ### ####'
+        // El texto previo era '612 345' (cursor en 7). Se escribe '6' -> '612 3456' (cursor en 8)
+        val tfv7 = TextFieldValue(text = "612 3456", selection = TextRange(8))
+        val res7 = FormateadorCampos.transformarConMascara(tfv7, "612 345") {
+            FormateadorCampos.aplicarMascaraTelefono(it, FormateadorCampos.TEL_ESPACIOS)
+        }
+        assertEquals("612 345 6", res7.text)
+        // El cursor debe estar en 9 (después del '6', no antes)
+        assertEquals(9, res7.selection.end)
+
+        // Caso 3: Máscara con paréntesis '(###) ###-####'
+        // Escribir '6' en texto vacío -> '(6' con cursor en 2
+        val tfvPar1 = TextFieldValue(text = "6", selection = TextRange(1))
+        val resPar1 = FormateadorCampos.transformarConMascara(tfvPar1, "") {
+            FormateadorCampos.aplicarMascaraTelefono(it, FormateadorCampos.TEL_PARENTESIS)
+        }
+        assertEquals("(6", resPar1.text)
+        assertEquals(2, resPar1.selection.end)
+
+        // Escribir '3' tras '(612' -> '(612) 3' con cursor en 7
+        val tfvPar4 = TextFieldValue(text = "(6123", selection = TextRange(5))
+        val resPar4 = FormateadorCampos.transformarConMascara(tfvPar4, "(612") {
+            FormateadorCampos.aplicarMascaraTelefono(it, FormateadorCampos.TEL_PARENTESIS)
+        }
+        assertEquals("(612) 3", resPar4.text)
+        assertEquals(7, resPar4.selection.end)
+
+        // Caso 4: Pulsar backspace borrando '3' de '612 3'
+        val tfvBorrar = TextFieldValue(text = "612 ", selection = TextRange(4))
+        val resBorrar = FormateadorCampos.transformarConMascara(tfvBorrar, "612 3") {
+            FormateadorCampos.aplicarMascaraTelefono(it, FormateadorCampos.TEL_ESPACIOS)
+        }
+        assertEquals("612", resBorrar.text)
+        assertEquals(3, resBorrar.selection.end)
+
+        // Caso 5: Solo mover el cursor sin cambiar texto
+        val tfvMov = TextFieldValue(text = "612 345", selection = TextRange(2))
+        val resMov = FormateadorCampos.transformarConMascara(tfvMov, "612 345") {
+            FormateadorCampos.aplicarMascaraTelefono(it, FormateadorCampos.TEL_ESPACIOS)
+        }
+        assertEquals("612 345", resMov.text)
+        assertEquals(2, resMov.selection.end)
     }
 }

@@ -1,6 +1,8 @@
 package com.jlnavas3.bovedalocal.util
 
 import java.util.Locale
+import androidx.compose.ui.text.TextRange
+import androidx.compose.ui.text.input.TextFieldValue
 
 object FormateadorCampos {
 
@@ -147,5 +149,86 @@ object FormateadorCampos {
         }
 
         return resultado.toString().trim()
+    }
+
+    /**
+     * Procesa la entrada en un TextFieldValue aplicando una máscara formateadora
+     * y recalculando de forma precisa la posición del cursor para evitar que salte
+     * antes de los separadores (espacios, guiones, paréntesis) o atrape al usuario al borrar.
+     */
+    fun transformarConMascara(
+        nuevoTfv: TextFieldValue,
+        textoAnterior: String,
+        formatear: (String) -> String
+    ): TextFieldValue {
+        var nuevoTexto = nuevoTfv.text
+        var cursorNuevo = nuevoTfv.selection.end
+
+        // Si el texto no cambió (el usuario solo movió el cursor o seleccionó texto), no alterar
+        if (nuevoTexto == textoAnterior) {
+            return nuevoTfv
+        }
+
+        // Si el usuario borró caracteres con Backspace:
+        if (nuevoTexto.length < textoAnterior.length) {
+            // Verificar si el carácter borrado era un separador/máscara (no dígito ni '+')
+            if (cursorNuevo in textoAnterior.indices) {
+                val charBorrado = textoAnterior[cursorNuevo]
+                if (!charBorrado.isDigit() && charBorrado != '+') {
+                    // El usuario pulsó backspace sobre un separador; también eliminamos el dígito anterior
+                    val partePrevia = nuevoTexto.substring(0, cursorNuevo)
+                    val ultimoDigitoIdx = partePrevia.indexOfLast { it.isDigit() }
+                    if (ultimoDigitoIdx >= 0) {
+                        nuevoTexto = partePrevia.removeRange(ultimoDigitoIdx, ultimoDigitoIdx + 1) + 
+                                     nuevoTexto.substring(cursorNuevo)
+                        cursorNuevo = ultimoDigitoIdx
+                    }
+                }
+            }
+        }
+
+        // Contar cuántos caracteres de contenido (dígitos o '+' inicial) están antes del cursor en la entrada
+        var rawAntes = 0
+        val limite = cursorNuevo.coerceIn(0, nuevoTexto.length)
+        for (i in 0 until limite) {
+            val c = nuevoTexto[i]
+            if (c.isDigit() || (c == '+' && i == 0)) {
+                rawAntes++
+            }
+        }
+
+        val formateado = formatear(nuevoTexto)
+
+        val nuevoCursor = if (rawAntes == 0) {
+            var pos = 0
+            while (pos < formateado.length && !(formateado[pos].isDigit() || (formateado[pos] == '+' && pos == 0))) {
+                pos++
+            }
+            pos
+        } else {
+            var conteo = 0
+            var pos = 0
+            for (i in formateado.indices) {
+                val c = formateado[i]
+                if (c.isDigit() || (c == '+' && i == 0)) {
+                    conteo++
+                    if (conteo == rawAntes) {
+                        pos = i + 1
+                        break
+                    }
+                }
+            }
+            if (conteo < rawAntes) {
+                pos = formateado.length
+            }
+            // Avanzar sobre caracteres de formato inmediatos (ej. espacio o guión tras completar un bloque)
+            while (pos < formateado.length && !formateado[pos].isDigit()) {
+                pos++
+            }
+            pos
+        }
+
+        val cursorFinal = nuevoCursor.coerceIn(0, formateado.length)
+        return TextFieldValue(text = formateado, selection = TextRange(cursorFinal))
     }
 }

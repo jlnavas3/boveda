@@ -279,9 +279,11 @@ fun TarjetaCampoPersonalizadoEdicion(
                 CampoBoveda(
                     valor = campo.valor,
                     etiqueta = "Teléfono",
-                    alCambiar = { raw ->
-                        val formateado = FormateadorCampos.aplicarMascaraTelefono(raw, ajustes.formatoTelefono)
-                        alModificar(campo.copy(valor = formateado))
+                    alCambiar = { nuevoValor ->
+                        alModificar(campo.copy(valor = nuevoValor))
+                    },
+                    formateadorMascara = { raw ->
+                        FormateadorCampos.aplicarMascaraTelefono(raw, ajustes.formatoTelefono)
                     },
                     keyboardType = KeyboardType.Phone,
                     monoespaciada = true
