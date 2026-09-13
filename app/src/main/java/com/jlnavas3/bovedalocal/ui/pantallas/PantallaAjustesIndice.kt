@@ -55,6 +55,7 @@ import com.jlnavas3.bovedalocal.ui.theme.Superficie
 import com.jlnavas3.bovedalocal.ui.theme.SuperficieAlta
 import com.jlnavas3.bovedalocal.ui.theme.TextoPrincipal
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
+import com.jlnavas3.bovedalocal.ui.theme.esOscuroActivo
 import com.jlnavas3.bovedalocal.util.Haptica
 
 /**
@@ -331,15 +332,25 @@ fun PantallaAjustesIndice(vm: VaultViewModel) {
 
             // 5. Color y luminosidad de las letras
             val tono = ajustes.indiceTonoLetras
-            val textoTono = when {
-                tono < 25f -> "Muy oscuro / discreto"
-                tono < 45f -> "Oscuro suave"
-                tono <= 65f -> "Equilibrado (predeterminado)"
-                tono < 85f -> "Claro y nítido"
-                else -> "Máximo brillo / blanco puro"
+            val textoTono = if (esOscuroActivo) {
+                when {
+                    tono < 25f -> "Muy tenue / discreto"
+                    tono < 45f -> "Oscuro suave"
+                    tono <= 65f -> "Equilibrado (predeterminado)"
+                    tono < 85f -> "Claro y nítido"
+                    else -> "Máximo brillo / blanco puro"
+                }
+            } else {
+                when {
+                    tono < 25f -> "Muy tenue / discreto"
+                    tono < 45f -> "Gris suave"
+                    tono <= 65f -> "Equilibrado (predeterminado)"
+                    tono < 85f -> "Oscuro y nítido"
+                    else -> "Máximo contraste / negro definido"
+                }
             }
             SliderAjusteIndice(
-                titulo = "Color de las letras: ${tono.toInt()}%",
+                titulo = "Tono y contraste de las letras: ${tono.toInt()}%",
                 subtitulo = textoTono,
                 valor = tono,
                 rango = 10f..100f,

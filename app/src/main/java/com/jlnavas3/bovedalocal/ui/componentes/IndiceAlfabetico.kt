@@ -50,6 +50,7 @@ import com.jlnavas3.bovedalocal.ui.theme.Ambar
 import com.jlnavas3.bovedalocal.ui.theme.ColorSobreAcento
 import com.jlnavas3.bovedalocal.ui.theme.DegradadoAmbar
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
+import com.jlnavas3.bovedalocal.ui.theme.esOscuroActivo
 import com.jlnavas3.bovedalocal.util.Haptica
 import com.jlnavas3.bovedalocal.util.ItemAgrupado
 import kotlin.math.abs
@@ -186,14 +187,26 @@ fun IndiceAlfabetico(
         label = "amplitudOla"
     )
 
-    // Tono y luminosidad de las letras inactivas (de tenue/oscuro discreto a blanco puro de alto contraste)
+    // Tono y luminosidad de las letras inactivas adaptado dinámicamente al tema (claro / oscuro)
     val factorTono = (tonoLetras / 100f).coerceIn(0.05f, 1f)
-    val colorLetraInactiva = lerp(
-        Color(0xFF38404E),
-        Color(0xFFFFFFFF),
-        factorTono
-    )
-    val alfaBase = 0.35f + 0.65f * factorTono
+    val colorLetraInactiva = if (esOscuroActivo) {
+        lerp(
+            Color(0xFF4A5568),
+            Color(0xFFFFFFFF),
+            factorTono
+        )
+    } else {
+        lerp(
+            Color(0xFF9AA3B8),
+            Color(0xFF15171F),
+            factorTono
+        )
+    }
+    val alfaBase = if (esOscuroActivo) {
+        0.35f + 0.65f * factorTono
+    } else {
+        0.50f + 0.50f * factorTono
+    }
 
     Box(
         modifier = modifier
@@ -257,7 +270,7 @@ fun IndiceAlfabetico(
                     color = if (esActiva) Ambar else colorLetraInactiva,
                     style = MaterialTheme.typography.labelSmall.copy(
                         fontSize = 10.sp,
-                        fontWeight = if (esActiva) FontWeight.ExtraBold else FontWeight.Medium
+                        fontWeight = if (esActiva) FontWeight.ExtraBold else if (esOscuroActivo) FontWeight.Medium else FontWeight.SemiBold
                     ),
                     textAlign = TextAlign.Center,
                     modifier = Modifier.graphicsLayer {
