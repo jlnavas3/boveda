@@ -50,6 +50,13 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.width
 import androidx.compose.ui.text.font.FontWeight
+import com.jlnavas3.bovedalocal.ui.pantallas.edicion.FormularioEdicionCuentaBancaria
+import com.jlnavas3.bovedalocal.ui.pantallas.edicion.FormularioEdicionIdentidad
+import com.jlnavas3.bovedalocal.ui.pantallas.edicion.FormularioEdicionServidor
+import com.jlnavas3.bovedalocal.ui.pantallas.edicion.FormularioEdicionTarjeta
+import com.jlnavas3.bovedalocal.ui.pantallas.edicion.FormularioEdicionWallet
+import com.jlnavas3.bovedalocal.ui.pantallas.edicion.FormularioEdicionWifi
+import com.jlnavas3.bovedalocal.ui.pantallas.edicion.GestorCamposBase
 import com.jlnavas3.bovedalocal.ui.pantallas.edicion.SeccionEtiquetasEdicion
 import com.jlnavas3.bovedalocal.ui.pantallas.edicion.SelectorTipoEntrada
 import com.jlnavas3.bovedalocal.ui.theme.Ambar
@@ -114,110 +121,120 @@ fun PantallaEdicion(vm: VaultViewModel, id: String?, contrasenaInicial: String) 
                 tipoActual = tipo,
                 alSeleccionarTipo = { tipo = it; haptica.tic() }
             )
-            val camposSugeridos = remember(tipo) { PresetsCampos.paraTipoEntrada(tipo) }
-            if (camposSugeridos.isNotEmpty() && camposPersonalizados.isEmpty()) {
-                Spacer(Modifier.height(8.dp))
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clip(FormaBoton)
-                        .background(ColorAcento.copy(alpha = 0.12f))
-                        .clickable {
-                            haptica.tic()
-                            camposPersonalizados = camposSugeridos
-                        }
-                        .padding(horizontal = 14.dp, vertical = 10.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Column(modifier = Modifier.weight(1f)) {
-                        Text(
-                            text = "¿Agregar campos para ${tipo.etiqueta}?",
-                            color = ColorTitulos,
-                            style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold)
-                        )
-                        Text(
-                            text = "Añade los campos habituales para completar con un toque.",
-                            color = TextoSecundario,
-                            style = MaterialTheme.typography.labelSmall
-                        )
-                    }
-                    Spacer(Modifier.width(8.dp))
-                    BotonColorido(
-                        texto = "Usar",
-                        color = ColorAcento,
-                        alPulsar = {
-                            haptica.tic()
-                            camposPersonalizados = camposSugeridos
-                        }
-                    )
-                }
-            }
             Spacer(Modifier.height(16.dp))
         }
 
         CampoPepo(valor = titulo, etiqueta = "Título", alCambiar = { titulo = it })
         Spacer(Modifier.height(12.dp))
 
-        if (tipo != TipoEntrada.NOTA) {
-            CampoPepo(valor = usuario, etiqueta = "Usuario o correo", alCambiar = { usuario = it })
-            Spacer(Modifier.height(12.dp))
-            CampoPepo(
-                valor = contrasena,
-                etiqueta = "Contraseña",
-                alCambiar = { contrasena = it },
-                esContrasena = true,
-                mostrarContrasena = mostrarContrasena,
-                alAlternarMostrarContrasena = { mostrarContrasena = !mostrarContrasena },
-                monoespaciada = true
-            )
-            Spacer(Modifier.height(10.dp))
-
-            GeneradorEnLineaEdicion(
-                opcionesGenerador = opcionesGenerador,
-                alCambiarOpciones = { opcionesGenerador = it },
-                alGenerarContrasena = { contrasena = it },
-                haptica = haptica
-            )
-
-            if (contrasena.isNotEmpty()) {
+        when (tipo) {
+            TipoEntrada.LOGIN -> {
+                CampoPepo(valor = usuario, etiqueta = "Usuario o correo", alCambiar = { usuario = it })
                 Spacer(Modifier.height(12.dp))
-                BarraFuerza(fuerza.fraccion, fuerza.etiqueta, fuerza.tiempo)
-                if (esComun) {
-                    Spacer(Modifier.height(6.dp))
-                    Text(
-                        "Está entre las contraseñas más repetidas en filtraciones conocidas: cualquiera la prueba primero.",
-                        color = Peligro,
-                        style = MaterialTheme.typography.bodyMedium
-                    )
+                CampoPepo(
+                    valor = contrasena,
+                    etiqueta = "Contraseña",
+                    alCambiar = { contrasena = it },
+                    esContrasena = true,
+                    mostrarContrasena = mostrarContrasena,
+                    alAlternarMostrarContrasena = { mostrarContrasena = !mostrarContrasena },
+                    monoespaciada = true
+                )
+                Spacer(Modifier.height(10.dp))
+
+                GeneradorEnLineaEdicion(
+                    opcionesGenerador = opcionesGenerador,
+                    alCambiarOpciones = { opcionesGenerador = it },
+                    alGenerarContrasena = { contrasena = it },
+                    haptica = haptica
+                )
+
+                if (contrasena.isNotEmpty()) {
+                    Spacer(Modifier.height(12.dp))
+                    BarraFuerza(fuerza.fraccion, fuerza.etiqueta, fuerza.tiempo)
+                    if (esComun) {
+                        Spacer(Modifier.height(6.dp))
+                        Text(
+                            "Está entre las contraseñas más repetidas en filtraciones conocidas: cualquiera la prueba primero.",
+                            color = Peligro,
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                    }
                 }
+                Spacer(Modifier.height(12.dp))
+                CampoPepo(
+                    valor = urls,
+                    etiqueta = "Sitios o paquetes (separados por comas)",
+                    alCambiar = { urls = it }
+                )
+                Spacer(Modifier.height(12.dp))
+                CampoPepo(
+                    valor = totp,
+                    etiqueta = "Secreto TOTP en Base32 (opcional)",
+                    alCambiar = { totp = it.uppercase() },
+                    monoespaciada = true
+                )
+                if (!totpValido) {
+                    Spacer(Modifier.height(6.dp))
+                    Text("Ese secreto no es Base32 válido", color = Peligro, style = MaterialTheme.typography.bodyMedium)
+                }
+                Spacer(Modifier.height(12.dp))
             }
-            Spacer(Modifier.height(12.dp))
-            CampoPepo(
-                valor = urls,
-                etiqueta = "Sitios o paquetes (separados por comas)",
-                alCambiar = { urls = it }
-            )
-            Spacer(Modifier.height(12.dp))
-            CampoPepo(
-                valor = totp,
-                etiqueta = "Secreto TOTP en Base32 (opcional)",
-                alCambiar = { totp = it.uppercase() },
-                monoespaciada = true
-            )
-            if (!totpValido) {
-                Spacer(Modifier.height(6.dp))
-                Text("Ese secreto no es Base32 válido", color = Peligro, style = MaterialTheme.typography.bodyMedium)
+            TipoEntrada.TARJETA -> {
+                FormularioEdicionTarjeta(
+                    campos = camposPersonalizados,
+                    alCambiarCampos = { camposPersonalizados = it }
+                )
+                Spacer(Modifier.height(14.dp))
             }
-            Spacer(Modifier.height(12.dp))
+            TipoEntrada.WIFI -> {
+                FormularioEdicionWifi(
+                    campos = camposPersonalizados,
+                    alCambiarCampos = { camposPersonalizados = it }
+                )
+                Spacer(Modifier.height(14.dp))
+            }
+            TipoEntrada.CUENTA_BANCARIA -> {
+                FormularioEdicionCuentaBancaria(
+                    campos = camposPersonalizados,
+                    alCambiarCampos = { camposPersonalizados = it }
+                )
+                Spacer(Modifier.height(14.dp))
+            }
+            TipoEntrada.IDENTIDAD -> {
+                FormularioEdicionIdentidad(
+                    campos = camposPersonalizados,
+                    alCambiarCampos = { camposPersonalizados = it }
+                )
+                Spacer(Modifier.height(14.dp))
+            }
+            TipoEntrada.SERVIDOR -> {
+                FormularioEdicionServidor(
+                    campos = camposPersonalizados,
+                    alCambiarCampos = { camposPersonalizados = it }
+                )
+                Spacer(Modifier.height(14.dp))
+            }
+            TipoEntrada.WALLET -> {
+                FormularioEdicionWallet(
+                    campos = camposPersonalizados,
+                    alCambiarCampos = { camposPersonalizados = it }
+                )
+                Spacer(Modifier.height(14.dp))
+            }
+            TipoEntrada.NOTA, TipoEntrada.PASSKEY -> {
+                // Para nota y passkey, notas es el campo principal
+            }
         }
 
         CampoPepo(valor = notas, etiqueta = "Notas", alCambiar = { notas = it }, varias = true)
         Spacer(Modifier.height(16.dp))
 
+        val etiquetasBase = remember(tipo) { GestorCamposBase.etiquetasBaseParaTipo(tipo) }
         SeccionCamposPersonalizados(
             camposPersonalizados = camposPersonalizados,
             alCambiarCampos = { camposPersonalizados = it },
+            etiquetasBase = etiquetasBase,
             haptica = haptica
         )
         Spacer(Modifier.height(16.dp))

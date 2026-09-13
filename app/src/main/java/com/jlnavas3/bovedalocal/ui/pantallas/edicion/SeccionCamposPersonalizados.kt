@@ -242,64 +242,77 @@ fun TarjetaCampoPersonalizadoEdicion(
 fun SeccionCamposPersonalizados(
     camposPersonalizados: List<CampoPersonalizado>,
     alCambiarCampos: (List<CampoPersonalizado>) -> Unit,
+    etiquetasBase: Set<String> = emptySet(),
     haptica: Haptica
 ) {
     var mostrandoDialogoNuevoCampo by remember { mutableStateOf(false) }
     var mostrandoDialogoPresets by remember { mutableStateOf(false) }
 
-    EtiquetaSeccion("Campos personalizados")
+    val camposVisibles = remember(camposPersonalizados, etiquetasBase) {
+        if (etiquetasBase.isEmpty()) camposPersonalizados
+        else camposPersonalizados.filterNot { campo ->
+            etiquetasBase.any { base -> base.equals(campo.etiqueta, ignoreCase = true) }
+        }
+    }
+
+    EtiquetaSeccion(if (etiquetasBase.isEmpty()) "Campos personalizados" else "Campos adicionales")
     Spacer(Modifier.height(8.dp))
 
-    if (camposPersonalizados.isEmpty()) {
-        Text(
-            "Añade datos extra como tarjetas, redes Wi-Fi, cuentas bancarias, preguntas de seguridad o cualquier campo a tu medida.",
-            style = MaterialTheme.typography.bodyMedium,
-            color = TextoSecundario
-        )
-        Spacer(Modifier.height(8.dp))
-    } else {
-        camposPersonalizados.forEachIndexed { indice, campo ->
+    if (camposVisibles.isNotEmpty()) {
+        camposVisibles.forEachIndexed { indice, campo ->
             TarjetaCampoPersonalizadoEdicion(
                 numero = indice + 1,
                 campo = campo,
                 alModificar = { modificado ->
-                    alCambiarCampos(camposPersonalizados.toMutableList().apply {
-                        set(indice, modificado)
-                    })
+                    val actualizados = camposPersonalizados.toMutableList()
+                    val idx = actualizados.indexOfFirst { it.id == campo.id }
+                    if (idx >= 0) {
+                        actualizados[idx] = modificado
+                    }
+                    alCambiarCampos(actualizados)
                 },
                 alEliminar = {
                     haptica.tic()
-                    alCambiarCampos(camposPersonalizados.toMutableList().apply {
-                        removeAt(indice)
-                    })
+                    alCambiarCampos(camposPersonalizados.filterNot { it.id == campo.id })
                 }
             )
             Spacer(Modifier.height(10.dp))
         }
     }
 
-    // Botones de acción: + Añadir campo y + Conjunto rápido
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
+    if (etiquetasBase.isEmpty()) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            BotonBorde(
+                texto = "+ Campo",
+                icono = Icons.Filled.Add,
+                modifier = Modifier.weight(1f),
+                alPulsar = {
+                    haptica.tic()
+                    mostrandoDialogoNuevoCampo = true
+                }
+            )
+            BotonColorido(
+                texto = "Presets",
+                icono = Icons.Filled.DynamicForm,
+                color = ColorAcento,
+                modifier = Modifier.weight(1f),
+                alPulsar = {
+                    haptica.tic()
+                    mostrandoDialogoPresets = true
+                }
+            )
+        }
+    } else {
         BotonBorde(
-            texto = "+ Añadir campo",
+            texto = "+ Añadir campo adicional",
             icono = Icons.Filled.Add,
-            modifier = Modifier.weight(1f),
+            modifier = Modifier.fillMaxWidth(),
             alPulsar = {
                 haptica.tic()
                 mostrandoDialogoNuevoCampo = true
-            }
-        )
-        BotonColorido(
-            texto = "Conjunto rápido",
-            icono = Icons.Filled.DynamicForm,
-            color = ColorAcento,
-            modifier = Modifier.weight(1f),
-            alPulsar = {
-                haptica.tic()
-                mostrandoDialogoPresets = true
             }
         )
     }
