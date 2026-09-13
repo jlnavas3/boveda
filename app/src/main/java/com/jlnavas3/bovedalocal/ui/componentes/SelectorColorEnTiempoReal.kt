@@ -84,7 +84,6 @@ fun SelectorColorEnTiempoReal(
     colorInicial: Color,
     modifier: Modifier = Modifier,
     titulo: String = "Elegir color",
-    mostrarPresets: Boolean = true,
     alCambiarColor: (Color) -> Unit
 ) {
     val hsvInicial = remember(colorInicial) { colorAhsv(colorInicial) }
@@ -207,49 +206,6 @@ fun SelectorColorEnTiempoReal(
                     inactiveTrackColor = Borde
                 )
             )
-        }
-
-        // Paleta rápida de colores recomendados (presets)
-        if (mostrarPresets) {
-            Text("Colores predeterminados", color = TextoSecundario, style = MaterialTheme.typography.labelSmall)
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .horizontalScroll(rememberScrollState()),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                PaletaAcento.entries.forEach { paleta ->
-                    val seleccionado = colorActual.aHex().equals(paleta.base.aHex(), ignoreCase = true)
-                    Box(
-                        modifier = Modifier
-                            .size(36.dp)
-                            .clip(CircleShape)
-                            .background(paleta.base)
-                            .border(
-                                width = if (seleccionado) 2.5.dp else 1.dp,
-                                color = if (seleccionado) TextoPrincipal else Borde,
-                                shape = CircleShape
-                            )
-                            .clickable {
-                                val hsv = colorAhsv(paleta.base)
-                                hue = hsv.first
-                                sat = hsv.second
-                                valLum = hsv.third
-                                alCambiarColor(paleta.base)
-                            },
-                        contentAlignment = Alignment.Center
-                    ) {
-                        if (seleccionado) {
-                            Icon(
-                                imageVector = Icons.Filled.Check,
-                                contentDescription = null,
-                                tint = colorContraste(paleta.base),
-                                modifier = Modifier.size(18.dp)
-                            )
-                        }
-                    }
-                }
-            }
         }
     }
 }

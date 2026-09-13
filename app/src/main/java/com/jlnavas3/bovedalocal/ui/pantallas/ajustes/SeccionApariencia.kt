@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Palette
+import androidx.compose.material.icons.filled.Save
 import androidx.compose.material.icons.filled.SquareFoot
 import androidx.compose.material.icons.filled.TextFields
 import androidx.compose.material.icons.filled.Tune
@@ -73,6 +74,7 @@ fun SeccionApariencia(
         Spacer(Modifier.height(8.dp))
         BotonColorido(
             texto = "Guardar nombre",
+            icono = Icons.Filled.Save,
             color = ColorAcento
         ) {
             vm.ajustarNombrePersonalizado(nombreLocal.trim())

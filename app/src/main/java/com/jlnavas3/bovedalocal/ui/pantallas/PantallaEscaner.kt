@@ -20,6 +20,12 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.CameraAlt
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Image
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -244,12 +250,12 @@ fun PantallaEscaner(
                                 style = MaterialTheme.typography.bodyMedium
                             )
                             Spacer(Modifier.height(10.dp))
-                            BotonAmbar("Abrir la ficha de la app") {
+                            BotonAmbar("Abrir la ficha de la app", icono = Icons.Filled.Settings) {
                                 if (!AjustesSistema.abrirFichaApp(contexto)) vm.avisar("No encuentro la ficha de la app en este móvil")
                             }
                         }
                         EstadoPermiso.DENEGADO -> {
-                            BotonAmbar("Usar la cámara") { pedirPermiso.launch(Manifest.permission.CAMERA) }
+                            BotonAmbar("Usar la cámara", icono = Icons.Filled.CameraAlt) { pedirPermiso.launch(Manifest.permission.CAMERA) }
                             Spacer(Modifier.height(8.dp))
                             Text(
                                 "Sin permiso no hay cámara, y no pasa nada: lee el QR desde una captura o escribe el código a mano aquí abajo.",
@@ -257,12 +263,15 @@ fun PantallaEscaner(
                                 style = MaterialTheme.typography.bodyMedium
                             )
                         }
-                        EstadoPermiso.NO_PEDIDO -> BotonAmbar("Usar la cámara") { pedirPermiso.launch(Manifest.permission.CAMERA) }
+                        EstadoPermiso.NO_PEDIDO -> BotonAmbar("Usar la cámara", icono = Icons.Filled.CameraAlt) { pedirPermiso.launch(Manifest.permission.CAMERA) }
                     }
                 }
             }
             Spacer(Modifier.height(10.dp))
-            BotonBorde(if (leyendoImagen) "Buscando el QR en la imagen…" else "Leer el QR de una imagen") {
+            BotonBorde(
+                texto = if (leyendoImagen) "Buscando el QR en la imagen…" else "Leer el QR de una imagen",
+                icono = Icons.Filled.Image
+            ) {
                 if (!leyendoImagen) abrirSelectorDeImagen()
             }
         }
@@ -322,7 +331,11 @@ fun PantallaEscaner(
                     )
                 }
                 Spacer(Modifier.height(12.dp))
-                BotonAmbar("Añadir este código", activo = manual.isNotBlank()) {
+                BotonAmbar(
+                    texto = "Añadir este código",
+                    icono = Icons.Filled.Add,
+                    activo = manual.isNotBlank()
+                ) {
                     val texto = manual.trim()
                     if (!procesarTexto(texto, "el teclado") && !qrPasskey) fallo = true
                 }
@@ -330,7 +343,10 @@ fun PantallaEscaner(
         }
 
         Spacer(Modifier.height(16.dp))
-        BotonBorde("Cancelar") { vm.volverAtras() }
+        BotonBorde(
+            texto = "Cancelar",
+            icono = Icons.Filled.Close
+        ) { vm.volverAtras() }
         Spacer(Modifier.height(32.dp))
     }
 }
@@ -432,7 +448,10 @@ private fun ZonaCamara(
                     style = MaterialTheme.typography.bodyMedium
                 )
                 Spacer(Modifier.height(12.dp))
-                BotonAmbar("Leer el QR de una imagen") { alElegirImagen() }
+                BotonAmbar(
+                    texto = "Leer el QR de una imagen",
+                    icono = Icons.Filled.Image
+                ) { alElegirImagen() }
             }
         }
     }

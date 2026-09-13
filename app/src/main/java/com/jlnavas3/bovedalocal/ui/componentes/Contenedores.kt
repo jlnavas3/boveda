@@ -53,6 +53,7 @@ import com.jlnavas3.bovedalocal.ui.theme.ColorTarjetas
 import com.jlnavas3.bovedalocal.ui.theme.ColorTitulos
 import com.jlnavas3.bovedalocal.ui.theme.CurvaturaEsquinas
 import com.jlnavas3.bovedalocal.ui.theme.EspaciadoComponentes
+import com.jlnavas3.bovedalocal.ui.theme.FormaPequena
 import com.jlnavas3.bovedalocal.ui.theme.FormaTarjeta
 import com.jlnavas3.bovedalocal.ui.theme.GrosorBorde
 import com.jlnavas3.bovedalocal.ui.theme.Obsidiana
@@ -104,15 +105,23 @@ fun ContenedorSeccion(
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
+            horizontalArrangement = Arrangement.spacedBy(10.dp)
         ) {
             if (icono != null) {
-                Icon(
-                    imageVector = icono,
-                    contentDescription = null,
-                    tint = ColorIconosInternos,
-                    modifier = Modifier.size(20.dp)
-                )
+                Box(
+                    modifier = Modifier
+                        .size(32.dp)
+                        .clip(FormaPequena)
+                        .background(ColorIconosInternos.copy(alpha = 0.12f)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = icono,
+                        contentDescription = null,
+                        tint = ColorIconosInternos,
+                        modifier = Modifier.size(18.dp)
+                    )
+                }
             }
             Text(
                 text = titulo,
@@ -194,8 +203,8 @@ fun ContenedorFila(
         if (icono != null) {
             Box(
                 modifier = Modifier
-                    .size(38.dp)
-                    .clip(CircleShape)
+                    .size(36.dp)
+                    .clip(FormaPequena)
                     .background(colorIcono.copy(alpha = 0.12f)),
                 contentAlignment = Alignment.Center
             ) {
@@ -203,7 +212,7 @@ fun ContenedorFila(
                     imageVector = icono,
                     contentDescription = null,
                     tint = colorIcono,
-                    modifier = Modifier.size(20.dp)
+                    modifier = Modifier.size(19.dp)
                 )
             }
             Spacer(Modifier.width(12.dp))
@@ -387,7 +396,7 @@ fun BotonColorido(
                     imageVector = icono,
                     contentDescription = null,
                     tint = if (activo) colorTexto else TextoSecundario,
-                    modifier = Modifier.size(26.dp)
+                    modifier = Modifier.size(22.dp)
                 )
                 Spacer(Modifier.width(8.dp))
                 Text(
@@ -443,15 +452,23 @@ fun TarjetaAccion(
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
+            horizontalArrangement = Arrangement.spacedBy(10.dp)
         ) {
             if (icono != null) {
-                Icon(
-                    imageVector = icono,
-                    contentDescription = null,
-                    tint = colorBoton,
-                    modifier = Modifier.size(22.dp)
-                )
+                Box(
+                    modifier = Modifier
+                        .size(36.dp)
+                        .clip(FormaPequena)
+                        .background(colorBoton.copy(alpha = 0.12f)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = icono,
+                        contentDescription = null,
+                        tint = colorBoton,
+                        modifier = Modifier.size(20.dp)
+                    )
+                }
             }
             Text(
                 text = titulo,

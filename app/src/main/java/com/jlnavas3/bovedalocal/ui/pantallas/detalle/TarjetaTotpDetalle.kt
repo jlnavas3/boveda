@@ -5,6 +5,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -78,7 +80,11 @@ fun TarjetaTotpDetalle(
                     style = MaterialTheme.typography.bodyMedium
                 )
                 Spacer(Modifier.height(8.dp))
-                BotonBorde("Copiar código", color = Menta) {
+                BotonBorde(
+                    texto = "Copiar código",
+                    icono = Icons.Filled.ContentCopy,
+                    color = Menta
+                ) {
                     haptica.toque()
                     alCopiarTotp(codigo)
                 }

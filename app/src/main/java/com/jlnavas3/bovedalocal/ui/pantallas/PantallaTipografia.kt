@@ -19,10 +19,12 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.AutoAwesome
+import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.FormatBold
 import androidx.compose.material.icons.filled.FormatItalic
 import androidx.compose.material.icons.filled.FormatLineSpacing
 import androidx.compose.material.icons.filled.FormatSize
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Key
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.TextFields
@@ -165,10 +167,16 @@ fun PantallaTipografia(vm: VaultViewModel) {
                     horizontalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
                     Box(modifier = Modifier.weight(1f)) {
-                        BotonAmbar(texto = "Copiar Clave") { haptica.tic() }
+                        BotonAmbar(
+                            texto = "Copiar Clave",
+                            icono = Icons.Filled.ContentCopy
+                        ) { haptica.tic() }
                     }
                     Box(modifier = Modifier.weight(1f)) {
-                        BotonBorde(texto = "Detalles") { haptica.tic() }
+                        BotonBorde(
+                            texto = "Detalles",
+                            icono = Icons.Filled.Info
+                        ) { haptica.tic() }
                     }
                 }
             }
@@ -511,7 +519,10 @@ fun PantallaTipografia(vm: VaultViewModel) {
             subtitulo = "¿Deseas restablecer los valores de fuente originales?",
             icono = Icons.Filled.Refresh
         ) {
-            BotonBorde("Restablecer tipografía predeterminada") {
+            BotonBorde(
+                texto = "Restablecer tipografía predeterminada",
+                icono = Icons.Filled.Refresh
+            ) {
                 haptica.toque()
                 vm.restablecerTipografia()
             }

@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -97,8 +98,11 @@ fun SeccionEtiquetasEdicion(
             )
         }
         Spacer(Modifier.width(10.dp))
-        Box(modifier = Modifier.width(96.dp)) {
-            BotonBorde("Añadir") {
+        Box(modifier = Modifier.width(112.dp)) {
+            BotonBorde(
+                texto = "Añadir",
+                icono = Icons.Filled.Add
+            ) {
                 val limpia = normalizarEtiqueta(nuevaEtiqueta)
                 if (limpia.isNotEmpty() && !etiquetas.contains(limpia)) {
                     alCambiarEtiquetas(etiquetas + limpia)

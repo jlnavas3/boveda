@@ -101,7 +101,11 @@ fun PantallaDetalle(vm: VaultViewModel, id: String) {
         Column(modifier = Modifier.fillMaxSize().padding(24.dp), verticalArrangement = Arrangement.Center) {
             Text("Esta entrada ya no está en la bóveda", color = TextoSecundario)
             Spacer(Modifier.height(16.dp))
-            BotonColorido("Volver", color = ColorAcento) { vm.volverAtras() }
+            BotonColorido(
+                texto = "Volver",
+                color = ColorAcento,
+                icono = Icons.AutoMirrored.Filled.ArrowBack
+            ) { vm.volverAtras() }
         }
         return
     }

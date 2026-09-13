@@ -24,6 +24,8 @@ import androidx.compose.material.icons.filled.FormatShapes
 import androidx.compose.material.icons.filled.LineWeight
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.SpaceDashboard
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.filled.Tune
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -116,10 +118,16 @@ fun PantallaFormas(vm: VaultViewModel) {
                     horizontalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
                     Box(modifier = Modifier.weight(1f)) {
-                        BotonAmbar(texto = "Botón Principal") { haptica.tic() }
+                        BotonAmbar(
+                            texto = "Botón Principal",
+                            icono = Icons.Filled.Star
+                        ) { haptica.tic() }
                     }
                     Box(modifier = Modifier.weight(1f)) {
-                        BotonBorde(texto = "Secundario") { haptica.tic() }
+                        BotonBorde(
+                            texto = "Secundario",
+                            icono = Icons.Filled.Tune
+                        ) { haptica.tic() }
                     }
                 }
             }
@@ -348,7 +356,10 @@ fun PantallaFormas(vm: VaultViewModel) {
             subtitulo = "¿Deseas regresar a la apariencia geométrica estándar?",
             icono = Icons.Filled.Refresh
         ) {
-            BotonBorde("Restablecer bordes y formas predeterminados") {
+            BotonBorde(
+                texto = "Restablecer bordes y formas predeterminados",
+                icono = Icons.Filled.Refresh
+            ) {
                 haptica.toque()
                 vm.restablecerFormas()
             }

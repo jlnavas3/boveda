@@ -72,6 +72,7 @@ import com.jlnavas3.bovedalocal.ui.theme.DegradadoAmbar
 import com.jlnavas3.bovedalocal.ui.theme.EscalaTexto
 import com.jlnavas3.bovedalocal.ui.theme.FormaBoton
 import com.jlnavas3.bovedalocal.ui.theme.FormaCampo
+import com.jlnavas3.bovedalocal.ui.theme.FormaPequena
 import com.jlnavas3.bovedalocal.ui.theme.FormaTarjeta
 import com.jlnavas3.bovedalocal.ui.theme.GrosorBorde
 import com.jlnavas3.bovedalocal.ui.theme.Menta
@@ -207,13 +208,21 @@ fun TarjetaBovedaDesplegable(
                 .padding(horizontal = 16.dp, vertical = 14.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Icono a la izquierda y más grande
-            Icon(
-                imageVector = icono,
-                contentDescription = null,
-                tint = colorIcono,
-                modifier = Modifier.size(28.dp)
-            )
+            // Icono distinguido con contenedor suave estilo barra lateral
+            Box(
+                modifier = Modifier
+                    .size(38.dp)
+                    .clip(FormaPequena)
+                    .background(colorIcono.copy(alpha = 0.14f)),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = icono,
+                    contentDescription = null,
+                    tint = colorIcono,
+                    modifier = Modifier.size(20.dp)
+                )
+            }
 
             Spacer(Modifier.width(14.dp))
 
@@ -312,7 +321,7 @@ fun BotonAmbar(
                     imageVector = icono,
                     contentDescription = null,
                     tint = colorTexto,
-                    modifier = Modifier.size(26.dp)
+                    modifier = Modifier.size(22.dp)
                 )
                 Spacer(Modifier.width(8.dp))
                 Text(
@@ -382,7 +391,7 @@ fun BotonBorde(
                     imageVector = icono,
                     contentDescription = null,
                     tint = color,
-                    modifier = Modifier.size(26.dp)
+                    modifier = Modifier.size(22.dp)
                 )
                 Spacer(Modifier.width(8.dp))
                 Text(

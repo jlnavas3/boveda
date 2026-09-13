@@ -48,6 +48,7 @@ import com.jlnavas3.bovedalocal.ui.theme.ColorSobreAcento
 import com.jlnavas3.bovedalocal.ui.theme.ColorTarjetas
 import com.jlnavas3.bovedalocal.ui.theme.ColorTitulos
 import com.jlnavas3.bovedalocal.ui.theme.FormaCampo
+import com.jlnavas3.bovedalocal.ui.theme.FormaPequena
 import com.jlnavas3.bovedalocal.ui.theme.GrosorBorde
 import com.jlnavas3.bovedalocal.ui.theme.Superficie
 import com.jlnavas3.bovedalocal.ui.theme.SuperficieAlta
@@ -186,8 +187,21 @@ fun SelectorAjuste(
                 .padding(horizontal = 12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Icon(icono, contentDescription = null, tint = if (abierto) ColorIconosInternos else TextoSecundario, modifier = Modifier.size(20.dp))
-            Spacer(Modifier.width(8.dp))
+            Box(
+                modifier = Modifier
+                    .size(34.dp)
+                    .clip(FormaPequena)
+                    .background(ColorIconosInternos.copy(alpha = if (abierto) 0.18f else 0.12f)),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    icono,
+                    contentDescription = null,
+                    tint = if (abierto) ColorTitulos else ColorIconosInternos,
+                    modifier = Modifier.size(18.dp)
+                )
+            }
+            Spacer(Modifier.width(10.dp))
             Column(modifier = Modifier.weight(1f)) {
                 Text(titulo, color = if (abierto) ColorTitulos else TextoSecundario, style = MaterialTheme.typography.labelMedium)
                 Text(seleccionado, color = TextoPrincipal, style = MaterialTheme.typography.bodyMedium, maxLines = 1)
@@ -206,14 +220,23 @@ fun SelectorAjuste(
                 if (index > 0) {
                     SeparadorOpcionMenu()
                 }
+                val esSeleccionado = opcion.texto == seleccionado
                 DropdownMenuItem(
                     leadingIcon = {
-                        Icon(
-                            opcion.icono,
-                            contentDescription = null,
-                            tint = if (opcion.texto == seleccionado) ColorIconosInternos else TextoSecundario,
-                            modifier = Modifier.size(20.dp)
-                        )
+                        Box(
+                            modifier = Modifier
+                                .size(28.dp)
+                                .clip(FormaPequena)
+                                .background(ColorIconosInternos.copy(alpha = if (esSeleccionado) 0.16f else 0.08f)),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                opcion.icono,
+                                contentDescription = null,
+                                tint = if (esSeleccionado) ColorIconosInternos else TextoSecundario,
+                                modifier = Modifier.size(16.dp)
+                            )
+                        }
                     },
                     text = {
                         Text(
