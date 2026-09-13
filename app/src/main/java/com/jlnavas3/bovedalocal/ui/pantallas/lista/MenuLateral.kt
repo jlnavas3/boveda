@@ -215,54 +215,59 @@ fun MenuLateral(
         // Pie de Menú estilizado
         Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(ColorSeparadorDropdown))
         Spacer(Modifier.height(10.dp))
-        Row(
+        Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 8.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
+            verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {
-            Column {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
                 Text(
                     "Bóveda local",
                     style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.SemiBold),
                     color = ColorTitulos
                 )
-                Text(
-                    "v${BuildConfig.VERSION_NAME} · 100% offline",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = TextoSecundario
-                )
-            }
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(5.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Box(
-                    modifier = Modifier
-                        .clip(CircleShape)
-                        .background(ColorAcento.copy(alpha = 0.12f))
-                        .padding(horizontal = 6.dp, vertical = 3.dp)
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(5.dp),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(
-                        "Argon2id · ${perfilArgon2.memoriaKiB / 1024}M",
-                        style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold, fontSize = 9.sp),
-                        color = ColorAcento
-                    )
-                }
-                Box(
-                    modifier = Modifier
-                        .clip(CircleShape)
-                        .background(Menta.copy(alpha = 0.15f))
-                        .padding(horizontal = 6.dp, vertical = 3.dp)
-                ) {
-                    Text(
-                        "AES-256",
-                        style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold, fontSize = 9.sp),
-                        color = Menta
-                    )
+                    Box(
+                        modifier = Modifier
+                            .clip(CircleShape)
+                            .background(ColorAcento.copy(alpha = 0.12f))
+                            .padding(horizontal = 6.dp, vertical = 3.dp)
+                    ) {
+                        Text(
+                            "Argon2id · ${perfilArgon2.memoriaKiB / 1024}M",
+                            style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold, fontSize = 9.sp),
+                            color = ColorAcento,
+                            maxLines = 1
+                        )
+                    }
+                    Box(
+                        modifier = Modifier
+                            .clip(CircleShape)
+                            .background(Menta.copy(alpha = 0.15f))
+                            .padding(horizontal = 6.dp, vertical = 3.dp)
+                    ) {
+                        Text(
+                            "AES-256",
+                            style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold, fontSize = 9.sp),
+                            color = Menta,
+                            maxLines = 1
+                        )
+                    }
                 }
             }
+            Text(
+                "v${BuildConfig.VERSION_NAME} · 100% offline · by: jlnavas3",
+                style = MaterialTheme.typography.bodySmall,
+                color = TextoSecundario
+            )
         }
     }
 }
