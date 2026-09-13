@@ -13,6 +13,8 @@ import com.jlnavas3.bovedalocal.data.modoBiometriaActivo
 
 import android.app.ActivityManager
 import android.content.pm.PackageManager
+import com.jlnavas3.bovedalocal.crypto.KdfParams
+import com.jlnavas3.bovedalocal.crypto.PerfilArgon2
 
 /**
  * Lo que sabe Android de este móvil y que importa para la cámara y la huella. Es la
@@ -61,7 +63,9 @@ object InformeDiagnostico {
         val flagSecureActivo: Boolean,
         val permisosDeclarados: List<String>,
         val lineasBiometria: List<Linea>,
-        val lineasCamara: List<Linea>
+        val lineasCamara: List<Linea>,
+        val perfilArgon2: PerfilArgon2,
+        val kdfParams: KdfParams
     )
 
     fun recopilarAuditoria(contexto: Context, repositorio: VaultRepository): DatosAuditoria {
@@ -204,7 +208,9 @@ object InformeDiagnostico {
             flagSecureActivo = true,
             permisosDeclarados = permisos,
             lineasBiometria = lineasBio,
-            lineasCamara = lineasCam
+            lineasCamara = lineasCam,
+            perfilArgon2 = repositorio.perfilArgon2Actual(),
+            kdfParams = repositorio.paramsActuales()
         )
     }
 

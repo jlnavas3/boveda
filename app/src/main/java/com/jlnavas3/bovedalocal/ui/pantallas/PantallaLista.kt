@@ -259,6 +259,7 @@ fun PantallaLista(vm: VaultViewModel, estado: EstadoBoveda) {
                     nombreApp = ajustes.nombrePersonalizado.ifBlank { "Bóveda local" },
                     totalEntradas = entradas.size,
                     totalPapelera = (estado as? EstadoBoveda.Desbloqueada)?.papelera?.size ?: 0,
+                    perfilArgon2 = vm.repositorio.perfilArgon2Actual(),
                     alIr = { destino -> cerrarMenu(); vm.ir(destino) },
                     alBloquear = { cerrarMenu(); haptica.toque(); vm.bloquear() }
                 )

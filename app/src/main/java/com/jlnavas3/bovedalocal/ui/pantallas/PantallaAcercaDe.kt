@@ -121,6 +121,11 @@ fun PantallaAcercaDe(vm: VaultViewModel) {
                     )
                     FilaAuditoria(
                         ok = true,
+                        titulo = "Derivación de clave Argon2id (${datos.perfilArgon2.titulo})",
+                        detalle = "${datos.kdfParams.memoryKiB / 1024} MiB de memoria protegida contra ataques GPU/ASIC (${datos.kdfParams.iterations} pasadas, ${datos.kdfParams.parallelism} hilos)"
+                    )
+                    FilaAuditoria(
+                        ok = true,
                         titulo = "Claves efímeras en RAM",
                         detalle = "La clave maestra nunca toca disco, reside solo en memoria volátil y se sobreescribe con ceros al bloquear"
                     )
@@ -182,7 +187,8 @@ fun PantallaAcercaDe(vm: VaultViewModel) {
                 icono = Icons.Filled.Lock
             ) {
                 ContenedorTarjeta(paddingInterno = 16.dp) {
-                    ItemMetrica("KDF Derivación", "Argon2id (64 MiB RAM, 3 iteraciones, paralelismo 4, salt 16B)")
+                    ItemMetrica("KDF Derivación", "Argon2id · ${datos.perfilArgon2.titulo}")
+                    ItemMetrica("Parámetros KDF", "${datos.kdfParams.memoryKiB / 1024} MiB RAM, ${datos.kdfParams.iterations} pasadas, paralelismo ${datos.kdfParams.parallelism}, salt 16B")
                     ItemMetrica("Cifrado de datos", "AES-256-GCM (nonce 12B, tag 128b, AAD autenticado)")
                     ItemMetrica("Generador aleatorio", "SecureRandom CSPRNG del kernel de Android")
                     ItemMetrica("Passkeys WebAuthn", "Claves asimétricas ECDSA P-256 (ES256) locales")

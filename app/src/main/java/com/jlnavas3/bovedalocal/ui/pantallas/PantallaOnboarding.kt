@@ -55,6 +55,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.fragment.app.FragmentActivity
+import com.jlnavas3.bovedalocal.crypto.PerfilArgon2
 import com.jlnavas3.bovedalocal.ui.VaultViewModel
 import com.jlnavas3.bovedalocal.ui.componentes.BarraFuerza
 import com.jlnavas3.bovedalocal.ui.componentes.BarraProgresoForja
@@ -63,6 +64,7 @@ import com.jlnavas3.bovedalocal.ui.componentes.BotonBorde
 import com.jlnavas3.bovedalocal.ui.componentes.CampoBoveda
 import com.jlnavas3.bovedalocal.ui.componentes.ContenedorTarjeta
 import com.jlnavas3.bovedalocal.ui.componentes.PuertaBoveda
+import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.SelectorPerfilArgon2
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.ColorSeguridad
 import com.jlnavas3.bovedalocal.ui.theme.ColorTitulos
@@ -76,6 +78,10 @@ import com.jlnavas3.bovedalocal.util.MedidorFuerza
 fun PantallaOnboarding(vm: VaultViewModel, actividad: FragmentActivity) {
     val contexto = LocalContext.current
     val haptica = remember { Haptica(contexto) }
+    val ajustes = vm.repositorio.ajustes.actual
+    var perfilSeleccionado by remember {
+        mutableStateOf(PerfilArgon2.desde(ajustes.perfilArgon2))
+    }
     var paso by remember { mutableIntStateOf(0) }
     var contrasena by remember { mutableStateOf("") }
     var repetida by remember { mutableStateOf("") }
@@ -227,8 +233,16 @@ fun PantallaOnboarding(vm: VaultViewModel, actividad: FragmentActivity) {
                 Column(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                    verticalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
+                    SelectorPerfilArgon2(
+                        perfilActual = perfilSeleccionado,
+                        alSeleccionarPerfil = { nuevo ->
+                            perfilSeleccionado = nuevo
+                            vm.repositorio.ajustes.actualizar { it.copy(perfilArgon2 = nuevo.clave) }
+                        }
+                    )
+                    Spacer(Modifier.height(4.dp))
                     BotonAmbar(
                         texto = "Crear mi bóveda",
                         icono = Icons.Filled.VpnKey
@@ -240,7 +254,7 @@ fun PantallaOnboarding(vm: VaultViewModel, actividad: FragmentActivity) {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.Center,
-                        modifier = Modifier.fillMaxWidth().padding(top = 4.dp)
+                        modifier = Modifier.fillMaxWidth().padding(top = 2.dp)
                     ) {
                         Icon(
                             imageVector = Icons.Filled.Info,
@@ -311,7 +325,15 @@ fun PantallaOnboarding(vm: VaultViewModel, actividad: FragmentActivity) {
                                 .clickable { mostrar = !mostrar }
                         )
                     }
-                    Spacer(Modifier.height(24.dp))
+                    Spacer(Modifier.height(16.dp))
+                    SelectorPerfilArgon2(
+                        perfilActual = perfilSeleccionado,
+                        alSeleccionarPerfil = { nuevo ->
+                            perfilSeleccionado = nuevo
+                            vm.repositorio.ajustes.actualizar { it.copy(perfilArgon2 = nuevo.clave) }
+                        }
+                    )
+                    Spacer(Modifier.height(16.dp))
                     BotonAmbar("Forjar la bóveda", activo = valida, icono = Icons.Filled.Shield) {
                         haptica.toque()
                         paso = 2

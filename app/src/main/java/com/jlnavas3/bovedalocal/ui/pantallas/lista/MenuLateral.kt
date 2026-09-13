@@ -41,9 +41,11 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.jlnavas3.bovedalocal.BuildConfig
+import com.jlnavas3.bovedalocal.crypto.PerfilArgon2
 import com.jlnavas3.bovedalocal.ui.Pantalla
 import com.jlnavas3.bovedalocal.ui.theme.Ambar
 import com.jlnavas3.bovedalocal.ui.theme.Color2FA
+import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.ColorBordeDropdown
 import com.jlnavas3.bovedalocal.ui.theme.ColorGenerador
 import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
@@ -70,19 +72,20 @@ fun MenuLateral(
     nombreApp: String,
     totalEntradas: Int,
     totalPapelera: Int,
+    perfilArgon2: PerfilArgon2 = PerfilArgon2.ESTANDAR,
     alIr: (Pantalla) -> Unit,
     alBloquear: () -> Unit
 ) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(vertical = 20.dp, horizontal = 12.dp)
+            .padding(vertical = 18.dp, horizontal = 12.dp)
     ) {
         // Cabecera Premium
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 8.dp, vertical = 6.dp)
+                .padding(horizontal = 8.dp, vertical = 4.dp)
         ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
@@ -90,7 +93,7 @@ fun MenuLateral(
             ) {
                 Box(
                     modifier = Modifier
-                        .size(46.dp)
+                        .size(44.dp)
                         .clip(FormaCampo)
                         .background(SuperficieAlta)
                         .then(
@@ -103,7 +106,7 @@ fun MenuLateral(
                         imageVector = Icons.Filled.Lock,
                         contentDescription = null,
                         tint = Ambar,
-                        modifier = Modifier.size(24.dp)
+                        modifier = Modifier.size(22.dp)
                     )
                 }
                 Column(modifier = Modifier.weight(1f)) {
@@ -135,16 +138,16 @@ fun MenuLateral(
             }
         }
 
-        Spacer(Modifier.height(14.dp))
+        Spacer(Modifier.height(12.dp))
         Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(ColorSeparadorDropdown))
-        Spacer(Modifier.height(10.dp))
+        Spacer(Modifier.height(8.dp))
 
         // Opciones de navegación con contenedor y feedback
         Column(
             modifier = Modifier
                 .weight(1f)
                 .verticalScroll(rememberScrollState()),
-            verticalArrangement = Arrangement.spacedBy(4.dp)
+            verticalArrangement = Arrangement.spacedBy(2.dp)
         ) {
             ItemMenu(
                 texto = "Generar contraseñas",
@@ -197,9 +200,9 @@ fun MenuLateral(
                 colorIcono = ColorIconosInternos
             ) { alIr(Pantalla.Ajustes) }
 
-            Spacer(Modifier.height(6.dp))
+            Spacer(Modifier.height(4.dp))
             Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(ColorSeparadorDropdown))
-            Spacer(Modifier.height(6.dp))
+            Spacer(Modifier.height(4.dp))
 
             ItemMenu(
                 texto = "Bloquear bóveda",
@@ -211,7 +214,7 @@ fun MenuLateral(
 
         // Pie de Menú estilizado
         Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(ColorSeparadorDropdown))
-        Spacer(Modifier.height(12.dp))
+        Spacer(Modifier.height(10.dp))
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -231,17 +234,34 @@ fun MenuLateral(
                     color = TextoSecundario
                 )
             }
-            Box(
-                modifier = Modifier
-                    .clip(CircleShape)
-                    .background(Menta.copy(alpha = 0.15f))
-                    .padding(horizontal = 8.dp, vertical = 4.dp)
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(5.dp),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(
-                    "AES-256",
-                    style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
-                    color = Menta
-                )
+                Box(
+                    modifier = Modifier
+                        .clip(CircleShape)
+                        .background(ColorAcento.copy(alpha = 0.12f))
+                        .padding(horizontal = 6.dp, vertical = 3.dp)
+                ) {
+                    Text(
+                        "Argon2id · ${perfilArgon2.memoriaKiB / 1024}M",
+                        style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold, fontSize = 9.sp),
+                        color = ColorAcento
+                    )
+                }
+                Box(
+                    modifier = Modifier
+                        .clip(CircleShape)
+                        .background(Menta.copy(alpha = 0.15f))
+                        .padding(horizontal = 6.dp, vertical = 3.dp)
+                ) {
+                    Text(
+                        "AES-256",
+                        style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold, fontSize = 9.sp),
+                        color = Menta
+                    )
+                }
             }
         }
     }
@@ -261,12 +281,12 @@ fun ItemMenu(
             .fillMaxWidth()
             .clip(FormaCampo)
             .clickable { alPulsar() }
-            .padding(horizontal = 10.dp, vertical = 10.dp),
+            .padding(horizontal = 8.dp, vertical = 6.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Box(
             modifier = Modifier
-                .size(36.dp)
+                .size(34.dp)
                 .clip(FormaPequena)
                 .background(colorIcono.copy(alpha = 0.12f)),
             contentAlignment = Alignment.Center
@@ -275,7 +295,7 @@ fun ItemMenu(
                 imageVector = icono,
                 contentDescription = null,
                 tint = colorIcono,
-                modifier = Modifier.size(20.dp)
+                modifier = Modifier.size(19.dp)
             )
         }
         Spacer(Modifier.width(12.dp))

@@ -77,6 +77,7 @@ fun DialogoContrasena(
     alCancelar: () -> Unit
 ) {
     var valor by remember { mutableStateOf("") }
+    var mostrarContrasena by remember { mutableStateOf(false) }
     AlertDialog(
         onDismissRequest = alCancelar,
         containerColor = ColorTarjetas,
@@ -85,7 +86,14 @@ fun DialogoContrasena(
             Column {
                 Text(descripcion, color = TextoSecundario, style = MaterialTheme.typography.bodyMedium)
                 Spacer(Modifier.height(12.dp))
-                CampoBoveda(valor = valor, etiqueta = "Contraseña", alCambiar = { valor = it }, esContrasena = true)
+                CampoBoveda(
+                    valor = valor,
+                    etiqueta = "Contraseña",
+                    alCambiar = { valor = it },
+                    esContrasena = true,
+                    mostrarContrasena = mostrarContrasena,
+                    alAlternarMostrarContrasena = { mostrarContrasena = !mostrarContrasena }
+                )
             }
         },
         confirmButton = {

@@ -153,6 +153,7 @@ fun SeccionSeguridad(
                             perfilPendiente = nuevo
                         } else {
                             vm.repositorio.ajustes.actualizar { it.copy(perfilArgon2 = nuevo.clave) }
+                            com.jlnavas3.bovedalocal.util.Diagnostico.apuntar("bóveda", "Perfil Argon2id predeterminado establecido en ${nuevo.titulo}")
                             vm.avisar("Perfil de cifrado predeterminado: ${nuevo.titulo}")
                         }
                     }
@@ -230,7 +231,7 @@ fun SeccionSeguridad(
     perfilPendiente?.let { objetivo ->
         DialogoContrasena(
             titulo = "Aplicar ${objetivo.titulo}",
-            descripcion = "Para re-cifrar la bóveda con ${objetivo.resumen}, introduce tu contraseña maestra. Los datos se re-cifrarán inmediatamente con este perfil de alta seguridad.",
+            descripcion = "Para re-cifrar la bóveda con ${objetivo.resumen}, introduce tu contraseña maestra.\n\nNota criptográfica: La huella dactilar no conoce tu contraseña (solo custodia la llave derivada en Keystore). Para derivar la nueva clave con ${objetivo.memoriaKiB / 1024} MiB de memoria, se requiere tu contraseña maestra.",
             textoBoton = "Re-cifrar bóveda",
             alConfirmar = { pass ->
                 vm.reForjarBoveda(pass, objetivo) { exito ->
@@ -246,7 +247,7 @@ fun SeccionSeguridad(
 }
 
 @Composable
-private fun SelectorPerfilArgon2(
+fun SelectorPerfilArgon2(
     perfilActual: PerfilArgon2,
     alSeleccionarPerfil: (PerfilArgon2) -> Unit
 ) {

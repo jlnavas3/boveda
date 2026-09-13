@@ -196,7 +196,7 @@ class VaultViewModel(app: Application) : AndroidViewModel(app), VaultAjustesDele
                 withContext(Dispatchers.Default) {
                     repositorio.reForjarBovedaConPerfil(chars, nuevoPerfil)
                 }
-                Diagnostico.apuntar("bóveda", "Bóveda re-forjada con perfil ${nuevoPerfil.titulo}")
+                Diagnostico.apuntar("bóveda", "Bóveda re-forjada con perfil ${nuevoPerfil.titulo} (${nuevoPerfil.memoriaKiB / 1024} MiB RAM, ${nuevoPerfil.iteraciones} pasadas, ${nuevoPerfil.paralelismo} hilos)")
                 registrarInteraccion()
                 avisar("Bóveda re-cifrada con perfil ${nuevoPerfil.titulo}")
                 alTerminar(true)
