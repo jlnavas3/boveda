@@ -41,6 +41,7 @@ import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.SeccionAvanzada
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.SeccionCamara
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.SeccionCopiaSeguridad
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.SeccionCsvGoogle
+import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.SeccionFormatosCampos
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.SeccionSeguridad
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.SeccionTileRapido
 import com.jlnavas3.bovedalocal.util.Biometria
@@ -238,6 +239,14 @@ fun PantallaAjustes(vm: VaultViewModel, actividad: FragmentActivity) {
         Spacer(Modifier.height(16.dp))
 
         SeccionApariencia(
+            vm = vm,
+            ajustes = ajustes,
+            haptica = haptica
+        )
+
+        Spacer(Modifier.height(16.dp))
+
+        SeccionFormatosCampos(
             vm = vm,
             ajustes = ajustes,
             haptica = haptica

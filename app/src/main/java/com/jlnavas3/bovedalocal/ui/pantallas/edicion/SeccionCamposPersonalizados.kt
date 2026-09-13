@@ -13,6 +13,15 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import android.app.DatePickerDialog
+import android.app.TimePickerDialog
+import java.util.Calendar
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.material.icons.filled.CalendarToday
+import androidx.compose.material.icons.filled.Schedule
+import androidx.compose.ui.text.input.KeyboardType
+import com.jlnavas3.bovedalocal.data.AjustesApp
+import com.jlnavas3.bovedalocal.util.FormateadorCampos
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
@@ -68,11 +77,38 @@ fun TarjetaCampoPersonalizadoEdicion(
     numero: Int,
     campo: CampoPersonalizado,
     alModificar: (CampoPersonalizado) -> Unit,
-    alEliminar: () -> Unit
+    alEliminar: () -> Unit,
+    ajustes: AjustesApp = AjustesApp()
 ) {
+    val contexto = LocalContext.current
     var mostrarValor by remember { mutableStateOf(false) }
     val esSensible = campo.esSensibleEfectivo
 
+    fun abrirSelectorFecha() {
+        val parseado = FormateadorCampos.parsearFecha(campo.valor, ajustes.formatoFecha)
+        val cal = Calendar.getInstance()
+        val y = parseado?.first ?: cal.get(Calendar.YEAR)
+        val m = parseado?.second ?: cal.get(Calendar.MONTH)
+        val d = parseado?.third ?: cal.get(Calendar.DAY_OF_MONTH)
+
+        DatePickerDialog(contexto, { _, anio, mes, dia ->
+            val fechaFormateada = FormateadorCampos.formatearFecha(anio, mes, dia, ajustes.formatoFecha)
+            alModificar(campo.copy(valor = fechaFormateada))
+        }, y, m, d).show()
+    }
+
+    fun abrirSelectorHora() {
+        val parseado = FormateadorCampos.parsearHora(campo.valor, ajustes.formatoHora)
+        val cal = Calendar.getInstance()
+        val h = parseado?.first ?: cal.get(Calendar.HOUR_OF_DAY)
+        val min = parseado?.second ?: cal.get(Calendar.MINUTE)
+        val es24h = ajustes.formatoHora == FormateadorCampos.HORA_24H
+
+        TimePickerDialog(contexto, { _, hora, minuto ->
+            val horaFormateada = FormateadorCampos.formatearHora(hora, minuto, ajustes.formatoHora)
+            alModificar(campo.copy(valor = horaFormateada))
+        }, h, min, es24h).show()
+    }
 
     Column(
         modifier = Modifier
@@ -166,51 +202,145 @@ fun TarjetaCampoPersonalizadoEdicion(
 
         Spacer(Modifier.height(8.dp))
 
-        // Valor del campo
-        if (campo.tipo == TipoCampo.NOTAS) {
-            OutlinedTextField(
-                value = campo.valor,
-                onValueChange = { alModificar(campo.copy(valor = it)) },
-                label = { Text("Notas / Contenido", color = TextoSecundario) },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(110.dp),
-                shape = FormaBoton,
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = ColorTitulos,
-                    unfocusedBorderColor = ColorBordeActual,
-                    focusedTextColor = TextoPrincipal,
-                    unfocusedTextColor = TextoPrincipal,
-                    focusedContainerColor = SuperficieAlta,
-                    unfocusedContainerColor = SuperficieAlta
-                ),
-                textStyle = TextStyle(
-                    fontSize = 15.sp,
-                    fontFamily = if (esSensible && !mostrarValor) FontFamily.Monospace else FontFamily.Default
-                ),
-                visualTransformation = if (esSensible && !mostrarValor) PasswordVisualTransformation() else VisualTransformation.None,
-                trailingIcon = if (esSensible) {
-                    {
-                        IconButton(onClick = { mostrarValor = !mostrarValor }) {
+        // Valor del campo según su tipo específico
+        when (campo.tipo) {
+            TipoCampo.NOTAS -> {
+                OutlinedTextField(
+                    value = campo.valor,
+                    onValueChange = { alModificar(campo.copy(valor = it)) },
+                    label = { Text("Notas / Contenido", color = TextoSecundario) },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(110.dp),
+                    shape = FormaBoton,
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = ColorTitulos,
+                        unfocusedBorderColor = ColorBordeActual,
+                        focusedTextColor = TextoPrincipal,
+                        unfocusedTextColor = TextoPrincipal,
+                        focusedContainerColor = SuperficieAlta,
+                        unfocusedContainerColor = SuperficieAlta
+                    ),
+                    textStyle = TextStyle(
+                        fontSize = 15.sp,
+                        fontFamily = if (esSensible && !mostrarValor) FontFamily.Monospace else FontFamily.Default
+                    ),
+                    visualTransformation = if (esSensible && !mostrarValor) PasswordVisualTransformation() else VisualTransformation.None,
+                    trailingIcon = if (esSensible) {
+                        {
+                            IconButton(onClick = { mostrarValor = !mostrarValor }) {
+                                Icon(
+                                    imageVector = if (mostrarValor) Icons.Filled.VisibilityOff else Icons.Filled.Visibility,
+                                    contentDescription = if (mostrarValor) "Ocultar" else "Mostrar",
+                                    tint = ColorIconosInternos
+                                )
+                            }
+                        }
+                    } else null
+                )
+            }
+            TipoCampo.FECHA -> {
+                CampoPepo(
+                    valor = campo.valor,
+                    etiqueta = "Fecha (${ajustes.formatoFecha})",
+                    alCambiar = {},
+                    readOnly = true,
+                    trailingIcon = {
+                        IconButton(onClick = { abrirSelectorFecha() }) {
                             Icon(
-                                imageVector = if (mostrarValor) Icons.Filled.VisibilityOff else Icons.Filled.Visibility,
-                                contentDescription = if (mostrarValor) "Ocultar" else "Mostrar",
+                                imageVector = Icons.Filled.CalendarToday,
+                                contentDescription = "Elegir fecha",
                                 tint = ColorIconosInternos
                             )
                         }
-                    }
-                } else null
-            )
-        } else {
-            CampoPepo(
-                valor = campo.valor,
-                etiqueta = if (campo.tipo == TipoCampo.PIN) "Valor del PIN" else "Valor del campo",
-                alCambiar = { alModificar(campo.copy(valor = it)) },
-                esContrasena = esSensible,
-                mostrarContrasena = mostrarValor,
-                alAlternarMostrarContrasena = if (esSensible) { { mostrarValor = !mostrarValor } } else null,
-                tecladoNumerico = campo.tipo == TipoCampo.NUMERO || campo.tipo == TipoCampo.PIN
-            )
+                    },
+                    alPulsar = { abrirSelectorFecha() }
+                )
+            }
+            TipoCampo.HORA -> {
+                CampoPepo(
+                    valor = campo.valor,
+                    etiqueta = "Hora (${ajustes.formatoHora})",
+                    alCambiar = {},
+                    readOnly = true,
+                    trailingIcon = {
+                        IconButton(onClick = { abrirSelectorHora() }) {
+                            Icon(
+                                imageVector = Icons.Filled.Schedule,
+                                contentDescription = "Elegir hora",
+                                tint = ColorIconosInternos
+                            )
+                        }
+                    },
+                    alPulsar = { abrirSelectorHora() }
+                )
+            }
+            TipoCampo.TELEFONO -> {
+                CampoPepo(
+                    valor = campo.valor,
+                    etiqueta = "Teléfono",
+                    alCambiar = { raw ->
+                        val formateado = FormateadorCampos.aplicarMascaraTelefono(raw, ajustes.formatoTelefono)
+                        alModificar(campo.copy(valor = formateado))
+                    },
+                    keyboardType = KeyboardType.Phone,
+                    monoespaciada = true
+                )
+            }
+            TipoCampo.NUMERO, TipoCampo.PIN -> {
+                CampoPepo(
+                    valor = campo.valor,
+                    etiqueta = if (campo.tipo == TipoCampo.PIN) "PIN (solo números)" else "Número entero",
+                    alCambiar = { raw ->
+                        val sanitizado = FormateadorCampos.sanitizarNumero(raw)
+                        alModificar(campo.copy(valor = sanitizado))
+                    },
+                    esContrasena = esSensible,
+                    mostrarContrasena = mostrarValor,
+                    alAlternarMostrarContrasena = if (esSensible) { { mostrarValor = !mostrarValor } } else null,
+                    tecladoNumerico = true,
+                    keyboardType = if (esSensible) KeyboardType.NumberPassword else KeyboardType.Number,
+                    monoespaciada = true
+                )
+            }
+            TipoCampo.DECIMAL -> {
+                CampoPepo(
+                    valor = campo.valor,
+                    etiqueta = "Número decimal (separador '${ajustes.separadorDecimal}')",
+                    alCambiar = { raw ->
+                        val sanitizado = FormateadorCampos.sanitizarDecimal(raw, ajustes.separadorDecimal)
+                        alModificar(campo.copy(valor = sanitizado))
+                    },
+                    keyboardType = KeyboardType.Decimal,
+                    monoespaciada = true
+                )
+            }
+            TipoCampo.EMAIL -> {
+                CampoPepo(
+                    valor = campo.valor,
+                    etiqueta = "Correo electrónico",
+                    alCambiar = { alModificar(campo.copy(valor = it)) },
+                    keyboardType = KeyboardType.Email
+                )
+            }
+            TipoCampo.URL -> {
+                CampoPepo(
+                    valor = campo.valor,
+                    etiqueta = "Dirección web (URL)",
+                    alCambiar = { alModificar(campo.copy(valor = it)) },
+                    keyboardType = KeyboardType.Uri
+                )
+            }
+            else -> {
+                CampoPepo(
+                    valor = campo.valor,
+                    etiqueta = "Valor del campo",
+                    alCambiar = { alModificar(campo.copy(valor = it)) },
+                    esContrasena = esSensible,
+                    mostrarContrasena = mostrarValor,
+                    alAlternarMostrarContrasena = if (esSensible) { { mostrarValor = !mostrarValor } } else null
+                )
+            }
         }
 
         // Toggle rápido de sensibilidad
@@ -243,6 +373,7 @@ fun SeccionCamposPersonalizados(
     camposPersonalizados: List<CampoPersonalizado>,
     alCambiarCampos: (List<CampoPersonalizado>) -> Unit,
     etiquetasBase: Set<String> = emptySet(),
+    ajustes: AjustesApp = AjustesApp(),
     haptica: Haptica
 ) {
     var mostrandoDialogoNuevoCampo by remember { mutableStateOf(false) }
@@ -274,7 +405,8 @@ fun SeccionCamposPersonalizados(
                 alEliminar = {
                     haptica.tic()
                     alCambiarCampos(camposPersonalizados.filterNot { it.id == campo.id })
-                }
+                },
+                ajustes = ajustes
             )
             Spacer(Modifier.height(10.dp))
         }

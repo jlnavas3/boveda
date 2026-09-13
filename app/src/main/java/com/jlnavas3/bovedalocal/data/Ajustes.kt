@@ -96,7 +96,11 @@ data class AjustesApp(
     val indiceTonoLetras: Float = 80f,
     val indiceIncluirEnie: Boolean = true,
     val indiceResaltarEntradas: Boolean = true,
-    val indiceResaltarSoloPrimera: Boolean = true
+    val indiceResaltarSoloPrimera: Boolean = true,
+    val formatoFecha: String = "DD/MM/AAAA",
+    val formatoHora: String = "24h",
+    val formatoTelefono: String = "### ### ####",
+    val separadorDecimal: String = "."
 )
 
 
@@ -213,7 +217,11 @@ class AlmacenAjustes(contexto: Context) {
             indiceTonoLetras = prefs.getFloat("indice_tono_letras", 80f),
             indiceIncluirEnie = prefs.getBoolean("indice_incluir_enie", true),
             indiceResaltarEntradas = prefs.getBoolean("indice_resaltar_entradas", true),
-            indiceResaltarSoloPrimera = prefs.getBoolean("indice_resaltar_solo_primera", true)
+            indiceResaltarSoloPrimera = prefs.getBoolean("indice_resaltar_solo_primera", true),
+            formatoFecha = prefs.getString("formato_fecha", "DD/MM/AAAA") ?: "DD/MM/AAAA",
+            formatoHora = prefs.getString("formato_hora", "24h") ?: "24h",
+            formatoTelefono = prefs.getString("formato_telefono", "### ### ####") ?: "### ### ####",
+            separadorDecimal = prefs.getString("separador_decimal", ".") ?: "."
         )
     }
 
@@ -284,6 +292,10 @@ class AlmacenAjustes(contexto: Context) {
             .putBoolean("indice_incluir_enie", nuevo.indiceIncluirEnie)
             .putBoolean("indice_resaltar_entradas", nuevo.indiceResaltarEntradas)
             .putBoolean("indice_resaltar_solo_primera", nuevo.indiceResaltarSoloPrimera)
+            .putString("formato_fecha", nuevo.formatoFecha)
+            .putString("formato_hora", nuevo.formatoHora)
+            .putString("formato_telefono", nuevo.formatoTelefono)
+            .putString("separador_decimal", nuevo.separadorDecimal)
             .apply()
         _ajustes.value = nuevo
     }

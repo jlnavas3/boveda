@@ -26,6 +26,7 @@ sealed interface Pantalla {
     object Papelera : Pantalla
     object KitEmergencia : Pantalla
     object AjustesSenuelo : Pantalla
+    object FormatosCampos : Pantalla
 }
 
 enum class CriterioOrdenacion(val etiqueta: String) {

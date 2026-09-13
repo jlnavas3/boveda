@@ -204,7 +204,8 @@ fun PantallaEdicion(vm: VaultViewModel, id: String?, contrasenaInicial: String) 
             TipoEntrada.IDENTIDAD -> {
                 FormularioEdicionIdentidad(
                     campos = camposPersonalizados,
-                    alCambiarCampos = { camposPersonalizados = it }
+                    alCambiarCampos = { camposPersonalizados = it },
+                    ajustes = ajustes
                 )
                 Spacer(Modifier.height(14.dp))
             }
@@ -235,6 +236,7 @@ fun PantallaEdicion(vm: VaultViewModel, id: String?, contrasenaInicial: String) 
             camposPersonalizados = camposPersonalizados,
             alCambiarCampos = { camposPersonalizados = it },
             etiquetasBase = etiquetasBase,
+            ajustes = ajustes,
             haptica = haptica
         )
         Spacer(Modifier.height(16.dp))

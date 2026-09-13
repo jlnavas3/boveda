@@ -345,4 +345,24 @@ interface VaultAjustesDelegate {
             )
         }
     }
+
+    fun ajustarFormatoFecha(formato: String) {
+        repositorio.ajustes.actualizar { it.copy(formatoFecha = formato) }
+        Diagnostico.apuntar("formatos", "Formato de fecha establecido en $formato")
+    }
+
+    fun ajustarFormatoHora(formato: String) {
+        repositorio.ajustes.actualizar { it.copy(formatoHora = formato) }
+        Diagnostico.apuntar("formatos", "Formato de hora establecido en $formato")
+    }
+
+    fun ajustarFormatoTelefono(formato: String) {
+        repositorio.ajustes.actualizar { it.copy(formatoTelefono = formato) }
+        Diagnostico.apuntar("formatos", "Formato de teléfono establecido en $formato")
+    }
+
+    fun ajustarSeparadorDecimal(separador: String) {
+        repositorio.ajustes.actualizar { it.copy(separadorDecimal = separador) }
+        Diagnostico.apuntar("formatos", "Separador decimal establecido en $separador")
+    }
 }

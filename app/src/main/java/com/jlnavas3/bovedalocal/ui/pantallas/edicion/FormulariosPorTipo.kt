@@ -13,6 +13,16 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import android.app.DatePickerDialog
+import java.util.Calendar
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CalendarToday
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import com.jlnavas3.bovedalocal.data.AjustesApp
+import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
+import com.jlnavas3.bovedalocal.util.FormateadorCampos
 import com.jlnavas3.bovedalocal.data.CampoPersonalizado
 import com.jlnavas3.bovedalocal.data.TipoCampo
 import com.jlnavas3.bovedalocal.data.TipoEntrada
@@ -91,8 +101,9 @@ fun FormularioEdicionTarjeta(
         CampoPepo(
             valor = numero,
             etiqueta = "Número de tarjeta",
-            alCambiar = {
-                alCambiarCampos(GestorCamposBase.actualizarValor(campos, "Número de tarjeta", it, TipoCampo.TEXTO, sensible = true, formato = "TARJETA_CREDITO"))
+            alCambiar = { raw ->
+                val sanitizado = raw.filter { it.isDigit() || it == ' ' }
+                alCambiarCampos(GestorCamposBase.actualizarValor(campos, "Número de tarjeta", sanitizado, TipoCampo.TEXTO, sensible = true, formato = "TARJETA_CREDITO"))
             },
             esContrasena = true,
             mostrarContrasena = mostrarNumero,
@@ -108,17 +119,20 @@ fun FormularioEdicionTarjeta(
             CampoPepo(
                 valor = vencimiento,
                 etiqueta = "Vencimiento (MM/AA)",
-                alCambiar = {
-                    alCambiarCampos(GestorCamposBase.actualizarValor(campos, "Vencimiento", it, TipoCampo.FECHA, formato = "MM/AA"))
+                alCambiar = { raw ->
+                    val sanitizado = raw.filter { it.isDigit() || it == '/' }.take(5)
+                    alCambiarCampos(GestorCamposBase.actualizarValor(campos, "Vencimiento", sanitizado, TipoCampo.FECHA, formato = "MM/AA"))
                 },
-                modifier = Modifier.weight(1f)
+                modifier = Modifier.weight(1f),
+                tecladoNumerico = true
             )
 
             CampoPepo(
                 valor = cvv,
                 etiqueta = "CVV / CVC",
-                alCambiar = {
-                    alCambiarCampos(GestorCamposBase.actualizarValor(campos, "CVV", it, TipoCampo.NUMERO, sensible = true))
+                alCambiar = { raw ->
+                    val sanitizado = raw.filter { it.isDigit() }.take(4)
+                    alCambiarCampos(GestorCamposBase.actualizarValor(campos, "CVV", sanitizado, TipoCampo.NUMERO, sensible = true))
                 },
                 esContrasena = true,
                 mostrarContrasena = mostrarCvv,
@@ -132,8 +146,9 @@ fun FormularioEdicionTarjeta(
         CampoPepo(
             valor = pin,
             etiqueta = "PIN del cajero (opcional)",
-            alCambiar = {
-                alCambiarCampos(GestorCamposBase.actualizarValor(campos, "PIN de tarjeta", it, TipoCampo.PIN, sensible = true))
+            alCambiar = { raw ->
+                val sanitizado = raw.filter { it.isDigit() }.take(12)
+                alCambiarCampos(GestorCamposBase.actualizarValor(campos, "PIN de tarjeta", sanitizado, TipoCampo.PIN, sensible = true))
             },
             esContrasena = true,
             mostrarContrasena = mostrarPin,
@@ -247,8 +262,10 @@ fun FormularioEdicionCuentaBancaria(
 @Composable
 fun FormularioEdicionIdentidad(
     campos: List<CampoPersonalizado>,
-    alCambiarCampos: (List<CampoPersonalizado>) -> Unit
+    alCambiarCampos: (List<CampoPersonalizado>) -> Unit,
+    ajustes: AjustesApp = AjustesApp()
 ) {
+    val contexto = LocalContext.current
     var mostrarDoc by remember { mutableStateOf(false) }
 
     val tipoDoc = GestorCamposBase.valorDeCampo(campos, "Tipo de documento")
@@ -257,6 +274,19 @@ fun FormularioEdicionIdentidad(
     val expedicion = GestorCamposBase.valorDeCampo(campos, "Expedición")
     val caducidad = GestorCamposBase.valorDeCampo(campos, "Caducidad")
     val pais = GestorCamposBase.valorDeCampo(campos, "País emisor")
+
+    fun abrirSelectorFecha(clave: String, valorActual: String) {
+        val parseado = FormateadorCampos.parsearFecha(valorActual, ajustes.formatoFecha)
+        val cal = Calendar.getInstance()
+        val y = parseado?.first ?: cal.get(Calendar.YEAR)
+        val m = parseado?.second ?: cal.get(Calendar.MONTH)
+        val d = parseado?.third ?: cal.get(Calendar.DAY_OF_MONTH)
+
+        DatePickerDialog(contexto, { _, anio, mes, dia ->
+            val fechaFormateada = FormateadorCampos.formatearFecha(anio, mes, dia, ajustes.formatoFecha)
+            alCambiarCampos(GestorCamposBase.actualizarValor(campos, clave, fechaFormateada, TipoCampo.FECHA))
+        }, y, m, d).show()
+    }
 
     EtiquetaSeccion("Documento de identidad")
     Spacer(Modifier.height(8.dp))
@@ -296,19 +326,37 @@ fun FormularioEdicionIdentidad(
         ) {
             CampoPepo(
                 valor = expedicion,
-                etiqueta = "Expedición",
-                alCambiar = {
-                    alCambiarCampos(GestorCamposBase.actualizarValor(campos, "Expedición", it, TipoCampo.FECHA))
+                etiqueta = "Expedición (${ajustes.formatoFecha})",
+                alCambiar = {},
+                readOnly = true,
+                trailingIcon = {
+                    IconButton(onClick = { abrirSelectorFecha("Expedición", expedicion) }) {
+                        Icon(
+                            imageVector = Icons.Filled.CalendarToday,
+                            contentDescription = "Elegir fecha",
+                            tint = ColorIconosInternos
+                        )
+                    }
                 },
+                alPulsar = { abrirSelectorFecha("Expedición", expedicion) },
                 modifier = Modifier.weight(1f)
             )
 
             CampoPepo(
                 valor = caducidad,
-                etiqueta = "Caducidad",
-                alCambiar = {
-                    alCambiarCampos(GestorCamposBase.actualizarValor(campos, "Caducidad", it, TipoCampo.FECHA))
+                etiqueta = "Caducidad (${ajustes.formatoFecha})",
+                alCambiar = {},
+                readOnly = true,
+                trailingIcon = {
+                    IconButton(onClick = { abrirSelectorFecha("Caducidad", caducidad) }) {
+                        Icon(
+                            imageVector = Icons.Filled.CalendarToday,
+                            contentDescription = "Elegir fecha",
+                            tint = ColorIconosInternos
+                        )
+                    }
                 },
+                alPulsar = { abrirSelectorFecha("Caducidad", caducidad) },
                 modifier = Modifier.weight(1f)
             )
         }
@@ -355,8 +403,9 @@ fun FormularioEdicionServidor(
             CampoPepo(
                 valor = puerto,
                 etiqueta = "Puerto",
-                alCambiar = {
-                    alCambiarCampos(GestorCamposBase.actualizarValor(campos, "Puerto", it, TipoCampo.NUMERO))
+                alCambiar = { raw ->
+                    val sanitizado = raw.filter { it.isDigit() }.take(5)
+                    alCambiarCampos(GestorCamposBase.actualizarValor(campos, "Puerto", sanitizado, TipoCampo.NUMERO))
                 },
                 tecladoNumerico = true,
                 modifier = Modifier.weight(1f)

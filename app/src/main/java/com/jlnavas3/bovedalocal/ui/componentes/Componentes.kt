@@ -424,54 +424,77 @@ fun CampoPepo(
     alAlternarMostrarContrasena: (() -> Unit)? = null,
     monoespaciada: Boolean = false,
     varias: Boolean = false,
-    tecladoNumerico: Boolean = false
+    tecladoNumerico: Boolean = false,
+    keyboardType: KeyboardType? = null,
+    readOnly: Boolean = false,
+    trailingIcon: (@Composable () -> Unit)? = null,
+    alPulsar: (() -> Unit)? = null
 ) {
     val forma = FormaCampo
-    OutlinedTextField(
-        value = valor,
-        onValueChange = alCambiar,
-        label = { Text(etiqueta) },
-        modifier = modifier.fillMaxWidth(),
-        singleLine = !varias,
-        minLines = if (varias) 3 else 1,
-        textStyle = if (monoespaciada) {
-            MaterialTheme.typography.bodyLarge.copy(fontFamily = androidx.compose.ui.text.font.FontFamily.Monospace)
-        } else {
-            MaterialTheme.typography.bodyLarge
-        },
-        visualTransformation = if (esContrasena && !mostrarContrasena) PasswordVisualTransformation() else VisualTransformation.None,
-        trailingIcon = if (esContrasena && alAlternarMostrarContrasena != null) {
-            {
-                IconButton(onClick = alAlternarMostrarContrasena) {
-                    Icon(
-                        imageVector = if (mostrarContrasena) Icons.Filled.VisibilityOff else Icons.Filled.Visibility,
-                        contentDescription = if (mostrarContrasena) "Ocultar contraseña" else "Mostrar contraseña",
-                        tint = TextoSecundario,
-                        modifier = Modifier.size(26.dp)
-                    )
+    val iconoFinal = trailingIcon ?: if (esContrasena && alAlternarMostrarContrasena != null) {
+        {
+            IconButton(onClick = alAlternarMostrarContrasena) {
+                Icon(
+                    imageVector = if (mostrarContrasena) Icons.Filled.VisibilityOff else Icons.Filled.Visibility,
+                    contentDescription = if (mostrarContrasena) "Ocultar contraseña" else "Mostrar contraseña",
+                    tint = TextoSecundario,
+                    modifier = Modifier.size(26.dp)
+                )
+            }
+        }
+    } else null
+
+    val campoTexto = @Composable {
+        OutlinedTextField(
+            value = valor,
+            onValueChange = alCambiar,
+            label = { Text(etiqueta) },
+            modifier = modifier.fillMaxWidth(),
+            readOnly = readOnly,
+            singleLine = !varias,
+            minLines = if (varias) 3 else 1,
+            textStyle = if (monoespaciada) {
+                MaterialTheme.typography.bodyLarge.copy(fontFamily = androidx.compose.ui.text.font.FontFamily.Monospace)
+            } else {
+                MaterialTheme.typography.bodyLarge
+            },
+            visualTransformation = if (esContrasena && !mostrarContrasena) PasswordVisualTransformation() else VisualTransformation.None,
+            trailingIcon = iconoFinal,
+            keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(
+                keyboardType = keyboardType ?: when {
+                    tecladoNumerico -> KeyboardType.Number
+                    esContrasena -> KeyboardType.Password
+                    else -> KeyboardType.Text
                 }
-            }
-        } else null,
-        keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(
-            keyboardType = when {
-                tecladoNumerico -> KeyboardType.Number
-                esContrasena -> KeyboardType.Password
-                else -> KeyboardType.Text
-            }
-        ),
-        shape = forma,
-        colors = TextFieldDefaults.colors(
-            focusedContainerColor = Superficie,
-            unfocusedContainerColor = Superficie,
-            focusedIndicatorColor = Ambar,
-            unfocusedIndicatorColor = if (GrosorBorde > 0.dp) ColorBordeActual else Color.Transparent,
-            focusedLabelColor = Ambar,
-            unfocusedLabelColor = TextoSecundario,
-            cursorColor = Ambar,
-            focusedTextColor = TextoPrincipal,
-            unfocusedTextColor = TextoPrincipal
+            ),
+            shape = forma,
+            colors = TextFieldDefaults.colors(
+                focusedContainerColor = Superficie,
+                unfocusedContainerColor = Superficie,
+                focusedIndicatorColor = Ambar,
+                unfocusedIndicatorColor = if (GrosorBorde > 0.dp) ColorBordeActual else Color.Transparent,
+                focusedLabelColor = Ambar,
+                unfocusedLabelColor = TextoSecundario,
+                cursorColor = Ambar,
+                focusedTextColor = TextoPrincipal,
+                unfocusedTextColor = TextoPrincipal
+            )
         )
-    )
+    }
+
+    if (alPulsar != null) {
+        Box(modifier = modifier.fillMaxWidth()) {
+            campoTexto()
+            Box(
+                modifier = Modifier
+                    .matchParentSize()
+                    .clip(forma)
+                    .clickable { alPulsar() }
+            )
+        }
+    } else {
+        campoTexto()
+    }
 }
 
 @Composable
