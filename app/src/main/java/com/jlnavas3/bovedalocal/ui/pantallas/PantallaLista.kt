@@ -326,14 +326,19 @@ fun PantallaLista(vm: VaultViewModel, estado: EstadoBoveda) {
                     SelectorFiltros(
                         filtro = filtro,
                         soloFavoritos = soloFavoritos,
+                        alSeleccionarTipo = { tipo ->
+                            haptica.tic()
+                            vm.filtrarPorTipo(if (filtro == tipo) null else tipo)
+                        },
+                        alFavoritos = {
+                            haptica.tic()
+                            vm.alternarSoloFavoritos()
+                        },
                         alTodo = {
+                            haptica.tic()
                             vm.filtrarPorTipo(null)
                             if (soloFavoritos) vm.alternarSoloFavoritos()
-                        },
-                        alClaves = { vm.filtrarPorTipo(if (filtro == TipoEntrada.LOGIN) null else TipoEntrada.LOGIN) },
-                        alPasskeys = { vm.filtrarPorTipo(if (filtro == TipoEntrada.PASSKEY) null else TipoEntrada.PASSKEY) },
-                        alNotas = { vm.filtrarPorTipo(if (filtro == TipoEntrada.NOTA) null else TipoEntrada.NOTA) },
-                        alFavoritos = { vm.alternarSoloFavoritos() }
+                        }
                     )
                 }
                 SelectorOrdenacion(

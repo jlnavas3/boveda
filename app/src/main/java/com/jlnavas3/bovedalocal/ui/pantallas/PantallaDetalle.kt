@@ -81,6 +81,7 @@ import com.jlnavas3.bovedalocal.ui.theme.Menta
 import com.jlnavas3.bovedalocal.ui.theme.Peligro
 import com.jlnavas3.bovedalocal.ui.theme.TextoPrincipal
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
+import com.jlnavas3.bovedalocal.util.Diagnostico
 import com.jlnavas3.bovedalocal.util.Haptica
 import kotlinx.coroutines.delay
 
@@ -103,6 +104,18 @@ fun PantallaDetalle(vm: VaultViewModel, id: String) {
             BotonColorido("Volver", color = ColorAcento) { vm.volverAtras() }
         }
         return
+    }
+
+    LaunchedEffect(entrada.id) {
+        val tipoDesc = entrada.tipo.etiqueta.lowercase()
+        Diagnostico.apuntar("bóveda", "Detalle de entrada consultado ($tipoDesc)")
+    }
+
+    LaunchedEffect(revelada) {
+        if (revelada) {
+            val tipoDesc = entrada.tipo.etiqueta.lowercase()
+            Diagnostico.apuntar("seguridad", "Contraseña revelada en pantalla ($tipoDesc)")
+        }
     }
 
     LaunchedEffect(ultimaCopia) {

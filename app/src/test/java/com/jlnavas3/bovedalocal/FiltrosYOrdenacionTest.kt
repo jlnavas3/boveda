@@ -55,16 +55,28 @@ class FiltrosYOrdenacionTest {
     }
 
     @Test
-    fun `filtra por tipo de entrada LOGIN PASSKEY NOTA`() {
+    fun `filtra por todos los tipos de entrada nativos`() {
         val eLogin = Entrada("1", tipo = TipoEntrada.LOGIN, titulo = "Login", contrasena = "123")
         val ePasskey = Entrada("2", tipo = TipoEntrada.PASSKEY, titulo = "Passkey", passkey = DatosPasskey("paypal.com", "PayPal", "user", "id", "key"))
-        val eNota = Entrada("3", tipo = TipoEntrada.NOTA, titulo = "Nota", contrasena = "", passkey = null)
+        val eNota = Entrada("3", tipo = TipoEntrada.NOTA, titulo = "Nota")
+        val eTarjeta = Entrada("4", tipo = TipoEntrada.TARJETA, titulo = "Visa Oro")
+        val eWifi = Entrada("5", tipo = TipoEntrada.WIFI, titulo = "MiFibra_5G")
+        val eCuenta = Entrada("6", tipo = TipoEntrada.CUENTA_BANCARIA, titulo = "Cuenta Ahorro")
+        val eId = Entrada("7", tipo = TipoEntrada.IDENTIDAD, titulo = "DNI")
+        val eServ = Entrada("8", tipo = TipoEntrada.SERVIDOR, titulo = "VPS Ubuntu")
+        val eWallet = Entrada("9", tipo = TipoEntrada.WALLET, titulo = "Metamask")
 
-        val lista = listOf(eLogin, ePasskey, eNota)
+        val lista = listOf(eLogin, ePasskey, eNota, eTarjeta, eWifi, eCuenta, eId, eServ, eWallet)
 
         assertEquals(listOf(eLogin), filtrarYOrdenar(lista, filtroTipo = TipoEntrada.LOGIN))
         assertEquals(listOf(ePasskey), filtrarYOrdenar(lista, filtroTipo = TipoEntrada.PASSKEY))
         assertEquals(listOf(eNota), filtrarYOrdenar(lista, filtroTipo = TipoEntrada.NOTA))
+        assertEquals(listOf(eTarjeta), filtrarYOrdenar(lista, filtroTipo = TipoEntrada.TARJETA))
+        assertEquals(listOf(eWifi), filtrarYOrdenar(lista, filtroTipo = TipoEntrada.WIFI))
+        assertEquals(listOf(eCuenta), filtrarYOrdenar(lista, filtroTipo = TipoEntrada.CUENTA_BANCARIA))
+        assertEquals(listOf(eId), filtrarYOrdenar(lista, filtroTipo = TipoEntrada.IDENTIDAD))
+        assertEquals(listOf(eServ), filtrarYOrdenar(lista, filtroTipo = TipoEntrada.SERVIDOR))
+        assertEquals(listOf(eWallet), filtrarYOrdenar(lista, filtroTipo = TipoEntrada.WALLET))
     }
 
     @Test

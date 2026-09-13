@@ -327,7 +327,11 @@ class VaultViewModel(app: Application) : AndroidViewModel(app), VaultAjustesDele
             if (existente == null) {
                 Diagnostico.apuntar("bóveda", "Nueva entrada creada ($tipoDesc)")
             } else {
-                Diagnostico.apuntar("bóveda", "Entrada modificada ($tipoDesc)")
+                if (existente.tipo != entrada.tipo) {
+                    Diagnostico.apuntar("bóveda", "Entrada modificada (${existente.tipo.etiqueta.lowercase()} -> $tipoDesc)")
+                } else {
+                    Diagnostico.apuntar("bóveda", "Entrada modificada ($tipoDesc)")
+                }
             }
             _aviso.value = "Guardado en la bóveda"
         }
@@ -336,11 +340,7 @@ class VaultViewModel(app: Application) : AndroidViewModel(app), VaultAjustesDele
     fun eliminar(id: String) {
         ejecutar {
             val ent = withContext(Dispatchers.IO) { repositorio.entrada(id) }
-            val tipoDesc = when (ent?.tipo) {
-                TipoEntrada.NOTA -> "nota segura"
-                TipoEntrada.PASSKEY -> "passkey"
-                else -> "credencial"
-            }
+            val tipoDesc = ent?.tipo?.etiqueta?.lowercase() ?: "entrada"
             withContext(Dispatchers.IO) { repositorio.eliminarEntrada(id) }
             Diagnostico.apuntar("papelera", "Entrada ($tipoDesc) enviada a la papelera")
             irRaiz(Pantalla.Lista)
@@ -361,16 +361,20 @@ class VaultViewModel(app: Application) : AndroidViewModel(app), VaultAjustesDele
 
     fun restaurarDeLaPapelera(id: String) {
         ejecutar {
+            val ent = withContext(Dispatchers.IO) { repositorio.entrada(id) }
+            val tipoDesc = ent?.tipo?.etiqueta?.lowercase() ?: "entrada"
             withContext(Dispatchers.IO) { repositorio.restaurarDeLaPapelera(id) }
-            Diagnostico.apuntar("papelera", "Entrada restaurada desde la papelera a la bóveda")
+            Diagnostico.apuntar("papelera", "Entrada ($tipoDesc) restaurada desde la papelera a la bóveda")
             _aviso.value = "Entrada restaurada"
         }
     }
 
     fun borrarDefinitivamente(id: String) {
         ejecutar {
+            val ent = withContext(Dispatchers.IO) { repositorio.entrada(id) }
+            val tipoDesc = ent?.tipo?.etiqueta?.lowercase() ?: "entrada"
             withContext(Dispatchers.IO) { repositorio.borrarDefinitivamente(id) }
-            Diagnostico.apuntar("papelera", "Entrada eliminada definitivamente de la papelera")
+            Diagnostico.apuntar("papelera", "Entrada ($tipoDesc) eliminada definitivamente de la papelera")
             _aviso.value = "Borrada para siempre"
         }
     }
