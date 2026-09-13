@@ -7,8 +7,11 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -16,8 +19,22 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.Shield
+import androidx.compose.material.icons.filled.VerifiedUser
+import androidx.compose.material.icons.filled.VpnKey
+import androidx.compose.material.icons.filled.WifiOff
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -29,10 +46,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.fragment.app.FragmentActivity
 import com.jlnavas3.bovedalocal.ui.VaultViewModel
 import com.jlnavas3.bovedalocal.ui.componentes.BarraFuerza
@@ -40,9 +61,10 @@ import com.jlnavas3.bovedalocal.ui.componentes.BarraProgresoForja
 import com.jlnavas3.bovedalocal.ui.componentes.BotonAmbar
 import com.jlnavas3.bovedalocal.ui.componentes.BotonBorde
 import com.jlnavas3.bovedalocal.ui.componentes.CampoBoveda
+import com.jlnavas3.bovedalocal.ui.componentes.ContenedorTarjeta
 import com.jlnavas3.bovedalocal.ui.componentes.PuertaBoveda
-import com.jlnavas3.bovedalocal.ui.componentes.TarjetaBoveda
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
+import com.jlnavas3.bovedalocal.ui.theme.ColorSeguridad
 import com.jlnavas3.bovedalocal.ui.theme.ColorTitulos
 import com.jlnavas3.bovedalocal.ui.theme.Menta
 import com.jlnavas3.bovedalocal.ui.theme.TextoPrincipal
@@ -72,38 +94,167 @@ fun PantallaOnboarding(vm: VaultViewModel, actividad: FragmentActivity) {
                 modifier = Modifier
                     .fillMaxSize()
                     .verticalScroll(rememberScrollState())
-                    .padding(24.dp),
+                    .padding(horizontal = 24.dp, vertical = 28.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
+                verticalArrangement = Arrangement.spacedBy(20.dp)
             ) {
-                PuertaBoveda(abierta = false, tamano = 190)
-                Spacer(Modifier.height(28.dp))
-                Text(
-                    "Bóveda local",
-                    style = MaterialTheme.typography.displaySmall.copy(fontWeight = FontWeight.Bold),
-                    color = ColorTitulos
-                )
-                Spacer(Modifier.height(12.dp))
-                Text(
-                    "Esta app no tiene permiso de internet — compruébalo.",
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = ColorAcento,
-                    textAlign = TextAlign.Center
-                )
-                Spacer(Modifier.height(20.dp))
-                TarjetaBoveda {
-                    Text("Lo que hay dentro del manifest", style = MaterialTheme.typography.titleMedium, color = ColorTitulos)
-                    Spacer(Modifier.height(10.dp))
-                    Text("• USE_BIOMETRIC — para abrir con tu huella", color = TextoSecundario, style = MaterialTheme.typography.bodyMedium)
-                    Text("• VIBRATE — para las microinteracciones", color = TextoSecundario, style = MaterialTheme.typography.bodyMedium)
-                    Text("• CAMERA — solo para leer el QR de un 2FA, y solo si tú pulsas escanear", color = TextoSecundario, style = MaterialTheme.typography.bodyMedium)
-                    Spacer(Modifier.height(10.dp))
-                    Text("Y nada más. Sin red, sin analítica, sin copias en la nube.", color = Menta, style = MaterialTheme.typography.bodyMedium)
+                // Rueda giratoria mecánica animada de la bóveda
+                PuertaBoveda(abierta = false, tamano = 175)
+
+                // Encabezado con insignia de seguridad
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    // Píldora de estado de seguridad
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(50))
+                            .background(ColorAcento.copy(alpha = 0.12f))
+                            .border(0.8.dp, ColorAcento.copy(alpha = 0.35f), RoundedCornerShape(50))
+                            .padding(horizontal = 14.dp, vertical = 5.dp)
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .size(7.dp)
+                                .clip(CircleShape)
+                                .background(Menta)
+                        )
+                        Spacer(Modifier.width(8.dp))
+                        Text(
+                            text = "SEGURIDAD DE CERO CONOCIMIENTO",
+                            style = MaterialTheme.typography.labelSmall.copy(
+                                fontWeight = FontWeight.Bold,
+                                letterSpacing = 1.1.sp
+                            ),
+                            color = ColorAcento
+                        )
+                    }
+
+                    Text(
+                        text = "Bóveda Local",
+                        style = MaterialTheme.typography.headlineLarge.copy(
+                            fontWeight = FontWeight.ExtraBold,
+                            letterSpacing = (-0.5).sp
+                        ),
+                        color = ColorTitulos,
+                        textAlign = TextAlign.Center
+                    )
+
+                    Text(
+                        text = "Custodia soberana de tus contraseñas y secretos. Todo se almacena exclusivamente en este dispositivo con cifrado de grado militar.",
+                        style = MaterialTheme.typography.bodyMedium.copy(lineHeight = 20.sp),
+                        color = TextoSecundario,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.padding(horizontal = 8.dp)
+                    )
                 }
-                Spacer(Modifier.height(28.dp))
-                BotonAmbar("Crear mi bóveda") {
-                    haptica.toque()
-                    paso = 1
+
+                // Tarjeta de garantías de seguridad y transparencia
+                ContenedorTarjeta(
+                    paddingInterno = 18.dp
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.Shield,
+                            contentDescription = null,
+                            tint = ColorAcento,
+                            modifier = Modifier.size(20.dp)
+                        )
+                        Spacer(Modifier.width(10.dp))
+                        Text(
+                            text = "Garantías de privacidad y seguridad",
+                            style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
+                            color = ColorTitulos
+                        )
+                    }
+
+                    Spacer(Modifier.height(6.dp))
+
+                    FilaPilarSeguridad(
+                        icono = Icons.Filled.WifiOff,
+                        titulo = "Cero conexión a Internet",
+                        descripcion = "La aplicación no posee permisos de red en el sistema operativo. Es técnicamente imposible que tus secretos salgan del teléfono hacia servidores o la nube.",
+                        colorIcono = ColorAcento
+                    )
+
+                    FilaPilarSeguridad(
+                        icono = Icons.Filled.Lock,
+                        titulo = "Argon2id + AES-256-GCM",
+                        descripcion = "Derivación intensiva de clave (64 MiB de memoria y 3 pasadas) contra ataques por fuerza bruta, combinada con cifrado autenticado en almacenamiento local.",
+                        colorIcono = ColorSeguridad
+                    )
+
+                    FilaPilarSeguridad(
+                        icono = Icons.Filled.VerifiedUser,
+                        titulo = "Permisos mínimos auditables",
+                        descripcion = "Únicamente biometría para acceso rápido y cámara para escaneo local de códigos QR/2FA. Sin acceso a tus contactos, archivos ni ubicación.",
+                        colorIcono = Menta
+                    )
+
+                    Spacer(Modifier.height(4.dp))
+
+                    // Distintivo de garantía inferior
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clip(RoundedCornerShape(8.dp))
+                            .background(Menta.copy(alpha = 0.08f))
+                            .border(0.8.dp, Menta.copy(alpha = 0.25f), RoundedCornerShape(8.dp))
+                            .padding(horizontal = 12.dp, vertical = 9.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.CheckCircle,
+                            contentDescription = null,
+                            tint = Menta,
+                            modifier = Modifier.size(16.dp)
+                        )
+                        Spacer(Modifier.width(8.dp))
+                        Text(
+                            text = "Sin cuentas · Sin telemetría ni analíticas · 100% Offline",
+                            color = Menta,
+                            style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.SemiBold)
+                        )
+                    }
+                }
+
+                // Acciones
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    BotonAmbar(
+                        texto = "Crear mi bóveda",
+                        icono = Icons.Filled.VpnKey
+                    ) {
+                        haptica.toque()
+                        paso = 1
+                    }
+
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center,
+                        modifier = Modifier.fillMaxWidth().padding(top = 4.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.Info,
+                            contentDescription = null,
+                            tint = TextoSecundario.copy(alpha = 0.7f),
+                            modifier = Modifier.size(14.dp)
+                        )
+                        Spacer(Modifier.width(6.dp))
+                        Text(
+                            text = "Configurarás tu contraseña maestra en el siguiente paso",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = TextoSecundario
+                        )
+                    }
                 }
             }
 
@@ -161,12 +312,12 @@ fun PantallaOnboarding(vm: VaultViewModel, actividad: FragmentActivity) {
                         )
                     }
                     Spacer(Modifier.height(24.dp))
-                    BotonAmbar("Forjar la bóveda", activo = valida) {
+                    BotonAmbar("Forjar la bóveda", activo = valida, icono = Icons.Filled.Shield) {
                         haptica.toque()
                         paso = 2
                     }
                     Spacer(Modifier.height(12.dp))
-                    BotonBorde("Volver") { paso = 0 }
+                    BotonBorde("Volver", icono = Icons.AutoMirrored.Filled.ArrowBack) { paso = 0 }
                 }
             }
 
@@ -195,6 +346,51 @@ fun PantallaOnboarding(vm: VaultViewModel, actividad: FragmentActivity) {
                     BarraProgresoForja()
                 }
             }
+        }
+    }
+}
+
+@Composable
+private fun FilaPilarSeguridad(
+    icono: ImageVector,
+    titulo: String,
+    descripcion: String,
+    colorIcono: Color = ColorAcento
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 5.dp),
+        verticalAlignment = Alignment.Top
+    ) {
+        Box(
+            modifier = Modifier
+                .padding(top = 2.dp)
+                .size(36.dp)
+                .clip(RoundedCornerShape(10.dp))
+                .background(colorIcono.copy(alpha = 0.14f)),
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                imageVector = icono,
+                contentDescription = null,
+                tint = colorIcono,
+                modifier = Modifier.size(20.dp)
+            )
+        }
+        Spacer(Modifier.width(14.dp))
+        Column(modifier = Modifier.weight(1f)) {
+            Text(
+                text = titulo,
+                color = ColorTitulos,
+                style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold)
+            )
+            Spacer(Modifier.height(2.dp))
+            Text(
+                text = descripcion,
+                color = TextoSecundario,
+                style = MaterialTheme.typography.bodySmall.copy(lineHeight = 17.sp)
+            )
         }
     }
 }
