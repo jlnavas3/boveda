@@ -9,7 +9,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.jlnavas3.bovedalocal.data.DatosPasskey
 import com.jlnavas3.bovedalocal.ui.componentes.EtiquetaSeccion
-import com.jlnavas3.bovedalocal.ui.componentes.TarjetaPepo
+import com.jlnavas3.bovedalocal.ui.componentes.TarjetaBoveda
 import com.jlnavas3.bovedalocal.ui.theme.Menta
 import com.jlnavas3.bovedalocal.ui.theme.TextoPrincipal
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
@@ -19,7 +19,7 @@ fun TarjetaPasskeyDetalle(
     passkey: DatosPasskey,
     usuarioEntrada: String = ""
 ) {
-    TarjetaPepo {
+    TarjetaBoveda {
         EtiquetaSeccion("Passkey")
         Spacer(Modifier.height(8.dp))
         Text(

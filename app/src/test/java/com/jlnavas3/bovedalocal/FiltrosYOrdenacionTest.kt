@@ -41,14 +41,14 @@ class FiltrosYOrdenacionTest {
 
     @Test
     fun `filtra por texto en titulo usuario url o etiqueta de forma insensible a mayusculas`() {
-        val e1 = Entrada("1", titulo = "GitHub", usuario = "pepotech", etiquetas = listOf("#dev"))
+        val e1 = Entrada("1", titulo = "GitHub", usuario = "bovedadev", etiquetas = listOf("#dev"))
         val e2 = Entrada("2", titulo = "Google Cloud", usuario = "admin@empresa.com", urls = listOf("https://console.cloud.google.com"))
         val e3 = Entrada("3", titulo = "Banco", usuario = "cliente", notas = "nota interna")
 
         val lista = listOf(e1, e2, e3)
 
         assertEquals(listOf(e1), filtrarYOrdenar(lista, busqueda = "github"))
-        assertEquals(listOf(e1), filtrarYOrdenar(lista, busqueda = "PEPO"))
+        assertEquals(listOf(e1), filtrarYOrdenar(lista, busqueda = "BOVEDA"))
         assertEquals(listOf(e1), filtrarYOrdenar(lista, busqueda = "#dev"))
         assertEquals(listOf(e2), filtrarYOrdenar(lista, busqueda = "cloud.google"))
         assertEquals(listOf(e3), filtrarYOrdenar(lista, busqueda = "banco"))

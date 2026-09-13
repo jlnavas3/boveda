@@ -21,7 +21,7 @@ import com.jlnavas3.bovedalocal.data.AlmacenAjustes
 import com.jlnavas3.bovedalocal.ui.Pantalla
 import com.jlnavas3.bovedalocal.ui.VaultViewModel
 import com.jlnavas3.bovedalocal.ui.componentes.BotonColorido
-import com.jlnavas3.bovedalocal.ui.componentes.CampoPepo
+import com.jlnavas3.bovedalocal.ui.componentes.CampoBoveda
 import com.jlnavas3.bovedalocal.ui.componentes.EtiquetaSeccion
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.TextoPrincipal
@@ -65,7 +65,7 @@ fun SeccionApariencia(
         )
         Spacer(Modifier.height(8.dp))
         var nombreLocal by remember(ajustes.nombrePersonalizado) { mutableStateOf(ajustes.nombrePersonalizado) }
-        CampoPepo(
+        CampoBoveda(
             valor = nombreLocal,
             etiqueta = "Nombre (solo dentro de la app)",
             alCambiar = { nombreLocal = it }

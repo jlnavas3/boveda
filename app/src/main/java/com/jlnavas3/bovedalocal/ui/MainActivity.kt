@@ -64,7 +64,7 @@ import com.jlnavas3.bovedalocal.ui.pantallas.PantallaPapelera
 import com.jlnavas3.bovedalocal.ui.pantallas.PantallaRegistro
 import com.jlnavas3.bovedalocal.ui.theme.Ambar
 import com.jlnavas3.bovedalocal.ui.theme.Obsidiana
-import com.jlnavas3.bovedalocal.ui.theme.PepoBovedaTheme
+import com.jlnavas3.bovedalocal.ui.theme.BovedaTheme
 import com.jlnavas3.bovedalocal.ui.theme.SuperficieAlta
 import com.jlnavas3.bovedalocal.ui.theme.TextoPrincipal
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
@@ -87,15 +87,15 @@ class MainActivity : FragmentActivity() {
             LaunchedEffect(ajustes) {
                 com.jlnavas3.bovedalocal.ui.theme.aplicarPersonalizacionTemaCompleto(ajustes)
             }
-            PepoBovedaTheme(temaApp = ajustes.temaApp) {
-                RaizPepoBoveda(vm, this)
+            BovedaTheme(temaApp = ajustes.temaApp) {
+                RaizBoveda(vm, this)
             }
         }
     }
 }
 
 @Composable
-fun RaizPepoBoveda(vm: VaultViewModel, actividad: FragmentActivity) {
+fun RaizBoveda(vm: VaultViewModel, actividad: FragmentActivity) {
     val pantalla by vm.pantalla.collectAsStateWithLifecycle()
     val estado by vm.estado.collectAsStateWithLifecycle()
     val error by vm.error.collectAsStateWithLifecycle()

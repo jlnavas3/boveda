@@ -111,7 +111,7 @@ class VaultCryptoTest {
 
     @Test
     fun `la escritura atomica no deja archivo temporal`() {
-        val carpeta = File(System.getProperty("java.io.tmpdir"), "pepo-boveda-test-" + System.nanoTime())
+        val carpeta = File(System.getProperty("java.io.tmpdir"), "boveda-test-" + System.nanoTime())
         carpeta.mkdirs()
         val destino = File(carpeta, "boveda.bvda")
         val salt = VaultCrypto.nuevoSalt()
@@ -127,7 +127,7 @@ class VaultCryptoTest {
 
     @Test
     fun `la escritura interrumpida no corrompe la boveda anterior`() {
-        val carpeta = File(System.getProperty("java.io.tmpdir"), "pepo-boveda-crash-" + System.nanoTime())
+        val carpeta = File(System.getProperty("java.io.tmpdir"), "boveda-crash-" + System.nanoTime())
         carpeta.mkdirs()
         val destino = File(carpeta, "boveda.bvda")
         val salt = VaultCrypto.nuevoSalt()
@@ -150,13 +150,13 @@ class VaultCryptoTest {
     fun `vector determinista con salt fijo`() {
         val salt = ByteArray(16) { (it + 1).toByte() }
         val derivada = VaultCrypto.derivarClave(
-            "pepotech-2026".toCharArray(),
+            "bovedatech-2026".toCharArray(),
             salt,
             KdfParams.PREDETERMINADOS,
             KdfDePrueba
         )
         assertEquals(
-            "3fe1674025889e8d4967f5c487d7b6dbc4707cac1876fb91980724ee73ada7d1",
+            "e5c4172e265426fed8745584a84c0ebd8b12298d07ecdaf1c0523f64776b4f5a",
             derivada.joinToString("") { "%02x".format(it) }
         )
     }

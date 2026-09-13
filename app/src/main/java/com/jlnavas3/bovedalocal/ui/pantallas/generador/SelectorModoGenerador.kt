@@ -34,7 +34,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.jlnavas3.bovedalocal.ui.componentes.MenuDesplegablePepo
+import com.jlnavas3.bovedalocal.ui.componentes.MenuDesplegableBoveda
 import com.jlnavas3.bovedalocal.ui.componentes.SeparadorOpcionMenu
 import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
 import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
@@ -93,7 +93,7 @@ fun SelectorModoGenerador(
             )
         }
 
-        MenuDesplegablePepo(
+        MenuDesplegableBoveda(
             expanded = abierto,
             onDismissRequest = { abierto = false }
         ) {

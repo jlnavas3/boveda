@@ -21,7 +21,7 @@
         tools:node="remove" />
 
     <application
-        android:name=".PepoBovedaApp"
+        android:name=".BovedaApp"
         android:allowBackup="false"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="false"
@@ -30,14 +30,14 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher"
         android:supportsRtl="false"
-        android:theme="@style/Theme.PepoBoveda"
+        android:theme="@style/Theme.BovedaLocal"
         tools:targetApi="34">
 
         <activity
             android:name=".ui.MainActivity"
             android:exported="true"
             android:configChanges="orientation|screenSize|keyboardHidden|uiMode"
-            android:theme="@style/Theme.PepoBoveda" />
+            android:theme="@style/Theme.BovedaLocal" />
 
         <!--
           Color del icono (Ajustes > Apariencia, al estilo Fossify): MainActivity de arriba
@@ -317,38 +317,38 @@
             android:exported="false"
             android:excludeFromRecents="true"
             android:configChanges="orientation|screenSize|keyboardHidden|uiMode"
-            android:theme="@style/Theme.PepoBoveda.Transparent" />
+            android:theme="@style/Theme.BovedaLocal.Transparent" />
 
         <activity
             android:name=".passkey.PasskeyCreateActivity"
             android:exported="false"
             android:excludeFromRecents="true"
             android:configChanges="orientation|screenSize|keyboardHidden|uiMode"
-            android:theme="@style/Theme.PepoBoveda.Transparent" />
+            android:theme="@style/Theme.BovedaLocal.Transparent" />
 
         <activity
             android:name=".passkey.PasskeyGetActivity"
             android:exported="false"
             android:excludeFromRecents="true"
             android:configChanges="orientation|screenSize|keyboardHidden|uiMode"
-            android:theme="@style/Theme.PepoBoveda.Transparent" />
+            android:theme="@style/Theme.BovedaLocal.Transparent" />
 
         <activity
             android:name=".passkey.PasswordCreateActivity"
             android:exported="false"
             android:excludeFromRecents="true"
             android:configChanges="orientation|screenSize|keyboardHidden|uiMode"
-            android:theme="@style/Theme.PepoBoveda.Transparent" />
+            android:theme="@style/Theme.BovedaLocal.Transparent" />
 
         <activity
             android:name=".passkey.PasswordGetActivity"
             android:exported="false"
             android:excludeFromRecents="true"
             android:configChanges="orientation|screenSize|keyboardHidden|uiMode"
-            android:theme="@style/Theme.PepoBoveda.Transparent" />
+            android:theme="@style/Theme.BovedaLocal.Transparent" />
 
         <service
-            android:name=".autofill.PepoAutofillService"
+            android:name=".autofill.BovedaAutofillService"
             android:exported="true"
             android:label="@string/app_name"
             android:permission="android.permission.BIND_AUTOFILL_SERVICE">
@@ -361,7 +361,7 @@
         </service>
 
         <service
-            android:name=".passkey.PepoCredentialProviderService"
+            android:name=".passkey.BovedaCredentialProviderService"
             android:exported="true"
             android:label="@string/app_name"
             android:permission="android.permission.BIND_CREDENTIAL_PROVIDER_SERVICE">

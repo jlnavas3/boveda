@@ -60,7 +60,7 @@ import com.jlnavas3.bovedalocal.ui.componentes.BotonColorido
 import com.jlnavas3.bovedalocal.ui.componentes.DialogoCompartirQr
 import com.jlnavas3.bovedalocal.ui.componentes.EtiquetaSeccion
 import com.jlnavas3.bovedalocal.ui.componentes.Monograma
-import com.jlnavas3.bovedalocal.ui.componentes.TarjetaPepo
+import com.jlnavas3.bovedalocal.ui.componentes.TarjetaBoveda
 import com.jlnavas3.bovedalocal.ui.componentes.contrasenaColoreada
 import com.jlnavas3.bovedalocal.ui.pantallas.detalle.TarjetaCamposDetalle
 import com.jlnavas3.bovedalocal.ui.pantallas.detalle.TarjetaHistorialDetalle
@@ -193,7 +193,7 @@ fun PantallaDetalle(vm: VaultViewModel, id: String) {
 
         // Usuario / Correo
         if (entrada.usuario.isNotBlank()) {
-            TarjetaPepo {
+            TarjetaBoveda {
                 EtiquetaSeccion("Usuario o correo")
                 Spacer(Modifier.height(8.dp))
                 Text(
@@ -220,7 +220,7 @@ fun PantallaDetalle(vm: VaultViewModel, id: String) {
 
         // Contraseña principal
         if (entrada.contrasena.isNotBlank()) {
-            TarjetaPepo {
+            TarjetaBoveda {
                 EtiquetaSeccion("Contraseña")
                 Spacer(Modifier.height(8.dp))
                 if (revelada) {
@@ -298,7 +298,7 @@ fun PantallaDetalle(vm: VaultViewModel, id: String) {
 
         // URLs y sitios asociados
         if (entrada.urls.isNotEmpty()) {
-            TarjetaPepo {
+            TarjetaBoveda {
                 EtiquetaSeccion("Sitios y apps asociados")
                 Spacer(Modifier.height(8.dp))
                 entrada.urls.forEach { url ->
@@ -310,7 +310,7 @@ fun PantallaDetalle(vm: VaultViewModel, id: String) {
 
         // Notas
         if (entrada.notas.isNotBlank()) {
-            TarjetaPepo {
+            TarjetaBoveda {
                 EtiquetaSeccion("Notas")
                 Spacer(Modifier.height(8.dp))
                 Text(entrada.notas, style = MaterialTheme.typography.bodyLarge, color = TextoPrincipal)
@@ -320,7 +320,7 @@ fun PantallaDetalle(vm: VaultViewModel, id: String) {
 
         // Etiquetas
         if (entrada.etiquetas.isNotEmpty()) {
-            TarjetaPepo {
+            TarjetaBoveda {
                 EtiquetaSeccion("Etiquetas")
                 Spacer(Modifier.height(8.dp))
                 Row(

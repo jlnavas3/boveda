@@ -19,7 +19,7 @@ import androidx.compose.ui.unit.dp
 import com.jlnavas3.bovedalocal.crypto.PasswordGenerator
 import com.jlnavas3.bovedalocal.ui.componentes.ContrasenaSlotMachine
 import com.jlnavas3.bovedalocal.ui.componentes.EtiquetaSeccion
-import com.jlnavas3.bovedalocal.ui.componentes.TarjetaPepo
+import com.jlnavas3.bovedalocal.ui.componentes.TarjetaBoveda
 import com.jlnavas3.bovedalocal.ui.theme.FormaPequena
 import com.jlnavas3.bovedalocal.ui.theme.Menta
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
@@ -33,7 +33,7 @@ fun TarjetaResultadoGenerador(
     bits: Double,
     haptica: Haptica
 ) {
-    TarjetaPepo {
+    TarjetaBoveda {
         EtiquetaSeccion("Resultado")
         Spacer(Modifier.height(10.dp))
         ContrasenaSlotMachine(objetivo = generada, generacion = generacion, haptica = haptica)

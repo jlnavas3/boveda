@@ -32,7 +32,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.jlnavas3.bovedalocal.data.normalizarEtiqueta
 import com.jlnavas3.bovedalocal.ui.componentes.BotonBorde
-import com.jlnavas3.bovedalocal.ui.componentes.CampoPepo
+import com.jlnavas3.bovedalocal.ui.componentes.CampoBoveda
 import com.jlnavas3.bovedalocal.ui.componentes.EtiquetaSeccion
 import com.jlnavas3.bovedalocal.ui.theme.Borde
 import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
@@ -89,7 +89,7 @@ fun SeccionEtiquetasEdicion(
     }
     Row(verticalAlignment = Alignment.CenterVertically) {
         Box(modifier = Modifier.weight(1f)) {
-            CampoPepo(
+            CampoBoveda(
                 valor = nuevaEtiqueta,
                 etiqueta = "Nueva etiqueta",
                 alCambiar = { nuevaEtiqueta = it },

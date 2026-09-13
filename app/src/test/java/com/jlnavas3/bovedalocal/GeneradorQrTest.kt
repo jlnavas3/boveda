@@ -23,7 +23,7 @@ class GeneradorQrTest {
         val entrada = Entrada(
             id = "test-1",
             titulo = "GitHub",
-            usuario = "pepo@example.com",
+            usuario = "usuario@example.com",
             secretoTotp = "JBSWY3DPEHPK3PXP",
             totpEmisor = "GitHub",
             totpDigitos = 6,
@@ -31,14 +31,14 @@ class GeneradorQrTest {
         )
         val uri = GeneradorQr.uriTotp(entrada)
         assertNotNull(uri)
-        assertTrue(uri!!.startsWith("otpauth://totp/GitHub:pepo%40example.com?secret=JBSWY3DPEHPK3PXP"))
+        assertTrue(uri!!.startsWith("otpauth://totp/GitHub:usuario%40example.com?secret=JBSWY3DPEHPK3PXP"))
         assertTrue(uri.contains("digits=6"))
         assertTrue(uri.contains("period=30"))
     }
 
     @Test
     fun `uriTotp devuelve null si no hay secreto`() {
-        val entrada = Entrada(id = "test-2", titulo = "Twitter", usuario = "pepo")
+        val entrada = Entrada(id = "test-2", titulo = "Twitter", usuario = "usuario")
         assertNull(GeneradorQr.uriTotp(entrada))
     }
 

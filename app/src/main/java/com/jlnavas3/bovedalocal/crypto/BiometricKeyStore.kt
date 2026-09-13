@@ -29,9 +29,9 @@ import javax.crypto.spec.GCMParameterSpec
  */
 class BiometricKeyStore(private val directorio: File, private val prefijoAlias: String = "") {
 
-    enum class Modo(val clave: String, val alias: String, val archivo: String, val etiqueta: String) {
-        FUERTE("fuerte", "pepo_boveda_bio_v1", "bio.blob", "fuerte (Clase 3, atada al Keystore)"),
-        COMPATIBLE("compatible", "pepo_boveda_bio_compat_v1", "bio_compat.blob", "compatible (comprobada por Android)");
+    enum class Modo(val clave: String, val alias: String, val archivo: String, val etiqueta: String, val aliasLegado: String = "") {
+        FUERTE("fuerte", "boveda_bio_v1", "bio.blob", "fuerte (Clase 3, atada al Keystore)", "pepo_boveda_bio_v1"),
+        COMPATIBLE("compatible", "boveda_bio_compat_v1", "bio_compat.blob", "compatible (comprobada por Android)", "pepo_boveda_bio_compat_v1");
 
         val otro: Modo get() = if (this == FUERTE) COMPATIBLE else FUERTE
 
@@ -91,12 +91,23 @@ class BiometricKeyStore(private val directorio: File, private val prefijoAlias: 
         }
     }
 
-    private fun archivo(modo: Modo): File = File(directorio, prefijoAlias + modo.archivo)
-
-    private fun alias(modo: Modo): String = prefijoAlias + modo.alias
-
     /** Un solo Keystore cargado por instancia: cargarlo es una llamada al servicio y no cambia. */
     private val almacen: KeyStore by lazy { KeyStore.getInstance(PROVEEDOR).apply { load(null) } }
+
+    private fun archivo(modo: Modo): File = File(directorio, prefijoAlias + modo.archivo)
+
+    private fun alias(modo: Modo): String {
+        val base = prefijoAlias + modo.alias
+        return try {
+            if (modo.aliasLegado.isNotEmpty() && !almacen.containsAlias(base) && almacen.containsAlias(prefijoAlias + modo.aliasLegado)) {
+                prefijoAlias + modo.aliasLegado
+            } else {
+                base
+            }
+        } catch (_: Exception) {
+            base
+        }
+    }
 
     fun estaConfigurada(modo: Modo): Boolean = archivo(modo).exists() && claveExiste(modo)
 

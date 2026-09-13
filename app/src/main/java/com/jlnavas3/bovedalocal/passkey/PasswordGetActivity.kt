@@ -15,7 +15,7 @@ import androidx.fragment.app.FragmentActivity
 import com.jlnavas3.bovedalocal.data.Entrada
 import com.jlnavas3.bovedalocal.data.TipoEntrada
 import com.jlnavas3.bovedalocal.data.VaultRepository
-import com.jlnavas3.bovedalocal.ui.theme.PepoBovedaTheme
+import com.jlnavas3.bovedalocal.ui.theme.BovedaTheme
 import com.jlnavas3.bovedalocal.util.Dominios
 
 /** Confirma y devuelve una contraseña a Android Credential Manager. */
@@ -32,11 +32,11 @@ class PasswordGetActivity : FragmentActivity() {
         window.setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE)
 
         PendingIntentHandler.retrieveProviderGetCredentialRequest(intent)
-        entradaId = intent.getStringExtra(PepoCredentialProviderService.EXTRA_ENTRADA_ID)
-        objetivo = intent.getStringExtra(PepoCredentialProviderService.EXTRA_OBJETIVO).orEmpty()
+        entradaId = intent.getStringExtra(BovedaCredentialProviderService.EXTRA_ENTRADA_ID)
+        objetivo = intent.getStringExtra(BovedaCredentialProviderService.EXTRA_OBJETIVO).orEmpty()
 
         setContent {
-            PepoBovedaTheme {
+            BovedaTheme {
                 HojaPasskey(
                     actividad = this,
                     repositorio = repositorio,

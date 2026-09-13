@@ -10,11 +10,11 @@ class OtpAuthTest {
 
     @Test
     fun `parsea URI estandar de Google Authenticator`() {
-        val uri = "otpauth://totp/GitHub:pepotech?secret=JBSWY3DPEHPK3PXP&issuer=GitHub"
+        val uri = "otpauth://totp/GitHub:bovedatech?secret=JBSWY3DPEHPK3PXP&issuer=GitHub"
         val semilla = OtpAuth.leer(uri)
         assertNotNull(semilla)
         assertEquals("GitHub", semilla!!.emisor)
-        assertEquals("pepotech", semilla.cuenta)
+        assertEquals("bovedatech", semilla.cuenta)
         assertEquals("JBSWY3DPEHPK3PXP", semilla.secreto)
         assertEquals(6, semilla.digitos)
         assertEquals(30, semilla.periodo)

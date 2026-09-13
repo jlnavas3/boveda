@@ -26,7 +26,7 @@ class SeguridadYExportacionTest {
     @Test
     fun el_recordatorio_de_exportacion_persiste_en_ajustes() {
         val contexto = InstrumentationRegistry.getInstrumentation().targetContext
-        val prefs = contexto.getSharedPreferences("ajustes_pepo_boveda", android.content.Context.MODE_PRIVATE)
+        val prefs = contexto.getSharedPreferences("ajustes_boveda", android.content.Context.MODE_PRIVATE)
         prefs.edit().clear().commit()
 
         val almacen = AlmacenAjustes(contexto)
@@ -40,7 +40,7 @@ class SeguridadYExportacionTest {
     @Test
     fun la_densidad_de_la_lista_persiste_en_ajustes() {
         val contexto = InstrumentationRegistry.getInstrumentation().targetContext
-        val prefs = contexto.getSharedPreferences("ajustes_pepo_boveda", android.content.Context.MODE_PRIVATE)
+        val prefs = contexto.getSharedPreferences("ajustes_boveda", android.content.Context.MODE_PRIVATE)
         prefs.edit().clear().commit()
 
         val almacen = AlmacenAjustes(contexto)

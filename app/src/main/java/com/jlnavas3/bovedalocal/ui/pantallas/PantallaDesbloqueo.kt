@@ -37,7 +37,7 @@ import com.jlnavas3.bovedalocal.ui.FlujoBiometria
 import com.jlnavas3.bovedalocal.ui.VaultViewModel
 import com.jlnavas3.bovedalocal.ui.componentes.BotonAmbar
 import com.jlnavas3.bovedalocal.ui.componentes.BotonBorde
-import com.jlnavas3.bovedalocal.ui.componentes.CampoPepo
+import com.jlnavas3.bovedalocal.ui.componentes.CampoBoveda
 import com.jlnavas3.bovedalocal.ui.componentes.PuertaBoveda
 import com.jlnavas3.bovedalocal.ui.theme.ColorTitulos
 import com.jlnavas3.bovedalocal.ui.theme.TextoPrincipal
@@ -113,7 +113,7 @@ fun PantallaDesbloqueo(vm: VaultViewModel, actividad: FragmentActivity) {
         )
         Spacer(Modifier.height(28.dp))
         Column(modifier = Modifier.offset { IntOffset(sacudida.value.toInt(), 0) }) {
-            CampoPepo(
+            CampoBoveda(
                 valor = contrasena,
                 etiqueta = "Contraseña maestra",
                 alCambiar = { contrasena = it },

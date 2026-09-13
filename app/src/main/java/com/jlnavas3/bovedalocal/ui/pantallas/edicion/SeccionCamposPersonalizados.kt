@@ -55,7 +55,7 @@ import com.jlnavas3.bovedalocal.data.CampoPersonalizado
 import com.jlnavas3.bovedalocal.data.TipoCampo
 import com.jlnavas3.bovedalocal.ui.componentes.BotonBorde
 import com.jlnavas3.bovedalocal.ui.componentes.BotonColorido
-import com.jlnavas3.bovedalocal.ui.componentes.CampoPepo
+import com.jlnavas3.bovedalocal.ui.componentes.CampoBoveda
 import com.jlnavas3.bovedalocal.ui.componentes.EtiquetaSeccion
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
@@ -194,7 +194,7 @@ fun TarjetaCampoPersonalizadoEdicion(
         Spacer(Modifier.height(10.dp))
 
         // Etiqueta del campo
-        CampoPepo(
+        CampoBoveda(
             valor = campo.etiqueta,
             etiqueta = "Nombre del campo",
             alCambiar = { alModificar(campo.copy(etiqueta = it)) }
@@ -240,7 +240,7 @@ fun TarjetaCampoPersonalizadoEdicion(
                 )
             }
             TipoCampo.FECHA -> {
-                CampoPepo(
+                CampoBoveda(
                     valor = campo.valor,
                     etiqueta = "Fecha (${ajustes.formatoFecha})",
                     alCambiar = {},
@@ -258,7 +258,7 @@ fun TarjetaCampoPersonalizadoEdicion(
                 )
             }
             TipoCampo.HORA -> {
-                CampoPepo(
+                CampoBoveda(
                     valor = campo.valor,
                     etiqueta = "Hora (${ajustes.formatoHora})",
                     alCambiar = {},
@@ -276,7 +276,7 @@ fun TarjetaCampoPersonalizadoEdicion(
                 )
             }
             TipoCampo.TELEFONO -> {
-                CampoPepo(
+                CampoBoveda(
                     valor = campo.valor,
                     etiqueta = "Teléfono",
                     alCambiar = { raw ->
@@ -288,7 +288,7 @@ fun TarjetaCampoPersonalizadoEdicion(
                 )
             }
             TipoCampo.NUMERO, TipoCampo.PIN -> {
-                CampoPepo(
+                CampoBoveda(
                     valor = campo.valor,
                     etiqueta = if (campo.tipo == TipoCampo.PIN) "PIN (solo números)" else "Número entero",
                     alCambiar = { raw ->
@@ -304,7 +304,7 @@ fun TarjetaCampoPersonalizadoEdicion(
                 )
             }
             TipoCampo.DECIMAL -> {
-                CampoPepo(
+                CampoBoveda(
                     valor = campo.valor,
                     etiqueta = "Número decimal (separador '${ajustes.separadorDecimal}')",
                     alCambiar = { raw ->
@@ -316,7 +316,7 @@ fun TarjetaCampoPersonalizadoEdicion(
                 )
             }
             TipoCampo.EMAIL -> {
-                CampoPepo(
+                CampoBoveda(
                     valor = campo.valor,
                     etiqueta = "Correo electrónico",
                     alCambiar = { alModificar(campo.copy(valor = it)) },
@@ -324,7 +324,7 @@ fun TarjetaCampoPersonalizadoEdicion(
                 )
             }
             TipoCampo.URL -> {
-                CampoPepo(
+                CampoBoveda(
                     valor = campo.valor,
                     etiqueta = "Dirección web (URL)",
                     alCambiar = { alModificar(campo.copy(valor = it)) },
@@ -332,7 +332,7 @@ fun TarjetaCampoPersonalizadoEdicion(
                 )
             }
             else -> {
-                CampoPepo(
+                CampoBoveda(
                     valor = campo.valor,
                     etiqueta = "Valor del campo",
                     alCambiar = { alModificar(campo.copy(valor = it)) },

@@ -42,7 +42,7 @@ import com.jlnavas3.bovedalocal.ui.componentes.BarraFuerza
 import com.jlnavas3.bovedalocal.ui.componentes.BotonBorde
 import com.jlnavas3.bovedalocal.ui.componentes.BotonColorido
 import com.jlnavas3.bovedalocal.ui.componentes.CabeceraPantalla
-import com.jlnavas3.bovedalocal.ui.componentes.CampoPepo
+import com.jlnavas3.bovedalocal.ui.componentes.CampoBoveda
 import com.jlnavas3.bovedalocal.ui.componentes.EtiquetaSeccion
 import com.jlnavas3.bovedalocal.ui.pantallas.edicion.GeneradorEnLineaEdicion
 import com.jlnavas3.bovedalocal.ui.pantallas.edicion.SeccionCamposPersonalizados
@@ -124,14 +124,14 @@ fun PantallaEdicion(vm: VaultViewModel, id: String?, contrasenaInicial: String) 
             Spacer(Modifier.height(16.dp))
         }
 
-        CampoPepo(valor = titulo, etiqueta = "Título", alCambiar = { titulo = it })
+        CampoBoveda(valor = titulo, etiqueta = "Título", alCambiar = { titulo = it })
         Spacer(Modifier.height(12.dp))
 
         when (tipo) {
             TipoEntrada.LOGIN -> {
-                CampoPepo(valor = usuario, etiqueta = "Usuario o correo", alCambiar = { usuario = it })
+                CampoBoveda(valor = usuario, etiqueta = "Usuario o correo", alCambiar = { usuario = it })
                 Spacer(Modifier.height(12.dp))
-                CampoPepo(
+                CampoBoveda(
                     valor = contrasena,
                     etiqueta = "Contraseña",
                     alCambiar = { contrasena = it },
@@ -162,13 +162,13 @@ fun PantallaEdicion(vm: VaultViewModel, id: String?, contrasenaInicial: String) 
                     }
                 }
                 Spacer(Modifier.height(12.dp))
-                CampoPepo(
+                CampoBoveda(
                     valor = urls,
                     etiqueta = "Sitios o paquetes (separados por comas)",
                     alCambiar = { urls = it }
                 )
                 Spacer(Modifier.height(12.dp))
-                CampoPepo(
+                CampoBoveda(
                     valor = totp,
                     etiqueta = "Secreto TOTP en Base32 (opcional)",
                     alCambiar = { totp = it.uppercase() },
@@ -228,7 +228,7 @@ fun PantallaEdicion(vm: VaultViewModel, id: String?, contrasenaInicial: String) 
             }
         }
 
-        CampoPepo(valor = notas, etiqueta = "Notas", alCambiar = { notas = it }, varias = true)
+        CampoBoveda(valor = notas, etiqueta = "Notas", alCambiar = { notas = it }, varias = true)
         Spacer(Modifier.height(16.dp))
 
         val etiquetasBase = remember(tipo) { GestorCamposBase.etiquetasBaseParaTipo(tipo) }

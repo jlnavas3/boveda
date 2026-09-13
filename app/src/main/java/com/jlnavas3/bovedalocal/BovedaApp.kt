@@ -9,7 +9,7 @@ import com.jlnavas3.bovedalocal.util.Diagnostico
 import java.io.File
 import java.util.concurrent.atomic.AtomicInteger
 
-class PepoBovedaApp : Application(), Application.ActivityLifecycleCallbacks {
+class BovedaApp : Application(), Application.ActivityLifecycleCallbacks {
 
     companion object {
         /** Tope de la excepción al bloqueo mientras un selector está abierto. */
@@ -24,11 +24,11 @@ class PepoBovedaApp : Application(), Application.ActivityLifecycleCallbacks {
          * minutos por si algo se pierde; a partir de ahí el bloqueo vuelve a mandar.
          */
         fun salidaPendiente(contexto: Context) {
-            (contexto.applicationContext as? PepoBovedaApp)?.salidaPendiente()
+            (contexto.applicationContext as? BovedaApp)?.salidaPendiente()
         }
 
         fun salidaTerminada(contexto: Context) {
-            (contexto.applicationContext as? PepoBovedaApp)?.salidaTerminada()
+            (contexto.applicationContext as? BovedaApp)?.salidaTerminada()
         }
     }
 

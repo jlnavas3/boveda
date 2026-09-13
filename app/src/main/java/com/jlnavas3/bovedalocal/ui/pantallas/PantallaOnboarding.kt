@@ -39,9 +39,9 @@ import com.jlnavas3.bovedalocal.ui.componentes.BarraFuerza
 import com.jlnavas3.bovedalocal.ui.componentes.BarraProgresoForja
 import com.jlnavas3.bovedalocal.ui.componentes.BotonAmbar
 import com.jlnavas3.bovedalocal.ui.componentes.BotonBorde
-import com.jlnavas3.bovedalocal.ui.componentes.CampoPepo
+import com.jlnavas3.bovedalocal.ui.componentes.CampoBoveda
 import com.jlnavas3.bovedalocal.ui.componentes.PuertaBoveda
-import com.jlnavas3.bovedalocal.ui.componentes.TarjetaPepo
+import com.jlnavas3.bovedalocal.ui.componentes.TarjetaBoveda
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.ColorTitulos
 import com.jlnavas3.bovedalocal.ui.theme.Menta
@@ -91,7 +91,7 @@ fun PantallaOnboarding(vm: VaultViewModel, actividad: FragmentActivity) {
                     textAlign = TextAlign.Center
                 )
                 Spacer(Modifier.height(20.dp))
-                TarjetaPepo {
+                TarjetaBoveda {
                     Text("Lo que hay dentro del manifest", style = MaterialTheme.typography.titleMedium, color = ColorTitulos)
                     Spacer(Modifier.height(10.dp))
                     Text("• USE_BIOMETRIC — para abrir con tu huella", color = TextoSecundario, style = MaterialTheme.typography.bodyMedium)
@@ -126,7 +126,7 @@ fun PantallaOnboarding(vm: VaultViewModel, actividad: FragmentActivity) {
                         color = TextoSecundario
                     )
                     Spacer(Modifier.height(24.dp))
-                    CampoPepo(
+                    CampoBoveda(
                         valor = contrasena,
                         etiqueta = "Contraseña maestra",
                         alCambiar = { contrasena = it },
@@ -135,7 +135,7 @@ fun PantallaOnboarding(vm: VaultViewModel, actividad: FragmentActivity) {
                         monoespaciada = true
                     )
                     Spacer(Modifier.height(12.dp))
-                    CampoPepo(
+                    CampoBoveda(
                         valor = repetida,
                         etiqueta = "Repítela",
                         alCambiar = { repetida = it },

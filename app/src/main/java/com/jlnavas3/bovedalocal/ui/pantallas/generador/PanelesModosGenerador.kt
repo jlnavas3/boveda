@@ -30,7 +30,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.jlnavas3.bovedalocal.crypto.OpcionesGenerador
 import com.jlnavas3.bovedalocal.crypto.Wordlist
-import com.jlnavas3.bovedalocal.ui.componentes.CampoPepo
+import com.jlnavas3.bovedalocal.ui.componentes.CampoBoveda
 import com.jlnavas3.bovedalocal.ui.componentes.EtiquetaSeccion
 import com.jlnavas3.bovedalocal.ui.theme.Ambar
 import com.jlnavas3.bovedalocal.ui.theme.Borde
@@ -257,7 +257,7 @@ fun PanelModoPatron(
 
     Spacer(Modifier.height(12.dp))
 
-    CampoPepo(
+    CampoBoveda(
         valor = opciones.patron,
         etiqueta = "Máscara / Patrón personalizado",
         alCambiar = { alCambiarOpciones(opciones.copy(patron = it)) },

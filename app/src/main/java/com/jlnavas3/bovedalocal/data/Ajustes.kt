@@ -106,8 +106,25 @@ data class AjustesApp(
 
 class AlmacenAjustes(contexto: Context) {
 
-    private val prefs: SharedPreferences =
-        contexto.getSharedPreferences("ajustes_pepo_boveda", Context.MODE_PRIVATE)
+    private val prefs: SharedPreferences = run {
+        val actual = contexto.getSharedPreferences("ajustes_boveda", Context.MODE_PRIVATE)
+        val antigua = contexto.getSharedPreferences("ajustes_pepo_boveda", Context.MODE_PRIVATE)
+        if (actual.all.isEmpty() && antigua.all.isNotEmpty()) {
+            val ed = actual.edit()
+            antigua.all.forEach { (k, v) ->
+                when (v) {
+                    is Boolean -> ed.putBoolean(k, v)
+                    is Int -> ed.putInt(k, v)
+                    is Long -> ed.putLong(k, v)
+                    is Float -> ed.putFloat(k, v)
+                    is String -> ed.putString(k, v)
+                }
+            }
+            ed.apply()
+            antigua.edit().clear().apply()
+        }
+        actual
+    }
 
     private val _ajustes = MutableStateFlow(leer())
     val ajustes: StateFlow<AjustesApp> = _ajustes

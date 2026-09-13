@@ -31,7 +31,7 @@ import com.jlnavas3.bovedalocal.ui.VaultViewModel
 import com.jlnavas3.bovedalocal.ui.componentes.AnilloTotp
 import com.jlnavas3.bovedalocal.ui.componentes.BotonAmbar
 import com.jlnavas3.bovedalocal.ui.componentes.BotonBorde
-import com.jlnavas3.bovedalocal.ui.componentes.TarjetaPepo
+import com.jlnavas3.bovedalocal.ui.componentes.TarjetaBoveda
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.ColorTitulos
 import com.jlnavas3.bovedalocal.ui.theme.TextoPrincipal
@@ -87,7 +87,7 @@ fun PantallaAutenticador(vm: VaultViewModel, estado: EstadoBoveda) {
         Spacer(Modifier.height(18.dp))
 
         if (conTotp.isEmpty()) {
-            TarjetaPepo {
+            TarjetaBoveda {
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -131,7 +131,7 @@ fun PantallaAutenticador(vm: VaultViewModel, estado: EstadoBoveda) {
                         "------"
                     }
                 }
-                TarjetaPepo(alPulsar = { vm.copiar("Código 2FA", codigo, true) }) {
+                TarjetaBoveda(alPulsar = { vm.copiar("Código 2FA", codigo, true) }) {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         verticalAlignment = Alignment.CenterVertically

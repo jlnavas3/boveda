@@ -43,8 +43,8 @@ import com.jlnavas3.bovedalocal.ui.Pantalla
 import com.jlnavas3.bovedalocal.ui.VaultViewModel
 import com.jlnavas3.bovedalocal.ui.componentes.CabeceraPantalla
 import com.jlnavas3.bovedalocal.ui.componentes.EtiquetaSeccion
-import com.jlnavas3.bovedalocal.ui.componentes.TarjetaPepo
-import com.jlnavas3.bovedalocal.ui.componentes.TarjetaPepoDesplegable
+import com.jlnavas3.bovedalocal.ui.componentes.TarjetaBoveda
+import com.jlnavas3.bovedalocal.ui.componentes.TarjetaBovedaDesplegable
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
 import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
@@ -111,7 +111,7 @@ fun PantallaSaludBoveda(vm: VaultViewModel, estado: EstadoBoveda) {
         Spacer(Modifier.height(8.dp))
 
         // Tarjeta de Resumen General
-        TarjetaPepo {
+        TarjetaBoveda {
             EtiquetaSeccion("Resumen")
             Spacer(Modifier.height(8.dp))
             FilaResumen("Contraseñas analizadas", claves.size.toString(), ColorTitulos)
@@ -124,7 +124,7 @@ fun PantallaSaludBoveda(vm: VaultViewModel, estado: EstadoBoveda) {
         // 1. Sección: Contraseñas repetidas con Tarjetas Desplegables anidadas
         if (duplicadas.isNotEmpty()) {
             Spacer(Modifier.height(espaciado))
-            TarjetaPepoDesplegable(
+            TarjetaBovedaDesplegable(
                 titulo = "Contraseñas repetidas (${duplicadas.sumOf { it.size }})",
                 descripcion = "${duplicadas.size} grupos de cuentas con la misma clave",
                 icono = Icons.Filled.LockReset,
@@ -142,7 +142,7 @@ fun PantallaSaludBoveda(vm: VaultViewModel, estado: EstadoBoveda) {
                     val nombresGrupo = grupo.take(2).joinToString { it.titulo.ifBlank { "Sin título" } } +
                         if (grupo.size > 2) ", +${grupo.size - 2} más" else ""
 
-                    TarjetaPepoDesplegable(
+                    TarjetaBovedaDesplegable(
                         titulo = "Grupo ${indice + 1} (${grupo.size} entradas)",
                         descripcion = nombresGrupo,
                         icono = Icons.Filled.Key,
@@ -167,7 +167,7 @@ fun PantallaSaludBoveda(vm: VaultViewModel, estado: EstadoBoveda) {
         // 2. Sección: Contraseñas muy comunes o filtradas
         if (muyComunes.isNotEmpty()) {
             Spacer(Modifier.height(espaciado))
-            TarjetaPepoDesplegable(
+            TarjetaBovedaDesplegable(
                 titulo = "Contraseñas muy comunes (${muyComunes.size})",
                 descripcion = "Coinciden con filtraciones públicas globales",
                 icono = Icons.Filled.Warning,
@@ -198,7 +198,7 @@ fun PantallaSaludBoveda(vm: VaultViewModel, estado: EstadoBoveda) {
         // 3. Sección: Contraseñas débiles
         if (debiles.isNotEmpty()) {
             Spacer(Modifier.height(espaciado))
-            TarjetaPepoDesplegable(
+            TarjetaBovedaDesplegable(
                 titulo = "Contraseñas débiles (${debiles.size})",
                 descripcion = "Fáciles de descifrar por baja entropía o longitud",
                 icono = Icons.Filled.LockOpen,
@@ -230,7 +230,7 @@ fun PantallaSaludBoveda(vm: VaultViewModel, estado: EstadoBoveda) {
         // 4. Sección: Sin cambiar hace tiempo
         if (antiguas.isNotEmpty()) {
             Spacer(Modifier.height(espaciado))
-            TarjetaPepoDesplegable(
+            TarjetaBovedaDesplegable(
                 titulo = "Sin cambiar hace tiempo (${antiguas.size})",
                 descripcion = "Más de $DIAS_AVISO_ANTIGUEDAD días sin actualizarse",
                 icono = Icons.Filled.History,
@@ -262,7 +262,7 @@ fun PantallaSaludBoveda(vm: VaultViewModel, estado: EstadoBoveda) {
         // Mensaje de estado perfecto si no hay ninguna advertencia
         if (claves.isNotEmpty() && duplicadas.isEmpty() && muyComunes.isEmpty() && debiles.isEmpty() && antiguas.isEmpty()) {
             Spacer(Modifier.height(espaciado))
-            TarjetaPepo {
+            TarjetaBoveda {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(12.dp)

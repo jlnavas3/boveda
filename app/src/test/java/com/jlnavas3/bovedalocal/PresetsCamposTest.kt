@@ -97,16 +97,16 @@ class PresetsCamposTest {
                 "id": "login-999",
                 "tipo": "LOGIN",
                 "titulo": "Google Account",
-                "usuario": "pepo@gmail.com",
-                "contrasena": "PepoPassword123!"
+                "usuario": "usuario@gmail.com",
+                "contrasena": "SecretPassword123!"
             }
         """.trimIndent()
 
         val entrada = json.decodeFromString<Entrada>(jsonEntrada)
         assertEquals(TipoEntrada.LOGIN, entrada.tipo)
         assertEquals("Google Account", entrada.titulo)
-        assertEquals("pepo@gmail.com", entrada.usuario)
-        assertEquals("PepoPassword123!", entrada.contrasena)
+        assertEquals("usuario@gmail.com", entrada.usuario)
+        assertEquals("SecretPassword123!", entrada.contrasena)
         assertTrue("Campos personalizados deben ser lista vacia por defecto", entrada.camposPersonalizados.isEmpty())
     }
 

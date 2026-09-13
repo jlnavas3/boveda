@@ -26,7 +26,7 @@ import com.jlnavas3.bovedalocal.util.FormateadorCampos
 import com.jlnavas3.bovedalocal.data.CampoPersonalizado
 import com.jlnavas3.bovedalocal.data.TipoCampo
 import com.jlnavas3.bovedalocal.data.TipoEntrada
-import com.jlnavas3.bovedalocal.ui.componentes.CampoPepo
+import com.jlnavas3.bovedalocal.ui.componentes.CampoBoveda
 import com.jlnavas3.bovedalocal.ui.componentes.EtiquetaSeccion
 
 import androidx.compose.foundation.background
@@ -120,7 +120,7 @@ fun FormularioEdicionTarjeta(
     Spacer(Modifier.height(8.dp))
 
     Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-        CampoPepo(
+        CampoBoveda(
             valor = titular,
             etiqueta = "Titular (nombre como figura en el plástico)",
             alCambiar = {
@@ -128,7 +128,7 @@ fun FormularioEdicionTarjeta(
             }
         )
 
-        CampoPepo(
+        CampoBoveda(
             valor = numero,
             etiqueta = "Número de tarjeta",
             alCambiar = { raw ->
@@ -146,7 +146,7 @@ fun FormularioEdicionTarjeta(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(10.dp)
         ) {
-            CampoPepo(
+            CampoBoveda(
                 valor = vencimiento,
                 etiqueta = "Vencimiento (MM/AA)",
                 alCambiar = { raw ->
@@ -157,7 +157,7 @@ fun FormularioEdicionTarjeta(
                 tecladoNumerico = true
             )
 
-            CampoPepo(
+            CampoBoveda(
                 valor = cvv,
                 etiqueta = "CVV / CVC",
                 alCambiar = { raw ->
@@ -173,7 +173,7 @@ fun FormularioEdicionTarjeta(
             )
         }
 
-        CampoPepo(
+        CampoBoveda(
             valor = pin,
             etiqueta = "PIN del cajero (opcional)",
             alCambiar = { raw ->
@@ -204,7 +204,7 @@ fun FormularioEdicionWifi(
     Spacer(Modifier.height(8.dp))
 
     Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-        CampoPepo(
+        CampoBoveda(
             valor = ssid,
             etiqueta = "Nombre de red (SSID)",
             alCambiar = {
@@ -212,7 +212,7 @@ fun FormularioEdicionWifi(
             }
         )
 
-        CampoPepo(
+        CampoBoveda(
             valor = clave,
             etiqueta = "Contraseña Wi-Fi",
             alCambiar = {
@@ -225,7 +225,7 @@ fun FormularioEdicionWifi(
         )
 
         Column {
-            CampoPepo(
+            CampoBoveda(
                 valor = seguridad,
                 etiqueta = "Tipo de seguridad (ej. WPA3, WPA2-Personal)",
                 alCambiar = {
@@ -276,7 +276,7 @@ fun FormularioEdicionCuentaBancaria(
     Spacer(Modifier.height(8.dp))
 
     Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-        CampoPepo(
+        CampoBoveda(
             valor = banco,
             etiqueta = "Banco / Entidad financiera",
             alCambiar = {
@@ -284,7 +284,7 @@ fun FormularioEdicionCuentaBancaria(
             }
         )
 
-        CampoPepo(
+        CampoBoveda(
             valor = titular,
             etiqueta = "Titular de la cuenta",
             alCambiar = {
@@ -292,7 +292,7 @@ fun FormularioEdicionCuentaBancaria(
             }
         )
 
-        CampoPepo(
+        CampoBoveda(
             valor = iban,
             etiqueta = "Número de cuenta / IBAN",
             alCambiar = {
@@ -304,7 +304,7 @@ fun FormularioEdicionCuentaBancaria(
             monoespaciada = true
         )
 
-        CampoPepo(
+        CampoBoveda(
             valor = swift,
             etiqueta = "SWIFT / BIC / CLABE / CBU",
             alCambiar = {
@@ -348,7 +348,7 @@ fun FormularioEdicionIdentidad(
     Spacer(Modifier.height(8.dp))
 
     Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-        CampoPepo(
+        CampoBoveda(
             valor = tipoDoc,
             etiqueta = "Tipo (DNI, Pasaporte, Licencia...)",
             alCambiar = {
@@ -356,7 +356,7 @@ fun FormularioEdicionIdentidad(
             }
         )
 
-        CampoPepo(
+        CampoBoveda(
             valor = numero,
             etiqueta = "Número de documento",
             alCambiar = {
@@ -368,7 +368,7 @@ fun FormularioEdicionIdentidad(
             monoespaciada = true
         )
 
-        CampoPepo(
+        CampoBoveda(
             valor = nombre,
             etiqueta = "Nombre completo del titular",
             alCambiar = {
@@ -380,7 +380,7 @@ fun FormularioEdicionIdentidad(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(10.dp)
         ) {
-            CampoPepo(
+            CampoBoveda(
                 valor = expedicion,
                 etiqueta = "Expedición (${ajustes.formatoFecha})",
                 alCambiar = {},
@@ -398,7 +398,7 @@ fun FormularioEdicionIdentidad(
                 modifier = Modifier.weight(1f)
             )
 
-            CampoPepo(
+            CampoBoveda(
                 valor = caducidad,
                 etiqueta = "Caducidad (${ajustes.formatoFecha})",
                 alCambiar = {},
@@ -417,7 +417,7 @@ fun FormularioEdicionIdentidad(
             )
         }
 
-        CampoPepo(
+        CampoBoveda(
             valor = pais,
             etiqueta = "País emisor",
             alCambiar = {
@@ -447,7 +447,7 @@ fun FormularioEdicionServidor(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(10.dp)
         ) {
-            CampoPepo(
+            CampoBoveda(
                 valor = host,
                 etiqueta = "Host o IP",
                 alCambiar = {
@@ -456,7 +456,7 @@ fun FormularioEdicionServidor(
                 modifier = Modifier.weight(2.2f)
             )
 
-            CampoPepo(
+            CampoBoveda(
                 valor = puerto,
                 etiqueta = "Puerto",
                 alCambiar = { raw ->
@@ -468,7 +468,7 @@ fun FormularioEdicionServidor(
             )
         }
 
-        CampoPepo(
+        CampoBoveda(
             valor = usuario,
             etiqueta = "Usuario SSH (ej. root, ubuntu)",
             alCambiar = {
@@ -476,7 +476,7 @@ fun FormularioEdicionServidor(
             }
         )
 
-        CampoPepo(
+        CampoBoveda(
             valor = clave,
             etiqueta = "Clave privada SSH o Contraseña",
             alCambiar = {
@@ -508,7 +508,7 @@ fun FormularioEdicionWallet(
     Spacer(Modifier.height(8.dp))
 
     Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-        CampoPepo(
+        CampoBoveda(
             valor = red,
             etiqueta = "Red / Blockchain (ej. Ethereum, Bitcoin, Solana)",
             alCambiar = {
@@ -516,7 +516,7 @@ fun FormularioEdicionWallet(
             }
         )
 
-        CampoPepo(
+        CampoBoveda(
             valor = direccion,
             etiqueta = "Dirección pública (clave pública)",
             alCambiar = {
@@ -525,7 +525,7 @@ fun FormularioEdicionWallet(
             monoespaciada = true
         )
 
-        CampoPepo(
+        CampoBoveda(
             valor = semilla,
             etiqueta = "Frase semilla (12 o 24 palabras mnemónicas)",
             alCambiar = {
@@ -538,7 +538,7 @@ fun FormularioEdicionWallet(
             varias = true
         )
 
-        CampoPepo(
+        CampoBoveda(
             valor = clavePrivada,
             etiqueta = "Clave privada (Private key)",
             alCambiar = {

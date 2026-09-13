@@ -16,7 +16,7 @@ import androidx.fragment.app.FragmentActivity
 import com.jlnavas3.bovedalocal.data.Entrada
 import com.jlnavas3.bovedalocal.data.TipoEntrada
 import com.jlnavas3.bovedalocal.data.VaultRepository
-import com.jlnavas3.bovedalocal.ui.theme.PepoBovedaTheme
+import com.jlnavas3.bovedalocal.ui.theme.BovedaTheme
 import com.jlnavas3.bovedalocal.util.Diagnostico
 import com.jlnavas3.bovedalocal.util.Dominios
 
@@ -48,7 +48,7 @@ class PasswordCreateActivity : FragmentActivity() {
 
         val objetivo = objetivoSolicitante(peticion?.callingAppInfo)
         setContent {
-            PepoBovedaTheme {
+            BovedaTheme {
                 HojaPasskey(
                     actividad = this,
                     repositorio = repositorio,

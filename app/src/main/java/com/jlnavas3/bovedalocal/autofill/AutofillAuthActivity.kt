@@ -37,10 +37,10 @@ import com.jlnavas3.bovedalocal.data.VaultRepository
 import com.jlnavas3.bovedalocal.ui.FlujoBiometria
 import com.jlnavas3.bovedalocal.ui.componentes.BotonAmbar
 import com.jlnavas3.bovedalocal.ui.componentes.BotonBorde
-import com.jlnavas3.bovedalocal.ui.componentes.CampoPepo
-import com.jlnavas3.bovedalocal.ui.componentes.TarjetaPepo
+import com.jlnavas3.bovedalocal.ui.componentes.CampoBoveda
+import com.jlnavas3.bovedalocal.ui.componentes.TarjetaBoveda
 import com.jlnavas3.bovedalocal.ui.theme.Ambar
-import com.jlnavas3.bovedalocal.ui.theme.PepoBovedaTheme
+import com.jlnavas3.bovedalocal.ui.theme.BovedaTheme
 import com.jlnavas3.bovedalocal.ui.theme.Peligro
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
 import com.jlnavas3.bovedalocal.util.Diagnostico
@@ -68,10 +68,10 @@ class AutofillAuthActivity : FragmentActivity() {
         repositorio = VaultRepository.obtener(this)
         window.setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE)
 
-        usuarioId = leerId(PepoAutofillService.EXTRA_USUARIO_ID)
-        contrasenaId = leerId(PepoAutofillService.EXTRA_CONTRASENA_ID)
-        paquete = intent.getStringExtra(PepoAutofillService.EXTRA_PAQUETE) ?: ""
-        dominio = intent.getStringExtra(PepoAutofillService.EXTRA_DOMINIO)
+        usuarioId = leerId(BovedaAutofillService.EXTRA_USUARIO_ID)
+        contrasenaId = leerId(BovedaAutofillService.EXTRA_CONTRASENA_ID)
+        paquete = intent.getStringExtra(BovedaAutofillService.EXTRA_PAQUETE) ?: ""
+        dominio = intent.getStringExtra(BovedaAutofillService.EXTRA_DOMINIO)
 
         if (repositorio.estaDesbloqueada) {
             responder()
@@ -79,7 +79,7 @@ class AutofillAuthActivity : FragmentActivity() {
         }
 
         setContent {
-            PepoBovedaTheme {
+            BovedaTheme {
                 Contenido()
             }
         }
@@ -115,7 +115,7 @@ class AutofillAuthActivity : FragmentActivity() {
                 .padding(22.dp),
             contentAlignment = Alignment.Center
         ) {
-            TarjetaPepo {
+            TarjetaBoveda {
                 Text("Bóveda local", style = MaterialTheme.typography.titleLarge, color = Ambar)
                 Spacer(Modifier.height(6.dp))
                 Text(
@@ -124,7 +124,7 @@ class AutofillAuthActivity : FragmentActivity() {
                     color = TextoSecundario
                 )
                 Spacer(Modifier.height(18.dp))
-                CampoPepo(
+                CampoBoveda(
                     valor = contrasena,
                     etiqueta = "Contraseña maestra",
                     alCambiar = { contrasena = it; error = null },

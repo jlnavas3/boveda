@@ -54,11 +54,11 @@ El código fuente se organiza bajo el paquete base `com.jlnavas3.bovedalocal`:
 
 ```
 app/src/main/java/com/jlnavas3/bovedalocal/
-├── PepoBovedaApp.kt             # Application class: ciclo de vida global y timeout de inactividad
+├── BovedaApp.kt                 # Application class: ciclo de vida global y timeout de inactividad
 ├── autofill/                    # Framework de Autorrelleno clásico de Android
 │   ├── AutofillAuthActivity.kt  # Hoja de desbloqueo biométrico/PIN para autofill
 │   ├── AutofillUtiles.kt        # Heurística de detección de campos y paquetes
-│   └── PepoAutofillService.kt   # Servicio principal de autofill (AutofillService)
+│   └── BovedaAutofillService.kt # Servicio principal de autofill (AutofillService)
 ├── camara/                      # Módulos de escaneo QR para 2FA
 │   ├── EstadoCamara.kt          # Estados de cámara y resultados de decodificación
 │   ├── LectorImagenes.kt        # Lectura de códigos QR desde imágenes del almacenamiento
@@ -91,7 +91,7 @@ app/src/main/java/com/jlnavas3/bovedalocal/
 │   ├── PasswordCreateActivity.kt# Guardado de contraseñas vía Credential Manager
 │   ├── PasswordGetActivity.kt   # Selección de contraseñas vía Credential Manager
 │   ├── PasswordProviderUtiles.kt# Mapeo y extracción de credenciales
-│   ├── PepoCredentialProviderService.kt # Servicio del proveedor de credenciales
+│   ├── BovedaCredentialProviderService.kt # Servicio del proveedor de credenciales
 │   └── WebAuthn.kt              # Criptografía EC P-256 y autenticadores WebAuthn
 ├── quicksettings/               # Integración con panel de notificaciones
 │   └── TileGeneradorRapido.kt   # TileService para generar contraseñas desde la cortina de Android
@@ -150,11 +150,11 @@ flowchart TD
     end
 
     subgraph AndroidOS ["Subsistemas del Sistema Operativo"]
-        Autofill["PepoAutofillService + AutofillAuthActivity"]
-        CredMan["PepoCredentialProviderService + Passkey/Password Activities"]
+        Autofill["BovedaAutofillService + AutofillAuthActivity"]
+        CredMan["BovedaCredentialProviderService + Passkey/Password Activities"]
         QSTile["TileGeneradorRapido (Quick Settings)"]
         AppWidget["WidgetTotpFavoritos (AppWidgetProvider)"]
-        AppLifecycle["PepoBovedaApp (ActivityLifecycleCallbacks)"]
+        AppLifecycle["BovedaApp (ActivityLifecycleCallbacks)"]
     end
 
     subgraph Storage ["Almacenamiento Privado"]
@@ -276,13 +276,13 @@ La bóveda se guarda como un único archivo binario en el almacenamiento interno
 
 ## 6. Subsistemas del Sistema Operativo Android
 
-### 1. Autofill Framework (`PepoAutofillService`)
+### 1. Autofill Framework (`BovedaAutofillService`)
 - Registrado en el manifiesto con `android.permission.BIND_AUTOFILL_SERVICE`.
 - `onFillRequest()` inspecciona la jerarquía `AssistStructure` buscando campos `AUTOFILL_HINT_USERNAME`, `AUTOFILL_HINT_PASSWORD`, dominios web o nombres de paquete.
 - Si la bóveda está bloqueada, genera una respuesta que abre `AutofillAuthActivity` (con `FLAG_SECURE`) para autenticar con biometría o contraseña sin exponer la app completa.
 - `onSaveRequest()` permite capturar y actualizar credenciales directamente desde formularios de inicio de sesión del navegador o apps nativas.
 
-### 2. Credential Manager API (`PepoCredentialProviderService`)
+### 2. Credential Manager API (`BovedaCredentialProviderService`)
 - Implementación de Android 14+ (`androidx.credentials`).
 - Provee tanto contraseñas tradicionales como **Passkeys FIDO2/WebAuthn**.
 - Emplea `WebAuthn.kt` para generar pares de claves curvas elípticas NIST P-256 (`secp256r1`) y firmar `clientDataJSON` codificando aserciones en CBOR.
@@ -366,7 +366,7 @@ Cuando un usuario tiene múltiples cuentas para el mismo servicio (ej. cuentas p
 
 ## 9. Ciclo de Vida, Inactividad y Auto-bloqueo
 
-### Gestión Global en `PepoBovedaApp.kt`
+### Gestión Global en `BovedaApp.kt`
 - Implementa `Application.ActivityLifecycleCallbacks` para rastrear las actividades en primer plano (`actividadesVisibles`).
 - Cuando `actividadesVisibles == 0`, se registra el timestamp `momentoAlFondo = System.currentTimeMillis()`.
 - Al reabrir cualquier actividad, si el tiempo transcurrido supera `ajustes.autoBloqueoSegundos`, se invoca inmediatamente `repositorio.bloquear()`.
@@ -374,11 +374,11 @@ Cuando un usuario tiene múltiples cuentas para el mismo servicio (ej. cuentas p
 ### Excepción para Selectores del Sistema (`salidaPendiente`)
 Al abrir selectores externos (como SAF para exportar/importar o galería para leer un QR), la app pasa momentáneamente a segundo plano:
 ```kotlin
-PepoBovedaApp.salidaPendiente(context)  // Activa gracia temporal de 2 minutos
+BovedaApp.salidaPendiente(context)  // Activa gracia temporal de 2 minutos
 try {
     lanzador.launch(...)
 } finally {
-    PepoBovedaApp.salidaTerminada(context) // Restaura el temporizador estándar
+    BovedaApp.salidaTerminada(context) // Restaura el temporizador estándar
 }
 ```
 
@@ -461,5 +461,5 @@ adb devices
 adb install -r app/build/outputs/apk/release/app-release.apk
 
 # Inspeccionar logs de diagnóstico en tiempo real
-adb logcat -s PepoBoveda:D
+adb logcat -s BovedaLocal:D
 ```

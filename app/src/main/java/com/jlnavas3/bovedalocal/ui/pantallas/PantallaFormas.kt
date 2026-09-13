@@ -47,7 +47,7 @@ import com.jlnavas3.bovedalocal.data.AlmacenAjustes
 import com.jlnavas3.bovedalocal.ui.VaultViewModel
 import com.jlnavas3.bovedalocal.ui.componentes.BotonAmbar
 import com.jlnavas3.bovedalocal.ui.componentes.BotonBorde
-import com.jlnavas3.bovedalocal.ui.componentes.CampoPepo
+import com.jlnavas3.bovedalocal.ui.componentes.CampoBoveda
 import com.jlnavas3.bovedalocal.ui.componentes.ContenedorPrincipal
 import com.jlnavas3.bovedalocal.ui.componentes.ContenedorSeccion
 import com.jlnavas3.bovedalocal.ui.componentes.ContenedorTarjeta
@@ -105,7 +105,7 @@ fun PantallaFormas(vm: VaultViewModel) {
                     style = MaterialTheme.typography.bodyMedium
                 )
                 Spacer(Modifier.height(4.dp))
-                CampoPepo(
+                CampoBoveda(
                     valor = textoPrueba,
                     etiqueta = "Campo de entrada con borde dinámico",
                     alCambiar = { textoPrueba = it }

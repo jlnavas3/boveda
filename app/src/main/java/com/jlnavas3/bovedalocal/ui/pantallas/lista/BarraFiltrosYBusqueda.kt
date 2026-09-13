@@ -56,7 +56,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.jlnavas3.bovedalocal.data.TipoEntrada
 import com.jlnavas3.bovedalocal.ui.CriterioOrdenacion
-import com.jlnavas3.bovedalocal.ui.componentes.MenuDesplegablePepo
+import com.jlnavas3.bovedalocal.ui.componentes.MenuDesplegableBoveda
 import com.jlnavas3.bovedalocal.ui.componentes.SeparadorOpcionMenu
 import com.jlnavas3.bovedalocal.ui.theme.Ambar
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
@@ -280,7 +280,7 @@ fun SelectorFiltros(
             )
         }
 
-        MenuDesplegablePepo(
+        MenuDesplegableBoveda(
             expanded = desplegado,
             onDismissRequest = { desplegado = false },
             modifier = Modifier.widthIn(min = 180.dp)
@@ -401,7 +401,7 @@ fun SelectorOrdenacion(
             )
         }
 
-        MenuDesplegablePepo(
+        MenuDesplegableBoveda(
             expanded = desplegado,
             onDismissRequest = { desplegado = false }
         ) {

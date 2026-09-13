@@ -63,9 +63,9 @@ import androidx.lifecycle.compose.LifecycleResumeEffect
 import com.jlnavas3.bovedalocal.ui.VaultViewModel
 import com.jlnavas3.bovedalocal.ui.componentes.BotonColorido
 import com.jlnavas3.bovedalocal.ui.componentes.CabeceraPantalla
-import com.jlnavas3.bovedalocal.ui.componentes.CampoPepo
+import com.jlnavas3.bovedalocal.ui.componentes.CampoBoveda
 import com.jlnavas3.bovedalocal.ui.componentes.ContenedorTarjeta
-import com.jlnavas3.bovedalocal.ui.componentes.MenuDesplegablePepo
+import com.jlnavas3.bovedalocal.ui.componentes.MenuDesplegableBoveda
 import com.jlnavas3.bovedalocal.ui.componentes.SeparadorOpcionMenu
 import com.jlnavas3.bovedalocal.ui.theme.Ambar
 import com.jlnavas3.bovedalocal.ui.theme.Color2FA
@@ -219,7 +219,7 @@ fun PantallaRegistro(vm: VaultViewModel) {
         )
 
         // Buscador
-        CampoPepo(
+        CampoBoveda(
             valor = filtroTexto,
             etiqueta = "Buscar en eventos (${eventosOrdenados.size} de ${registro.size})…",
             alCambiar = { filtroTexto = it }
@@ -437,7 +437,7 @@ private fun SelectorCategoriaRegistro(
             )
         }
 
-        MenuDesplegablePepo(
+        MenuDesplegableBoveda(
             expanded = desplegado,
             onDismissRequest = { desplegado = false }
         ) {
@@ -516,7 +516,7 @@ private fun SelectorOrdenRegistro(
             )
         }
 
-        MenuDesplegablePepo(
+        MenuDesplegableBoveda(
             expanded = desplegado,
             onDismissRequest = { desplegado = false }
         ) {

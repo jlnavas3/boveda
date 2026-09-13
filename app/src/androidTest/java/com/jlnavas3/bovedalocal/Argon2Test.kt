@@ -21,16 +21,16 @@ class Argon2Test {
 
     @Test
     fun argon2id_es_determinista_con_salt_fijo() {
-        val a = Argon2Kdf.derivar("pepotech-2026".toCharArray(), salt, KdfParams.PREDETERMINADOS)
-        val b = Argon2Kdf.derivar("pepotech-2026".toCharArray(), salt, KdfParams.PREDETERMINADOS)
+        val a = Argon2Kdf.derivar("bovedatech-2026".toCharArray(), salt, KdfParams.PREDETERMINADOS)
+        val b = Argon2Kdf.derivar("bovedatech-2026".toCharArray(), salt, KdfParams.PREDETERMINADOS)
         assertEquals(32, a.size)
         assertArrayEquals(a, b)
     }
 
     @Test
     fun argon2id_cambia_con_salt_o_contrasena() {
-        val base = Argon2Kdf.derivar("pepotech-2026".toCharArray(), salt, KdfParams.PREDETERMINADOS)
-        val otroSalt = Argon2Kdf.derivar("pepotech-2026".toCharArray(), ByteArray(16), KdfParams.PREDETERMINADOS)
+        val base = Argon2Kdf.derivar("bovedatech-2026".toCharArray(), salt, KdfParams.PREDETERMINADOS)
+        val otroSalt = Argon2Kdf.derivar("bovedatech-2026".toCharArray(), ByteArray(16), KdfParams.PREDETERMINADOS)
         val otraClave = Argon2Kdf.derivar("otra cosa".toCharArray(), salt, KdfParams.PREDETERMINADOS)
         assertFalse(base.contentEquals(otroSalt))
         assertFalse(base.contentEquals(otraClave))

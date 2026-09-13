@@ -111,7 +111,7 @@ import com.jlnavas3.bovedalocal.ui.componentes.IlustracionVacio
 import com.jlnavas3.bovedalocal.ui.componentes.IndiceAlfabetico
 import com.jlnavas3.bovedalocal.ui.componentes.encontrarIndiceParaLetra
 import androidx.compose.ui.text.style.TextOverflow
-import com.jlnavas3.bovedalocal.ui.componentes.MenuDesplegablePepo
+import com.jlnavas3.bovedalocal.ui.componentes.MenuDesplegableBoveda
 import com.jlnavas3.bovedalocal.ui.componentes.Monograma
 import com.jlnavas3.bovedalocal.ui.componentes.SeparadorOpcionMenu
 import com.jlnavas3.bovedalocal.ui.pantallas.lista.BannerRecordatorioExportacion

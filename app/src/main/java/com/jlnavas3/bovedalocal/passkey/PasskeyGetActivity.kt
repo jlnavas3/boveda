@@ -16,7 +16,7 @@ import androidx.credentials.provider.ProviderGetCredentialRequest
 import androidx.fragment.app.FragmentActivity
 import com.jlnavas3.bovedalocal.data.Entrada
 import com.jlnavas3.bovedalocal.data.VaultRepository
-import com.jlnavas3.bovedalocal.ui.theme.PepoBovedaTheme
+import com.jlnavas3.bovedalocal.ui.theme.BovedaTheme
 import com.jlnavas3.bovedalocal.util.Diagnostico
 
 /** Confirma y firma una aserción con una passkey ya guardada. */
@@ -52,10 +52,10 @@ class PasskeyGetActivity : FragmentActivity() {
             fallar("La petición no trae ni sitio ni reto")
             return
         }
-        val entradaId = intent.getStringExtra(PepoCredentialProviderService.EXTRA_ENTRADA_ID)
+        val entradaId = intent.getStringExtra(BovedaCredentialProviderService.EXTRA_ENTRADA_ID)
 
         setContent {
-            PepoBovedaTheme {
+            BovedaTheme {
                 HojaPasskey(
                     actividad = this,
                     repositorio = repositorio,

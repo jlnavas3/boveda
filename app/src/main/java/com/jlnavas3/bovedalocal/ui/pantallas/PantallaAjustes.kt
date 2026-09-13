@@ -22,7 +22,7 @@ import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.jlnavas3.bovedalocal.PepoBovedaApp
+import com.jlnavas3.bovedalocal.BovedaApp
 import com.jlnavas3.bovedalocal.crypto.BiometricKeyStore
 import com.jlnavas3.bovedalocal.data.modoBiometriaActivo
 import com.jlnavas3.bovedalocal.ui.FlujoBiometria
@@ -65,7 +65,7 @@ fun PantallaAjustes(vm: VaultViewModel, actividad: FragmentActivity) {
     val lanzadorCrear = rememberLauncherForActivityResult(
         ActivityResultContracts.CreateDocument("application/octet-stream")
     ) { uri ->
-        PepoBovedaApp.salidaTerminada(contexto)
+        BovedaApp.salidaTerminada(contexto)
         if (uri != null) {
             val clave = passwordExportacion
             passwordExportacion = ""
@@ -78,7 +78,7 @@ fun PantallaAjustes(vm: VaultViewModel, actividad: FragmentActivity) {
     val lanzadorAbrir = rememberLauncherForActivityResult(
         ActivityResultContracts.OpenDocument()
     ) { uri ->
-        PepoBovedaApp.salidaTerminada(contexto)
+        BovedaApp.salidaTerminada(contexto)
         if (uri != null) {
             uriPendiente = uri
             dialogoImportar = true
@@ -88,7 +88,7 @@ fun PantallaAjustes(vm: VaultViewModel, actividad: FragmentActivity) {
     val lanzadorAbrirCsv = rememberLauncherForActivityResult(
         ActivityResultContracts.OpenDocument()
     ) { uri ->
-        PepoBovedaApp.salidaTerminada(contexto)
+        BovedaApp.salidaTerminada(contexto)
         if (uri != null) {
             var nombreArchivo = uri.lastPathSegment ?: "Google Passwords.csv"
             try {
@@ -207,11 +207,11 @@ fun PantallaAjustes(vm: VaultViewModel, actividad: FragmentActivity) {
             haptica = haptica,
             alExportar = { dialogoExportar = true },
             alImportar = {
-                PepoBovedaApp.salidaPendiente(contexto)
+                BovedaApp.salidaPendiente(contexto)
                 try {
                     lanzadorAbrir.launch(arrayOf("*/*"))
                 } catch (e: Exception) {
-                    PepoBovedaApp.salidaTerminada(contexto)
+                    BovedaApp.salidaTerminada(contexto)
                     vm.avisar("Este móvil no tiene ningún selector de archivos que pueda abrir")
                 }
             }
@@ -284,11 +284,11 @@ fun PantallaAjustes(vm: VaultViewModel, actividad: FragmentActivity) {
             alConfirmar = { clave ->
                 passwordExportacion = clave
                 dialogoExportar = false
-                PepoBovedaApp.salidaPendiente(contexto)
+                BovedaApp.salidaPendiente(contexto)
                 try {
-                    lanzadorCrear.launch("pepo-boveda-${System.currentTimeMillis()}.bvda")
+                    lanzadorCrear.launch("boveda-local-${System.currentTimeMillis()}.bvda")
                 } catch (e: Exception) {
-                    PepoBovedaApp.salidaTerminada(contexto)
+                    BovedaApp.salidaTerminada(contexto)
                     passwordExportacion = ""
                     vm.avisar("Este móvil no tiene ningún selector de archivos que pueda abrir")
                 }
@@ -332,11 +332,11 @@ fun PantallaAjustes(vm: VaultViewModel, actividad: FragmentActivity) {
             alDescartar = { dialogoImportarCsv = false },
             alConfirmar = {
                 dialogoImportarCsv = false
-                PepoBovedaApp.salidaPendiente(contexto)
+                BovedaApp.salidaPendiente(contexto)
                 try {
                     lanzadorAbrirCsv.launch(arrayOf("text/csv", "text/comma-separated-values", "text/plain", "*/*"))
                 } catch (e: Exception) {
-                    PepoBovedaApp.salidaTerminada(contexto)
+                    BovedaApp.salidaTerminada(contexto)
                     vm.avisar("Este móvil no tiene ningún selector de archivos que pueda abrir")
                 }
             }

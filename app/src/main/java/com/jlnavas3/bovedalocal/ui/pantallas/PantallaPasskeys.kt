@@ -29,7 +29,7 @@ import com.jlnavas3.bovedalocal.ui.VaultViewModel
 import com.jlnavas3.bovedalocal.ui.componentes.BotonBorde
 import com.jlnavas3.bovedalocal.ui.componentes.EtiquetaSeccion
 import com.jlnavas3.bovedalocal.ui.componentes.Monograma
-import com.jlnavas3.bovedalocal.ui.componentes.TarjetaPepo
+import com.jlnavas3.bovedalocal.ui.componentes.TarjetaBoveda
 import com.jlnavas3.bovedalocal.ui.theme.ColorTitulos
 import com.jlnavas3.bovedalocal.ui.theme.Menta
 import com.jlnavas3.bovedalocal.ui.theme.TextoPrincipal
@@ -66,7 +66,7 @@ fun PantallaPasskeys(vm: VaultViewModel) {
             alVolver = { vm.volverAtras() }
         )
 
-        TarjetaPepo {
+        TarjetaBoveda {
             EtiquetaSeccion("Cómo activarlas")
             Spacer(Modifier.height(8.dp))
             Text(
@@ -105,7 +105,7 @@ fun PantallaPasskeys(vm: VaultViewModel) {
         Spacer(Modifier.height(16.dp))
 
         if (passkeys.isEmpty()) {
-            TarjetaPepo {
+            TarjetaBoveda {
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -136,7 +136,7 @@ fun PantallaPasskeys(vm: VaultViewModel) {
         } else {
             passkeys.forEach { entrada ->
                 val datos = entrada.passkey ?: return@forEach
-                TarjetaPepo(alPulsar = { vm.ir(Pantalla.Detalle(entrada.id)) }) {
+                TarjetaBoveda(alPulsar = { vm.ir(Pantalla.Detalle(entrada.id)) }) {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         verticalAlignment = Alignment.CenterVertically

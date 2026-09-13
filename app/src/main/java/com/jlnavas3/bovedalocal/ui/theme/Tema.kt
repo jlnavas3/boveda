@@ -592,7 +592,7 @@ val EstiloMono: TextStyle
     )
 
 @Composable
-fun PepoBovedaTheme(temaApp: String = "sistema", contenido: @Composable () -> Unit) {
+fun BovedaTheme(temaApp: String = "sistema", contenido: @Composable () -> Unit) {
     aplicarTema(temaApp, isSystemInDarkTheme())
     val contexto = LocalContext.current
     val vista = LocalView.current
@@ -640,6 +640,7 @@ fun PepoBovedaTheme(temaApp: String = "sistema", contenido: @Composable () -> Un
         content = contenido
     )
 }
+
 
 private tailrec fun Context.encontrarActividad(): Activity? = when (this) {
     is Activity -> this

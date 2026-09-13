@@ -15,7 +15,7 @@ import androidx.compose.ui.unit.dp
 import com.jlnavas3.bovedalocal.data.AjustesApp
 import com.jlnavas3.bovedalocal.data.AlmacenAjustes
 import com.jlnavas3.bovedalocal.ui.VaultViewModel
-import com.jlnavas3.bovedalocal.ui.componentes.CampoPepo
+import com.jlnavas3.bovedalocal.ui.componentes.CampoBoveda
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
 import com.jlnavas3.bovedalocal.util.Haptica
 
@@ -60,7 +60,7 @@ fun SeccionTileRapido(
                 alSeleccionar = { valor -> haptica.tic(); vm.ajustarTileLongitud(valor.toInt()) }
             )
         } else {
-            CampoPepo(
+            CampoBoveda(
                 valor = ajustes.tilePatron,
                 etiqueta = "Patrón (ej. XXXXX-XXXXX-XXXXX-XXXXX)",
                 alCambiar = { vm.ajustarTilePatron(it) },

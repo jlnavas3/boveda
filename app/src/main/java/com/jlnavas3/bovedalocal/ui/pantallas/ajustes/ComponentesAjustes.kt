@@ -36,10 +36,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
-import com.jlnavas3.bovedalocal.ui.componentes.CampoPepo
-import com.jlnavas3.bovedalocal.ui.componentes.MenuDesplegablePepo
+import com.jlnavas3.bovedalocal.ui.componentes.CampoBoveda
+import com.jlnavas3.bovedalocal.ui.componentes.MenuDesplegableBoveda
 import com.jlnavas3.bovedalocal.ui.componentes.SeparadorOpcionMenu
-import com.jlnavas3.bovedalocal.ui.componentes.TarjetaPepoDesplegable
+import com.jlnavas3.bovedalocal.ui.componentes.TarjetaBovedaDesplegable
 import com.jlnavas3.bovedalocal.ui.theme.Ambar
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
@@ -85,7 +85,7 @@ fun DialogoContrasena(
             Column {
                 Text(descripcion, color = TextoSecundario, style = MaterialTheme.typography.bodyMedium)
                 Spacer(Modifier.height(12.dp))
-                CampoPepo(valor = valor, etiqueta = "Contraseña", alCambiar = { valor = it }, esContrasena = true)
+                CampoBoveda(valor = valor, etiqueta = "Contraseña", alCambiar = { valor = it }, esContrasena = true)
             }
         },
         confirmButton = {
@@ -137,7 +137,7 @@ fun TarjetaAjuste(
     inicialmenteAbierta: Boolean = false,
     contenido: @Composable androidx.compose.foundation.layout.ColumnScope.() -> Unit
 ) {
-    TarjetaPepoDesplegable(
+    TarjetaBovedaDesplegable(
         titulo = titulo,
         icono = icono,
         descripcion = descripcion,
@@ -190,7 +190,7 @@ fun SelectorAjuste(
                 tint = TextoSecundario
             )
         }
-        MenuDesplegablePepo(
+        MenuDesplegableBoveda(
             expanded = abierto,
             onDismissRequest = { abierto = false }
         ) {

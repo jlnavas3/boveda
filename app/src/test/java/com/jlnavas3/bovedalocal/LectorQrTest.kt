@@ -15,7 +15,7 @@ import java.nio.ByteBuffer
 
 class LectorQrTest {
 
-    private val carga = "otpauth://totp/PepoTech:daniel@pepotech.es?secret=JBSWY3DPEHPK3PXP&issuer=PepoTech&digits=6&period=30"
+    private val carga = "otpauth://totp/BovedaTech:daniel@bovedatech.es?secret=JBSWY3DPEHPK3PXP&issuer=BovedaTech&digits=6&period=30"
     private val lado = 320
 
     private fun matriz(): BitMatrix =

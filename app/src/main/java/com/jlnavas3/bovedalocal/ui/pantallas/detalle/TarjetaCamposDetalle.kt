@@ -40,7 +40,7 @@ import com.jlnavas3.bovedalocal.data.CampoPersonalizado
 import com.jlnavas3.bovedalocal.data.TipoCampo
 import com.jlnavas3.bovedalocal.ui.VaultViewModel
 import com.jlnavas3.bovedalocal.ui.componentes.EtiquetaSeccion
-import com.jlnavas3.bovedalocal.ui.componentes.TarjetaPepo
+import com.jlnavas3.bovedalocal.ui.componentes.TarjetaBoveda
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.Ambar
 import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
@@ -64,7 +64,7 @@ fun TarjetaCamposDetalle(
 ) {
     if (campos.isEmpty()) return
 
-    TarjetaPepo {
+    TarjetaBoveda {
         EtiquetaSeccion("Campos personalizados")
         Spacer(Modifier.height(8.dp))
         campos.forEachIndexed { index, campo ->

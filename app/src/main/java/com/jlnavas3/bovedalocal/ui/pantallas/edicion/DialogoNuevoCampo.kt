@@ -42,7 +42,7 @@ import androidx.compose.ui.unit.dp
 import com.jlnavas3.bovedalocal.data.CampoPersonalizado
 import com.jlnavas3.bovedalocal.data.TipoCampo
 import com.jlnavas3.bovedalocal.ui.componentes.BotonColorido
-import com.jlnavas3.bovedalocal.ui.componentes.CampoPepo
+import com.jlnavas3.bovedalocal.ui.componentes.CampoBoveda
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
 import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
@@ -100,7 +100,7 @@ fun DialogoNuevoCampo(
                 verticalArrangement = Arrangement.spacedBy(14.dp)
             ) {
                 // Nombre del campo
-                CampoPepo(
+                CampoBoveda(
                     valor = nombre,
                     alCambiar = { nombre = it },
                     etiqueta = "Nombre (ej. CVV, Titular, IP...)"

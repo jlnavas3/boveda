@@ -17,13 +17,13 @@ import com.jlnavas3.bovedalocal.data.VaultRepository
 import com.jlnavas3.bovedalocal.util.Diagnostico
 import com.jlnavas3.bovedalocal.util.Dominios
 
-class PepoAutofillService : AutofillService() {
+class BovedaAutofillService : AutofillService() {
 
     companion object {
-        const val EXTRA_USUARIO_ID = "pepo.usuario.id"
-        const val EXTRA_CONTRASENA_ID = "pepo.contrasena.id"
-        const val EXTRA_PAQUETE = "pepo.paquete"
-        const val EXTRA_DOMINIO = "pepo.dominio"
+        const val EXTRA_USUARIO_ID = "boveda.usuario.id"
+        const val EXTRA_CONTRASENA_ID = "boveda.contrasena.id"
+        const val EXTRA_PAQUETE = "boveda.paquete"
+        const val EXTRA_DOMINIO = "boveda.dominio"
     }
 
     override fun onFillRequest(

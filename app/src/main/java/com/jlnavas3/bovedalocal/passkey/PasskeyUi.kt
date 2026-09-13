@@ -27,9 +27,9 @@ import com.jlnavas3.bovedalocal.data.VaultRepository
 import com.jlnavas3.bovedalocal.ui.FlujoBiometria
 import com.jlnavas3.bovedalocal.ui.componentes.BotonAmbar
 import com.jlnavas3.bovedalocal.ui.componentes.BotonBorde
-import com.jlnavas3.bovedalocal.ui.componentes.CampoPepo
+import com.jlnavas3.bovedalocal.ui.componentes.CampoBoveda
 import com.jlnavas3.bovedalocal.ui.componentes.Monograma
-import com.jlnavas3.bovedalocal.ui.componentes.TarjetaPepo
+import com.jlnavas3.bovedalocal.ui.componentes.TarjetaBoveda
 import com.jlnavas3.bovedalocal.ui.theme.Ambar
 import com.jlnavas3.bovedalocal.ui.theme.Peligro
 import com.jlnavas3.bovedalocal.ui.theme.TextoPrincipal
@@ -154,7 +154,7 @@ fun HojaPasskey(
             .padding(22.dp),
         contentAlignment = Alignment.Center
     ) {
-        TarjetaPepo {
+        TarjetaBoveda {
             Monograma(titulo = sitio.ifBlank { "Passkey" }, semilla = sitio, tamano = 52)
             Spacer(Modifier.height(14.dp))
             Text(titulo, style = MaterialTheme.typography.titleLarge, color = Ambar)
@@ -163,7 +163,7 @@ fun HojaPasskey(
             Spacer(Modifier.height(18.dp))
 
             if (!abierta) {
-                CampoPepo(
+                CampoBoveda(
                     valor = contrasena,
                     etiqueta = "Contraseña maestra",
                     alCambiar = { contrasena = it; error = null },

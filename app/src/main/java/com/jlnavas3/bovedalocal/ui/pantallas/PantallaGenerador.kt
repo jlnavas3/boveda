@@ -32,7 +32,7 @@ import com.jlnavas3.bovedalocal.ui.componentes.BotonBorde
 import com.jlnavas3.bovedalocal.ui.componentes.BotonColorido
 import com.jlnavas3.bovedalocal.ui.componentes.CabeceraPantalla
 import com.jlnavas3.bovedalocal.ui.componentes.EtiquetaSeccion
-import com.jlnavas3.bovedalocal.ui.componentes.TarjetaPepo
+import com.jlnavas3.bovedalocal.ui.componentes.TarjetaBoveda
 import com.jlnavas3.bovedalocal.ui.pantallas.generador.PanelModoAleatorio
 import com.jlnavas3.bovedalocal.ui.pantallas.generador.PanelModoDiceware
 import com.jlnavas3.bovedalocal.ui.pantallas.generador.PanelModoPatron
@@ -92,7 +92,7 @@ fun PantallaGenerador(vm: VaultViewModel) {
         Spacer(Modifier.height(espaciado))
 
         // 2. Tarjeta: Configuración de Parámetros
-        TarjetaPepo {
+        TarjetaBoveda {
             EtiquetaSeccion("Configuración del Generador")
             Spacer(Modifier.height(10.dp))
 

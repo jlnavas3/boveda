@@ -35,12 +35,12 @@ import java.time.Instant
  * pedido, y todo lo delicado ocurre en las actividades con confirmación.
  */
 @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
-class PepoCredentialProviderService : CredentialProviderService() {
+class BovedaCredentialProviderService : CredentialProviderService() {
 
     companion object {
-        const val EXTRA_ENTRADA_ID = "pepo.passkey.entrada"
-        const val EXTRA_OPCION_ID = "pepo.passkey.opcion"
-        const val EXTRA_OBJETIVO = "pepo.credencial.objetivo"
+        const val EXTRA_ENTRADA_ID = "boveda.passkey.entrada"
+        const val EXTRA_OPCION_ID = "boveda.passkey.opcion"
+        const val EXTRA_OBJETIVO = "boveda.credencial.objetivo"
         private const val PETICION_CREAR = 2001
         private const val PETICION_OBTENER = 2002
         private const val PETICION_CREAR_PASSWORD = 2101

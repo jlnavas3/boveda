@@ -18,7 +18,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.jlnavas3.bovedalocal.ui.componentes.CampoPepo
+import com.jlnavas3.bovedalocal.ui.componentes.CampoBoveda
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.ColorTarjetas
 import com.jlnavas3.bovedalocal.ui.theme.Peligro
@@ -72,9 +72,9 @@ fun DialogoCambioMaestra(
         title = { Text("Cambiar contraseña maestra") },
         text = {
             Column {
-                CampoPepo(valor = actualMaestra, etiqueta = "Contraseña actual", alCambiar = { actualMaestra = it }, esContrasena = true)
+                CampoBoveda(valor = actualMaestra, etiqueta = "Contraseña actual", alCambiar = { actualMaestra = it }, esContrasena = true)
                 Spacer(Modifier.height(10.dp))
-                CampoPepo(valor = nuevaMaestra, etiqueta = "Nueva contraseña", alCambiar = { nuevaMaestra = it }, esContrasena = true)
+                CampoBoveda(valor = nuevaMaestra, etiqueta = "Nueva contraseña", alCambiar = { nuevaMaestra = it }, esContrasena = true)
                 Spacer(Modifier.height(8.dp))
                 Text(
                     "Se vuelve a cifrar toda la bóveda y se desactiva la huella.",

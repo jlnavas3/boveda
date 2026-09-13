@@ -12,8 +12,8 @@ class ImportadorCsvTest {
     fun `parsea CSV de Google Password Manager y Chrome`() {
         val csv = """
             name,url,username,password,note
-            Google,https://accounts.google.com,pepo@gmail.com,ClaveSecreta123!,Nota de Google
-            GitHub,https://github.com/login,pepotech,SuperP@ssw0rd,
+            Google,https://accounts.google.com,usuario@gmail.com,ClaveSecreta123!,Nota de Google
+            GitHub,https://github.com/login,usuariotech,SuperP@ssw0rd,
         """.trimIndent()
 
         val entradas = ImportadorCsv.parsear(csv.toByteArray(Charsets.UTF_8))
@@ -22,14 +22,14 @@ class ImportadorCsvTest {
         val e1 = entradas[0]
         assertEquals("Google", e1.titulo)
         assertEquals("https://accounts.google.com", e1.urls.first())
-        assertEquals("pepo@gmail.com", e1.usuario)
+        assertEquals("usuario@gmail.com", e1.usuario)
         assertEquals("ClaveSecreta123!", e1.contrasena)
         assertEquals("Nota de Google", e1.notas)
 
         val e2 = entradas[1]
         assertEquals("GitHub", e2.titulo)
         assertEquals("https://github.com/login", e2.urls.first())
-        assertEquals("pepotech", e2.usuario)
+        assertEquals("usuariotech", e2.usuario)
         assertEquals("SuperP@ssw0rd", e2.contrasena)
         assertEquals("", e2.notas)
     }

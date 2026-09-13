@@ -46,7 +46,7 @@ import com.jlnavas3.bovedalocal.data.CambioContrasena
 import com.jlnavas3.bovedalocal.data.Entrada
 import com.jlnavas3.bovedalocal.ui.VaultViewModel
 import com.jlnavas3.bovedalocal.ui.componentes.EtiquetaSeccion
-import com.jlnavas3.bovedalocal.ui.componentes.TarjetaPepo
+import com.jlnavas3.bovedalocal.ui.componentes.TarjetaBoveda
 import com.jlnavas3.bovedalocal.ui.componentes.contrasenaColoreada
 import com.jlnavas3.bovedalocal.ui.theme.Ambar
 import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
@@ -90,7 +90,7 @@ fun TarjetaHistorialDetalle(
         }
     }
 
-    TarjetaPepo {
+    TarjetaBoveda {
         EtiquetaSeccion("Contraseñas anteriores")
         Spacer(Modifier.height(6.dp))
         Text(

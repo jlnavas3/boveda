@@ -138,7 +138,7 @@ fun Monograma(titulo: String, semilla: String, tamano: Int = 46) {
 }
 
 @Composable
-fun TarjetaPepo(
+fun TarjetaBoveda(
     modifier: Modifier = Modifier,
     alPulsar: (() -> Unit)? = null,
     contenido: @Composable androidx.compose.foundation.layout.ColumnScope.() -> Unit
@@ -163,13 +163,14 @@ fun TarjetaPepo(
     }
 }
 
+
 /**
  * Tarjeta desplegable con encabezado distinguido (tono más oscuro, icono grande a la izquierda,
  * textos verticalmente centrados, borde separador inferior y chevron a la derecha).
  * Completamente plana: sin sombras ni blur, gobernada por el borde y curvatura configurados.
  */
 @Composable
-fun TarjetaPepoDesplegable(
+fun TarjetaBovedaDesplegable(
     titulo: String,
     icono: ImageVector,
     descripcion: String = "",
@@ -414,7 +415,7 @@ fun BotonBorde(
 }
 
 @Composable
-fun CampoPepo(
+fun CampoBoveda(
     valor: String,
     etiqueta: String,
     alCambiar: (String) -> Unit,
@@ -497,6 +498,7 @@ fun CampoPepo(
     }
 }
 
+
 @Composable
 fun BarraFuerza(fraccion: Float, etiqueta: String, tiempo: String) {
     val anchoAnimado by animateFloatAsState(
@@ -562,7 +564,7 @@ fun EtiquetaSeccion(texto: String, modifier: Modifier = Modifier) {
  * y esquinas consistentes con el diseño de la aplicación.
  */
 @Composable
-fun MenuDesplegablePepo(
+fun MenuDesplegableBoveda(
     expanded: Boolean,
     onDismissRequest: () -> Unit,
     modifier: Modifier = Modifier,

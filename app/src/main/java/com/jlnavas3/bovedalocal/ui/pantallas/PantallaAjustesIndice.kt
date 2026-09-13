@@ -78,7 +78,7 @@ fun PantallaAjustesIndice(vm: VaultViewModel) {
             "Netflix" to "Suscripción familiar",
             "Ñandú" to "Cuenta de prueba en español",
             "Spotify" to "Música y podcasts",
-            "Twitter" to "@usuario_pepo",
+            "Twitter" to "@usuario_boveda",
             "Zara" to "Moda y calzado"
         )
     }

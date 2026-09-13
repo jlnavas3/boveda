@@ -46,7 +46,7 @@ import com.jlnavas3.bovedalocal.ui.VaultViewModel
 import com.jlnavas3.bovedalocal.ui.componentes.BotonColorido
 import com.jlnavas3.bovedalocal.ui.componentes.CabeceraPantalla
 import com.jlnavas3.bovedalocal.ui.componentes.IlustracionVacio
-import com.jlnavas3.bovedalocal.ui.componentes.TarjetaPepoDesplegable
+import com.jlnavas3.bovedalocal.ui.componentes.TarjetaBovedaDesplegable
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
 import com.jlnavas3.bovedalocal.ui.theme.ColorPapelera
@@ -187,7 +187,7 @@ private fun FilaPapeleraDesplegable(
         entrada.urls.firstOrNull() ?: entrada.tipo.etiqueta
     }
 
-    TarjetaPepoDesplegable(
+    TarjetaBovedaDesplegable(
         titulo = entrada.titulo.ifBlank { "Sin título" },
         descripcion = subtitulo,
         icono = icono,

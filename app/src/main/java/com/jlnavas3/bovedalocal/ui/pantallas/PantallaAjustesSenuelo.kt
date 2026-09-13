@@ -47,7 +47,7 @@ import com.jlnavas3.bovedalocal.data.BovedaSenuelo
 import com.jlnavas3.bovedalocal.ui.VaultViewModel
 import com.jlnavas3.bovedalocal.ui.componentes.BotonColorido
 import com.jlnavas3.bovedalocal.ui.componentes.CabeceraPantalla
-import com.jlnavas3.bovedalocal.ui.componentes.CampoPepo
+import com.jlnavas3.bovedalocal.ui.componentes.CampoBoveda
 import com.jlnavas3.bovedalocal.ui.componentes.ContenedorTarjeta
 import com.jlnavas3.bovedalocal.ui.theme.Ambar
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
@@ -164,7 +164,7 @@ fun PantallaAjustesSenuelo(vm: VaultViewModel) {
 
                 Spacer(Modifier.height(6.dp))
 
-                CampoPepo(
+                CampoBoveda(
                     valor = pinCoaccion,
                     etiqueta = "PIN o clave de coacción (ej. 1984)",
                     alCambiar = { pinCoaccion = it },

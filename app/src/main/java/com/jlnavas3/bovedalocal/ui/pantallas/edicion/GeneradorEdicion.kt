@@ -44,9 +44,9 @@ import androidx.compose.ui.unit.dp
 import com.jlnavas3.bovedalocal.crypto.OpcionesGenerador
 import com.jlnavas3.bovedalocal.crypto.PasswordGenerator
 import com.jlnavas3.bovedalocal.ui.componentes.BotonAmbar
-import com.jlnavas3.bovedalocal.ui.componentes.CampoPepo
+import com.jlnavas3.bovedalocal.ui.componentes.CampoBoveda
 import com.jlnavas3.bovedalocal.ui.componentes.EtiquetaSeccion
-import com.jlnavas3.bovedalocal.ui.componentes.MenuDesplegablePepo
+import com.jlnavas3.bovedalocal.ui.componentes.MenuDesplegableBoveda
 import com.jlnavas3.bovedalocal.ui.componentes.SeparadorOpcionMenu
 import com.jlnavas3.bovedalocal.ui.theme.Ambar
 import com.jlnavas3.bovedalocal.ui.theme.Borde
@@ -140,7 +140,7 @@ fun SelectorModoEdicion(
             )
         }
 
-        MenuDesplegablePepo(
+        MenuDesplegableBoveda(
             expanded = abierto,
             onDismissRequest = { abierto = false }
         ) {
@@ -250,7 +250,7 @@ fun GeneradorEnLineaEdicion(
             )
         }
         opcionesGenerador.modoPatron -> {
-            CampoPepo(
+            CampoBoveda(
                 valor = opcionesGenerador.patron,
                 etiqueta = "Patrón (ej. XXXXX-XXXXX-XXXXX-XXXXX-XXXXX)",
                 alCambiar = { alCambiarOpciones(opcionesGenerador.copy(patron = it)) },

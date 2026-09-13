@@ -51,7 +51,7 @@ import androidx.core.app.ActivityCompat
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.jlnavas3.bovedalocal.PepoBovedaApp
+import com.jlnavas3.bovedalocal.BovedaApp
 import com.jlnavas3.bovedalocal.camara.EstadoCamara
 import com.jlnavas3.bovedalocal.camara.LectorImagenes
 import com.jlnavas3.bovedalocal.camara.LectorQr
@@ -62,8 +62,8 @@ import com.jlnavas3.bovedalocal.camara.PermisoCamara
 import com.jlnavas3.bovedalocal.ui.VaultViewModel
 import com.jlnavas3.bovedalocal.ui.componentes.BotonAmbar
 import com.jlnavas3.bovedalocal.ui.componentes.BotonBorde
-import com.jlnavas3.bovedalocal.ui.componentes.CampoPepo
-import com.jlnavas3.bovedalocal.ui.componentes.TarjetaPepo
+import com.jlnavas3.bovedalocal.ui.componentes.CampoBoveda
+import com.jlnavas3.bovedalocal.ui.componentes.TarjetaBoveda
 import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
 import com.jlnavas3.bovedalocal.ui.theme.ColorTitulos
 import com.jlnavas3.bovedalocal.ui.theme.FormaPequena
@@ -163,7 +163,7 @@ fun PantallaEscaner(
     }
 
     val elegirImagen = rememberLauncherForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
-        PepoBovedaApp.salidaTerminada(contexto)
+        BovedaApp.salidaTerminada(contexto)
         if (uri == null) {
             Diagnostico.apuntar("camara", "Selector de imagen cerrado sin elegir nada")
             return@rememberLauncherForActivityResult
@@ -191,11 +191,11 @@ fun PantallaEscaner(
     fun abrirSelectorDeImagen() {
         avisoImagen = null
         // Salimos a otra app un momento a por un resultado: que eso no cierre la bóveda.
-        PepoBovedaApp.salidaPendiente(contexto)
+        BovedaApp.salidaPendiente(contexto)
         try {
             elegirImagen.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
         } catch (e: Exception) {
-            PepoBovedaApp.salidaTerminada(contexto)
+            BovedaApp.salidaTerminada(contexto)
             Diagnostico.apuntar("camara", "No se pudo abrir el selector de imágenes", e)
             avisoImagen = "Este móvil no tiene ningún selector de imágenes que pueda abrir."
         }
@@ -227,7 +227,7 @@ fun PantallaEscaner(
                     alElegirImagen = { abrirSelectorDeImagen() }
                 )
             } else {
-                TarjetaPepo {
+                TarjetaBoveda {
                     Text("Escanear el QR", color = ColorTitulos, style = MaterialTheme.typography.titleMedium)
                     Spacer(Modifier.height(6.dp))
                     Text(
@@ -274,7 +274,7 @@ fun PantallaEscaner(
 
         if (qrPasskey) {
             Spacer(Modifier.height(18.dp))
-            TarjetaPepo {
+            TarjetaBoveda {
                 Text("Ese QR es de una llave de acceso, no de un 2FA", color = Peligro, style = MaterialTheme.typography.titleMedium)
                 Spacer(Modifier.height(6.dp))
                 Text(
@@ -307,7 +307,7 @@ fun PantallaEscaner(
                     )
                 }
                 Spacer(Modifier.height(10.dp))
-                CampoPepo(
+                CampoBoveda(
                     valor = manual,
                     etiqueta = "Clave del 2FA o enlace otpauth://",
                     alCambiar = { manual = it; fallo = false },
