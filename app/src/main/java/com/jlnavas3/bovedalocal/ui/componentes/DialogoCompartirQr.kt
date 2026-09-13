@@ -61,7 +61,13 @@ import com.jlnavas3.bovedalocal.util.GeneradorQr
 import com.jlnavas3.bovedalocal.util.Portapapeles
 import kotlinx.coroutines.delay
 
+import androidx.compose.material.icons.filled.Wifi
+import com.jlnavas3.bovedalocal.data.TipoEntrada
+import com.jlnavas3.bovedalocal.ui.pantallas.edicion.GestorCamposBase
+import com.jlnavas3.bovedalocal.util.Haptica
+
 private enum class ModoQr(val etiqueta: String) {
+    WIFI("Conectar Wi-Fi"),
     TOTP("2FA / TOTP"),
     CONTRASENA("Contraseña"),
     CREDENCIAL("Completa")
@@ -73,11 +79,30 @@ fun DialogoCompartirQr(
     alCerrar: () -> Unit
 ) {
     val contexto = LocalContext.current
-    val tieneTotp = !entrada.secretoTotp.isNullOrBlank()
-    val tieneContrasena = entrada.contrasena.isNotBlank()
+    val haptica = remember { Haptica(contexto) }
 
-    val modosDisponibles = remember(entrada) {
+    val ssidWifi = remember(entrada) {
+        GestorCamposBase.valorDeCampo(entrada.camposPersonalizados, "Nombre de red (SSID)")
+            .ifBlank { GestorCamposBase.valorDeCampo(entrada.camposPersonalizados, "SSID") }
+            .ifBlank { entrada.titulo }
+            .trim()
+    }
+    val claveWifi = remember(entrada) {
+        GestorCamposBase.valorDeCampo(entrada.camposPersonalizados, "Contraseña Wi-Fi")
+            .ifBlank { GestorCamposBase.valorDeCampo(entrada.camposPersonalizados, "Contraseña") }
+            .ifBlank { entrada.contrasena }
+    }
+    val esWifi = remember(entrada, ssidWifi) {
+        entrada.tipo == TipoEntrada.WIFI ||
+            GestorCamposBase.valorDeCampo(entrada.camposPersonalizados, "Nombre de red (SSID)").isNotBlank()
+    }
+
+    val tieneTotp = !entrada.secretoTotp.isNullOrBlank()
+    val tieneContrasena = entrada.contrasena.isNotBlank() || (esWifi && claveWifi.isNotBlank())
+
+    val modosDisponibles = remember(entrada, esWifi, tieneTotp, tieneContrasena) {
         buildList {
+            if (esWifi) add(ModoQr.WIFI)
             if (tieneTotp) add(ModoQr.TOTP)
             if (tieneContrasena) add(ModoQr.CONTRASENA)
             add(ModoQr.CREDENCIAL)
@@ -85,13 +110,21 @@ fun DialogoCompartirQr(
     }
 
     var modoSeleccionado by remember {
-        mutableStateOf(if (tieneTotp) ModoQr.TOTP else if (tieneContrasena) ModoQr.CONTRASENA else ModoQr.CREDENCIAL)
+        mutableStateOf(
+            when {
+                esWifi -> ModoQr.WIFI
+                tieneTotp -> ModoQr.TOTP
+                tieneContrasena -> ModoQr.CONTRASENA
+                else -> ModoQr.CREDENCIAL
+            }
+        )
     }
 
-    val textoQr = remember(entrada, modoSeleccionado) {
+    val textoQr = remember(entrada, modoSeleccionado, esWifi, claveWifi) {
         when (modoSeleccionado) {
+            ModoQr.WIFI -> GeneradorQr.textoWifiDesdeEntrada(entrada)
             ModoQr.TOTP -> GeneradorQr.uriTotp(entrada) ?: entrada.titulo
-            ModoQr.CONTRASENA -> entrada.contrasena
+            ModoQr.CONTRASENA -> if (esWifi) claveWifi else entrada.contrasena
             ModoQr.CREDENCIAL -> GeneradorQr.textoCredencialCompleta(entrada)
         }
     }
@@ -139,9 +172,9 @@ fun DialogoCompartirQr(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
+                    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.weight(1f)) {
                         Icon(
-                            Icons.Filled.QrCode,
+                            if (esWifi && modoSeleccionado == ModoQr.WIFI) Icons.Filled.Wifi else Icons.Filled.QrCode,
                             contentDescription = null,
                             tint = ColorAcento,
                             modifier = Modifier.size(24.dp)
@@ -149,19 +182,31 @@ fun DialogoCompartirQr(
                         Spacer(Modifier.width(10.dp))
                         Column {
                             Text(
-                                text = "Compartir por QR",
+                                text = if (esWifi && modoSeleccionado == ModoQr.WIFI) "Conectar a Wi-Fi" else "Compartir por QR",
                                 color = TextoPrincipal,
                                 style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
                             )
                             Text(
-                                text = entrada.titulo.ifBlank { "Credencial" },
+                                text = if (esWifi && ssidWifi.isNotBlank()) "Red: $ssidWifi" else entrada.titulo.ifBlank { "Credencial" },
                                 color = TextoSecundario,
                                 style = MaterialTheme.typography.bodySmall
                             )
                         }
                     }
-                    IconButton(onClick = alCerrar) {
-                        Icon(Icons.Filled.Close, contentDescription = "Cerrar", tint = TextoSecundario)
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        IconButton(onClick = {
+                            haptica.toque()
+                            if (modoSeleccionado == ModoQr.CONTRASENA) {
+                                Portapapeles.copiarSensible(contexto, "Contraseña", textoQr)
+                            } else {
+                                Portapapeles.copiar(contexto, "Contenido QR", textoQr)
+                            }
+                        }) {
+                            Icon(Icons.Filled.ContentCopy, contentDescription = "Copiar texto del QR", tint = TextoSecundario)
+                        }
+                        IconButton(onClick = alCerrar) {
+                            Icon(Icons.Filled.Close, contentDescription = "Cerrar", tint = TextoSecundario)
+                        }
                     }
                 }
 
@@ -229,9 +274,10 @@ fun DialogoCompartirQr(
                 // Nota informativa y advertencia de seguridad
                 Text(
                     text = when (modoSeleccionado) {
+                        ModoQr.WIFI -> "Escanea este código con la cámara o ajustes Wi-Fi de otro teléfono para conectarte automáticamente a la red."
                         ModoQr.TOTP -> "Escanea con cualquier app de autenticación para vincular este token 2FA."
-                        ModoQr.CONTRASENA -> "Escanea pantalla a pantalla para transferir la contraseña sin internet."
-                        ModoQr.CREDENCIAL -> "Transfiere usuario y clave de forma segura y sin conexión."
+                        ModoQr.CONTRASENA -> "Escanea pantalla a pantalla para transferir únicamente la contraseña sin internet."
+                        ModoQr.CREDENCIAL -> "Transfiere los datos de la entrada de forma segura y sin conexión."
                     },
                     color = TextoSecundario,
                     style = MaterialTheme.typography.bodySmall,

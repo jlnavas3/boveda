@@ -37,7 +37,7 @@ object PresetsCampos {
     fun wifi(): List<CampoPersonalizado> = listOf(
         campo("Nombre de red (SSID)", TipoCampo.TEXTO),
         campo("Contraseña Wi-Fi", TipoCampo.TEXTO, sensible = true),
-        campo("Tipo de seguridad (WPA3/WPA2)", TipoCampo.TEXTO)
+        campo("Tipo de seguridad", TipoCampo.TEXTO)
     )
 
     fun cuentaBancaria(): List<CampoPersonalizado> = listOf(

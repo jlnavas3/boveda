@@ -178,6 +178,19 @@ fun PantallaDetalle(vm: VaultViewModel, id: String) {
 
         Spacer(Modifier.height(20.dp))
 
+        if (entrada.tipo == com.jlnavas3.bovedalocal.data.TipoEntrada.WIFI) {
+            BotonColorido(
+                texto = "Compartir Wi-Fi por código QR",
+                color = ColorAcento,
+                icono = Icons.Filled.QrCode,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                haptica.tic()
+                mostrarDialogoQr = true
+            }
+            Spacer(Modifier.height(14.dp))
+        }
+
         // Usuario / Correo
         if (entrada.usuario.isNotBlank()) {
             TarjetaPepo {

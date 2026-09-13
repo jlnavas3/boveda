@@ -57,4 +57,72 @@ class GeneradorQrTest {
         assertTrue(texto.contains("Contraseña: SuperClave99!"))
         assertTrue(texto.contains("URL: https://192.168.1.1"))
     }
+
+    @Test
+    fun `textoWifiDesdeEntrada genera formato estandar valido para el caso del usuario`() {
+        val entrada = Entrada(
+            id = "wifi-spider",
+            tipo = com.jlnavas3.bovedalocal.data.TipoEntrada.WIFI,
+            titulo = "SPIDER2",
+            camposPersonalizados = listOf(
+                com.jlnavas3.bovedalocal.data.CampoPersonalizado(
+                    etiqueta = "Nombre de red (SSID)",
+                    valor = "SPIDER2"
+                ),
+                com.jlnavas3.bovedalocal.data.CampoPersonalizado(
+                    etiqueta = "Contraseña Wi-Fi",
+                    valor = "La contraseña",
+                    esSensible = true
+                ),
+                com.jlnavas3.bovedalocal.data.CampoPersonalizado(
+                    etiqueta = "Tipo de seguridad",
+                    valor = "WPA2-PSK [AES]"
+                )
+            )
+        )
+
+        val qrTexto = GeneradorQr.textoWifiDesdeEntrada(entrada)
+        assertEquals("WIFI:T:WPA;S:SPIDER2;P:La contraseña;;", qrTexto)
+
+        // Verificamos que el parser de ZXing (el mismo de Android) lo interprete correctamente
+        val result = com.google.zxing.Result(qrTexto, null, null, com.google.zxing.BarcodeFormat.QR_CODE)
+        val parsed = com.google.zxing.client.result.WifiResultParser().parse(result)
+        assertNotNull(parsed)
+        assertEquals("SPIDER2", parsed.ssid)
+        assertEquals("La contraseña", parsed.password)
+        assertEquals("WPA", parsed.networkEncryption)
+    }
+
+    @Test
+    fun `textoConfiguracionWifi maneja caracteres especiales con escape`() {
+        val qrTexto = GeneradorQr.textoConfiguracionWifi(
+            ssid = "Mi;Red:WiFi",
+            clave = "P@ss;w:ord\\123",
+            tipoSeguridad = "WPA2"
+        )
+        assertEquals("WIFI:T:WPA;S:Mi\\;Red\\:WiFi;P:P@ss\\;w\\:ord\\\\123;;", qrTexto)
+
+        val result = com.google.zxing.Result(qrTexto, null, null, com.google.zxing.BarcodeFormat.QR_CODE)
+        val parsed = com.google.zxing.client.result.WifiResultParser().parse(result)
+        assertNotNull(parsed)
+        assertEquals("Mi;Red:WiFi", parsed.ssid)
+        assertEquals("P@ss;w:ord\\123", parsed.password)
+    }
+
+    @Test
+    fun `textoConfiguracionWifi para red abierta omite contrasena y usa nopass`() {
+        val qrTexto = GeneradorQr.textoConfiguracionWifi(
+            ssid = "RedLibre",
+            clave = "",
+            tipoSeguridad = "Abierta"
+        )
+        assertEquals("WIFI:T:nopass;S:RedLibre;;", qrTexto)
+
+        val result = com.google.zxing.Result(qrTexto, null, null, com.google.zxing.BarcodeFormat.QR_CODE)
+        val parsed = com.google.zxing.client.result.WifiResultParser().parse(result)
+        assertNotNull(parsed)
+        assertEquals("RedLibre", parsed.ssid)
+        assertEquals("nopass", parsed.networkEncryption)
+        assertNull(parsed.password)
+    }
 }

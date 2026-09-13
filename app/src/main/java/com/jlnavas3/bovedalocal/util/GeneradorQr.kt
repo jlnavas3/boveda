@@ -7,6 +7,8 @@ import com.google.zxing.common.BitMatrix
 import com.google.zxing.qrcode.QRCodeWriter
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel
 import com.jlnavas3.bovedalocal.data.Entrada
+import com.jlnavas3.bovedalocal.data.TipoEntrada
+import com.jlnavas3.bovedalocal.ui.pantallas.edicion.GestorCamposBase
 
 object GeneradorQr {
 
@@ -77,13 +79,101 @@ object GeneradorQr {
     }
 
     /**
+     * Escapa caracteres reservados en el formato Wi-Fi de ZXing:
+     * '\', ';', ',', ':', '"' se prefijan con una barra invertida '\'.
+     */
+    fun escaparWifi(valor: String): String = buildString {
+        for (c in valor) {
+            if (c == '\\' || c == ';' || c == ',' || c == ':' || c == '"') {
+                append('\\')
+            }
+            append(c)
+        }
+    }
+
+    /**
+     * Normaliza el tipo de seguridad Wi-Fi según el estándar:
+     * "WPA" (compatible con WPA, WPA2, WPA3, WPA-PSK, etc. en Android e iOS), "WEP", o "nopass" para redes abiertas.
+     */
+    fun normalizarSeguridadWifi(tipoSeguridad: String, tienePassword: Boolean): String {
+        val limpia = tipoSeguridad.trim().uppercase()
+        return when {
+            !tienePassword || limpia.contains("NOPASS") || limpia.contains("ABIERTA") || limpia.contains("OPEN") || limpia.contains("NINGUNA") || limpia == "SIN SEGURIDAD" -> "nopass"
+            limpia.contains("WEP") -> "WEP"
+            limpia.contains("WPA") || limpia.contains("SAE") || limpia.contains("PSK") || limpia.contains("AES") -> "WPA"
+            else -> if (tienePassword) "WPA" else "nopass"
+        }
+    }
+
+    /**
+     * Genera la cadena de configuración Wi-Fi estándar según la especificación ZXing / Android / iOS:
+     * WIFI:T:WPA;S:SPIDER2;P:La contraseña;;
+     * o para redes abiertas:
+     * WIFI:T:nopass;S:SPIDER2;;
+     */
+    fun textoConfiguracionWifi(
+        ssid: String,
+        clave: String = "",
+        tipoSeguridad: String = "WPA",
+        oculta: Boolean = false
+    ): String {
+        val ssidEscapado = escaparWifi(ssid.trim())
+        val segNormalizada = normalizarSeguridadWifi(tipoSeguridad, tienePassword = clave.isNotBlank())
+        return buildString {
+            append("WIFI:")
+            append("T:").append(segNormalizada).append(";")
+            append("S:").append(ssidEscapado).append(";")
+            if (segNormalizada != "nopass" && clave.isNotBlank()) {
+                append("P:").append(escaparWifi(clave)).append(";")
+            }
+            if (oculta) {
+                append("H:true;")
+            }
+            append(";")
+        }
+    }
+
+    /**
+     * Extrae de forma inteligente el SSID, contraseña y tipo de seguridad de una [Entrada]
+     * y genera el código QR estándar que los teléfonos reconocen de forma nativa para conectarse.
+     */
+    fun textoWifiDesdeEntrada(entrada: Entrada): String {
+        val ssid = GestorCamposBase.valorDeCampo(entrada.camposPersonalizados, "Nombre de red (SSID)")
+            .ifBlank { GestorCamposBase.valorDeCampo(entrada.camposPersonalizados, "SSID") }
+            .ifBlank { entrada.titulo }
+            .trim()
+
+        val clave = GestorCamposBase.valorDeCampo(entrada.camposPersonalizados, "Contraseña Wi-Fi")
+            .ifBlank { GestorCamposBase.valorDeCampo(entrada.camposPersonalizados, "Contraseña") }
+            .ifBlank { entrada.contrasena }
+
+        val seguridad = GestorCamposBase.valorDeCampo(entrada.camposPersonalizados, "Tipo de seguridad")
+            .ifBlank { GestorCamposBase.valorDeCampo(entrada.camposPersonalizados, "Seguridad") }
+            .ifBlank { "WPA" }
+
+        val esOculta = GestorCamposBase.valorDeCampo(entrada.camposPersonalizados, "Red oculta")
+            .equals("true", ignoreCase = true) ||
+            GestorCamposBase.valorDeCampo(entrada.camposPersonalizados, "Oculta")
+                .equals("true", ignoreCase = true)
+
+        return textoConfiguracionWifi(ssid = ssid, clave = clave, tipoSeguridad = seguridad, oculta = esOculta)
+    }
+
+    /**
      * Formatea los datos de la entrada en un formato claro para compartir pantalla a pantalla.
      */
     fun textoCredencialCompleta(entrada: Entrada): String = buildString {
         appendLine("--- CREDENCIAL BÓVEDA LOCAL ---")
         if (entrada.titulo.isNotBlank()) appendLine("Título: ${entrada.titulo}")
+        if (entrada.tipo != TipoEntrada.LOGIN) appendLine("Tipo: ${entrada.tipo.etiqueta}")
         if (entrada.usuario.isNotBlank()) appendLine("Usuario: ${entrada.usuario}")
         if (entrada.contrasena.isNotBlank()) appendLine("Contraseña: ${entrada.contrasena}")
         if (entrada.urls.isNotEmpty()) appendLine("URL: ${entrada.urls.first()}")
+        entrada.camposPersonalizados.forEach { campo ->
+            if (campo.valor.isNotBlank()) {
+                appendLine("${campo.etiqueta}: ${campo.valor}")
+            }
+        }
+        if (entrada.notas.isNotBlank()) appendLine("Notas: ${entrada.notas}")
     }.trim()
 }

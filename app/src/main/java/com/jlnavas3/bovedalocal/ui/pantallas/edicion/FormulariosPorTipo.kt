@@ -29,6 +29,22 @@ import com.jlnavas3.bovedalocal.data.TipoEntrada
 import com.jlnavas3.bovedalocal.ui.componentes.CampoPepo
 import com.jlnavas3.bovedalocal.ui.componentes.EtiquetaSeccion
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.text.font.FontWeight
+import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
+import com.jlnavas3.bovedalocal.ui.theme.Obsidiana
+import com.jlnavas3.bovedalocal.ui.theme.Superficie
+import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
+
 object GestorCamposBase {
     fun etiquetasBaseParaTipo(tipo: TipoEntrada): Set<String> = when (tipo) {
         TipoEntrada.TARJETA -> setOf("Titular", "Número de tarjeta", "Vencimiento", "CVV", "PIN de tarjeta")
@@ -41,7 +57,16 @@ object GestorCamposBase {
     }
 
     fun valorDeCampo(campos: List<CampoPersonalizado>, clave: String): String {
-        return campos.firstOrNull { it.etiqueta.equals(clave, ignoreCase = true) }?.valor ?: ""
+        return campos.firstOrNull { it.etiqueta.equals(clave, ignoreCase = true) }?.valor
+            ?: campos.firstOrNull { it.etiqueta.startsWith(clave, ignoreCase = true) }?.valor
+            ?: campos.firstOrNull {
+                val c = clave.lowercase()
+                val e = it.etiqueta.lowercase()
+                (c.contains("seguridad") && e.contains("seguridad")) ||
+                (c.contains("ssid") && e.contains("ssid")) ||
+                (c.contains("red") && e.contains("red"))
+            }?.valor
+            ?: ""
     }
 
     fun actualizarValor(
@@ -53,9 +78,14 @@ object GestorCamposBase {
         formato: String? = null
     ): List<CampoPersonalizado> {
         val lista = campos.toMutableList()
-        val index = lista.indexOfFirst { it.etiqueta.equals(etiqueta, ignoreCase = true) }
+        val index = lista.indexOfFirst {
+            it.etiqueta.equals(etiqueta, ignoreCase = true) ||
+            it.etiqueta.startsWith(etiqueta, ignoreCase = true) ||
+            (etiqueta.contains("seguridad", ignoreCase = true) && it.etiqueta.contains("seguridad", ignoreCase = true)) ||
+            (etiqueta.contains("ssid", ignoreCase = true) && it.etiqueta.contains("ssid", ignoreCase = true))
+        }
         if (index >= 0) {
-            lista[index] = lista[index].copy(valor = nuevoValor)
+            lista[index] = lista[index].copy(etiqueta = etiqueta, valor = nuevoValor, tipo = tipo, esSensible = sensible, formato = formato)
         } else {
             lista.add(
                 CampoPersonalizado(
@@ -194,13 +224,39 @@ fun FormularioEdicionWifi(
             monoespaciada = true
         )
 
-        CampoPepo(
-            valor = seguridad,
-            etiqueta = "Tipo de seguridad (ej. WPA3, WPA2-Personal)",
-            alCambiar = {
-                alCambiarCampos(GestorCamposBase.actualizarValor(campos, "Tipo de seguridad", it, TipoCampo.TEXTO))
+        Column {
+            CampoPepo(
+                valor = seguridad,
+                etiqueta = "Tipo de seguridad (ej. WPA3, WPA2-Personal)",
+                alCambiar = {
+                    alCambiarCampos(GestorCamposBase.actualizarValor(campos, "Tipo de seguridad", it, TipoCampo.TEXTO))
+                }
+            )
+            Spacer(Modifier.height(6.dp))
+            Row(
+                modifier = Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                listOf("WPA2 / WPA3", "WPA", "WEP", "Sin contraseña (Abierta)").forEach { opcion ->
+                    val seleccionado = seguridad.equals(opcion, ignoreCase = true)
+                    Box(
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(8.dp))
+                            .background(if (seleccionado) ColorAcento else Superficie)
+                            .clickable {
+                                alCambiarCampos(GestorCamposBase.actualizarValor(campos, "Tipo de seguridad", opcion, TipoCampo.TEXTO))
+                            }
+                            .padding(horizontal = 10.dp, vertical = 6.dp)
+                    ) {
+                        Text(
+                            text = opcion,
+                            color = if (seleccionado) Obsidiana else TextoSecundario,
+                            style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.SemiBold)
+                        )
+                    }
+                }
             }
-        )
+        }
     }
 }
 
