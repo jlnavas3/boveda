@@ -16,6 +16,7 @@ import com.jlnavas3.bovedalocal.data.AjustesApp
 import com.jlnavas3.bovedalocal.data.AlmacenAjustes
 import com.jlnavas3.bovedalocal.ui.VaultViewModel
 import com.jlnavas3.bovedalocal.ui.componentes.CampoBoveda
+import com.jlnavas3.bovedalocal.ui.theme.ColorGenerador
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
 import com.jlnavas3.bovedalocal.util.Haptica
 
@@ -27,9 +28,10 @@ fun SeccionTileRapido(
     haptica: Haptica
 ) {
     TarjetaAjuste(
-        "Atajo en Ajustes Rápidos (Tile)",
-        Icons.Filled.Key,
-        "Genera credenciales seguras al instante desde la cortina de notificaciones de Android."
+        titulo = "Atajo en Ajustes Rápidos (Tile)",
+        icono = Icons.Filled.Key,
+        descripcion = "Genera credenciales seguras al instante desde la cortina de notificaciones de Android.",
+        colorIcono = ColorGenerador
     ) {
         Spacer(Modifier.height(8.dp))
         Text(

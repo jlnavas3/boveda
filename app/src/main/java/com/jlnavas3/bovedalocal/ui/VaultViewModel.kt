@@ -217,6 +217,17 @@ class VaultViewModel(app: Application) : AndroidViewModel(app), VaultAjustesDele
             alTerminar(false)
             return
         }
+        if (com.jlnavas3.bovedalocal.data.PinAutodestruccion.esPinAutodestruccion(contextoApp, password)) {
+            ejecutar {
+                repositorio.borrarTodo()
+                com.jlnavas3.bovedalocal.data.PinAutodestruccion.desactivar(contextoApp)
+                com.jlnavas3.bovedalocal.data.BovedaSenuelo.desactivar(contextoApp)
+                limpiarFallos()
+                irRaiz(Pantalla.Onboarding)
+                alTerminar(true)
+            }
+            return
+        }
         if (com.jlnavas3.bovedalocal.data.BovedaSenuelo.esPinCoaccion(contextoApp, password)) {
             ejecutar {
                 val senuelo = com.jlnavas3.bovedalocal.data.BovedaSenuelo.cargar(contextoApp).entradas

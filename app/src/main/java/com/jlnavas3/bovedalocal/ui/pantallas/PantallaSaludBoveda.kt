@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -17,12 +18,22 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForwardIos
+import androidx.compose.material.icons.filled.AccountBalance
+import androidx.compose.material.icons.filled.AccountBalanceWallet
+import androidx.compose.material.icons.filled.Assessment
+import androidx.compose.material.icons.filled.Badge
+import androidx.compose.material.icons.filled.CreditCard
+import androidx.compose.material.icons.filled.Description
+import androidx.compose.material.icons.filled.Dns
+import androidx.compose.material.icons.filled.Fingerprint
 import androidx.compose.material.icons.filled.HealthAndSafety
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Key
+import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.LockOpen
 import androidx.compose.material.icons.filled.LockReset
 import androidx.compose.material.icons.filled.Warning
+import androidx.compose.material.icons.filled.Wifi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -47,11 +58,18 @@ import com.jlnavas3.bovedalocal.ui.componentes.TarjetaBoveda
 import com.jlnavas3.bovedalocal.ui.componentes.TarjetaBovedaDesplegable
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
+import com.jlnavas3.bovedalocal.ui.theme.ColorExportacion
+import com.jlnavas3.bovedalocal.ui.theme.ColorGenerador
 import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
+import com.jlnavas3.bovedalocal.ui.theme.ColorPasskeys
 import com.jlnavas3.bovedalocal.ui.theme.ColorSalud
+import com.jlnavas3.bovedalocal.ui.theme.ColorSeguridad
 import com.jlnavas3.bovedalocal.ui.theme.ColorTitulos
+import com.jlnavas3.bovedalocal.ui.theme.colorLegibleParaTema
+import com.jlnavas3.bovedalocal.ui.theme.fondoBadgeParaTema
 import com.jlnavas3.bovedalocal.ui.theme.EspaciadoComponentes
 import com.jlnavas3.bovedalocal.ui.theme.FormaCampo
+import com.jlnavas3.bovedalocal.ui.theme.FormaPequena
 import com.jlnavas3.bovedalocal.ui.theme.FormaTarjeta
 import com.jlnavas3.bovedalocal.ui.theme.GrosorBorde
 import com.jlnavas3.bovedalocal.ui.theme.Menta
@@ -111,9 +129,13 @@ fun PantallaSaludBoveda(vm: VaultViewModel, estado: EstadoBoveda) {
         Spacer(Modifier.height(8.dp))
 
         // Tarjeta de Resumen General
-        TarjetaBoveda {
-            EtiquetaSeccion("Resumen")
-            Spacer(Modifier.height(8.dp))
+        TarjetaBovedaDesplegable(
+            titulo = "Resumen de Auditoría",
+            descripcion = "${claves.size} contraseñas analizadas",
+            icono = Icons.Filled.Assessment,
+            colorIcono = ColorSalud,
+            inicialmenteAbierta = true
+        ) {
             FilaResumen("Contraseñas analizadas", claves.size.toString(), ColorTitulos)
             FilaResumen("Repetidas (en grupos)", duplicadas.sumOf { it.size }.toString(), if (duplicadas.isEmpty()) Menta else Peligro)
             FilaResumen("Muy comunes o filtradas", muyComunes.size.toString(), if (muyComunes.isEmpty()) Menta else Peligro)
@@ -150,7 +172,7 @@ fun PantallaSaludBoveda(vm: VaultViewModel, estado: EstadoBoveda) {
                         inicialmenteAbierta = false
                     ) {
                         Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                            grupo.forEach { entrada ->
+                            for (entrada in grupo) {
                                 FilaProblema(entrada = entrada) {
                                     vm.ir(Pantalla.Detalle(entrada.id))
                                 }
@@ -182,7 +204,7 @@ fun PantallaSaludBoveda(vm: VaultViewModel, estado: EstadoBoveda) {
                 Spacer(Modifier.height(12.dp))
 
                 Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                    muyComunes.forEach { entrada ->
+                    for (entrada in muyComunes) {
                         FilaProblema(
                             entrada = entrada,
                             detalle = "Frecuente",
@@ -213,7 +235,7 @@ fun PantallaSaludBoveda(vm: VaultViewModel, estado: EstadoBoveda) {
                 Spacer(Modifier.height(12.dp))
 
                 Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                    debiles.forEach { entrada ->
+                    for (entrada in debiles) {
                         val fuerza = MedidorFuerza.medir(entrada.contrasena)
                         FilaProblema(
                             entrada = entrada,
@@ -245,7 +267,7 @@ fun PantallaSaludBoveda(vm: VaultViewModel, estado: EstadoBoveda) {
                 Spacer(Modifier.height(12.dp))
 
                 Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                    antiguas.forEach { entrada ->
+                    for (entrada in antiguas) {
                         val dias = diasDesde(entrada.modificadaEn, ahora)
                         FilaProblema(
                             entrada = entrada,
@@ -308,6 +330,18 @@ private fun FilaProblema(
     alAbrir: () -> Unit
 ) {
     val forma = FormaCampo
+    val (iconoTipo, colorTipo) = when (entrada.tipo) {
+        TipoEntrada.LOGIN -> Icons.Filled.Lock to ColorSeguridad
+        TipoEntrada.PASSKEY -> Icons.Filled.Fingerprint to ColorPasskeys
+        TipoEntrada.NOTA -> Icons.Filled.Description to ColorAcento
+        TipoEntrada.TARJETA -> Icons.Filled.CreditCard to ColorGenerador
+        TipoEntrada.WIFI -> Icons.Filled.Wifi to ColorSalud
+        TipoEntrada.CUENTA_BANCARIA -> Icons.Filled.AccountBalance to ColorSeguridad
+        TipoEntrada.IDENTIDAD -> Icons.Filled.Badge to ColorExportacion
+        TipoEntrada.SERVIDOR -> Icons.Filled.Dns to ColorIconosInternos
+        TipoEntrada.WALLET -> Icons.Filled.AccountBalanceWallet to ColorAcento
+    }
+    val colorLegible = colorLegibleParaTema(colorTipo)
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -319,10 +353,25 @@ private fun FilaProblema(
                 else Modifier
             )
             .clickable { alAbrir() }
-            .padding(horizontal = 14.dp, vertical = 10.dp),
+            .padding(horizontal = 12.dp, vertical = 10.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
+        Box(
+            modifier = Modifier
+                .size(34.dp)
+                .clip(FormaPequena)
+                .background(fondoBadgeParaTema(colorTipo)),
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                imageVector = iconoTipo,
+                contentDescription = null,
+                tint = colorLegible,
+                modifier = Modifier.size(18.dp)
+            )
+        }
+        Spacer(Modifier.width(10.dp))
         Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = entrada.titulo.ifBlank { "Sin título" },

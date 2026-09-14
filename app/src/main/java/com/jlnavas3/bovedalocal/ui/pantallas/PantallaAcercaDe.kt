@@ -48,10 +48,13 @@ import com.jlnavas3.bovedalocal.ui.VaultViewModel
 import com.jlnavas3.bovedalocal.ui.componentes.BotonColorido
 import com.jlnavas3.bovedalocal.ui.componentes.CabeceraPantalla
 import com.jlnavas3.bovedalocal.ui.componentes.ContenedorPrincipal
-import com.jlnavas3.bovedalocal.ui.componentes.ContenedorSeccion
 import com.jlnavas3.bovedalocal.ui.componentes.ContenedorTarjeta
+import com.jlnavas3.bovedalocal.ui.componentes.TarjetaBovedaDesplegable
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
+import com.jlnavas3.bovedalocal.ui.theme.ColorGenerador
 import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
+import com.jlnavas3.bovedalocal.ui.theme.ColorPasskeys
+import com.jlnavas3.bovedalocal.ui.theme.ColorSalud
 import com.jlnavas3.bovedalocal.ui.theme.ColorSeguridad
 import com.jlnavas3.bovedalocal.ui.theme.ColorTitulos
 import com.jlnavas3.bovedalocal.ui.theme.Menta
@@ -103,123 +106,123 @@ fun PantallaAcercaDe(vm: VaultViewModel) {
             }
         } else {
             // 1. Tarjeta Destacada: Aislamiento y Seguridad Offline
-            ContenedorSeccion(
+            TarjetaBovedaDesplegable(
                 titulo = "Aislamiento y Privacidad",
-                subtitulo = "Comprobación estricta de barreras de seguridad del sistema",
-                icono = Icons.Filled.Security
+                descripcion = "Comprobación estricta de barreras de seguridad del sistema",
+                icono = Icons.Filled.Security,
+                colorIcono = ColorSeguridad,
+                inicialmenteAbierta = true
             ) {
-                ContenedorTarjeta(paddingInterno = 16.dp) {
-                    FilaAuditoria(
-                        ok = !datos.tienePermisoInternet,
-                        titulo = "Aislamiento de red",
-                        detalle = if (!datos.tienePermisoInternet) "Permiso INTERNET NO declarado (100% offline garantizado por el kernel Android)" else "Alerta: permiso INTERNET presente"
-                    )
-                    FilaAuditoria(
-                        ok = datos.flagSecureActivo,
-                        titulo = "Protección de ventana FLAG_SECURE",
-                        detalle = "Bloqueo forzado a nivel de SurfaceFlinger contra capturas, grabadores y vista en apps recientes"
-                    )
-                    FilaAuditoria(
-                        ok = true,
-                        titulo = "Derivación de clave Argon2id (${datos.perfilArgon2.titulo})",
-                        detalle = "${datos.kdfParams.memoryKiB / 1024} MiB de memoria protegida contra ataques GPU/ASIC (${datos.kdfParams.iterations} pasadas, ${datos.kdfParams.parallelism} hilos)"
-                    )
-                    FilaAuditoria(
-                        ok = true,
-                        titulo = "Claves efímeras en RAM",
-                        detalle = "La clave maestra nunca toca disco, reside solo en memoria volátil y se sobreescribe con ceros al bloquear"
-                    )
-                    FilaAuditoria(
-                        ok = true,
-                        titulo = "Permisos concedidos a la app",
-                        detalle = if (datos.permisosDeclarados.isEmpty()) "Ningún permiso declarado en el Manifest" else datos.permisosDeclarados.joinToString { it.substringAfterLast('.') }
-                    )
-                }
+                FilaAuditoria(
+                    ok = !datos.tienePermisoInternet,
+                    titulo = "Aislamiento de red",
+                    detalle = if (!datos.tienePermisoInternet) "Permiso INTERNET NO declarado (100% offline garantizado por el kernel Android)" else "Alerta: permiso INTERNET presente"
+                )
+                FilaAuditoria(
+                    ok = datos.flagSecureActivo,
+                    titulo = "Protección de ventana FLAG_SECURE",
+                    detalle = "Bloqueo forzado a nivel de SurfaceFlinger contra capturas, grabadores y vista en apps recientes"
+                )
+                FilaAuditoria(
+                    ok = true,
+                    titulo = "Derivación de clave Argon2id (${datos.perfilArgon2.titulo})",
+                    detalle = "${datos.kdfParams.memoryKiB / 1024} MiB de memoria protegida contra ataques GPU/ASIC (${datos.kdfParams.iterations} pasadas, ${datos.kdfParams.parallelism} hilos)"
+                )
+                FilaAuditoria(
+                    ok = true,
+                    titulo = "Claves efímeras en RAM",
+                    detalle = "La clave maestra nunca toca disco, reside solo en memoria volátil y se sobreescribe con ceros al bloquear"
+                )
+                FilaAuditoria(
+                    ok = true,
+                    titulo = "Permisos concedidos a la app",
+                    detalle = if (datos.permisosDeclarados.isEmpty()) "Ningún permiso declarado en el Manifest" else datos.permisosDeclarados.joinToString { it.substringAfterLast('.') }
+                )
             }
 
             // 2. Hardware y SoC en Vivo
-            ContenedorSeccion(
+            TarjetaBovedaDesplegable(
                 titulo = "Hardware y Procesamiento",
-                subtitulo = "Especificaciones leídas de la capa HAL del móvil",
-                icono = Icons.Filled.Smartphone
+                descripcion = "Especificaciones leídas de la capa HAL del móvil",
+                icono = Icons.Filled.Smartphone,
+                colorIcono = ColorAcento,
+                inicialmenteAbierta = false
             ) {
-                ContenedorTarjeta(paddingInterno = 16.dp) {
-                    ItemMetrica("Dispositivo", "${datos.fabricante} ${datos.modelo} (${datos.dispositivo})")
-                    ItemMetrica("SoC / Placa", if (datos.soc != null) "${datos.soc} (${datos.placa})" else datos.placa)
-                    ItemMetrica("Arquitectura ABI", datos.abis)
-                    ItemMetrica("Núcleos CPU", "${datos.nucleosCpu} núcleos disponibles")
-                }
+                ItemMetrica("Dispositivo", "${datos.fabricante} ${datos.modelo} (${datos.dispositivo})")
+                ItemMetrica("SoC / Placa", if (datos.soc != null) "${datos.soc} (${datos.placa})" else datos.placa)
+                ItemMetrica("Arquitectura ABI", datos.abis)
+                ItemMetrica("Núcleos CPU", "${datos.nucleosCpu} núcleos disponibles")
             }
 
             // 3. Sistema Android y Parche
-            ContenedorSeccion(
+            TarjetaBovedaDesplegable(
                 titulo = "Sistema Operativo",
-                subtitulo = "Nivel de seguridad de la plataforma",
-                icono = Icons.Filled.Info
+                descripcion = "Nivel de seguridad de la plataforma",
+                icono = Icons.Filled.Info,
+                colorIcono = ColorSalud,
+                inicialmenteAbierta = false
             ) {
-                ContenedorTarjeta(paddingInterno = 16.dp) {
-                    ItemMetrica("Versión Android", "Android ${datos.versionAndroid} (API ${datos.apiSdk})")
-                    ItemMetrica("Parche de seguridad", datos.parcheSeguridad)
-                    ItemMetrica("Compilación del sistema", datos.compilacion)
-                }
+                ItemMetrica("Versión Android", "Android ${datos.versionAndroid} (API ${datos.apiSdk})")
+                ItemMetrica("Parche de seguridad", datos.parcheSeguridad)
+                ItemMetrica("Compilación del sistema", datos.compilacion)
             }
 
             // 4. Memoria y Almacenamiento Local
-            ContenedorSeccion(
+            TarjetaBovedaDesplegable(
                 titulo = "Memoria y Almacenamiento",
-                subtitulo = "Recursos de ejecución y archivo criptográfico en disco",
-                icono = Icons.Filled.Memory
+                descripcion = "Recursos de ejecución y archivo criptográfico en disco",
+                icono = Icons.Filled.Memory,
+                colorIcono = ColorGenerador,
+                inicialmenteAbierta = false
             ) {
-                ContenedorTarjeta(paddingInterno = 16.dp) {
-                    ItemMetrica("Memoria RAM", "${datos.ramLibreMb} MB libres de ${datos.ramTotalMb} MB (Estado bajo: ${if (datos.ramBaja) "Sí" else "No"})")
-                    ItemMetrica("Heap JVM", "${datos.heapUsadoMb} MB en uso / ${datos.heapMaxMb} MB límite")
-                    ItemMetrica("Almacenamiento interno", "${datos.almacenamientoLibreMb} MB disponibles de ${datos.almacenamientoTotalMb} MB")
-                    ItemMetrica("Ruta física de la bóveda", datos.rutaBoveda)
-                    ItemMetrica("Tamaño archivo en disco", "${datos.tamanoBovedaBytes} bytes")
-                    ItemMetrica("Escritura atómica", "Buffer .tmp + fsync() + Atomic Rename (inmune a corte de energía)")
-                }
+                ItemMetrica("Memoria RAM", "${datos.ramLibreMb} MB libres de ${datos.ramTotalMb} MB (Estado bajo: ${if (datos.ramBaja) "Sí" else "No"})")
+                ItemMetrica("Heap JVM", "${datos.heapUsadoMb} MB en uso / ${datos.heapMaxMb} MB límite")
+                ItemMetrica("Almacenamiento interno", "${datos.almacenamientoLibreMb} MB disponibles de ${datos.almacenamientoTotalMb} MB")
+                ItemMetrica("Ruta física de la bóveda", datos.rutaBoveda)
+                ItemMetrica("Tamaño archivo en disco", "${datos.tamanoBovedaBytes} bytes")
+                ItemMetrica("Escritura atómica", "Buffer .tmp + fsync() + Atomic Rename (inmune a corte de energía)")
             }
 
             // 5. Criptografía Verificada
-            ContenedorSeccion(
+            TarjetaBovedaDesplegable(
                 titulo = "Criptografía y Blindaje",
-                subtitulo = "Parámetros matemáticos aplicados",
-                icono = Icons.Filled.Lock
+                descripcion = "Parámetros matemáticos aplicados",
+                icono = Icons.Filled.Lock,
+                colorIcono = ColorSeguridad,
+                inicialmenteAbierta = true
             ) {
-                ContenedorTarjeta(paddingInterno = 16.dp) {
-                    ItemMetrica("KDF Derivación", "Argon2id · ${datos.perfilArgon2.titulo}")
-                    ItemMetrica("Parámetros KDF", "${datos.kdfParams.memoryKiB / 1024} MiB RAM, ${datos.kdfParams.iterations} pasadas, paralelismo ${datos.kdfParams.parallelism}, salt 16B")
-                    ItemMetrica("Cifrado de datos", "AES-256-GCM (nonce 12B, tag 128b, AAD autenticado)")
-                    ItemMetrica("Generador aleatorio", "SecureRandom CSPRNG del kernel de Android")
-                    ItemMetrica("Passkeys WebAuthn", "Claves asimétricas ECDSA P-256 (ES256) locales")
-                    ItemMetrica("Formato de cabecera", "Magic BVDA · v${VaultCrypto.VERSION} · ${VaultCrypto.TAM_CABECERA} bytes AAD")
-                }
+                ItemMetrica("KDF Derivación", "Argon2id · ${datos.perfilArgon2.titulo}")
+                ItemMetrica("Parámetros KDF", "${datos.kdfParams.memoryKiB / 1024} MiB RAM, ${datos.kdfParams.iterations} pasadas, paralelismo ${datos.kdfParams.parallelism}, salt 16B")
+                ItemMetrica("Cifrado de datos", "AES-256-GCM (nonce 12B, tag 128b, AAD autenticado)")
+                ItemMetrica("Generador aleatorio", "SecureRandom CSPRNG del kernel de Android")
+                ItemMetrica("Passkeys WebAuthn", "Claves asimétricas ECDSA P-256 (ES256) locales")
+                ItemMetrica("Formato de cabecera", "Magic BVDA · v${VaultCrypto.VERSION} · ${VaultCrypto.TAM_CABECERA} bytes AAD")
             }
 
             // 6. Biometría y Keystore
-            ContenedorSeccion(
+            TarjetaBovedaDesplegable(
                 titulo = "Biometría y Keystore",
-                subtitulo = "Métricas reportadas por BiometricPrompt y Keystore",
-                icono = Icons.Filled.Fingerprint
+                descripcion = "Métricas reportadas por BiometricPrompt y Keystore",
+                icono = Icons.Filled.Fingerprint,
+                colorIcono = ColorPasskeys,
+                inicialmenteAbierta = false
             ) {
-                ContenedorTarjeta(paddingInterno = 16.dp) {
-                    datos.lineasBiometria.forEach { linea ->
-                        if (linea.ok != null) {
-                            FilaAuditoria(
-                                ok = linea.ok,
-                                titulo = linea.texto,
-                                detalle = linea.detalle ?: if (linea.ok) "Soportado y verificado" else "No disponible",
-                                indentada = linea.indentada
-                            )
-                        } else {
-                            Row(modifier = Modifier.padding(vertical = 3.dp).padding(start = if (linea.indentada) 16.dp else 0.dp)) {
-                                Text("•", color = ColorIconosInternos)
-                                Spacer(Modifier.width(8.dp))
-                                Column {
-                                    Text(linea.texto, color = TextoPrincipal, style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Medium))
-                                    if (!linea.detalle.isNullOrBlank()) {
-                                        Text(linea.detalle, color = TextoSecundario, style = MaterialTheme.typography.bodySmall)
-                                    }
+                datos.lineasBiometria.forEach { linea ->
+                    if (linea.ok != null) {
+                        FilaAuditoria(
+                            ok = linea.ok,
+                            titulo = linea.texto,
+                            detalle = linea.detalle ?: if (linea.ok) "Soportado y verificado" else "No disponible",
+                            indentada = linea.indentada
+                        )
+                    } else {
+                        Row(modifier = Modifier.padding(vertical = 3.dp).padding(start = if (linea.indentada) 16.dp else 0.dp)) {
+                            Text("•", color = ColorIconosInternos)
+                            Spacer(Modifier.width(8.dp))
+                            Column {
+                                Text(linea.texto, color = TextoPrincipal, style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Medium))
+                                if (!linea.detalle.isNullOrBlank()) {
+                                    Text(linea.detalle, color = TextoSecundario, style = MaterialTheme.typography.bodySmall)
                                 }
                             }
                         }
@@ -228,29 +231,29 @@ fun PantallaAcercaDe(vm: VaultViewModel) {
             }
 
             // 7. Sensores de Cámara (Camera2)
-            ContenedorSeccion(
+            TarjetaBovedaDesplegable(
                 titulo = "Cámara y Sensores QR",
-                subtitulo = "Diagnóstico de hardware de captura para escaneo offline",
-                icono = Icons.Filled.PhotoCamera
+                descripcion = "Diagnóstico de hardware de captura para escaneo offline",
+                icono = Icons.Filled.PhotoCamera,
+                colorIcono = ColorAcento,
+                inicialmenteAbierta = false
             ) {
-                ContenedorTarjeta(paddingInterno = 16.dp) {
-                    datos.lineasCamara.forEach { linea ->
-                        if (linea.ok != null) {
-                            FilaAuditoria(
-                                ok = linea.ok,
-                                titulo = linea.texto,
-                                detalle = linea.detalle ?: if (linea.ok) "Activo" else "No concedido / inactivo",
-                                indentada = linea.indentada
-                            )
-                        } else {
-                            Row(modifier = Modifier.padding(vertical = 3.dp).padding(start = if (linea.indentada) 16.dp else 0.dp)) {
-                                Text("•", color = ColorIconosInternos)
-                                Spacer(Modifier.width(8.dp))
-                                Column {
-                                    Text(linea.texto, color = TextoPrincipal, style = MaterialTheme.typography.bodyMedium)
-                                    if (!linea.detalle.isNullOrBlank()) {
-                                        Text(linea.detalle, color = TextoSecundario, style = MaterialTheme.typography.bodySmall)
-                                    }
+                datos.lineasCamara.forEach { linea ->
+                    if (linea.ok != null) {
+                        FilaAuditoria(
+                            ok = linea.ok,
+                            titulo = linea.texto,
+                            detalle = linea.detalle ?: if (linea.ok) "Activo" else "No concedido / inactivo",
+                            indentada = linea.indentada
+                        )
+                    } else {
+                        Row(modifier = Modifier.padding(vertical = 3.dp).padding(start = if (linea.indentada) 16.dp else 0.dp)) {
+                            Text("•", color = ColorIconosInternos)
+                            Spacer(Modifier.width(8.dp))
+                            Column {
+                                Text(linea.texto, color = TextoPrincipal, style = MaterialTheme.typography.bodyMedium)
+                                if (!linea.detalle.isNullOrBlank()) {
+                                    Text(linea.detalle, color = TextoSecundario, style = MaterialTheme.typography.bodySmall)
                                 }
                             }
                         }

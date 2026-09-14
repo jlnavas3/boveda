@@ -26,6 +26,7 @@ sealed interface Pantalla {
     object Papelera : Pantalla
     object KitEmergencia : Pantalla
     object AjustesSenuelo : Pantalla
+    object AjustesAutodestruccion : Pantalla
     object FormatosCampos : Pantalla
 }
 

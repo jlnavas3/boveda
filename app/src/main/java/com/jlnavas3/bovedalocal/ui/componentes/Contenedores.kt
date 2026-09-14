@@ -59,6 +59,8 @@ import com.jlnavas3.bovedalocal.ui.theme.GrosorBorde
 import com.jlnavas3.bovedalocal.ui.theme.Obsidiana
 import com.jlnavas3.bovedalocal.ui.theme.TextoPrincipal
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
+import com.jlnavas3.bovedalocal.ui.theme.colorLegibleParaTema
+import com.jlnavas3.bovedalocal.ui.theme.fondoBadgeParaTema
 
 /**
  * Contenedor principal de pantalla (equivalente al `<main class="container">` en HTML).
@@ -95,6 +97,7 @@ fun ContenedorSeccion(
     modifier: Modifier = Modifier,
     subtitulo: String? = null,
     icono: ImageVector? = null,
+    colorIcono: Color = ColorAcento,
     colorTitulo: Color = ColorTitulos,
     espaciado: Dp = 10.dp,
     contenido: @Composable ColumnScope.() -> Unit
@@ -108,18 +111,19 @@ fun ContenedorSeccion(
             horizontalArrangement = Arrangement.spacedBy(10.dp)
         ) {
             if (icono != null) {
+                val colorLegible = colorLegibleParaTema(colorIcono)
                 Box(
                     modifier = Modifier
-                        .size(32.dp)
+                        .size(34.dp)
                         .clip(FormaPequena)
-                        .background(ColorIconosInternos.copy(alpha = 0.12f)),
+                        .background(fondoBadgeParaTema(colorIcono)),
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
                         imageVector = icono,
                         contentDescription = null,
-                        tint = ColorIconosInternos,
-                        modifier = Modifier.size(18.dp)
+                        tint = colorLegible,
+                        modifier = Modifier.size(19.dp)
                     )
                 }
             }
@@ -201,17 +205,18 @@ fun ContenedorFila(
         verticalAlignment = Alignment.CenterVertically
     ) {
         if (icono != null) {
+            val colorLegible = colorLegibleParaTema(colorIcono)
             Box(
                 modifier = Modifier
                     .size(36.dp)
                     .clip(FormaPequena)
-                    .background(colorIcono.copy(alpha = 0.12f)),
+                    .background(fondoBadgeParaTema(colorIcono)),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
                     imageVector = icono,
                     contentDescription = null,
-                    tint = colorIcono,
+                    tint = colorLegible,
                     modifier = Modifier.size(19.dp)
                 )
             }
@@ -251,14 +256,15 @@ fun ContenedorDestacado(
     accion: (@Composable () -> Unit)? = null
 ) {
     val forma = FormaTarjeta
+    val colorLegible = colorLegibleParaTema(colorBordeAcento)
     Box(
         modifier = modifier
             .fillMaxWidth()
             .clip(forma)
-            .background(colorBordeAcento.copy(alpha = 0.08f))
+            .background(fondoBadgeParaTema(colorBordeAcento))
             .then(
                 if (GrosorBorde > 0.dp) {
-                    Modifier.border(GrosorBorde, colorBordeAcento.copy(alpha = 0.35f), forma)
+                    Modifier.border(GrosorBorde, colorLegible.copy(alpha = 0.35f), forma)
                 } else {
                     Modifier
                 }
@@ -268,13 +274,21 @@ fun ContenedorDestacado(
         Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 if (icono != null) {
-                    Icon(
-                        imageVector = icono,
-                        contentDescription = null,
-                        tint = colorBordeAcento,
-                        modifier = Modifier.size(20.dp)
-                    )
-                    Spacer(Modifier.width(8.dp))
+                    Box(
+                        modifier = Modifier
+                            .size(34.dp)
+                            .clip(FormaPequena)
+                            .background(fondoBadgeParaTema(colorBordeAcento)),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = icono,
+                            contentDescription = null,
+                            tint = colorLegible,
+                            modifier = Modifier.size(18.dp)
+                        )
+                    }
+                    Spacer(Modifier.width(10.dp))
                 }
                 Text(
                     text = titulo,

@@ -2,14 +2,16 @@ package com.jlnavas3.bovedalocal.ui.pantallas.detalle
 
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Fingerprint
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.jlnavas3.bovedalocal.data.DatosPasskey
-import com.jlnavas3.bovedalocal.ui.componentes.EtiquetaSeccion
-import com.jlnavas3.bovedalocal.ui.componentes.TarjetaBoveda
+import com.jlnavas3.bovedalocal.ui.componentes.TarjetaBovedaDesplegable
+import com.jlnavas3.bovedalocal.ui.theme.ColorPasskeys
 import com.jlnavas3.bovedalocal.ui.theme.Menta
 import com.jlnavas3.bovedalocal.ui.theme.TextoPrincipal
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
@@ -19,8 +21,14 @@ fun TarjetaPasskeyDetalle(
     passkey: DatosPasskey,
     usuarioEntrada: String = ""
 ) {
-    TarjetaBoveda {
-        EtiquetaSeccion("Passkey")
+    val servicio = passkey.rpName.ifBlank { passkey.rpId }
+    TarjetaBovedaDesplegable(
+        titulo = "Passkey WebAuthn",
+        descripcion = servicio,
+        icono = Icons.Filled.Fingerprint,
+        colorIcono = ColorPasskeys,
+        inicialmenteAbierta = true
+    ) {
         Spacer(Modifier.height(8.dp))
         Text(
             "Servicio: ${passkey.rpName.ifBlank { passkey.rpId }}",

@@ -48,8 +48,13 @@ import com.jlnavas3.bovedalocal.ui.componentes.CabeceraPantalla
 import com.jlnavas3.bovedalocal.ui.componentes.IlustracionVacio
 import com.jlnavas3.bovedalocal.ui.componentes.TarjetaBovedaDesplegable
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
+import com.jlnavas3.bovedalocal.ui.theme.ColorExportacion
+import com.jlnavas3.bovedalocal.ui.theme.ColorGenerador
 import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
 import com.jlnavas3.bovedalocal.ui.theme.ColorPapelera
+import com.jlnavas3.bovedalocal.ui.theme.ColorPasskeys
+import com.jlnavas3.bovedalocal.ui.theme.ColorSalud
+import com.jlnavas3.bovedalocal.ui.theme.ColorSeguridad
 import com.jlnavas3.bovedalocal.ui.theme.ColorTarjetas
 import com.jlnavas3.bovedalocal.ui.theme.ColorTitulos
 import com.jlnavas3.bovedalocal.ui.theme.EspaciadoComponentes
@@ -183,6 +188,18 @@ private fun FilaPapeleraDesplegable(
         TipoEntrada.WALLET -> Icons.Filled.AccountBalanceWallet
     }
 
+    val colorIcono = when (entrada.tipo) {
+        TipoEntrada.LOGIN -> ColorSeguridad
+        TipoEntrada.PASSKEY -> ColorPasskeys
+        TipoEntrada.NOTA -> ColorAcento
+        TipoEntrada.TARJETA -> ColorGenerador
+        TipoEntrada.WIFI -> ColorSalud
+        TipoEntrada.CUENTA_BANCARIA -> ColorSeguridad
+        TipoEntrada.IDENTIDAD -> ColorExportacion
+        TipoEntrada.SERVIDOR -> ColorIconosInternos
+        TipoEntrada.WALLET -> ColorAcento
+    }
+
     val subtitulo = entrada.usuario.ifBlank {
         entrada.urls.firstOrNull() ?: entrada.tipo.etiqueta
     }
@@ -191,7 +208,7 @@ private fun FilaPapeleraDesplegable(
         titulo = entrada.titulo.ifBlank { "Sin título" },
         descripcion = subtitulo,
         icono = icono,
-        colorIcono = ColorIconosInternos,
+        colorIcono = colorIcono,
         inicialmenteAbierta = false
     ) {
         Row(

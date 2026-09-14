@@ -42,7 +42,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.TextRange
@@ -55,10 +54,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.jlnavas3.bovedalocal.util.IconosMarcas
 import com.jlnavas3.bovedalocal.ui.theme.Ambar
 import com.jlnavas3.bovedalocal.ui.theme.AmbarFuerte
 import com.jlnavas3.bovedalocal.ui.theme.Borde
+import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
 import com.jlnavas3.bovedalocal.ui.theme.ColorBordeDropdown
 import com.jlnavas3.bovedalocal.ui.theme.ColorEncabezadoTarjeta
@@ -83,6 +82,8 @@ import com.jlnavas3.bovedalocal.ui.theme.SuperficieAlta
 import com.jlnavas3.bovedalocal.ui.theme.TextoPrincipal
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
 import com.jlnavas3.bovedalocal.ui.theme.colorContraste
+import com.jlnavas3.bovedalocal.ui.theme.colorLegibleParaTema
+import com.jlnavas3.bovedalocal.ui.theme.fondoBadgeParaTema
 import com.jlnavas3.bovedalocal.util.Dominios
 import kotlin.math.abs
 
@@ -102,7 +103,6 @@ fun coloresMonograma(semilla: String): Pair<Color, Color> {
 fun Monograma(titulo: String, semilla: String, tamano: Int = 46) {
     val (a, b) = coloresMonograma(semilla.ifBlank { titulo })
     val colorTexto = colorContraste(a)
-    val iconoMarca = IconosMarcas.buscar(semilla, titulo)
     val radio = (tamano * (com.jlnavas3.bovedalocal.ui.theme.CurvaturaEsquinasDp / 54f)).coerceIn(0f, tamano / 2f).dp
     val forma = RoundedCornerShape(radio)
     Box(
@@ -119,25 +119,16 @@ fun Monograma(titulo: String, semilla: String, tamano: Int = 46) {
             ),
         contentAlignment = Alignment.Center
     ) {
-        if (iconoMarca != null) {
-            Icon(
-                painter = painterResource(iconoMarca),
-                contentDescription = titulo,
-                tint = colorTexto,
-                modifier = Modifier.size((tamano * 0.52f).dp)
-            )
-        } else {
-            val letras = titulo.trim().split(Regex("\\s+"))
-                .filter { it.isNotEmpty() }
-                .take(2)
-                .joinToString("") { it.first().uppercase() }
-            Text(
-                text = letras,
-                color = colorTexto,
-                fontWeight = FontWeight.Bold,
-                fontSize = (tamano / 2.4f).sp
-            )
-        }
+        val letras = titulo.trim().split(Regex("\\s+"))
+            .filter { it.isNotEmpty() }
+            .take(2)
+            .joinToString("") { it.first().uppercase() }
+        Text(
+            text = letras,
+            color = colorTexto,
+            fontWeight = FontWeight.Bold,
+            fontSize = (tamano / 2.4f).sp
+        )
     }
 }
 
@@ -209,17 +200,18 @@ fun TarjetaBovedaDesplegable(
             verticalAlignment = Alignment.CenterVertically
         ) {
             // Icono distinguido con contenedor suave estilo barra lateral
+            val colorLegible = colorLegibleParaTema(colorIcono)
             Box(
                 modifier = Modifier
                     .size(38.dp)
                     .clip(FormaPequena)
-                    .background(colorIcono.copy(alpha = 0.14f)),
+                    .background(fondoBadgeParaTema(colorIcono)),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
                     imageVector = icono,
                     contentDescription = null,
-                    tint = colorIcono,
+                    tint = colorLegible,
                     modifier = Modifier.size(20.dp)
                 )
             }
@@ -616,13 +608,47 @@ fun BarraFuerza(fraccion: Float, etiqueta: String, tiempo: String) {
 }
 
 @Composable
-fun EtiquetaSeccion(texto: String, modifier: Modifier = Modifier) {
-    Text(
-        text = texto.uppercase(),
-        color = ColorTitulos,
-        style = TextStyle(fontSize = 12.sp, fontWeight = FontWeight.SemiBold, letterSpacing = 1.5.sp),
-        modifier = modifier
-    )
+fun EtiquetaSeccion(
+    texto: String,
+    modifier: Modifier = Modifier,
+    icono: ImageVector? = null,
+    colorIcono: Color = ColorAcento
+) {
+    if (icono != null) {
+        val colorLegible = colorLegibleParaTema(colorIcono)
+        Row(
+            modifier = modifier,
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(24.dp)
+                    .clip(FormaPequena)
+                    .background(fondoBadgeParaTema(colorIcono)),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = icono,
+                    contentDescription = null,
+                    tint = colorLegible,
+                    modifier = Modifier.size(14.dp)
+                )
+            }
+            Text(
+                text = texto.uppercase(),
+                color = ColorTitulos,
+                style = TextStyle(fontSize = 12.sp, fontWeight = FontWeight.SemiBold, letterSpacing = 1.5.sp)
+            )
+        }
+    } else {
+        Text(
+            text = texto.uppercase(),
+            color = ColorTitulos,
+            style = TextStyle(fontSize = 12.sp, fontWeight = FontWeight.SemiBold, letterSpacing = 1.5.sp),
+            modifier = modifier
+        )
+    }
 }
 
 /**

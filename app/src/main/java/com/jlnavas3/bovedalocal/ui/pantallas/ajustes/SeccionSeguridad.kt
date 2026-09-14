@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Backup
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.DeleteForever
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.Fingerprint
@@ -61,6 +62,7 @@ import com.jlnavas3.bovedalocal.ui.theme.ColorTitulos
 import com.jlnavas3.bovedalocal.ui.theme.FormaCampo
 import com.jlnavas3.bovedalocal.ui.theme.FormaTarjeta
 import com.jlnavas3.bovedalocal.ui.theme.GrosorBorde
+import com.jlnavas3.bovedalocal.ui.theme.Peligro
 import com.jlnavas3.bovedalocal.ui.theme.Superficie
 import com.jlnavas3.bovedalocal.ui.theme.TextoPrincipal
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
@@ -87,10 +89,47 @@ fun SeccionSeguridad(
     TarjetaAjuste(
         titulo = "Seguridad",
         icono = Icons.Filled.Security,
-        descripcion = if (esSenuelo) "Bloqueo automático y borrado del portapapeles." else "Huella, bloqueo automático y borrado del portapapeles."
+        descripcion = if (esSenuelo) "Bloqueo automático y borrado del portapapeles." else "Huella, bloqueo automático y borrado del portapapeles.",
+        colorIcono = ColorSeguridad
     ) {
+        Spacer(Modifier.height(8.dp))
+
+        // Aviso esencial FLAG_SECURE al inicio
+        Surface(
+            color = MaterialTheme.colorScheme.primary.copy(alpha = 0.08f),
+            shape = FormaTarjeta,
+            border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.25f))
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth().padding(10.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    Icons.Filled.Security,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.size(22.dp)
+                )
+                Spacer(Modifier.width(10.dp))
+                Column {
+                    Text(
+                        "Protección de pantalla (FLAG_SECURE)",
+                        style = MaterialTheme.typography.bodyMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = TextoPrincipal
+                    )
+                    Spacer(Modifier.height(2.dp))
+                    Text(
+                        "Bloqueo permanente de capturas de pantalla y ocultación en aplicaciones recientes.",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = TextoSecundario
+                    )
+                }
+            }
+        }
+
         if (!esSenuelo) {
-            Spacer(Modifier.height(10.dp))
+            Spacer(Modifier.height(12.dp))
             FilaAjuste(
                 titulo = "Abrir con huella",
                 descripcion = when {
@@ -131,71 +170,66 @@ fun SeccionSeguridad(
                 }
             }
             when {
-                ajustes.biometriaActiva && modoActivo == BiometricKeyStore.Modo.FUERTE && Biometria.hayCompatible(capacidad) ->
-                    EnlaceAjuste("Cambiar a modo compatible") {
+                ajustes.biometriaActiva && modoActivo == BiometricKeyStore.Modo.FUERTE && Biometria.hayCompatible(capacidad) -> {
+                    Spacer(Modifier.height(10.dp))
+                    BotonColorido(
+                        texto = "Cambiar a modo compatible",
+                        color = ColorSeguridad,
+                        icono = Icons.Filled.Fingerprint
+                    ) {
                         ofrecerCompatible("Si la huella te falla en este móvil aunque Android la acepte, el modo compatible suele funcionar.")
                     }
-                ajustes.biometriaActiva && modoActivo == BiometricKeyStore.Modo.COMPATIBLE && Biometria.hayFuerte(capacidad) ->
-                    EnlaceAjuste("Volver al modo fuerte") { activarFuerte() }
-                !ajustes.biometriaActiva && nivel == Biometria.Nivel.FUERTE && Biometria.hayCompatible(capacidad) ->
-                    EnlaceAjuste("Activar en modo compatible") {
-                        ofrecerCompatible("Para quien ya sabe que la huella de Clase 3 le falla en este móvil.")
-                    }
-            }
-            Spacer(Modifier.height(8.dp))
-            Spacer(Modifier.height(4.dp))
-            val perfilActual = vm.repositorio.perfilArgon2Actual()
-            SelectorPerfilArgon2(
-                perfilActual = perfilActual,
-                alSeleccionarPerfil = { nuevo ->
-                    if (nuevo != perfilActual) {
-                        if (vm.repositorio.estaDesbloqueada) {
-                            perfilPendiente = nuevo
-                        } else {
-                            vm.repositorio.ajustes.actualizar { it.copy(perfilArgon2 = nuevo.clave) }
-                            com.jlnavas3.bovedalocal.util.Diagnostico.apuntar("bóveda", "Perfil Argon2id predeterminado establecido en ${nuevo.titulo}")
-                            vm.avisar("Perfil de cifrado predeterminado: ${nuevo.titulo}")
-                        }
+                }
+                ajustes.biometriaActiva && modoActivo == BiometricKeyStore.Modo.COMPATIBLE && Biometria.hayFuerte(capacidad) -> {
+                    Spacer(Modifier.height(10.dp))
+                    BotonColorido(
+                        texto = "Volver al modo fuerte",
+                        color = ColorSeguridad,
+                        icono = Icons.Filled.Security
+                    ) {
+                        activarFuerte()
                     }
                 }
-            )
-            Spacer(Modifier.height(8.dp))
+                !ajustes.biometriaActiva && nivel == Biometria.Nivel.FUERTE && Biometria.hayCompatible(capacidad) -> {
+                    Spacer(Modifier.height(10.dp))
+                    BotonColorido(
+                        texto = "Activar en modo compatible",
+                        color = ColorSeguridad,
+                        icono = Icons.Filled.Fingerprint
+                    ) {
+                        ofrecerCompatible("Para quien ya sabe que la huella de Clase 3 le falla en este móvil.")
+                    }
+                }
+            }
+            Spacer(Modifier.height(14.dp))
+            TarjetaAjuste(
+                titulo = "Perfil de cifrado Argon2id",
+                icono = Icons.Filled.Memory,
+                descripcion = "Intensidad de memoria e iteraciones contra ataques de fuerza bruta.",
+                inicialmenteAbierta = false,
+                colorIcono = ColorSeguridad
+            ) {
+                val perfilActual = vm.repositorio.perfilArgon2Actual()
+                SelectorPerfilArgon2(
+                    perfilActual = perfilActual,
+                    alSeleccionarPerfil = { nuevo ->
+                        if (nuevo != perfilActual) {
+                            if (vm.repositorio.estaDesbloqueada) {
+                                perfilPendiente = nuevo
+                            } else {
+                                vm.repositorio.ajustes.actualizar { it.copy(perfilArgon2 = nuevo.clave) }
+                                com.jlnavas3.bovedalocal.util.Diagnostico.apuntar("bóveda", "Perfil Argon2id predeterminado establecido en ${nuevo.titulo}")
+                                vm.avisar("Perfil de cifrado predeterminado: ${nuevo.titulo}")
+                            }
+                        }
+                    }
+                )
+            }
         } else {
             Spacer(Modifier.height(10.dp))
         }
-        Surface(
-            color = MaterialTheme.colorScheme.primary.copy(alpha = 0.08f),
-            shape = FormaTarjeta,
-            border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.25f))
-        ) {
-            Row(
-                modifier = Modifier.fillMaxWidth().padding(12.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Icon(
-                    Icons.Filled.Security,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.size(24.dp)
-                )
-                Spacer(Modifier.width(12.dp))
-                Column {
-                    Text(
-                        "Protección de pantalla permanente (FLAG_SECURE)",
-                        style = MaterialTheme.typography.bodyMedium,
-                        fontWeight = FontWeight.Bold,
-                        color = TextoPrincipal
-                    )
-                    Spacer(Modifier.height(2.dp))
-                    Text(
-                        "La bóveda bloquea permanentemente las capturas de pantalla y oculta la vista previa en aplicaciones recientes de Android para garantizar la máxima privacidad.",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = TextoSecundario
-                    )
-                }
-            }
-        }
-        Spacer(Modifier.height(14.dp))
+
+        Spacer(Modifier.height(8.dp))
         SelectorAjuste(
             titulo = "Bloqueo automático",
             icono = Icons.Filled.Lock,
@@ -217,13 +251,51 @@ fun SeccionSeguridad(
         )
         if (!esSenuelo) {
             Spacer(Modifier.height(14.dp))
-            BotonColorido(
-                texto = "Bóveda señuelo (PIN de coacción)",
-                color = ColorSeguridad,
-                icono = Icons.Filled.Shield
+            TarjetaAjuste(
+                titulo = "Bóveda señuelo",
+                icono = Icons.Filled.Shield,
+                descripcion = "Apertura señuelo transparente con credenciales simuladas inofensivas.",
+                inicialmenteAbierta = false,
+                colorIcono = ColorSeguridad
             ) {
-                haptica.toque()
-                vm.ir(Pantalla.AjustesSenuelo)
+                Text(
+                    text = "Si alguien te obliga a desbloquear la app bajo amenaza o coacción, puedes introducir un PIN señuelo especial. La app se abrirá normalmente pero mostrará solo datos simulados.",
+                    color = TextoSecundario,
+                    style = MaterialTheme.typography.bodySmall
+                )
+                Spacer(Modifier.height(10.dp))
+                BotonColorido(
+                    texto = "Configurar bóveda señuelo",
+                    color = ColorSeguridad,
+                    icono = Icons.Filled.Shield
+                ) {
+                    haptica.toque()
+                    vm.ir(Pantalla.AjustesSenuelo)
+                }
+            }
+
+            Spacer(Modifier.height(14.dp))
+            TarjetaAjuste(
+                titulo = "Autodestrucción",
+                icono = Icons.Filled.DeleteForever,
+                descripcion = "Borrado irreversible inmediato de la bóveda ante peligro extremo.",
+                inicialmenteAbierta = false,
+                colorIcono = Peligro
+            ) {
+                Text(
+                    text = "Al introducir este PIN en la pantalla de desbloqueo, toda la bóveda y sus claves serán destruidas permanentemente sin dejar rastro en el dispositivo.",
+                    color = TextoSecundario,
+                    style = MaterialTheme.typography.bodySmall
+                )
+                Spacer(Modifier.height(10.dp))
+                BotonColorido(
+                    texto = "Configurar PIN de autodestrucción",
+                    color = Peligro,
+                    icono = Icons.Filled.DeleteForever
+                ) {
+                    haptica.toque()
+                    vm.ir(Pantalla.AjustesAutodestruccion)
+                }
             }
         }
     }
@@ -255,19 +327,6 @@ fun SelectorPerfilArgon2(
     val forma = FormaCampo
 
     Column(modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)) {
-        Text(
-            text = "Perfil de cifrado Argon2id",
-            color = TextoPrincipal,
-            style = MaterialTheme.typography.titleMedium
-        )
-        Spacer(Modifier.height(2.dp))
-        Text(
-            text = "Intensidad de memoria e iteraciones contra ataques de fuerza bruta.",
-            color = TextoSecundario,
-            style = MaterialTheme.typography.bodySmall
-        )
-        Spacer(Modifier.height(8.dp))
-
         Box(modifier = Modifier.fillMaxWidth()) {
             Row(
                 modifier = Modifier

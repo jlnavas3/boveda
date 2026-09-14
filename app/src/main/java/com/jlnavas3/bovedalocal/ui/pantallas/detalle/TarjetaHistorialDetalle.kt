@@ -42,13 +42,14 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.material.icons.filled.History
 import com.jlnavas3.bovedalocal.data.CambioContrasena
 import com.jlnavas3.bovedalocal.data.Entrada
 import com.jlnavas3.bovedalocal.ui.VaultViewModel
-import com.jlnavas3.bovedalocal.ui.componentes.EtiquetaSeccion
-import com.jlnavas3.bovedalocal.ui.componentes.TarjetaBoveda
+import com.jlnavas3.bovedalocal.ui.componentes.TarjetaBovedaDesplegable
 import com.jlnavas3.bovedalocal.ui.componentes.contrasenaColoreada
 import com.jlnavas3.bovedalocal.ui.theme.Ambar
+import com.jlnavas3.bovedalocal.ui.theme.ColorExportacion
 import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
 import com.jlnavas3.bovedalocal.ui.theme.ColorTarjetas
 import com.jlnavas3.bovedalocal.ui.theme.EstiloMono
@@ -90,9 +91,13 @@ fun TarjetaHistorialDetalle(
         }
     }
 
-    TarjetaBoveda {
-        EtiquetaSeccion("Contraseñas anteriores")
-        Spacer(Modifier.height(6.dp))
+    TarjetaBovedaDesplegable(
+        titulo = "Contraseñas anteriores",
+        descripcion = "${historialUnico.size} clave${if (historialUnico.size == 1) "" else "s"} previas",
+        icono = Icons.Filled.History,
+        colorIcono = ColorExportacion,
+        inicialmenteAbierta = false
+    ) {
         Text(
             "Historial cifrado de claves previas. Puedes visualizarlas, copiarlas o restaurarlas si cambiaste de clave por error.",
             color = TextoSecundario,

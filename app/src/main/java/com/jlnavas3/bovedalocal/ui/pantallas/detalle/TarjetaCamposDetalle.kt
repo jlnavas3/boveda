@@ -36,14 +36,15 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.material.icons.filled.FormatListBulleted
 import com.jlnavas3.bovedalocal.data.CampoPersonalizado
 import com.jlnavas3.bovedalocal.data.TipoCampo
 import com.jlnavas3.bovedalocal.ui.VaultViewModel
-import com.jlnavas3.bovedalocal.ui.componentes.EtiquetaSeccion
-import com.jlnavas3.bovedalocal.ui.componentes.TarjetaBoveda
+import com.jlnavas3.bovedalocal.ui.componentes.TarjetaBovedaDesplegable
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.Ambar
 import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
+import com.jlnavas3.bovedalocal.ui.theme.ColorSalud
 import com.jlnavas3.bovedalocal.ui.theme.EstiloMono
 import com.jlnavas3.bovedalocal.ui.theme.EstiloMonoGrande
 import com.jlnavas3.bovedalocal.ui.theme.FormaPequena
@@ -53,6 +54,7 @@ import com.jlnavas3.bovedalocal.ui.theme.SuperficieAlta
 import com.jlnavas3.bovedalocal.ui.theme.TextoPrincipal
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
 import com.jlnavas3.bovedalocal.util.Haptica
+import com.jlnavas3.bovedalocal.util.Diagnostico
 
 @Composable
 fun TarjetaCamposDetalle(
@@ -64,9 +66,13 @@ fun TarjetaCamposDetalle(
 ) {
     if (campos.isEmpty()) return
 
-    TarjetaBoveda {
-        EtiquetaSeccion("Campos personalizados")
-        Spacer(Modifier.height(8.dp))
+    TarjetaBovedaDesplegable(
+        titulo = "Campos personalizados",
+        descripcion = "${campos.size} campo${if (campos.size == 1) "" else "s"}",
+        icono = Icons.Filled.FormatListBulleted,
+        colorIcono = ColorSalud,
+        inicialmenteAbierta = true
+    ) {
         campos.forEachIndexed { index, campo ->
             if (index > 0) {
                 Spacer(Modifier.height(10.dp))
@@ -175,6 +181,9 @@ private fun FilaCampoPersonalizadoDetalle(
                 IconButton(onClick = {
                     haptica.toque()
                     revelado = !revelado
+                    if (revelado) {
+                        Diagnostico.apuntar("seguridad", "Dato sensible revelado (${campo.etiqueta.ifBlank { "campo personalizado" }})")
+                    }
                 }) {
                     Icon(
                         imageVector = if (revelado) Icons.Filled.VisibilityOff else Icons.Filled.Visibility,

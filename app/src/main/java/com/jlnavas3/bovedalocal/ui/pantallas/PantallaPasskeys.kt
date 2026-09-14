@@ -48,6 +48,14 @@ import com.jlnavas3.bovedalocal.ui.componentes.BotonColorido
 import com.jlnavas3.bovedalocal.ui.componentes.CabeceraPantalla
 import com.jlnavas3.bovedalocal.ui.theme.ColorPasskeys
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.ui.draw.clip
+import com.jlnavas3.bovedalocal.ui.componentes.TarjetaBovedaDesplegable
+import com.jlnavas3.bovedalocal.ui.theme.FormaPequena
+import com.jlnavas3.bovedalocal.ui.theme.colorLegibleParaTema
+import com.jlnavas3.bovedalocal.ui.theme.fondoBadgeParaTema
+
 @Composable
 fun PantallaPasskeys(vm: VaultViewModel) {
     val contexto = LocalContext.current
@@ -66,9 +74,13 @@ fun PantallaPasskeys(vm: VaultViewModel) {
             alVolver = { vm.volverAtras() }
         )
 
-        TarjetaBoveda {
-            EtiquetaSeccion("Cómo activarlas")
-            Spacer(Modifier.height(8.dp))
+        TarjetaBovedaDesplegable(
+            titulo = "Cómo activar Passkeys",
+            descripcion = "Configura Bóveda local como proveedor de credenciales",
+            icono = Icons.Filled.Key,
+            colorIcono = ColorPasskeys,
+            inicialmenteAbierta = false
+        ) {
             Text(
                 buildAnnotatedString {
                     append("Android requiere registrar a ")
@@ -112,12 +124,20 @@ fun PantallaPasskeys(vm: VaultViewModel) {
                         .padding(vertical = 12.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Icon(
-                        imageVector = Icons.Filled.Fingerprint,
-                        contentDescription = null,
-                        tint = ColorPasskeys,
-                        modifier = Modifier.size(48.dp)
-                    )
+                    Box(
+                        modifier = Modifier
+                            .size(64.dp)
+                            .clip(FormaPequena)
+                            .background(fondoBadgeParaTema(ColorPasskeys)),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.Fingerprint,
+                            contentDescription = null,
+                            tint = colorLegibleParaTema(ColorPasskeys),
+                            modifier = Modifier.size(32.dp)
+                        )
+                    }
                     Spacer(Modifier.height(10.dp))
                     Text(
                         "Todavía no hay passkeys",

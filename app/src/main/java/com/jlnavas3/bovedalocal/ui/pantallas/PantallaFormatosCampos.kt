@@ -27,8 +27,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
@@ -38,11 +40,13 @@ import com.jlnavas3.bovedalocal.ui.componentes.CabeceraPantalla
 import com.jlnavas3.bovedalocal.ui.componentes.EtiquetaSeccion
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.OpcionAjuste
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.SelectorAjuste
-import androidx.compose.runtime.remember
-import androidx.compose.ui.platform.LocalContext
+import com.jlnavas3.bovedalocal.ui.componentes.TarjetaBovedaDesplegable
 import com.jlnavas3.bovedalocal.util.Haptica
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
+import com.jlnavas3.bovedalocal.ui.theme.ColorGenerador
+import com.jlnavas3.bovedalocal.ui.theme.ColorPasskeys
+import com.jlnavas3.bovedalocal.ui.theme.ColorSalud
 import com.jlnavas3.bovedalocal.ui.theme.ColorTitulos
 import com.jlnavas3.bovedalocal.ui.theme.EstiloMono
 import com.jlnavas3.bovedalocal.ui.theme.FormaPequena
@@ -82,34 +86,13 @@ fun PantallaFormatosCampos(vm: VaultViewModel) {
         Spacer(Modifier.height(16.dp))
 
         // Vista previa en vivo
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clip(FormaTarjeta)
-                .background(Superficie)
-                .then(
-                    if (GrosorBorde > 0.dp && ColorBordeActual != Color.Transparent)
-                        Modifier.border(GrosorBorde, ColorBordeActual, FormaTarjeta)
-                    else Modifier
-                )
-                .padding(16.dp)
+        TarjetaBovedaDesplegable(
+            titulo = "Vista previa en tiempo real",
+            descripcion = "Previsualización instantánea de los formatos activos",
+            icono = Icons.Filled.Tune,
+            colorIcono = ColorSalud,
+            inicialmenteAbierta = true
         ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(
-                    imageVector = Icons.Filled.Tune,
-                    contentDescription = null,
-                    tint = ColorAcento,
-                    modifier = Modifier.size(20.dp)
-                )
-                Spacer(Modifier.width(8.dp))
-                Text(
-                    text = "Vista previa en tiempo real",
-                    color = ColorTitulos,
-                    style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold)
-                )
-            }
-            Spacer(Modifier.height(12.dp))
-
             // Fila de ejemplos
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -147,12 +130,13 @@ fun PantallaFormatosCampos(vm: VaultViewModel) {
         Spacer(Modifier.height(20.dp))
 
         // Selectores de formato
-        EtiquetaSeccion("Configuración de formatos")
+        EtiquetaSeccion("Configuración de formatos", icono = Icons.Filled.Tune, colorIcono = ColorAcento)
         Spacer(Modifier.height(10.dp))
 
         SelectorAjuste(
             titulo = "Formato de fecha",
             icono = Icons.Filled.CalendarToday,
+            colorIcono = ColorAcento,
             seleccionado = FormateadorCampos.OPCIONES_FECHA.firstOrNull { it.first == ajustes.formatoFecha }?.second ?: ajustes.formatoFecha,
             opciones = FormateadorCampos.OPCIONES_FECHA.map { (valor, etiqueta) ->
                 OpcionAjuste(valor, etiqueta, Icons.Filled.CalendarToday)
@@ -168,6 +152,7 @@ fun PantallaFormatosCampos(vm: VaultViewModel) {
         SelectorAjuste(
             titulo = "Formato de hora",
             icono = Icons.Filled.Schedule,
+            colorIcono = ColorGenerador,
             seleccionado = FormateadorCampos.OPCIONES_HORA.firstOrNull { it.first == ajustes.formatoHora }?.second ?: ajustes.formatoHora,
             opciones = FormateadorCampos.OPCIONES_HORA.map { (valor, etiqueta) ->
                 OpcionAjuste(valor, etiqueta, Icons.Filled.Schedule)
@@ -183,6 +168,7 @@ fun PantallaFormatosCampos(vm: VaultViewModel) {
         SelectorAjuste(
             titulo = "Máscara de teléfono",
             icono = Icons.Filled.Phone,
+            colorIcono = ColorPasskeys,
             seleccionado = FormateadorCampos.OPCIONES_TELEFONO.firstOrNull { it.first == ajustes.formatoTelefono }?.second ?: ajustes.formatoTelefono,
             opciones = FormateadorCampos.OPCIONES_TELEFONO.map { (valor, etiqueta) ->
                 OpcionAjuste(valor, etiqueta, Icons.Filled.Phone)
@@ -198,6 +184,7 @@ fun PantallaFormatosCampos(vm: VaultViewModel) {
         SelectorAjuste(
             titulo = "Separador decimal",
             icono = Icons.Filled.Numbers,
+            colorIcono = ColorSalud,
             seleccionado = FormateadorCampos.OPCIONES_DECIMAL.firstOrNull { it.first == ajustes.separadorDecimal }?.second ?: ajustes.separadorDecimal,
             opciones = FormateadorCampos.OPCIONES_DECIMAL.map { (valor, etiqueta) ->
                 OpcionAjuste(valor, etiqueta, Icons.Filled.Numbers)

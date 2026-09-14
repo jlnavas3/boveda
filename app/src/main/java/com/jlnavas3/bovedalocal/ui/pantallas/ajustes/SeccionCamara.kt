@@ -12,6 +12,7 @@ import androidx.compose.ui.unit.dp
 import com.jlnavas3.bovedalocal.camara.MotorCamara
 import com.jlnavas3.bovedalocal.data.AjustesApp
 import com.jlnavas3.bovedalocal.ui.VaultViewModel
+import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
 import com.jlnavas3.bovedalocal.util.Haptica
 
@@ -21,7 +22,12 @@ fun SeccionCamara(
     ajustes: AjustesApp,
     haptica: Haptica
 ) {
-    TarjetaAjuste("Cámara del escáner", Icons.Filled.CameraAlt, "Elige cómo se leen los códigos QR de autenticación.") {
+    TarjetaAjuste(
+        titulo = "Cámara del escáner",
+        icono = Icons.Filled.CameraAlt,
+        descripcion = "Elige cómo se leen los códigos QR de autenticación.",
+        colorIcono = ColorAcento
+    ) {
         Spacer(Modifier.height(8.dp))
         Text(
             "Automático prueba CameraX y, si falla, pasa solo al motor compatible. Si la imagen sale negra o no lee nada, fuerza el compatible: usa la API antigua de cámara, que funciona hasta en los móviles más raros. Y si nada va, siempre puedes leer el QR desde una captura.",

@@ -283,9 +283,18 @@ fun PantallaLista(vm: VaultViewModel, estado: EstadoBoveda) {
                     .padding(start = 8.dp, end = 8.dp, top = 16.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                IconButton(onClick = { haptica.toque(); abrirMenu() }) {
-                    Icon(Icons.Filled.Menu, contentDescription = "Menú", tint = ColorIconosInternos)
+                IconButton(
+                    onClick = { haptica.toque(); abrirMenu() },
+                    modifier = Modifier.size(54.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.Menu,
+                        contentDescription = "Menú",
+                        tint = ColorIconosInternos,
+                        modifier = Modifier.size(42.dp)
+                    )
                 }
+                Spacer(Modifier.width(6.dp))
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
                         ajustes.nombrePersonalizado.ifBlank { "Bóveda local" },

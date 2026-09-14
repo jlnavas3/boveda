@@ -49,8 +49,10 @@ import com.jlnavas3.bovedalocal.ui.componentes.BotonColorido
 import com.jlnavas3.bovedalocal.ui.componentes.CabeceraPantalla
 import com.jlnavas3.bovedalocal.ui.componentes.CampoBoveda
 import com.jlnavas3.bovedalocal.ui.componentes.ContenedorTarjeta
+import com.jlnavas3.bovedalocal.ui.componentes.TarjetaBovedaDesplegable
 import com.jlnavas3.bovedalocal.ui.theme.Ambar
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
+import com.jlnavas3.bovedalocal.ui.theme.ColorGenerador
 import com.jlnavas3.bovedalocal.ui.theme.ColorSeguridad
 import com.jlnavas3.bovedalocal.ui.theme.ColorSobreAcento
 import com.jlnavas3.bovedalocal.ui.theme.Obsidiana
@@ -85,29 +87,18 @@ fun PantallaAjustesSenuelo(vm: VaultViewModel) {
         )
 
         // Tarjeta Explicativa de Seguridad
-        ContenedorTarjeta(paddingInterno = 14.dp) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(
-                    Icons.Filled.Security,
-                    contentDescription = null,
-                    tint = ColorSeguridad,
-                    modifier = Modifier.size(28.dp)
-                )
-                Spacer(Modifier.size(12.dp))
-                Column {
-                    Text(
-                        text = "¿Cómo funciona?",
-                        color = TextoPrincipal,
-                        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
-                    )
-                    Spacer(Modifier.height(2.dp))
-                    Text(
-                        text = "Si alguien te obliga a desbloquear la app, introduce tu PIN de coacción en la pantalla principal. Bóveda Local se abrirá normalmente pero mostrará solo cuentas señuelo inofensivas. Tu bóveda real permanece 100% cifrada e inaccesible.",
-                        color = TextoSecundario,
-                        style = MaterialTheme.typography.bodySmall
-                    )
-                }
-            }
+        TarjetaBovedaDesplegable(
+            titulo = "¿Cómo funciona la Bóveda Señuelo?",
+            descripcion = "Protección anti-extorsión y apertura señuelo transparente",
+            icono = Icons.Filled.Security,
+            colorIcono = ColorSeguridad,
+            inicialmenteAbierta = false
+        ) {
+            Text(
+                text = "Si alguien te obliga a desbloquear la app, introduce tu PIN de coacción en la pantalla principal. Bóveda Local se abrirá normalmente pero mostrará solo cuentas señuelo inofensivas. Tu bóveda real permanece 100% cifrada e inaccesible.",
+                color = TextoSecundario,
+                style = MaterialTheme.typography.bodySmall
+            )
         }
 
         Spacer(Modifier.height(14.dp))
@@ -267,15 +258,13 @@ fun PantallaAjustesSenuelo(vm: VaultViewModel) {
 
         // Estado y Cuentas Señuelo
         if (activo) {
-            ContenedorTarjeta(paddingInterno = 14.dp) {
-                Text(
-                    text = "Cuentas Simuladas en Bóveda Señuelo",
-                    color = ColorAcento,
-                    style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold)
-                )
-
-                Spacer(Modifier.height(6.dp))
-
+            TarjetaBovedaDesplegable(
+                titulo = "Cuentas Simuladas en Señuelo",
+                descripcion = "${datosSenuelo.entradas.size} cuentas de ejemplo configuradas",
+                icono = Icons.Filled.LockOpen,
+                colorIcono = ColorGenerador,
+                inicialmenteAbierta = false
+            ) {
                 Text(
                     text = "Actualmente hay ${datosSenuelo.entradas.size} cuentas simuladas almacenadas en la bóveda señuelo.",
                     color = TextoPrincipal,

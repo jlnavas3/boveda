@@ -12,6 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.jlnavas3.bovedalocal.data.AjustesApp
 import com.jlnavas3.bovedalocal.ui.VaultViewModel
+import com.jlnavas3.bovedalocal.ui.theme.Color2FA
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
 import com.jlnavas3.bovedalocal.util.Haptica
 
@@ -21,7 +22,12 @@ fun SeccionAutenticador2FA(
     ajustes: AjustesApp,
     haptica: Haptica
 ) {
-    TarjetaAjuste("Autenticador 2FA", Icons.Filled.Timer, "Configura los valores usados al introducir una clave TOTP manualmente.") {
+    TarjetaAjuste(
+        titulo = "Autenticador 2FA",
+        icono = Icons.Filled.Timer,
+        descripcion = "Configura los valores usados al introducir una clave TOTP manualmente.",
+        colorIcono = Color2FA
+    ) {
         Spacer(Modifier.height(8.dp))
         Text(
             "Los QR otpauth traen sus propios parámetros y siempre tienen prioridad. Estos valores solo se usan cuando pegas una clave Base32 sin QR.",

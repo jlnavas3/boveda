@@ -50,8 +50,10 @@ import com.jlnavas3.bovedalocal.ui.componentes.BotonAmbar
 import com.jlnavas3.bovedalocal.ui.componentes.BotonBorde
 import com.jlnavas3.bovedalocal.ui.componentes.CampoBoveda
 import com.jlnavas3.bovedalocal.ui.componentes.ContenedorTarjeta
+import com.jlnavas3.bovedalocal.ui.componentes.TarjetaBovedaDesplegable
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.SelectorPerfilArgon2
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
+import com.jlnavas3.bovedalocal.ui.theme.ColorSeguridad
 import com.jlnavas3.bovedalocal.ui.theme.ColorTarjetas
 import com.jlnavas3.bovedalocal.ui.theme.ColorTitulos
 import com.jlnavas3.bovedalocal.ui.theme.FormaCampo
@@ -75,7 +77,6 @@ fun PasoCrearContrasena(
     var mostrarRepetida by remember { mutableStateOf(false) }
 
     var expandirConsejoTile by remember { mutableStateOf(false) }
-    var expandirArgon2 by remember { mutableStateOf(false) }
     var mostrarDialogoCompartir by remember { mutableStateOf(false) }
 
     val fuerza = remember(contrasena) { MedidorFuerza.medir(contrasena) }
@@ -221,47 +222,17 @@ fun PasoCrearContrasena(
         Spacer(Modifier.height(14.dp))
 
         // Tarjeta colapsable para el Perfil de cifrado Argon2id (colapsada por defecto)
-        ContenedorTarjeta(paddingInterno = 14.dp) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable { expandirArgon2 = !expandirArgon2 },
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Icon(
-                    imageVector = Icons.Filled.Memory,
-                    contentDescription = null,
-                    tint = ColorAcento,
-                    modifier = Modifier.size(22.dp)
-                )
-                Spacer(Modifier.width(12.dp))
-                Column(modifier = Modifier.weight(1f)) {
-                    Text(
-                        text = "Perfil de cifrado Argon2id",
-                        style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
-                        color = ColorTitulos
-                    )
-                    Text(
-                        text = perfilSeleccionado.titulo,
-                        style = MaterialTheme.typography.bodySmall,
-                        color = Menta
-                    )
-                }
-                Icon(
-                    imageVector = if (expandirArgon2) Icons.Filled.ExpandLess else Icons.Filled.ExpandMore,
-                    contentDescription = if (expandirArgon2) "Colapsar" else "Expandir",
-                    tint = TextoSecundario
-                )
-            }
-
-            AnimatedVisibility(visible = expandirArgon2) {
-                Column(modifier = Modifier.padding(top = 10.dp)) {
-                    SelectorPerfilArgon2(
-                        perfilActual = perfilSeleccionado,
-                        alSeleccionarPerfil = alCambiarPerfil
-                    )
-                }
-            }
+        TarjetaBovedaDesplegable(
+            titulo = "Perfil de cifrado Argon2id",
+            descripcion = perfilSeleccionado.titulo,
+            icono = Icons.Filled.Memory,
+            colorIcono = ColorSeguridad,
+            inicialmenteAbierta = false
+        ) {
+            SelectorPerfilArgon2(
+                perfilActual = perfilSeleccionado,
+                alSeleccionarPerfil = alCambiarPerfil
+            )
         }
 
         Spacer(Modifier.height(20.dp))

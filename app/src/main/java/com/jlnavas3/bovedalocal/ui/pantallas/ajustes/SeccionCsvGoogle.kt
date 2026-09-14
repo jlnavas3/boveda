@@ -52,10 +52,11 @@ fun SeccionCsvGoogle(
     alMostrarDialogoBorradoManual: () -> Unit
 ) {
     TarjetaAjuste(
-        "Passwords de Google",
-        Icons.Filled.Key,
-        "Importa un CSV exportado desde Google Password Manager.",
-        inicialmenteAbierta = ajustes.csvGoogleRuta.isNotBlank()
+        titulo = "Passwords de Google",
+        icono = Icons.Filled.Key,
+        descripcion = "Importa un CSV exportado desde Google Password Manager.",
+        inicialmenteAbierta = ajustes.csvGoogleRuta.isNotBlank(),
+        colorIcono = ColorExportacion
     ) {
         Spacer(Modifier.height(8.dp))
         Text(

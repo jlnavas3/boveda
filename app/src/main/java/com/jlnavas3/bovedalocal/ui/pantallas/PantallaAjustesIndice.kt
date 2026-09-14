@@ -18,7 +18,12 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Sort
+import androidx.compose.material.icons.filled.Circle
+import androidx.compose.material.icons.filled.Highlight
 import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.icons.filled.TouchApp
+import androidx.compose.material.icons.filled.Tune
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
@@ -42,9 +47,14 @@ import com.jlnavas3.bovedalocal.ui.VaultViewModel
 import com.jlnavas3.bovedalocal.ui.componentes.BotonBorde
 import com.jlnavas3.bovedalocal.ui.componentes.CabeceraPantalla
 import com.jlnavas3.bovedalocal.ui.componentes.IndiceAlfabetico
+import com.jlnavas3.bovedalocal.ui.componentes.TarjetaBovedaDesplegable
 import com.jlnavas3.bovedalocal.ui.theme.Ambar
 import com.jlnavas3.bovedalocal.ui.theme.Borde
+import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
+import com.jlnavas3.bovedalocal.ui.theme.ColorGenerador
+import com.jlnavas3.bovedalocal.ui.theme.ColorSalud
+import com.jlnavas3.bovedalocal.ui.theme.ColorSeguridad
 import com.jlnavas3.bovedalocal.ui.theme.ColorSobreAcento
 import com.jlnavas3.bovedalocal.ui.theme.ColorTarjetas
 import com.jlnavas3.bovedalocal.ui.theme.FormaCampo
@@ -101,36 +111,13 @@ fun PantallaAjustesIndice(vm: VaultViewModel) {
             Spacer(Modifier.height(8.dp))
 
             // Tarjeta de demostración interactiva
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(FormaTarjeta)
-                    .background(SuperficieAlta)
-                    .then(
-                        if (GrosorBorde > 0.dp && ColorBordeActual != Color.Transparent)
-                            Modifier.border(GrosorBorde, ColorBordeActual, FormaTarjeta)
-                        else Modifier
-                    )
-                    .padding(14.dp)
+            TarjetaBovedaDesplegable(
+                titulo = "Demo interactiva del abecedario",
+                descripcion = "Desliza en el borde derecho para calibrar en vivo",
+                icono = Icons.AutoMirrored.Filled.Sort,
+                colorIcono = ColorAcento,
+                inicialmenteAbierta = true
             ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        "DEMO INTERACTIVA",
-                        color = Ambar,
-                        style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold)
-                    )
-                    Text(
-                        "Desliza en el borde 👉",
-                        color = TextoSecundario,
-                        style = MaterialTheme.typography.labelSmall
-                    )
-                }
-                Spacer(Modifier.height(8.dp))
-
                 val primerIndiceCoincidente = remember(mockItems, letraArrastrada, ajustes.indiceIncluirEnie, ajustes.indiceResaltarEntradas, ajustes.indiceResaltarSoloPrimera) {
                     if (!ajustes.indiceResaltarEntradas || letraArrastrada == null) null
                     else if (ajustes.indiceResaltarSoloPrimera) {
@@ -195,196 +182,225 @@ fun PantallaAjustesIndice(vm: VaultViewModel) {
                 }
             }
 
-            Spacer(Modifier.height(18.dp))
+            Spacer(Modifier.height(14.dp))
 
             // 1. Efecto de ola Niagara
-            FilaAjusteIndice(
+            TarjetaBovedaDesplegable(
                 titulo = "Efecto de ola Niagara",
-                descripcion = "Curvatura dinámica continua que sigue el movimiento del dedo.",
-                activo = ajustes.indiceEfectoOla,
-                alCambiar = { haptica.tic(); vm.ajustarIndiceEfectoOla(it) }
-            )
-
-            if (ajustes.indiceEfectoOla) {
-                Spacer(Modifier.height(10.dp))
-                val amplitud = ajustes.indiceAmplitudOlaDp
-                val textoAmplitud = when {
-                    amplitud <= 0f -> "Recto (sin ola)"
-                    amplitud < 45f -> "Curva sutil"
-                    amplitud < 85f -> "Equilibrado"
-                    amplitud <= 115f -> "Ola amplia (predeterminado)"
-                    else -> "Super exagerado"
-                }
-                SliderAjusteIndice(
-                    titulo = "Amplitud de la curvatura: ${amplitud.toInt()} dp",
-                    subtitulo = textoAmplitud,
-                    valor = amplitud,
-                    rango = 0f..130f,
-                    alCambiar = { vm.ajustarIndiceAmplitudOlaDp(it) }
+                descripcion = "Curvatura dinámica continua, amplitud y escalas de letra",
+                icono = Icons.Filled.Tune,
+                colorIcono = ColorAcento,
+                inicialmenteAbierta = true
+            ) {
+                FilaAjusteIndice(
+                    titulo = "Activar ola interactiva",
+                    descripcion = "Curvatura dinámica que sigue el movimiento del dedo.",
+                    activo = ajustes.indiceEfectoOla,
+                    alCambiar = { haptica.tic(); vm.ajustarIndiceEfectoOla(it) }
                 )
 
-                Spacer(Modifier.height(10.dp))
-                val radio = ajustes.indiceRadioOlaDp
-                val textoRadio = when {
-                    radio < 140f -> "Concentrado"
-                    radio < 220f -> "Arco medio"
-                    radio <= 265f -> "Arco amplio (predeterminado)"
-                    else -> "Abarca todo el abecedario"
-                }
-                SliderAjusteIndice(
-                    titulo = "Alcance vertical: ${radio.toInt()} dp",
-                    subtitulo = textoRadio,
-                    valor = radio,
-                    rango = 80f..300f,
-                    alCambiar = { vm.ajustarIndiceRadioOlaDp(it) }
-                )
+                if (ajustes.indiceEfectoOla) {
+                    Spacer(Modifier.height(10.dp))
+                    val amplitud = ajustes.indiceAmplitudOlaDp
+                    val textoAmplitud = when {
+                        amplitud <= 0f -> "Recto (sin ola)"
+                        amplitud < 45f -> "Curva sutil"
+                        amplitud < 85f -> "Equilibrado"
+                        amplitud <= 115f -> "Ola amplia (predeterminado)"
+                        else -> "Super exagerado"
+                    }
+                    SliderAjusteIndice(
+                        titulo = "Amplitud de la curvatura: ${amplitud.toInt()} dp",
+                        subtitulo = textoAmplitud,
+                        valor = amplitud,
+                        rango = 0f..130f,
+                        alCambiar = { vm.ajustarIndiceAmplitudOlaDp(it) }
+                    )
 
-                Spacer(Modifier.height(10.dp))
-                val escala = ajustes.indiceEscalaLetras
-                val textoEscala = when {
-                    escala <= 1.05f -> "Sin aumento"
-                    escala < 1.45f -> "Crecimiento suave"
-                    escala <= 1.8f -> "Letras destacadas (predeterminado)"
-                    escala < 2.3f -> "Letras grandes en cresta"
-                    else -> "Letras gigantescas"
+                    Spacer(Modifier.height(10.dp))
+                    val radio = ajustes.indiceRadioOlaDp
+                    val textoRadio = when {
+                        radio < 140f -> "Concentrado"
+                        radio < 220f -> "Arco medio"
+                        radio <= 265f -> "Arco amplio (predeterminado)"
+                        else -> "Abarca todo el abecedario"
+                    }
+                    SliderAjusteIndice(
+                        titulo = "Alcance vertical: ${radio.toInt()} dp",
+                        subtitulo = textoRadio,
+                        valor = radio,
+                        rango = 80f..300f,
+                        alCambiar = { vm.ajustarIndiceRadioOlaDp(it) }
+                    )
+
+                    Spacer(Modifier.height(10.dp))
+                    val escala = ajustes.indiceEscalaLetras
+                    val textoEscala = when {
+                        escala <= 1.05f -> "Sin aumento"
+                        escala < 1.45f -> "Crecimiento suave"
+                        escala <= 1.8f -> "Letras destacadas (predeterminado)"
+                        escala < 2.3f -> "Letras grandes en cresta"
+                        else -> "Letras gigantescas"
+                    }
+                    val escalaStr = "%.1f".format(java.util.Locale.US, escala)
+                    SliderAjusteIndice(
+                        titulo = "Aumento de letras en la cresta: ${escalaStr}x",
+                        subtitulo = textoEscala,
+                        valor = escala,
+                        rango = 1.0f..2.6f,
+                        alCambiar = { vm.ajustarIndiceEscalaLetras(it) }
+                    )
                 }
-                val escalaStr = "%.1f".format(java.util.Locale.US, escala)
-                SliderAjusteIndice(
-                    titulo = "Aumento de letras en la cresta: ${escalaStr}x",
-                    subtitulo = textoEscala,
-                    valor = escala,
-                    rango = 1.0f..2.6f,
-                    alCambiar = { vm.ajustarIndiceEscalaLetras(it) }
-                )
             }
 
             Spacer(Modifier.height(14.dp))
 
             // 2. Círculo aumentado en la cresta
-            FilaAjusteIndice(
-                titulo = "Círculo aumentado en la cresta",
-                descripcion = "Muestra la letra activa sin borde proyectada hacia el centro.",
-                activo = ajustes.indiceMostrarCirculo,
-                alCambiar = { haptica.tic(); vm.ajustarIndiceMostrarCirculo(it) }
-            )
-
-            if (ajustes.indiceMostrarCirculo) {
-                Spacer(Modifier.height(10.dp))
-                val tamanoCirculo = ajustes.indiceTamanoCirculoDp
-                val textoTamano = when {
-                    tamanoCirculo < 65f -> "Compacto y discreto"
-                    tamanoCirculo <= 85f -> "Estándar equilibrado (predeterminado)"
-                    else -> "Grande y vistoso"
-                }
-                SliderAjusteIndice(
-                    titulo = "Tamaño del círculo: ${tamanoCirculo.toInt()} dp",
-                    subtitulo = textoTamano,
-                    valor = tamanoCirculo,
-                    rango = 50f..110f,
-                    alCambiar = { vm.ajustarIndiceTamanoCirculoDp(it) }
-                )
-
-                Spacer(Modifier.height(10.dp))
-                val offset = ajustes.indiceOffsetCirculoDp
-                val textoOffset = when {
-                    offset < 80f -> "Cerca de la franja"
-                    offset < 130f -> "Proyección flotante"
-                    else -> "Casi a media pantalla"
-                }
-                SliderAjusteIndice(
-                    titulo = "Desplazamiento del círculo: ${offset.toInt()} dp",
-                    subtitulo = textoOffset,
-                    valor = offset,
-                    rango = 50f..160f,
-                    alCambiar = { vm.ajustarIndiceOffsetCirculoDp(it) }
-                )
-            }
-
-            Spacer(Modifier.height(14.dp))
-
-            // 3. Vibración háptica
-            FilaAjusteIndice(
-                titulo = "Vibración háptica al deslizar",
-                descripcion = "Respuesta táctil sutil en cada letra seleccionada.",
-                activo = ajustes.indiceHaptica,
-                alCambiar = { haptica.tic(); vm.ajustarIndiceHaptica(it) }
-            )
-
-            Spacer(Modifier.height(10.dp))
-
-            // 4. Zona táctil de arrastre
-            val anchoTactil = ajustes.indiceAnchoTactilDp
-            val textoAnchoTactil = when {
-                anchoTactil < 35f -> "Estrecho (solo sobre letras)"
-                anchoTactil <= 55f -> "Estándar cómodo (predeterminado)"
-                anchoTactil < 75f -> "Área amplia"
-                else -> "Extremadamente amplio"
-            }
-            SliderAjusteIndice(
-                titulo = "Zona táctil de arrastre: ${anchoTactil.toInt()} dp",
-                subtitulo = textoAnchoTactil,
-                valor = anchoTactil,
-                rango = 26f..90f,
-                alCambiar = { vm.ajustarIndiceAnchoTactilDp(it) }
-            )
-
-            Spacer(Modifier.height(10.dp))
-
-            // 5. Color y luminosidad de las letras
-            val tono = ajustes.indiceTonoLetras
-            val textoTono = if (esOscuroActivo) {
-                when {
-                    tono < 25f -> "Muy tenue / discreto"
-                    tono < 45f -> "Oscuro suave"
-                    tono <= 65f -> "Equilibrado (predeterminado)"
-                    tono < 85f -> "Claro y nítido"
-                    else -> "Máximo brillo / blanco puro"
-                }
-            } else {
-                when {
-                    tono < 25f -> "Muy tenue / discreto"
-                    tono < 45f -> "Gris suave"
-                    tono <= 65f -> "Equilibrado (predeterminado)"
-                    tono < 85f -> "Oscuro y nítido"
-                    else -> "Máximo contraste / negro definido"
-                }
-            }
-            SliderAjusteIndice(
-                titulo = "Tono y contraste de las letras: ${tono.toInt()}%",
-                subtitulo = textoTono,
-                valor = tono,
-                rango = 10f..100f,
-                alCambiar = { vm.ajustarIndiceTonoLetras(it) }
-            )
-
-            Spacer(Modifier.height(14.dp))
-
-            // 6. Switch para la letra Ñ
-            FilaAjusteIndice(
-                titulo = "Incluir letra Ñ",
-                descripcion = "Muestra la 'Ñ' en su posición alfabética en español (si se desactiva, se normaliza en la 'N').",
-                activo = ajustes.indiceIncluirEnie,
-                alCambiar = { haptica.tic(); vm.ajustarIndiceIncluirEnie(it) }
-            )
-
-            Spacer(Modifier.height(14.dp))
-
-            // 7. Resaltado de entradas al arrastrar
-            FilaAjusteIndice(
-                titulo = "Resaltar entradas al deslizar",
-                descripcion = "Destaca visualmente con borde y fondo de acento las entradas referentes a la letra activa.",
-                activo = ajustes.indiceResaltarEntradas,
-                alCambiar = { haptica.tic(); vm.ajustarIndiceResaltarEntradas(it) }
-            )
-
-            if (ajustes.indiceResaltarEntradas) {
-                Spacer(Modifier.height(10.dp))
+            TarjetaBovedaDesplegable(
+                titulo = "Círculo en la cresta",
+                descripcion = "Lupa y desplazamiento de la letra seleccionada hacia el centro",
+                icono = Icons.Filled.Circle,
+                colorIcono = ColorGenerador,
+                inicialmenteAbierta = false
+            ) {
                 FilaAjusteIndice(
-                    titulo = "Resaltar solo la primera entrada",
-                    descripcion = "Marca únicamente la primera entrada de cada letra como ancla visual en vez de todas.",
-                    activo = ajustes.indiceResaltarSoloPrimera,
-                    alCambiar = { haptica.tic(); vm.ajustarIndiceResaltarSoloPrimera(it) }
+                    titulo = "Mostrar círculo en cresta",
+                    descripcion = "Muestra la letra activa sin borde proyectada hacia el centro.",
+                    activo = ajustes.indiceMostrarCirculo,
+                    alCambiar = { haptica.tic(); vm.ajustarIndiceMostrarCirculo(it) }
                 )
+
+                if (ajustes.indiceMostrarCirculo) {
+                    Spacer(Modifier.height(10.dp))
+                    val tamanoCirculo = ajustes.indiceTamanoCirculoDp
+                    val textoTamano = when {
+                        tamanoCirculo < 65f -> "Compacto y discreto"
+                        tamanoCirculo <= 85f -> "Estándar equilibrado (predeterminado)"
+                        else -> "Grande y vistoso"
+                    }
+                    SliderAjusteIndice(
+                        titulo = "Tamaño del círculo: ${tamanoCirculo.toInt()} dp",
+                        subtitulo = textoTamano,
+                        valor = tamanoCirculo,
+                        rango = 50f..110f,
+                        alCambiar = { vm.ajustarIndiceTamanoCirculoDp(it) }
+                    )
+
+                    Spacer(Modifier.height(10.dp))
+                    val offset = ajustes.indiceOffsetCirculoDp
+                    val textoOffset = when {
+                        offset < 80f -> "Cerca de la franja"
+                        offset < 130f -> "Proyección flotante"
+                        else -> "Casi a media pantalla"
+                    }
+                    SliderAjusteIndice(
+                        titulo = "Desplazamiento del círculo: ${offset.toInt()} dp",
+                        subtitulo = textoOffset,
+                        valor = offset,
+                        rango = 50f..160f,
+                        alCambiar = { vm.ajustarIndiceOffsetCirculoDp(it) }
+                    )
+                }
+            }
+
+            Spacer(Modifier.height(14.dp))
+
+            // 3. Tacto, háptica y contraste
+            TarjetaBovedaDesplegable(
+                titulo = "Tacto, háptica y contraste",
+                descripcion = "Vibración, ancho táctil, luminosidad y letra Ñ",
+                icono = Icons.Filled.TouchApp,
+                colorIcono = ColorSalud,
+                inicialmenteAbierta = false
+            ) {
+                FilaAjusteIndice(
+                    titulo = "Vibración háptica al deslizar",
+                    descripcion = "Respuesta táctil sutil en cada letra seleccionada.",
+                    activo = ajustes.indiceHaptica,
+                    alCambiar = { haptica.tic(); vm.ajustarIndiceHaptica(it) }
+                )
+
+                Spacer(Modifier.height(10.dp))
+
+                val anchoTactil = ajustes.indiceAnchoTactilDp
+                val textoAnchoTactil = when {
+                    anchoTactil < 35f -> "Estrecho (solo sobre letras)"
+                    anchoTactil <= 55f -> "Estándar cómodo (predeterminado)"
+                    anchoTactil < 75f -> "Área amplia"
+                    else -> "Extremadamente amplio"
+                }
+                SliderAjusteIndice(
+                    titulo = "Zona táctil de arrastre: ${anchoTactil.toInt()} dp",
+                    subtitulo = textoAnchoTactil,
+                    valor = anchoTactil,
+                    rango = 26f..90f,
+                    alCambiar = { vm.ajustarIndiceAnchoTactilDp(it) }
+                )
+
+                Spacer(Modifier.height(10.dp))
+
+                val tono = ajustes.indiceTonoLetras
+                val textoTono = if (esOscuroActivo) {
+                    when {
+                        tono < 25f -> "Muy tenue / discreto"
+                        tono < 45f -> "Oscuro suave"
+                        tono <= 65f -> "Equilibrado (predeterminado)"
+                        tono < 85f -> "Claro y nítido"
+                        else -> "Máximo brillo / blanco puro"
+                    }
+                } else {
+                    when {
+                        tono < 25f -> "Muy tenue / discreto"
+                        tono < 45f -> "Gris suave"
+                        tono <= 65f -> "Equilibrado (predeterminado)"
+                        tono < 85f -> "Oscuro y nítido"
+                        else -> "Máximo contraste / negro definido"
+                    }
+                }
+                SliderAjusteIndice(
+                    titulo = "Tono y contraste de las letras: ${tono.toInt()}%",
+                    subtitulo = textoTono,
+                    valor = tono,
+                    rango = 10f..100f,
+                    alCambiar = { vm.ajustarIndiceTonoLetras(it) }
+                )
+
+                Spacer(Modifier.height(10.dp))
+
+                FilaAjusteIndice(
+                    titulo = "Incluir letra Ñ",
+                    descripcion = "Muestra la 'Ñ' en su posición alfabética en español (si se desactiva, se normaliza en la 'N').",
+                    activo = ajustes.indiceIncluirEnie,
+                    alCambiar = { haptica.tic(); vm.ajustarIndiceIncluirEnie(it) }
+                )
+            }
+
+            Spacer(Modifier.height(14.dp))
+
+            // 4. Resaltado de entradas al arrastrar
+            TarjetaBovedaDesplegable(
+                titulo = "Resaltado al deslizar",
+                descripcion = "Destacar entradas en la lista al pasar por cada letra",
+                icono = Icons.Filled.Highlight,
+                colorIcono = ColorSeguridad,
+                inicialmenteAbierta = false
+            ) {
+                FilaAjusteIndice(
+                    titulo = "Resaltar entradas al deslizar",
+                    descripcion = "Destaca visualmente con borde y fondo de acento las entradas referentes a la letra activa.",
+                    activo = ajustes.indiceResaltarEntradas,
+                    alCambiar = { haptica.tic(); vm.ajustarIndiceResaltarEntradas(it) }
+                )
+
+                if (ajustes.indiceResaltarEntradas) {
+                    Spacer(Modifier.height(10.dp))
+                    FilaAjusteIndice(
+                        titulo = "Resaltar solo la primera entrada",
+                        descripcion = "Marca únicamente la primera entrada de cada letra como ancla visual en vez de todas.",
+                        activo = ajustes.indiceResaltarSoloPrimera,
+                        alCambiar = { haptica.tic(); vm.ajustarIndiceResaltarSoloPrimera(it) }
+                    )
+                }
             }
 
             Spacer(Modifier.height(18.dp))

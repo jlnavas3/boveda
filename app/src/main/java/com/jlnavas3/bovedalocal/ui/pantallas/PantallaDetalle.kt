@@ -26,7 +26,12 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Description
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Key
+import androidx.compose.material.icons.filled.Label
+import androidx.compose.material.icons.filled.Language
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.QrCode
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.Visibility
@@ -61,6 +66,7 @@ import com.jlnavas3.bovedalocal.ui.componentes.DialogoCompartirQr
 import com.jlnavas3.bovedalocal.ui.componentes.EtiquetaSeccion
 import com.jlnavas3.bovedalocal.ui.componentes.Monograma
 import com.jlnavas3.bovedalocal.ui.componentes.TarjetaBoveda
+import com.jlnavas3.bovedalocal.ui.componentes.TarjetaBovedaDesplegable
 import com.jlnavas3.bovedalocal.ui.componentes.contrasenaColoreada
 import com.jlnavas3.bovedalocal.ui.pantallas.detalle.TarjetaCamposDetalle
 import com.jlnavas3.bovedalocal.ui.pantallas.detalle.TarjetaHistorialDetalle
@@ -70,8 +76,12 @@ import com.jlnavas3.bovedalocal.ui.theme.Ambar
 import com.jlnavas3.bovedalocal.ui.theme.Borde
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
+import com.jlnavas3.bovedalocal.ui.theme.ColorExportacion
+import com.jlnavas3.bovedalocal.ui.theme.ColorGenerador
 import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
 import com.jlnavas3.bovedalocal.ui.theme.ColorPapelera
+import com.jlnavas3.bovedalocal.ui.theme.ColorSalud
+import com.jlnavas3.bovedalocal.ui.theme.ColorSeguridad
 import com.jlnavas3.bovedalocal.ui.theme.ColorTitulos
 import com.jlnavas3.bovedalocal.ui.theme.EstiloMono
 import com.jlnavas3.bovedalocal.ui.theme.EstiloMonoGrande
@@ -197,9 +207,13 @@ fun PantallaDetalle(vm: VaultViewModel, id: String) {
 
         // Usuario / Correo
         if (entrada.usuario.isNotBlank()) {
-            TarjetaBoveda {
-                EtiquetaSeccion("Usuario o correo")
-                Spacer(Modifier.height(8.dp))
+            TarjetaBovedaDesplegable(
+                titulo = "Usuario o correo",
+                descripcion = entrada.usuario,
+                icono = Icons.Filled.Person,
+                colorIcono = ColorAcento,
+                inicialmenteAbierta = true
+            ) {
                 Text(
                     text = entrada.usuario,
                     style = EstiloMono,
@@ -224,9 +238,13 @@ fun PantallaDetalle(vm: VaultViewModel, id: String) {
 
         // Contraseña principal
         if (entrada.contrasena.isNotBlank()) {
-            TarjetaBoveda {
-                EtiquetaSeccion("Contraseña")
-                Spacer(Modifier.height(8.dp))
+            TarjetaBovedaDesplegable(
+                titulo = "Contraseña",
+                descripcion = "${entrada.contrasena.length} caracteres",
+                icono = Icons.Filled.Key,
+                colorIcono = ColorSeguridad,
+                inicialmenteAbierta = true
+            ) {
                 if (revelada) {
                     Text(
                         text = contrasenaColoreada(entrada.contrasena),
@@ -302,9 +320,13 @@ fun PantallaDetalle(vm: VaultViewModel, id: String) {
 
         // URLs y sitios asociados
         if (entrada.urls.isNotEmpty()) {
-            TarjetaBoveda {
-                EtiquetaSeccion("Sitios y apps asociados")
-                Spacer(Modifier.height(8.dp))
+            TarjetaBovedaDesplegable(
+                titulo = "Sitios y apps asociados",
+                descripcion = "${entrada.urls.size} enlace${if (entrada.urls.size == 1) "" else "s"}",
+                icono = Icons.Filled.Language,
+                colorIcono = ColorGenerador,
+                inicialmenteAbierta = true
+            ) {
                 entrada.urls.forEach { url ->
                     Text(url, style = MaterialTheme.typography.bodyLarge, color = TextoPrincipal)
                 }
@@ -314,9 +336,13 @@ fun PantallaDetalle(vm: VaultViewModel, id: String) {
 
         // Notas
         if (entrada.notas.isNotBlank()) {
-            TarjetaBoveda {
-                EtiquetaSeccion("Notas")
-                Spacer(Modifier.height(8.dp))
+            TarjetaBovedaDesplegable(
+                titulo = "Notas",
+                descripcion = entrada.notas.take(35) + (if (entrada.notas.length > 35) "…" else ""),
+                icono = Icons.Filled.Description,
+                colorIcono = ColorExportacion,
+                inicialmenteAbierta = true
+            ) {
                 Text(entrada.notas, style = MaterialTheme.typography.bodyLarge, color = TextoPrincipal)
             }
             Spacer(Modifier.height(12.dp))
@@ -324,9 +350,13 @@ fun PantallaDetalle(vm: VaultViewModel, id: String) {
 
         // Etiquetas
         if (entrada.etiquetas.isNotEmpty()) {
-            TarjetaBoveda {
-                EtiquetaSeccion("Etiquetas")
-                Spacer(Modifier.height(8.dp))
+            TarjetaBovedaDesplegable(
+                titulo = "Etiquetas",
+                descripcion = "${entrada.etiquetas.size} etiqueta${if (entrada.etiquetas.size == 1) "" else "s"}",
+                icono = Icons.Filled.Label,
+                colorIcono = ColorSalud,
+                inicialmenteAbierta = true
+            ) {
                 Row(
                     modifier = Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
                     horizontalArrangement = Arrangement.spacedBy(8.dp)

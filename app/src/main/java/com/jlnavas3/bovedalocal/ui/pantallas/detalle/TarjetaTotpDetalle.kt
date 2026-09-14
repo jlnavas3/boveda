@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ContentCopy
+import androidx.compose.material.icons.filled.Timer
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -24,9 +25,8 @@ import com.jlnavas3.bovedalocal.data.AjustesApp
 import com.jlnavas3.bovedalocal.data.Entrada
 import com.jlnavas3.bovedalocal.ui.componentes.AnilloTotp
 import com.jlnavas3.bovedalocal.ui.componentes.BotonBorde
-import com.jlnavas3.bovedalocal.ui.componentes.EtiquetaSeccion
-import com.jlnavas3.bovedalocal.ui.componentes.TarjetaBoveda
-import com.jlnavas3.bovedalocal.ui.theme.Menta
+import com.jlnavas3.bovedalocal.ui.componentes.TarjetaBovedaDesplegable
+import com.jlnavas3.bovedalocal.ui.theme.Color2FA
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
 import com.jlnavas3.bovedalocal.util.Haptica
 import kotlinx.coroutines.delay
@@ -63,9 +63,13 @@ fun TarjetaTotpDetalle(
         }
     }
 
-    TarjetaBoveda {
-        EtiquetaSeccion("Código de verificación (TOTP)")
-        Spacer(Modifier.height(10.dp))
+    TarjetaBovedaDesplegable(
+        titulo = "Código de verificación (TOTP)",
+        descripcion = "Se renueva cada ${periodo} s · ${entrada.totpDigitos} dígitos",
+        icono = Icons.Filled.Timer,
+        colorIcono = Color2FA,
+        inicialmenteAbierta = true
+    ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             AnilloTotp(
                 codigo = if (ajustes.totpSepararDigitos && codigo.length == 6) "${codigo.take(3)} ${codigo.drop(3)}" else codigo,
@@ -75,7 +79,7 @@ fun TarjetaTotpDetalle(
             Spacer(Modifier.width(16.dp))
             Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    "Se renueva cada ${periodo} s · ${entrada.totpDigitos} dígitos",
+                    "Código temporal de un solo uso",
                     color = TextoSecundario,
                     style = MaterialTheme.typography.bodyMedium
                 )
@@ -83,7 +87,7 @@ fun TarjetaTotpDetalle(
                 BotonBorde(
                     texto = "Copiar código",
                     icono = Icons.Filled.ContentCopy,
-                    color = Menta
+                    color = Color2FA
                 ) {
                     haptica.toque()
                     alCopiarTotp(codigo)

@@ -93,6 +93,11 @@ import com.jlnavas3.bovedalocal.util.Diagnostico
 import com.jlnavas3.bovedalocal.util.Haptica
 import com.jlnavas3.bovedalocal.util.Portapapeles
 
+import com.jlnavas3.bovedalocal.ui.componentes.TarjetaBovedaDesplegable
+import com.jlnavas3.bovedalocal.ui.theme.FormaPequena
+import com.jlnavas3.bovedalocal.ui.theme.colorLegibleParaTema
+import com.jlnavas3.bovedalocal.ui.theme.fondoBadgeParaTema
+
 enum class CriterioOrdenRegistro(val etiqueta: String) {
     RECIENTES("Más recientes"),
     ANTIGUOS("Más antiguos"),
@@ -218,38 +223,45 @@ fun PantallaRegistro(vm: VaultViewModel) {
             alVolver = { vm.volverAtras() }
         )
 
-        // Buscador
-        CampoBoveda(
-            valor = filtroTexto,
-            etiqueta = "Buscar en eventos (${eventosOrdenados.size} de ${registro.size})…",
-            alCambiar = { filtroTexto = it }
-        )
-
-        Spacer(Modifier.height(10.dp))
-
-        // Fila de Filtro de Categoría y Ordenación
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalAlignment = Alignment.CenterVertically
+        // Filtros y Búsqueda en Tarjeta Desplegable
+        TarjetaBovedaDesplegable(
+            titulo = "Filtros y Búsqueda",
+            descripcion = if (filtroTexto.isBlank() && categoriaSeleccionada == "Todos") "Filtrar por categoría técnica u ordenar eventos" else "Filtro activo: $categoriaSeleccionada (${eventosOrdenados.size} eventos)",
+            icono = Icons.Filled.FilterList,
+            colorIcono = ColorAcento,
+            inicialmenteAbierta = false
         ) {
-            Box(modifier = Modifier.weight(1f)) {
-                SelectorCategoriaRegistro(
-                    categoriaSeleccionada = categoriaSeleccionada,
-                    categorias = categorias,
-                    alSeleccionar = {
+            CampoBoveda(
+                valor = filtroTexto,
+                etiqueta = "Buscar en eventos (${eventosOrdenados.size} de ${registro.size})…",
+                alCambiar = { filtroTexto = it }
+            )
+
+            Spacer(Modifier.height(10.dp))
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Box(modifier = Modifier.weight(1f)) {
+                    SelectorCategoriaRegistro(
+                        categoriaSeleccionada = categoriaSeleccionada,
+                        categorias = categorias,
+                        alSeleccionar = {
+                            haptica.tic()
+                            categoriaSeleccionada = it
+                        }
+                    )
+                }
+                SelectorOrdenRegistro(
+                    criterio = criterioOrden,
+                    alCambiar = {
                         haptica.tic()
-                        categoriaSeleccionada = it
+                        criterioOrden = it
                     }
                 )
             }
-            SelectorOrdenRegistro(
-                criterio = criterioOrden,
-                alCambiar = {
-                    haptica.tic()
-                    criterioOrden = it
-                }
-            )
         }
 
         Spacer(Modifier.height(12.dp))
@@ -265,11 +277,31 @@ fun PantallaRegistro(vm: VaultViewModel) {
                     modifier = Modifier.align(Alignment.Center),
                     paddingInterno = 24.dp
                 ) {
-                    Text(
-                        text = if (registro.isEmpty()) "(Registro vacío todavía)" else "No hay eventos con los filtros actuales",
-                        color = TextoSecundario,
-                        style = MaterialTheme.typography.bodyMedium
-                    )
+                    Column(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .size(48.dp)
+                                .clip(FormaPequena)
+                                .background(fondoBadgeParaTema(ColorAcento)),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                imageVector = Icons.Filled.FilterList,
+                                contentDescription = null,
+                                tint = colorLegibleParaTema(ColorAcento),
+                                modifier = Modifier.size(24.dp)
+                            )
+                        }
+                        Spacer(Modifier.height(10.dp))
+                        Text(
+                            text = if (registro.isEmpty()) "(Registro vacío todavía)" else "No hay eventos con los filtros actuales",
+                            color = TextoSecundario,
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                    }
                 }
             } else {
                 LazyColumn(
@@ -301,12 +333,12 @@ fun PantallaRegistro(vm: VaultViewModel) {
                                     Box(
                                         modifier = Modifier
                                             .clip(RoundedCornerShape(4.dp))
-                                            .background(badgeColor.copy(alpha = 0.18f))
+                                            .background(fondoBadgeParaTema(badgeColor))
                                             .padding(horizontal = 6.dp, vertical = 2.dp)
                                     ) {
                                         Text(
                                             text = ev.area.uppercase(),
-                                            color = badgeColor,
+                                            color = colorLegibleParaTema(badgeColor),
                                             style = MaterialTheme.typography.labelSmall.copy(
                                                 fontSize = 10.sp,
                                                 fontWeight = FontWeight.Bold

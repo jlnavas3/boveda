@@ -207,6 +207,7 @@ fun RaizBoveda(vm: VaultViewModel, actividad: FragmentActivity) {
                     Pantalla.Papelera -> PantallaPapelera(vm, estado)
                     Pantalla.KitEmergencia -> com.jlnavas3.bovedalocal.ui.pantallas.PantallaKitEmergencia(vm, actividad)
                     Pantalla.AjustesSenuelo -> com.jlnavas3.bovedalocal.ui.pantallas.PantallaAjustesSenuelo(vm)
+                    Pantalla.AjustesAutodestruccion -> com.jlnavas3.bovedalocal.ui.pantallas.PantallaAjustesAutodestruccion(vm)
                     Pantalla.FormatosCampos -> com.jlnavas3.bovedalocal.ui.pantallas.PantallaFormatosCampos(vm)
                 }
             }

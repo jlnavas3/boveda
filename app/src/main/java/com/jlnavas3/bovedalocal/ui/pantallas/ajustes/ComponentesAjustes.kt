@@ -55,6 +55,8 @@ import com.jlnavas3.bovedalocal.ui.theme.SuperficieAlta
 import com.jlnavas3.bovedalocal.ui.theme.TextoPrincipal
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
 import com.jlnavas3.bovedalocal.ui.theme.colorContraste
+import com.jlnavas3.bovedalocal.ui.theme.colorLegibleParaTema
+import com.jlnavas3.bovedalocal.ui.theme.fondoBadgeParaTema
 
 @Composable
 fun EnlaceAjuste(texto: String, alPulsar: () -> Unit) {
@@ -144,6 +146,7 @@ fun TarjetaAjuste(
     icono: ImageVector,
     descripcion: String,
     inicialmenteAbierta: Boolean = false,
+    colorIcono: Color = ColorAcento,
     contenido: @Composable androidx.compose.foundation.layout.ColumnScope.() -> Unit
 ) {
     TarjetaBovedaDesplegable(
@@ -151,6 +154,7 @@ fun TarjetaAjuste(
         icono = icono,
         descripcion = descripcion,
         inicialmenteAbierta = inicialmenteAbierta,
+        colorIcono = colorIcono,
         contenido = contenido
     )
 }
@@ -167,6 +171,7 @@ fun SelectorAjuste(
     icono: ImageVector,
     seleccionado: String,
     opciones: List<OpcionAjuste>,
+    colorIcono: Color = ColorAcento,
     alSeleccionar: (String) -> Unit
 ) {
     var abierto by remember { mutableStateOf(false) }
@@ -187,17 +192,19 @@ fun SelectorAjuste(
                 .padding(horizontal = 12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
+            val colorFinalIcono = if (abierto) ColorTitulos else colorIcono
+            val colorLegible = colorLegibleParaTema(colorFinalIcono)
             Box(
                 modifier = Modifier
                     .size(34.dp)
                     .clip(FormaPequena)
-                    .background(ColorIconosInternos.copy(alpha = if (abierto) 0.18f else 0.12f)),
+                    .background(fondoBadgeParaTema(colorFinalIcono)),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
                     icono,
                     contentDescription = null,
-                    tint = if (abierto) ColorTitulos else ColorIconosInternos,
+                    tint = colorLegible,
                     modifier = Modifier.size(18.dp)
                 )
             }

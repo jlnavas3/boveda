@@ -31,7 +31,12 @@ fun SeccionCopiaSeguridad(
     alExportar: () -> Unit,
     alImportar: () -> Unit
 ) {
-    TarjetaAjuste("Copia de seguridad", Icons.Filled.Backup, "Exporta, importa y configura avisos para no olvidar tus copias.") {
+    TarjetaAjuste(
+        titulo = "Copia de seguridad",
+        icono = Icons.Filled.Backup,
+        descripcion = "Exporta, importa y configura avisos para no olvidar tus copias.",
+        colorIcono = ColorExportacion
+    ) {
         Spacer(Modifier.height(8.dp))
         Text(
             "El archivo exportado va cifrado con su propia contraseña y con Argon2id. Sin esa contraseña es ruido.",

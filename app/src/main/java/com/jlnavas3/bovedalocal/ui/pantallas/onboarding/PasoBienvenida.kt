@@ -42,6 +42,7 @@ import com.jlnavas3.bovedalocal.crypto.PerfilArgon2
 import com.jlnavas3.bovedalocal.ui.componentes.BotonAmbar
 import com.jlnavas3.bovedalocal.ui.componentes.ContenedorTarjeta
 import com.jlnavas3.bovedalocal.ui.componentes.PuertaBoveda
+import com.jlnavas3.bovedalocal.ui.componentes.TarjetaBovedaDesplegable
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.SelectorPerfilArgon2
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.ColorSeguridad
@@ -115,30 +116,14 @@ fun PasoBienvenida(
             )
         }
 
-        // Tarjeta de garantías de seguridad y transparencia
-        ContenedorTarjeta(
-            paddingInterno = 18.dp
+        // Tarjeta de garantías de seguridad y transparencia (desplegable colapsada)
+        TarjetaBovedaDesplegable(
+            titulo = "Cúspide de Privacidad y Cifrado",
+            descripcion = "Air-Gapped · Argon2id + AES-256 · Sin telemetría",
+            icono = Icons.Filled.Shield,
+            colorIcono = ColorSeguridad,
+            inicialmenteAbierta = false
         ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Icon(
-                    imageVector = Icons.Filled.Shield,
-                    contentDescription = null,
-                    tint = ColorAcento,
-                    modifier = Modifier.size(20.dp)
-                )
-                Spacer(Modifier.width(10.dp))
-                Text(
-                    text = "Cúspide de Privacidad y Cifrado",
-                    style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
-                    color = ColorTitulos
-                )
-            }
-
-            Spacer(Modifier.height(6.dp))
-
             FilaPilarSeguridad(
                 icono = Icons.Filled.WifiOff,
                 titulo = "Cero conexión a Internet (Air-Gapped)",

@@ -18,8 +18,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ContentCopy
+import androidx.compose.material.icons.filled.Description
 import androidx.compose.material.icons.filled.Print
 import androidx.compose.material.icons.filled.Shield
+import androidx.compose.material.icons.filled.Tune
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -45,9 +47,11 @@ import com.jlnavas3.bovedalocal.ui.VaultViewModel
 import com.jlnavas3.bovedalocal.ui.componentes.BotonColorido
 import com.jlnavas3.bovedalocal.ui.componentes.CabeceraPantalla
 import com.jlnavas3.bovedalocal.ui.componentes.ContenedorTarjeta
+import com.jlnavas3.bovedalocal.ui.componentes.TarjetaBovedaDesplegable
 import com.jlnavas3.bovedalocal.ui.theme.Ambar
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
+import com.jlnavas3.bovedalocal.ui.theme.ColorSalud
 import com.jlnavas3.bovedalocal.ui.theme.ColorSeguridad
 import com.jlnavas3.bovedalocal.ui.theme.ColorSobreAcento
 import com.jlnavas3.bovedalocal.ui.theme.ColorTarjetas
@@ -106,43 +110,30 @@ fun PantallaKitEmergencia(
         )
 
         // Banner informativo
-        ContenedorTarjeta(paddingInterno = 14.dp) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(
-                    Icons.Filled.Shield,
-                    contentDescription = null,
-                    tint = ColorSeguridad,
-                    modifier = Modifier.size(28.dp)
-                )
-                Spacer(Modifier.size(12.dp))
-                Column {
-                    Text(
-                        text = "Copia Física de Seguridad",
-                        color = TextoPrincipal,
-                        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
-                    )
-                    Spacer(Modifier.height(2.dp))
-                    Text(
-                        text = "Genera un documento que puedes imprimir o guardar en PDF localmente. Bóveda Local opera 100% offline sin conexión a internet.",
-                        color = TextoSecundario,
-                        style = MaterialTheme.typography.bodySmall
-                    )
-                }
-            }
+        TarjetaBovedaDesplegable(
+            titulo = "Copia Física de Seguridad",
+            descripcion = "Genera un documento impreso o PDF 100% offline para guardar en caja fuerte",
+            icono = Icons.Filled.Shield,
+            colorIcono = ColorSeguridad,
+            inicialmenteAbierta = false
+        ) {
+            Text(
+                text = "Genera un documento que puedes imprimir o guardar en PDF localmente. Bóveda Local opera 100% offline sin conexión a internet ni telemetría.",
+                color = TextoSecundario,
+                style = MaterialTheme.typography.bodySmall
+            )
         }
 
         Spacer(Modifier.height(14.dp))
 
         // Opciones de configuración
-        ContenedorTarjeta(paddingInterno = 14.dp) {
-            Text(
-                text = "Opciones del Documento",
-                color = ColorAcento,
-                style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold)
-            )
-
-            Spacer(Modifier.height(10.dp))
-
+        TarjetaBovedaDesplegable(
+            titulo = "Opciones del Documento",
+            descripcion = "Contraseñas, favoritos y notas en el kit",
+            icono = Icons.Filled.Tune,
+            colorIcono = ColorAcento,
+            inicialmenteAbierta = true
+        ) {
             FilaOpcionKit(
                 titulo = "Incluir contraseñas en claro",
                 descripcion = if (incluirContrasenas) "Las contraseñas se imprimirán legibles (¡Riesgo físico!)" else "Se dejarán espacios en blanco para anotar a mano",
@@ -211,35 +202,35 @@ fun PantallaKitEmergencia(
 
         Spacer(Modifier.height(16.dp))
 
-        // Vista previa del documento
-        Text(
-            text = "Vista Previa del Documento",
-            color = TextoSecundario,
-            style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold)
-        )
-
-        Spacer(Modifier.height(6.dp))
-
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clip(RoundedCornerShape(CurvaturaEsquinas))
-                .background(Superficie)
-                .then(
-                    if (GrosorBorde > 0.dp) Modifier.border(GrosorBorde, ColorBordeActual, RoundedCornerShape(CurvaturaEsquinas))
-                    else Modifier
-                )
-                .padding(14.dp)
+        // Vista previa del documento en Tarjeta Desplegable
+        TarjetaBovedaDesplegable(
+            titulo = "Vista Previa del Documento",
+            descripcion = "Previsualización del texto que se imprimirá",
+            icono = Icons.Filled.Description,
+            colorIcono = ColorSalud,
+            inicialmenteAbierta = false
         ) {
-            Text(
-                text = textoPreview,
-                color = TextoPrincipal,
-                style = MaterialTheme.typography.bodySmall.copy(
-                    fontFamily = FontFamily.Monospace,
-                    fontSize = 11.sp,
-                    lineHeight = 15.sp
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(CurvaturaEsquinas))
+                    .background(Superficie)
+                    .then(
+                        if (GrosorBorde > 0.dp) Modifier.border(GrosorBorde, ColorBordeActual, RoundedCornerShape(CurvaturaEsquinas))
+                        else Modifier
+                    )
+                    .padding(14.dp)
+            ) {
+                Text(
+                    text = textoPreview,
+                    color = TextoPrincipal,
+                    style = MaterialTheme.typography.bodySmall.copy(
+                        fontFamily = FontFamily.Monospace,
+                        fontSize = 11.sp,
+                        lineHeight = 15.sp
+                    )
                 )
-            )
+            }
         }
 
         Spacer(Modifier.height(32.dp))

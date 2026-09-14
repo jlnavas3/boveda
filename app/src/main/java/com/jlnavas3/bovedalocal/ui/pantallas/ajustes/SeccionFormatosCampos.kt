@@ -13,7 +13,7 @@ import com.jlnavas3.bovedalocal.data.AjustesApp
 import com.jlnavas3.bovedalocal.ui.Pantalla
 import com.jlnavas3.bovedalocal.ui.VaultViewModel
 import com.jlnavas3.bovedalocal.ui.componentes.BotonColorido
-import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
+import com.jlnavas3.bovedalocal.ui.theme.ColorSalud
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
 import com.jlnavas3.bovedalocal.util.Haptica
 
@@ -26,7 +26,8 @@ fun SeccionFormatosCampos(
     TarjetaAjuste(
         titulo = "Formatos de campos",
         icono = Icons.Filled.FormatShapes,
-        descripcion = "Máscaras de teléfono, fechas, horas y separadores numéricos."
+        descripcion = "Máscaras de teléfono, fechas, horas y separadores numéricos.",
+        colorIcono = ColorSalud
     ) {
         Spacer(Modifier.height(8.dp))
         Text(
@@ -37,7 +38,7 @@ fun SeccionFormatosCampos(
         Spacer(Modifier.height(12.dp))
         BotonColorido(
             texto = "Personalizar formatos de campos",
-            color = ColorAcento,
+            color = ColorSalud,
             icono = Icons.Filled.FormatShapes
         ) {
             haptica.tic()

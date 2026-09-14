@@ -48,8 +48,10 @@ import com.jlnavas3.bovedalocal.ui.theme.Ambar
 import com.jlnavas3.bovedalocal.ui.theme.Color2FA
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.ColorBordeDropdown
+import com.jlnavas3.bovedalocal.ui.theme.ColorExportacion
 import com.jlnavas3.bovedalocal.ui.theme.ColorGenerador
 import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
+import com.jlnavas3.bovedalocal.ui.theme.ColorPapelera
 import com.jlnavas3.bovedalocal.ui.theme.ColorPasskeys
 import com.jlnavas3.bovedalocal.ui.theme.ColorSalud
 import com.jlnavas3.bovedalocal.ui.theme.ColorSeguridad
@@ -63,6 +65,8 @@ import com.jlnavas3.bovedalocal.ui.theme.Peligro
 import com.jlnavas3.bovedalocal.ui.theme.SuperficieAlta
 import com.jlnavas3.bovedalocal.ui.theme.TextoPrincipal
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
+import com.jlnavas3.bovedalocal.ui.theme.colorLegibleParaTema
+import com.jlnavas3.bovedalocal.ui.theme.fondoBadgeParaTema
 
 /**
  * Menú lateral al estilo Solid Explorer: se abre deslizando desde el borde
@@ -179,7 +183,7 @@ fun MenuLateral(
             ItemMenu(
                 texto = "Papelera",
                 icono = Icons.Filled.Delete,
-                colorIcono = if (totalPapelera > 0) Ambar else ColorIconosInternos,
+                colorIcono = if (totalPapelera > 0) ColorPapelera else ColorIconosInternos,
                 badge = if (totalPapelera > 0) totalPapelera.toString() else null
             ) { alIr(Pantalla.Papelera) }
 
@@ -192,13 +196,13 @@ fun MenuLateral(
             ItemMenu(
                 texto = "Registro de eventos",
                 icono = Icons.Filled.History,
-                colorIcono = ColorIconosInternos
+                colorIcono = ColorExportacion
             ) { alIr(Pantalla.Registro) }
 
             ItemMenu(
                 texto = "Configuración",
                 icono = Icons.Filled.Settings,
-                colorIcono = ColorIconosInternos
+                colorIcono = ColorAcento
             ) { alIr(Pantalla.Ajustes) }
 
             Spacer(Modifier.height(4.dp))
@@ -239,13 +243,13 @@ fun MenuLateral(
                 Box(
                     modifier = Modifier
                         .clip(CircleShape)
-                        .background(ColorAcento.copy(alpha = 0.12f))
+                        .background(fondoBadgeParaTema(ColorAcento))
                         .padding(horizontal = 8.dp, vertical = 3.dp)
                 ) {
                     Text(
                         "Argon2id · ${perfilArgon2.memoriaKiB / 1024}M",
                         style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold, fontSize = 10.sp),
-                        color = ColorAcento,
+                        color = colorLegibleParaTema(ColorAcento),
                         maxLines = 1
                     )
                 }
@@ -253,13 +257,13 @@ fun MenuLateral(
                 Box(
                     modifier = Modifier
                         .clip(CircleShape)
-                        .background(Menta.copy(alpha = 0.15f))
+                        .background(fondoBadgeParaTema(Menta))
                         .padding(horizontal = 8.dp, vertical = 3.dp)
                 ) {
                     Text(
                         "AES-256",
                         style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold, fontSize = 10.sp),
-                        color = Menta,
+                        color = colorLegibleParaTema(Menta),
                         maxLines = 1
                     )
                 }
@@ -268,10 +272,11 @@ fun MenuLateral(
             // [tercera línea] v1.1.0 · 100% offline · by: jlnavas3 (alineado al centro)
             Text(
                 "v${BuildConfig.VERSION_NAME} · 100% offline · by: jlnavas3",
-                style = MaterialTheme.typography.bodySmall,
+                style = MaterialTheme.typography.labelSmall.copy(fontSize = 11.sp),
                 color = TextoSecundario,
+                modifier = Modifier.fillMaxWidth(),
                 textAlign = TextAlign.Center,
-                modifier = Modifier.fillMaxWidth()
+                maxLines = 1
             )
         }
     }
@@ -286,26 +291,27 @@ fun ItemMenu(
     badge: String? = null,
     alPulsar: () -> Unit
 ) {
+    val colorLegible = colorLegibleParaTema(colorIcono)
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .clip(FormaCampo)
             .clickable { alPulsar() }
-            .padding(horizontal = 8.dp, vertical = 6.dp),
+            .padding(horizontal = 8.dp, vertical = 5.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Box(
             modifier = Modifier
-                .size(34.dp)
+                .size(40.dp)
                 .clip(FormaPequena)
-                .background(colorIcono.copy(alpha = 0.12f)),
+                .background(fondoBadgeParaTema(colorIcono)),
             contentAlignment = Alignment.Center
         ) {
             Icon(
                 imageVector = icono,
                 contentDescription = null,
-                tint = colorIcono,
-                modifier = Modifier.size(19.dp)
+                tint = colorLegible,
+                modifier = Modifier.size(22.dp)
             )
         }
         Spacer(Modifier.width(12.dp))
