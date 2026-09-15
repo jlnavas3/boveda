@@ -27,7 +27,7 @@ fun TarjetaPasskeyDetalle(
         descripcion = servicio,
         icono = Icons.Filled.Fingerprint,
         colorIcono = ColorPasskeys,
-        inicialmenteAbierta = true
+        inicialmenteAbierta = false
     ) {
         Spacer(Modifier.height(8.dp))
         Text(

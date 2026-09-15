@@ -95,6 +95,10 @@ import com.jlnavas3.bovedalocal.util.Diagnostico
 import com.jlnavas3.bovedalocal.util.Haptica
 import kotlinx.coroutines.delay
 
+private val formatoFechaDetalle = ThreadLocal.withInitial {
+    java.text.SimpleDateFormat("d MMM yyyy, HH:mm", java.util.Locale.forLanguageTag("es"))
+}
+
 @Composable
 fun PantallaDetalle(vm: VaultViewModel, id: String) {
     val contexto = LocalContext.current
@@ -212,7 +216,7 @@ fun PantallaDetalle(vm: VaultViewModel, id: String) {
                 descripcion = entrada.usuario,
                 icono = Icons.Filled.Person,
                 colorIcono = ColorAcento,
-                inicialmenteAbierta = true
+                inicialmenteAbierta = false
             ) {
                 Text(
                     text = entrada.usuario,
@@ -243,7 +247,7 @@ fun PantallaDetalle(vm: VaultViewModel, id: String) {
                 descripcion = "${entrada.contrasena.length} caracteres",
                 icono = Icons.Filled.Key,
                 colorIcono = ColorSeguridad,
-                inicialmenteAbierta = true
+                inicialmenteAbierta = false
             ) {
                 if (revelada) {
                     Text(
@@ -256,6 +260,8 @@ fun PantallaDetalle(vm: VaultViewModel, id: String) {
                         text = "•".repeat(entrada.contrasena.length.coerceIn(8, 24)),
                         style = EstiloMonoGrande.copy(letterSpacing = 2.sp),
                         color = TextoSecundario,
+                        maxLines = 1,
+                        overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
                         modifier = Modifier.fillMaxWidth()
                     )
                 }
@@ -325,7 +331,7 @@ fun PantallaDetalle(vm: VaultViewModel, id: String) {
                 descripcion = "${entrada.urls.size} enlace${if (entrada.urls.size == 1) "" else "s"}",
                 icono = Icons.Filled.Language,
                 colorIcono = ColorGenerador,
-                inicialmenteAbierta = true
+                inicialmenteAbierta = false
             ) {
                 entrada.urls.forEach { url ->
                     Text(url, style = MaterialTheme.typography.bodyLarge, color = TextoPrincipal)
@@ -341,7 +347,7 @@ fun PantallaDetalle(vm: VaultViewModel, id: String) {
                 descripcion = entrada.notas.take(35) + (if (entrada.notas.length > 35) "…" else ""),
                 icono = Icons.Filled.Description,
                 colorIcono = ColorExportacion,
-                inicialmenteAbierta = true
+                inicialmenteAbierta = false
             ) {
                 Text(entrada.notas, style = MaterialTheme.typography.bodyLarge, color = TextoPrincipal)
             }
@@ -355,7 +361,7 @@ fun PantallaDetalle(vm: VaultViewModel, id: String) {
                 descripcion = "${entrada.etiquetas.size} etiqueta${if (entrada.etiquetas.size == 1) "" else "s"}",
                 icono = Icons.Filled.Label,
                 colorIcono = ColorSalud,
-                inicialmenteAbierta = true
+                inicialmenteAbierta = false
             ) {
                 Row(
                     modifier = Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
@@ -403,6 +409,31 @@ fun PantallaDetalle(vm: VaultViewModel, id: String) {
         }
 
         Spacer(Modifier.height(8.dp))
+
+        // Fechas de creación y modificación
+        if (entrada.creadaEn > 0L || entrada.modificadaEn > 0L) {
+            Row(
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 4.dp),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                if (entrada.creadaEn > 0L) {
+                    Text(
+                        "Creada: ${formatoFechaDetalle.get()?.format(java.util.Date(entrada.creadaEn)) ?: ""}",
+                        style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Medium),
+                        color = TextoPrincipal
+                    )
+                }
+                if (entrada.modificadaEn > 0L && entrada.modificadaEn != entrada.creadaEn) {
+                    Text(
+                        "Editada: ${formatoFechaDetalle.get()?.format(java.util.Date(entrada.modificadaEn)) ?: ""}",
+                        style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Medium),
+                        color = TextoPrincipal
+                    )
+                }
+            }
+            Spacer(Modifier.height(12.dp))
+        }
+
         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
             BotonColorido(
                 texto = "Editar",

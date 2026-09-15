@@ -257,6 +257,8 @@ fun aplicarPersonalizacionColores(ajustes: com.jlnavas3.bovedalocal.data.Ajustes
 
     // Colores semánticos de secciones funcionales
     colorSeguridadBase = parsearColorO(ajustes.colorSeguridad, Color(0xFF0284C7))
+    colorArgon2Base = parsearColorO(ajustes.colorArgon2, Color(0xFF2563EB))
+    colorCamaraBase = parsearColorO(ajustes.colorCamara, Color(0xFF06B6D4))
     color2FABase = parsearColorO(ajustes.color2FA, Color(0xFFF97316))
     colorPasskeysBase = parsearColorO(ajustes.colorPasskeys, Color(0xFF8B5CF6))
     colorGeneradorBase = parsearColorO(ajustes.colorGenerador, Color(0xFF0D9488))
@@ -267,6 +269,8 @@ fun aplicarPersonalizacionColores(ajustes: com.jlnavas3.bovedalocal.data.Ajustes
 
 // Colores Semánticos de Secciones Funcionales
 private var colorSeguridadBase by mutableStateOf(Color(0xFF0284C7))
+private var colorArgon2Base by mutableStateOf(Color(0xFF2563EB))
+private var colorCamaraBase by mutableStateOf(Color(0xFF06B6D4))
 private var color2FABase by mutableStateOf(Color(0xFFF97316))
 private var colorPasskeysBase by mutableStateOf(Color(0xFF8B5CF6))
 private var colorGeneradorBase by mutableStateOf(Color(0xFF0D9488))
@@ -277,6 +281,14 @@ private var colorExportacionBase by mutableStateOf(Color(0xFF6366F1))
 var ColorSeguridad: Color
     get() = colorSeguridadBase
     set(valor) { colorSeguridadBase = valor }
+
+var ColorArgon2: Color
+    get() = colorArgon2Base
+    set(valor) { colorArgon2Base = valor }
+
+var ColorCamara: Color
+    get() = colorCamaraBase
+    set(valor) { colorCamaraBase = valor }
 
 var Color2FA: Color
     get() = color2FABase

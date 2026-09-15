@@ -12,7 +12,7 @@ import androidx.compose.ui.unit.dp
 import com.jlnavas3.bovedalocal.camara.MotorCamara
 import com.jlnavas3.bovedalocal.data.AjustesApp
 import com.jlnavas3.bovedalocal.ui.VaultViewModel
-import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
+import com.jlnavas3.bovedalocal.ui.theme.ColorCamara
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
 import com.jlnavas3.bovedalocal.util.Haptica
 
@@ -26,7 +26,7 @@ fun SeccionCamara(
         titulo = "Cámara del escáner",
         icono = Icons.Filled.CameraAlt,
         descripcion = "Elige cómo se leen los códigos QR de autenticación.",
-        colorIcono = ColorAcento
+        colorIcono = ColorCamara
     ) {
         Spacer(Modifier.height(8.dp))
         Text(

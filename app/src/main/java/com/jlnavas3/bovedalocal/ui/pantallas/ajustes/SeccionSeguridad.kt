@@ -55,6 +55,7 @@ import com.jlnavas3.bovedalocal.ui.componentes.BotonColorido
 import com.jlnavas3.bovedalocal.ui.componentes.MenuDesplegableBoveda
 import com.jlnavas3.bovedalocal.ui.componentes.SeparadorOpcionMenu
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
+import com.jlnavas3.bovedalocal.ui.theme.ColorArgon2
 import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
 import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
 import com.jlnavas3.bovedalocal.ui.theme.ColorSeguridad
@@ -84,7 +85,6 @@ fun SeccionSeguridad(
     ofrecerCompatible: (String) -> Unit
 ) {
     val esSenuelo = vm.repositorio.esModoSenuelo
-    var perfilPendiente by remember { mutableStateOf<PerfilArgon2?>(null) }
 
     TarjetaAjuste(
         titulo = "Seguridad",
@@ -94,38 +94,52 @@ fun SeccionSeguridad(
     ) {
         Spacer(Modifier.height(8.dp))
 
-        // Aviso esencial FLAG_SECURE al inicio
-        Surface(
-            color = MaterialTheme.colorScheme.primary.copy(alpha = 0.08f),
-            shape = FormaTarjeta,
-            border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.25f))
-        ) {
-            Row(
-                modifier = Modifier.fillMaxWidth().padding(10.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Icon(
-                    Icons.Filled.Security,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.size(22.dp)
-                )
-                Spacer(Modifier.width(10.dp))
-                Column {
-                    Text(
-                        "Protección de pantalla (FLAG_SECURE)",
-                        style = MaterialTheme.typography.bodyMedium,
-                        fontWeight = FontWeight.Bold,
-                        color = TextoPrincipal
-                    )
-                    Spacer(Modifier.height(2.dp))
-                    Text(
-                        "Bloqueo permanente de capturas de pantalla y ocultación en aplicaciones recientes.",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = TextoSecundario
-                    )
+        // Switch interactivo para FLAG_SECURE
+        var confirmarDesactivar by remember { mutableStateOf(false) }
+        FilaAjuste(
+            titulo = "Protección de pantalla (FLAG_SECURE)",
+            descripcion = if (ajustes.proteccionPantalla)
+                "Activa: capturas de pantalla y vista en recientes están bloqueadas."
+            else
+                "Desactivada: las capturas de pantalla y la vista en recientes están permitidas. Tu bóveda puede quedar visible en grabaciones y capturas.",
+            activo = ajustes.proteccionPantalla,
+            alCambiar = { activar ->
+                if (activar) {
+                    vm.ajustarProteccionPantalla(true)
+                    haptica.tic()
+                } else {
+                    confirmarDesactivar = true
                 }
             }
+        )
+        if (confirmarDesactivar) {
+            androidx.compose.material3.AlertDialog(
+                onDismissRequest = { confirmarDesactivar = false },
+                containerColor = com.jlnavas3.bovedalocal.ui.theme.SuperficieAlta,
+                title = { Text("¿Desactivar protección de pantalla?", color = TextoPrincipal) },
+                text = {
+                    Text(
+                        "Al desactivar FLAG_SECURE, las capturas de pantalla y la vista previa en " +
+                            "aplicaciones recientes estarán permitidas. Tus contraseñas y datos " +
+                            "sensibles podrían quedar visibles en grabaciones de pantalla.\n\n" +
+                            "Puedes volver a activarla en cualquier momento.",
+                        color = TextoSecundario,
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                },
+                confirmButton = {
+                    androidx.compose.material3.TextButton(onClick = {
+                        confirmarDesactivar = false
+                        vm.ajustarProteccionPantalla(false)
+                        haptica.tic()
+                    }) { Text("Desactivar", color = Peligro) }
+                },
+                dismissButton = {
+                    androidx.compose.material3.TextButton(onClick = { confirmarDesactivar = false }) {
+                        Text("Cancelar", color = TextoSecundario)
+                    }
+                }
+            )
         }
 
         if (!esSenuelo) {
@@ -201,30 +215,6 @@ fun SeccionSeguridad(
                     }
                 }
             }
-            Spacer(Modifier.height(14.dp))
-            TarjetaAjuste(
-                titulo = "Perfil de cifrado Argon2id",
-                icono = Icons.Filled.Memory,
-                descripcion = "Intensidad de memoria e iteraciones contra ataques de fuerza bruta.",
-                inicialmenteAbierta = false,
-                colorIcono = ColorSeguridad
-            ) {
-                val perfilActual = vm.repositorio.perfilArgon2Actual()
-                SelectorPerfilArgon2(
-                    perfilActual = perfilActual,
-                    alSeleccionarPerfil = { nuevo ->
-                        if (nuevo != perfilActual) {
-                            if (vm.repositorio.estaDesbloqueada) {
-                                perfilPendiente = nuevo
-                            } else {
-                                vm.repositorio.ajustes.actualizar { it.copy(perfilArgon2 = nuevo.clave) }
-                                com.jlnavas3.bovedalocal.util.Diagnostico.apuntar("bóveda", "Perfil Argon2id predeterminado establecido en ${nuevo.titulo}")
-                                vm.avisar("Perfil de cifrado predeterminado: ${nuevo.titulo}")
-                            }
-                        }
-                    }
-                )
-            }
         } else {
             Spacer(Modifier.height(10.dp))
         }
@@ -298,6 +288,38 @@ fun SeccionSeguridad(
                 }
             }
         }
+    }
+}
+
+@Composable
+fun SeccionArgon2id(
+    vm: VaultViewModel,
+    haptica: Haptica
+) {
+    var perfilPendiente by remember { mutableStateOf<PerfilArgon2?>(null) }
+
+    TarjetaAjuste(
+        titulo = "Perfil de cifrado Argon2id",
+        icono = Icons.Filled.Memory,
+        descripcion = "Intensidad de memoria e iteraciones contra ataques de fuerza bruta.",
+        inicialmenteAbierta = false,
+        colorIcono = ColorArgon2
+    ) {
+        val perfilActual = vm.repositorio.perfilArgon2Actual()
+        SelectorPerfilArgon2(
+            perfilActual = perfilActual,
+            alSeleccionarPerfil = { nuevo ->
+                if (nuevo != perfilActual) {
+                    if (vm.repositorio.estaDesbloqueada) {
+                        perfilPendiente = nuevo
+                    } else {
+                        vm.repositorio.ajustes.actualizar { it.copy(perfilArgon2 = nuevo.clave) }
+                        com.jlnavas3.bovedalocal.util.Diagnostico.apuntar("bóveda", "Perfil Argon2id predeterminado establecido en ${nuevo.titulo}")
+                        vm.avisar("Perfil de cifrado predeterminado: ${nuevo.titulo}")
+                    }
+                }
+            }
+        )
     }
 
     perfilPendiente?.let { objetivo ->

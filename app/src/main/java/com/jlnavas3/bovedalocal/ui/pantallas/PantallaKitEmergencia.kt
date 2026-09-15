@@ -132,7 +132,7 @@ fun PantallaKitEmergencia(
             descripcion = "Contraseñas, favoritos y notas en el kit",
             icono = Icons.Filled.Tune,
             colorIcono = ColorAcento,
-            inicialmenteAbierta = true
+            inicialmenteAbierta = false
         ) {
             FilaOpcionKit(
                 titulo = "Incluir contraseñas en claro",

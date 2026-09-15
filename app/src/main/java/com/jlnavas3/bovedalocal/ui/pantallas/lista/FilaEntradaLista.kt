@@ -53,6 +53,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.jlnavas3.bovedalocal.crypto.Base32
 import com.jlnavas3.bovedalocal.crypto.Totp
 import com.jlnavas3.bovedalocal.data.Entrada
@@ -76,6 +77,10 @@ import com.jlnavas3.bovedalocal.util.Haptica
 import kotlinx.coroutines.launch
 import kotlin.math.abs
 import kotlin.math.roundToInt
+
+private val formatoFechaFila = ThreadLocal.withInitial {
+    java.text.SimpleDateFormat("dd/MM/yy HH:mm", java.util.Locale.forLanguageTag("es"))
+}
 
 @Composable
 fun FilaGrupoSitio(
@@ -150,6 +155,7 @@ fun FilaEntrada(
     val compacta = alturaFila.value <= 48f
     val forma = FormaTarjeta
     val contenidoFila: @Composable () -> Unit = {
+        Box {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -258,6 +264,26 @@ fun FilaEntrada(
                         tint = if (entrada.favorito) Ambar else ColorBordeActual.copy(alpha = 0.5f)
                     )
                 }
+            }
+        }
+            // Etiquetas de fechas flotantes pegadas a las esquinas del contenedor
+            if (!compacta && !seleccionActiva && entrada.creadaEn > 0L) {
+                Text(
+                    formatoFechaFila.get()?.format(java.util.Date(entrada.creadaEn)) ?: "",
+                    style = MaterialTheme.typography.labelSmall.copy(fontSize = 8.5.sp, fontWeight = FontWeight.Medium),
+                    color = TextoPrincipal,
+                    maxLines = 1,
+                    modifier = Modifier.align(Alignment.TopEnd).padding(top = 3.dp, end = 6.dp)
+                )
+            }
+            if (!compacta && !seleccionActiva && entrada.modificadaEn > 0L && entrada.modificadaEn != entrada.creadaEn) {
+                Text(
+                    "✎ ${formatoFechaFila.get()?.format(java.util.Date(entrada.modificadaEn)) ?: ""}",
+                    style = MaterialTheme.typography.labelSmall.copy(fontSize = 8.5.sp, fontWeight = FontWeight.Medium),
+                    color = TextoPrincipal,
+                    maxLines = 1,
+                    modifier = Modifier.align(Alignment.BottomEnd).padding(bottom = 3.dp, end = 6.dp)
+                )
             }
         }
     }

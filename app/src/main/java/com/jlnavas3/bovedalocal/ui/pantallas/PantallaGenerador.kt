@@ -36,6 +36,7 @@ import com.jlnavas3.bovedalocal.ui.componentes.TarjetaBoveda
 import com.jlnavas3.bovedalocal.ui.pantallas.generador.PanelModoAleatorio
 import com.jlnavas3.bovedalocal.ui.pantallas.generador.PanelModoDiceware
 import com.jlnavas3.bovedalocal.ui.pantallas.generador.PanelModoPatron
+import com.jlnavas3.bovedalocal.ui.pantallas.generador.SelectorCaracteresGenerador
 import com.jlnavas3.bovedalocal.ui.pantallas.generador.SelectorModoGenerador
 import com.jlnavas3.bovedalocal.ui.pantallas.generador.TarjetaResultadoGenerador
 import com.jlnavas3.bovedalocal.ui.theme.ColorGenerador
@@ -96,18 +97,32 @@ fun PantallaGenerador(vm: VaultViewModel) {
             EtiquetaSeccion("Configuración del Generador")
             Spacer(Modifier.height(10.dp))
 
-            // Selector desplegable para el Modo de Generación
-            SelectorModoGenerador(
-                modoActual = modoActual,
-                alSeleccionarModo = { nuevoModo ->
-                    haptica.tic()
-                    opciones = when (nuevoModo) {
-                        "Frase Diceware" -> opciones.copy(modoFrase = true, modoPatron = false)
-                        "Por Patrón" -> opciones.copy(modoFrase = false, modoPatron = true)
-                        else -> opciones.copy(modoFrase = false, modoPatron = false)
-                    }
-                }
-            )
+            // Selectores desplegables: Caracteres (50%) a la izquierda y Modo de generación (50%) a la derecha
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(10.dp)
+            ) {
+                SelectorCaracteresGenerador(
+                    opciones = opciones,
+                    alCambiarOpciones = { opciones = it },
+                    haptica = haptica,
+                    habilitado = !opciones.modoFrase && !opciones.modoPatron,
+                    modifier = Modifier.weight(1f)
+                )
+
+                SelectorModoGenerador(
+                    modoActual = modoActual,
+                    alSeleccionarModo = { nuevoModo ->
+                        haptica.tic()
+                        opciones = when (nuevoModo) {
+                            "Frase Diceware" -> opciones.copy(modoFrase = true, modoPatron = false)
+                            "Por Patrón" -> opciones.copy(modoFrase = false, modoPatron = true)
+                            else -> opciones.copy(modoFrase = false, modoPatron = false)
+                        }
+                    },
+                    modifier = Modifier.weight(1f)
+                )
+            }
 
             Spacer(Modifier.height(14.dp))
 

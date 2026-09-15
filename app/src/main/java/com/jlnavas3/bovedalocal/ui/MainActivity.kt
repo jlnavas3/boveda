@@ -6,8 +6,8 @@ import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
@@ -70,6 +70,7 @@ import com.jlnavas3.bovedalocal.ui.theme.TextoPrincipal
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
 import com.jlnavas3.bovedalocal.util.AjustesSistema
 import com.jlnavas3.bovedalocal.util.Biometria
+import com.jlnavas3.bovedalocal.util.Diagnostico
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
@@ -77,15 +78,54 @@ class MainActivity : FragmentActivity() {
 
     private val vm: VaultViewModel by viewModels()
 
+    /** Detecta capturas de pantalla en Android 14+ y las registra en el log de eventos. */
+    private val capturaCallback: Any? = if (android.os.Build.VERSION.SDK_INT >= 34) {
+        android.app.Activity.ScreenCaptureCallback {
+            Diagnostico.apuntar("seguridad", "Captura de pantalla detectada por el sistema")
+        }
+    } else null
+
+    override fun onStart() {
+        super.onStart()
+        if (android.os.Build.VERSION.SDK_INT >= 34 && capturaCallback != null) {
+            try {
+                @Suppress("NewApi")
+                registerScreenCaptureCallback(mainExecutor, capturaCallback as android.app.Activity.ScreenCaptureCallback)
+            } catch (_: SecurityException) {
+                // Algunas ROMs (Honor/HarmonyOS) exigen un permiso no público para esta API
+            }
+        }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        if (android.os.Build.VERSION.SDK_INT >= 34 && capturaCallback != null) {
+            try {
+                @Suppress("NewApi")
+                unregisterScreenCaptureCallback(capturaCallback as android.app.Activity.ScreenCaptureCallback)
+            } catch (_: Exception) {
+                // Ignorar si no se pudo registrar en onStart
+            }
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        // FLAG_SECURE permanente e incondicional: protección anti-captura y anti-recientes siempre activa
+        // FLAG_SECURE activa por defecto; se gestiona dinámicamente según la preferencia del usuario
         window.setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE)
         com.jlnavas3.bovedalocal.ui.theme.aplicarPersonalizacionTemaCompleto(vm.repositorio.ajustes.actual)
         setContent {
             val ajustes by vm.ajustes.collectAsStateWithLifecycle()
             LaunchedEffect(ajustes) {
                 com.jlnavas3.bovedalocal.ui.theme.aplicarPersonalizacionTemaCompleto(ajustes)
+            }
+            // FLAG_SECURE dinámico: respeta la preferencia del usuario en tiempo real
+            LaunchedEffect(ajustes.proteccionPantalla) {
+                if (ajustes.proteccionPantalla) {
+                    window.setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE)
+                } else {
+                    window.clearFlags(WindowManager.LayoutParams.FLAG_SECURE)
+                }
             }
             BovedaTheme(temaApp = ajustes.temaApp) {
                 RaizBoveda(vm, this)
@@ -102,6 +142,7 @@ fun RaizBoveda(vm: VaultViewModel, actividad: FragmentActivity) {
     val aviso by vm.aviso.collectAsStateWithLifecycle()
     val cuentaAtras by vm.cuentaAtrasPortapapeles.collectAsStateWithLifecycle()
     val ajustes by vm.ajustes.collectAsStateWithLifecycle()
+    val esRetroceso by vm.navegandoAtras.collectAsStateWithLifecycle()
     val anfitrion = remember { SnackbarHostState() }
 
     // Sin esto, atrás cerraba la app desde generador, passkeys o ajustes.
@@ -176,12 +217,17 @@ fun RaizBoveda(vm: VaultViewModel, actividad: FragmentActivity) {
             AnimatedContent(
                 targetState = pantalla,
                 transitionSpec = {
+                    // Adelante: la pantalla nueva entra desde la derecha; la actual sale por la izquierda.
+                    // Atrás: la pantalla anterior entra desde la izquierda; la actual sale por la derecha.
+                    val signo = if (esRetroceso) -1 else 1
+                    val animOffset = tween<androidx.compose.ui.unit.IntOffset>(durationMillis = 180, easing = FastOutSlowInEasing)
+                    val animFade = tween<Float>(durationMillis = 180, easing = FastOutSlowInEasing)
                     val entrada = slideInHorizontally(
-                        animationSpec = spring(dampingRatio = 0.6f, stiffness = Spring.StiffnessLow)
-                    ) { ancho -> ancho / 4 } + fadeIn(spring(dampingRatio = 0.6f))
+                        animationSpec = animOffset
+                    ) { ancho -> signo * (ancho / 4) } + fadeIn(animationSpec = animFade)
                     val salida = slideOutHorizontally(
-                        animationSpec = spring(dampingRatio = 0.6f, stiffness = Spring.StiffnessLow)
-                    ) { ancho -> -ancho / 6 } + fadeOut(spring(dampingRatio = 0.6f))
+                        animationSpec = animOffset
+                    ) { ancho -> signo * (-ancho / 6) } + fadeOut(animationSpec = animFade)
                     entrada togetherWith salida
                 },
                 label = "navegacion"

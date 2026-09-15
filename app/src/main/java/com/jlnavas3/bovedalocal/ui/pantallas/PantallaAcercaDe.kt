@@ -121,7 +121,10 @@ fun PantallaAcercaDe(vm: VaultViewModel) {
                 FilaAuditoria(
                     ok = datos.flagSecureActivo,
                     titulo = "Protección de ventana FLAG_SECURE",
-                    detalle = "Bloqueo forzado a nivel de SurfaceFlinger contra capturas, grabadores y vista en apps recientes"
+                    detalle = if (datos.flagSecureActivo)
+                        "Activa: capturas de pantalla, grabaciones y vista en recientes bloqueadas a nivel de SurfaceFlinger"
+                    else
+                        "Desactivada por el usuario en Ajustes → Seguridad. Las capturas de pantalla y la vista en recientes están permitidas"
                 )
                 FilaAuditoria(
                     ok = true,

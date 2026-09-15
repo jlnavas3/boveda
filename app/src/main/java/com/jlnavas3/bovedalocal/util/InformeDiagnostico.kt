@@ -205,7 +205,7 @@ object InformeDiagnostico {
             rutaBoveda = repositorio.archivoBoveda.absolutePath,
             tamanoBovedaBytes = repositorio.archivoBoveda.length(),
             tienePermisoInternet = tieneInternet,
-            flagSecureActivo = true,
+            flagSecureActivo = ajustes.proteccionPantalla,
             permisosDeclarados = permisos,
             lineasBiometria = lineasBio,
             lineasCamara = lineasCam,

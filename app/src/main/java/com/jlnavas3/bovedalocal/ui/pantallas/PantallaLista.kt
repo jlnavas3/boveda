@@ -307,6 +307,27 @@ fun PantallaLista(vm: VaultViewModel, estado: EstadoBoveda) {
                         color = TextoSecundario
                     )
                 }
+                IconButton(
+                    onClick = { haptica.toque(); vm.bloquear() },
+                    modifier = Modifier
+                        .size(48.dp)
+                        .clip(FormaBoton)
+                        .background(Peligro.copy(alpha = 0.15f))
+                        .then(
+                            if (GrosorBorde > 0.dp && ColorBordeActual != Color.Transparent) {
+                                Modifier.border(GrosorBorde, Peligro.copy(alpha = 0.4f), FormaBoton)
+                            } else {
+                                Modifier.border(1.dp, Peligro.copy(alpha = 0.3f), FormaBoton)
+                            }
+                        )
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.Lock,
+                        contentDescription = "Bloquear bóveda",
+                        tint = Peligro,
+                        modifier = Modifier.size(22.dp)
+                    )
+                }
             }
             }
 

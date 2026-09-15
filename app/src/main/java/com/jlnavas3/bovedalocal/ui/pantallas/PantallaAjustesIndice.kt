@@ -112,11 +112,11 @@ fun PantallaAjustesIndice(vm: VaultViewModel) {
 
             // Tarjeta de demostración interactiva
             TarjetaBovedaDesplegable(
-                titulo = "Demo interactiva del abecedario",
+                titulo = "Vista previa",
                 descripcion = "Desliza en el borde derecho para calibrar en vivo",
                 icono = Icons.AutoMirrored.Filled.Sort,
                 colorIcono = ColorAcento,
-                inicialmenteAbierta = true
+                inicialmenteAbierta = false
             ) {
                 val primerIndiceCoincidente = remember(mockItems, letraArrastrada, ajustes.indiceIncluirEnie, ajustes.indiceResaltarEntradas, ajustes.indiceResaltarSoloPrimera) {
                     if (!ajustes.indiceResaltarEntradas || letraArrastrada == null) null
@@ -190,7 +190,7 @@ fun PantallaAjustesIndice(vm: VaultViewModel) {
                 descripcion = "Curvatura dinámica continua, amplitud y escalas de letra",
                 icono = Icons.Filled.Tune,
                 colorIcono = ColorAcento,
-                inicialmenteAbierta = true
+                inicialmenteAbierta = false
             ) {
                 FilaAjusteIndice(
                     titulo = "Activar ola interactiva",

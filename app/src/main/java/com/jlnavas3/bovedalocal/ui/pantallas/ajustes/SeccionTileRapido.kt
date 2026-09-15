@@ -28,7 +28,7 @@ fun SeccionTileRapido(
     haptica: Haptica
 ) {
     TarjetaAjuste(
-        titulo = "Atajo en Ajustes Rápidos (Tile)",
+        titulo = "Ajustes Rápidos (Tile)",
         icono = Icons.Filled.Key,
         descripcion = "Genera credenciales seguras al instante desde la cortina de notificaciones de Android.",
         colorIcono = ColorGenerador

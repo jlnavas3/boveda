@@ -27,13 +27,15 @@ object MedidorFuerza {
         val bitsZxcvbn = ln(intentos) / ln(2.0)
 
         // Si la clave no tiene patrones de diccionario ni repeticiones (score >= 3),
-        // se evalúa la entropía combinatoria del espacio de caracteres usados
+        // se evalúa la entropía combinatoria del espacio de caracteres usados.
+        // Si no contiene caracteres ambiguos (I, O, l, 0, 1), usa el tamaño del generador (80 caracteres).
         val bits = if (medida.score >= 3) {
+            val tieneAmbiguos = contrasena.any { it == 'I' || it == 'O' || it == 'l' || it == '0' || it == '1' }
             var pool = 0
-            if (contrasena.any { it.isUpperCase() }) pool += 26
-            if (contrasena.any { it.isLowerCase() }) pool += 26
-            if (contrasena.any { it.isDigit() }) pool += 10
-            if (contrasena.any { !it.isLetterOrDigit() }) pool += 33
+            if (contrasena.any { it.isUpperCase() }) pool += if (tieneAmbiguos) 26 else PasswordGenerator.MAYUSCULAS.length
+            if (contrasena.any { it.isLowerCase() }) pool += if (tieneAmbiguos) 26 else PasswordGenerator.MINUSCULAS.length
+            if (contrasena.any { it.isDigit() }) pool += if (tieneAmbiguos) 10 else PasswordGenerator.DIGITOS.length
+            if (contrasena.any { !it.isLetterOrDigit() }) pool += if (tieneAmbiguos) 33 else PasswordGenerator.SIMBOLOS.length
             val bitsCombinatorios = if (pool > 0) contrasena.length * (ln(pool.toDouble()) / ln(2.0)) else 0.0
             maxOf(bitsZxcvbn, bitsCombinatorios)
         } else {

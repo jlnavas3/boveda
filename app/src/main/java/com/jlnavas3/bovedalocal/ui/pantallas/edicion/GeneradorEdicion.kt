@@ -48,6 +48,7 @@ import com.jlnavas3.bovedalocal.ui.componentes.CampoBoveda
 import com.jlnavas3.bovedalocal.ui.componentes.EtiquetaSeccion
 import com.jlnavas3.bovedalocal.ui.componentes.MenuDesplegableBoveda
 import com.jlnavas3.bovedalocal.ui.componentes.SeparadorOpcionMenu
+import com.jlnavas3.bovedalocal.ui.pantallas.generador.SelectorCaracteresGenerador
 import com.jlnavas3.bovedalocal.ui.theme.Ambar
 import com.jlnavas3.bovedalocal.ui.theme.Borde
 import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
@@ -264,22 +265,60 @@ fun GeneradorEnLineaEdicion(
             )
         }
         else -> {
-            EtiquetaSeccion("Ajuste rápido: ${opcionesGenerador.longitud} caracteres")
-            Slider(
-                value = opcionesGenerador.longitud.toFloat(),
-                onValueChange = { alCambiarOpciones(opcionesGenerador.copy(longitud = it.roundToInt().coerceIn(8, 64))) },
-                valueRange = 8f..64f,
-                colors = SliderDefaults.colors(
-                    thumbColor = Ambar,
-                    activeTrackColor = Ambar,
-                    inactiveTrackColor = Borde
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(10.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                // 50% Slider de caracteres
+                Column(
+                    modifier = Modifier.weight(1f),
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "Longitud",
+                            color = TextoSecundario,
+                            style = MaterialTheme.typography.labelSmall
+                        )
+                        Text(
+                            text = "${opcionesGenerador.longitud} car.",
+                            color = ColorTitulos,
+                            style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold)
+                        )
+                    }
+                    Slider(
+                        value = opcionesGenerador.longitud.toFloat(),
+                        onValueChange = {
+                            val nuevo = it.roundToInt().coerceIn(8, 64)
+                            if (nuevo != opcionesGenerador.longitud) {
+                                haptica.tic()
+                                alCambiarOpciones(opcionesGenerador.copy(longitud = nuevo))
+                            }
+                        },
+                        valueRange = 8f..64f,
+                        colors = SliderDefaults.colors(
+                            thumbColor = Ambar,
+                            activeTrackColor = Ambar,
+                            inactiveTrackColor = Borde
+                        )
+                    )
+                }
+
+                // 50% Menú desplegable con todos los switches (A-Z, a-z, 0-9, #$!)
+                SelectorCaracteresGenerador(
+                    opciones = opcionesGenerador,
+                    alCambiarOpciones = {
+                        haptica.tic()
+                        alCambiarOpciones(it)
+                    },
+                    haptica = haptica,
+                    modifier = Modifier.weight(1f)
                 )
-            )
-            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                OpcionGeneradorCompacta("A-Z", opcionesGenerador.mayusculas) { alCambiarOpciones(opcionesGenerador.copy(mayusculas = it)) }
-                OpcionGeneradorCompacta("a-z", opcionesGenerador.minusculas) { alCambiarOpciones(opcionesGenerador.copy(minusculas = it)) }
-                OpcionGeneradorCompacta("0-9", opcionesGenerador.digitos) { alCambiarOpciones(opcionesGenerador.copy(digitos = it)) }
-                OpcionGeneradorCompacta("Símbolos", opcionesGenerador.simbolos) { alCambiarOpciones(opcionesGenerador.copy(simbolos = it)) }
             }
         }
     }

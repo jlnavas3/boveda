@@ -94,11 +94,11 @@ fun PantallaTipografia(vm: VaultViewModel) {
 
         // 1. Tarjeta de vista previa en tiempo real
         TarjetaBovedaDesplegable(
-            titulo = "Vista previa en tiempo real",
+            titulo = "Vista previa",
             descripcion = "Observa en vivo el tamaño, peso, familia y espaciado de las fuentes",
             icono = Icons.Filled.TextFields,
             colorIcono = ColorSalud,
-            inicialmenteAbierta = true
+            inicialmenteAbierta = false
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -189,7 +189,7 @@ fun PantallaTipografia(vm: VaultViewModel) {
             descripcion = "Combinaciones optimizadas para lectura, terminales o accesibilidad",
             icono = Icons.Filled.AutoAwesome,
             colorIcono = ColorAcento,
-            inicialmenteAbierta = true
+            inicialmenteAbierta = false
         ) {
             Row(
                 modifier = Modifier

@@ -16,13 +16,14 @@ class HistorialContrasenasTest {
      */
     private fun actualizarEntrada(previa: Entrada, nueva: Entrada, momento: Long): Entrada {
         val historial = if (previa.contrasena.isNotBlank() && previa.contrasena != nueva.contrasena) {
-            val previaSinDuplicados = previa.historialContrasenas
+            val base = if (nueva.historialContrasenas.isNotEmpty()) nueva.historialContrasenas else previa.historialContrasenas
+            val baseSinDuplicados = base
                 .distinctBy { it.contrasena }
                 .filterNot { it.contrasena == previa.contrasena || it.contrasena == nueva.contrasena }
-            (listOf(CambioContrasena(previa.contrasena, previa.modificadaEn.takeIf { it > 0 } ?: momento)) + previaSinDuplicados)
+            (listOf(CambioContrasena(previa.contrasena, previa.modificadaEn.takeIf { it > 0 } ?: momento)) + baseSinDuplicados)
                 .take(MAX_HISTORIAL)
         } else {
-            previa.historialContrasenas
+            nueva.historialContrasenas
                 .distinctBy { it.contrasena }
                 .filterNot { it.contrasena == nueva.contrasena }
         }
@@ -164,5 +165,32 @@ class HistorialContrasenasTest {
         val clavesEnHistorial = resultado.historialContrasenas.map { it.contrasena }
         // Debe contener ClaveActual, ClaveVieja (una sola vez) y ClaveOtra (una sola vez)
         assertEquals(listOf("ClaveActual", "ClaveVieja", "ClaveOtra"), clavesEnHistorial)
+    }
+
+    @Test
+    fun `eliminar una clave del historial persiste correctamente`() {
+        val inicial = Entrada(
+            id = "1",
+            contrasena = "ClaveActual",
+            modificadaEn = 1000L,
+            historialContrasenas = listOf(
+                CambioContrasena("ClaveVieja1", 900L),
+                CambioContrasena("ClaveVieja2", 800L),
+                CambioContrasena("ClaveVieja3", 700L)
+            )
+        )
+
+        // El usuario elimina ClaveVieja2 sin modificar la clave actual
+        val nuevoHistorial = inicial.historialContrasenas.filterNot { it.contrasena == "ClaveVieja2" }
+        val resultado = actualizarEntrada(
+            previa = inicial,
+            nueva = inicial.copy(historialContrasenas = nuevoHistorial),
+            momento = 2000L
+        )
+
+        assertEquals("ClaveActual", resultado.contrasena)
+        assertEquals(2, resultado.historialContrasenas.size)
+        assertEquals(listOf("ClaveVieja1", "ClaveVieja3"), resultado.historialContrasenas.map { it.contrasena })
+        assertFalse(resultado.historialContrasenas.any { it.contrasena == "ClaveVieja2" })
     }
 }

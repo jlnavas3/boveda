@@ -558,7 +558,12 @@ fun CampoBoveda(
 
 
 @Composable
-fun BarraFuerza(fraccion: Float, etiqueta: String, tiempo: String) {
+fun BarraFuerza(
+    fraccion: Float,
+    etiqueta: String,
+    tiempo: String,
+    bits: Double? = null
+) {
     val anchoAnimado by animateFloatAsState(
         targetValue = fraccion,
         animationSpec = spring(dampingRatio = 0.6f, stiffness = Spring.StiffnessLow),
@@ -594,9 +599,29 @@ fun BarraFuerza(fraccion: Float, etiqueta: String, tiempo: String) {
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = 6.dp),
-            horizontalArrangement = Arrangement.SpaceBetween
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(etiqueta, color = color, style = MaterialTheme.typography.labelLarge)
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Text(etiqueta, color = color, style = MaterialTheme.typography.labelLarge)
+                if (bits != null && bits > 0) {
+                    Box(
+                        modifier = Modifier
+                            .clip(FormaPequena)
+                            .background(color.copy(alpha = 0.15f))
+                            .padding(horizontal = 6.dp, vertical = 2.dp)
+                    ) {
+                        Text(
+                            text = "${kotlin.math.round(bits).toInt()} bits",
+                            color = color,
+                            style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold)
+                        )
+                    }
+                }
+            }
             Text(
                 tiempo,
                 color = TextoSecundario,

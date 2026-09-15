@@ -48,7 +48,8 @@ import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
 @Composable
 fun SelectorModoGenerador(
     modoActual: String,
-    alSeleccionarModo: (String) -> Unit
+    alSeleccionarModo: (String) -> Unit,
+    modifier: Modifier = Modifier
 ) {
     var abierto by remember { mutableStateOf(false) }
     val forma = FormaCampo
@@ -59,7 +60,7 @@ fun SelectorModoGenerador(
         else -> Icons.Filled.Shuffle
     }
 
-    Box(modifier = Modifier.fillMaxWidth()) {
+    Box(modifier = modifier) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -72,24 +73,37 @@ fun SelectorModoGenerador(
                     else Modifier
                 )
                 .clickable { abierto = true }
-                .padding(horizontal = 14.dp),
+                .padding(horizontal = 10.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(
                 icono,
                 contentDescription = null,
                 tint = if (abierto) ColorIconosInternos else TextoSecundario,
-                modifier = Modifier.size(22.dp)
+                modifier = Modifier.size(20.dp)
             )
-            Spacer(Modifier.width(10.dp))
+            Spacer(Modifier.width(8.dp))
             Column(modifier = Modifier.weight(1f)) {
-                Text("Modo de generación", color = if (abierto) ColorTitulos else TextoSecundario, style = MaterialTheme.typography.labelSmall)
-                Text(modoActual, color = TextoPrincipal, style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold), maxLines = 1)
+                Text(
+                    "Modo de generación",
+                    color = if (abierto) ColorTitulos else TextoSecundario,
+                    style = MaterialTheme.typography.labelSmall,
+                    maxLines = 1,
+                    overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
+                )
+                Text(
+                    modoActual,
+                    color = TextoPrincipal,
+                    style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold),
+                    maxLines = 1,
+                    overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
+                )
             }
             Icon(
                 if (abierto) Icons.Filled.ExpandLess else Icons.Filled.ExpandMore,
                 contentDescription = "Abrir modos de generación",
-                tint = TextoSecundario
+                tint = TextoSecundario,
+                modifier = Modifier.size(20.dp)
             )
         }
 

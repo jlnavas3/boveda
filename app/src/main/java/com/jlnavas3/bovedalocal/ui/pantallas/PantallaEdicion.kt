@@ -37,6 +37,7 @@ import com.jlnavas3.bovedalocal.data.PresetsCampos
 import com.jlnavas3.bovedalocal.data.TipoEntrada
 import com.jlnavas3.bovedalocal.data.normalizarEtiqueta
 import com.jlnavas3.bovedalocal.ui.Pantalla
+import com.jlnavas3.bovedalocal.crypto.PasswordGenerator
 import com.jlnavas3.bovedalocal.ui.VaultViewModel
 import com.jlnavas3.bovedalocal.ui.componentes.BarraFuerza
 import com.jlnavas3.bovedalocal.ui.componentes.BotonBorde
@@ -140,18 +141,15 @@ fun PantallaEdicion(vm: VaultViewModel, id: String?, contrasenaInicial: String) 
                     alAlternarMostrarContrasena = { mostrarContrasena = !mostrarContrasena },
                     monoespaciada = true
                 )
-                Spacer(Modifier.height(10.dp))
-
-                GeneradorEnLineaEdicion(
-                    opcionesGenerador = opcionesGenerador,
-                    alCambiarOpciones = { opcionesGenerador = it },
-                    alGenerarContrasena = { contrasena = it },
-                    haptica = haptica
-                )
 
                 if (contrasena.isNotEmpty()) {
-                    Spacer(Modifier.height(12.dp))
-                    BarraFuerza(fuerza.fraccion, fuerza.etiqueta, fuerza.tiempo)
+                    Spacer(Modifier.height(8.dp))
+                    BarraFuerza(
+                        fraccion = fuerza.fraccion,
+                        etiqueta = fuerza.etiqueta,
+                        tiempo = fuerza.tiempo,
+                        bits = fuerza.bits
+                    )
                     if (esComun) {
                         Spacer(Modifier.height(6.dp))
                         Text(
@@ -161,6 +159,22 @@ fun PantallaEdicion(vm: VaultViewModel, id: String?, contrasenaInicial: String) 
                         )
                     }
                 }
+
+                Spacer(Modifier.height(10.dp))
+
+                GeneradorEnLineaEdicion(
+                    opcionesGenerador = opcionesGenerador,
+                    alCambiarOpciones = { nuevas ->
+                        opcionesGenerador = nuevas
+                        mostrarContrasena = true
+                        contrasena = PasswordGenerator.generar(nuevas)
+                    },
+                    alGenerarContrasena = { nueva ->
+                        mostrarContrasena = true
+                        contrasena = nueva
+                    },
+                    haptica = haptica
+                )
                 Spacer(Modifier.height(12.dp))
                 CampoBoveda(
                     valor = urls,
@@ -280,37 +294,46 @@ fun PantallaEdicion(vm: VaultViewModel, id: String?, contrasenaInicial: String) 
         }
 
         Spacer(Modifier.height(20.dp))
-        BotonColorido(
-            texto = if (original == null) "Guardar entrada" else "Guardar cambios",
-            color = ColorAcento,
-            icono = Icons.Filled.Check,
-            activo = puedeGuardar
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            haptica.exito()
-            val entrada = Entrada(
-                id = original?.id ?: vm.nuevoId(),
-                tipo = original?.passkey?.let { TipoEntrada.PASSKEY } ?: tipo,
-                titulo = titulo.trim(),
-                usuario = usuario.trim(),
-                contrasena = contrasena,
-                urls = urls.split(",").map { it.trim() }.filter { it.isNotEmpty() },
-                notas = notas,
-                secretoTotp = totp.trim().ifBlank { null },
-                favorito = favorito,
-                creadaEn = original?.creadaEn ?: 0L,
-                etiquetas = etiquetas.map(::normalizarEtiqueta).filter { it.isNotEmpty() }.distinct(),
-                passkey = original?.passkey,
-                camposPersonalizados = camposPersonalizados.filter { it.etiqueta.isNotBlank() || it.valor.isNotBlank() }
-            )
-            vm.guardar(entrada)
-            if (original == null) vm.volverAtras() else vm.ir(Pantalla.Detalle(entrada.id))
-        }
-        Spacer(Modifier.height(12.dp))
-        BotonBorde(
-            texto = "Cancelar",
-            icono = Icons.Filled.Close
-        ) {
-            vm.volverAtras()
+            BotonBorde(
+                texto = "Cancelar",
+                icono = Icons.Filled.Close,
+                modifier = Modifier.weight(1f)
+            ) {
+                vm.volverAtras()
+            }
+            BotonColorido(
+                texto = "Guardar",
+                color = ColorAcento,
+                icono = Icons.Filled.Check,
+                activo = puedeGuardar,
+                modifier = Modifier.weight(1f)
+            ) {
+                haptica.exito()
+                val entrada = Entrada(
+                    id = original?.id ?: vm.nuevoId(),
+                    tipo = original?.passkey?.let { TipoEntrada.PASSKEY } ?: tipo,
+                    titulo = titulo.trim(),
+                    usuario = usuario.trim(),
+                    contrasena = contrasena,
+                    urls = urls.split(",").map { it.trim() }.filter { it.isNotEmpty() },
+                    notas = notas,
+                    secretoTotp = totp.trim().ifBlank { null },
+                    favorito = favorito,
+                    creadaEn = original?.creadaEn ?: 0L,
+                    etiquetas = etiquetas.map(::normalizarEtiqueta).filter { it.isNotEmpty() }.distinct(),
+                    historialContrasenas = original?.historialContrasenas ?: emptyList(),
+                    passkey = original?.passkey,
+                    camposPersonalizados = camposPersonalizados.filter { it.etiqueta.isNotBlank() || it.valor.isNotBlank() }
+                )
+                vm.guardar(entrada)
+                // Al editar una entrada existente, volvemos atrás (a Detalle que ya está en la pila)
+                // en vez de hacer ir(Detalle) que empujaría Editar a la pila y causaría doble atrás.
+                vm.volverAtras()
+            }
         }
         Spacer(Modifier.height(32.dp))
     }

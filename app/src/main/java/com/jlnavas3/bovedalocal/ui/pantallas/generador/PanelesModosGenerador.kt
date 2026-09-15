@@ -41,6 +41,7 @@ import com.jlnavas3.bovedalocal.ui.theme.ColorTitulos
 import com.jlnavas3.bovedalocal.ui.theme.DegradadoAmbar
 import com.jlnavas3.bovedalocal.ui.theme.FormaCampo
 import com.jlnavas3.bovedalocal.ui.theme.GrosorBorde
+import com.jlnavas3.bovedalocal.ui.theme.Peligro
 import com.jlnavas3.bovedalocal.ui.theme.Superficie
 import com.jlnavas3.bovedalocal.ui.theme.SuperficieAlta
 import com.jlnavas3.bovedalocal.ui.theme.TextoPrincipal
@@ -115,66 +116,12 @@ fun PanelModoAleatorio(
         colors = coloresSlider()
     )
 
-    Spacer(Modifier.height(8.dp))
-    EtiquetaSeccion("Caracteres incluidos")
-    Spacer(Modifier.height(8.dp))
-
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clip(FormaCampo)
-            .background(Superficie)
-            .then(
-                if (GrosorBorde > 0.dp && ColorBordeActual != Color.Transparent)
-                    Modifier.border(GrosorBorde, ColorBordeActual, FormaCampo)
-                else Modifier
-            )
-            .padding(vertical = 10.dp, horizontal = 4.dp),
-        horizontalArrangement = Arrangement.SpaceEvenly,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        ColumnaInterruptor(
-            simbolo = "A-Z",
-            etiqueta = "Mayús",
-            activo = opciones.mayusculas,
-            alCambiar = {
-                haptica.tic()
-                alCambiarOpciones(opciones.copy(mayusculas = it))
-            },
-            modifier = Modifier.weight(1f)
-        )
-        Box(modifier = Modifier.width(1.dp).height(36.dp).background(ColorSeparadorDropdown))
-        ColumnaInterruptor(
-            simbolo = "a-z",
-            etiqueta = "Minús",
-            activo = opciones.minusculas,
-            alCambiar = {
-                haptica.tic()
-                alCambiarOpciones(opciones.copy(minusculas = it))
-            },
-            modifier = Modifier.weight(1f)
-        )
-        Box(modifier = Modifier.width(1.dp).height(36.dp).background(ColorSeparadorDropdown))
-        ColumnaInterruptor(
-            simbolo = "0-9",
-            etiqueta = "Núm",
-            activo = opciones.digitos,
-            alCambiar = {
-                haptica.tic()
-                alCambiarOpciones(opciones.copy(digitos = it))
-            },
-            modifier = Modifier.weight(1f)
-        )
-        Box(modifier = Modifier.width(1.dp).height(36.dp).background(ColorSeparadorDropdown))
-        ColumnaInterruptor(
-            simbolo = "#$!",
-            etiqueta = "Símb",
-            activo = opciones.simbolos,
-            alCambiar = {
-                haptica.tic()
-                alCambiarOpciones(opciones.copy(simbolos = it))
-            },
-            modifier = Modifier.weight(1f)
+    if (!opciones.mayusculas && !opciones.minusculas && !opciones.digitos && !opciones.simbolos) {
+        Spacer(Modifier.height(8.dp))
+        Text(
+            "Activa al menos un tipo de carácter en el menú desplegable superior.",
+            color = Peligro,
+            style = MaterialTheme.typography.bodySmall
         )
     }
 }

@@ -92,11 +92,11 @@ fun PantallaFormas(vm: VaultViewModel) {
 
         // 1. Tarjeta de vista previa interactiva en tiempo real
         TarjetaBovedaDesplegable(
-            titulo = "Vista previa en tiempo real",
+            titulo = "Vista previa",
             descripcion = "Observa en vivo las esquinas, trazos y espaciados de los componentes",
             icono = Icons.Filled.FormatShapes,
             colorIcono = ColorSalud,
-            inicialmenteAbierta = true
+            inicialmenteAbierta = false
         ) {
             Text(
                 text = "Tarjeta Interactiva",
@@ -140,7 +140,7 @@ fun PantallaFormas(vm: VaultViewModel) {
             descripcion = "Aplica combinaciones armónicas de esquinas y trazos en un solo toque",
             icono = Icons.Filled.AutoAwesome,
             colorIcono = ColorAcento,
-            inicialmenteAbierta = true
+            inicialmenteAbierta = false
         ) {
             Row(
                 modifier = Modifier

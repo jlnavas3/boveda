@@ -73,7 +73,12 @@ class VaultViewModel(app: Application) : AndroidViewModel(app), VaultAjustesDele
     /** Pila de navegación: sin esto, el botón atrás cerraba la app. */
     private val pila = ArrayDeque<Pantalla>()
 
+    /** true cuando la última transición fue un retroceso: la animación desliza al revés. */
+    private val _navegandoAtras = MutableStateFlow(false)
+    val navegandoAtras: StateFlow<Boolean> = _navegandoAtras
+
     fun ir(pantalla: Pantalla) {
+        _navegandoAtras.value = false
         if (pantalla != _pantalla.value) {
             pila.addLast(_pantalla.value)
             if (pila.size > 20) pila.removeFirst()
@@ -83,6 +88,7 @@ class VaultViewModel(app: Application) : AndroidViewModel(app), VaultAjustesDele
 
     /** Cambia de pantalla vaciando la pila: se usa al abrir, cerrar y bloquear. */
     private fun irRaiz(pantalla: Pantalla) {
+        _navegandoAtras.value = true
         pila.clear()
         _pantalla.value = pantalla
     }
@@ -97,6 +103,7 @@ class VaultViewModel(app: Application) : AndroidViewModel(app), VaultAjustesDele
      */
     fun retroceder(): Boolean {
         val anterior = pila.removeLastOrNull() ?: return false
+        _navegandoAtras.value = true
         _pantalla.value = anterior
         return true
     }
@@ -356,13 +363,14 @@ class VaultViewModel(app: Application) : AndroidViewModel(app), VaultAjustesDele
             val existente = withContext(Dispatchers.IO) { repositorio.entrada(entrada.id) }
             withContext(Dispatchers.IO) { repositorio.guardarEntrada(entrada) }
             val tipoDesc = entrada.tipo.etiqueta.lowercase()
+            val nombre = entrada.titulo.ifBlank { "(sin título)" }
             if (existente == null) {
-                Diagnostico.apuntar("bóveda", "Nueva entrada creada ($tipoDesc)")
+                Diagnostico.apuntar("bóveda", "Nueva entrada creada: \"$nombre\" ($tipoDesc)")
             } else {
                 if (existente.tipo != entrada.tipo) {
-                    Diagnostico.apuntar("bóveda", "Entrada modificada (${existente.tipo.etiqueta.lowercase()} -> $tipoDesc)")
+                    Diagnostico.apuntar("bóveda", "Entrada editada: \"$nombre\" (${existente.tipo.etiqueta.lowercase()} → $tipoDesc)")
                 } else {
-                    Diagnostico.apuntar("bóveda", "Entrada modificada ($tipoDesc)")
+                    Diagnostico.apuntar("bóveda", "Entrada editada: \"$nombre\" ($tipoDesc)")
                 }
             }
             _aviso.value = "Guardado en la bóveda"

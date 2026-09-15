@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.ContentCopy
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Restore
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
@@ -59,6 +60,7 @@ import com.jlnavas3.bovedalocal.ui.theme.FormaPequena
 import com.jlnavas3.bovedalocal.ui.theme.FormaTarjeta
 import com.jlnavas3.bovedalocal.ui.theme.GrosorBorde
 import com.jlnavas3.bovedalocal.ui.theme.Menta
+import com.jlnavas3.bovedalocal.ui.theme.Peligro
 import com.jlnavas3.bovedalocal.ui.theme.SuperficieAlta
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
 import com.jlnavas3.bovedalocal.util.Haptica
@@ -83,6 +85,7 @@ fun TarjetaHistorialDetalle(
     val reveladas = remember { mutableStateMapOf<String, Boolean>() }
     var claveCopiadaReciente by remember { mutableStateOf<String?>(null) }
     var claveARestaurar by remember { mutableStateOf<String?>(null) }
+    var claveAEliminar by remember { mutableStateOf<String?>(null) }
 
     LaunchedEffect(claveCopiadaReciente) {
         if (claveCopiadaReciente != null) {
@@ -125,6 +128,10 @@ fun TarjetaHistorialDetalle(
                     vm.copiar("Contraseña anterior", cambio.contrasena, sensible = true)
                     claveCopiadaReciente = cambio.contrasena
                 },
+                onEliminar = {
+                    haptica.toque()
+                    claveAEliminar = cambio.contrasena
+                },
                 onSolicitarRestaurar = {
                     haptica.toque()
                     claveARestaurar = cambio.contrasena
@@ -159,6 +166,34 @@ fun TarjetaHistorialDetalle(
             }
         )
     }
+
+    if (claveAEliminar != null) {
+        AlertDialog(
+            onDismissRequest = { claveAEliminar = null },
+            title = { Text("¿Eliminar esta contraseña del historial?") },
+            text = {
+                Text("Esta contraseña anterior se eliminará permanentemente. Esta acción no se puede deshacer.")
+            },
+            confirmButton = {
+                TextButton(onClick = {
+                    val clave = claveAEliminar
+                    claveAEliminar = null
+                    if (clave != null) {
+                        haptica.error()
+                        val nuevoHistorial = entrada.historialContrasenas.filterNot { it.contrasena == clave }
+                        vm.guardar(entrada.copy(historialContrasenas = nuevoHistorial))
+                    }
+                }) {
+                    Text("Eliminar", color = Peligro, fontWeight = FontWeight.Bold)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { claveAEliminar = null }) {
+                    Text("Cancelar")
+                }
+            }
+        )
+    }
 }
 
 @Composable
@@ -168,6 +203,7 @@ private fun FilaHistorialContrasena(
     copiado: Boolean,
     onToggleRevelar: () -> Unit,
     onCopiar: () -> Unit,
+    onEliminar: () -> Unit,
     onSolicitarRestaurar: () -> Unit
 ) {
     Column(
@@ -177,7 +213,7 @@ private fun FilaHistorialContrasena(
             .background(SuperficieAlta)
             .padding(12.dp)
     ) {
-        // Cabecera de la clave anterior: Fecha + Iconos de Ver y Copiar claramente visibles
+        // Cabecera de la clave anterior: Fecha + Iconos de Eliminar, Ver y Copiar
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -198,6 +234,18 @@ private fun FilaHistorialContrasena(
             }
 
             Row(verticalAlignment = Alignment.CenterVertically) {
+                // Botón Eliminar
+                IconButton(
+                    onClick = onEliminar,
+                    modifier = Modifier.size(40.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.Delete,
+                        contentDescription = "Eliminar contraseña anterior",
+                        tint = Peligro.copy(alpha = 0.7f),
+                        modifier = Modifier.size(22.dp)
+                    )
+                }
                 // Botón Revelar / Ocultar
                 IconButton(
                     onClick = onToggleRevelar,
@@ -246,13 +294,12 @@ private fun FilaHistorialContrasena(
 
         Spacer(Modifier.height(8.dp))
 
-        // Contenedor visual de la contraseña (pulsable para revelar/ocultar)
+        // Contenedor visual de la contraseña (solo lectura; se revela con el botón del ojo)
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(FormaPequena)
                 .background(ColorTarjetas)
-                .clickable { onToggleRevelar() }
                 .padding(horizontal = 12.dp, vertical = 10.dp)
         ) {
             if (revelada) {
@@ -266,6 +313,8 @@ private fun FilaHistorialContrasena(
                     text = "•".repeat(cambio.contrasena.length.coerceIn(8, 24)),
                     style = EstiloMonoGrande.copy(letterSpacing = 2.sp),
                     color = TextoSecundario,
+                    maxLines = 1,
+                    overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
                     modifier = Modifier.fillMaxWidth()
                 )
             }

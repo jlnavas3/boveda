@@ -83,6 +83,16 @@ interface VaultAjustesDelegate {
         aplicarPersonalizacionColores(repositorio.ajustes.actual)
     }
 
+    fun ajustarColorArgon2(hex: String) {
+        repositorio.ajustes.actualizar { it.copy(colorArgon2 = hex) }
+        aplicarPersonalizacionColores(repositorio.ajustes.actual)
+    }
+
+    fun ajustarColorCamara(hex: String) {
+        repositorio.ajustes.actualizar { it.copy(colorCamara = hex) }
+        aplicarPersonalizacionColores(repositorio.ajustes.actual)
+    }
+
     fun ajustarColor2FA(hex: String) {
         repositorio.ajustes.actualizar { it.copy(color2FA = hex) }
         aplicarPersonalizacionColores(repositorio.ajustes.actual)
@@ -122,6 +132,8 @@ interface VaultAjustesDelegate {
                 colorTarjetas = "",
                 colorDinamicoSistema = false,
                 colorSeguridad = "",
+                colorArgon2 = "",
+                colorCamara = "",
                 color2FA = "",
                 colorPasskeys = "",
                 colorGenerador = "",
@@ -247,6 +259,8 @@ interface VaultAjustesDelegate {
                     colorTitulos = "",
                     colorTarjetas = "",
                     colorSeguridad = "",
+                    colorArgon2 = "",
+                    colorCamara = "",
                     color2FA = "",
                     colorPasskeys = "",
                     colorGenerador = "",
@@ -364,5 +378,11 @@ interface VaultAjustesDelegate {
     fun ajustarSeparadorDecimal(separador: String) {
         repositorio.ajustes.actualizar { it.copy(separadorDecimal = separador) }
         Diagnostico.apuntar("formatos", "Separador decimal establecido en $separador")
+    }
+
+    fun ajustarProteccionPantalla(activo: Boolean) {
+        repositorio.ajustes.actualizar { it.copy(proteccionPantalla = activo) }
+        val desc = if (activo) "activada" else "desactivada"
+        Diagnostico.apuntar("seguridad", "Protección de pantalla (FLAG_SECURE) $desc por el usuario")
     }
 }

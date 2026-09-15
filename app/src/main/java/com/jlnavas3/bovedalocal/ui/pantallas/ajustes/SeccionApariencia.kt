@@ -80,7 +80,7 @@ fun SeccionApariencia(
 
         // 2. Personalización de colores y tema
         TarjetaAjuste(
-            titulo = "Personalización de colores y tema",
+            titulo = "Colores y Tema",
             icono = Icons.Filled.Palette,
             descripcion = "Modo claro/oscuro y personalización completa de paleta cromática.",
             inicialmenteAbierta = false,
@@ -122,7 +122,7 @@ fun SeccionApariencia(
 
         // 3. Personalización de bordes y formas
         TarjetaAjuste(
-            titulo = "Personalización de bordes y formas",
+            titulo = "Bordes y Formas",
             icono = Icons.Filled.SquareFoot,
             descripcion = "Curvatura de esquinas, grosores de trazo y espaciados entre componentes.",
             inicialmenteAbierta = false,
@@ -148,7 +148,7 @@ fun SeccionApariencia(
 
         // 4. Personalización de tipografía y textos
         TarjetaAjuste(
-            titulo = "Personalización de tipografía y textos",
+            titulo = "Tipografía y Textos",
             icono = Icons.Filled.TextFields,
             descripcion = "Tamaño de fuentes, peso, interlineado y familias tipográficas.",
             inicialmenteAbierta = false,

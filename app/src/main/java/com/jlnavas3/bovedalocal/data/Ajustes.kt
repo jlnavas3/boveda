@@ -71,6 +71,8 @@ data class AjustesApp(
     val tileHaptica: Boolean = true,
     // Colores semánticos de secciones funcionales
     val colorSeguridad: String = "",
+    val colorArgon2: String = "",
+    val colorCamara: String = "",
     val color2FA: String = "",
     val colorPasskeys: String = "",
     val colorGenerador: String = "",
@@ -102,7 +104,9 @@ data class AjustesApp(
     val formatoTelefono: String = "### ### ####",
     val separadorDecimal: String = ".",
     /** Perfil de derivación Argon2id: "estandar", "reforzado" o "ultraseguro". */
-    val perfilArgon2: String = "estandar"
+    val perfilArgon2: String = "estandar",
+    /** FLAG_SECURE: protección anti-captura de pantalla y anti-recientes. Activa por defecto. */
+    val proteccionPantalla: Boolean = true
 )
 
 
@@ -213,6 +217,8 @@ class AlmacenAjustes(contexto: Context) {
             tileMostrarToast = prefs.getBoolean("tile_toast", true),
             tileHaptica = prefs.getBoolean("tile_haptica", true),
             colorSeguridad = prefs.getString("color_seguridad", "") ?: "",
+            colorArgon2 = prefs.getString("color_argon2", "") ?: "",
+            colorCamara = prefs.getString("color_camara", "") ?: "",
             color2FA = prefs.getString("color_2fa", "") ?: "",
             colorPasskeys = prefs.getString("color_passkeys", "") ?: "",
             colorGenerador = prefs.getString("color_generador", "") ?: "",
@@ -241,7 +247,8 @@ class AlmacenAjustes(contexto: Context) {
             formatoHora = prefs.getString("formato_hora", "24h") ?: "24h",
             formatoTelefono = prefs.getString("formato_telefono", "### ### ####") ?: "### ### ####",
             separadorDecimal = prefs.getString("separador_decimal", ".") ?: ".",
-            perfilArgon2 = prefs.getString("perfil_argon2", "estandar") ?: "estandar"
+            perfilArgon2 = prefs.getString("perfil_argon2", "estandar") ?: "estandar",
+            proteccionPantalla = prefs.getBoolean("proteccion_pantalla", true)
         )
     }
 
@@ -288,6 +295,8 @@ class AlmacenAjustes(contexto: Context) {
             .putBoolean("tile_toast", nuevo.tileMostrarToast)
             .putBoolean("tile_haptica", nuevo.tileHaptica)
             .putString("color_seguridad", nuevo.colorSeguridad)
+            .putString("color_argon2", nuevo.colorArgon2)
+            .putString("color_camara", nuevo.colorCamara)
             .putString("color_2fa", nuevo.color2FA)
             .putString("color_passkeys", nuevo.colorPasskeys)
             .putString("color_generador", nuevo.colorGenerador)
@@ -317,6 +326,7 @@ class AlmacenAjustes(contexto: Context) {
             .putString("formato_telefono", nuevo.formatoTelefono)
             .putString("separador_decimal", nuevo.separadorDecimal)
             .putString("perfil_argon2", nuevo.perfilArgon2)
+            .putBoolean("proteccion_pantalla", nuevo.proteccionPantalla)
             .apply()
         _ajustes.value = nuevo
     }

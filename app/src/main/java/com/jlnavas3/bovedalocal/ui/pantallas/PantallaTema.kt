@@ -21,6 +21,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AppShortcut
 import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.Backup
+import androidx.compose.material.icons.filled.CameraAlt
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.ColorLens
 import androidx.compose.material.icons.filled.Delete
@@ -30,6 +31,7 @@ import androidx.compose.material.icons.filled.Fingerprint
 import androidx.compose.material.icons.filled.HealthAndSafety
 import androidx.compose.material.icons.filled.Key
 import androidx.compose.material.icons.filled.Layers
+import androidx.compose.material.icons.filled.Memory
 import androidx.compose.material.icons.filled.Palette
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Security
@@ -74,7 +76,9 @@ import com.jlnavas3.bovedalocal.ui.componentes.TarjetaBovedaDesplegable
 import com.jlnavas3.bovedalocal.ui.theme.Borde
 import com.jlnavas3.bovedalocal.ui.theme.Color2FA
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
+import com.jlnavas3.bovedalocal.ui.theme.ColorArgon2
 import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
+import com.jlnavas3.bovedalocal.ui.theme.ColorCamara
 import com.jlnavas3.bovedalocal.ui.theme.ColorExportacion
 import com.jlnavas3.bovedalocal.ui.theme.ColorGenerador
 import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
@@ -128,6 +132,24 @@ fun PantallaTema(vm: VaultViewModel) {
             colorActual = ColorSeguridad,
             colorPorDefecto = Color(0xFF0284C7),
             mutador = { vm.ajustarColorSeguridad(it.aHex()) }
+        ),
+        InfoSeccionFuncional(
+            id = "argon2",
+            nombre = "Cifrado Argon2id",
+            descripcion = "Intensidad de memoria, hilos e iteraciones criptográficas",
+            icono = Icons.Filled.Memory,
+            colorActual = ColorArgon2,
+            colorPorDefecto = Color(0xFF2563EB),
+            mutador = { vm.ajustarColorArgon2(it.aHex()) }
+        ),
+        InfoSeccionFuncional(
+            id = "camara",
+            nombre = "Cámara y Escáner QR",
+            descripcion = "Lector óptico de códigos 2FA y motor de captura",
+            icono = Icons.Filled.CameraAlt,
+            colorActual = ColorCamara,
+            colorPorDefecto = Color(0xFF06B6D4),
+            mutador = { vm.ajustarColorCamara(it.aHex()) }
         ),
         InfoSeccionFuncional(
             id = "generador",
@@ -194,11 +216,11 @@ fun PantallaTema(vm: VaultViewModel) {
 
         // 1. Tarjeta de previsualización en tiempo real
         TarjetaBovedaDesplegable(
-            titulo = "Vista previa en tiempo real",
+            titulo = "Vista previa",
             descripcion = "Observa cómo interactúan tus colores en vivo",
             icono = Icons.Filled.Visibility,
             colorIcono = ColorAcento,
-            inicialmenteAbierta = true
+            inicialmenteAbierta = false
         ) {
             ContenedorTarjeta(
                 colorFondo = ColorTarjetas,
@@ -276,7 +298,7 @@ fun PantallaTema(vm: VaultViewModel) {
             descripcion = "Afecta a los botones destacados, elementos activos y selector flotante",
             icono = Icons.Filled.Palette,
             colorIcono = ColorAcento,
-            inicialmenteAbierta = true
+            inicialmenteAbierta = false
         ) {
             SelectorColorEnTiempoReal(
                 colorInicial = ColorAcento,
@@ -392,7 +414,7 @@ fun PantallaTema(vm: VaultViewModel) {
             descripcion = "Color semántico para cada módulo clave de la app",
             icono = Icons.Filled.ColorLens,
             colorIcono = seccionActual.colorActual,
-            inicialmenteAbierta = true
+            inicialmenteAbierta = false
         ) {
             Text(
                 text = "Selecciona un módulo en el menú desplegable para personalizar su identidad visual:",

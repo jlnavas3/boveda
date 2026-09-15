@@ -68,7 +68,7 @@ fun TarjetaTotpDetalle(
         descripcion = "Se renueva cada ${periodo} s · ${entrada.totpDigitos} dígitos",
         icono = Icons.Filled.Timer,
         colorIcono = Color2FA,
-        inicialmenteAbierta = true
+        inicialmenteAbierta = false
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             AnilloTotp(

@@ -71,7 +71,7 @@ fun TarjetaCamposDetalle(
         descripcion = "${campos.size} campo${if (campos.size == 1) "" else "s"}",
         icono = Icons.Filled.FormatListBulleted,
         colorIcono = ColorSalud,
-        inicialmenteAbierta = true
+        inicialmenteAbierta = false
     ) {
         campos.forEachIndexed { index, campo ->
             if (index > 0) {

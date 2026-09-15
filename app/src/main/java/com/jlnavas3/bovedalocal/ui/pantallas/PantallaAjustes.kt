@@ -37,6 +37,7 @@ import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.DialogoImportarCsv
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.DialogoModoCompatible
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.SeccionApariencia
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.SeccionAutenticador2FA
+import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.SeccionArgon2id
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.SeccionAvanzada
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.SeccionCamara
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.SeccionCopiaSeguridad
@@ -180,6 +181,13 @@ fun PantallaAjustes(vm: VaultViewModel, actividad: FragmentActivity) {
             capacidad = capacidad,
             activarFuerte = ::activarFuerte,
             ofrecerCompatible = ::ofrecerCompatible
+        )
+
+        Spacer(Modifier.height(16.dp))
+
+        SeccionArgon2id(
+            vm = vm,
+            haptica = haptica
         )
 
         Spacer(Modifier.height(16.dp))
