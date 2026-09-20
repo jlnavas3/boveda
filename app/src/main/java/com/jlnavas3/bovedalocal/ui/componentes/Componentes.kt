@@ -29,8 +29,10 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
+import com.jlnavas3.bovedalocal.ui.theme.esOscuroActivo
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -69,6 +71,7 @@ import com.jlnavas3.bovedalocal.ui.theme.ColorTitulos
 import com.jlnavas3.bovedalocal.ui.theme.CurvaturaEsquinas
 import com.jlnavas3.bovedalocal.ui.theme.DegradadoAmbar
 import com.jlnavas3.bovedalocal.ui.theme.EscalaTexto
+import com.jlnavas3.bovedalocal.ui.theme.EstiloMono
 import com.jlnavas3.bovedalocal.ui.theme.FormaBoton
 import com.jlnavas3.bovedalocal.ui.theme.FormaCampo
 import com.jlnavas3.bovedalocal.ui.theme.FormaPequena
@@ -103,8 +106,7 @@ fun coloresMonograma(semilla: String): Pair<Color, Color> {
 fun Monograma(titulo: String, semilla: String, tamano: Int = 46) {
     val (a, b) = coloresMonograma(semilla.ifBlank { titulo })
     val colorTexto = colorContraste(a)
-    val radio = (tamano * (com.jlnavas3.bovedalocal.ui.theme.CurvaturaEsquinasDp / 54f)).coerceIn(0f, tamano / 2f).dp
-    val forma = RoundedCornerShape(radio)
+    val forma = CircleShape
     Box(
         modifier = Modifier
             .size(tamano.dp)
@@ -172,9 +174,14 @@ fun TarjetaBovedaDesplegable(
     inicialmenteAbierta: Boolean = false,
     modifier: Modifier = Modifier,
     colorIcono: Color = ColorIconosInternos,
+    idEtiqueta: String? = null,
+    mostrarId: Boolean = false,
+    abiertaControlada: Boolean? = null,
+    alAlternarAbierta: ((Boolean) -> Unit)? = null,
     contenido: @Composable androidx.compose.foundation.layout.ColumnScope.() -> Unit
 ) {
-    var abierta by remember { mutableStateOf(inicialmenteAbierta) }
+    var abiertaLocal by remember(inicialmenteAbierta) { mutableStateOf(inicialmenteAbierta) }
+    val abierta = abiertaControlada ?: abiertaLocal
     val forma = FormaTarjeta
 
     Column(
@@ -195,25 +202,53 @@ fun TarjetaBovedaDesplegable(
             modifier = Modifier
                 .fillMaxWidth()
                 .background(ColorEncabezadoTarjeta)
-                .clickable { abierta = !abierta }
+                .clickable {
+                    if (alAlternarAbierta != null) {
+                        alAlternarAbierta(!abierta)
+                    } else {
+                        abiertaLocal = !abiertaLocal
+                    }
+                }
                 .padding(horizontal = 16.dp, vertical = 14.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Icono distinguido con contenedor suave estilo barra lateral
+            // Icono distinguido con contenedor suave estilo barra lateral y etiqueta ID opcional
             val colorLegible = colorLegibleParaTema(colorIcono)
-            Box(
-                modifier = Modifier
-                    .size(38.dp)
-                    .clip(FormaPequena)
-                    .background(fondoBadgeParaTema(colorIcono)),
-                contentAlignment = Alignment.Center
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
             ) {
-                Icon(
-                    imageVector = icono,
-                    contentDescription = null,
-                    tint = colorLegible,
-                    modifier = Modifier.size(20.dp)
-                )
+                Box(
+                    modifier = Modifier
+                        .size(38.dp)
+                        .clip(FormaPequena)
+                        .background(fondoBadgeParaTema(colorIcono)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = icono,
+                        contentDescription = null,
+                        tint = colorLegible,
+                        modifier = Modifier.size(20.dp)
+                    )
+                }
+
+                if (mostrarId && !idEtiqueta.isNullOrBlank()) {
+                    Spacer(Modifier.height(3.dp))
+                    Box(
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(4.dp))
+                            .background(fondoBadgeParaTema(colorIcono))
+                            .padding(horizontal = 4.dp, vertical = 1.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = idEtiqueta,
+                            style = EstiloMono.copy(fontSize = 8.sp, fontWeight = FontWeight.Bold),
+                            color = colorLegibleParaTema(colorIcono)
+                        )
+                    }
+                }
             }
 
             Spacer(Modifier.width(14.dp))
@@ -289,7 +324,7 @@ fun BotonAmbar(
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .height(52.dp)
+            .height(42.dp)
             .clip(forma)
             .background(if (activo) DegradadoAmbar else Brush.horizontalGradient(listOf(Borde, Borde)))
             .then(
@@ -307,34 +342,34 @@ fun BotonAmbar(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 12.dp),
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
             ) {
                 Icon(
                     imageVector = icono,
                     contentDescription = null,
                     tint = colorTexto,
-                    modifier = Modifier.size(22.dp)
+                    modifier = Modifier.size(18.dp)
                 )
                 Spacer(Modifier.width(8.dp))
                 Text(
                     text = texto,
                     color = colorTexto,
-                    style = MaterialTheme.typography.labelLarge.copy(
-                        fontSize = (15 * escala * EscalaTexto).sp,
+                    style = MaterialTheme.typography.bodyMedium.copy(
+                        fontSize = (14 * escala * EscalaTexto).sp,
                         fontWeight = FontWeight.SemiBold
                     ),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.weight(1f)
+                    textAlign = TextAlign.Center
                 )
             }
         } else {
             Text(
                 text = texto,
                 color = colorTexto,
-                style = MaterialTheme.typography.labelLarge.copy(
-                    fontSize = (15 * escala * EscalaTexto).sp,
+                style = MaterialTheme.typography.bodyMedium.copy(
+                    fontSize = (14 * escala * EscalaTexto).sp,
                     fontWeight = FontWeight.SemiBold
                 ),
                 maxLines = 1,
@@ -356,19 +391,14 @@ fun BotonBorde(
     icono: ImageVector? = null,
     alPulsar: () -> Unit
 ) {
-    val forma = FormaBoton
+    val forma = RoundedCornerShape(12.dp)
+    val fondoBoton = if (esOscuroActivo) Color(0xFF2A292E) else Color(0xFFEFEFF3)
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .height(52.dp)
+            .height(42.dp)
             .clip(forma)
-            .then(
-                if (GrosorBorde > 0.dp) {
-                    Modifier.border(GrosorBorde, ColorBordeActual, forma)
-                } else {
-                    Modifier
-                }
-            )
+            .background(fondoBoton)
             .clickable { alPulsar() },
         contentAlignment = Alignment.Center
     ) {
@@ -377,34 +407,34 @@ fun BotonBorde(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 12.dp),
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
             ) {
                 Icon(
                     imageVector = icono,
                     contentDescription = null,
                     tint = color,
-                    modifier = Modifier.size(22.dp)
+                    modifier = Modifier.size(18.dp)
                 )
                 Spacer(Modifier.width(8.dp))
                 Text(
                     text = texto,
                     color = color,
-                    style = MaterialTheme.typography.labelLarge.copy(
-                        fontSize = (15 * EscalaTexto).sp,
+                    style = MaterialTheme.typography.bodyMedium.copy(
+                        fontSize = (14 * EscalaTexto).sp,
                         fontWeight = FontWeight.SemiBold
                     ),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.weight(1f)
+                    textAlign = TextAlign.Center
                 )
             }
         } else {
             Text(
                 text = texto,
                 color = color,
-                style = MaterialTheme.typography.labelLarge.copy(
-                    fontSize = (15 * EscalaTexto).sp,
+                style = MaterialTheme.typography.bodyMedium.copy(
+                    fontSize = (14 * EscalaTexto).sp,
                     fontWeight = FontWeight.SemiBold
                 ),
                 maxLines = 1,
@@ -436,124 +466,30 @@ fun CampoBoveda(
     alPulsar: (() -> Unit)? = null,
     formateadorMascara: ((String) -> String)? = null
 ) {
-    val forma = FormaCampo
-    val iconoFinal = trailingIcon ?: if (esContrasena && alAlternarMostrarContrasena != null) {
-        {
-            IconButton(onClick = alAlternarMostrarContrasena) {
-                Icon(
-                    imageVector = if (mostrarContrasena) Icons.Filled.VisibilityOff else Icons.Filled.Visibility,
-                    contentDescription = if (mostrarContrasena) "Ocultar contraseña" else "Mostrar contraseña",
-                    tint = TextoSecundario,
-                    modifier = Modifier.size(26.dp)
-                )
-            }
-        }
-    } else null
-
-    val campoTexto = @Composable {
-        if (formateadorMascara != null) {
-            var tfv by remember {
-                mutableStateOf(TextFieldValue(text = valor, selection = TextRange(valor.length)))
-            }
-            if (tfv.text != valor) {
-                val nuevoCursor = tfv.selection.end.coerceIn(0, valor.length)
-                tfv = tfv.copy(text = valor, selection = TextRange(nuevoCursor))
-            }
-            OutlinedTextField(
-                value = tfv,
-                onValueChange = { nuevo ->
-                    val transformado = FormateadorCampos.transformarConMascara(
-                        nuevoTfv = nuevo,
-                        textoAnterior = tfv.text,
-                        formatear = formateadorMascara
-                    )
-                    tfv = transformado
-                    alCambiar(transformado.text)
-                },
-                label = { Text(etiqueta) },
-                modifier = modifier.fillMaxWidth(),
-                readOnly = readOnly,
-                singleLine = !varias,
-                minLines = if (varias) 3 else 1,
-                textStyle = if (monoespaciada) {
-                    MaterialTheme.typography.bodyLarge.copy(fontFamily = androidx.compose.ui.text.font.FontFamily.Monospace)
-                } else {
-                    MaterialTheme.typography.bodyLarge
-                },
-                visualTransformation = if (esContrasena && !mostrarContrasena) PasswordVisualTransformation() else VisualTransformation.None,
-                trailingIcon = iconoFinal,
-                keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(
-                    keyboardType = keyboardType ?: when {
-                        tecladoNumerico -> KeyboardType.Number
-                        esContrasena -> KeyboardType.Password
-                        else -> KeyboardType.Text
-                    }
-                ),
-                shape = forma,
-                colors = TextFieldDefaults.colors(
-                    focusedContainerColor = Superficie,
-                    unfocusedContainerColor = Superficie,
-                    focusedIndicatorColor = Ambar,
-                    unfocusedIndicatorColor = if (GrosorBorde > 0.dp) ColorBordeActual else Color.Transparent,
-                    focusedLabelColor = Ambar,
-                    unfocusedLabelColor = TextoSecundario,
-                    cursorColor = Ambar,
-                    focusedTextColor = TextoPrincipal,
-                    unfocusedTextColor = TextoPrincipal
-                )
-            )
-        } else {
-            OutlinedTextField(
-                value = valor,
-                onValueChange = alCambiar,
-                label = { Text(etiqueta) },
-                modifier = modifier.fillMaxWidth(),
-                readOnly = readOnly,
-                singleLine = !varias,
-                minLines = if (varias) 3 else 1,
-                textStyle = if (monoespaciada) {
-                    MaterialTheme.typography.bodyLarge.copy(fontFamily = androidx.compose.ui.text.font.FontFamily.Monospace)
-                } else {
-                    MaterialTheme.typography.bodyLarge
-                },
-                visualTransformation = if (esContrasena && !mostrarContrasena) PasswordVisualTransformation() else VisualTransformation.None,
-                trailingIcon = iconoFinal,
-                keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(
-                    keyboardType = keyboardType ?: when {
-                        tecladoNumerico -> KeyboardType.Number
-                        esContrasena -> KeyboardType.Password
-                        else -> KeyboardType.Text
-                    }
-                ),
-                shape = forma,
-                colors = TextFieldDefaults.colors(
-                    focusedContainerColor = Superficie,
-                    unfocusedContainerColor = Superficie,
-                    focusedIndicatorColor = Ambar,
-                    unfocusedIndicatorColor = if (GrosorBorde > 0.dp) ColorBordeActual else Color.Transparent,
-                    focusedLabelColor = Ambar,
-                    unfocusedLabelColor = TextoSecundario,
-                    cursorColor = Ambar,
-                    focusedTextColor = TextoPrincipal,
-                    unfocusedTextColor = TextoPrincipal
-                )
-            )
-        }
+    val tipo = when {
+        esContrasena -> com.jlnavas3.bovedalocal.ui.componentes.ajustes.TipoCampoTexto.CONTRASENA
+        tecladoNumerico -> com.jlnavas3.bovedalocal.ui.componentes.ajustes.TipoCampoTexto.NUMERICO
+        varias -> com.jlnavas3.bovedalocal.ui.componentes.ajustes.TipoCampoTexto.MULTILINEA
+        else -> com.jlnavas3.bovedalocal.ui.componentes.ajustes.TipoCampoTexto.TEXTO
     }
-
-    if (alPulsar != null) {
-        Box(modifier = modifier.fillMaxWidth()) {
-            campoTexto()
-            Box(
-                modifier = Modifier
-                    .matchParentSize()
-                    .clip(forma)
-                    .clickable { alPulsar() }
-            )
-        }
-    } else {
-        campoTexto()
-    }
+    com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteCampoTexto(
+        valor = valor,
+        etiqueta = etiqueta,
+        alCambiar = alCambiar,
+        modifier = modifier,
+        tipo = tipo,
+        esContrasena = esContrasena,
+        mostrarContrasena = if (alAlternarMostrarContrasena != null) mostrarContrasena else null,
+        alAlternarMostrarContrasena = alAlternarMostrarContrasena,
+        monoespaciada = monoespaciada,
+        varias = varias,
+        tecladoNumerico = tecladoNumerico,
+        keyboardType = keyboardType,
+        readOnly = readOnly,
+        trailingIcon = trailingIcon,
+        alPulsar = alPulsar,
+        formateadorMascara = formateadorMascara
+    )
 }
 
 
@@ -689,8 +625,9 @@ fun MenuDesplegableBoveda(
     properties: androidx.compose.ui.window.PopupProperties = androidx.compose.ui.window.PopupProperties(focusable = true),
     content: @Composable androidx.compose.foundation.layout.ColumnScope.() -> Unit
 ) {
-    val forma = FormaTarjeta
-    val grosor = if (GrosorBorde > 0.dp) GrosorBorde else 0.8.dp
+    val forma = RoundedCornerShape(14.dp)
+    val fondoMenu = if (esOscuroActivo) Color(0xFF262529) else Color(0xFFFFFFFF)
+    val bordeMenu = if (esOscuroActivo) Color(0xFF38373C) else Color(0xFFE2E2E2)
 
     DropdownMenu(
         expanded = expanded,
@@ -699,8 +636,7 @@ fun MenuDesplegableBoveda(
         properties = properties,
         modifier = modifier
             .clip(forma)
-            .background(SuperficieAlta)
-            .border(grosor, ColorBordeDropdown, forma)
+            .background(fondoMenu)
     ) {
         content()
     }
@@ -716,6 +652,6 @@ fun SeparadorOpcionMenu(modifier: Modifier = Modifier) {
         modifier = modifier
             .fillMaxWidth()
             .height(0.8.dp)
-            .background(ColorSeparadorDropdown)
+            .background(if (esOscuroActivo) Color(0xFF2D2C30) else Color(0xFFEBEBEB))
     )
 }

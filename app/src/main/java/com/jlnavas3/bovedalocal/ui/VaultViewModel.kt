@@ -21,6 +21,11 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
+data class RecordatorioExportacionInfo(
+    val titulo: String,
+    val descripcion: String
+)
+
 class VaultViewModel(app: Application) : AndroidViewModel(app), VaultAjustesDelegate, VaultBackupDelegate {
 
     override val repositorio = VaultRepository.obtener(app)
@@ -77,13 +82,126 @@ class VaultViewModel(app: Application) : AndroidViewModel(app), VaultAjustesDele
     private val _navegandoAtras = MutableStateFlow(false)
     val navegandoAtras: StateFlow<Boolean> = _navegandoAtras
 
+    /** Devuelve la pantalla padre a la que debe retornar una subsección jerárquica. */
+    fun padreDe(pantalla: Pantalla): Pantalla? = when (pantalla) {
+        // Grupo 01: Seguridad -> Ajustes
+        is Pantalla.Seguridad -> Pantalla.Ajustes("01.1")
+        is Pantalla.AjustesSenuelo -> Pantalla.Ajustes("01.2")
+        is Pantalla.AjustesAutodestruccion -> Pantalla.Ajustes("01.3")
+        is Pantalla.Argon2id -> Pantalla.Ajustes("01.4")
+
+        // Grupo 02: Cuentas y Datos -> Ajustes
+        is Pantalla.CopiaSeguridad -> Pantalla.Ajustes("02.1")
+        is Pantalla.CsvGoogle -> Pantalla.Ajustes("02.2")
+        is Pantalla.KitEmergencia -> Pantalla.Ajustes("02.3")
+
+        // Grupo 03: Personalización -> Ajustes
+        is Pantalla.Tema -> Pantalla.Ajustes("03.2")
+        is Pantalla.CalibracionAnimacion -> Pantalla.Tema("03.2.G2")
+        is Pantalla.AjustesWidget -> Pantalla.Ajustes("03.3")
+        is Pantalla.Formas -> Pantalla.Ajustes("03.3")
+        is Pantalla.AjustesIndice -> Pantalla.Ajustes("03.4")
+        is Pantalla.Tipografia -> Pantalla.Ajustes("03.4")
+        is Pantalla.OrganizacionLista -> Pantalla.Ajustes("03.5")
+        is Pantalla.FormatosCampos -> Pantalla.Ajustes("03.6")
+
+        // Grupo 04: Funciones -> Ajustes
+        is Pantalla.AjustesAutenticador -> Pantalla.Ajustes("04.1")
+        is Pantalla.AjustesCamara -> Pantalla.Ajustes("04.2")
+        is Pantalla.TileRapido -> Pantalla.Ajustes("04.3")
+
+        // Grupo 05: Sistema -> Ajustes
+        is Pantalla.Avanzada -> Pantalla.Ajustes("05.1")
+
+        // Pantallas de la barra lateral -> Retornan a la Lista principal
+        is Pantalla.Generador -> Pantalla.Lista
+        is Pantalla.HistorialClaves -> Pantalla.Lista
+        is Pantalla.Passkeys -> Pantalla.Lista
+        is Pantalla.Autenticador -> Pantalla.Lista
+        is Pantalla.SaludBoveda -> Pantalla.Lista
+        is Pantalla.Duplicados -> Pantalla.Lista
+        is Pantalla.Papelera -> Pantalla.Lista
+        is Pantalla.Registro -> Pantalla.Lista
+        is Pantalla.AcercaDe -> Pantalla.Lista
+        else -> null
+    }
+
     fun ir(pantalla: Pantalla) {
         _navegandoAtras.value = false
         if (pantalla != _pantalla.value) {
-            pila.addLast(_pantalla.value)
+            // Si salimos de Ajustes hacia una subpantalla hija con padre conocido,
+            // guardamos en la pila el estado contextual con el ID de retorno para que
+            // al volver atrás regrese a la tarjeta padre desplegada.
+            val origen = if (_pantalla.value is Pantalla.Ajustes) {
+                val padre = padreDe(pantalla)
+                if (padre is Pantalla.Ajustes && !padre.seccionId.isNullOrBlank()) {
+                    padre
+                } else {
+                    _pantalla.value
+                }
+            } else {
+                _pantalla.value
+            }
+            pila.addLast(origen)
             if (pila.size > 20) pila.removeFirst()
         }
         _pantalla.value = pantalla
+    }
+
+    /** Navega directamente a la pantalla y tarjeta específica correspondiente al ID jerárquico. */
+    fun irPorId(id: String) {
+        val limpio = id.trim()
+        val destino = when {
+            // Grupo 01: Seguridad
+            limpio == "01" || limpio.startsWith("01.1") || limpio.startsWith("01.0") -> Pantalla.Seguridad(limpio)
+            limpio.startsWith("01.2") -> Pantalla.AjustesSenuelo(limpio)
+            limpio.startsWith("01.3") -> Pantalla.AjustesAutodestruccion(limpio)
+            limpio.startsWith("01.4") || limpio == "03" || limpio.startsWith("03.0") -> Pantalla.Argon2id(limpio)
+
+            // Grupo 02: Cuentas y Datos
+            limpio == "02" || limpio.startsWith("02.1") || limpio == "06" || limpio.startsWith("06.0") -> Pantalla.CopiaSeguridad(limpio)
+            limpio.startsWith("02.2") || limpio == "08" || limpio.startsWith("08.0") -> Pantalla.CsvGoogle(limpio)
+            limpio.startsWith("02.3") || limpio.startsWith("06.3") -> Pantalla.KitEmergencia(limpio)
+            limpio.startsWith("02.4") || limpio.startsWith("06.1") -> Pantalla.SaludBoveda(limpio)
+            limpio.startsWith("02.5") || limpio.startsWith("06.2") -> Pantalla.Duplicados(limpio)
+            limpio.startsWith("02.6") || limpio.startsWith("06.4") -> Pantalla.Papelera(limpio)
+
+            // Grupo 03: Personalización
+            limpio.startsWith("03.1") || limpio.startsWith("09.1") -> Pantalla.Ajustes("03.1")
+            limpio.startsWith("03.2") || limpio.startsWith("09.2") -> Pantalla.Tema(limpio)
+            limpio.startsWith("03.3") || limpio.startsWith("09.4") -> Pantalla.AjustesWidget(limpio)
+            limpio.startsWith("03.4") || limpio.startsWith("09.5") -> Pantalla.AjustesIndice(limpio)
+            limpio.startsWith("03.5") || limpio.startsWith("09.6") || limpio.startsWith("09.7") -> Pantalla.OrganizacionLista(limpio)
+            limpio.startsWith("03.6") || limpio.startsWith("10") -> Pantalla.FormatosCampos(limpio)
+
+            // Grupo 04: Funciones y Herramientas
+            limpio.startsWith("04.1") || limpio == "07" || limpio.startsWith("07.0") -> Pantalla.AjustesAutenticador(limpio)
+            limpio.startsWith("04.2") || limpio == "05" || limpio.startsWith("05.0") -> Pantalla.AjustesCamara(limpio)
+            limpio.startsWith("04.3") -> Pantalla.TileRapido(limpio)
+            limpio.startsWith("04.4") -> Pantalla.Generador
+            limpio.startsWith("04.5") || limpio == "04" || limpio.startsWith("04.0") -> Pantalla.HistorialClaves(limpio)
+            limpio.startsWith("04.6") -> Pantalla.Passkeys
+            limpio.startsWith("04.7") -> Pantalla.Autenticador
+
+            // Grupo 05: Sistema
+            limpio.startsWith("05.1") || limpio.startsWith("11.1") || limpio.startsWith("11.2") || limpio.startsWith("11.4") || limpio == "11" -> Pantalla.Avanzada(limpio)
+            limpio.startsWith("05.2") || limpio.startsWith("11.3.2") -> Pantalla.Registro(limpio)
+            limpio.startsWith("05.3") || limpio.startsWith("11.3.1") -> Pantalla.AcercaDe(limpio)
+
+            else -> Pantalla.Ajustes(limpio)
+        }
+        _navegandoAtras.value = false
+        if (destino != _pantalla.value) {
+            // Si venimos de Ajustes, guardamos el origen contextual con el ID que lo disparó
+            val origen = if (_pantalla.value is Pantalla.Ajustes) {
+                Pantalla.Ajustes(limpio)
+            } else {
+                _pantalla.value
+            }
+            pila.addLast(origen)
+            if (pila.size > 20) pila.removeFirst()
+        }
+        _pantalla.value = destino
     }
 
     /** Cambia de pantalla vaciando la pila: se usa al abrir, cerrar y bloquear. */
@@ -102,10 +220,19 @@ class VaultViewModel(app: Application) : AndroidViewModel(app), VaultAjustesDele
      * ya estamos en la lista, en el desbloqueo o en el onboarding.
      */
     fun retroceder(): Boolean {
-        val anterior = pila.removeLastOrNull() ?: return false
-        _navegandoAtras.value = true
-        _pantalla.value = anterior
-        return true
+        val anterior = pila.removeLastOrNull()
+        if (anterior != null) {
+            _navegandoAtras.value = true
+            _pantalla.value = anterior
+            return true
+        }
+        val fallback = padreDe(_pantalla.value)
+        if (fallback != null) {
+            _navegandoAtras.value = true
+            _pantalla.value = fallback
+            return true
+        }
+        return false
     }
 
     /**
@@ -242,8 +369,9 @@ class VaultViewModel(app: Application) : AndroidViewModel(app), VaultAjustesDele
                 limpiarFallos()
                 Diagnostico.apuntar("bóveda", "Desbloqueada con contraseña maestra")
                 registrarInteraccion()
-                irRaiz(Pantalla.Lista)
                 alTerminar(true)
+                delay(520)
+                irRaiz(Pantalla.Lista)
             }
             return
         }
@@ -254,8 +382,11 @@ class VaultViewModel(app: Application) : AndroidViewModel(app), VaultAjustesDele
                 limpiarFallos()
                 Diagnostico.apuntar("bóveda", "Desbloqueada con contraseña maestra")
                 registrarInteraccion()
-                irRaiz(Pantalla.Lista)
                 alTerminar(true)
+                delay(520)
+                irRaiz(Pantalla.Lista)
+                procesarShortcutPendiente()
+                verificarBackupAutomatico()
             } catch (e: Exception) {
                 apuntarFallo()
                 Diagnostico.apuntar("bóveda", "Desbloqueo con contraseña rechazado")
@@ -274,8 +405,11 @@ class VaultViewModel(app: Application) : AndroidViewModel(app), VaultAjustesDele
                 limpiarFallos()
                 Diagnostico.apuntar("bóveda", "Desbloqueada con huella")
                 registrarInteraccion()
-                irRaiz(Pantalla.Lista)
                 alTerminar(true)
+                delay(520)
+                irRaiz(Pantalla.Lista)
+                procesarShortcutPendiente()
+                verificarBackupAutomatico()
             } catch (e: Exception) {
                 Diagnostico.apuntar("huella", "La clave desenvuelta no abrió la bóveda: ${e.javaClass.simpleName}")
                 _error.value = "No se pudo abrir la bóveda con la huella"
@@ -283,6 +417,48 @@ class VaultViewModel(app: Application) : AndroidViewModel(app), VaultAjustesDele
             } finally {
                 Zeroizar.borrar(clave)
             }
+        }
+    }
+
+    private var accionShortcutPendiente: String? = null
+
+    fun solicitarAccionShortcut(accion: String) {
+        if (repositorio.estaDesbloqueada) {
+            ejecutarAccionShortcut(accion)
+        } else {
+            accionShortcutPendiente = accion
+        }
+    }
+
+    fun procesarShortcutPendiente() {
+        val pendiente = accionShortcutPendiente ?: return
+        accionShortcutPendiente = null
+        ejecutarAccionShortcut(pendiente)
+    }
+
+    fun ejecutarAccionShortcut(accion: String) {
+        when (accion) {
+            "nueva_entrada" -> ir(Pantalla.Editar(id = null))
+            "buscar" -> irRaiz(Pantalla.Lista)
+            "escanear_qr" -> ir(Pantalla.Escaner())
+        }
+    }
+
+    fun verificarBackupAutomatico() {
+        if (com.jlnavas3.bovedalocal.data.GestorBackupAutomatico.debeEjecutar(repositorio.ajustes.actual)) {
+            ejecutarBackupAutomatico(manual = false)
+        }
+    }
+
+    fun ejecutarBackupAutomatico(manual: Boolean = false, alTerminar: (Boolean, String) -> Unit = { _, _ -> }) {
+        ejecutar {
+            val (exito, mensaje) = withContext(Dispatchers.IO) {
+                com.jlnavas3.bovedalocal.data.GestorBackupAutomatico.ejecutar(contextoApp, repositorio)
+            }
+            if (manual || exito) {
+                _aviso.value = mensaje
+            }
+            alTerminar(exito, mensaje)
         }
     }
 
@@ -298,13 +474,66 @@ class VaultViewModel(app: Application) : AndroidViewModel(app), VaultAjustesDele
         irRaiz(if (repositorio.existeBoveda) Pantalla.Desbloqueo else Pantalla.Onboarding)
     }
 
+    /** Información del recordatorio de copia; null si no corresponde mostrarlo. */
+    fun recordatorioExportacionInfo(): RecordatorioExportacionInfo? {
+        val ajustes = repositorio.ajustes.actual
+        val config = ajustes.recordatorioExportacionDias
+        if (config == 0) return null
+
+        val ahora = System.currentTimeMillis()
+        val umbralMs = when (config) {
+            -30 -> 30L * 60 * 1000 // 30 minutos
+            in 1..Int.MAX_VALUE -> config.toLong() * 24 * 60 * 60 * 1000
+            else -> return null
+        }
+
+        val ultimaCopia = maxOf(ajustes.ultimaExportacionEn, ajustes.backupAutoUltimaEjecucion)
+
+        if (ultimaCopia > 0L) {
+            val transcurridoMs = ahora - ultimaCopia
+            if (transcurridoMs >= umbralMs) {
+                return if (config == -30) {
+                    val minutos = (transcurridoMs / (60 * 1000)).coerceAtLeast(30)
+                    RecordatorioExportacionInfo(
+                        titulo = "Hace $minutos min que no haces una copia",
+                        descripcion = "Toca para ir a Copia de seguridad"
+                    )
+                } else {
+                    val dias = (transcurridoMs / (24L * 60 * 60 * 1000)).coerceAtLeast(config.toLong())
+                    RecordatorioExportacionInfo(
+                        titulo = "Hace $dias ${if (dias == 1L) "día" else "días"} sin exportar una copia",
+                        descripcion = "Toca para ir a Copia de seguridad"
+                    )
+                }
+            }
+            return null
+        } else {
+            // Nunca se ha realizado una copia ni exportación
+            val entradas = repositorio.entradas()
+            if (entradas.isEmpty()) return null
+
+            val tiempoBase = entradas.minOfOrNull { it.creadaEn }
+                ?: repositorio.archivoBoveda.lastModified().takeIf { it > 0L }
+                ?: ahora
+
+            val transcurridoMs = ahora - tiempoBase
+            if (transcurridoMs >= umbralMs) {
+                return RecordatorioExportacionInfo(
+                    titulo = "Copia de seguridad recomendada",
+                    descripcion = "Aún no has realizado ninguna copia de tu bóveda. Toca para hacer una."
+                )
+            }
+            return null
+        }
+    }
+
     /** Días sin exportar la bóveda; null si nunca se exportó o el recordatorio está apagado. */
     fun diasSinExportar(): Long? {
-        val ajustes = repositorio.ajustes.actual
-        if (ajustes.recordatorioExportacionDias <= 0) return null
-        if (ajustes.ultimaExportacionEn <= 0L) return null
-        val transcurridos = (System.currentTimeMillis() - ajustes.ultimaExportacionEn) / (24L * 60 * 60 * 1000)
-        return if (transcurridos >= ajustes.recordatorioExportacionDias) transcurridos else null
+        val info = recordatorioExportacionInfo() ?: return null
+        val config = repositorio.ajustes.actual.recordatorioExportacionDias
+        if (config == -30) return 0L
+        val ultimaCopia = maxOf(repositorio.ajustes.actual.ultimaExportacionEn, repositorio.ajustes.actual.backupAutoUltimaEjecucion)
+        return if (ultimaCopia > 0L) (System.currentTimeMillis() - ultimaCopia) / (24L * 60 * 60 * 1000) else config.toLong()
     }
 
     // ---------------------------------------------------------------- entradas
@@ -394,6 +623,60 @@ class VaultViewModel(app: Application) : AndroidViewModel(app), VaultAjustesDele
             withContext(Dispatchers.IO) { repositorio.eliminarEntradas(ids) }
             Diagnostico.apuntar("papelera", "${ids.size} entradas enviadas a la papelera")
             _aviso.value = if (ids.size == 1) "Entrada movida a la papelera" else "${ids.size} entradas movidas a la papelera"
+        }
+    }
+
+    fun renombrarVarias(ids: Set<String>, nuevoTitulo: String) {
+        if (ids.isEmpty()) return
+        val tituloLimpio = nuevoTitulo.trim()
+        if (tituloLimpio.isBlank()) return
+        ejecutar {
+            withContext(Dispatchers.IO) { repositorio.renombrarEntradas(ids, tituloLimpio) }
+            Diagnostico.apuntar("lista", "${ids.size} entradas renombradas a «$tituloLimpio»")
+            _aviso.value = if (ids.size == 1) "Entrada renombrada a «$tituloLimpio»" else "${ids.size} entradas renombradas a «$tituloLimpio»"
+        }
+    }
+
+    // ------------------------------------------------------------- duplicados y salud
+    fun eliminarDuplicadasExactasMasivo(grupos: List<com.jlnavas3.bovedalocal.data.GrupoDuplicado>) {
+        val idsABorrar = grupos
+            .filter { it.tipo == com.jlnavas3.bovedalocal.data.TipoDuplicado.IDENTICO }
+            .flatMap { it.entradasSecundarias.map { ent -> ent.id } }
+            .toSet()
+
+        if (idsABorrar.isEmpty()) return
+        ejecutar {
+            withContext(Dispatchers.IO) { repositorio.eliminarEntradas(idsABorrar) }
+            Diagnostico.apuntar("duplicados", "Limpieza masiva: ${idsABorrar.size} copias idénticas movidas a la papelera")
+            _aviso.value = "${idsABorrar.size} copias idénticas movidas a la papelera"
+        }
+    }
+
+    fun unificarEntradas(principal: Entrada, secundarias: List<Entrada>) {
+        val idsSecundarias = secundarias.map { it.id }.toSet()
+        if (idsSecundarias.isEmpty()) return
+        ejecutar {
+            val unificada = com.jlnavas3.bovedalocal.data.AnalizadorDuplicados.fusionar(principal, secundarias)
+            withContext(Dispatchers.IO) {
+                repositorio.guardarEntrada(unificada)
+                repositorio.eliminarEntradas(idsSecundarias)
+            }
+            Diagnostico.apuntar("duplicados", "Entrada unificada y ${idsSecundarias.size} duplicadas enviadas a la papelera")
+            _aviso.value = "Entradas unificadas con éxito"
+        }
+    }
+
+    fun actualizarContrasenaRapida(id: String, nuevaClave: String) {
+        if (nuevaClave.isBlank()) return
+        ejecutar {
+            val entrada = withContext(Dispatchers.IO) { repositorio.entrada(id) } ?: return@ejecutar
+            val entradaActualizada = entrada.copy(
+                contrasena = nuevaClave,
+                modificadaEn = System.currentTimeMillis()
+            )
+            withContext(Dispatchers.IO) { repositorio.guardarEntrada(entradaActualizada) }
+            Diagnostico.apuntar("salud", "Contraseña de \"${entrada.titulo}\" actualizada de forma rápida")
+            _aviso.value = "Contraseña actualizada con éxito"
         }
     }
 

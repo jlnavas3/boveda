@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -34,6 +35,7 @@ import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.Fingerprint
@@ -41,6 +43,7 @@ import androidx.compose.material.icons.filled.HealthAndSafety
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Security
 import androidx.compose.material.icons.filled.SelectAll
@@ -50,7 +53,6 @@ import androidx.compose.material.icons.filled.Timer
 import androidx.compose.material.icons.filled.Tune
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.DrawerValue
-import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
@@ -59,6 +61,8 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
@@ -115,9 +119,14 @@ import com.jlnavas3.bovedalocal.ui.componentes.MenuDesplegableBoveda
 import com.jlnavas3.bovedalocal.ui.componentes.Monograma
 import com.jlnavas3.bovedalocal.ui.componentes.SeparadorOpcionMenu
 import com.jlnavas3.bovedalocal.ui.pantallas.lista.BannerRecordatorioExportacion
+import com.jlnavas3.bovedalocal.ui.pantallas.lista.BarraBusquedaAnimada
 import com.jlnavas3.bovedalocal.ui.pantallas.lista.BarraSeleccion
 import com.jlnavas3.bovedalocal.ui.pantallas.lista.CampoBusquedaLista
 import com.jlnavas3.bovedalocal.ui.pantallas.lista.ChipFiltro
+import com.jlnavas3.bovedalocal.ui.pantallas.lista.ChipFiltroActivo
+import com.jlnavas3.bovedalocal.ui.pantallas.lista.ComponenteGrupoLista
+import com.jlnavas3.bovedalocal.ui.pantallas.lista.DialogoFiltrosLista
+import com.jlnavas3.bovedalocal.ui.pantallas.lista.DialogoOrdenacionLista
 import com.jlnavas3.bovedalocal.ui.pantallas.lista.FilaEntrada
 import com.jlnavas3.bovedalocal.ui.pantallas.lista.FilaGrupoSitio
 import com.jlnavas3.bovedalocal.ui.pantallas.lista.MenuLateral
@@ -197,9 +206,16 @@ fun PantallaLista(vm: VaultViewModel, estado: EstadoBoveda) {
     var modoSeleccion by remember { mutableStateOf(false) }
     var seleccionados by remember { mutableStateOf(setOf<String>()) }
     var dialogoBorrarSeleccion by remember { mutableStateOf(false) }
+    var dialogoRenombrarSeleccion by remember { mutableStateOf(false) }
+    var textoNuevoTitulo by remember { mutableStateOf("") }
 
     // Claves "categoria|sitio" de los grupos por sitio que el usuario ha desplegado a mano.
     var gruposExpandidos by remember { mutableStateOf(setOf<String>()) }
+
+    var busquedaVisible by remember { mutableStateOf(false) }
+    var menuOpcionesDesplegado by remember { mutableStateOf(false) }
+    var mostrarDialogoFiltros by remember { mutableStateOf(false) }
+    var mostrarDialogoOrdenacion by remember { mutableStateOf(false) }
 
     fun salirDeSeleccion() {
         modoSeleccion = false
@@ -239,27 +255,26 @@ fun PantallaLista(vm: VaultViewModel, estado: EstadoBoveda) {
         }
     }
 
+    val totalDuplicadas = remember(entradas) {
+        com.jlnavas3.bovedalocal.data.AnalizadorDuplicados.analizar(entradas).sumOf { it.entradasSecundarias.size }
+    }
+
     ModalNavigationDrawer(
         drawerState = estadoCajon,
         drawerContent = {
             ModalDrawerSheet(
-                modifier = Modifier
-                    .fillMaxWidth(0.82f)
-                    .then(
-                        if (GrosorBorde > 0.dp) Modifier.border(
-                            width = GrosorBorde,
-                            color = ColorBordeDropdown,
-                            shape = RoundedCornerShape(topEnd = CurvaturaEsquinas, bottomEnd = CurvaturaEsquinas)
-                        ) else Modifier
-                    ),
-                drawerShape = RoundedCornerShape(topEnd = CurvaturaEsquinas, bottomEnd = CurvaturaEsquinas),
-                drawerContainerColor = Superficie
+                modifier = Modifier.fillMaxWidth(0.88f),
+                drawerShape = RoundedCornerShape(topEnd = 24.dp, bottomEnd = 24.dp),
+                drawerContainerColor = com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjustesFondo,
+                windowInsets = WindowInsets(0, 0, 0, 0)
             ) {
                 MenuLateral(
                     nombreApp = ajustes.nombrePersonalizado.ifBlank { "Bóveda local" },
                     totalEntradas = entradas.size,
                     totalPapelera = (estado as? EstadoBoveda.Desbloqueada)?.papelera?.size ?: 0,
+                    totalDuplicadas = totalDuplicadas,
                     perfilArgon2 = vm.repositorio.perfilArgon2Actual(),
+                    mostrarIds = ajustes.mostrarIdsAjustes,
                     alIr = { destino -> cerrarMenu(); vm.ir(destino) },
                     alBloquear = { cerrarMenu(); haptica.toque(); vm.bloquear() }
                 )
@@ -273,6 +288,11 @@ fun PantallaLista(vm: VaultViewModel, estado: EstadoBoveda) {
                     cantidad = seleccionados.size,
                     todoSeleccionado = todoSeleccionado,
                     alCancelar = { salirDeSeleccion() },
+                    alRenombrar = {
+                        val primera = entradas.firstOrNull { seleccionados.contains(it.id) }
+                        textoNuevoTitulo = primera?.titulo ?: ""
+                        dialogoRenombrarSeleccion = true
+                    },
                     alSeleccionarTodo = { alternarSeleccionarTodo() },
                     alBorrar = { dialogoBorrarSeleccion = true }
                 )
@@ -280,121 +300,263 @@ fun PantallaLista(vm: VaultViewModel, estado: EstadoBoveda) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(start = 8.dp, end = 8.dp, top = 16.dp),
+                    .padding(start = 12.dp, end = 12.dp, top = 12.dp, bottom = 4.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 IconButton(
                     onClick = { haptica.toque(); abrirMenu() },
-                    modifier = Modifier.size(54.dp)
+                    modifier = Modifier
+                        .size(40.dp)
+                        .clip(CircleShape)
+                        .background(com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorTarjetaAjustes)
                 ) {
                     Icon(
                         imageVector = Icons.Filled.Menu,
                         contentDescription = "Menú",
                         tint = ColorIconosInternos,
-                        modifier = Modifier.size(42.dp)
+                        modifier = Modifier.size(20.dp)
                     )
                 }
-                Spacer(Modifier.width(6.dp))
+                Spacer(Modifier.width(10.dp))
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
                         ajustes.nombrePersonalizado.ifBlank { "Bóveda local" },
-                        style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
-                        color = ColorTitulos
+                        style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
+                        color = ColorTitulos,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
                     )
                     Text(
                         "${entradas.size} ${if (entradas.size == 1) "entrada" else "entradas"} cifradas",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = TextoSecundario
+                        style = MaterialTheme.typography.bodySmall,
+                        color = TextoSecundario,
+                        maxLines = 1
                     )
                 }
+
+                // Botón Búsqueda (Lupa)
+                IconButton(
+                    onClick = {
+                        haptica.tic()
+                        busquedaVisible = !busquedaVisible
+                        if (!busquedaVisible && busqueda.isNotBlank()) {
+                            vm.buscar("")
+                        }
+                    },
+                    modifier = Modifier
+                        .size(40.dp)
+                        .clip(CircleShape)
+                        .background(if (busquedaVisible || busqueda.isNotBlank()) Ambar.copy(alpha = 0.16f) else com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorTarjetaAjustes)
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.Search,
+                        contentDescription = "Buscar",
+                        tint = if (busquedaVisible || busqueda.isNotBlank()) Ambar else ColorIconosInternos,
+                        modifier = Modifier.size(20.dp)
+                    )
+                }
+
+                Spacer(Modifier.width(6.dp))
+
+                // Botón Tres Puntos (Filtros y Ordenación)
+                Box {
+                    val tieneFiltrosActivos = filtro != null || soloFavoritos || criterioOrdenacion != CriterioOrdenacion.NOMBRE_AZ
+                    IconButton(
+                        onClick = {
+                            haptica.tic()
+                            menuOpcionesDesplegado = true
+                        },
+                        modifier = Modifier
+                            .size(40.dp)
+                            .clip(CircleShape)
+                            .background(if (tieneFiltrosActivos) Ambar.copy(alpha = 0.16f) else com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorTarjetaAjustes)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.MoreVert,
+                            contentDescription = "Más opciones",
+                            tint = if (tieneFiltrosActivos) Ambar else ColorIconosInternos,
+                            modifier = Modifier.size(20.dp)
+                        )
+                    }
+
+                    MenuDesplegableBoveda(
+                        expanded = menuOpcionesDesplegado,
+                        onDismissRequest = { menuOpcionesDesplegado = false },
+                        modifier = Modifier.widthIn(min = 210.dp)
+                    ) {
+                        DropdownMenuItem(
+                            leadingIcon = {
+                                Icon(Icons.AutoMirrored.Filled.Sort, contentDescription = null, tint = Ambar, modifier = Modifier.size(20.dp))
+                            },
+                            text = { Text("Ordenar por...", color = TextoPrincipal) },
+                            onClick = {
+                                menuOpcionesDesplegado = false
+                                mostrarDialogoOrdenacion = true
+                            }
+                        )
+                        SeparadorOpcionMenu()
+                        DropdownMenuItem(
+                            leadingIcon = {
+                                Icon(Icons.Filled.Tune, contentDescription = null, tint = Ambar, modifier = Modifier.size(20.dp))
+                            },
+                            text = { Text("Filtrar por tipo...", color = TextoPrincipal) },
+                            onClick = {
+                                menuOpcionesDesplegado = false
+                                mostrarDialogoFiltros = true
+                            }
+                        )
+                        SeparadorOpcionMenu()
+                        DropdownMenuItem(
+                            leadingIcon = {
+                                Icon(
+                                    Icons.Filled.Star,
+                                    contentDescription = null,
+                                    tint = if (soloFavoritos) Ambar else ColorIconosInternos,
+                                    modifier = Modifier.size(20.dp)
+                                )
+                            },
+                            text = {
+                                Text(
+                                    if (soloFavoritos) "Ver todas las cuentas" else "Solo favoritos",
+                                    color = if (soloFavoritos) Ambar else TextoPrincipal
+                                )
+                            },
+                            onClick = {
+                                menuOpcionesDesplegado = false
+                                haptica.tic()
+                                vm.alternarSoloFavoritos()
+                            }
+                        )
+                        if (filtro != null || soloFavoritos || filtroEtiqueta != null) {
+                            SeparadorOpcionMenu()
+                            DropdownMenuItem(
+                                leadingIcon = {
+                                    Icon(Icons.Filled.Close, contentDescription = null, tint = Peligro, modifier = Modifier.size(20.dp))
+                                },
+                                text = { Text("Restablecer filtros", color = Peligro) },
+                                onClick = {
+                                    menuOpcionesDesplegado = false
+                                    haptica.tic()
+                                    vm.filtrarPorTipo(null)
+                                    if (soloFavoritos) vm.alternarSoloFavoritos()
+                                    vm.filtrarPorEtiqueta(null)
+                                }
+                            )
+                        }
+                    }
+                }
+
+                Spacer(Modifier.width(6.dp))
+
+                // Botón Bloquear
                 IconButton(
                     onClick = { haptica.toque(); vm.bloquear() },
                     modifier = Modifier
-                        .size(48.dp)
-                        .clip(FormaBoton)
-                        .background(Peligro.copy(alpha = 0.15f))
-                        .then(
-                            if (GrosorBorde > 0.dp && ColorBordeActual != Color.Transparent) {
-                                Modifier.border(GrosorBorde, Peligro.copy(alpha = 0.4f), FormaBoton)
-                            } else {
-                                Modifier.border(1.dp, Peligro.copy(alpha = 0.3f), FormaBoton)
-                            }
-                        )
+                        .size(40.dp)
+                        .clip(CircleShape)
+                        .background(Peligro.copy(alpha = 0.12f))
                 ) {
                     Icon(
                         imageVector = Icons.Filled.Lock,
                         contentDescription = "Bloquear bóveda",
                         tint = Peligro,
-                        modifier = Modifier.size(22.dp)
-                    )
-                }
-            }
-            }
-
-            val diasSinExportar = remember(ajustes) { vm.diasSinExportar() }
-            if (diasSinExportar != null) {
-                Spacer(Modifier.height((EspaciadoComponentes * 0.8f).coerceAtLeast(6.dp)))
-                Box(modifier = Modifier.padding(horizontal = 20.dp)) {
-                    BannerRecordatorioExportacion(
-                        dias = diasSinExportar,
-                        alIr = { vm.ir(Pantalla.Ajustes) }
+                        modifier = Modifier.size(20.dp)
                     )
                 }
             }
 
-            Spacer(Modifier.height((EspaciadoComponentes * 0.8f).coerceAtLeast(6.dp)))
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 20.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalAlignment = Alignment.CenterVertically
+            // Campo de Búsqueda Animado (One UI Expandible)
+            androidx.compose.animation.AnimatedVisibility(
+                visible = busquedaVisible || busqueda.isNotBlank(),
+                enter = androidx.compose.animation.expandVertically() + androidx.compose.animation.fadeIn(),
+                exit = androidx.compose.animation.shrinkVertically() + androidx.compose.animation.fadeOut()
             ) {
-                Box(modifier = Modifier.weight(1.1f)) {
-                    CampoBusquedaLista(valor = busqueda, alCambiar = { vm.buscar(it) })
-                }
-                Box(modifier = Modifier.weight(0.9f)) {
-                    SelectorFiltros(
-                        filtro = filtro,
-                        soloFavoritos = soloFavoritos,
-                        alSeleccionarTipo = { tipo ->
-                            haptica.tic()
-                            vm.filtrarPorTipo(if (filtro == tipo) null else tipo)
-                        },
-                        alFavoritos = {
-                            haptica.tic()
-                            vm.alternarSoloFavoritos()
-                        },
-                        alTodo = {
-                            haptica.tic()
-                            vm.filtrarPorTipo(null)
-                            if (soloFavoritos) vm.alternarSoloFavoritos()
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = 20.dp, end = 20.dp, top = 6.dp, bottom = 2.dp)
+                ) {
+                    BarraBusquedaAnimada(
+                        valor = busqueda,
+                        alCambiar = { vm.buscar(it) },
+                        alCerrar = {
+                            busquedaVisible = false
+                            vm.buscar("")
                         }
                     )
                 }
-                SelectorOrdenacion(
-                    criterio = criterioOrdenacion,
-                    alCambiar = {
-                        haptica.tic()
-                        vm.cambiarCriterioOrdenacion(it)
-                    }
-                )
             }
-            if (etiquetasDisponibles.isNotEmpty()) {
-                Spacer(Modifier.height((EspaciadoComponentes * 0.5f).coerceAtLeast(4.dp)))
+            }
+
+            val recordatorio = remember(ajustes, entradas) { vm.recordatorioExportacionInfo() }
+            if (recordatorio != null) {
+                Spacer(Modifier.height((EspaciadoComponentes * 0.8f).coerceAtLeast(6.dp)))
+                Box(modifier = Modifier.padding(horizontal = 20.dp)) {
+                    BannerRecordatorioExportacion(
+                        info = recordatorio,
+                        alIr = { vm.ir(Pantalla.CopiaSeguridad("02.1")) }
+                    )
+                }
+            }
+
+            // Chips de Filtros Activos y Etiquetas
+            val hayFiltroActivo = filtro != null || soloFavoritos || filtroEtiqueta != null
+            if (hayFiltroActivo || etiquetasDisponibles.isNotEmpty()) {
+                Spacer(Modifier.height(6.dp))
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 20.dp)
                         .horizontalScroll(rememberScrollState()),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    etiquetasDisponibles.forEach { etiqueta ->
-                        ChipFiltro("#${normalizarEtiqueta(etiqueta)}", filtroEtiqueta == etiqueta) {
-                            vm.filtrarPorEtiqueta(if (filtroEtiqueta == etiqueta) null else etiqueta)
+                    if (soloFavoritos) {
+                        ChipFiltroActivo(
+                            texto = "★ Favoritos",
+                            alLimpiar = { vm.alternarSoloFavoritos() }
+                        )
+                    }
+                    if (filtro != null) {
+                        ChipFiltroActivo(
+                            texto = filtro?.etiqueta ?: "Filtro",
+                            alLimpiar = { vm.filtrarPorTipo(null) }
+                        )
+                    }
+                    if (filtroEtiqueta != null) {
+                        ChipFiltroActivo(
+                            texto = "#${normalizarEtiqueta(filtroEtiqueta!!)}",
+                            alLimpiar = { vm.filtrarPorEtiqueta(null) }
+                        )
+                    }
+                    etiquetasDisponibles.filter { it != filtroEtiqueta }.forEach { etiqueta ->
+                        ChipFiltro("#${normalizarEtiqueta(etiqueta)}", false) {
+                            vm.filtrarPorEtiqueta(etiqueta)
                         }
                     }
                 }
+            }
+
+            if (mostrarDialogoFiltros) {
+                DialogoFiltrosLista(
+                    filtroActual = filtro,
+                    alSeleccionarTipo = { tipo ->
+                        haptica.tic()
+                        vm.filtrarPorTipo(tipo)
+                    },
+                    alCerrar = { mostrarDialogoFiltros = false }
+                )
+            }
+
+            if (mostrarDialogoOrdenacion) {
+                DialogoOrdenacionLista(
+                    criterioActual = criterioOrdenacion,
+                    alSeleccionarCriterio = { crit ->
+                        haptica.tic()
+                        vm.cambiarCriterioOrdenacion(crit)
+                    },
+                    alCerrar = { mostrarDialogoOrdenacion = false }
+                )
             }
 
             Spacer(Modifier.height((EspaciadoComponentes * 0.8f).coerceAtLeast(6.dp)))
@@ -417,14 +579,14 @@ fun PantallaLista(vm: VaultViewModel, estado: EstadoBoveda) {
                 }
             } else {
                 val expandidoEnLista: (String) -> Boolean = { clave ->
-                    modoSeleccion || gruposExpandidos.contains(clave)
+                    modoSeleccion || busqueda.isNotBlank() || gruposExpandidos.contains(clave)
                 }
-                val itemsAMostrar = remember(visibles, gruposExpandidos, modoSeleccion, criterioOrdenacion, ajustes.agruparPorSitio) {
+                val itemsAMostrar = remember(visibles, modoSeleccion, criterioOrdenacion, ajustes.agruparPorSitio) {
                     com.jlnavas3.bovedalocal.util.construirItemsAgrupadosPorSitio(
                         entradas = visibles,
                         criterio = criterioOrdenacion,
                         agrupar = ajustes.agruparPorSitio,
-                        expandido = expandidoEnLista
+                        expandido = { false }
                     )
                 }
 
@@ -478,9 +640,9 @@ fun PantallaLista(vm: VaultViewModel, estado: EstadoBoveda) {
                                 itemCoincideConLetra(item, letraArrastrada, ajustes.indiceIncluirEnie)
                             }
                             when (item) {
-                                is com.jlnavas3.bovedalocal.util.ItemAgrupado.Grupo -> FilaGrupoSitio(
+                                is com.jlnavas3.bovedalocal.util.ItemAgrupado.Grupo -> ComponenteGrupoLista(
                                     clave = item.clave,
-                                    cantidad = item.entradas.size,
+                                    entradas = item.entradas,
                                     expandido = expandidoEnLista(item.clave),
                                     alturaFila = densidadAltura,
                                     tamanoMonograma = densidadMonograma,
@@ -492,6 +654,40 @@ fun PantallaLista(vm: VaultViewModel, estado: EstadoBoveda) {
                                         } else {
                                             gruposExpandidos + item.clave
                                         }
+                                    },
+                                    contenidoEntrada = { entradaHija, indiceHijo, totalHijos ->
+                                        val coincideLetraHijo = if (!ajustes.indiceResaltarEntradas || letraArrastrada == null) {
+                                            false
+                                        } else {
+                                            com.jlnavas3.bovedalocal.ui.componentes.letraInicialIndice(entradaHija.titulo, ajustes.indiceIncluirEnie) == letraArrastrada
+                                        }
+                                        FilaEntrada(
+                                            entrada = entradaHija,
+                                            seleccionActiva = modoSeleccion,
+                                            seleccionado = seleccionados.contains(entradaHija.id),
+                                            alAbrir = { vm.ir(Pantalla.Detalle(entradaHija.id)) },
+                                            alCopiarUsuario = {
+                                                haptica.toque()
+                                                vm.copiar("Usuario", entradaHija.usuario, sensible = false)
+                                            },
+                                            alCopiarContrasena = {
+                                                haptica.exito()
+                                                vm.copiar("Contraseña", entradaHija.contrasena, sensible = true)
+                                            },
+                                            alFavorito = { haptica.tic(); vm.alternarFavorito(entradaHija.id) },
+                                            alCopiarCodigo = { codigo ->
+                                                haptica.exito()
+                                                vm.copiar("Código", codigo, sensible = true)
+                                            },
+                                            alPulsarLargo = { entrarEnSeleccion(entradaHija.id) },
+                                            alAlternarSeleccion = { alternarSeleccion(entradaHija.id) },
+                                            alturaFila = densidadAltura,
+                                            tamanoMonograma = densidadMonograma,
+                                            resaltado = coincideLetraHijo,
+                                            separarDigitosTotp = ajustes.totpSepararDigitos,
+                                            enGrupo = true,
+                                            esUltimoEnGrupo = indiceHijo == totalHijos - 1
+                                        )
                                     }
                                 )
                                 is com.jlnavas3.bovedalocal.util.ItemAgrupado.Suelto -> FilaEntrada(
@@ -516,34 +712,11 @@ fun PantallaLista(vm: VaultViewModel, estado: EstadoBoveda) {
                                     alAlternarSeleccion = { alternarSeleccion(item.entrada.id) },
                                     alturaFila = densidadAltura,
                                     tamanoMonograma = densidadMonograma,
-                                    resaltado = coincideLetra
+                                    resaltado = coincideLetra,
+                                    separarDigitosTotp = ajustes.totpSepararDigitos,
+                                    enGrupo = false
                                 )
-                                is com.jlnavas3.bovedalocal.util.ItemAgrupado.Hijo -> Box(modifier = Modifier.padding(start = 16.dp)) {
-                                    FilaEntrada(
-                                        entrada = item.entrada,
-                                        seleccionActiva = modoSeleccion,
-                                        seleccionado = seleccionados.contains(item.entrada.id),
-                                        alAbrir = { vm.ir(Pantalla.Detalle(item.entrada.id)) },
-                                        alCopiarUsuario = {
-                                            haptica.toque()
-                                            vm.copiar("Usuario", item.entrada.usuario, sensible = false)
-                                        },
-                                        alCopiarContrasena = {
-                                            haptica.exito()
-                                            vm.copiar("Contraseña", item.entrada.contrasena, sensible = true)
-                                        },
-                                        alFavorito = { haptica.tic(); vm.alternarFavorito(item.entrada.id) },
-                                        alCopiarCodigo = { codigo ->
-                                            haptica.exito()
-                                            vm.copiar("Código", codigo, sensible = true)
-                                        },
-                                        alPulsarLargo = { entrarEnSeleccion(item.entrada.id) },
-                                        alAlternarSeleccion = { alternarSeleccion(item.entrada.id) },
-                                        alturaFila = densidadAltura,
-                                        tamanoMonograma = densidadMonograma,
-                                        resaltado = coincideLetra
-                                    )
-                                }
+                                is com.jlnavas3.bovedalocal.util.ItemAgrupado.Hijo -> Unit
                             }
                         }
                     }
@@ -584,28 +757,26 @@ fun PantallaLista(vm: VaultViewModel, estado: EstadoBoveda) {
             onClick = { haptica.toque(); vm.ir(Pantalla.Editar(null)) },
             containerColor = Ambar,
             contentColor = ColorSobreAcento,
-            shape = FormaBoton,
+            shape = CircleShape,
             modifier = Modifier
                 .align(Alignment.BottomEnd)
-                .padding(24.dp)
-                .then(
-                    if (GrosorBorde > 0.dp && ColorBordeActual != Color.Transparent) {
-                        Modifier.border(GrosorBorde, ColorBordeActual, FormaBoton)
-                    } else {
-                        Modifier
-                    }
-                )
+                .padding(20.dp)
         ) {
-            Icon(Icons.Filled.Add, contentDescription = "Nueva entrada")
+            Icon(Icons.Filled.Add, contentDescription = "Nueva entrada", modifier = Modifier.size(24.dp))
         }
         }
     }
     }
 
+    val esOscuro = androidx.compose.foundation.isSystemInDarkTheme()
+    val colorDialogo = if (esOscuro) Color(0xFF212023) else Color(0xFFFFFFFF)
+
     if (dialogoBorrarSeleccion) {
         AlertDialog(
             onDismissRequest = { dialogoBorrarSeleccion = false },
-            containerColor = SuperficieAlta,
+            containerColor = colorDialogo,
+            tonalElevation = 0.dp,
+            shape = androidx.compose.foundation.shape.RoundedCornerShape(20.dp),
             title = { Text("¿Mover ${seleccionados.size} entradas a la papelera?", color = TextoPrincipal) },
             text = { Text("Se pueden restaurar desde la papelera durante 30 días.", color = TextoSecundario) },
             confirmButton = {
@@ -618,6 +789,78 @@ fun PantallaLista(vm: VaultViewModel, estado: EstadoBoveda) {
             },
             dismissButton = {
                 TextButton(onClick = { dialogoBorrarSeleccion = false }) { Text("Cancelar", color = TextoSecundario) }
+            }
+        )
+    }
+
+    if (dialogoRenombrarSeleccion) {
+        AlertDialog(
+            onDismissRequest = { dialogoRenombrarSeleccion = false },
+            containerColor = colorDialogo,
+            tonalElevation = 0.dp,
+            shape = androidx.compose.foundation.shape.RoundedCornerShape(20.dp),
+            icon = {
+                Icon(Icons.Filled.Edit, contentDescription = null, tint = Ambar)
+            },
+            title = {
+                Text(
+                    if (seleccionados.size == 1) "Renombrar título"
+                    else "Renombrar título (${seleccionados.size} seleccionadas)",
+                    color = TextoPrincipal,
+                    style = MaterialTheme.typography.titleLarge
+                )
+            },
+            text = {
+                Column {
+                    Text(
+                        "Introduce el nuevo título para ${if (seleccionados.size == 1) "la entrada seleccionada" else "las ${seleccionados.size} entradas seleccionadas"}:",
+                        color = TextoSecundario,
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                    com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteCampoTexto(
+                        valor = textoNuevoTitulo,
+                        etiqueta = "Nuevo título",
+                        alCambiar = { textoNuevoTitulo = it },
+                        capitalization = androidx.compose.ui.text.input.KeyboardCapitalization.Sentences,
+                        imeAction = androidx.compose.ui.text.input.ImeAction.Done,
+                        keyboardActions = androidx.compose.foundation.text.KeyboardActions(
+                            onDone = {
+                                val nuevo = textoNuevoTitulo.trim()
+                                if (nuevo.isNotBlank()) {
+                                    dialogoRenombrarSeleccion = false
+                                    val idsARenombrar = seleccionados
+                                    salirDeSeleccion()
+                                    vm.renombrarVarias(idsARenombrar, nuevo)
+                                    haptica.exito()
+                                }
+                            }
+                        ),
+                        botonLimpiar = true,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        val nuevo = textoNuevoTitulo.trim()
+                        if (nuevo.isNotBlank()) {
+                            dialogoRenombrarSeleccion = false
+                            val idsARenombrar = seleccionados
+                            salirDeSeleccion()
+                            vm.renombrarVarias(idsARenombrar, nuevo)
+                            haptica.exito()
+                        }
+                    },
+                    enabled = textoNuevoTitulo.isNotBlank()
+                ) {
+                    Text("Renombrar", color = if (textoNuevoTitulo.isNotBlank()) Ambar else TextoSecundario)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { dialogoRenombrarSeleccion = false }) {
+                    Text("Cancelar", color = TextoSecundario)
+                }
             }
         )
     }

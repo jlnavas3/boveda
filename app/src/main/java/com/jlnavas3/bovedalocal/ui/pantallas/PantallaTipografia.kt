@@ -36,7 +36,10 @@ import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
+import androidx.compose.foundation.relocation.BringIntoViewRequester
+import androidx.compose.foundation.relocation.bringIntoViewRequester
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -54,6 +57,9 @@ import com.jlnavas3.bovedalocal.ui.componentes.BotonBorde
 import com.jlnavas3.bovedalocal.ui.componentes.ContenedorPrincipal
 import com.jlnavas3.bovedalocal.ui.componentes.ContenedorTarjeta
 import com.jlnavas3.bovedalocal.ui.componentes.TarjetaBovedaDesplegable
+import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteBotonFila
+import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteGrupo
+import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.FilaAjuste
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
 import com.jlnavas3.bovedalocal.ui.theme.ColorGenerador
@@ -79,26 +85,54 @@ import kotlin.math.roundToInt
 
 import com.jlnavas3.bovedalocal.ui.componentes.CabeceraPantalla
 
+@OptIn(androidx.compose.foundation.ExperimentalFoundationApi::class)
 @Composable
-fun PantallaTipografia(vm: VaultViewModel) {
+fun PantallaTipografia(
+    vm: VaultViewModel,
+    seccionDestino: String? = null
+) {
     val contexto = LocalContext.current
     val haptica = remember { Haptica(contexto) }
     val ajustes by vm.ajustes.collectAsStateWithLifecycle()
 
-    ContenedorPrincipal(conScroll = true, espaciado = EspaciadoComponentes) {
-        CabeceraPantalla(
-            titulo = "Tipografía y Textos",
-            subtitulo = "Personaliza fuentes, escalas y pesos en tiempo real",
-            alVolver = { vm.volverAtras() }
-        )
+    val reqPreview = remember { BringIntoViewRequester() }
+    val reqPresets = remember { BringIntoViewRequester() }
+    val reqEscala = remember { BringIntoViewRequester() }
+    val reqFamilia = remember { BringIntoViewRequester() }
+    val reqPeso = remember { BringIntoViewRequester() }
+    val reqEspaciado = remember { BringIntoViewRequester() }
 
+    LaunchedEffect(seccionDestino) {
+        if (seccionDestino != null) {
+            when {
+                seccionDestino == "09.5.1" -> reqPreview.bringIntoView()
+                seccionDestino == "09.5.2" -> reqPresets.bringIntoView()
+                seccionDestino == "09.5.3" -> reqEscala.bringIntoView()
+                seccionDestino == "09.5.4" -> reqFamilia.bringIntoView()
+                seccionDestino == "09.5.5" -> reqPeso.bringIntoView()
+                seccionDestino == "09.5.6" -> reqEspaciado.bringIntoView()
+                seccionDestino.startsWith("09.5.") && seccionDestino != "09.5" -> reqPresets.bringIntoView()
+            }
+        }
+    }
+
+    ContenedorPrincipal(
+        titulo = "Tipografía y Textos",
+        subtitulo = "Personaliza fuentes, escalas y pesos en tiempo real",
+        alVolver = { vm.volverAtras() },
+        conScroll = true,
+        espaciado = EspaciadoComponentes
+    ) {
         // 1. Tarjeta de vista previa en tiempo real
         TarjetaBovedaDesplegable(
             titulo = "Vista previa",
             descripcion = "Observa en vivo el tamaño, peso, familia y espaciado de las fuentes",
             icono = Icons.Filled.TextFields,
             colorIcono = ColorSalud,
-            inicialmenteAbierta = false
+            inicialmenteAbierta = seccionDestino == "09.5.1",
+            idEtiqueta = "09.5.1",
+            mostrarId = ajustes.mostrarIdsAjustes,
+            modifier = Modifier.bringIntoViewRequester(reqPreview)
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -142,8 +176,7 @@ fun PantallaTipografia(vm: VaultViewModel) {
                             Modifier
                         }
                     )
-                    .padding(14.dp),
-                contentAlignment = Alignment.CenterStart
+                    .padding(horizontal = 14.dp, vertical = 10.dp)
             ) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -151,27 +184,27 @@ fun PantallaTipografia(vm: VaultViewModel) {
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "p3p0#B0v3d4!2026",
-                        color = TextoPrincipal,
-                        style = EstiloMonoGrande
+                        text = "k9#mP$2vL@xQ!8zW",
+                        color = ColorAcento,
+                        style = EstiloMonoGrande.copy(fontWeight = FontWeight.Bold)
                     )
                     Icon(
-                        imageVector = Icons.Filled.Key,
-                        contentDescription = null,
+                        imageVector = Icons.Filled.ContentCopy,
+                        contentDescription = "Copiar",
                         tint = ColorIconosInternos,
-                        modifier = Modifier.size(20.dp)
+                        modifier = Modifier.size(18.dp)
                     )
                 }
             }
-            Spacer(Modifier.height(6.dp))
+            Spacer(Modifier.height(4.dp))
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(10.dp)
             ) {
                 Box(modifier = Modifier.weight(1f)) {
                     BotonAmbar(
-                        texto = "Copiar Clave",
-                        icono = Icons.Filled.ContentCopy
+                        texto = "Acción Principal",
+                        icono = Icons.Filled.Key
                     ) { haptica.tic() }
                 }
                 Box(modifier = Modifier.weight(1f)) {
@@ -189,7 +222,10 @@ fun PantallaTipografia(vm: VaultViewModel) {
             descripcion = "Combinaciones optimizadas para lectura, terminales o accesibilidad",
             icono = Icons.Filled.AutoAwesome,
             colorIcono = ColorAcento,
-            inicialmenteAbierta = false
+            inicialmenteAbierta = seccionDestino == "09.5.2",
+            idEtiqueta = "09.5.2",
+            mostrarId = ajustes.mostrarIdsAjustes,
+            modifier = Modifier.bringIntoViewRequester(reqPresets)
         ) {
             Row(
                 modifier = Modifier
@@ -281,7 +317,10 @@ fun PantallaTipografia(vm: VaultViewModel) {
             descripcion = "Agranda o reduce todos los textos de la app manteniendo proporciones",
             icono = Icons.Filled.FormatSize,
             colorIcono = ColorGenerador,
-            inicialmenteAbierta = false
+            inicialmenteAbierta = seccionDestino == "09.5.3",
+            idEtiqueta = "09.5.3",
+            mostrarId = ajustes.mostrarIdsAjustes,
+            modifier = Modifier.bringIntoViewRequester(reqEscala)
         ) {
             val porcentaje = ((ajustes.escalaTexto - 1.0f) * 100).roundToInt()
             val textoPorcentaje = if (porcentaje == 0) "1.00x (Normal)" else if (porcentaje > 0) "${String.format("%.2f", ajustes.escalaTexto)}x (+$porcentaje%)" else "${String.format("%.2f", ajustes.escalaTexto)}x ($porcentaje%)"
@@ -312,6 +351,12 @@ fun PantallaTipografia(vm: VaultViewModel) {
                 Text("1.00x (100%)", color = TextoSecundario, style = MaterialTheme.typography.bodySmall)
                 Text("1.35x (+35%)", color = TextoSecundario, style = MaterialTheme.typography.bodySmall)
             }
+            ComponenteBotonFila(
+                titulo = "Restablecer",
+                alPulsar = {
+                    vm.ajustarEscalaTexto(1.0f)
+                }
+            )
         }
 
         // 4. Selector de Familia Tipográfica
@@ -320,7 +365,10 @@ fun PantallaTipografia(vm: VaultViewModel) {
             descripcion = "Selecciona el estilo de fuente principal para la interfaz y lecturas",
             icono = Icons.Filled.TextFields,
             colorIcono = ColorPasskeys,
-            inicialmenteAbierta = false
+            inicialmenteAbierta = seccionDestino == "09.5.4",
+            idEtiqueta = "09.5.4",
+            mostrarId = ajustes.mostrarIdsAjustes,
+            modifier = Modifier.bringIntoViewRequester(reqFamilia)
         ) {
             Row(
                 modifier = Modifier
@@ -356,6 +404,12 @@ fun PantallaTipografia(vm: VaultViewModel) {
                     }
                 }
             }
+            ComponenteBotonFila(
+                titulo = "Restablecer",
+                alPulsar = {
+                    vm.ajustarFamiliaFuente("sans")
+                }
+            )
         }
 
         // 5. Selector de Grosor y Estilo
@@ -364,7 +418,10 @@ fun PantallaTipografia(vm: VaultViewModel) {
             descripcion = "Densidad de trazos y estilo itálico",
             icono = Icons.Filled.FormatBold,
             colorIcono = ColorSeguridad,
-            inicialmenteAbierta = false
+            inicialmenteAbierta = seccionDestino == "09.5.5",
+            idEtiqueta = "09.5.5",
+            mostrarId = ajustes.mostrarIdsAjustes,
+            modifier = Modifier.bringIntoViewRequester(reqPeso)
         ) {
             Text(
                 text = "Grosor / Peso de la fuente",
@@ -409,36 +466,22 @@ fun PantallaTipografia(vm: VaultViewModel) {
 
             Spacer(Modifier.height(14.dp))
 
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Column(modifier = Modifier.weight(1f)) {
-                    Text(
-                        text = "Texto en cursiva",
-                        color = TextoPrincipal,
-                        style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Medium)
-                    )
-                    Text(
-                        text = "Añade inclinación estética a títulos, descripciones y etiquetas.",
-                        color = TextoSecundario,
-                        style = MaterialTheme.typography.bodySmall
-                    )
+            FilaAjuste(
+                titulo = "Texto en cursiva",
+                descripcion = "Añade inclinación estética a títulos, descripciones y etiquetas.",
+                activo = ajustes.cursivaTexto,
+                alCambiar = {
+                    haptica.tic()
+                    vm.ajustarCursivaTexto(it)
                 }
-                Switch(
-                    checked = ajustes.cursivaTexto,
-                    onCheckedChange = {
-                        haptica.tic()
-                        vm.ajustarCursivaTexto(it)
-                    },
-                    colors = SwitchDefaults.colors(
-                        checkedThumbColor = ColorSobreAcento,
-                        checkedTrackColor = ColorAcento,
-                        uncheckedTrackColor = SuperficieAlta
-                    )
-                )
-            }
+            )
+            ComponenteBotonFila(
+                titulo = "Restablecer",
+                alPulsar = {
+                    vm.ajustarPesoTexto("normal")
+                    vm.ajustarCursivaTexto(false)
+                }
+            )
         }
 
         // 6. Espaciado e Interlineado
@@ -447,7 +490,10 @@ fun PantallaTipografia(vm: VaultViewModel) {
             descripcion = "Separación entre letras y altura de línea",
             icono = Icons.Filled.FormatLineSpacing,
             colorIcono = ColorAcento,
-            inicialmenteAbierta = false
+            inicialmenteAbierta = seccionDestino == "09.5.6",
+            idEtiqueta = "09.5.6",
+            mostrarId = ajustes.mostrarIdsAjustes,
+            modifier = Modifier.bringIntoViewRequester(reqEspaciado)
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -506,15 +552,23 @@ fun PantallaTipografia(vm: VaultViewModel) {
                 Text("1.00x (Normal)", color = TextoSecundario, style = MaterialTheme.typography.bodySmall)
                 Text("1.40x (Amplio)", color = TextoSecundario, style = MaterialTheme.typography.bodySmall)
             }
+            ComponenteBotonFila(
+                titulo = "Restablecer",
+                alPulsar = {
+                    vm.ajustarEspaciadoLetras(0.0f)
+                    vm.ajustarInterlineadoFactor(1.0f)
+                }
+            )
         }
 
         // 7. Botón de restauración
-        BotonBorde(
-            texto = "Restablecer tipografía predeterminada",
-            icono = Icons.Filled.Refresh
-        ) {
-            haptica.toque()
-            vm.restablecerTipografia()
+        ComponenteGrupo {
+            ComponenteBotonFila(
+                titulo = "Restablecer módulo",
+                alPulsar = {
+                    vm.restablecerTipografia()
+                }
+            )
         }
 
         Spacer(Modifier.height(16.dp))

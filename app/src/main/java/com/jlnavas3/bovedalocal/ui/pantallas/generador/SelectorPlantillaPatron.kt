@@ -41,6 +41,8 @@ import com.jlnavas3.bovedalocal.ui.theme.ColorTitulos
 import com.jlnavas3.bovedalocal.ui.theme.FormaCampo
 import com.jlnavas3.bovedalocal.ui.theme.GrosorBorde
 import com.jlnavas3.bovedalocal.ui.theme.Superficie
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.unit.sp
 import com.jlnavas3.bovedalocal.ui.theme.TextoPrincipal
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
 
@@ -58,7 +60,10 @@ fun SelectorPlantillaPatron(
     alSeleccionarPlantilla: (String) -> Unit
 ) {
     var abierto by remember { mutableStateOf(false) }
-    val forma = FormaCampo
+    val forma = RoundedCornerShape(12.dp)
+    val esOscuro = androidx.compose.foundation.isSystemInDarkTheme()
+    val fondo = if (esOscuro) Color(0xFF161518) else Color(0xFFF4F4F6)
+    val borde = if (esOscuro) Color(0xFF333238) else Color(0xFFDFDFE3)
 
     val nombreSeleccionado = PLANTILLAS_PATRON_RAPIDO.firstOrNull { it.second == patronActual }?.first ?: "Plantilla personalizada"
 
@@ -66,33 +71,29 @@ fun SelectorPlantillaPatron(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(54.dp)
+                .height(42.dp)
                 .clip(forma)
-                .background(Superficie)
-                .then(
-                    if (GrosorBorde > 0.dp && (abierto || ColorBordeActual != Color.Transparent))
-                        Modifier.border(GrosorBorde, if (abierto) ColorTitulos else ColorBordeActual, forma)
-                    else Modifier
-                )
+                .background(fondo)
                 .clickable { abierto = true }
-                .padding(horizontal = 14.dp),
+                .padding(horizontal = 12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(
                 Icons.Filled.AutoAwesome,
                 contentDescription = null,
                 tint = if (abierto) ColorIconosInternos else TextoSecundario,
-                modifier = Modifier.size(22.dp)
+                modifier = Modifier.size(18.dp)
             )
-            Spacer(Modifier.width(10.dp))
+            Spacer(Modifier.width(8.dp))
             Column(modifier = Modifier.weight(1f)) {
-                Text("Plantilla rápida", color = if (abierto) ColorTitulos else TextoSecundario, style = MaterialTheme.typography.labelSmall)
-                Text(nombreSeleccionado, color = TextoPrincipal, style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold), maxLines = 1)
+                Text("Plantilla rápida", color = if (abierto) ColorTitulos else TextoSecundario, style = MaterialTheme.typography.labelSmall.copy(fontSize = 11.sp))
+                Text(nombreSeleccionado, color = TextoPrincipal, style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold, fontSize = 13.sp), maxLines = 1)
             }
             Icon(
                 if (abierto) Icons.Filled.ExpandLess else Icons.Filled.ExpandMore,
                 contentDescription = "Abrir plantillas rápidas",
-                tint = TextoSecundario
+                tint = TextoSecundario,
+                modifier = Modifier.size(18.dp)
             )
         }
 

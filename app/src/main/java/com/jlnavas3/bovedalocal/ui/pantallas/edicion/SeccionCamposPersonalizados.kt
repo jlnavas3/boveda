@@ -53,6 +53,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.jlnavas3.bovedalocal.data.CampoPersonalizado
 import com.jlnavas3.bovedalocal.data.TipoCampo
+import androidx.compose.foundation.shape.RoundedCornerShape
+import com.jlnavas3.bovedalocal.ui.theme.esOscuroActivo
 import com.jlnavas3.bovedalocal.ui.componentes.BotonBorde
 import com.jlnavas3.bovedalocal.ui.componentes.BotonColorido
 import com.jlnavas3.bovedalocal.ui.componentes.CampoBoveda
@@ -110,17 +112,16 @@ fun TarjetaCampoPersonalizadoEdicion(
         }, h, min, es24h).show()
     }
 
+    val fondoTarjeta = if (esOscuroActivo) Color(0xFF161518) else Color(0xFFF4F4F6)
+    val bordeTarjeta = if (esOscuroActivo) Color(0xFF333238) else Color(0xFFDFDFE3)
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .clip(FormaTarjeta)
-            .background(Superficie)
-            .then(
-                if (GrosorBorde > 0.dp && ColorBordeActual != Color.Transparent)
-                    Modifier.border(GrosorBorde, ColorBordeActual, FormaTarjeta)
-                else Modifier
-            )
-            .padding(14.dp)
+            .clip(RoundedCornerShape(12.dp))
+            .background(fondoTarjeta)
+            .border(1.dp, bordeTarjeta, RoundedCornerShape(12.dp))
+            .padding(12.dp)
     ) {
         // Cabecera del campo: Número, Badge de Tipo, Sensible y Eliminar
         Row(
@@ -205,38 +206,15 @@ fun TarjetaCampoPersonalizadoEdicion(
         // Valor del campo según su tipo específico
         when (campo.tipo) {
             TipoCampo.NOTAS -> {
-                OutlinedTextField(
-                    value = campo.valor,
-                    onValueChange = { alModificar(campo.copy(valor = it)) },
-                    label = { Text("Notas / Contenido", color = TextoSecundario) },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(110.dp),
-                    shape = FormaBoton,
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = ColorTitulos,
-                        unfocusedBorderColor = ColorBordeActual,
-                        focusedTextColor = TextoPrincipal,
-                        unfocusedTextColor = TextoPrincipal,
-                        focusedContainerColor = SuperficieAlta,
-                        unfocusedContainerColor = SuperficieAlta
-                    ),
-                    textStyle = TextStyle(
-                        fontSize = 15.sp,
-                        fontFamily = if (esSensible && !mostrarValor) FontFamily.Monospace else FontFamily.Default
-                    ),
-                    visualTransformation = if (esSensible && !mostrarValor) PasswordVisualTransformation() else VisualTransformation.None,
-                    trailingIcon = if (esSensible) {
-                        {
-                            IconButton(onClick = { mostrarValor = !mostrarValor }) {
-                                Icon(
-                                    imageVector = if (mostrarValor) Icons.Filled.VisibilityOff else Icons.Filled.Visibility,
-                                    contentDescription = if (mostrarValor) "Ocultar" else "Mostrar",
-                                    tint = ColorIconosInternos
-                                )
-                            }
-                        }
-                    } else null
+                com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteCampoTexto(
+                    valor = campo.valor,
+                    etiqueta = "Notas / Contenido",
+                    alCambiar = { alModificar(campo.copy(valor = it)) },
+                    tipo = com.jlnavas3.bovedalocal.ui.componentes.ajustes.TipoCampoTexto.MULTILINEA,
+                    esContrasena = esSensible,
+                    mostrarContrasena = if (esSensible) mostrarValor else null,
+                    alAlternarMostrarContrasena = if (esSensible) { { mostrarValor = !mostrarValor } } else null,
+                    monoespaciada = esSensible
                 )
             }
             TipoCampo.FECHA -> {
@@ -388,9 +366,6 @@ fun SeccionCamposPersonalizados(
         }
     }
 
-    EtiquetaSeccion(if (etiquetasBase.isEmpty()) "Campos personalizados" else "Campos adicionales")
-    Spacer(Modifier.height(8.dp))
-
     if (camposVisibles.isNotEmpty()) {
         camposVisibles.forEachIndexed { indice, campo ->
             TarjetaCampoPersonalizadoEdicion(
@@ -420,7 +395,7 @@ fun SeccionCamposPersonalizados(
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             BotonBorde(
-                texto = "+ Campo",
+                texto = "Añadir campo",
                 icono = Icons.Filled.Add,
                 modifier = Modifier.weight(1f),
                 alPulsar = {
@@ -441,7 +416,7 @@ fun SeccionCamposPersonalizados(
         }
     } else {
         BotonBorde(
-            texto = "+ Añadir campo adicional",
+            texto = "Añadir campo adicional",
             icono = Icons.Filled.Add,
             modifier = Modifier.fillMaxWidth(),
             alPulsar = {

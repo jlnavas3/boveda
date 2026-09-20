@@ -5,6 +5,17 @@ import android.content.SharedPreferences
 import com.jlnavas3.bovedalocal.crypto.BiometricKeyStore
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
+
+private val jsonAjustes = Json { ignoreUnknownKeys = true }
+
+private fun deserializarHistorial(raw: String): List<RegistroClaveGenerada> = try {
+    if (raw.isBlank()) emptyList()
+    else jsonAjustes.decodeFromString(raw)
+} catch (_: Exception) {
+    emptyList()
+}
 
 /** El modo de huella en uso, o null si está apagada. Única lectura de [AjustesApp.biometriaModo]. */
 val AjustesApp.modoBiometriaActivo: BiometricKeyStore.Modo?
@@ -29,30 +40,38 @@ data class AjustesApp(
     val colorIconosInternos: String = "",
     /** Hex del color para los títulos y cabeceras (o vacío para seguir el acento). */
     val colorTitulos: String = "",
-    /** Hex del color para las tarjetas / superficies (o vacío para usar el predeterminado del tema). */
+    /** Hex del color para el fondo de las tarjetas (o vacío para seguir el tema). */
     val colorTarjetas: String = "",
-    /** "sistema", "claro" u "oscuro". */
+    /** "sistema", "claro" u "oscuro": tema visual de la aplicación. */
     val temaApp: String = "sistema",
-    /** 0 si nunca se ha exportado todavía. */
+    /** Momento (milisegundos epoch) de la última exportación de la bóveda; 0 si nunca se exportó. */
     val ultimaExportacionEn: Long = 0L,
-    /** Días entre avisos de "haz una copia"; 0 = recordatorio apagado. */
+    /** Días entre recordatorios para exportar la bóveda; 0 para no avisar nunca. */
     val recordatorioExportacionDias: Int = 30,
-    /** "predeterminada", "comoda" o "compacta". */
+    /** "predeterminada", "comoda" o "compacta": espaciado entre elementos en la lista principal. */
     val densidadLista: String = "predeterminada",
-    /** Criterio de ordenación activo en la lista principal (CriterioOrdenacion.name). */
+    /** Criterio de ordenación de la lista: NOMBRE_AZ, NOMBRE_ZA, MODIFICACION_RECIENTE, CREACION_RECIENTE, ANTIGUEDAD. */
     val criterioOrdenacion: String = "NOMBRE_AZ",
-    /** Agrupa cuentas del mismo servicio/sitio en un bloque plegable. */
-    val agruparPorSitio: Boolean = true,
-    /** Defaults for manually entered TOTP secrets; otpauth QR parameters override them. */
+    /** Si es true, las entradas con el mismo dominio/sitio se agrupan en un acordeón desplegable. */
+    val agruparPorSitio: Boolean = false,
+    // Preferencias del generador manual de 2FA
     val totpManualDigitos: Int = 6,
     val totpManualPeriodo: Int = 30,
     val totpManualAlgoritmo: String = "HmacSHA1",
     val totpSepararDigitos: Boolean = true,
-    // Personalización de bordes y formas
-    val curvaturaEsquinasDp: Float = 6f,
-    val grosorBordeDp: Float = 0.8f,
-    val estiloBorde: String = "marcado",
+    // Personalización de formas y bordes
+    val curvaturaEsquinasDp: Float = 16f,
+    val grosorBordeDp: Float = 1.0f,
+    val estiloBorde: String = "acento",
     val espaciadoComponentesDp: Float = 14f,
+    // Personalización del Widget de escritorio (2FA favoritos)
+    val widgetGrosorBordeDp: Float = 0f,
+    val widgetCurvaturaEsquinasDp: Float = 0f,
+    val widgetTransparenciaFondo: Float = 0.50f,
+    val widgetColorBorde: String = "#FFB300",
+    val widgetColorContador: String = "#FFFFFF",
+    val widgetColorCodigo: String = "#FFB300",
+    val widgetColorTituloIcono: String = "#FFFFFF",
     // Personalización de tipografía y textos
     val escalaTexto: Float = 1.0f,
     val pesoTexto: String = "normal",
@@ -106,7 +125,45 @@ data class AjustesApp(
     /** Perfil de derivación Argon2id: "estandar", "reforzado" o "ultraseguro". */
     val perfilArgon2: String = "estandar",
     /** FLAG_SECURE: protección anti-captura de pantalla y anti-recientes. Activa por defecto. */
-    val proteccionPantalla: Boolean = true
+    val proteccionPantalla: Boolean = true,
+    // Historial temporal de contraseñas generadas
+    val historialClavesMax: Int = 15,
+    val historialClavesVaciadoAuto: Boolean = true,
+    val historialClavesTiempoAutoDestruccion: Long = 30 * 60 * 1000L,
+    val historialClaves: List<RegistroClaveGenerada> = emptyList(),
+    // Copia de seguridad automática local rotativa
+    val backupAutoFrecuenciaDias: Int = 0,
+    val backupAutoPasswordCifrado: String = "",
+    val backupAutoUltimaEjecucion: Long = 0L,
+    val backupAutoMaxCopias: Int = 5,
+    val backupAutoPatronNombre: String = "{99}-backup-{FECHA}",
+    val backupAutoSecuencia: Int = 0,
+    val mostrarIdsAjustes: Boolean = false,
+    /** Animación de pantalla bloqueada: "engranajes" (mecanismo relojero) o "puerta" (anillos concéntricos). */
+    val animacionDesbloqueo: String = "engranajes",
+    // Configuración visual y física de los engranajes
+    val engranajesVelocidad: Float = 24f,
+    val engranajesGrosorBorde: Float = 0.7f,
+    val engranajesAlturaDientes: Float = 0.76f,
+    val engranajesAnchoDientes: Float = 1.00f,
+    val engranajesGrosorRadios: Float = 1.40f,
+    val engranajesCurvaturaRadios: Float = 1.00f,
+    val engranajesCantidadRadios: Int = 6,
+    val engranajesRadioInterior: Float = 0.80f,
+    val engranajesTamanoEje: Float = 1.23f,
+    val engranajesSombraIntensidad: Float = 0.95f,
+    val engranajesColorBrillo: String = "#ABA799",
+    val engranajesColorPrincipal: String = "#918D7E",
+    val engranajesColorSombraMedio: String = "#635C57",
+    val engranajesColorSombraOscuro: String = "#404038",
+    val engranajesColorBisel: String = "#A5A19D",
+    val engranajesColorInterior: String = "#00000000",
+    val engranajesColorCubo: String = "#D3D1C8",
+    val engranajesColorEje: String = "#141316",
+    // Configuración visual y física de la puerta de bóveda
+    val puertaVelocidad: Float = 1.0f,
+    val puertaGrosorAnillos: Float = 1.0f,
+    val puertaColor: String = ""
 )
 
 
@@ -134,6 +191,18 @@ class AlmacenAjustes(contexto: Context) {
 
     private val _ajustes = MutableStateFlow(leer())
     val ajustes: StateFlow<AjustesApp> = _ajustes
+
+    private val prefListener = SharedPreferences.OnSharedPreferenceChangeListener { _, _ ->
+        _ajustes.value = leer()
+    }
+
+    init {
+        prefs.registerOnSharedPreferenceChangeListener(prefListener)
+    }
+
+    fun recargar() {
+        _ajustes.value = leer()
+    }
 
     val actual: AjustesApp get() = _ajustes.value
 
@@ -176,6 +245,65 @@ class AlmacenAjustes(contexto: Context) {
                 .apply()
         }
 
+        // Migración a los valores predefinidos del widget elegidos por el usuario (0dp / 0dp / 50%)
+        if (!prefs.getBoolean("v1_widget_defecto_usuario", false)) {
+            val grosorPrev = prefs.getFloat("widget_grosor_borde_dp", 1.0f)
+            val radPrev = prefs.getFloat("widget_curvatura_esquinas_dp", 16f)
+            val transPrev = prefs.getFloat("widget_transparencia_fondo", 0.90f)
+            prefs.edit()
+                .putBoolean("v1_widget_defecto_usuario", true)
+                .putFloat("widget_grosor_borde_dp", if (grosorPrev == 1.0f) 0f else grosorPrev)
+                .putFloat("widget_curvatura_esquinas_dp", if (radPrev == 16f) 0f else radPrev)
+                .putFloat("widget_transparencia_fondo", if (transPrev == 0.90f) 0.50f else transPrev)
+                .apply()
+        }
+
+        if (!prefs.getBoolean("v1_engranajes_interior_hueco", false)) {
+            val colorIntPrevio = prefs.getString("engranajes_color_interior", "#19181C") ?: "#19181C"
+            prefs.edit()
+                .putBoolean("v1_engranajes_interior_hueco", true)
+                .putString("engranajes_color_interior", if (colorIntPrevio == "#19181C") "#00000000" else colorIntPrevio)
+                .apply()
+        }
+
+        if (!prefs.getBoolean("v2_widget_contador_blanco", false)) {
+            val colorContadorPrev = prefs.getString("widget_color_contador", "#FFB300")
+            prefs.edit()
+                .putBoolean("v2_widget_contador_blanco", true)
+                .putString("widget_color_contador", if (colorContadorPrev == "#FFB300") "#FFFFFF" else colorContadorPrev)
+                .apply()
+        }
+
+        if (!prefs.getBoolean("v3_animacion_engranajes_defecto", false)) {
+            val animPrev = prefs.getString("animacion_desbloqueo", "puerta")
+            prefs.edit()
+                .putBoolean("v3_animacion_engranajes_defecto", true)
+                .putString("animacion_desbloqueo", if (animPrev == "puerta") "engranajes" else animPrev)
+                .apply()
+        }
+
+        if (!prefs.getBoolean("v2_engranajes_defecto_usuario", false)) {
+            val editor = prefs.edit().putBoolean("v2_engranajes_defecto_usuario", true)
+            if (prefs.getFloat("engranajes_velocidad", 35f) == 35f) editor.putFloat("engranajes_velocidad", 24f)
+            if (prefs.getFloat("engranajes_grosor_borde", 1.4f) == 1.4f) editor.putFloat("engranajes_grosor_borde", 0.7f)
+            if (prefs.getFloat("engranajes_altura_dientes", 1.0f) == 1.0f) editor.putFloat("engranajes_altura_dientes", 0.76f)
+            if (prefs.getFloat("engranajes_ancho_dientes", 1.0f) == 1.0f) editor.putFloat("engranajes_ancho_dientes", 1.00f)
+            if (prefs.getFloat("engranajes_grosor_radios", 1.0f) == 1.0f) editor.putFloat("engranajes_grosor_radios", 1.40f)
+            if (prefs.getFloat("engranajes_curvatura_radios", 0.55f) == 0.55f) editor.putFloat("engranajes_curvatura_radios", 1.00f)
+            if (prefs.getInt("engranajes_cantidad_radios", 0) == 0) editor.putInt("engranajes_cantidad_radios", 6)
+            if (prefs.getFloat("engranajes_radio_interior", 0.72f) == 0.72f) editor.putFloat("engranajes_radio_interior", 0.80f)
+            if (prefs.getFloat("engranajes_tamano_eje", 1.0f) == 1.0f) editor.putFloat("engranajes_tamano_eje", 1.23f)
+            if (prefs.getFloat("engranajes_sombra_intensidad", 0.85f) == 0.85f) editor.putFloat("engranajes_sombra_intensidad", 0.95f)
+            if (prefs.getString("engranajes_color_brillo", "#FFE082") == "#FFE082") editor.putString("engranajes_color_brillo", "#ABA799")
+            if (prefs.getString("engranajes_color_principal", "#FFB300") == "#FFB300") editor.putString("engranajes_color_principal", "#918D7E")
+            if (prefs.getString("engranajes_color_sombra_medio", "#FF8F00") == "#FF8F00") editor.putString("engranajes_color_sombra_medio", "#635C57")
+            if (prefs.getString("engranajes_color_sombra_oscuro", "#2E2207") == "#2E2207") editor.putString("engranajes_color_sombra_oscuro", "#404038")
+            if (prefs.getString("engranajes_color_bisel", "#FFD54F") == "#FFD54F") editor.putString("engranajes_color_bisel", "#A5A19D")
+            if (prefs.getString("engranajes_color_cubo", "#FFECB3") == "#FFECB3") editor.putString("engranajes_color_cubo", "#D3D1C8")
+            if (prefs.getString("engranajes_color_eje", "#141316") == "#141316") editor.putString("engranajes_color_eje", "#141316")
+            editor.apply()
+        }
+
         return AjustesApp(
             autoBloqueoSegundos = autoBloqueo,
             portapapelesSegundos = prefs.getInt("portapapeles", 30),
@@ -203,6 +331,13 @@ class AlmacenAjustes(contexto: Context) {
             grosorBordeDp = prefs.getFloat("grosor_borde_dp", 0.8f),
             estiloBorde = prefs.getString("estilo_borde", "marcado") ?: "marcado",
             espaciadoComponentesDp = prefs.getFloat("espaciado_componentes_dp", 14f),
+            widgetGrosorBordeDp = prefs.getFloat("widget_grosor_borde_dp", 0f),
+            widgetCurvaturaEsquinasDp = prefs.getFloat("widget_curvatura_esquinas_dp", 0f),
+            widgetTransparenciaFondo = prefs.getFloat("widget_transparencia_fondo", 0.50f),
+            widgetColorBorde = prefs.getString("widget_color_borde", "#FFB300") ?: "#FFB300",
+            widgetColorContador = prefs.getString("widget_color_contador", "#FFFFFF") ?: "#FFFFFF",
+            widgetColorCodigo = prefs.getString("widget_color_codigo", "#FFB300") ?: "#FFB300",
+            widgetColorTituloIcono = prefs.getString("widget_color_titulo_icono", "#FFFFFF") ?: "#FFFFFF",
             escalaTexto = prefs.getFloat("escala_texto", 1.0f),
             pesoTexto = prefs.getString("peso_texto", "normal") ?: "normal",
             cursivaTexto = prefs.getBoolean("cursiva_texto", false),
@@ -248,7 +383,47 @@ class AlmacenAjustes(contexto: Context) {
             formatoTelefono = prefs.getString("formato_telefono", "### ### ####") ?: "### ### ####",
             separadorDecimal = prefs.getString("separador_decimal", ".") ?: ".",
             perfilArgon2 = prefs.getString("perfil_argon2", "estandar") ?: "estandar",
-            proteccionPantalla = prefs.getBoolean("proteccion_pantalla", true)
+            proteccionPantalla = prefs.getBoolean("proteccion_pantalla", true),
+            historialClavesMax = prefs.getInt("historial_claves_max", 15),
+            historialClavesVaciadoAuto = prefs.getBoolean("historial_claves_vaciado_auto", true),
+            historialClavesTiempoAutoDestruccion = prefs.getLong("historial_claves_tiempo_autodestruccion", 30 * 60 * 1000L),
+            historialClaves = deserializarHistorial(prefs.getString("historial_claves_json", "") ?: ""),
+            backupAutoFrecuenciaDias = prefs.getInt("backup_auto_frecuencia_dias", 0),
+            backupAutoPasswordCifrado = prefs.getString("backup_auto_password", "") ?: "",
+            backupAutoUltimaEjecucion = prefs.getLong("backup_auto_ultima_ejecucion", 0L),
+            backupAutoMaxCopias = prefs.getInt("backup_auto_max_copias", 5),
+            backupAutoPatronNombre = run {
+                val guardado = prefs.getString("backup_auto_patron_nombre", null)
+                if (guardado == null || guardado == "boveda-auto-{FECHA}" || guardado == "{99}-boveda-auto-{FECHA}") {
+                    "{99}-backup-{FECHA}"
+                } else {
+                    guardado
+                }
+            },
+            backupAutoSecuencia = prefs.getInt("backup_auto_secuencia", 0),
+            mostrarIdsAjustes = prefs.getBoolean("mostrar_ids_ajustes", false),
+            animacionDesbloqueo = prefs.getString("animacion_desbloqueo", "engranajes") ?: "engranajes",
+            engranajesVelocidad = prefs.getFloat("engranajes_velocidad", 24f),
+            engranajesGrosorBorde = prefs.getFloat("engranajes_grosor_borde", 0.7f),
+            engranajesAlturaDientes = prefs.getFloat("engranajes_altura_dientes", 0.76f),
+            engranajesAnchoDientes = prefs.getFloat("engranajes_ancho_dientes", 1.00f),
+            engranajesGrosorRadios = prefs.getFloat("engranajes_grosor_radios", 1.40f),
+            engranajesCurvaturaRadios = prefs.getFloat("engranajes_curvatura_radios", 1.00f),
+            engranajesCantidadRadios = prefs.getInt("engranajes_cantidad_radios", 6),
+            engranajesRadioInterior = prefs.getFloat("engranajes_radio_interior", 0.80f),
+            engranajesTamanoEje = prefs.getFloat("engranajes_tamano_eje", 1.23f),
+            engranajesSombraIntensidad = prefs.getFloat("engranajes_sombra_intensidad", 0.95f),
+            engranajesColorBrillo = prefs.getString("engranajes_color_brillo", "#ABA799") ?: "#ABA799",
+            engranajesColorPrincipal = prefs.getString("engranajes_color_principal", "#918D7E") ?: "#918D7E",
+            engranajesColorSombraMedio = prefs.getString("engranajes_color_sombra_medio", "#635C57") ?: "#635C57",
+            engranajesColorSombraOscuro = prefs.getString("engranajes_color_sombra_oscuro", "#404038") ?: "#404038",
+            engranajesColorBisel = prefs.getString("engranajes_color_bisel", "#A5A19D") ?: "#A5A19D",
+            engranajesColorInterior = prefs.getString("engranajes_color_interior", "#00000000") ?: "#00000000",
+            engranajesColorCubo = prefs.getString("engranajes_color_cubo", "#D3D1C8") ?: "#D3D1C8",
+            engranajesColorEje = prefs.getString("engranajes_color_eje", "#141316") ?: "#141316",
+            puertaVelocidad = prefs.getFloat("puerta_velocidad", 1.0f),
+            puertaGrosorAnillos = prefs.getFloat("puerta_grosor_anillos", 1.0f),
+            puertaColor = prefs.getString("puerta_color", "") ?: ""
         )
     }
 
@@ -281,6 +456,13 @@ class AlmacenAjustes(contexto: Context) {
             .putFloat("grosor_borde_dp", nuevo.grosorBordeDp)
             .putString("estilo_borde", nuevo.estiloBorde)
             .putFloat("espaciado_componentes_dp", nuevo.espaciadoComponentesDp)
+            .putFloat("widget_grosor_borde_dp", nuevo.widgetGrosorBordeDp)
+            .putFloat("widget_curvatura_esquinas_dp", nuevo.widgetCurvaturaEsquinasDp)
+            .putFloat("widget_transparencia_fondo", nuevo.widgetTransparenciaFondo)
+            .putString("widget_color_borde", nuevo.widgetColorBorde)
+            .putString("widget_color_contador", nuevo.widgetColorContador)
+            .putString("widget_color_codigo", nuevo.widgetColorCodigo)
+            .putString("widget_color_titulo_icono", nuevo.widgetColorTituloIcono)
             .putFloat("escala_texto", nuevo.escalaTexto)
             .putString("peso_texto", nuevo.pesoTexto)
             .putBoolean("cursiva_texto", nuevo.cursivaTexto)
@@ -327,11 +509,48 @@ class AlmacenAjustes(contexto: Context) {
             .putString("separador_decimal", nuevo.separadorDecimal)
             .putString("perfil_argon2", nuevo.perfilArgon2)
             .putBoolean("proteccion_pantalla", nuevo.proteccionPantalla)
+            .putInt("historial_claves_max", nuevo.historialClavesMax)
+            .putBoolean("historial_claves_vaciado_auto", nuevo.historialClavesVaciadoAuto)
+            .putLong("historial_claves_tiempo_autodestruccion", nuevo.historialClavesTiempoAutoDestruccion)
+            .putString("historial_claves_json", jsonAjustes.encodeToString(nuevo.historialClaves))
+            .putInt("backup_auto_frecuencia_dias", nuevo.backupAutoFrecuenciaDias)
+            .putString("backup_auto_password", nuevo.backupAutoPasswordCifrado)
+            .putLong("backup_auto_ultima_ejecucion", nuevo.backupAutoUltimaEjecucion)
+            .putInt("backup_auto_max_copias", nuevo.backupAutoMaxCopias)
+            .putString("backup_auto_patron_nombre", nuevo.backupAutoPatronNombre)
+            .putInt("backup_auto_secuencia", nuevo.backupAutoSecuencia)
+            .putBoolean("mostrar_ids_ajustes", nuevo.mostrarIdsAjustes)
+            .putString("animacion_desbloqueo", nuevo.animacionDesbloqueo)
+            .putFloat("engranajes_velocidad", nuevo.engranajesVelocidad)
+            .putFloat("engranajes_grosor_borde", nuevo.engranajesGrosorBorde)
+            .putFloat("engranajes_altura_dientes", nuevo.engranajesAlturaDientes)
+            .putFloat("engranajes_ancho_dientes", nuevo.engranajesAnchoDientes)
+            .putFloat("engranajes_grosor_radios", nuevo.engranajesGrosorRadios)
+            .putFloat("engranajes_curvatura_radios", nuevo.engranajesCurvaturaRadios)
+            .putInt("engranajes_cantidad_radios", nuevo.engranajesCantidadRadios)
+            .putFloat("engranajes_radio_interior", nuevo.engranajesRadioInterior)
+            .putFloat("engranajes_tamano_eje", nuevo.engranajesTamanoEje)
+            .putFloat("engranajes_sombra_intensidad", nuevo.engranajesSombraIntensidad)
+            .putString("engranajes_color_brillo", nuevo.engranajesColorBrillo)
+            .putString("engranajes_color_principal", nuevo.engranajesColorPrincipal)
+            .putString("engranajes_color_sombra_medio", nuevo.engranajesColorSombraMedio)
+            .putString("engranajes_color_sombra_oscuro", nuevo.engranajesColorSombraOscuro)
+            .putString("engranajes_color_bisel", nuevo.engranajesColorBisel)
+            .putString("engranajes_color_interior", nuevo.engranajesColorInterior)
+            .putString("engranajes_color_cubo", nuevo.engranajesColorCubo)
+            .putString("engranajes_color_eje", nuevo.engranajesColorEje)
+            .putFloat("puerta_velocidad", nuevo.puertaVelocidad)
+            .putFloat("puerta_grosor_anillos", nuevo.puertaGrosorAnillos)
+            .putString("puerta_color", nuevo.puertaColor)
             .apply()
         _ajustes.value = nuevo
     }
 
     companion object {
+        val OPCIONES_ANIMACION_DESBLOQUEO = listOf(
+            "puerta" to "Puerta de bóveda",
+            "engranajes" to "Mecanismo de engranajes"
+        )
         val OPCIONES_AUTO_BLOQUEO = listOf(
             5 to "5 segundos",
             10 to "10 segundos",
@@ -363,6 +582,7 @@ class AlmacenAjustes(contexto: Context) {
         )
         val OPCIONES_RECORDATORIO_EXPORTACION = listOf(
             0 to "Nunca",
+            -30 to "Cada 30 minutos (prueba)",
             30 to "Cada 30 días",
             60 to "Cada 60 días",
             90 to "Cada 90 días"
@@ -391,5 +611,36 @@ class AlmacenAjustes(contexto: Context) {
             "serif" to "Serif (Editorial)",
             "cursiva" to "Cursiva"
         )
+        val OPCIONES_HISTORIAL_MAX = listOf(
+            5 to "5 contraseñas",
+            10 to "10 contraseñas",
+            15 to "15 contraseñas",
+            20 to "20 contraseñas",
+            25 to "25 contraseñas",
+            30 to "30 contraseñas"
+        )
+        val OPCIONES_AUTODESTRUCCION_HISTORIAL = listOf(
+            5 * 60 * 1000L to "5 minutos",
+            10 * 60 * 1000L to "10 minutos",
+            20 * 60 * 1000L to "20 minutos",
+            30 * 60 * 1000L to "30 minutos",
+            60 * 60 * 1000L to "1 hora",
+            2 * 60 * 60 * 1000L to "2 horas",
+            3 * 60 * 60 * 1000L to "3 horas",
+            24 * 60 * 60 * 1000L to "1 día",
+            2 * 24 * 60 * 60 * 1000L to "2 días",
+            3 * 24 * 60 * 60 * 1000L to "3 días",
+            7 * 24 * 60 * 60 * 1000L to "1 semana"
+        )
+        val OPCIONES_FRECUENCIA_BACKUP_AUTO = listOf(
+            0 to "Nunca",
+            1 to "Cada día",
+            7 to "Cada semana",
+            14 to "Cada 2 semanas",
+            30 to "Cada mes",
+            60 to "Cada 2 meses",
+            90 to "Cada 3 meses"
+        )
     }
 }
+

@@ -27,10 +27,27 @@ class AjustesTest {
         assertEquals("XXXXX-XXXXX-XXXXX-XXXXX", ajustes.tilePatron)
 
         // Formas y geometría
-        assertEquals(6f, ajustes.curvaturaEsquinasDp, 0.01f)
-        assertEquals(0.8f, ajustes.grosorBordeDp, 0.01f)
-        assertEquals("marcado", ajustes.estiloBorde)
+        assertEquals(16f, ajustes.curvaturaEsquinasDp, 0.01f)
+        assertEquals(1.0f, ajustes.grosorBordeDp, 0.01f)
+        assertEquals("acento", ajustes.estiloBorde)
         assertEquals(14f, ajustes.espaciadoComponentesDp, 0.01f)
+
+        // Widget 2FA
+        assertEquals(0f, ajustes.widgetGrosorBordeDp, 0.01f)
+        assertEquals(0f, ajustes.widgetCurvaturaEsquinasDp, 0.01f)
+        assertEquals(0.50f, ajustes.widgetTransparenciaFondo, 0.01f)
+
+        // Historial de contraseñas generadas
+        assertEquals(15, ajustes.historialClavesMax)
+        assertTrue(ajustes.historialClavesVaciadoAuto)
+        assertEquals(30 * 60 * 1000L, ajustes.historialClavesTiempoAutoDestruccion)
+        assertTrue(ajustes.historialClaves.isEmpty())
+
+        // Backup automático local
+        assertEquals(0, ajustes.backupAutoFrecuenciaDias)
+        assertEquals(5, ajustes.backupAutoMaxCopias)
+        assertEquals("{99}-backup-{FECHA}", ajustes.backupAutoPatronNombre)
+        assertEquals(0, ajustes.backupAutoSecuencia)
 
         // Tipografía
         assertEquals(1.0f, ajustes.escalaTexto, 0.01f)
@@ -84,5 +101,30 @@ class AjustesTest {
         assertEquals(120, modificado.autoBloqueoSegundos)
         assertEquals("patron", modificado.tileModo)
         assertEquals("9999", modificado.tilePatron)
+    }
+
+    @Test
+    fun `recordatorio opciones y patron backup por defecto`() {
+        val ajustes = AjustesApp()
+        assertEquals("{99}-backup-{FECHA}", ajustes.backupAutoPatronNombre)
+        assertTrue(AlmacenAjustes.OPCIONES_RECORDATORIO_EXPORTACION.any { it.first == -30 })
+    }
+
+    @Test
+    fun `opciones y valor por defecto de animacion de desbloqueo`() {
+        val ajustes = AjustesApp()
+        assertEquals("engranajes", ajustes.animacionDesbloqueo)
+        val opciones = AlmacenAjustes.OPCIONES_ANIMACION_DESBLOQUEO.map { it.first }
+        assertTrue(opciones.contains("puerta"))
+        assertTrue(opciones.contains("engranajes"))
+    }
+
+    @Test
+    fun `mostrarIdsAjustes esta desactivado por defecto y se puede alternar`() {
+        val ajustes = AjustesApp()
+        assertFalse("Los IDs deben estar ocultos por defecto", ajustes.mostrarIdsAjustes)
+
+        val activado = ajustes.copy(mostrarIdsAjustes = true)
+        assertTrue(activado.mostrarIdsAjustes)
     }
 }

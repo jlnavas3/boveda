@@ -5,8 +5,6 @@ import androidx.compose.animation.core.spring
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -16,7 +14,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.ContentCopy
@@ -39,29 +36,26 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.material.icons.filled.History
 import com.jlnavas3.bovedalocal.data.CambioContrasena
 import com.jlnavas3.bovedalocal.data.Entrada
 import com.jlnavas3.bovedalocal.ui.VaultViewModel
-import com.jlnavas3.bovedalocal.ui.componentes.TarjetaBovedaDesplegable
 import com.jlnavas3.bovedalocal.ui.componentes.contrasenaColoreada
+import androidx.compose.ui.graphics.Color
+import androidx.compose.foundation.shape.RoundedCornerShape
+import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorTarjetaAjustes
+import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.GrupoAjustes
+import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.SeparadorFilaSimple
 import com.jlnavas3.bovedalocal.ui.theme.Ambar
-import com.jlnavas3.bovedalocal.ui.theme.ColorExportacion
 import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
-import com.jlnavas3.bovedalocal.ui.theme.ColorTarjetas
 import com.jlnavas3.bovedalocal.ui.theme.EstiloMono
 import com.jlnavas3.bovedalocal.ui.theme.EstiloMonoGrande
-import com.jlnavas3.bovedalocal.ui.theme.FormaBoton
-import com.jlnavas3.bovedalocal.ui.theme.FormaPequena
-import com.jlnavas3.bovedalocal.ui.theme.FormaTarjeta
-import com.jlnavas3.bovedalocal.ui.theme.GrosorBorde
 import com.jlnavas3.bovedalocal.ui.theme.Menta
 import com.jlnavas3.bovedalocal.ui.theme.Peligro
-import com.jlnavas3.bovedalocal.ui.theme.SuperficieAlta
+import com.jlnavas3.bovedalocal.ui.theme.TextoPrincipal
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
 import com.jlnavas3.bovedalocal.util.Haptica
 import kotlinx.coroutines.delay
@@ -94,24 +88,9 @@ fun TarjetaHistorialDetalle(
         }
     }
 
-    TarjetaBovedaDesplegable(
-        titulo = "Contraseñas anteriores",
-        descripcion = "${historialUnico.size} clave${if (historialUnico.size == 1) "" else "s"} previas",
-        icono = Icons.Filled.History,
-        colorIcono = ColorExportacion,
-        inicialmenteAbierta = false
-    ) {
-        Text(
-            "Historial cifrado de claves previas. Puedes visualizarlas, copiarlas o restaurarlas si cambiaste de clave por error.",
-            color = TextoSecundario,
-            style = MaterialTheme.typography.bodyMedium
-        )
-        Spacer(Modifier.height(12.dp))
-
+    GrupoAjustes(etiqueta = "Contraseñas anteriores (${historialUnico.size})") {
         historialUnico.forEachIndexed { index, cambio ->
-            if (index > 0) {
-                Spacer(Modifier.height(12.dp))
-            }
+            if (index > 0) SeparadorFilaSimple()
             val estaRevelada = reveladas[cambio.contrasena] == true
             val fueCopiada = claveCopiadaReciente == cambio.contrasena
 
@@ -143,9 +122,12 @@ fun TarjetaHistorialDetalle(
     if (claveARestaurar != null) {
         AlertDialog(
             onDismissRequest = { claveARestaurar = null },
-            title = { Text("¿Restaurar esta contraseña?") },
+            shape = RoundedCornerShape(20.dp),
+            containerColor = ColorTarjetaAjustes,
+            tonalElevation = 0.dp,
+            title = { Text("¿Restaurar esta contraseña?", color = TextoPrincipal) },
             text = {
-                Text("Esta contraseña pasará a ser la contraseña activa de \"${entrada.titulo}\". La que tienes actualmente no se perderá: se conservará en este mismo historial.")
+                Text("Esta contraseña pasará a ser la contraseña activa de \"${entrada.titulo}\". La que tienes actualmente no se perderá: se conservará en este mismo historial.", color = TextoSecundario)
             },
             confirmButton = {
                 TextButton(onClick = {
@@ -161,7 +143,7 @@ fun TarjetaHistorialDetalle(
             },
             dismissButton = {
                 TextButton(onClick = { claveARestaurar = null }) {
-                    Text("Cancelar")
+                    Text("Cancelar", color = TextoSecundario)
                 }
             }
         )
@@ -170,9 +152,12 @@ fun TarjetaHistorialDetalle(
     if (claveAEliminar != null) {
         AlertDialog(
             onDismissRequest = { claveAEliminar = null },
-            title = { Text("¿Eliminar esta contraseña del historial?") },
+            shape = RoundedCornerShape(20.dp),
+            containerColor = ColorTarjetaAjustes,
+            tonalElevation = 0.dp,
+            title = { Text("¿Eliminar esta contraseña del historial?", color = TextoPrincipal) },
             text = {
-                Text("Esta contraseña anterior se eliminará permanentemente. Esta acción no se puede deshacer.")
+                Text("Esta contraseña anterior se eliminará permanentemente. Esta acción no se puede deshacer.", color = TextoSecundario)
             },
             confirmButton = {
                 TextButton(onClick = {
@@ -189,7 +174,7 @@ fun TarjetaHistorialDetalle(
             },
             dismissButton = {
                 TextButton(onClick = { claveAEliminar = null }) {
-                    Text("Cancelar")
+                    Text("Cancelar", color = TextoSecundario)
                 }
             }
         )
@@ -209,11 +194,8 @@ private fun FilaHistorialContrasena(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .clip(FormaTarjeta)
-            .background(SuperficieAlta)
-            .padding(12.dp)
+            .padding(horizontal = 16.dp, vertical = 12.dp)
     ) {
-        // Cabecera de la clave anterior: Fecha + Iconos de Eliminar, Ver y Copiar
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -234,134 +216,85 @@ private fun FilaHistorialContrasena(
             }
 
             Row(verticalAlignment = Alignment.CenterVertically) {
-                // Botón Eliminar
                 IconButton(
                     onClick = onEliminar,
-                    modifier = Modifier.size(40.dp)
+                    modifier = Modifier.size(36.dp)
                 ) {
                     Icon(
                         imageVector = Icons.Filled.Delete,
                         contentDescription = "Eliminar contraseña anterior",
                         tint = Peligro.copy(alpha = 0.7f),
-                        modifier = Modifier.size(22.dp)
+                        modifier = Modifier.size(20.dp)
                     )
                 }
-                // Botón Revelar / Ocultar
                 IconButton(
                     onClick = onToggleRevelar,
-                    modifier = Modifier.size(40.dp)
+                    modifier = Modifier.size(36.dp)
                 ) {
                     Icon(
                         imageVector = if (revelada) Icons.Filled.VisibilityOff else Icons.Filled.Visibility,
-                        contentDescription = if (revelada) "Ocultar" else "Visualizar contraseña",
-                        tint = if (revelada) Ambar else ColorIconosInternos,
-                        modifier = Modifier.size(24.dp)
+                        contentDescription = if (revelada) "Ocultar" else "Ver contraseña",
+                        tint = ColorIconosInternos,
+                        modifier = Modifier.size(22.dp)
                     )
                 }
-                Spacer(Modifier.width(4.dp))
-                // Botón Copiar con animación
                 IconButton(
                     onClick = onCopiar,
-                    modifier = Modifier.size(40.dp)
+                    modifier = Modifier.size(36.dp)
                 ) {
                     AnimatedVisibility(
                         visible = copiado,
                         enter = scaleIn(spring(dampingRatio = 0.5f)),
                         exit = scaleOut(spring(dampingRatio = 0.6f))
                     ) {
-                        Icon(
-                            imageVector = Icons.Filled.Check,
-                            contentDescription = "Copiada",
-                            tint = Menta,
-                            modifier = Modifier.size(24.dp)
-                        )
+                        Icon(Icons.Filled.Check, contentDescription = "Copiado", tint = Menta, modifier = Modifier.size(20.dp))
                     }
                     AnimatedVisibility(
                         visible = !copiado,
                         enter = scaleIn(spring(dampingRatio = 0.5f)),
                         exit = scaleOut(spring(dampingRatio = 0.6f))
                     ) {
-                        Icon(
-                            imageVector = Icons.Filled.ContentCopy,
-                            contentDescription = "Copiar contraseña",
-                            tint = ColorIconosInternos,
-                            modifier = Modifier.size(24.dp)
-                        )
+                        Icon(Icons.Filled.ContentCopy, contentDescription = "Copiar", tint = ColorIconosInternos, modifier = Modifier.size(20.dp))
                     }
+                }
+                IconButton(
+                    onClick = onSolicitarRestaurar,
+                    modifier = Modifier.size(36.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.Restore,
+                        contentDescription = "Restaurar como activa",
+                        tint = Ambar,
+                        modifier = Modifier.size(22.dp)
+                    )
                 }
             }
         }
 
-        Spacer(Modifier.height(8.dp))
+        Spacer(Modifier.height(6.dp))
 
-        // Contenedor visual de la contraseña (solo lectura; se revela con el botón del ojo)
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clip(FormaPequena)
-                .background(ColorTarjetas)
-                .padding(horizontal = 12.dp, vertical = 10.dp)
-        ) {
-            if (revelada) {
-                Text(
-                    text = contrasenaColoreada(cambio.contrasena),
-                    style = EstiloMono,
-                    modifier = Modifier.fillMaxWidth()
-                )
-            } else {
-                Text(
-                    text = "•".repeat(cambio.contrasena.length.coerceIn(8, 24)),
-                    style = EstiloMonoGrande.copy(letterSpacing = 2.sp),
-                    color = TextoSecundario,
-                    maxLines = 1,
-                    overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
-                    modifier = Modifier.fillMaxWidth()
-                )
-            }
-        }
-
-        Spacer(Modifier.height(10.dp))
-
-        // Botón Restaurar como activa bien demarcado
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(44.dp)
-                .clip(FormaBoton)
-                .border(
-                    width = if (GrosorBorde > 0.dp) GrosorBorde else 1.dp,
-                    color = Ambar.copy(alpha = 0.7f),
-                    shape = FormaBoton
-                )
-                .clickable { onSolicitarRestaurar() },
-            contentAlignment = Alignment.Center
-        ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center
-            ) {
-                Icon(
-                    imageVector = Icons.Filled.Restore,
-                    contentDescription = null,
-                    tint = Ambar,
-                    modifier = Modifier.size(20.dp)
-                )
-                Spacer(Modifier.width(8.dp))
-                Text(
-                    text = "Restaurar como contraseña activa",
-                    color = Ambar,
-                    style = MaterialTheme.typography.labelLarge.copy(
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 14.sp
-                    )
-                )
-            }
+        if (revelada) {
+            Text(
+                text = contrasenaColoreada(cambio.contrasena),
+                style = EstiloMono,
+                modifier = Modifier.fillMaxWidth()
+            )
+        } else {
+            Text(
+                text = "•".repeat(cambio.contrasena.length.coerceIn(8, 24)),
+                style = EstiloMonoGrande.copy(letterSpacing = 2.sp),
+                color = TextoSecundario,
+                maxLines = 1,
+                softWrap = false,
+                overflow = TextOverflow.Clip,
+                modifier = Modifier.fillMaxWidth()
+            )
         }
     }
 }
 
-private fun formatearFechaDetalle(momento: Long): String {
-    if (momento <= 0L) return "Fecha desconocida"
-    val formato = SimpleDateFormat("d MMM yyyy, HH:mm", Locale.forLanguageTag("es"))
-    return formato.format(Date(momento))
+private fun formatearFechaDetalle(ms: Long): String {
+    if (ms <= 0L) return "Fecha no registrada"
+    val sdf = SimpleDateFormat("dd/MM/yy HH:mm", Locale.getDefault())
+    return sdf.format(Date(ms))
 }

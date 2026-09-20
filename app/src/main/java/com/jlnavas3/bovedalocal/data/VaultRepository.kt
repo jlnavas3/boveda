@@ -242,6 +242,26 @@ class VaultRepository private constructor(contexto: Context) {
         }
     }
 
+    /** Cambia el título de varias entradas a la vez (selección múltiple). */
+    fun renombrarEntradas(ids: Set<String>, nuevoTitulo: String) {
+        if (ids.isEmpty()) return
+        val tituloLimpio = nuevoTitulo.trim()
+        if (tituloLimpio.isBlank()) return
+        synchronized(candado) {
+            val ahora = System.currentTimeMillis()
+            val actualizadas = contenido.entradas.map { ent ->
+                if (ids.contains(ent.id)) {
+                    ent.copy(titulo = tituloLimpio, modificadaEn = ahora)
+                } else {
+                    ent
+                }
+            }
+            contenido = contenido.copy(entradas = actualizadas)
+            persistir()
+            publicar()
+        }
+    }
+
     /** Saca una entrada de la papelera y la devuelve a la lista activa. */
     fun restaurarDeLaPapelera(id: String) {
         synchronized(candado) {

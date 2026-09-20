@@ -43,6 +43,7 @@ import com.jlnavas3.bovedalocal.data.CampoPersonalizado
 import com.jlnavas3.bovedalocal.data.TipoCampo
 import com.jlnavas3.bovedalocal.ui.componentes.BotonColorido
 import com.jlnavas3.bovedalocal.ui.componentes.CampoBoveda
+import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.SwitchBoveda
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
 import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
@@ -54,6 +55,10 @@ import com.jlnavas3.bovedalocal.ui.theme.Superficie
 import com.jlnavas3.bovedalocal.ui.theme.SuperficieAlta
 import com.jlnavas3.bovedalocal.ui.theme.TextoPrincipal
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
+
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.unit.sp
+import com.jlnavas3.bovedalocal.ui.theme.esOscuroActivo
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -81,10 +86,13 @@ fun DialogoNuevoCampo(
         )
     }
 
+    val colorDialogo = if (esOscuroActivo) Color(0xFF212023) else Color(0xFFFFFFFF)
+
     AlertDialog(
         onDismissRequest = alDescartar,
-        shape = FormaTarjeta,
-        containerColor = Superficie,
+        shape = RoundedCornerShape(20.dp),
+        containerColor = colorDialogo,
+        tonalElevation = 0.dp,
         title = {
             Text(
                 text = "Nuevo campo personalizado",
@@ -97,7 +105,7 @@ fun DialogoNuevoCampo(
                 modifier = Modifier
                     .fillMaxWidth()
                     .verticalScroll(rememberScrollState()),
-                verticalArrangement = Arrangement.spacedBy(14.dp)
+                verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 // Nombre del campo
                 CampoBoveda(
@@ -110,50 +118,46 @@ fun DialogoNuevoCampo(
                 Text(
                     text = "Tipo de campo",
                     color = TextoSecundario,
-                    style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.SemiBold)
+                    style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.SemiBold)
                 )
 
                 FlowRow(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    horizontalArrangement = Arrangement.spacedBy(6.dp),
+                    verticalArrangement = Arrangement.spacedBy(6.dp),
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     tiposDisponibles.forEach { tipo ->
                         val seleccionado = tipo == tipoSeleccionado
-                        val colorFondo = if (seleccionado) ColorAcento.copy(alpha = 0.18f) else SuperficieAlta
-                        val colorBorde = if (seleccionado) ColorAcento else ColorBordeActual
+                        val colorFondo = if (seleccionado) ColorAcento else if (esOscuroActivo) Color(0xFF2A292E) else Color(0xFFEFEFF3)
+                        val colorTexto = if (seleccionado) com.jlnavas3.bovedalocal.ui.theme.ColorSobreAcento else TextoPrincipal
 
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier
-                                .clip(FormaBoton)
+                                .clip(RoundedCornerShape(8.dp))
                                 .background(colorFondo)
-                                .then(
-                                    if (GrosorBorde > 0.dp || seleccionado)
-                                        Modifier.border(if (seleccionado) 1.5.dp else GrosorBorde, colorBorde, FormaBoton)
-                                    else Modifier
-                                )
                                 .clickable {
                                     tipoSeleccionado = tipo
                                     if (tipo == TipoCampo.PIN) {
                                         esSensible = true
                                     }
                                 }
-                                .padding(horizontal = 12.dp, vertical = 7.dp)
+                                .padding(horizontal = 10.dp, vertical = 6.dp)
                         ) {
                             if (seleccionado) {
                                 Icon(
                                     imageVector = Icons.Filled.Check,
                                     contentDescription = null,
-                                    tint = ColorAcento,
-                                    modifier = Modifier.size(15.dp)
+                                    tint = colorTexto,
+                                    modifier = Modifier.size(13.dp)
                                 )
                                 Spacer(Modifier.width(4.dp))
                             }
                             Text(
                                 text = tipo.etiqueta,
-                                color = if (seleccionado) ColorTitulos else TextoPrincipal,
-                                style = MaterialTheme.typography.labelMedium.copy(
+                                color = colorTexto,
+                                style = MaterialTheme.typography.labelSmall.copy(
+                                    fontSize = 12.sp,
                                     fontWeight = if (seleccionado) FontWeight.Bold else FontWeight.Medium
                                 )
                             )
@@ -161,16 +165,18 @@ fun DialogoNuevoCampo(
                     }
                 }
 
-                Spacer(Modifier.height(4.dp))
-
                 // Switch de Sensibilidad
+                val fondoSensible = if (esOscuroActivo) Color(0xFF18171A) else Color(0xFFF4F4F6)
+                val bordeSensible = if (esOscuroActivo) Color(0xFF333238) else Color(0xFFDFDFE3)
+
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clip(FormaBoton)
-                        .background(SuperficieAlta)
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(fondoSensible)
+                        .border(1.dp, bordeSensible, RoundedCornerShape(12.dp))
                         .clickable { esSensible = !esSensible }
-                        .padding(horizontal = 14.dp, vertical = 10.dp),
+                        .padding(horizontal = 12.dp, vertical = 8.dp),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
@@ -181,31 +187,27 @@ fun DialogoNuevoCampo(
                         Icon(
                             imageVector = Icons.Filled.Security,
                             contentDescription = null,
-                            tint = if (esSensible) ColorIconosInternos else TextoSecundario,
-                            modifier = Modifier.size(20.dp)
+                            tint = if (esSensible) ColorAcento else TextoSecundario,
+                            modifier = Modifier.size(18.dp)
                         )
                         Spacer(Modifier.width(10.dp))
                         Column {
                             Text(
                                 text = "Dato sensible (Secreto)",
                                 color = TextoPrincipal,
-                                style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold)
+                                style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold, fontSize = 13.sp)
                             )
                             Text(
-                                text = "Ocultar por defecto (••••) y portapapeles seguro",
+                                text = "Ocultar por defecto (••••)",
                                 color = TextoSecundario,
-                                style = MaterialTheme.typography.bodySmall
+                                style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.sp)
                             )
                         }
                     }
 
-                    Switch(
+                    SwitchBoveda(
                         checked = esSensible,
-                        onCheckedChange = { esSensible = it },
-                        colors = SwitchDefaults.colors(
-                            checkedThumbColor = Color.White,
-                            checkedTrackColor = ColorAcento
-                        )
+                        onCheckedChange = { esSensible = it }
                     )
                 }
             }

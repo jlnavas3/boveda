@@ -63,6 +63,102 @@ interface VaultAjustesDelegate {
         aplicarPersonalizacionColores(repositorio.ajustes.actual)
     }
 
+    fun ajustarAnimacionDesbloqueo(modo: String) {
+        repositorio.ajustes.actualizar { it.copy(animacionDesbloqueo = modo) }
+        Diagnostico.apuntar("apariencia", "Animación de desbloqueo configurada en: $modo")
+    }
+
+    // --- Personalización de Engranajes ---
+    fun ajustarEngranajesVelocidad(valor: Float) {
+        repositorio.ajustes.actualizar { it.copy(engranajesVelocidad = valor) }
+    }
+    fun ajustarEngranajesGrosorBorde(valor: Float) {
+        repositorio.ajustes.actualizar { it.copy(engranajesGrosorBorde = valor) }
+    }
+    fun ajustarEngranajesAlturaDientes(valor: Float) {
+        repositorio.ajustes.actualizar { it.copy(engranajesAlturaDientes = valor) }
+    }
+    fun ajustarEngranajesAnchoDientes(valor: Float) {
+        repositorio.ajustes.actualizar { it.copy(engranajesAnchoDientes = valor) }
+    }
+    fun ajustarEngranajesGrosorRadios(valor: Float) {
+        repositorio.ajustes.actualizar { it.copy(engranajesGrosorRadios = valor) }
+    }
+    fun ajustarEngranajesCurvaturaRadios(valor: Float) {
+        repositorio.ajustes.actualizar { it.copy(engranajesCurvaturaRadios = valor) }
+    }
+    fun ajustarEngranajesCantidadRadios(valor: Int) {
+        repositorio.ajustes.actualizar { it.copy(engranajesCantidadRadios = valor) }
+    }
+    fun ajustarEngranajesRadioInterior(valor: Float) {
+        repositorio.ajustes.actualizar { it.copy(engranajesRadioInterior = valor) }
+    }
+    fun ajustarEngranajesTamanoEje(valor: Float) {
+        repositorio.ajustes.actualizar { it.copy(engranajesTamanoEje = valor) }
+    }
+    fun ajustarEngranajesSombraIntensidad(valor: Float) {
+        repositorio.ajustes.actualizar { it.copy(engranajesSombraIntensidad = valor) }
+    }
+    fun ajustarEngranajesColor(campo: String, hex: String) {
+        repositorio.ajustes.actualizar {
+            when (campo) {
+                "brillo" -> it.copy(engranajesColorBrillo = hex)
+                "principal" -> it.copy(engranajesColorPrincipal = hex)
+                "sombra_medio" -> it.copy(engranajesColorSombraMedio = hex)
+                "sombra_oscuro" -> it.copy(engranajesColorSombraOscuro = hex)
+                "bisel" -> it.copy(engranajesColorBisel = hex)
+                "interior" -> it.copy(engranajesColorInterior = hex)
+                "cubo" -> it.copy(engranajesColorCubo = hex)
+                "eje" -> it.copy(engranajesColorEje = hex)
+                else -> it
+            }
+        }
+    }
+    fun restablecerAjustesEngranajes() {
+        repositorio.ajustes.actualizar {
+            it.copy(
+                engranajesVelocidad = 24f,
+                engranajesGrosorBorde = 0.7f,
+                engranajesAlturaDientes = 0.76f,
+                engranajesAnchoDientes = 1.00f,
+                engranajesGrosorRadios = 1.40f,
+                engranajesCurvaturaRadios = 1.00f,
+                engranajesCantidadRadios = 6,
+                engranajesRadioInterior = 0.80f,
+                engranajesTamanoEje = 1.23f,
+                engranajesSombraIntensidad = 0.95f,
+                engranajesColorBrillo = "#ABA799",
+                engranajesColorPrincipal = "#918D7E",
+                engranajesColorSombraMedio = "#635C57",
+                engranajesColorSombraOscuro = "#404038",
+                engranajesColorBisel = "#A5A19D",
+                engranajesColorInterior = "#00000000",
+                engranajesColorCubo = "#D3D1C8",
+                engranajesColorEje = "#141316"
+            )
+        }
+    }
+
+    // --- Personalización de Puerta de Bóveda ---
+    fun ajustarPuertaVelocidad(valor: Float) {
+        repositorio.ajustes.actualizar { it.copy(puertaVelocidad = valor) }
+    }
+    fun ajustarPuertaGrosorAnillos(valor: Float) {
+        repositorio.ajustes.actualizar { it.copy(puertaGrosorAnillos = valor) }
+    }
+    fun ajustarPuertaColor(hex: String) {
+        repositorio.ajustes.actualizar { it.copy(puertaColor = hex) }
+    }
+    fun restablecerAjustesPuerta() {
+        repositorio.ajustes.actualizar {
+            it.copy(
+                puertaVelocidad = 1.0f,
+                puertaGrosorAnillos = 1.0f,
+                puertaColor = ""
+            )
+        }
+    }
+
     fun ajustarColorIconosInternos(hex: String) {
         repositorio.ajustes.actualizar { it.copy(colorIconosInternos = hex) }
         aplicarPersonalizacionColores(repositorio.ajustes.actual)
@@ -384,5 +480,113 @@ interface VaultAjustesDelegate {
         repositorio.ajustes.actualizar { it.copy(proteccionPantalla = activo) }
         val desc = if (activo) "activada" else "desactivada"
         Diagnostico.apuntar("seguridad", "Protección de pantalla (FLAG_SECURE) $desc por el usuario")
+    }
+
+    fun ajustarWidgetGrosorBorde(grosor: Float) {
+        repositorio.ajustes.actualizar { it.copy(widgetGrosorBordeDp = grosor) }
+        com.jlnavas3.bovedalocal.widget.WidgetTotpFavoritos.actualizarTodos(obtenerApp())
+    }
+
+    fun ajustarWidgetCurvaturaEsquinas(curvatura: Float) {
+        repositorio.ajustes.actualizar { it.copy(widgetCurvaturaEsquinasDp = curvatura) }
+        com.jlnavas3.bovedalocal.widget.WidgetTotpFavoritos.actualizarTodos(obtenerApp())
+    }
+
+    fun ajustarWidgetTransparenciaFondo(transparencia: Float) {
+        repositorio.ajustes.actualizar { it.copy(widgetTransparenciaFondo = transparencia) }
+        com.jlnavas3.bovedalocal.widget.WidgetTotpFavoritos.actualizarTodos(obtenerApp())
+    }
+
+    fun ajustarWidgetColorBorde(colorHex: String) {
+        repositorio.ajustes.actualizar { it.copy(widgetColorBorde = colorHex) }
+        com.jlnavas3.bovedalocal.widget.WidgetTotpFavoritos.actualizarTodos(obtenerApp())
+    }
+
+    fun ajustarWidgetColorContador(colorHex: String) {
+        repositorio.ajustes.actualizar { it.copy(widgetColorContador = colorHex) }
+        com.jlnavas3.bovedalocal.widget.WidgetTotpFavoritos.actualizarTodos(obtenerApp())
+    }
+
+    fun ajustarWidgetColorCodigo(colorHex: String) {
+        repositorio.ajustes.actualizar { it.copy(widgetColorCodigo = colorHex) }
+        com.jlnavas3.bovedalocal.widget.WidgetTotpFavoritos.actualizarTodos(obtenerApp())
+    }
+
+    fun ajustarWidgetColorTituloIcono(colorHex: String) {
+        repositorio.ajustes.actualizar { it.copy(widgetColorTituloIcono = colorHex) }
+        com.jlnavas3.bovedalocal.widget.WidgetTotpFavoritos.actualizarTodos(obtenerApp())
+    }
+
+    fun restablecerAjustesWidget() {
+        repositorio.ajustes.actualizar {
+            it.copy(
+                widgetGrosorBordeDp = 0f,
+                widgetCurvaturaEsquinasDp = 0f,
+                widgetTransparenciaFondo = 0.50f,
+                widgetColorBorde = "#FFB300",
+                widgetColorContador = "#FFFFFF",
+                widgetColorCodigo = "#FFB300",
+                widgetColorTituloIcono = "#FFFFFF"
+            )
+        }
+        com.jlnavas3.bovedalocal.widget.WidgetTotpFavoritos.actualizarTodos(obtenerApp())
+    }
+
+    fun ajustarHistorialClavesMax(max: Int) {
+        repositorio.ajustes.actualizar {
+            val recortado = it.historialClaves.take(max.coerceAtLeast(1))
+            it.copy(historialClavesMax = max, historialClaves = recortado)
+        }
+    }
+
+    fun ajustarHistorialClavesVaciadoAuto(activo: Boolean) {
+        repositorio.ajustes.actualizar { it.copy(historialClavesVaciadoAuto = activo) }
+    }
+
+    fun ajustarHistorialClavesTiempoAutoDestruccion(ms: Long) {
+        repositorio.ajustes.actualizar { it.copy(historialClavesTiempoAutoDestruccion = ms) }
+    }
+
+    fun eliminarDeHistorialClaves(id: String) {
+        repositorio.ajustes.actualizar { actual ->
+            actual.copy(historialClaves = actual.historialClaves.filterNot { it.id == id })
+        }
+    }
+
+    fun vaciarHistorialClaves() {
+        repositorio.ajustes.actualizar { it.copy(historialClaves = emptyList()) }
+        Diagnostico.apuntar("generador", "Historial de contraseñas vaciado manualmente")
+    }
+
+    fun ajustarBackupAutoFrecuenciaDias(dias: Int) {
+        repositorio.ajustes.actualizar { it.copy(backupAutoFrecuenciaDias = dias) }
+        val desc = if (dias == 0) "desactivado" else "cada $dias días"
+        Diagnostico.apuntar("backup", "Frecuencia de backup automático establecida en $desc")
+    }
+
+    fun ajustarBackupAutoPassword(password: String) {
+        repositorio.ajustes.actualizar { it.copy(backupAutoPasswordCifrado = password) }
+    }
+
+    fun ajustarBackupAutoPasswordCifrado(password: String) = ajustarBackupAutoPassword(password)
+
+    fun ajustarBackupAutoMaxCopias(max: Int) {
+        repositorio.ajustes.actualizar { it.copy(backupAutoMaxCopias = max) }
+    }
+
+    fun ajustarBackupAutoPatronNombre(patron: String) {
+        repositorio.ajustes.actualizar { it.copy(backupAutoPatronNombre = patron) }
+    }
+
+    fun ajustarBackupAutoSecuencia(secuencia: Int) {
+        repositorio.ajustes.actualizar { it.copy(backupAutoSecuencia = secuencia) }
+    }
+
+    fun ajustarMostrarIdsAjustes(mostrar: Boolean) {
+        repositorio.ajustes.actualizar { it.copy(mostrarIdsAjustes = mostrar) }
+    }
+
+    fun recargarAjustes() {
+        repositorio.ajustes.recargar()
     }
 }

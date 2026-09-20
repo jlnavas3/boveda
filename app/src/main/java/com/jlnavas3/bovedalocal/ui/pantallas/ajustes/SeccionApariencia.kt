@@ -10,6 +10,7 @@ import androidx.compose.material.icons.filled.Save
 import androidx.compose.material.icons.filled.SquareFoot
 import androidx.compose.material.icons.filled.TextFields
 import androidx.compose.material.icons.filled.Tune
+import androidx.compose.material.icons.filled.Widgets
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -34,14 +35,18 @@ import com.jlnavas3.bovedalocal.util.Haptica
 fun SeccionApariencia(
     vm: VaultViewModel,
     ajustes: AjustesApp,
-    haptica: Haptica
+    haptica: Haptica,
+    inicialmenteAbierta: Boolean = false,
+    seccionDestino: String? = null
 ) {
     TarjetaAjuste(
         titulo = "Apariencia",
         icono = Icons.Filled.Palette,
         descripcion = "Tema, color, nombre, densidad y organización de la lista.",
         colorIcono = ColorAcento,
-        inicialmenteAbierta = false
+        inicialmenteAbierta = inicialmenteAbierta || (seccionDestino != null && seccionDestino.startsWith("09")),
+        idEtiqueta = "09",
+        mostrarId = ajustes.mostrarIdsAjustes
     ) {
         Spacer(Modifier.height(8.dp))
 
@@ -50,8 +55,10 @@ fun SeccionApariencia(
             titulo = "Nombre dentro de la app",
             icono = Icons.Filled.Badge,
             descripcion = "Nombre personalizado visible únicamente dentro de la aplicación.",
-            inicialmenteAbierta = false,
-            colorIcono = ColorAcento
+            inicialmenteAbierta = seccionDestino == "09.1",
+            colorIcono = ColorAcento,
+            idEtiqueta = "09.1",
+            mostrarId = ajustes.mostrarIdsAjustes
         ) {
             Text(
                 "El icono del cajón de aplicaciones siempre se llama \"Bóveda local\": Android no deja poner ahí un texto libre. Este nombre solo se ve dentro de la app.",
@@ -74,6 +81,10 @@ fun SeccionApariencia(
                 vm.ajustarNombrePersonalizado(nombreLocal.trim())
                 haptica.tic()
             }
+            BotonRestablecerItem {
+                nombreLocal = ""
+                vm.ajustarNombrePersonalizado("")
+            }
         }
 
         Spacer(Modifier.height(12.dp))
@@ -83,8 +94,10 @@ fun SeccionApariencia(
             titulo = "Colores y Tema",
             icono = Icons.Filled.Palette,
             descripcion = "Modo claro/oscuro y personalización completa de paleta cromática.",
-            inicialmenteAbierta = false,
-            colorIcono = ColorAcento
+            inicialmenteAbierta = seccionDestino == "09.2",
+            colorIcono = ColorAcento,
+            idEtiqueta = "09.2",
+            mostrarId = ajustes.mostrarIdsAjustes
         ) {
             Text(
                 "Modo de tema",
@@ -101,6 +114,9 @@ fun SeccionApariencia(
                 },
                 alSeleccionar = { valor -> haptica.tic(); vm.ajustarTema(valor) }
             )
+            BotonRestablecerItem {
+                vm.ajustarTema("sistema")
+            }
             Spacer(Modifier.height(12.dp))
             Text(
                 "Configura independientemente los colores de íconos internos, títulos, tarjetas, acento y el ícono del launcher con selectores interactivos en tiempo real.",
@@ -114,7 +130,7 @@ fun SeccionApariencia(
                 icono = Icons.Filled.Palette
             ) {
                 haptica.tic()
-                vm.ir(Pantalla.Tema)
+                vm.irPorId("09.2")
             }
         }
 
@@ -125,8 +141,10 @@ fun SeccionApariencia(
             titulo = "Bordes y Formas",
             icono = Icons.Filled.SquareFoot,
             descripcion = "Curvatura de esquinas, grosores de trazo y espaciados entre componentes.",
-            inicialmenteAbierta = false,
-            colorIcono = ColorAcento
+            inicialmenteAbierta = seccionDestino == "09.3",
+            colorIcono = ColorAcento,
+            idEtiqueta = "09.3",
+            mostrarId = ajustes.mostrarIdsAjustes
         ) {
             Text(
                 "Configura en tiempo real curvatura de esquinas, grosores de trazo, estilos perimetrales y espaciados entre componentes con controles deslizantes.",
@@ -140,19 +158,49 @@ fun SeccionApariencia(
                 icono = Icons.Filled.SquareFoot
             ) {
                 haptica.tic()
-                vm.ir(Pantalla.Formas)
+                vm.irPorId("09.3")
             }
         }
 
         Spacer(Modifier.height(12.dp))
 
-        // 4. Personalización de tipografía y textos
+        // 4. Personalización del Widget
+        TarjetaAjuste(
+            titulo = "Widget de Inicio",
+            icono = Icons.Filled.Widgets,
+            descripcion = "Bordes, curvatura de esquinas y transparencia de fondo del widget.",
+            inicialmenteAbierta = seccionDestino == "09.4",
+            colorIcono = ColorAcento,
+            idEtiqueta = "09.4",
+            mostrarId = ajustes.mostrarIdsAjustes
+        ) {
+            Text(
+                "Personaliza el borde perimetral, la curvatura de esquinas y la opacidad del fondo del widget de códigos 2FA con controles deslizantes y vista previa en vivo.",
+                color = TextoSecundario,
+                style = MaterialTheme.typography.bodyMedium
+            )
+            Spacer(Modifier.height(10.dp))
+            BotonColorido(
+                texto = "Personalizar widget",
+                color = ColorAcento,
+                icono = Icons.Filled.Widgets
+            ) {
+                haptica.tic()
+                vm.irPorId("09.4")
+            }
+        }
+
+        Spacer(Modifier.height(12.dp))
+
+        // 5. Personalización de tipografía y textos
         TarjetaAjuste(
             titulo = "Tipografía y Textos",
             icono = Icons.Filled.TextFields,
             descripcion = "Tamaño de fuentes, peso, interlineado y familias tipográficas.",
-            inicialmenteAbierta = false,
-            colorIcono = ColorAcento
+            inicialmenteAbierta = seccionDestino == "09.5",
+            colorIcono = ColorAcento,
+            idEtiqueta = "09.5",
+            mostrarId = ajustes.mostrarIdsAjustes
         ) {
             Text(
                 "Ajusta en tiempo real tamaño de fuentes, peso de texto, inclinación cursiva, kerning, interlineado y familias tipográficas a tu gusto.",
@@ -166,19 +214,21 @@ fun SeccionApariencia(
                 icono = Icons.Filled.TextFields
             ) {
                 haptica.tic()
-                vm.ir(Pantalla.Tipografia)
+                vm.irPorId("09.5")
             }
         }
 
         Spacer(Modifier.height(12.dp))
 
-        // 5. Densidad de lista
+        // 6. Densidad de lista
         TarjetaAjuste(
             titulo = "Densidad de lista",
             icono = Icons.Filled.Tune,
             descripcion = "Altura y compactación de las filas en la pantalla principal.",
-            inicialmenteAbierta = false,
-            colorIcono = ColorAcento
+            inicialmenteAbierta = seccionDestino == "09.6",
+            colorIcono = ColorAcento,
+            idEtiqueta = "09.6",
+            mostrarId = ajustes.mostrarIdsAjustes
         ) {
             Text(
                 "Predeterminada tiene la altura normal, cómoda la reduce algo y compacta hace las filas mucho más estrechas para ver más entradas a la vez.",
@@ -195,17 +245,22 @@ fun SeccionApariencia(
                 },
                 alSeleccionar = { valor -> haptica.tic(); vm.ajustarDensidadLista(valor) }
             )
+            BotonRestablecerItem {
+                vm.ajustarDensidadLista("predeterminada")
+            }
         }
 
         Spacer(Modifier.height(12.dp))
 
-        // 6. Agrupar cuentas por sitio
+        // 7. Agrupar cuentas por sitio
         TarjetaAjuste(
             titulo = "Agrupar cuentas por sitio",
             icono = Icons.Filled.Layers,
             descripcion = "Organización y agrupamiento automático de cuentas del mismo dominio.",
-            inicialmenteAbierta = false,
-            colorIcono = ColorAcento
+            inicialmenteAbierta = seccionDestino == "09.7",
+            colorIcono = ColorAcento,
+            idEtiqueta = "09.7",
+            mostrarId = ajustes.mostrarIdsAjustes
         ) {
             FilaAjuste(
                 titulo = "Agrupar cuentas por sitio",
@@ -213,6 +268,9 @@ fun SeccionApariencia(
                 activo = ajustes.agruparPorSitio,
                 alCambiar = { haptica.tic(); vm.ajustarAgruparPorSitio(it) }
             )
+            BotonRestablecerItem {
+                vm.ajustarAgruparPorSitio(true)
+            }
         }
     }
 }

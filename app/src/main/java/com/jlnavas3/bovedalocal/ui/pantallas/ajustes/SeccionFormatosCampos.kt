@@ -12,7 +12,7 @@ import androidx.compose.ui.unit.dp
 import com.jlnavas3.bovedalocal.data.AjustesApp
 import com.jlnavas3.bovedalocal.ui.Pantalla
 import com.jlnavas3.bovedalocal.ui.VaultViewModel
-import com.jlnavas3.bovedalocal.ui.componentes.BotonColorido
+import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteBotonFila
 import com.jlnavas3.bovedalocal.ui.theme.ColorSalud
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
 import com.jlnavas3.bovedalocal.util.Haptica
@@ -21,13 +21,18 @@ import com.jlnavas3.bovedalocal.util.Haptica
 fun SeccionFormatosCampos(
     vm: VaultViewModel,
     ajustes: AjustesApp,
-    haptica: Haptica
+    haptica: Haptica,
+    inicialmenteAbierta: Boolean = false,
+    seccionDestino: String? = null
 ) {
     TarjetaAjuste(
         titulo = "Formatos de campos",
         icono = Icons.Filled.FormatShapes,
         descripcion = "Máscaras de teléfono, fechas, horas y separadores numéricos.",
-        colorIcono = ColorSalud
+        colorIcono = ColorSalud,
+        inicialmenteAbierta = inicialmenteAbierta || (seccionDestino != null && seccionDestino.startsWith("10")),
+        idEtiqueta = "10",
+        mostrarId = ajustes.mostrarIdsAjustes
     ) {
         Spacer(Modifier.height(8.dp))
         Text(
@@ -36,13 +41,16 @@ fun SeccionFormatosCampos(
             style = MaterialTheme.typography.bodyMedium
         )
         Spacer(Modifier.height(12.dp))
-        BotonColorido(
-            texto = "Personalizar formatos de campos",
-            color = ColorSalud,
-            icono = Icons.Filled.FormatShapes
-        ) {
-            haptica.tic()
-            vm.ir(Pantalla.FormatosCampos)
-        }
+        ComponenteBotonFila(
+            titulo = "Personalizar formatos de campos",
+            icono = Icons.Filled.FormatShapes,
+            colorIcono = ColorSalud,
+            idFila = "10",
+            mostrarId = ajustes.mostrarIdsAjustes,
+            alPulsar = {
+                haptica.tic()
+                vm.irPorId("10")
+            }
+        )
     }
 }

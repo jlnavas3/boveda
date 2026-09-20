@@ -51,13 +51,13 @@ private class PaletaBase(
 )
 
 private val paletaOscura = PaletaBase(
-    fondo = Color(0xFF0E0F13),
-    superficie = Color(0xFF1B1F2A),
-    superficieAlta = Color(0xFF252B3A),
-    borde = Color(0xFF3A4356),
+    fondo = Color(0xFF000000),
+    superficie = Color(0xFF212023),
+    superficieAlta = Color(0xFF2A292E),
+    borde = Color(0xFF38373C),
     // Gris claro, no blanco puro: de noche, el blanco a #FFF brilla y molesta a la vista.
-    textoPrincipal = Color(0xFFD6DAE2),
-    textoSecundario = Color(0xFF9AA3B8),
+    textoPrincipal = Color(0xFFE6E6EA),
+    textoSecundario = Color(0xFF9E9EA4),
     menta = Color(0xFF57E6B4),
     peligro = Color(0xFFFF5D5D)
 )
@@ -314,6 +314,32 @@ var ColorExportacion: Color
     get() = colorExportacionBase
     set(valor) { colorExportacionBase = valor }
 
+fun colorParaGrupoId(id: String?): Color {
+    if (id.isNullOrBlank()) return ColorAcento
+    val matchG = Regex("""G(\d+)""").find(id)
+    if (matchG != null) {
+        val num = matchG.groupValues[1].toIntOrNull() ?: 1
+        return when (num % 6) {
+            1 -> Color(0xFFFB8C00)
+            2 -> Color(0xFF5C6BC0)
+            3 -> Color(0xFF00BFA5)
+            4 -> Color(0xFF8E24AA)
+            5 -> Color(0xFF43A047)
+            0 -> Color(0xFF1E88E5)
+            else -> ColorAcento
+        }
+    }
+    val prefijo = id.trimStart().take(2)
+    return when (prefijo) {
+        "01" -> ColorSeguridad
+        "02" -> ColorSalud
+        "03" -> Color(0xFF8E24AA)
+        "04" -> ColorGenerador
+        "05" -> Color(0xFF1E88E5)
+        else -> ColorAcento
+    }
+}
+
 // -------------------------------------------------------------------------------------------------
 // Tokens Dinámicos de Bordes, Formas y Espaciado (Snapshot State en tiempo real)
 // -------------------------------------------------------------------------------------------------
@@ -355,13 +381,13 @@ val ColorBordeActual: Color get() = when (estiloBordeBase) {
 /** Borde externo para el contenedor de menús desplegables (DropdownMenu), adaptativo y sutil. */
 val ColorBordeDropdown: Color get() = when (estiloBordeBase) {
     "acento" -> ColorAcento.copy(alpha = if (esOscuroActivo) 0.45f else 0.55f)
-    "marcado" -> if (esOscuroActivo) Color(0xFF455066) else Color(0xFFB8BFCE)
-    "ninguno" -> if (esOscuroActivo) Color(0xFF2E3545) else Color(0xFFE2E5EC)
-    else -> if (esOscuroActivo) Color(0xFF3A4356) else Color(0xFFD4D8E2)
+    "marcado" -> if (esOscuroActivo) Color(0xFF4E4D53) else Color(0xFFB8BFCE)
+    "ninguno" -> if (esOscuroActivo) Color(0xFF2D2C30) else Color(0xFFE2E5EC)
+    else -> if (esOscuroActivo) Color(0xFF38373C) else Color(0xFFD4D8E2)
 }
 
 /** Separador o divisor sutil entre las opciones de un menú desplegable (DropdownMenu). */
-val ColorSeparadorDropdown: Color get() = if (esOscuroActivo) Color(0xFF2A3140) else Color(0xFFE0E3EB)
+val ColorSeparadorDropdown: Color get() = if (esOscuroActivo) Color(0xFF2D2C30) else Color(0xFFE0E3EB)
 
 /** Tono del encabezado para tarjetas desplegables: sutilmente más oscuro que el cuerpo. */
 val ColorEncabezadoTarjeta: Color get() {

@@ -51,6 +51,7 @@ fun PantallaOnboarding(vm: VaultViewModel, actividad: FragmentActivity) {
         when (actual) {
             0 -> PasoBienvenida(
                 perfilSeleccionado = perfilSeleccionado,
+                ajustes = ajustes,
                 alCambiarPerfil = { nuevo ->
                     perfilSeleccionado = nuevo
                     vm.repositorio.ajustes.actualizar { it.copy(perfilArgon2 = nuevo.clave) }
@@ -79,6 +80,7 @@ fun PantallaOnboarding(vm: VaultViewModel, actividad: FragmentActivity) {
 
             else -> PasoForjando(
                 perfil = perfilSeleccionado,
+                ajustes = ajustes,
                 alIniciarForja = {
                     vm.crearBoveda(contrasenaMaestra) { haptica.exito() }
                 }

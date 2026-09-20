@@ -39,14 +39,16 @@ class MenuLateralTest {
             Pantalla.Passkeys,
             Pantalla.Autenticador,
             Pantalla.SaludBoveda,
+            Pantalla.Duplicados,
             Pantalla.Papelera,
             Pantalla.AcercaDe,
             Pantalla.Registro,
             Pantalla.Ajustes
         )
 
-        assertEquals(8, rutasMenu.size)
+        assertEquals(9, rutasMenu.size)
         assertTrue(rutasMenu.contains(Pantalla.Generador))
+        assertTrue(rutasMenu.contains(Pantalla.Duplicados))
         assertTrue(rutasMenu.contains(Pantalla.Ajustes))
         assertTrue(rutasMenu.contains(Pantalla.AcercaDe))
     }

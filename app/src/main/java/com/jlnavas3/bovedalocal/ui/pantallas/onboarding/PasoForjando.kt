@@ -12,17 +12,23 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.jlnavas3.bovedalocal.crypto.PerfilArgon2
+import com.jlnavas3.bovedalocal.data.AjustesApp
 import com.jlnavas3.bovedalocal.ui.componentes.BarraProgresoForja
+import com.jlnavas3.bovedalocal.ui.componentes.EngranajesBoveda
 import com.jlnavas3.bovedalocal.ui.componentes.PuertaBoveda
+import com.jlnavas3.bovedalocal.ui.componentes.aEngranajesConfig
 import com.jlnavas3.bovedalocal.ui.theme.TextoPrincipal
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
 
 @Composable
 fun PasoForjando(
     perfil: PerfilArgon2,
+    ajustes: AjustesApp = AjustesApp(),
     alIniciarForja: () -> Unit
 ) {
     LaunchedEffect(Unit) {
@@ -36,7 +42,22 @@ fun PasoForjando(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        PuertaBoveda(abierta = false, tamano = 210)
+        if (ajustes.animacionDesbloqueo == "engranajes") {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(200.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                EngranajesBoveda(
+                    abierta = false,
+                    modifier = Modifier.fillMaxSize(),
+                    config = ajustes.aEngranajesConfig()
+                )
+            }
+        } else {
+            PuertaBoveda(abierta = false, tamano = 210)
+        }
         Spacer(Modifier.height(32.dp))
         Text("Forjando tu bóveda", style = MaterialTheme.typography.headlineSmall, color = TextoPrincipal)
         Spacer(Modifier.height(10.dp))

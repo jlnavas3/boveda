@@ -44,7 +44,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
-import com.jlnavas3.bovedalocal.ui.componentes.CabeceraPantalla
+import com.jlnavas3.bovedalocal.ui.componentes.ContenedorPrincipal
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -207,17 +207,13 @@ fun PantallaEscaner(
         }
     }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-            .padding(20.dp)
+    ContenedorPrincipal(
+        titulo = "Añadir Doble Factor",
+        subtitulo = "Escaneo seguro offline de QR o introducción manual",
+        alVolver = { vm.volverAtras() },
+        conScroll = true,
+        espaciado = 16.dp
     ) {
-        CabeceraPantalla(
-            titulo = "Añadir Doble Factor",
-            subtitulo = "Escaneo seguro offline de QR o introducción manual",
-            alVolver = { vm.volverAtras() }
-        )
 
         if (soloManual) {
             // Nada de cámara: has venido a teclear la clave.

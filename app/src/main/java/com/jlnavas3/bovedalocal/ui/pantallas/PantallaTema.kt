@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -17,13 +18,16 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AppShortcut
 import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.Backup
+import androidx.compose.material.icons.filled.BrightnessAuto
 import androidx.compose.material.icons.filled.CameraAlt
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.ColorLens
+import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
@@ -31,6 +35,7 @@ import androidx.compose.material.icons.filled.Fingerprint
 import androidx.compose.material.icons.filled.HealthAndSafety
 import androidx.compose.material.icons.filled.Key
 import androidx.compose.material.icons.filled.Layers
+import androidx.compose.material.icons.filled.LightMode
 import androidx.compose.material.icons.filled.Memory
 import androidx.compose.material.icons.filled.Palette
 import androidx.compose.material.icons.filled.Refresh
@@ -38,15 +43,45 @@ import androidx.compose.material.icons.filled.Security
 import androidx.compose.material.icons.filled.TextFields
 import androidx.compose.material.icons.filled.Timer
 import androidx.compose.material.icons.filled.Visibility
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
+import android.widget.Toast
+import androidx.compose.material.icons.filled.ContentCopy
+import androidx.compose.material.icons.filled.RestartAlt
+import androidx.compose.material.icons.filled.Tune
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Slider
+import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.foundation.relocation.BringIntoViewRequester
+import androidx.compose.foundation.relocation.bringIntoViewRequester
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.runtime.mutableIntStateOf
+import com.jlnavas3.bovedalocal.ui.componentes.BarraSuperiorPantalla
+import com.jlnavas3.bovedalocal.ui.componentes.DescripcionPantalla
+import com.jlnavas3.bovedalocal.ui.theme.parsearColorO
+import kotlin.math.roundToInt
+import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteBotonFila
+import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteGrupo
+import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteNavegacion
+import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteRadio
+import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteSeparador
+import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteSwitch
+import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ProveedorResaltadoAjustes
+import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjustesFondo
+import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.FilaAjuste
+import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.FilaOpcionRadio
+import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.GrupoAjustes
+import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.SeparadorFilaSimple
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -61,6 +96,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.jlnavas3.bovedalocal.ui.Pantalla
 import com.jlnavas3.bovedalocal.ui.VaultViewModel
 import com.jlnavas3.bovedalocal.ui.componentes.BotonAmbar
 import com.jlnavas3.bovedalocal.ui.componentes.BotonBorde
@@ -72,7 +108,6 @@ import com.jlnavas3.bovedalocal.ui.componentes.ContenedorTarjeta
 import com.jlnavas3.bovedalocal.ui.componentes.MenuDesplegableBoveda
 import com.jlnavas3.bovedalocal.ui.componentes.SelectorColorEnTiempoReal
 import com.jlnavas3.bovedalocal.ui.componentes.SeparadorOpcionMenu
-import com.jlnavas3.bovedalocal.ui.componentes.TarjetaBovedaDesplegable
 import com.jlnavas3.bovedalocal.ui.theme.Borde
 import com.jlnavas3.bovedalocal.ui.theme.Color2FA
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
@@ -112,8 +147,12 @@ private data class InfoSeccionFuncional(
     val mutador: (Color) -> Unit
 )
 
+@OptIn(androidx.compose.foundation.ExperimentalFoundationApi::class)
 @Composable
-fun PantallaTema(vm: VaultViewModel) {
+fun PantallaTema(
+    vm: VaultViewModel,
+    seccionDestino: String? = null
+) {
     val contexto = LocalContext.current
     val actividad = contexto as? Activity
     val haptica = remember { Haptica(contexto) }
@@ -122,6 +161,23 @@ fun PantallaTema(vm: VaultViewModel) {
     var dialogoConfirmarIcono by remember { mutableStateOf<PaletaAcento?>(null) }
     var seccionElegida by remember { mutableStateOf(0) }
     var dropdownSeccionesAbierto by remember { mutableStateOf(false) }
+
+    val reqDinamico = remember { BringIntoViewRequester() }
+    val reqAcento = remember { BringIntoViewRequester() }
+    val reqFuncional = remember { BringIntoViewRequester() }
+    val reqLauncher = remember { BringIntoViewRequester() }
+
+    LaunchedEffect(seccionDestino) {
+        if (seccionDestino != null) {
+            when {
+                seccionDestino == "09.2.2" -> reqDinamico.bringIntoView()
+                seccionDestino == "09.2.3" -> reqAcento.bringIntoView()
+                seccionDestino == "09.2.7" -> reqFuncional.bringIntoView()
+                seccionDestino == "09.2.8" -> reqLauncher.bringIntoView()
+                seccionDestino.startsWith("09.2.") && seccionDestino != "09.2" -> reqAcento.bringIntoView()
+            }
+        }
+    }
 
     val seccionesFuncionales = listOf(
         InfoSeccionFuncional(
@@ -207,482 +263,399 @@ fun PantallaTema(vm: VaultViewModel) {
         )
     )
 
-    ContenedorPrincipal(conScroll = true, espaciado = 14.dp) {
-        CabeceraPantalla(
-            titulo = "Personalizar Colores",
-            subtitulo = "Paleta visual de la app y colores semánticos por módulo",
-            alVolver = { vm.volverAtras() }
-        )
 
-        // 1. Tarjeta de previsualización en tiempo real
-        TarjetaBovedaDesplegable(
-            titulo = "Vista previa",
-            descripcion = "Observa cómo interactúan tus colores en vivo",
-            icono = Icons.Filled.Visibility,
-            colorIcono = ColorAcento,
-            inicialmenteAbierta = false
+    val scrollState = rememberScrollState()
+
+    ProveedorResaltadoAjustes(seccionDestino) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(ColorAjustesFondo)
         ) {
-            ContenedorTarjeta(
-                colorFondo = ColorTarjetas,
-                paddingInterno = 18.dp
-            ) {
-                Text(
-                    text = "Título de Sección de Ejemplo",
-                    color = ColorTitulos,
-                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
-                )
-                Text(
-                    text = "Este es un texto sobre la tarjeta personalizada. El contraste se calcula automáticamente.",
-                    color = ColorSobreTarjetas.copy(alpha = 0.85f),
-                    style = MaterialTheme.typography.bodyMedium
-                )
-                Spacer(Modifier.height(4.dp))
-                ContenedorFila(
-                    titulo = "Elemento de prueba",
-                    subtitulo = "El ícono usa el color asignado",
-                    icono = Icons.Filled.Key,
-                    colorIcono = ColorIconosInternos
-                )
-                Spacer(Modifier.height(6.dp))
-                BotonAmbar(
-                    texto = "Botón con Color de Acento",
-                    icono = Icons.Filled.Check
-                ) {}
-            }
-        }
-
-        // 2. Color dinámico del sistema (Material You - Android 12+)
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
-            TarjetaBovedaDesplegable(
-                titulo = "Color dinámico del sistema",
-                descripcion = "Sincroniza la paleta con tu fondo de pantalla (Material You)",
-                icono = Icons.Filled.AutoAwesome,
-                colorIcono = ColorAcento,
-                inicialmenteAbierta = false
-            ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Column(modifier = Modifier.weight(1f)) {
-                        Text("Material You (Monet)", color = TextoPrincipal, style = MaterialTheme.typography.titleMedium)
-                        Text(
-                            if (ajustes.colorDinamicoSistema) "Activo: usando colores del fondo de pantalla" else "Desactivado: usando paleta elegida",
-                            color = TextoSecundario,
-                            style = MaterialTheme.typography.bodySmall
-                        )
-                    }
-                    Switch(
-                        checked = ajustes.colorDinamicoSistema,
-                        onCheckedChange = {
-                            haptica.tic()
-                            vm.alternarColorDinamicoSistema(it)
-                        },
-                        colors = SwitchDefaults.colors(
-                            checkedThumbColor = ColorSobreAcento,
-                            checkedTrackColor = ColorAcento,
-                            checkedBorderColor = ColorAcento,
-                            uncheckedThumbColor = TextoSecundario,
-                            uncheckedTrackColor = SuperficieAlta,
-                            uncheckedBorderColor = TextoSecundario
-                        )
-                    )
-                }
-            }
-        }
-
-        // 3. Sección: Color de Acento (con Picker en tiempo real)
-        TarjetaBovedaDesplegable(
-            titulo = "Color de acento principal",
-            descripcion = "Afecta a los botones destacados, elementos activos y selector flotante",
-            icono = Icons.Filled.Palette,
-            colorIcono = ColorAcento,
-            inicialmenteAbierta = false
-        ) {
-            SelectorColorEnTiempoReal(
-                colorInicial = ColorAcento,
-                titulo = "Acento"
-            ) { nuevoColor ->
-                vm.ajustarColorAcento(nuevoColor.aHex())
-            }
-        }
-
-        // 4. Sección: Color de Íconos Internos (independiente)
-        TarjetaBovedaDesplegable(
-            titulo = "Color de íconos internos",
-            descripcion = "Personaliza los íconos de la lista, menú y botones sin alterar el acento general",
-            icono = Icons.Filled.Security,
-            colorIcono = ColorIconosInternos,
-            inicialmenteAbierta = false
-        ) {
-            val esAdaptativo = ajustes.colorIconosInternos.isBlank()
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text("Color adaptativo del tema", color = TextoPrincipal, style = MaterialTheme.typography.bodyMedium)
-                BotonBorde(
-                    texto = if (esAdaptativo) "Activo" else "Restablecer",
-                    icono = Icons.Filled.Refresh,
-                    modifier = Modifier.width(140.dp)
-                ) {
-                    haptica.tic()
-                    vm.ajustarColorIconosInternos("")
-                }
-            }
-            Spacer(Modifier.height(8.dp))
-            SelectorColorEnTiempoReal(
-                colorInicial = ColorIconosInternos,
-                titulo = "Íconos"
-            ) { nuevoColor ->
-                vm.ajustarColorIconosInternos(nuevoColor.aHex())
-            }
-        }
-
-        // 5. Sección: Color de Títulos y Cabeceras
-        TarjetaBovedaDesplegable(
-            titulo = "Color de títulos y cabeceras",
-            descripcion = "Color destacado para las categorías de la lista y títulos de sección",
-            icono = Icons.Filled.TextFields,
-            colorIcono = ColorTitulos,
-            inicialmenteAbierta = false
-        ) {
-            val esAdaptativo = ajustes.colorTitulos.isBlank()
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text("Color adaptativo del tema", color = TextoPrincipal, style = MaterialTheme.typography.bodyMedium)
-                BotonBorde(
-                    texto = if (esAdaptativo) "Activo" else "Restablecer",
-                    icono = Icons.Filled.Refresh,
-                    modifier = Modifier.width(140.dp)
-                ) {
-                    haptica.tic()
-                    vm.ajustarColorTitulos("")
-                }
-            }
-            Spacer(Modifier.height(8.dp))
-            SelectorColorEnTiempoReal(
-                colorInicial = ColorTitulos,
-                titulo = "Títulos"
-            ) { nuevoColor ->
-                vm.ajustarColorTitulos(nuevoColor.aHex())
-            }
-        }
-
-        // 6. Sección: Color de Tarjetas
-        TarjetaBovedaDesplegable(
-            titulo = "Color de tarjetas y superficies",
-            descripcion = "Personaliza el fondo de las tarjetas y paneles de contenido",
-            icono = Icons.Filled.Layers,
-            colorIcono = ColorTarjetas,
-            inicialmenteAbierta = false
-        ) {
-            val esAdaptativo = ajustes.colorTarjetas.isBlank()
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text("Fondo adaptativo del tema", color = TextoPrincipal, style = MaterialTheme.typography.bodyMedium)
-                BotonBorde(
-                    texto = if (esAdaptativo) "Activo" else "Restablecer",
-                    icono = Icons.Filled.Refresh,
-                    modifier = Modifier.width(140.dp)
-                ) {
-                    haptica.tic()
-                    vm.ajustarColorTarjetas("")
-                }
-            }
-            Spacer(Modifier.height(8.dp))
-            SelectorColorEnTiempoReal(
-                colorInicial = ColorTarjetas,
-                titulo = "Tarjetas"
-            ) { nuevoColor ->
-                vm.ajustarColorTarjetas(nuevoColor.aHex())
-            }
-        }
-
-        // 7. Sección: Colores por Sección Funcional con Menú Dropdown
-        val seccionActual = seccionesFuncionales[seccionElegida.coerceIn(0, seccionesFuncionales.size - 1)]
-        TarjetaBovedaDesplegable(
-            titulo = "Colores por Sección Funcional",
-            descripcion = "Color semántico para cada módulo clave de la app",
-            icono = Icons.Filled.ColorLens,
-            colorIcono = seccionActual.colorActual,
-            inicialmenteAbierta = false
-        ) {
-            Text(
-                text = "Selecciona un módulo en el menú desplegable para personalizar su identidad visual:",
-                color = TextoSecundario,
-                style = MaterialTheme.typography.bodySmall
+            BarraSuperiorPantalla(
+                titulo = "Tema y colores",
+                idEtiqueta = "03.2",
+                mostrarId = ajustes.mostrarIdsAjustes,
+                alVolver = { vm.volverAtras() },
+                conSeparador = scrollState.value > 0,
+                colorFondo = ColorAjustesFondo
             )
-            Spacer(Modifier.height(4.dp))
 
-            // Selector Dropdown de Sección Funcional
-            Box(modifier = Modifier.fillMaxWidth()) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clip(FormaCampo)
-                        .background(Superficie)
-                        .then(
-                            if (GrosorBorde > 0.dp) {
-                                Modifier.border(
-                                    GrosorBorde,
-                                    if (dropdownSeccionesAbierto) ColorTitulos else ColorBordeActual,
-                                    FormaCampo
-                                )
-                            } else {
-                                Modifier
-                            }
-                        )
-                        .clickable { dropdownSeccionesAbierto = true }
-                        .padding(horizontal = 12.dp, vertical = 10.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    // Badge del ícono con fondo suave estilo barra lateral
-                    Box(
-                        modifier = Modifier
-                            .size(36.dp)
-                            .clip(FormaPequena)
-                            .background(seccionActual.colorActual.copy(alpha = 0.14f)),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Icon(
-                            imageVector = seccionActual.icono,
-                            contentDescription = null,
-                            tint = seccionActual.colorActual,
-                            modifier = Modifier.size(20.dp)
-                        )
-                    }
-                    Spacer(Modifier.width(12.dp))
-                    Column(modifier = Modifier.weight(1f)) {
-                        Text(
-                            text = seccionActual.nombre,
-                            color = ColorTitulos,
-                            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                        Text(
-                            text = seccionActual.descripcion,
-                            color = TextoSecundario,
-                            style = MaterialTheme.typography.bodySmall,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                    }
-                    Spacer(Modifier.width(8.dp))
-                    // Muestra de color circular
-                    Box(
-                        modifier = Modifier
-                            .size(22.dp)
-                            .clip(CircleShape)
-                            .background(seccionActual.colorActual)
-                            .border(1.5.dp, TextoPrincipal.copy(alpha = 0.3f), CircleShape)
-                    )
-                    Spacer(Modifier.width(6.dp))
-                    Icon(
-                        imageVector = if (dropdownSeccionesAbierto) Icons.Filled.ExpandLess else Icons.Filled.ExpandMore,
-                        contentDescription = "Desplegar secciones funcionales",
-                        tint = TextoSecundario,
-                        modifier = Modifier.size(22.dp)
-                    )
-                }
-
-                MenuDesplegableBoveda(
-                    expanded = dropdownSeccionesAbierto,
-                    onDismissRequest = { dropdownSeccionesAbierto = false }
-                ) {
-                    seccionesFuncionales.forEachIndexed { i, seccion ->
-                        if (i > 0) {
-                            SeparadorOpcionMenu()
-                        }
-                        val esElegida = seccionElegida == i
-                        DropdownMenuItem(
-                            leadingIcon = {
-                                Box(
-                                    modifier = Modifier
-                                        .size(32.dp)
-                                        .clip(FormaPequena)
-                                        .background(seccion.colorActual.copy(alpha = 0.14f)),
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    Icon(
-                                        imageVector = seccion.icono,
-                                        contentDescription = null,
-                                        tint = seccion.colorActual,
-                                        modifier = Modifier.size(18.dp)
-                                    )
-                                }
-                            },
-                            text = {
-                                Column {
-                                    Text(
-                                        text = seccion.nombre,
-                                        color = if (esElegida) ColorTitulos else TextoPrincipal,
-                                        style = MaterialTheme.typography.bodyMedium.copy(
-                                            fontWeight = if (esElegida) FontWeight.Bold else FontWeight.Normal
-                                        )
-                                    )
-                                    Text(
-                                        text = seccion.descripcion,
-                                        color = TextoSecundario,
-                                        style = MaterialTheme.typography.bodySmall,
-                                        maxLines = 1,
-                                        overflow = TextOverflow.Ellipsis
-                                    )
-                                }
-                            },
-                            trailingIcon = {
-                                Row(verticalAlignment = Alignment.CenterVertically) {
-                                    Box(
-                                        modifier = Modifier
-                                            .size(18.dp)
-                                            .clip(CircleShape)
-                                            .background(seccion.colorActual)
-                                            .border(1.dp, TextoPrincipal.copy(alpha = 0.25f), CircleShape)
-                                    )
-                                    if (esElegida) {
-                                        Spacer(Modifier.width(8.dp))
-                                        Icon(
-                                            imageVector = Icons.Filled.Check,
-                                            contentDescription = "Seleccionado",
-                                            tint = ColorTitulos,
-                                            modifier = Modifier.size(18.dp)
-                                        )
-                                    }
-                                }
-                            },
-                            onClick = {
-                                haptica.tic()
-                                seccionElegida = i
-                                dropdownSeccionesAbierto = false
-                            }
-                        )
-                    }
-                }
-            }
-
-            Spacer(Modifier.height(6.dp))
-
-            // Barra de acción para restablecer este color individual
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = "Color actual: ${seccionActual.colorActual.aHex()}",
-                    color = TextoSecundario,
-                    style = MaterialTheme.typography.bodySmall
-                )
-                BotonBorde(
-                    texto = "Restablecer este módulo",
-                    icono = Icons.Filled.Refresh,
-                    modifier = Modifier.width(180.dp)
-                ) {
-                    haptica.tic()
-                    seccionActual.mutador(seccionActual.colorPorDefecto)
-                }
-            }
-
-            Spacer(Modifier.height(8.dp))
-
-            // Selector en tiempo real para el módulo seleccionado
-            SelectorColorEnTiempoReal(
-                colorInicial = seccionActual.colorActual,
-                titulo = seccionActual.nombre
-            ) { nuevoColor ->
-                seccionActual.mutador(nuevoColor)
-            }
-        }
-
-        // 8. Sección: Ícono del Launcher (Fossify)
-        TarjetaBovedaDesplegable(
-            titulo = "Ícono de la app en el Launcher",
-            descripcion = "Variantes del launcher del sistema (requiere reinicio rápido)",
-            icono = Icons.Filled.AppShortcut,
-            colorIcono = ColorAcento,
-            inicialmenteAbierta = false
-        ) {
-            Text(
-                "Android exige cambiar el icono del launcher mediante variantes del sistema. Al seleccionarlo, la app se reiniciará brevemente.",
-                color = TextoSecundario,
-                style = MaterialTheme.typography.bodySmall
-            )
-            Spacer(Modifier.height(8.dp))
-            Row(
+            Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .horizontalScroll(rememberScrollState()),
-                horizontalArrangement = Arrangement.spacedBy(10.dp)
+                    .weight(1f)
+                    .verticalScroll(scrollState)
+                    .padding(horizontal = 16.dp, vertical = 12.dp)
             ) {
-                PaletaAcento.entries.forEach { paleta ->
-                    val seleccionado = ajustes.iconoLauncher == paleta.clave
-                    Box(
-                        modifier = Modifier
-                            .size(42.dp)
-                            .clip(CircleShape)
-                            .background(paleta.base)
-                            .border(
-                                width = if (seleccionado) 3.dp else 1.dp,
-                                color = if (seleccionado) TextoPrincipal else Borde,
-                                shape = CircleShape
-                            )
-                            .clickable {
-                                if (ajustes.iconoLauncher != paleta.clave) {
-                                    haptica.tic()
-                                    dialogoConfirmarIcono = paleta
-                                }
-                            },
-                        contentAlignment = Alignment.Center
-                    ) {
-                        if (seleccionado) {
+                DescripcionPantalla(subtitulo = "Modo de tema, paleta visual y colores semánticos por módulo")
+                Spacer(Modifier.height(10.dp))
+
+                // 0. Modo de tema (Sistema, Claro, Oscuro)
+                ComponenteGrupo(
+                    etiqueta = "Modo de tema",
+                    idGrupo = "03.2.G1",
+                    mostrarId = ajustes.mostrarIdsAjustes,
+                    descripcion = "Sigue la configuración de Android o fija un aspecto específico"
+                ) {
+                    ComponenteRadio(
+                        titulo = "Automático (sistema)",
+                        icono = Icons.Filled.BrightnessAuto,
+                        colorIcono = Color(0xFFFB8C00),
+                        seleccionado = ajustes.temaApp == "sistema",
+                        idFila = "03.2.1",
+                        mostrarId = ajustes.mostrarIdsAjustes,
+                        alSeleccionar = {
+                            vm.ajustarTema("sistema")
+                        }
+                    )
+                    ComponenteSeparador()
+                    ComponenteRadio(
+                        titulo = "Modo claro",
+                        icono = Icons.Filled.LightMode,
+                        colorIcono = Color(0xFFFFA000),
+                        seleccionado = ajustes.temaApp == "claro",
+                        idFila = "03.2.2",
+                        mostrarId = ajustes.mostrarIdsAjustes,
+                        alSeleccionar = {
+                            vm.ajustarTema("claro")
+                        }
+                    )
+                    ComponenteSeparador()
+                    ComponenteRadio(
+                        titulo = "Modo oscuro",
+                        icono = Icons.Filled.DarkMode,
+                        colorIcono = Color(0xFF3F51B5),
+                        seleccionado = ajustes.temaApp == "oscuro",
+                        idFila = "03.2.3",
+                        mostrarId = ajustes.mostrarIdsAjustes,
+                        alSeleccionar = {
+                            vm.ajustarTema("oscuro")
+                        }
+                    )
+                }
+
+                Spacer(Modifier.height(18.dp))
+
+                // Animación de pantalla bloqueada
+                ComponenteGrupo(
+                    etiqueta = "Animación de pantalla bloqueada",
+                    idGrupo = "03.2.G2",
+                    mostrarId = ajustes.mostrarIdsAjustes
+                ) {
+                    ComponenteRadio(
+                        titulo = "Mecanismo de engranajes",
+                        icono = Icons.Filled.Memory,
+                        colorIcono = Color(0xFF5C6BC0),
+                        seleccionado = ajustes.animacionDesbloqueo == "engranajes",
+                        idFila = "03.2.4",
+                        mostrarId = ajustes.mostrarIdsAjustes,
+                        alSeleccionar = {
+                            haptica.tic()
+                            vm.ajustarAnimacionDesbloqueo("engranajes")
+                        }
+                    )
+                    ComponenteSeparador()
+                    ComponenteRadio(
+                        titulo = "Puerta de bóveda",
+                        icono = Icons.Filled.Security,
+                        colorIcono = Color(0xFF1E88E5),
+                        seleccionado = ajustes.animacionDesbloqueo != "engranajes",
+                        idFila = "03.2.5",
+                        mostrarId = ajustes.mostrarIdsAjustes,
+                        alSeleccionar = {
+                            haptica.tic()
+                            vm.ajustarAnimacionDesbloqueo("puerta")
+                        }
+                    )
+                    ComponenteSeparador()
+                    ComponenteBotonFila(
+                        titulo = "Calibración",
+                        icono = Icons.Filled.Tune,
+                        colorIcono = ColorAcento,
+                        idFila = "03.2.6",
+                        mostrarId = ajustes.mostrarIdsAjustes,
+                        alPulsar = {
+                            haptica.tic()
+                            vm.ir(Pantalla.CalibracionAnimacion())
+                        }
+                    )
+            }
+
+            Spacer(Modifier.height(18.dp))
+
+            // 1. Color dinámico del sistema (Material You - Android 12+)
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
+                Spacer(Modifier.height(18.dp))
+                ComponenteGrupo(
+                    etiqueta = "Color dinámico del sistema",
+                    idGrupo = "03.2.G3",
+                    mostrarId = ajustes.mostrarIdsAjustes,
+                    descripcion = "Adapta los colores automáticamente al fondo de pantalla de Android",
+                    modifier = Modifier.bringIntoViewRequester(reqDinamico)
+                ) {
+                    ComponenteSwitch(
+                        titulo = "Material You (Monet)",
+                        icono = Icons.Filled.AutoAwesome,
+                        colorIcono = Color(0xFF00897B),
+                        activo = ajustes.colorDinamicoSistema,
+                        idFila = "03.2.7",
+                        mostrarId = ajustes.mostrarIdsAjustes,
+                        alCambiar = {
+                            haptica.tic()
+                            vm.alternarColorDinamicoSistema(it)
+                        }
+                    )
+                }
+            }
+
+            // 2. Color de acento principal
+            Spacer(Modifier.height(18.dp))
+            ComponenteGrupo(
+                etiqueta = "Color de acento principal",
+                idGrupo = "03.2.G4",
+                mostrarId = ajustes.mostrarIdsAjustes,
+                descripcion = "Afecta a los botones destacados, elementos activos y selectores",
+                modifier = Modifier.bringIntoViewRequester(reqAcento)
+            ) {
+                Column(modifier = Modifier.padding(16.dp)) {
+                    SelectorColorEnTiempoReal(
+                        colorInicial = ColorAcento,
+                        titulo = "Acento"
+                    ) { nuevoColor ->
+                        vm.ajustarColorAcento(nuevoColor.aHex())
+                    }
+                }
+                ComponenteSeparador()
+                ComponenteBotonFila(
+                    titulo = "Restablecer",
+                    alPulsar = {
+                        vm.ajustarColorAcento("ambar")
+                    }
+                )
+            }
+
+            // 3. Colores por sección funcional
+            Spacer(Modifier.height(18.dp))
+            val seccionActual = seccionesFuncionales[seccionElegida.coerceIn(0, seccionesFuncionales.size - 1)]
+            ComponenteGrupo(
+                etiqueta = "Colores por módulo funcional",
+                idGrupo = "03.2.G5",
+                mostrarId = ajustes.mostrarIdsAjustes,
+                descripcion = "Identidad cromática de cada módulo en la barra lateral y listados",
+                modifier = Modifier.bringIntoViewRequester(reqFuncional)
+            ) {
+                Column(modifier = Modifier.padding(16.dp)) {
+                    // Selector Dropdown de Sección Funcional
+                    Box(modifier = Modifier.fillMaxWidth()) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clip(FormaCampo)
+                                .background(Superficie)
+                                .then(
+                                    if (GrosorBorde > 0.dp) {
+                                        Modifier.border(
+                                            GrosorBorde,
+                                            if (dropdownSeccionesAbierto) ColorTitulos else ColorBordeActual,
+                                            FormaCampo
+                                        )
+                                    } else {
+                                        Modifier
+                                    }
+                                )
+                                .clickable { dropdownSeccionesAbierto = true }
+                                .padding(horizontal = 12.dp, vertical = 10.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .size(36.dp)
+                                    .clip(FormaPequena)
+                                    .background(seccionActual.colorActual.copy(alpha = 0.14f)),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Icon(
+                                    imageVector = seccionActual.icono,
+                                    contentDescription = null,
+                                    tint = seccionActual.colorActual,
+                                    modifier = Modifier.size(20.dp)
+                                )
+                            }
+                            Spacer(Modifier.width(12.dp))
+                            Column(modifier = Modifier.weight(1f)) {
+                                Text(
+                                    text = seccionActual.nombre,
+                                    color = TextoPrincipal,
+                                    style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.SemiBold)
+                                )
+                                Text(
+                                    text = seccionActual.descripcion,
+                                    color = TextoSecundario,
+                                    style = MaterialTheme.typography.bodySmall,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis
+                                )
+                            }
                             Icon(
-                                imageVector = Icons.Filled.Check,
-                                contentDescription = paleta.etiqueta,
-                                tint = colorContraste(paleta.base),
-                                modifier = Modifier.size(20.dp)
+                                imageVector = if (dropdownSeccionesAbierto) Icons.Filled.ExpandLess else Icons.Filled.ExpandMore,
+                                contentDescription = "Cambiar sección",
+                                tint = TextoSecundario
                             )
+                        }
+
+                        MenuDesplegableBoveda(
+                            expanded = dropdownSeccionesAbierto,
+                            onDismissRequest = { dropdownSeccionesAbierto = false }
+                        ) {
+                            seccionesFuncionales.forEachIndexed { idx, sec ->
+                                DropdownMenuItem(
+                                    text = {
+                                        Row(verticalAlignment = Alignment.CenterVertically) {
+                                            Box(
+                                                modifier = Modifier
+                                                    .size(28.dp)
+                                                    .clip(FormaPequena)
+                                                    .background(sec.colorActual.copy(alpha = 0.14f)),
+                                                contentAlignment = Alignment.Center
+                                            ) {
+                                                Icon(
+                                                    imageVector = sec.icono,
+                                                    contentDescription = null,
+                                                    tint = sec.colorActual,
+                                                    modifier = Modifier.size(16.dp)
+                                                )
+                                            }
+                                            Spacer(Modifier.width(10.dp))
+                                            Column {
+                                                Text(sec.nombre, color = TextoPrincipal, style = MaterialTheme.typography.bodyMedium)
+                                                Text(sec.descripcion, color = TextoSecundario, style = MaterialTheme.typography.bodySmall)
+                                            }
+                                        }
+                                    },
+                                    onClick = {
+                                        haptica.toque()
+                                        seccionElegida = idx
+                                        dropdownSeccionesAbierto = false
+                                    }
+                                )
+                                if (idx < seccionesFuncionales.size - 1) SeparadorOpcionMenu()
+                            }
+                        }
+                    }
+
+                    Spacer(Modifier.height(10.dp))
+                    Text(
+                        text = "Color actual: ${seccionActual.colorActual.aHex()}",
+                        color = TextoSecundario,
+                        style = MaterialTheme.typography.bodySmall
+                    )
+                    Spacer(Modifier.height(8.dp))
+                    SelectorColorEnTiempoReal(
+                        colorInicial = seccionActual.colorActual,
+                        titulo = seccionActual.nombre
+                    ) { nuevoColor ->
+                        seccionActual.mutador(nuevoColor)
+                    }
+                }
+                ComponenteSeparador()
+                ComponenteBotonFila(
+                    titulo = "Restablecer",
+                    alPulsar = {
+                        seccionActual.mutador(seccionActual.colorPorDefecto)
+                    }
+                )
+            }
+
+            // 4. Ícono de la app en el Launcher
+            Spacer(Modifier.height(18.dp))
+            ComponenteGrupo(
+                etiqueta = "Ícono de la app en el launcher",
+                idGrupo = "03.2.G6",
+                mostrarId = ajustes.mostrarIdsAjustes,
+                descripcion = "Variante de icono para la pantalla de inicio y cajón de aplicaciones",
+                modifier = Modifier.bringIntoViewRequester(reqLauncher)
+            ) {
+                Column(modifier = Modifier.padding(16.dp)) {
+                    Text(
+                        "Android exige cambiar el icono del launcher mediante variantes del sistema. Al seleccionarlo, la app se reiniciará brevemente.",
+                        color = TextoSecundario,
+                        style = MaterialTheme.typography.bodySmall
+                    )
+                    Spacer(Modifier.height(12.dp))
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .horizontalScroll(rememberScrollState()),
+                        horizontalArrangement = Arrangement.spacedBy(10.dp)
+                    ) {
+                        PaletaAcento.entries.forEach { paleta ->
+                            val seleccionado = ajustes.iconoLauncher == paleta.clave
+                            Box(
+                                modifier = Modifier
+                                    .size(42.dp)
+                                    .clip(CircleShape)
+                                    .background(paleta.base)
+                                    .border(
+                                        width = if (seleccionado) 3.dp else 1.dp,
+                                        color = if (seleccionado) TextoPrincipal else Borde,
+                                        shape = CircleShape
+                                    )
+                                    .clickable {
+                                        if (ajustes.iconoLauncher != paleta.clave) {
+                                            haptica.tic()
+                                            dialogoConfirmarIcono = paleta
+                                        }
+                                    },
+                                contentAlignment = Alignment.Center
+                            ) {
+                                if (seleccionado) {
+                                    Icon(
+                                        imageVector = Icons.Filled.Check,
+                                        contentDescription = paleta.etiqueta,
+                                        tint = colorContraste(paleta.base),
+                                        modifier = Modifier.size(20.dp)
+                                    )
+                                }
+                            }
                         }
                     }
                 }
+                ComponenteSeparador()
+                ComponenteBotonFila(
+                    titulo = "Restablecer",
+                    alPulsar = {
+                        if (ajustes.iconoLauncher != "ambar") {
+                            dialogoConfirmarIcono = PaletaAcento.AMBAR
+                        }
+                    }
+                )
             }
-        }
 
-        // 9. Botones de acción inferiores con iconos normalizados
-        Spacer(Modifier.height(4.dp))
-        BotonBorde(
-            texto = "Restablecer todos los colores",
-            icono = Icons.Filled.Refresh,
-            color = ColorTitulos
-        ) {
-            haptica.tic()
-            vm.restablecerColoresTema()
-        }
+            // 9. Botones de acción inferiores con iconos normalizados
+            Spacer(Modifier.height(18.dp))
+            ComponenteGrupo {
+                ComponenteBotonFila(
+                    titulo = "Restablecer módulo",
+                    alPulsar = {
+                        vm.restablecerColoresTema()
+                    }
+                )
+            }
 
-        BotonColorido(
-            texto = "Listo",
-            icono = Icons.Filled.Check,
-            color = ColorAcento
-        ) {
-            haptica.exito()
-            vm.volverAtras()
+            Spacer(Modifier.height(32.dp))
         }
-
-        Spacer(Modifier.height(24.dp))
     }
+}
 
     dialogoConfirmarIcono?.let { paleta ->
+        val esOscuro = androidx.compose.foundation.isSystemInDarkTheme()
+        val colorDialogo = if (esOscuro) Color(0xFF212023) else Color(0xFFFFFFFF)
         AlertDialog(
             onDismissRequest = { dialogoConfirmarIcono = null },
-            containerColor = SuperficieAlta,
+            containerColor = colorDialogo,
+            tonalElevation = 0.dp,
+            shape = RoundedCornerShape(20.dp),
             title = { Text("Cambiar icono a \"${paleta.etiqueta}\"", color = TextoPrincipal) },
             text = {
                 Text(
@@ -705,3 +678,5 @@ fun PantallaTema(vm: VaultViewModel) {
         )
     }
 }
+
+

@@ -3,4 +3,8 @@
     <string name="app_name">Bóveda local</string>
     <string name="proveedor_subtitulo">Passkeys y contraseñas guardadas en local, sin internet</string>
     <string name="autofill_sugerencia">Bóveda local</string>
+    <string name="shortcut_nueva_entrada">Nueva entrada</string>
+    <string name="shortcut_buscar">Buscar en la bóveda</string>
+    <string name="shortcut_escanear">Escanear QR (2FA)</string>
+    <string name="shortcut_generador">Generador rápido</string>
 </resources>

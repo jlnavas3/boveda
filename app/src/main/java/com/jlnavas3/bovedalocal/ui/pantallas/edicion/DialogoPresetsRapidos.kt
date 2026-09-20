@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -31,6 +32,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -48,24 +50,31 @@ import com.jlnavas3.bovedalocal.ui.theme.SuperficieAlta
 import com.jlnavas3.bovedalocal.ui.theme.TextoPrincipal
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
 
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.unit.sp
+import com.jlnavas3.bovedalocal.ui.theme.esOscuroActivo
+
 @Composable
 fun DialogoPresetsRapidos(
     alDescartar: () -> Unit,
     alSeleccionarPreset: (List<CampoPersonalizado>) -> Unit
 ) {
+    val colorDialogo = if (esOscuroActivo) Color(0xFF212023) else Color(0xFFFFFFFF)
+
     AlertDialog(
         onDismissRequest = alDescartar,
-        shape = FormaTarjeta,
-        containerColor = Superficie,
+        shape = RoundedCornerShape(20.dp),
+        containerColor = colorDialogo,
+        tonalElevation = 0.dp,
         title = {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Icon(
                     imageVector = Icons.Filled.DynamicForm,
                     contentDescription = null,
                     tint = ColorAcento,
-                    modifier = Modifier.size(24.dp)
+                    modifier = Modifier.size(20.dp)
                 )
-                Spacer(Modifier.width(10.dp))
+                Spacer(Modifier.width(8.dp))
                 Text(
                     text = "Conjuntos de campos rápidos",
                     color = ColorTitulos,
@@ -78,15 +87,17 @@ fun DialogoPresetsRapidos(
                 modifier = Modifier
                     .fillMaxWidth()
                     .verticalScroll(rememberScrollState()),
-                verticalArrangement = Arrangement.spacedBy(10.dp)
+                verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 Text(
                     text = "Selecciona un conjunto sugerido para agregar sus campos a esta entrada:",
                     color = TextoSecundario,
-                    style = MaterialTheme.typography.bodySmall
+                    style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp)
                 )
 
-                Spacer(Modifier.height(4.dp))
+                Spacer(Modifier.height(2.dp))
+
+                val fondoItem = if (esOscuroActivo) Color(0xFF2A292E) else Color(0xFFEFEFF3)
 
                 PresetsCampos.todos.forEach { preset ->
                     val icono: ImageVector = when (preset.tipoEntradaSugerido) {
@@ -102,36 +113,40 @@ fun DialogoPresetsRapidos(
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .clip(FormaBoton)
-                            .background(SuperficieAlta)
-                            .then(
-                                if (GrosorBorde > 0.dp) Modifier.border(GrosorBorde, ColorBordeActual, FormaBoton)
-                                else Modifier
-                            )
+                            .clip(RoundedCornerShape(14.dp))
+                            .background(fondoItem)
                             .clickable {
                                 alSeleccionarPreset(preset.generarCampos())
                                 alDescartar()
                             }
-                            .padding(horizontal = 14.dp, vertical = 12.dp),
+                            .padding(horizontal = 12.dp, vertical = 10.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Icon(
-                            imageVector = icono,
-                            contentDescription = null,
-                            tint = ColorAcento,
-                            modifier = Modifier.size(24.dp)
-                        )
+                        Box(
+                            modifier = Modifier
+                                .size(36.dp)
+                                .clip(RoundedCornerShape(10.dp))
+                                .background(ColorAcento),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                imageVector = icono,
+                                contentDescription = null,
+                                tint = com.jlnavas3.bovedalocal.ui.theme.ColorSobreAcento,
+                                modifier = Modifier.size(20.dp)
+                            )
+                        }
                         Spacer(Modifier.width(12.dp))
                         Column(modifier = Modifier.weight(1f)) {
                             Text(
                                 text = preset.titulo,
                                 color = TextoPrincipal,
-                                style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold)
+                                style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold, fontSize = 14.5.sp)
                             )
                             Text(
                                 text = preset.descripcion,
                                 color = TextoSecundario,
-                                style = MaterialTheme.typography.bodySmall
+                                style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp)
                             )
                         }
                     }

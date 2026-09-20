@@ -1,18 +1,7 @@
 package com.jlnavas3.bovedalocal.quicksettings
 
-import android.content.ClipData
-import android.content.ClipboardManager
-import android.content.Context
-import android.os.Build
-import android.os.VibrationEffect
-import android.os.Vibrator
-import android.os.VibratorManager
 import android.service.quicksettings.Tile
 import android.service.quicksettings.TileService
-import android.widget.Toast
-import com.jlnavas3.bovedalocal.crypto.OpcionesGenerador
-import com.jlnavas3.bovedalocal.crypto.PasswordGenerator
-import com.jlnavas3.bovedalocal.data.AlmacenAjustes
 
 class TileGeneradorRapido : TileService() {
 
@@ -26,73 +15,8 @@ class TileGeneradorRapido : TileService() {
 
     override fun onClick() {
         super.onClick()
-        val ajustes = AlmacenAjustes(applicationContext).actual
-        val clave = if (ajustes.tileModo == "patron") {
-            PasswordGenerator.generarPorPatron(ajustes.tilePatron)
-        } else {
-            PasswordGenerator.generarAleatoria(
-                OpcionesGenerador(
-                    longitud = ajustes.tileLongitud,
-                    mayusculas = true,
-                    minusculas = true,
-                    digitos = true,
-                    simbolos = true
-                )
-            )
-        }
-
-        if (ajustes.tileCopiarPortapapeles) {
-            val cm = getSystemService(Context.CLIPBOARD_SERVICE) as? ClipboardManager
-            if (cm != null) {
-                val clip = ClipData.newPlainText("Contraseña generada", clave)
-                cm.setPrimaryClip(clip)
-                com.jlnavas3.bovedalocal.util.Diagnostico.apuntar("portapapeles", "Contraseña generada desde Quick Settings Tile")
-            }
-        } else {
-            com.jlnavas3.bovedalocal.util.Diagnostico.apuntar("bóveda", "Contraseña generada desde Quick Settings Tile")
-        }
-
-        if (ajustes.tileHaptica) {
-            ejecutarVibracion()
-        }
-
-        if (ajustes.tileMostrarToast) {
-            val mensaje = if (ajustes.tileCopiarPortapapeles) {
-                "Contraseña generada y copiada al portapapeles"
-            } else {
-                "Clave generada: $clave"
-            }
-            android.os.Handler(android.os.Looper.getMainLooper()).post {
-                Toast.makeText(applicationContext, mensaje, Toast.LENGTH_SHORT).show()
-            }
-        }
-    }
-
-    private fun ejecutarVibracion() {
-        try {
-            val v = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                val vm = getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as? VibratorManager
-                vm?.defaultVibrator
-            } else {
-                @Suppress("DEPRECATION")
-                getSystemService(Context.VIBRATOR_SERVICE) as? Vibrator
-            } ?: return
-
-            if (v.hasVibrator()) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    val efecto = if (v.hasAmplitudeControl()) {
-                        VibrationEffect.createOneShot(45, 200)
-                    } else {
-                        VibrationEffect.createOneShot(45, VibrationEffect.DEFAULT_AMPLITUDE)
-                    }
-                    v.vibrate(efecto)
-                } else {
-                    @Suppress("DEPRECATION")
-                    v.vibrate(45)
-                }
-            }
-        } catch (_: Exception) {
-        }
+        GeneradorRapidoHelper.generar(applicationContext, "Quick Settings Tile")
     }
 }
+
 

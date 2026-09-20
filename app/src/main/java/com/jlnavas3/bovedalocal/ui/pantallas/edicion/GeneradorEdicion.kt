@@ -41,6 +41,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.jlnavas3.bovedalocal.crypto.OpcionesGenerador
 import com.jlnavas3.bovedalocal.crypto.PasswordGenerator
 import com.jlnavas3.bovedalocal.ui.componentes.BotonAmbar
@@ -62,6 +63,8 @@ import com.jlnavas3.bovedalocal.ui.theme.SuperficieAlta
 import com.jlnavas3.bovedalocal.ui.theme.TextoPrincipal
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
 import com.jlnavas3.bovedalocal.util.Haptica
+import androidx.compose.foundation.shape.RoundedCornerShape
+import com.jlnavas3.bovedalocal.ui.theme.esOscuroActivo
 import kotlin.math.roundToInt
 
 @Composable
@@ -94,7 +97,9 @@ fun SelectorModoEdicion(
     modifier: Modifier = Modifier
 ) {
     var abierto by remember { mutableStateOf(false) }
-    val forma = FormaBoton
+    val forma = RoundedCornerShape(12.dp)
+    val fondo = if (esOscuroActivo) Color(0xFF161518) else Color(0xFFF4F4F6)
+    val borde = if (esOscuroActivo) Color(0xFF333238) else Color(0xFFDFDFE3)
 
     val (icono, titulo) = when {
         opciones.modoFrase -> Icons.AutoMirrored.Filled.MenuBook to "Diceware"
@@ -106,29 +111,24 @@ fun SelectorModoEdicion(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(52.dp)
+                .height(42.dp)
                 .clip(forma)
-                .background(Superficie)
-                .then(
-                    if (GrosorBorde > 0.dp && (abierto || ColorBordeActual != Color.Transparent))
-                        Modifier.border(GrosorBorde, if (abierto) ColorTitulos else ColorBordeActual, forma)
-                    else Modifier
-                )
+                .background(fondo)
                 .clickable { abierto = true }
-                .padding(horizontal = 14.dp),
+                .padding(horizontal = 12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(
                 imageVector = icono,
                 contentDescription = null,
                 tint = if (abierto) ColorIconosInternos else TextoSecundario,
-                modifier = Modifier.size(22.dp)
+                modifier = Modifier.size(18.dp)
             )
             Spacer(Modifier.width(8.dp))
             Text(
                 text = titulo,
                 color = TextoPrincipal,
-                style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold),
+                style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold, fontSize = 14.sp),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier.weight(1f)
@@ -137,7 +137,7 @@ fun SelectorModoEdicion(
                 imageVector = if (abierto) Icons.Filled.ExpandLess else Icons.Filled.ExpandMore,
                 contentDescription = "Desplegar modos",
                 tint = TextoSecundario,
-                modifier = Modifier.size(20.dp)
+                modifier = Modifier.size(18.dp)
             )
         }
 

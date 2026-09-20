@@ -42,6 +42,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
@@ -59,6 +60,7 @@ import com.jlnavas3.bovedalocal.ui.theme.TextoPrincipal
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
 import com.jlnavas3.bovedalocal.util.GeneradorQr
 import com.jlnavas3.bovedalocal.util.Portapapeles
+import com.jlnavas3.bovedalocal.ui.theme.esOscuroActivo
 import kotlinx.coroutines.delay
 
 import androidx.compose.material.icons.filled.Wifi
@@ -150,76 +152,107 @@ fun DialogoCompartirQr(
         onDismissRequest = alCerrar,
         properties = DialogProperties(usePlatformDefaultWidth = false)
     ) {
+        val fondoDialogo = com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorTarjetaAjustes
+        val fondoSelector = if (esOscuroActivo) Color(0xFF161518) else Color(0xFFEFEFF2)
+
         Box(
             modifier = Modifier
-                .padding(horizontal = 24.dp)
+                .padding(horizontal = 20.dp)
                 .fillMaxWidth()
-                .clip(RoundedCornerShape(CurvaturaEsquinas))
-                .background(ColorTarjetas)
-                .then(
-                    if (GrosorBorde > 0.dp) Modifier.border(GrosorBorde, ColorBordeActual, RoundedCornerShape(CurvaturaEsquinas))
-                    else Modifier
-                )
+                .clip(RoundedCornerShape(28.dp))
+                .background(fondoDialogo)
                 .padding(20.dp)
         ) {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                // Cabecera con título y botón de cerrar
+                // Cabecera limpia con ícono sólido estilo MagicOS, título, botón de copiar y cerrar
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.weight(1f)) {
-                        Icon(
-                            if (esWifi && modoSeleccionado == ModoQr.WIFI) Icons.Filled.Wifi else Icons.Filled.QrCode,
-                            contentDescription = null,
-                            tint = ColorAcento,
-                            modifier = Modifier.size(24.dp)
-                        )
-                        Spacer(Modifier.width(10.dp))
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .size(40.dp)
+                                .clip(RoundedCornerShape(11.dp))
+                                .background(ColorAcento),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                imageVector = if (esWifi && modoSeleccionado == ModoQr.WIFI) Icons.Filled.Wifi else Icons.Filled.QrCode,
+                                contentDescription = null,
+                                tint = com.jlnavas3.bovedalocal.ui.theme.ColorSobreAcento,
+                                modifier = Modifier.size(22.dp)
+                            )
+                        }
+                        Spacer(Modifier.width(12.dp))
                         Column {
                             Text(
                                 text = if (esWifi && modoSeleccionado == ModoQr.WIFI) "Conectar a Wi-Fi" else "Compartir por QR",
                                 color = TextoPrincipal,
-                                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
+                                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold, fontSize = 16.sp)
                             )
                             Text(
                                 text = if (esWifi && ssidWifi.isNotBlank()) "Red: $ssidWifi" else entrada.titulo.ifBlank { "Credencial" },
-                                color = TextoSecundario,
-                                style = MaterialTheme.typography.bodySmall
+                                color = com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjusteGris,
+                                style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp),
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
                             )
                         }
                     }
+
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        IconButton(onClick = {
-                            haptica.toque()
-                            if (modoSeleccionado == ModoQr.CONTRASENA) {
-                                Portapapeles.copiarSensible(contexto, "Contraseña", textoQr)
-                            } else {
-                                Portapapeles.copiar(contexto, "Contenido QR", textoQr)
-                            }
-                        }) {
-                            Icon(Icons.Filled.ContentCopy, contentDescription = "Copiar texto del QR", tint = TextoSecundario)
+                        IconButton(
+                            onClick = {
+                                haptica.toque()
+                                if (modoSeleccionado == ModoQr.CONTRASENA) {
+                                    Portapapeles.copiarSensible(contexto, "Contraseña", textoQr)
+                                } else {
+                                    Portapapeles.copiar(contexto, "Contenido QR", textoQr)
+                                }
+                            },
+                            modifier = Modifier.size(36.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Filled.ContentCopy,
+                                contentDescription = "Copiar texto del QR",
+                                tint = com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjusteGris,
+                                modifier = Modifier.size(20.dp)
+                            )
                         }
-                        IconButton(onClick = alCerrar) {
-                            Icon(Icons.Filled.Close, contentDescription = "Cerrar", tint = TextoSecundario)
+                        Spacer(Modifier.width(4.dp))
+                        IconButton(
+                            onClick = alCerrar,
+                            modifier = Modifier.size(36.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Filled.Close,
+                                contentDescription = "Cerrar",
+                                tint = com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjusteGris,
+                                modifier = Modifier.size(20.dp)
+                            )
                         }
                     }
                 }
 
-                Spacer(Modifier.height(14.dp))
+                Spacer(Modifier.height(16.dp))
 
-                // Selector de modo si hay más de 1
+                // Selector de modo tipo pastilla segmentada nativa (sin bordes)
                 if (modosDisponibles.size > 1) {
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .clip(RoundedCornerShape(8.dp))
-                            .background(Superficie)
-                            .padding(4.dp),
+                            .height(38.dp)
+                            .clip(RoundedCornerShape(12.dp))
+                            .background(fondoSelector)
+                            .padding(3.dp),
                         horizontalArrangement = Arrangement.spacedBy(4.dp)
                     ) {
                         modosDisponibles.forEach { modo ->
@@ -227,38 +260,41 @@ fun DialogoCompartirQr(
                             Box(
                                 modifier = Modifier
                                     .weight(1f)
-                                    .clip(RoundedCornerShape(6.dp))
+                                    .clip(RoundedCornerShape(9.dp))
                                     .background(if (seleccionado) ColorAcento else Color.Transparent)
-                                    .clickable { modoSeleccionado = modo }
-                                    .padding(vertical = 6.dp),
+                                    .clickable { haptica.tic(); modoSeleccionado = modo }
+                                    .padding(vertical = 4.dp),
                                 contentAlignment = Alignment.Center
                             ) {
                                 Text(
                                     text = modo.etiqueta,
-                                    color = if (seleccionado) Obsidiana else TextoSecundario,
-                                    style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
+                                    color = if (seleccionado) com.jlnavas3.bovedalocal.ui.theme.ColorSobreAcento else com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjusteGris,
+                                    style = MaterialTheme.typography.labelSmall.copy(
+                                        fontWeight = if (seleccionado) FontWeight.Bold else FontWeight.Medium,
+                                        fontSize = 11.5.sp
+                                    ),
                                     maxLines = 1
                                 )
                             }
                         }
                     }
-                    Spacer(Modifier.height(14.dp))
+                    Spacer(Modifier.height(16.dp))
                 }
 
-                // Marco del código QR de alto contraste
+                // Marco del código QR estilizado con esquinas redondeadas y sin bordes
                 Box(
                     modifier = Modifier
                         .size(240.dp)
-                        .clip(RoundedCornerShape(12.dp))
+                        .clip(RoundedCornerShape(18.dp))
                         .background(Color.White)
-                        .padding(12.dp),
+                        .padding(14.dp),
                     contentAlignment = Alignment.Center
                 ) {
                     if (qrBitmap != null) {
                         Image(
                             bitmap = qrBitmap.asImageBitmap(),
                             contentDescription = "Código QR offline",
-                            modifier = Modifier.size(216.dp)
+                            modifier = Modifier.size(212.dp)
                         )
                     } else {
                         Text(
@@ -274,34 +310,43 @@ fun DialogoCompartirQr(
                 // Nota informativa y advertencia de seguridad
                 Text(
                     text = when (modoSeleccionado) {
-                        ModoQr.WIFI -> "Escanea este código con la cámara o ajustes Wi-Fi de otro teléfono para conectarte automáticamente a la red."
-                        ModoQr.TOTP -> "Escanea con cualquier app de autenticación para vincular este token 2FA."
-                        ModoQr.CONTRASENA -> "Escanea pantalla a pantalla para transferir únicamente la contraseña sin internet."
-                        ModoQr.CREDENCIAL -> "Transfiere los datos de la entrada de forma segura y sin conexión."
+                        ModoQr.WIFI -> "Escanea este código con la cámara de otro teléfono para conectarte automáticamente a la red Wi-Fi."
+                        ModoQr.TOTP -> "Escanea con tu aplicación de autenticación para vincular este token 2FA."
+                        ModoQr.CONTRASENA -> "Escanea pantalla a pantalla para transferir únicamente la contraseña."
+                        ModoQr.CREDENCIAL -> "Transfiere los datos de la cuenta de forma segura y 100% offline."
                     },
-                    color = TextoSecundario,
-                    style = MaterialTheme.typography.bodySmall,
-                    textAlign = TextAlign.Center
+                    color = com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjusteGris,
+                    style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp),
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.padding(horizontal = 8.dp)
                 )
 
-                Spacer(Modifier.height(12.dp))
+                Spacer(Modifier.height(14.dp))
 
-                // Temporizador de cierre por privacidad
+                // Cápsula de temporizador en tono ámbar / seguridad
                 Row(
+                    modifier = Modifier
+                        .clip(androidx.compose.foundation.shape.CircleShape)
+                        .background(if (esOscuroActivo) Color(0xFF2B2215) else Color(0xFFFFF3E0))
+                        .padding(horizontal = 14.dp, vertical = 6.dp),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.Center
                 ) {
                     Icon(
-                        Icons.Filled.Timer,
+                        imageVector = Icons.Filled.Timer,
                         contentDescription = null,
-                        tint = TextoSecundario,
-                        modifier = Modifier.size(16.dp)
+                        tint = if (esOscuroActivo) Color(0xFFFFB74D) else Color(0xFFB45309),
+                        modifier = Modifier.size(15.dp)
                     )
                     Spacer(Modifier.width(6.dp))
                     Text(
                         text = "Se cerrará en ${tiempoRestante}s por seguridad",
-                        color = TextoSecundario,
-                        style = MaterialTheme.typography.labelSmall.copy(fontFamily = FontFamily.Monospace)
+                        color = if (esOscuroActivo) Color(0xFFFFB74D) else Color(0xFFB45309),
+                        style = MaterialTheme.typography.labelSmall.copy(
+                            fontFamily = FontFamily.Monospace,
+                            fontWeight = FontWeight.SemiBold,
+                            fontSize = 11.sp
+                        )
                     )
                 }
             }

@@ -43,7 +43,7 @@ object ImportadorCsv {
                 titulo = titulo,
                 usuario = usuario,
                 contrasena = contrasena,
-                urls = if (url.isNotBlank()) listOf(url) else emptyList(),
+                urls = if (url.isNotBlank()) url.split(",", "\n", ";").map { it.trim() }.filter { it.isNotEmpty() } else emptyList(),
                 notas = campo(idxNotas),
                 creadaEn = ahora,
                 modificadaEn = ahora

@@ -33,6 +33,7 @@ class AjustesMappersTest {
         assertTrue(opciones.isNotEmpty())
         val dias = opciones.map { it.first }
         assertTrue(dias.contains(0)) // Nunca
+        assertTrue(dias.contains(-30)) // Cada 30 minutos (prueba)
         assertTrue(dias.contains(30))
         assertTrue(dias.contains(60))
         assertTrue(dias.contains(90))

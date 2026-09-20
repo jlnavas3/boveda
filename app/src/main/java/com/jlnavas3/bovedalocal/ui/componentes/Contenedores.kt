@@ -33,6 +33,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.unit.sp
 import com.jlnavas3.bovedalocal.ui.theme.EscalaTexto
+import com.jlnavas3.bovedalocal.ui.theme.EstiloMono
 import com.jlnavas3.bovedalocal.ui.theme.FormaBoton
 import com.jlnavas3.bovedalocal.ui.theme.colorContraste
 import androidx.compose.ui.Alignment
@@ -60,31 +61,170 @@ import com.jlnavas3.bovedalocal.ui.theme.Obsidiana
 import com.jlnavas3.bovedalocal.ui.theme.TextoPrincipal
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
 import com.jlnavas3.bovedalocal.ui.theme.colorLegibleParaTema
+import com.jlnavas3.bovedalocal.ui.theme.colorParaGrupoId
 import com.jlnavas3.bovedalocal.ui.theme.fondoBadgeParaTema
 
 /**
+ * Barra superior fija de navegación (Sticky Top Bar) para pantallas secundarias.
+ * Queda anclada arriba, fuera del scroll, con botón atrás, título y espacio para acciones.
+ */
+@Composable
+fun BarraSuperiorPantalla(
+    titulo: String,
+    alVolver: () -> Unit,
+    modifier: Modifier = Modifier,
+    idEtiqueta: String? = null,
+    mostrarId: Boolean = false,
+    conSeparador: Boolean = false,
+    colorFondo: Color = Color.Unspecified,
+    acciones: (@Composable RowScope.() -> Unit)? = null
+) {
+    val fondoBarra = if (colorFondo != Color.Unspecified) colorFondo else Obsidiana
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .background(fondoBarra)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 12.dp, vertical = 8.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            IconButton(
+                onClick = alVolver,
+                modifier = Modifier.size(44.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                    contentDescription = "Volver atrás",
+                    tint = ColorIconosInternos,
+                    modifier = Modifier.size(24.dp)
+                )
+            }
+            Spacer(Modifier.width(6.dp))
+            Column(
+                modifier = Modifier.weight(1f),
+                verticalArrangement = Arrangement.Center
+            ) {
+                Text(
+                    text = titulo,
+                    color = ColorTitulos,
+                    style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+                if (mostrarId && !idEtiqueta.isNullOrBlank()) {
+                    Spacer(Modifier.height(2.dp))
+                    val colorId = colorParaGrupoId(idEtiqueta)
+                    Box(
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(4.dp))
+                            .background(fondoBadgeParaTema(colorId))
+                            .padding(horizontal = 6.dp, vertical = 1.5.dp)
+                    ) {
+                        Text(
+                            text = idEtiqueta,
+                            color = colorLegibleParaTema(colorId),
+                            style = EstiloMono.copy(
+                                fontSize = 10.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+                        )
+                    }
+                }
+            }
+            if (acciones != null) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(4.dp),
+                    content = acciones
+                )
+            }
+        }
+        if (conSeparador) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(1.dp)
+                    .background(ColorBordeActual.copy(alpha = 0.35f))
+            )
+        }
+    }
+}
+
+/**
+ * Descripción contextual que vive dentro del área con desplazamiento.
+ * Desaparece al hacer scroll hacia abajo para priorizar las opciones y tarjetas.
+ */
+@Composable
+fun DescripcionPantalla(
+    subtitulo: String,
+    modifier: Modifier = Modifier
+) {
+    if (subtitulo.isNotBlank()) {
+        Text(
+            text = subtitulo,
+            color = TextoSecundario,
+            style = MaterialTheme.typography.bodyMedium,
+            modifier = modifier
+                .fillMaxWidth()
+                .padding(bottom = 6.dp)
+        )
+    }
+}
+
+/**
  * Contenedor principal de pantalla (equivalente al `<main class="container">` en HTML).
- * Controla el fondo, padding exterior homogéneo y scroll vertical automático.
+ * Controla el fondo, la cabecera fija superior (si se indica título y alVolver),
+ * el padding exterior homogéneo y el scroll vertical automático.
  */
 @Composable
 fun ContenedorPrincipal(
     modifier: Modifier = Modifier,
+    titulo: String? = null,
+    alVolver: (() -> Unit)? = null,
+    subtitulo: String? = null,
+    acciones: (@Composable RowScope.() -> Unit)? = null,
     conScroll: Boolean = true,
     paddingHorizontal: Dp = 20.dp,
     paddingVertical: Dp = 16.dp,
     espaciado: Dp = EspaciadoComponentes,
     contenido: @Composable ColumnScope.() -> Unit
 ) {
-    val modBase = modifier
-        .fillMaxSize()
-        .background(Obsidiana)
-    val modScroll = if (conScroll) modBase.verticalScroll(rememberScrollState()) else modBase
+    val scrollState = rememberScrollState()
 
     Column(
-        modifier = modScroll.padding(horizontal = paddingHorizontal, vertical = paddingVertical),
-        verticalArrangement = Arrangement.spacedBy(espaciado),
-        content = contenido
-    )
+        modifier = modifier
+            .fillMaxSize()
+            .background(Obsidiana)
+    ) {
+        if (titulo != null && alVolver != null) {
+            BarraSuperiorPantalla(
+                titulo = titulo,
+                alVolver = alVolver,
+                conSeparador = conScroll && scrollState.value > 0,
+                colorFondo = Obsidiana,
+                acciones = acciones
+            )
+        }
+
+        val modScroll = if (conScroll) Modifier.verticalScroll(scrollState) else Modifier
+
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f)
+                .then(modScroll)
+                .padding(horizontal = paddingHorizontal, vertical = paddingVertical),
+            verticalArrangement = Arrangement.spacedBy(espaciado)
+        ) {
+            if (!subtitulo.isNullOrBlank()) {
+                DescripcionPantalla(subtitulo = subtitulo)
+            }
+            contenido()
+        }
+    }
 }
 
 /**
@@ -381,12 +521,12 @@ fun BotonColorido(
         animationSpec = spring(dampingRatio = 0.6f, stiffness = Spring.StiffnessMedium),
         label = "escalaBotonColorido"
     )
-    val forma = FormaBoton
+    val forma = RoundedCornerShape(12.dp)
     val colorTexto = colorContraste(color)
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .height(52.dp)
+            .height(42.dp)
             .clip(forma)
             .background(if (activo) color else Borde)
             .then(
@@ -404,34 +544,34 @@ fun BotonColorido(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 12.dp),
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
             ) {
                 Icon(
                     imageVector = icono,
                     contentDescription = null,
                     tint = if (activo) colorTexto else TextoSecundario,
-                    modifier = Modifier.size(22.dp)
+                    modifier = Modifier.size(18.dp)
                 )
                 Spacer(Modifier.width(8.dp))
                 Text(
                     text = texto,
                     color = if (activo) colorTexto else TextoSecundario,
-                    style = MaterialTheme.typography.labelLarge.copy(
-                        fontSize = (15 * escala * EscalaTexto).sp,
+                    style = MaterialTheme.typography.bodyMedium.copy(
+                        fontSize = (14 * escala * EscalaTexto).sp,
                         fontWeight = FontWeight.SemiBold
                     ),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.weight(1f)
+                    textAlign = TextAlign.Center
                 )
             }
         } else {
             Text(
                 text = texto,
                 color = if (activo) colorTexto else TextoSecundario,
-                style = MaterialTheme.typography.labelLarge.copy(
-                    fontSize = (15 * escala * EscalaTexto).sp,
+                style = MaterialTheme.typography.bodyMedium.copy(
+                    fontSize = (14 * escala * EscalaTexto).sp,
                     fontWeight = FontWeight.SemiBold
                 ),
                 maxLines = 1,

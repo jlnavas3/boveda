@@ -8,6 +8,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -23,15 +24,13 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.OpenInNew
+import androidx.compose.material.icons.filled.Android
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Description
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.Key
-import androidx.compose.material.icons.filled.Label
 import androidx.compose.material.icons.filled.Language
-import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.QrCode
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.Visibility
@@ -54,6 +53,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -61,13 +61,14 @@ import com.jlnavas3.bovedalocal.data.EstadoBoveda
 import com.jlnavas3.bovedalocal.data.normalizarEtiqueta
 import com.jlnavas3.bovedalocal.ui.Pantalla
 import com.jlnavas3.bovedalocal.ui.VaultViewModel
+import com.jlnavas3.bovedalocal.ui.componentes.BarraSuperiorPantalla
 import com.jlnavas3.bovedalocal.ui.componentes.BotonColorido
 import com.jlnavas3.bovedalocal.ui.componentes.DialogoCompartirQr
-import com.jlnavas3.bovedalocal.ui.componentes.EtiquetaSeccion
 import com.jlnavas3.bovedalocal.ui.componentes.Monograma
-import com.jlnavas3.bovedalocal.ui.componentes.TarjetaBoveda
-import com.jlnavas3.bovedalocal.ui.componentes.TarjetaBovedaDesplegable
 import com.jlnavas3.bovedalocal.ui.componentes.contrasenaColoreada
+import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjustesFondo
+import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.GrupoAjustes
+import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.SeparadorFilaSimple
 import com.jlnavas3.bovedalocal.ui.pantallas.detalle.TarjetaCamposDetalle
 import com.jlnavas3.bovedalocal.ui.pantallas.detalle.TarjetaHistorialDetalle
 import com.jlnavas3.bovedalocal.ui.pantallas.detalle.TarjetaPasskeyDetalle
@@ -76,12 +77,9 @@ import com.jlnavas3.bovedalocal.ui.theme.Ambar
 import com.jlnavas3.bovedalocal.ui.theme.Borde
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
-import com.jlnavas3.bovedalocal.ui.theme.ColorExportacion
 import com.jlnavas3.bovedalocal.ui.theme.ColorGenerador
 import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
-import com.jlnavas3.bovedalocal.ui.theme.ColorPapelera
-import com.jlnavas3.bovedalocal.ui.theme.ColorSalud
-import com.jlnavas3.bovedalocal.ui.theme.ColorSeguridad
+import com.jlnavas3.bovedalocal.ui.theme.ColorPasskeys
 import com.jlnavas3.bovedalocal.ui.theme.ColorTitulos
 import com.jlnavas3.bovedalocal.ui.theme.EstiloMono
 import com.jlnavas3.bovedalocal.ui.theme.EstiloMonoGrande
@@ -91,13 +89,15 @@ import com.jlnavas3.bovedalocal.ui.theme.Menta
 import com.jlnavas3.bovedalocal.ui.theme.Peligro
 import com.jlnavas3.bovedalocal.ui.theme.TextoPrincipal
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
+import com.jlnavas3.bovedalocal.ui.theme.colorLegibleParaTema
+import com.jlnavas3.bovedalocal.ui.theme.fondoBadgeParaTema
 import com.jlnavas3.bovedalocal.util.Diagnostico
 import com.jlnavas3.bovedalocal.util.Haptica
+import com.jlnavas3.bovedalocal.util.LanzadorEnlaces
 import kotlinx.coroutines.delay
-
-private val formatoFechaDetalle = ThreadLocal.withInitial {
-    java.text.SimpleDateFormat("d MMM yyyy, HH:mm", java.util.Locale.forLanguageTag("es"))
-}
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 @Composable
 fun PantallaDetalle(vm: VaultViewModel, id: String) {
@@ -111,8 +111,19 @@ fun PantallaDetalle(vm: VaultViewModel, id: String) {
     var mostrarDialogoQr by remember { mutableStateOf(false) }
     var ultimaCopia by remember { mutableStateOf<String?>(null) }
 
+    val formatoFechaCompacta = remember {
+        SimpleDateFormat("dd/MM/yy HH:mm", Locale.forLanguageTag("es-ES"))
+    }
+
     if (entrada == null) {
-        Column(modifier = Modifier.fillMaxSize().padding(24.dp), verticalArrangement = Arrangement.Center) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(ColorAjustesFondo)
+                .padding(24.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
             Text("Esta entrada ya no está en la bóveda", color = TextoSecundario)
             Spacer(Modifier.height(16.dp))
             BotonColorido(
@@ -143,319 +154,454 @@ fun PantallaDetalle(vm: VaultViewModel, id: String) {
         }
     }
 
+    val scrollState = rememberScrollState()
+
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-            .padding(20.dp)
+            .background(ColorAjustesFondo)
     ) {
-        // Cabecera con título, monograma y acciones rápidas
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
+        // Barra superior plana nativa
+        BarraSuperiorPantalla(
+            titulo = "",
+            alVolver = { vm.volverAtras() },
+            conSeparador = scrollState.value > 0,
+            colorFondo = ColorAjustesFondo,
+            acciones = {
+                IconButton(onClick = { haptica.tic(); mostrarDialogoQr = true }) {
+                    Icon(
+                        imageVector = Icons.Filled.QrCode,
+                        contentDescription = "Compartir por código QR",
+                        tint = ColorIconosInternos,
+                        modifier = Modifier.size(24.dp)
+                    )
+                }
+                IconButton(
+                    onClick = { haptica.tic(); vm.alternarFavorito(entrada.id) },
+                    modifier = Modifier.clip(CircleShape)
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.Star,
+                        contentDescription = if (entrada.favorito) "Quitar de favoritos" else "Marcar como favorito",
+                        tint = if (entrada.favorito) Ambar else ColorIconosInternos.copy(alpha = 0.35f),
+                        modifier = Modifier.size(26.dp)
+                    )
+                }
+                IconButton(onClick = { haptica.tic(); vm.ir(Pantalla.Editar(entrada.id)) }) {
+                    Icon(
+                        imageVector = Icons.Filled.Edit,
+                        contentDescription = "Editar",
+                        tint = ColorIconosInternos,
+                        modifier = Modifier.size(24.dp)
+                    )
+                }
+                IconButton(onClick = { haptica.tic(); confirmarBorrado = true }) {
+                    Icon(
+                        imageVector = Icons.Filled.Delete,
+                        contentDescription = "Mover a papelera",
+                        tint = Peligro,
+                        modifier = Modifier.size(24.dp)
+                    )
+                }
+            }
+        )
+
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f)
+                .verticalScroll(scrollState)
+                .padding(horizontal = 16.dp, vertical = 8.dp)
         ) {
-            IconButton(onClick = { vm.volverAtras() }) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                    contentDescription = "Volver atrás",
-                    tint = ColorIconosInternos
-                )
-            }
-            Spacer(Modifier.width(4.dp))
-            Monograma(
-                titulo = entrada.titulo.ifBlank { "?" },
-                semilla = entrada.urls.firstOrNull() ?: entrada.passkey?.rpId ?: entrada.titulo,
-                tamano = 50
-            )
-            Spacer(Modifier.width(12.dp))
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    entrada.titulo.ifBlank { "Sin título" },
-                    style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
-                    color = ColorTitulos
-                )
-                Text(entrada.tipo.etiqueta, style = MaterialTheme.typography.bodyMedium, color = TextoSecundario)
-            }
-            IconButton(onClick = { haptica.tic(); mostrarDialogoQr = true }) {
-                Icon(
-                    imageVector = Icons.Filled.QrCode,
-                    contentDescription = "Compartir por código QR",
-                    tint = ColorIconosInternos,
-                    modifier = Modifier.size(24.dp)
-                )
-            }
-            IconButton(onClick = { haptica.tic(); vm.alternarFavorito(entrada.id) }) {
-                Icon(
-                    imageVector = Icons.Filled.Star,
-                    contentDescription = if (entrada.favorito) "Quitar de favoritos" else "Marcar como favorito",
-                    tint = if (entrada.favorito) Ambar else ColorIconosInternos.copy(alpha = 0.35f),
-                    modifier = Modifier.size(26.dp)
-                )
-            }
-        }
-
-        Spacer(Modifier.height(20.dp))
-
-        if (entrada.tipo == com.jlnavas3.bovedalocal.data.TipoEntrada.WIFI) {
-            BotonColorido(
-                texto = "Compartir Wi-Fi por código QR",
-                color = ColorAcento,
-                icono = Icons.Filled.QrCode,
-                modifier = Modifier.fillMaxWidth()
+            // Cabecera Hero de identidad
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                haptica.tic()
-                mostrarDialogoQr = true
-            }
-            Spacer(Modifier.height(14.dp))
-        }
-
-        // Usuario / Correo
-        if (entrada.usuario.isNotBlank()) {
-            TarjetaBovedaDesplegable(
-                titulo = "Usuario o correo",
-                descripcion = entrada.usuario,
-                icono = Icons.Filled.Person,
-                colorIcono = ColorAcento,
-                inicialmenteAbierta = false
-            ) {
+                Monograma(
+                    titulo = entrada.titulo.ifBlank { "?" },
+                    semilla = entrada.urls.firstOrNull() ?: entrada.passkey?.rpId ?: entrada.titulo,
+                    tamano = 60
+                )
+                Spacer(Modifier.height(10.dp))
                 Text(
-                    text = entrada.usuario,
-                    style = EstiloMono,
-                    color = TextoPrincipal,
+                    text = entrada.titulo.ifBlank { "Sin título" },
+                    style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
+                    color = ColorTitulos,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis
+                )
+                Spacer(Modifier.height(4.dp))
+                Box(
+                    modifier = Modifier
+                        .clip(FormaPequena)
+                        .background(ColorAcento.copy(alpha = 0.12f))
+                        .padding(horizontal = 10.dp, vertical = 3.dp)
+                ) {
+                    Text(
+                        text = entrada.tipo.etiqueta,
+                        style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Medium),
+                        color = ColorAcento
+                    )
+                }
+            }
+
+            if (entrada.tipo == com.jlnavas3.bovedalocal.data.TipoEntrada.WIFI) {
+                Spacer(Modifier.height(8.dp))
+                BotonColorido(
+                    texto = "Compartir Wi-Fi por código QR",
+                    color = ColorAcento,
+                    icono = Icons.Filled.QrCode,
                     modifier = Modifier.fillMaxWidth()
-                )
-                Spacer(Modifier.height(4.dp))
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.End,
-                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    BotonCopiar(copiado = ultimaCopia == "usuario") {
-                        haptica.toque()
-                        vm.copiar("Usuario", entrada.usuario, sensible = false)
-                        ultimaCopia = "usuario"
-                    }
+                    haptica.tic()
+                    mostrarDialogoQr = true
                 }
             }
-            Spacer(Modifier.height(12.dp))
-        }
 
-        // Contraseña principal
-        if (entrada.contrasena.isNotBlank()) {
-            TarjetaBovedaDesplegable(
-                titulo = "Contraseña",
-                descripcion = "${entrada.contrasena.length} caracteres",
-                icono = Icons.Filled.Key,
-                colorIcono = ColorSeguridad,
-                inicialmenteAbierta = false
-            ) {
-                if (revelada) {
-                    Text(
-                        text = contrasenaColoreada(entrada.contrasena),
-                        style = EstiloMono,
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                } else {
-                    Text(
-                        text = "•".repeat(entrada.contrasena.length.coerceIn(8, 24)),
-                        style = EstiloMonoGrande.copy(letterSpacing = 2.sp),
-                        color = TextoSecundario,
-                        maxLines = 1,
-                        overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                }
-                Spacer(Modifier.height(4.dp))
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = "${entrada.contrasena.length} caracteres",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = TextoSecundario
-                    )
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        IconButton(onClick = {
-                            haptica.toque()
-                            revelada = !revelada
-                        }) {
-                            Icon(
-                                imageVector = if (revelada) Icons.Filled.VisibilityOff else Icons.Filled.Visibility,
-                                contentDescription = if (revelada) "Ocultar contraseña" else "Mostrar contraseña",
-                                tint = ColorIconosInternos,
-                                modifier = Modifier.size(26.dp)
-                            )
-                        }
-                        BotonCopiar(copiado = ultimaCopia == "contrasena") {
-                            haptica.exito()
-                            vm.copiar("Contraseña", entrada.contrasena, sensible = true)
-                            ultimaCopia = "contrasena"
-                        }
-                    }
-                }
-            }
-            Spacer(Modifier.height(12.dp))
-        }
+            Spacer(Modifier.height(14.dp))
 
-        // 2FA / TOTP modular
-        TarjetaTotpDetalle(
-            entrada = entrada,
-            ajustes = ajustes,
-            haptica = haptica,
-            alCopiarTotp = { codigo ->
-                vm.copiar("Código TOTP", codigo, sensible = true)
-            }
-        )
-        if (!entrada.secretoTotp.isNullOrBlank()) {
-            Spacer(Modifier.height(12.dp))
-        }
-
-        // Campos personalizados modulares
-        TarjetaCamposDetalle(
-            campos = entrada.camposPersonalizados,
-            vm = vm,
-            haptica = haptica,
-            ultimaCopia = ultimaCopia,
-            alCopiarCampo = { idCampo -> ultimaCopia = idCampo }
-        )
-        if (entrada.camposPersonalizados.isNotEmpty()) {
-            Spacer(Modifier.height(12.dp))
-        }
-
-        // URLs y sitios asociados
-        if (entrada.urls.isNotEmpty()) {
-            TarjetaBovedaDesplegable(
-                titulo = "Sitios y apps asociados",
-                descripcion = "${entrada.urls.size} enlace${if (entrada.urls.size == 1) "" else "s"}",
-                icono = Icons.Filled.Language,
-                colorIcono = ColorGenerador,
-                inicialmenteAbierta = false
-            ) {
-                entrada.urls.forEach { url ->
-                    Text(url, style = MaterialTheme.typography.bodyLarge, color = TextoPrincipal)
-                }
-            }
-            Spacer(Modifier.height(12.dp))
-        }
-
-        // Notas
-        if (entrada.notas.isNotBlank()) {
-            TarjetaBovedaDesplegable(
-                titulo = "Notas",
-                descripcion = entrada.notas.take(35) + (if (entrada.notas.length > 35) "…" else ""),
-                icono = Icons.Filled.Description,
-                colorIcono = ColorExportacion,
-                inicialmenteAbierta = false
-            ) {
-                Text(entrada.notas, style = MaterialTheme.typography.bodyLarge, color = TextoPrincipal)
-            }
-            Spacer(Modifier.height(12.dp))
-        }
-
-        // Etiquetas
-        if (entrada.etiquetas.isNotEmpty()) {
-            TarjetaBovedaDesplegable(
-                titulo = "Etiquetas",
-                descripcion = "${entrada.etiquetas.size} etiqueta${if (entrada.etiquetas.size == 1) "" else "s"}",
-                icono = Icons.Filled.Label,
-                colorIcono = ColorSalud,
-                inicialmenteAbierta = false
-            ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    entrada.etiquetas.forEach { etiqueta ->
-                        val formaChip = FormaPequena
-                        Box(
+            // Grupo 1: Credenciales principales (siempre visibles, sin acordeones)
+            val tieneCredenciales = entrada.usuario.isNotBlank() || entrada.contrasena.isNotBlank()
+            if (tieneCredenciales) {
+                GrupoAjustes(etiqueta = "Credenciales") {
+                    if (entrada.usuario.isNotBlank()) {
+                        Row(
                             modifier = Modifier
-                                .clip(formaChip)
-                                .background(Borde)
-                                .then(
-                                    if (GrosorBorde > 0.dp && ColorBordeActual != Color.Transparent)
-                                        Modifier.border(GrosorBorde, ColorBordeActual, formaChip)
-                                    else Modifier
-                                )
-                                .clickable {
-                                    vm.filtrarPorEtiqueta(etiqueta)
-                                    vm.volverALista()
-                                }
-                                .padding(horizontal = 10.dp, vertical = 6.dp)
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp, vertical = 12.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween
                         ) {
-                            Text("#${normalizarEtiqueta(etiqueta)}", color = TextoPrincipal, style = MaterialTheme.typography.bodyMedium)
+                            Column(modifier = Modifier.weight(1f)) {
+                                Text(
+                                    text = "Usuario o correo",
+                                    style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.SemiBold),
+                                    color = TextoSecundario
+                                )
+                                Spacer(Modifier.height(4.dp))
+                                Text(
+                                    text = entrada.usuario,
+                                    style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Medium),
+                                    color = TextoPrincipal
+                                )
+                            }
+                            BotonCopiar(copiado = ultimaCopia == "usuario") {
+                                haptica.toque()
+                                vm.copiar("Usuario", entrada.usuario, sensible = false)
+                                ultimaCopia = "usuario"
+                            }
+                        }
+                    }
+
+                    if (entrada.usuario.isNotBlank() && entrada.contrasena.isNotBlank()) {
+                        SeparadorFilaSimple()
+                    }
+
+                    if (entrada.contrasena.isNotBlank()) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp, vertical = 12.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Column(modifier = Modifier.weight(1f)) {
+                                Text(
+                                    text = "Contraseña · ${entrada.contrasena.length} caracteres",
+                                    style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.SemiBold),
+                                    color = TextoSecundario
+                                )
+                                Spacer(Modifier.height(4.dp))
+                                if (revelada) {
+                                    Text(
+                                        text = contrasenaColoreada(entrada.contrasena),
+                                        style = EstiloMono,
+                                        modifier = Modifier.fillMaxWidth()
+                                    )
+                                } else {
+                                    Text(
+                                        text = "•".repeat(entrada.contrasena.length.coerceIn(8, 24)),
+                                        style = EstiloMonoGrande.copy(letterSpacing = 2.sp),
+                                        color = TextoSecundario,
+                                        maxLines = 1,
+                                        softWrap = false,
+                                        overflow = TextOverflow.Clip,
+                                        modifier = Modifier.fillMaxWidth()
+                                    )
+                                }
+                            }
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                IconButton(onClick = {
+                                    haptica.toque()
+                                    revelada = !revelada
+                                }) {
+                                    Icon(
+                                        imageVector = if (revelada) Icons.Filled.VisibilityOff else Icons.Filled.Visibility,
+                                        contentDescription = if (revelada) "Ocultar contraseña" else "Mostrar contraseña",
+                                        tint = ColorIconosInternos,
+                                        modifier = Modifier.size(24.dp)
+                                    )
+                                }
+                                BotonCopiar(copiado = ultimaCopia == "contrasena") {
+                                    haptica.exito()
+                                    vm.copiar("Contraseña", entrada.contrasena, sensible = true)
+                                    ultimaCopia = "contrasena"
+                                }
+                            }
                         }
                     }
                 }
+                Spacer(Modifier.height(16.dp))
             }
-            Spacer(Modifier.height(12.dp))
-        }
 
-        // Historial de contraseñas modular con visor y restauración
-        TarjetaHistorialDetalle(
-            entrada = entrada,
-            vm = vm,
-            haptica = haptica
-        )
-        if (entrada.historialContrasenas.isNotEmpty()) {
-            Spacer(Modifier.height(12.dp))
-        }
-
-        // Passkey modular
-        entrada.passkey?.let { passkey ->
-            TarjetaPasskeyDetalle(passkey = passkey, usuarioEntrada = entrada.usuario)
-            Spacer(Modifier.height(12.dp))
-        }
-
-        Spacer(Modifier.height(8.dp))
-
-        // Fechas de creación y modificación
-        if (entrada.creadaEn > 0L || entrada.modificadaEn > 0L) {
-            Row(
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 4.dp),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                if (entrada.creadaEn > 0L) {
-                    Text(
-                        "Creada: ${formatoFechaDetalle.get()?.format(java.util.Date(entrada.creadaEn)) ?: ""}",
-                        style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Medium),
-                        color = TextoPrincipal
-                    )
+            // Grupo 2: 2FA / TOTP modular
+            TarjetaTotpDetalle(
+                entrada = entrada,
+                ajustes = ajustes,
+                haptica = haptica,
+                alCopiarTotp = { codigo ->
+                    vm.copiar("Código TOTP", codigo, sensible = true)
                 }
-                if (entrada.modificadaEn > 0L && entrada.modificadaEn != entrada.creadaEn) {
-                    Text(
-                        "Editada: ${formatoFechaDetalle.get()?.format(java.util.Date(entrada.modificadaEn)) ?: ""}",
-                        style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Medium),
-                        color = TextoPrincipal
-                    )
-                }
+            )
+            if (!entrada.secretoTotp.isNullOrBlank()) {
+                Spacer(Modifier.height(16.dp))
             }
-            Spacer(Modifier.height(12.dp))
-        }
 
-        Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            BotonColorido(
-                texto = "Editar",
-                color = ColorAcento,
-                icono = Icons.Filled.Edit,
-                modifier = Modifier.weight(1f)
-            ) { vm.ir(Pantalla.Editar(entrada.id)) }
-            BotonColorido(
-                texto = "Borrar",
-                color = ColorPapelera,
-                icono = Icons.Filled.Delete,
-                modifier = Modifier.weight(1f)
-            ) { confirmarBorrado = true }
+            // Grupo 3: Sitios y apps asociados (si existen)
+            val listaUrls = remember(entrada.urls) {
+                entrada.urls.flatMap { it.split(",", "\n", ";") }.map { it.trim() }.filter { it.isNotEmpty() }
+            }
+            if (listaUrls.isNotEmpty()) {
+                GrupoAjustes(etiqueta = "Sitios web y apps (${listaUrls.size})") {
+                    listaUrls.forEachIndexed { index, url ->
+                        val paquete = remember(url) { LanzadorEnlaces.extraerPaquete(url) }
+                        val esApp = paquete != null
+                        val estaInstalada = remember(url, contexto) {
+                            if (paquete != null) LanzadorEnlaces.estaInstalada(contexto, paquete) else false
+                        }
+                        val nombreApp = remember(url, contexto) {
+                            if (paquete != null && estaInstalada) LanzadorEnlaces.obtenerNombreApp(contexto, paquete) else null
+                        }
+
+                        if (index > 0) SeparadorFilaSimple()
+
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable {
+                                    haptica.toque()
+                                    LanzadorEnlaces.abrir(contexto, url, onAviso = { vm.avisar(it) })
+                                }
+                                .padding(horizontal = 16.dp, vertical = 12.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .size(38.dp)
+                                    .clip(FormaPequena)
+                                    .background(fondoBadgeParaTema(if (esApp) ColorPasskeys else ColorGenerador)),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Icon(
+                                    imageVector = if (esApp) Icons.Filled.Android else Icons.Filled.Language,
+                                    contentDescription = null,
+                                    tint = colorLegibleParaTema(if (esApp) ColorPasskeys else ColorGenerador),
+                                    modifier = Modifier.size(20.dp)
+                                )
+                            }
+                            Spacer(Modifier.width(12.dp))
+                            Column(modifier = Modifier.weight(1f)) {
+                                Text(
+                                    text = nombreApp ?: paquete ?: url,
+                                    style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold),
+                                    color = TextoPrincipal,
+                                    maxLines = 1,
+                                    softWrap = false,
+                                    overflow = TextOverflow.Clip
+                                )
+                                Spacer(Modifier.height(2.dp))
+                                val subtitulo = when {
+                                    esApp && estaInstalada -> "App instalada · Toca para abrir"
+                                    esApp -> "App no instalada · Ver en Google Play"
+                                    else -> "Sitio web · Toca para abrir"
+                                }
+                                Text(
+                                    text = subtitulo,
+                                    style = MaterialTheme.typography.labelSmall.copy(fontSize = 11.sp),
+                                    color = if (esApp && estaInstalada) Menta else TextoSecundario,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis
+                                )
+                            }
+                            Spacer(Modifier.width(4.dp))
+                            IconButton(
+                                onClick = {
+                                    haptica.toque()
+                                    vm.copiar("Enlace", url, sensible = false)
+                                },
+                                modifier = Modifier.size(34.dp)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Filled.ContentCopy,
+                                    contentDescription = "Copiar enlace",
+                                    tint = ColorIconosInternos,
+                                    modifier = Modifier.size(18.dp)
+                                )
+                            }
+                            IconButton(
+                                onClick = {
+                                    haptica.toque()
+                                    LanzadorEnlaces.abrir(contexto, url, onAviso = { vm.avisar(it) })
+                                },
+                                modifier = Modifier.size(34.dp)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.AutoMirrored.Filled.OpenInNew,
+                                    contentDescription = "Abrir enlace",
+                                    tint = ColorAcento,
+                                    modifier = Modifier.size(19.dp)
+                                )
+                            }
+                        }
+                    }
+                }
+                Spacer(Modifier.height(16.dp))
+            }
+
+            // Grupo 4: Campos personalizados
+            TarjetaCamposDetalle(
+                campos = entrada.camposPersonalizados,
+                vm = vm,
+                haptica = haptica,
+                ultimaCopia = ultimaCopia,
+                alCopiarCampo = { idCampo -> ultimaCopia = idCampo }
+            )
+            if (entrada.camposPersonalizados.isNotEmpty()) {
+                Spacer(Modifier.height(16.dp))
+            }
+
+            // Grupo 5: Notas
+            if (entrada.notas.isNotBlank()) {
+                GrupoAjustes(etiqueta = "Notas") {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp)
+                    ) {
+                        Text(
+                            text = entrada.notas,
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = TextoPrincipal
+                        )
+                        Spacer(Modifier.height(8.dp))
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.End
+                        ) {
+                            BotonCopiar(copiado = ultimaCopia == "notas") {
+                                haptica.toque()
+                                vm.copiar("Notas", entrada.notas, sensible = false)
+                                ultimaCopia = "notas"
+                            }
+                        }
+                    }
+                }
+                Spacer(Modifier.height(16.dp))
+            }
+
+            // Grupo 6: Etiquetas
+            if (entrada.etiquetas.isNotEmpty()) {
+                GrupoAjustes(etiqueta = "Etiquetas (${entrada.etiquetas.size})") {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .horizontalScroll(rememberScrollState())
+                            .padding(horizontal = 16.dp, vertical = 12.dp),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        entrada.etiquetas.forEach { etiqueta ->
+                            val formaChip = FormaPequena
+                            Box(
+                                modifier = Modifier
+                                    .clip(formaChip)
+                                    .background(Borde)
+                                    .then(
+                                        if (GrosorBorde > 0.dp && ColorBordeActual != Color.Transparent)
+                                            Modifier.border(GrosorBorde, ColorBordeActual, formaChip)
+                                        else Modifier
+                                    )
+                                    .clickable {
+                                        vm.filtrarPorEtiqueta(etiqueta)
+                                        vm.volverALista()
+                                    }
+                                    .padding(horizontal = 10.dp, vertical = 6.dp)
+                            ) {
+                                Text("#${normalizarEtiqueta(etiqueta)}", color = TextoPrincipal, style = MaterialTheme.typography.bodyMedium)
+                            }
+                        }
+                    }
+                }
+                Spacer(Modifier.height(16.dp))
+            }
+
+            // Grupo 7: Passkey
+            entrada.passkey?.let { passkey ->
+                TarjetaPasskeyDetalle(passkey = passkey, usuarioEntrada = entrada.usuario)
+                Spacer(Modifier.height(16.dp))
+            }
+
+            // Grupo 8: Historial de contraseñas anteriores
+            TarjetaHistorialDetalle(
+                entrada = entrada,
+                vm = vm,
+                haptica = haptica
+            )
+            if (entrada.historialContrasenas.isNotEmpty()) {
+                Spacer(Modifier.height(16.dp))
+            }
+
+            // Metadatos: Fechas de creación y edición (apiladas verticalmente y compactas para no colisionar)
+            if (entrada.creadaEn > 0L || entrada.modificadaEn > 0L) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 8.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(3.dp)
+                ) {
+                    if (entrada.creadaEn > 0L) {
+                        Text(
+                            text = "Creada: ${formatoFechaCompacta.format(Date(entrada.creadaEn))}",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = TextoSecundario
+                        )
+                    }
+                    if (entrada.modificadaEn > 0L && entrada.modificadaEn != entrada.creadaEn) {
+                        Text(
+                            text = "Editada: ${formatoFechaCompacta.format(Date(entrada.modificadaEn))}",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = TextoSecundario
+                        )
+                    }
+                }
+                Spacer(Modifier.height(16.dp))
+            }
         }
-        Spacer(Modifier.height(32.dp))
     }
 
     if (confirmarBorrado) {
+        val esOscuro = androidx.compose.foundation.isSystemInDarkTheme()
+        val colorDialogo = if (esOscuro) Color(0xFF212023) else Color(0xFFFFFFFF)
         AlertDialog(
             onDismissRequest = { confirmarBorrado = false },
-            title = { Text("¿Mover a la papelera?") },
-            text = { Text("Se puede restaurar desde Ajustes > Papelera durante 30 días; pasado ese tiempo se borra sola.") },
+            shape = androidx.compose.foundation.shape.RoundedCornerShape(20.dp),
+            containerColor = colorDialogo,
+            tonalElevation = 0.dp,
+            title = { Text("¿Mover a la papelera?", color = TextoPrincipal) },
+            text = { Text("Se puede restaurar desde Ajustes > Papelera durante 30 días; pasado ese tiempo se borra permanentemente.", color = TextoSecundario) },
             confirmButton = {
                 TextButton(onClick = {
                     confirmarBorrado = false
@@ -464,7 +610,7 @@ fun PantallaDetalle(vm: VaultViewModel, id: String) {
                 }) { Text("Mover a la papelera", color = Peligro) }
             },
             dismissButton = {
-                TextButton(onClick = { confirmarBorrado = false }) { Text("Cancelar") }
+                TextButton(onClick = { confirmarBorrado = false }) { Text("Cancelar", color = TextoSecundario) }
             }
         )
     }

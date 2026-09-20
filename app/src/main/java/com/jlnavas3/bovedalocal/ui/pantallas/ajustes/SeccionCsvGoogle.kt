@@ -49,14 +49,18 @@ fun SeccionCsvGoogle(
     contexto: Context,
     haptica: Haptica,
     alAbrirDialogoImportar: () -> Unit,
-    alMostrarDialogoBorradoManual: () -> Unit
+    alMostrarDialogoBorradoManual: () -> Unit,
+    inicialmenteAbierta: Boolean = false,
+    seccionDestino: String? = null
 ) {
     TarjetaAjuste(
         titulo = "Passwords de Google",
         icono = Icons.Filled.Key,
         descripcion = "Importa un CSV exportado desde Google Password Manager.",
-        inicialmenteAbierta = ajustes.csvGoogleRuta.isNotBlank(),
-        colorIcono = ColorExportacion
+        inicialmenteAbierta = inicialmenteAbierta || (seccionDestino != null && seccionDestino.startsWith("08")) || ajustes.csvGoogleRuta.isNotBlank(),
+        colorIcono = ColorExportacion,
+        idEtiqueta = "08",
+        mostrarId = ajustes.mostrarIdsAjustes
     ) {
         Spacer(Modifier.height(8.dp))
         Text(

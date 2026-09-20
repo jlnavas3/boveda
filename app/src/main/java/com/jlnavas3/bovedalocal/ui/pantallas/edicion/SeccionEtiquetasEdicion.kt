@@ -43,18 +43,21 @@ import com.jlnavas3.bovedalocal.ui.theme.Superficie
 import com.jlnavas3.bovedalocal.ui.theme.TextoPrincipal
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
 
+import androidx.compose.foundation.shape.RoundedCornerShape
+import com.jlnavas3.bovedalocal.ui.theme.esOscuroActivo
+
 @Composable
 fun ChipEtiqueta(texto: String, sugerida: Boolean = false, alPulsar: () -> Unit) {
-    val forma = FormaPequena
+    val forma = RoundedCornerShape(8.dp)
+    val fondoChip = if (esOscuroActivo) Color(0xFF19181B) else Color(0xFFF0F0F3)
+    val fondoSugerida = if (esOscuroActivo) Color(0xFF262529) else Color(0xFFE6E6EB)
+    val bordeChip = if (esOscuroActivo) Color(0xFF38373C) else Color(0xFFDADAE0)
+
     Row(
         modifier = Modifier
             .clip(forma)
-            .background(if (sugerida) Superficie else Borde)
-            .then(
-                if (GrosorBorde > 0.dp && ColorBordeActual != Color.Transparent)
-                    Modifier.border(GrosorBorde, ColorBordeActual, forma)
-                else Modifier
-            )
+            .background(if (sugerida) fondoSugerida else fondoChip)
+            .border(1.dp, bordeChip, forma)
             .clickable { alPulsar() }
             .padding(horizontal = 10.dp, vertical = 6.dp),
         verticalAlignment = Alignment.CenterVertically
@@ -75,8 +78,6 @@ fun SeccionEtiquetasEdicion(
 ) {
     var nuevaEtiqueta by remember { mutableStateOf("") }
 
-    EtiquetaSeccion("Etiquetas")
-    Spacer(Modifier.height(8.dp))
     if (etiquetas.isNotEmpty()) {
         Row(
             modifier = Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
@@ -93,8 +94,7 @@ fun SeccionEtiquetasEdicion(
             CampoBoveda(
                 valor = nuevaEtiqueta,
                 etiqueta = "Nueva etiqueta",
-                alCambiar = { nuevaEtiqueta = it },
-                modifier = Modifier.height(56.dp)
+                alCambiar = { nuevaEtiqueta = it }
             )
         }
         Spacer(Modifier.width(10.dp))

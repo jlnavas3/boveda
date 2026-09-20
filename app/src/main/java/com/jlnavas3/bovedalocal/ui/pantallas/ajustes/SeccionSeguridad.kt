@@ -82,15 +82,21 @@ fun SeccionSeguridad(
     nivel: Biometria.Nivel,
     capacidad: Biometria.Capacidad,
     activarFuerte: () -> Unit,
-    ofrecerCompatible: (String) -> Unit
+    ofrecerCompatible: (String) -> Unit,
+    inicialmenteAbierta: Boolean = false,
+    seccionDestino: String? = null
 ) {
     val esSenuelo = vm.repositorio.esModoSenuelo
+    val esOscuro = androidx.compose.foundation.isSystemInDarkTheme()
 
     TarjetaAjuste(
         titulo = "Seguridad",
         icono = Icons.Filled.Security,
         descripcion = if (esSenuelo) "Bloqueo automático y borrado del portapapeles." else "Huella, bloqueo automático y borrado del portapapeles.",
-        colorIcono = ColorSeguridad
+        colorIcono = ColorSeguridad,
+        inicialmenteAbierta = inicialmenteAbierta || (seccionDestino != null && seccionDestino.startsWith("01")),
+        idEtiqueta = "01",
+        mostrarId = ajustes.mostrarIdsAjustes
     ) {
         Spacer(Modifier.height(8.dp))
 
@@ -113,9 +119,12 @@ fun SeccionSeguridad(
             }
         )
         if (confirmarDesactivar) {
+            val colorDialogo = if (esOscuro) Color(0xFF212023) else Color(0xFFFFFFFF)
             androidx.compose.material3.AlertDialog(
                 onDismissRequest = { confirmarDesactivar = false },
-                containerColor = com.jlnavas3.bovedalocal.ui.theme.SuperficieAlta,
+                containerColor = colorDialogo,
+                tonalElevation = 0.dp,
+                shape = androidx.compose.foundation.shape.RoundedCornerShape(20.dp),
                 title = { Text("¿Desactivar protección de pantalla?", color = TextoPrincipal) },
                 text = {
                     Text(
@@ -239,14 +248,21 @@ fun SeccionSeguridad(
             },
             alSeleccionar = { valor -> haptica.tic(); vm.ajustarPortapapeles(valor.toInt()) }
         )
+        BotonRestablecerItem {
+            vm.ajustarAutoBloqueo(60)
+            vm.ajustarPortapapeles(30)
+            vm.ajustarProteccionPantalla(true)
+        }
         if (!esSenuelo) {
             Spacer(Modifier.height(14.dp))
             TarjetaAjuste(
                 titulo = "Bóveda señuelo",
                 icono = Icons.Filled.Shield,
                 descripcion = "Apertura señuelo transparente con credenciales simuladas inofensivas.",
-                inicialmenteAbierta = false,
-                colorIcono = ColorSeguridad
+                inicialmenteAbierta = seccionDestino == "01.1",
+                colorIcono = ColorSeguridad,
+                idEtiqueta = "01.1",
+                mostrarId = ajustes.mostrarIdsAjustes
             ) {
                 Text(
                     text = "Si alguien te obliga a desbloquear la app bajo amenaza o coacción, puedes introducir un PIN señuelo especial. La app se abrirá normalmente pero mostrará solo datos simulados.",
@@ -260,7 +276,7 @@ fun SeccionSeguridad(
                     icono = Icons.Filled.Shield
                 ) {
                     haptica.toque()
-                    vm.ir(Pantalla.AjustesSenuelo)
+                    vm.irPorId("01.1")
                 }
             }
 
@@ -269,8 +285,10 @@ fun SeccionSeguridad(
                 titulo = "Autodestrucción",
                 icono = Icons.Filled.DeleteForever,
                 descripcion = "Borrado irreversible inmediato de la bóveda ante peligro extremo.",
-                inicialmenteAbierta = false,
-                colorIcono = Peligro
+                inicialmenteAbierta = seccionDestino == "01.2",
+                colorIcono = Peligro,
+                idEtiqueta = "01.2",
+                mostrarId = ajustes.mostrarIdsAjustes
             ) {
                 Text(
                     text = "Al introducir este PIN en la pantalla de desbloqueo, toda la bóveda y sus claves serán destruidas permanentemente sin dejar rastro en el dispositivo.",
@@ -284,7 +302,7 @@ fun SeccionSeguridad(
                     icono = Icons.Filled.DeleteForever
                 ) {
                     haptica.toque()
-                    vm.ir(Pantalla.AjustesAutodestruccion)
+                    vm.irPorId("01.2")
                 }
             }
         }
@@ -294,7 +312,10 @@ fun SeccionSeguridad(
 @Composable
 fun SeccionArgon2id(
     vm: VaultViewModel,
-    haptica: Haptica
+    ajustes: AjustesApp,
+    haptica: Haptica,
+    inicialmenteAbierta: Boolean = false,
+    seccionDestino: String? = null
 ) {
     var perfilPendiente by remember { mutableStateOf<PerfilArgon2?>(null) }
 
@@ -302,8 +323,10 @@ fun SeccionArgon2id(
         titulo = "Perfil de cifrado Argon2id",
         icono = Icons.Filled.Memory,
         descripcion = "Intensidad de memoria e iteraciones contra ataques de fuerza bruta.",
-        inicialmenteAbierta = false,
-        colorIcono = ColorArgon2
+        inicialmenteAbierta = inicialmenteAbierta || (seccionDestino != null && seccionDestino.startsWith("03")),
+        colorIcono = ColorArgon2,
+        idEtiqueta = "03",
+        mostrarId = ajustes.mostrarIdsAjustes
     ) {
         val perfilActual = vm.repositorio.perfilArgon2Actual()
         SelectorPerfilArgon2(
@@ -320,6 +343,18 @@ fun SeccionArgon2id(
                 }
             }
         )
+        BotonRestablecerItem(texto = "Restablecer predefinido") {
+            val perfilDef = PerfilArgon2.ESTANDAR
+            if (perfilActual != perfilDef) {
+                if (vm.repositorio.estaDesbloqueada) {
+                    perfilPendiente = perfilDef
+                } else {
+                    vm.repositorio.ajustes.actualizar { it.copy(perfilArgon2 = perfilDef.clave) }
+                    com.jlnavas3.bovedalocal.util.Diagnostico.apuntar("bóveda", "Perfil Argon2id predeterminado establecido en ${perfilDef.titulo}")
+                    vm.avisar("Perfil de cifrado predeterminado: ${perfilDef.titulo}")
+                }
+            }
+        }
     }
 
     perfilPendiente?.let { objetivo ->
@@ -348,46 +383,47 @@ fun SelectorPerfilArgon2(
     var desplegado by remember { mutableStateOf(false) }
     val forma = FormaCampo
 
+    val esOscuro = androidx.compose.foundation.isSystemInDarkTheme()
+    val fondoCaja = if (esOscuro) Color(0xFF161518) else Color(0xFFF4F4F6)
+    val bordeCaja = if (desplegado) ColorAcento else (if (esOscuro) Color(0xFF333238) else Color(0xFFDFDFE3))
+
     Column(modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)) {
         Box(modifier = Modifier.fillMaxWidth()) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(54.dp)
+                    .height(44.dp)
                     .clip(forma)
-                    .background(Superficie)
-                    .then(
-                        if (GrosorBorde > 0.dp && (desplegado || ColorBordeActual != Color.Transparent))
-                            Modifier.border(GrosorBorde, if (desplegado) ColorTitulos else ColorBordeActual, forma)
-                        else Modifier
-                    )
+                    .background(fondoCaja)
                     .clickable { desplegado = true }
-                    .padding(horizontal = 14.dp),
+                    .padding(horizontal = 12.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Icon(
                     imageVector = Icons.Filled.Memory,
                     contentDescription = null,
-                    tint = if (desplegado) ColorTitulos else ColorIconosInternos,
-                    modifier = Modifier.size(22.dp)
+                    tint = if (desplegado) ColorAcento else ColorIconosInternos,
+                    modifier = Modifier.size(20.dp)
                 )
-                Spacer(Modifier.width(12.dp))
+                Spacer(Modifier.width(10.dp))
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
                         text = perfilActual.titulo,
-                        color = ColorTitulos,
-                        style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold)
+                        color = TextoPrincipal,
+                        style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold, fontSize = 14.sp)
                     )
                     Text(
                         text = perfilActual.resumen,
                         color = TextoSecundario,
-                        style = MaterialTheme.typography.labelSmall
+                        style = MaterialTheme.typography.labelSmall.copy(fontSize = 11.sp),
+                        maxLines = 1
                     )
                 }
                 Icon(
                     imageVector = if (desplegado) Icons.Filled.ExpandLess else Icons.Filled.ExpandMore,
                     contentDescription = "Desplegar perfiles",
-                    tint = TextoSecundario
+                    tint = TextoSecundario,
+                    modifier = Modifier.size(18.dp)
                 )
             }
 

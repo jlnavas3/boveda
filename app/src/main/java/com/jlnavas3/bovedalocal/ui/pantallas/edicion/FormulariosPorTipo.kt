@@ -40,6 +40,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.graphics.Color
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.Obsidiana
 import com.jlnavas3.bovedalocal.ui.theme.Superficie
@@ -115,9 +116,6 @@ fun FormularioEdicionTarjeta(
     val vencimiento = GestorCamposBase.valorDeCampo(campos, "Vencimiento")
     val cvv = GestorCamposBase.valorDeCampo(campos, "CVV")
     val pin = GestorCamposBase.valorDeCampo(campos, "PIN de tarjeta")
-
-    EtiquetaSeccion("Datos de la tarjeta")
-    Spacer(Modifier.height(8.dp))
 
     Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
         CampoBoveda(
@@ -200,9 +198,6 @@ fun FormularioEdicionWifi(
     val clave = GestorCamposBase.valorDeCampo(campos, "Contraseña Wi-Fi")
     val seguridad = GestorCamposBase.valorDeCampo(campos, "Tipo de seguridad")
 
-    EtiquetaSeccion("Datos de la red Wi-Fi")
-    Spacer(Modifier.height(8.dp))
-
     Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
         CampoBoveda(
             valor = ssid,
@@ -242,7 +237,7 @@ fun FormularioEdicionWifi(
                     Box(
                         modifier = Modifier
                             .clip(RoundedCornerShape(8.dp))
-                            .background(if (seleccionado) ColorAcento else Superficie)
+                            .background(if (seleccionado) ColorAcento else Color(0xFF161518))
                             .clickable {
                                 alCambiarCampos(GestorCamposBase.actualizarValor(campos, "Tipo de seguridad", opcion, TipoCampo.TEXTO))
                             }
@@ -271,9 +266,6 @@ fun FormularioEdicionCuentaBancaria(
     val titular = GestorCamposBase.valorDeCampo(campos, "Titular de la cuenta")
     val iban = GestorCamposBase.valorDeCampo(campos, "Número de cuenta / IBAN")
     val swift = GestorCamposBase.valorDeCampo(campos, "SWIFT / CBU / CLABE")
-
-    EtiquetaSeccion("Datos de la cuenta bancaria")
-    Spacer(Modifier.height(8.dp))
 
     Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
         CampoBoveda(
@@ -343,9 +335,6 @@ fun FormularioEdicionIdentidad(
             alCambiarCampos(GestorCamposBase.actualizarValor(campos, clave, fechaFormateada, TipoCampo.FECHA))
         }, y, m, d).show()
     }
-
-    EtiquetaSeccion("Documento de identidad")
-    Spacer(Modifier.height(8.dp))
 
     Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
         CampoBoveda(
@@ -439,9 +428,6 @@ fun FormularioEdicionServidor(
     val usuario = GestorCamposBase.valorDeCampo(campos, "Usuario SSH")
     val clave = GestorCamposBase.valorDeCampo(campos, "Clave privada / Password")
 
-    EtiquetaSeccion("Servidor / SSH")
-    Spacer(Modifier.height(8.dp))
-
     Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -503,9 +489,6 @@ fun FormularioEdicionWallet(
     val direccion = GestorCamposBase.valorDeCampo(campos, "Dirección pública")
     val semilla = GestorCamposBase.valorDeCampo(campos, "Frase semilla (Seed phrase)")
     val clavePrivada = GestorCamposBase.valorDeCampo(campos, "Clave privada")
-
-    EtiquetaSeccion("Cripto Wallet")
-    Spacer(Modifier.height(8.dp))
 
     Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
         CampoBoveda(

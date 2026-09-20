@@ -20,13 +20,18 @@ import com.jlnavas3.bovedalocal.util.Haptica
 fun SeccionCamara(
     vm: VaultViewModel,
     ajustes: AjustesApp,
-    haptica: Haptica
+    haptica: Haptica,
+    inicialmenteAbierta: Boolean = false,
+    seccionDestino: String? = null
 ) {
     TarjetaAjuste(
         titulo = "Cámara del escáner",
         icono = Icons.Filled.CameraAlt,
         descripcion = "Elige cómo se leen los códigos QR de autenticación.",
-        colorIcono = ColorCamara
+        colorIcono = ColorCamara,
+        inicialmenteAbierta = inicialmenteAbierta || (seccionDestino != null && seccionDestino.startsWith("05")),
+        idEtiqueta = "05",
+        mostrarId = ajustes.mostrarIdsAjustes
     ) {
         Spacer(Modifier.height(8.dp))
         Text(
@@ -44,5 +49,8 @@ fun SeccionCamara(
             },
             alSeleccionar = { valor -> haptica.tic(); vm.ajustarMotorCamara(valor) }
         )
+        BotonRestablecerItem {
+            vm.ajustarMotorCamara(MotorCamara.AUTOMATICO.clave)
+        }
     }
 }

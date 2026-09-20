@@ -32,6 +32,7 @@ import com.jlnavas3.bovedalocal.crypto.OpcionesGenerador
 import com.jlnavas3.bovedalocal.crypto.Wordlist
 import com.jlnavas3.bovedalocal.ui.componentes.CampoBoveda
 import com.jlnavas3.bovedalocal.ui.componentes.EtiquetaSeccion
+import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.SwitchBoveda
 import com.jlnavas3.bovedalocal.ui.theme.Ambar
 import com.jlnavas3.bovedalocal.ui.theme.Borde
 import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
@@ -81,17 +82,9 @@ fun ColumnaInterruptor(
             style = MaterialTheme.typography.labelSmall
         )
         Spacer(Modifier.height(4.dp))
-        Switch(
+        SwitchBoveda(
             checked = activo,
-            onCheckedChange = alCambiar,
-            colors = SwitchDefaults.colors(
-                checkedThumbColor = ColorSobreAcento,
-                checkedTrackColor = Ambar,
-                checkedBorderColor = Ambar,
-                uncheckedThumbColor = TextoSecundario,
-                uncheckedTrackColor = SuperficieAlta,
-                uncheckedBorderColor = TextoSecundario
-            )
+            onCheckedChange = alCambiar
         )
     }
 }
@@ -102,27 +95,29 @@ fun PanelModoAleatorio(
     alCambiarOpciones: (OpcionesGenerador) -> Unit,
     haptica: Haptica
 ) {
-    EtiquetaSeccion("Longitud: ${opciones.longitud} caracteres")
-    Slider(
-        value = opciones.longitud.toFloat(),
-        onValueChange = {
-            val nuevo = it.roundToInt().coerceIn(8, 64)
-            if (nuevo != opciones.longitud) {
-                haptica.tic()
-                alCambiarOpciones(opciones.copy(longitud = nuevo))
-            }
-        },
-        valueRange = 8f..64f,
-        colors = coloresSlider()
-    )
-
-    if (!opciones.mayusculas && !opciones.minusculas && !opciones.digitos && !opciones.simbolos) {
-        Spacer(Modifier.height(8.dp))
-        Text(
-            "Activa al menos un tipo de carácter en el menú desplegable superior.",
-            color = Peligro,
-            style = MaterialTheme.typography.bodySmall
+    Column(modifier = Modifier.fillMaxWidth()) {
+        EtiquetaSeccion("Longitud: ${opciones.longitud} caracteres")
+        Slider(
+            value = opciones.longitud.toFloat(),
+            onValueChange = {
+                val nuevo = it.roundToInt().coerceIn(8, 64)
+                if (nuevo != opciones.longitud) {
+                    haptica.tic()
+                    alCambiarOpciones(opciones.copy(longitud = nuevo))
+                }
+            },
+            valueRange = 8f..64f,
+            colors = coloresSlider()
         )
+
+        if (!opciones.mayusculas && !opciones.minusculas && !opciones.digitos && !opciones.simbolos) {
+            Spacer(Modifier.height(8.dp))
+            Text(
+                "Activa al menos un tipo de carácter en el menú desplegable superior.",
+                color = Peligro,
+                style = MaterialTheme.typography.bodySmall
+            )
+        }
     }
 }
 
@@ -132,60 +127,62 @@ fun PanelModoDiceware(
     alCambiarOpciones: (OpcionesGenerador) -> Unit,
     haptica: Haptica
 ) {
-    EtiquetaSeccion("Número de palabras: ${opciones.palabras}")
-    Slider(
-        value = opciones.palabras.toFloat(),
-        onValueChange = {
-            val nuevo = it.roundToInt().coerceIn(3, 12)
-            if (nuevo != opciones.palabras) {
-                haptica.tic()
-                alCambiarOpciones(opciones.copy(palabras = nuevo))
-            }
-        },
-        valueRange = 3f..12f,
-        steps = 8,
-        colors = coloresSlider()
-    )
-    Spacer(Modifier.height(10.dp))
-    EtiquetaSeccion("Separador")
-    Spacer(Modifier.height(6.dp))
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .horizontalScroll(rememberScrollState()),
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        listOf("-" to "Guion (-)", " " to "Espacio", "." to "Punto (.)", "_" to "Guion bajo (_)", "" to "Sin separador").forEach { (sep, label) ->
-            val activo = opciones.separadorFrase == sep
-            Box(
-                modifier = Modifier
-                    .clip(FormaCampo)
-                    .background(if (activo) DegradadoAmbar else Brush.horizontalGradient(listOf(Superficie, Superficie)))
-                    .then(
-                        if (GrosorBorde > 0.dp && ColorBordeActual != Color.Transparent)
-                            Modifier.border(GrosorBorde, if (activo) Ambar else ColorBordeActual, FormaCampo)
-                        else Modifier
+    Column(modifier = Modifier.fillMaxWidth()) {
+        EtiquetaSeccion("Número de palabras: ${opciones.palabras}")
+        Slider(
+            value = opciones.palabras.toFloat(),
+            onValueChange = {
+                val nuevo = it.roundToInt().coerceIn(3, 12)
+                if (nuevo != opciones.palabras) {
+                    haptica.tic()
+                    alCambiarOpciones(opciones.copy(palabras = nuevo))
+                }
+            },
+            valueRange = 3f..12f,
+            steps = 8,
+            colors = coloresSlider()
+        )
+        Spacer(Modifier.height(10.dp))
+        EtiquetaSeccion("Separador")
+        Spacer(Modifier.height(6.dp))
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .horizontalScroll(rememberScrollState()),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            listOf("-" to "Guion (-)", " " to "Espacio", "." to "Punto (.)", "_" to "Guion bajo (_)", "" to "Sin separador").forEach { (sep, label) ->
+                val activo = opciones.separadorFrase == sep
+                Box(
+                    modifier = Modifier
+                        .clip(FormaCampo)
+                        .background(if (activo) DegradadoAmbar else Brush.horizontalGradient(listOf(Superficie, Superficie)))
+                        .then(
+                            if (GrosorBorde > 0.dp && ColorBordeActual != Color.Transparent)
+                                Modifier.border(GrosorBorde, if (activo) Ambar else ColorBordeActual, FormaCampo)
+                            else Modifier
+                        )
+                        .clickable {
+                            haptica.tic()
+                            alCambiarOpciones(opciones.copy(separadorFrase = sep))
+                        }
+                        .padding(horizontal = 12.dp, vertical = 8.dp)
+                ) {
+                    Text(
+                        label,
+                        style = MaterialTheme.typography.labelMedium,
+                        color = if (activo) ColorSobreAcento else TextoPrincipal
                     )
-                    .clickable {
-                        haptica.tic()
-                        alCambiarOpciones(opciones.copy(separadorFrase = sep))
-                    }
-                    .padding(horizontal = 12.dp, vertical = 8.dp)
-            ) {
-                Text(
-                    label,
-                    style = MaterialTheme.typography.labelMedium,
-                    color = if (activo) ColorSobreAcento else TextoPrincipal
-                )
+                }
             }
         }
+        Spacer(Modifier.height(12.dp))
+        Text(
+            "Diccionario local de ${Wordlist.TAMANO} palabras en español, integrado dentro de la app sin conexión.",
+            color = TextoSecundario,
+            style = MaterialTheme.typography.bodySmall
+        )
     }
-    Spacer(Modifier.height(12.dp))
-    Text(
-        "Diccionario local de ${Wordlist.TAMANO} palabras en español, integrado dentro de la app sin conexión.",
-        color = TextoSecundario,
-        style = MaterialTheme.typography.bodySmall
-    )
 }
 
 @Composable

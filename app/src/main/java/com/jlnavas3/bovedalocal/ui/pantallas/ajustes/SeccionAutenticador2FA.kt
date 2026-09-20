@@ -5,13 +5,16 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Security
 import androidx.compose.material.icons.filled.Timer
+import androidx.compose.material.icons.filled.Widgets
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.jlnavas3.bovedalocal.data.AjustesApp
+import com.jlnavas3.bovedalocal.ui.Pantalla
 import com.jlnavas3.bovedalocal.ui.VaultViewModel
+import com.jlnavas3.bovedalocal.ui.componentes.BotonColorido
 import com.jlnavas3.bovedalocal.ui.theme.Color2FA
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
 import com.jlnavas3.bovedalocal.util.Haptica
@@ -20,13 +23,18 @@ import com.jlnavas3.bovedalocal.util.Haptica
 fun SeccionAutenticador2FA(
     vm: VaultViewModel,
     ajustes: AjustesApp,
-    haptica: Haptica
+    haptica: Haptica,
+    inicialmenteAbierta: Boolean = false,
+    seccionDestino: String? = null
 ) {
     TarjetaAjuste(
         titulo = "Autenticador 2FA",
         icono = Icons.Filled.Timer,
         descripcion = "Configura los valores usados al introducir una clave TOTP manualmente.",
-        colorIcono = Color2FA
+        colorIcono = Color2FA,
+        inicialmenteAbierta = inicialmenteAbierta || (seccionDestino != null && seccionDestino.startsWith("07")),
+        idEtiqueta = "07",
+        mostrarId = ajustes.mostrarIdsAjustes
     ) {
         Spacer(Modifier.height(8.dp))
         Text(
@@ -77,5 +85,20 @@ fun SeccionAutenticador2FA(
             color = TextoSecundario,
             style = MaterialTheme.typography.bodySmall
         )
+        BotonRestablecerItem {
+            vm.ajustarTotpManualDigitos(6)
+            vm.ajustarTotpManualPeriodo(30)
+            vm.ajustarTotpManualAlgoritmo("HmacSHA1")
+            vm.ajustarTotpSepararDigitos(true)
+        }
+        Spacer(Modifier.height(12.dp))
+        BotonColorido(
+            texto = "Personalizar widget de inicio",
+            color = Color2FA,
+            icono = Icons.Filled.Widgets
+        ) {
+            haptica.tic()
+            vm.irPorId("09.4")
+        }
     }
 }

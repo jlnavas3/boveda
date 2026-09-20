@@ -26,6 +26,12 @@ import com.jlnavas3.bovedalocal.ui.theme.SuperficieAlta
 import com.jlnavas3.bovedalocal.ui.theme.TextoPrincipal
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
 
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.graphics.Color
+import com.jlnavas3.bovedalocal.ui.theme.esOscuroActivo
+
+private val colorDialogo: Color @Composable get() = if (esOscuroActivo) Color(0xFF212023) else Color(0xFFFFFFFF)
+
 @Composable
 fun DialogoModoCompatible(
     motivo: String,
@@ -34,7 +40,9 @@ fun DialogoModoCompatible(
 ) {
     AlertDialog(
         onDismissRequest = alDescartar,
-        containerColor = SuperficieAlta,
+        shape = RoundedCornerShape(20.dp),
+        containerColor = colorDialogo,
+        tonalElevation = 0.dp,
         title = { Text("Modo compatible", color = TextoPrincipal) },
         text = {
             Text(
@@ -69,7 +77,10 @@ fun DialogoCambioMaestra(
 
     AlertDialog(
         onDismissRequest = alDescartar,
-        title = { Text("Cambiar contraseña maestra") },
+        shape = RoundedCornerShape(20.dp),
+        containerColor = colorDialogo,
+        tonalElevation = 0.dp,
+        title = { Text("Cambiar contraseña maestra", color = TextoPrincipal) },
         text = {
             Column {
                 CampoBoveda(valor = actualMaestra, etiqueta = "Contraseña actual", alCambiar = { actualMaestra = it }, esContrasena = true)
@@ -102,7 +113,9 @@ fun DialogoImportarCsv(
 ) {
     AlertDialog(
         onDismissRequest = alDescartar,
-        containerColor = ColorTarjetas,
+        shape = RoundedCornerShape(20.dp),
+        containerColor = colorDialogo,
+        tonalElevation = 0.dp,
         title = { Text("Importar CSV", color = TextoPrincipal) },
         text = {
             Text(
@@ -134,7 +147,9 @@ fun DialogoBorradoManualCsv(
 ) {
     AlertDialog(
         onDismissRequest = alDescartar,
-        containerColor = ColorTarjetas,
+        shape = RoundedCornerShape(20.dp),
+        containerColor = colorDialogo,
+        tonalElevation = 0.dp,
         icon = { Icon(Icons.Filled.Warning, contentDescription = null, tint = Peligro) },
         title = { Text("Eliminar archivo sin cifrar", color = TextoPrincipal, fontWeight = FontWeight.Bold) },
         text = {
@@ -167,14 +182,16 @@ fun DialogoBorrarBoveda(
 ) {
     AlertDialog(
         onDismissRequest = alDescartar,
-        containerColor = ColorTarjetas,
-        title = { Text("¿Borrar la bóveda entera?") },
-        text = { Text("Se elimina el archivo cifrado y la clave de la huella. Si no tienes copia, no hay vuelta atrás.") },
+        shape = RoundedCornerShape(20.dp),
+        containerColor = colorDialogo,
+        tonalElevation = 0.dp,
+        title = { Text("¿Borrar la bóveda entera?", color = TextoPrincipal) },
+        text = { Text("Se elimina el archivo cifrado y la clave de la huella. Si no tienes copia, no hay vuelta atrás.", color = TextoSecundario) },
         confirmButton = {
             TextButton(onClick = alConfirmar) {
                 Text("Borrar todo", color = Peligro)
             }
         },
-        dismissButton = { TextButton(onClick = alDescartar) { Text("Cancelar") } }
+        dismissButton = { TextButton(onClick = alDescartar) { Text("Cancelar", color = TextoSecundario) } }
     )
 }

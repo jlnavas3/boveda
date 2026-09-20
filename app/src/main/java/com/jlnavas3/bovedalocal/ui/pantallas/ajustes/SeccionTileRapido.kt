@@ -25,17 +25,22 @@ fun SeccionTileRapido(
     vm: VaultViewModel,
     ajustes: AjustesApp,
     contexto: Context,
-    haptica: Haptica
+    haptica: Haptica,
+    inicialmenteAbierta: Boolean = false,
+    seccionDestino: String? = null
 ) {
     TarjetaAjuste(
-        titulo = "Ajustes Rápidos (Tile)",
+        titulo = "Acceso Rápido (Tile y Widget 1x1)",
         icono = Icons.Filled.Key,
-        descripcion = "Genera credenciales seguras al instante desde la cortina de notificaciones de Android.",
-        colorIcono = ColorGenerador
+        descripcion = "Genera credenciales seguras al instante desde la cortina de notificaciones o con el widget 1x1.",
+        colorIcono = ColorGenerador,
+        inicialmenteAbierta = inicialmenteAbierta || (seccionDestino != null && seccionDestino.startsWith("02")),
+        idEtiqueta = "02",
+        mostrarId = ajustes.mostrarIdsAjustes
     ) {
         Spacer(Modifier.height(8.dp))
         Text(
-            "Añade el tile 'Generador Rápido' editando los botones de la barra de notificaciones para generar contraseñas con un solo toque sin abrir la bóveda.",
+            "Añade el tile 'Generador Rápido' en la barra de notificaciones o coloca el widget 1x1 en tu pantalla de inicio para generar contraseñas con un solo toque sin abrir la bóveda.",
             color = TextoSecundario,
             style = MaterialTheme.typography.bodyMedium
         )
@@ -62,7 +67,7 @@ fun SeccionTileRapido(
                 alSeleccionar = { valor -> haptica.tic(); vm.ajustarTileLongitud(valor.toInt()) }
             )
         } else {
-            CampoBoveda(
+            com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteCampoTexto(
                 valor = ajustes.tilePatron,
                 etiqueta = "Patrón (ej. XXXXX-XXXXX-XXXXX-XXXXX)",
                 alCambiar = { vm.ajustarTilePatron(it) },
@@ -120,5 +125,13 @@ fun SeccionTileRapido(
                 ).show()
             }
         )
+        BotonRestablecerItem {
+            vm.ajustarTileModo("longitud")
+            vm.ajustarTileLongitud(20)
+            vm.ajustarTilePatron("XXXXX-XXXXX-XXXXX-XXXXX")
+            vm.ajustarTileCopiarPortapapeles(true)
+            vm.ajustarTileMostrarToast(true)
+            vm.ajustarTileHaptica(true)
+        }
     }
 }

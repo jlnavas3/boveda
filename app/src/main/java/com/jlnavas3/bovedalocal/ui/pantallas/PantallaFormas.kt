@@ -32,7 +32,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Text
+import androidx.compose.foundation.relocation.BringIntoViewRequester
+import androidx.compose.foundation.relocation.bringIntoViewRequester
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -53,6 +56,8 @@ import com.jlnavas3.bovedalocal.ui.componentes.CampoBoveda
 import com.jlnavas3.bovedalocal.ui.componentes.ContenedorPrincipal
 import com.jlnavas3.bovedalocal.ui.componentes.ContenedorTarjeta
 import com.jlnavas3.bovedalocal.ui.componentes.TarjetaBovedaDesplegable
+import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteBotonFila
+import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteGrupo
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
 import com.jlnavas3.bovedalocal.ui.theme.ColorGenerador
@@ -75,28 +80,56 @@ import kotlin.math.roundToInt
 
 import com.jlnavas3.bovedalocal.ui.componentes.CabeceraPantalla
 
+@OptIn(androidx.compose.foundation.ExperimentalFoundationApi::class)
 @Composable
-fun PantallaFormas(vm: VaultViewModel) {
+fun PantallaFormas(
+    vm: VaultViewModel,
+    seccionDestino: String? = null
+) {
     val contexto = LocalContext.current
     val haptica = remember { Haptica(contexto) }
     val ajustes by vm.ajustes.collectAsStateWithLifecycle()
 
     var textoPrueba by remember { mutableStateOf("Texto de prueba") }
 
-    ContenedorPrincipal(conScroll = true, espaciado = EspaciadoComponentes) {
-        CabeceraPantalla(
-            titulo = "Bordes y Formas",
-            subtitulo = "Personaliza curvaturas, trazos y espaciados en tiempo real",
-            alVolver = { vm.volverAtras() }
-        )
+    val reqPreview = remember { BringIntoViewRequester() }
+    val reqPresets = remember { BringIntoViewRequester() }
+    val reqCurvatura = remember { BringIntoViewRequester() }
+    val reqGrosor = remember { BringIntoViewRequester() }
+    val reqEstilo = remember { BringIntoViewRequester() }
+    val reqEspaciado = remember { BringIntoViewRequester() }
 
+    LaunchedEffect(seccionDestino) {
+        if (seccionDestino != null) {
+            when {
+                seccionDestino == "09.3.1" -> reqPreview.bringIntoView()
+                seccionDestino == "09.3.2" -> reqPresets.bringIntoView()
+                seccionDestino == "09.3.3" -> reqCurvatura.bringIntoView()
+                seccionDestino == "09.3.4" -> reqGrosor.bringIntoView()
+                seccionDestino == "09.3.5" -> reqEstilo.bringIntoView()
+                seccionDestino == "09.3.6" -> reqEspaciado.bringIntoView()
+                seccionDestino.startsWith("09.3.") && seccionDestino != "09.3" -> reqPresets.bringIntoView()
+            }
+        }
+    }
+
+    ContenedorPrincipal(
+        titulo = "Bordes y Formas",
+        subtitulo = "Personaliza curvaturas, trazos y espaciados en tiempo real",
+        alVolver = { vm.volverAtras() },
+        conScroll = true,
+        espaciado = EspaciadoComponentes
+    ) {
         // 1. Tarjeta de vista previa interactiva en tiempo real
         TarjetaBovedaDesplegable(
             titulo = "Vista previa",
             descripcion = "Observa en vivo las esquinas, trazos y espaciados de los componentes",
             icono = Icons.Filled.FormatShapes,
             colorIcono = ColorSalud,
-            inicialmenteAbierta = false
+            inicialmenteAbierta = seccionDestino == "09.3.1",
+            idEtiqueta = "09.3.1",
+            mostrarId = ajustes.mostrarIdsAjustes,
+            modifier = Modifier.bringIntoViewRequester(reqPreview)
         ) {
             Text(
                 text = "Tarjeta Interactiva",
@@ -140,7 +173,10 @@ fun PantallaFormas(vm: VaultViewModel) {
             descripcion = "Aplica combinaciones armónicas de esquinas y trazos en un solo toque",
             icono = Icons.Filled.AutoAwesome,
             colorIcono = ColorAcento,
-            inicialmenteAbierta = false
+            inicialmenteAbierta = seccionDestino == "09.3.2",
+            idEtiqueta = "09.3.2",
+            mostrarId = ajustes.mostrarIdsAjustes,
+            modifier = Modifier.bringIntoViewRequester(reqPresets)
         ) {
             Row(
                 modifier = Modifier
@@ -205,7 +241,10 @@ fun PantallaFormas(vm: VaultViewModel) {
             descripcion = "Define qué tan redondeados son las tarjetas, botones y campos",
             icono = Icons.Filled.CropSquare,
             colorIcono = ColorGenerador,
-            inicialmenteAbierta = false
+            inicialmenteAbierta = seccionDestino == "09.3.3",
+            idEtiqueta = "09.3.3",
+            mostrarId = ajustes.mostrarIdsAjustes,
+            modifier = Modifier.bringIntoViewRequester(reqCurvatura)
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -234,6 +273,12 @@ fun PantallaFormas(vm: VaultViewModel) {
                 Text("18 dp (Estándar)", color = TextoSecundario, style = MaterialTheme.typography.bodySmall)
                 Text("32 dp (Píldora)", color = TextoSecundario, style = MaterialTheme.typography.bodySmall)
             }
+            ComponenteBotonFila(
+                titulo = "Restablecer",
+                alPulsar = {
+                    vm.ajustarCurvaturaEsquinas(6f)
+                }
+            )
         }
 
         // 4. Slider de Grosor de Bordes
@@ -242,7 +287,10 @@ fun PantallaFormas(vm: VaultViewModel) {
             descripcion = "Controla el ancho de trazo perimetral en tarjetas y controles",
             icono = Icons.Filled.LineWeight,
             colorIcono = ColorPasskeys,
-            inicialmenteAbierta = false
+            inicialmenteAbierta = seccionDestino == "09.3.4",
+            idEtiqueta = "09.3.4",
+            mostrarId = ajustes.mostrarIdsAjustes,
+            modifier = Modifier.bringIntoViewRequester(reqGrosor)
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -271,6 +319,12 @@ fun PantallaFormas(vm: VaultViewModel) {
                 Text("1 dp (Fino)", color = TextoSecundario, style = MaterialTheme.typography.bodySmall)
                 Text("4 dp (Grueso)", color = TextoSecundario, style = MaterialTheme.typography.bodySmall)
             }
+            ComponenteBotonFila(
+                titulo = "Restablecer",
+                alPulsar = {
+                    vm.ajustarGrosorBorde(0.8f)
+                }
+            )
         }
 
         // 5. Selector de Estilo de Borde
@@ -279,7 +333,10 @@ fun PantallaFormas(vm: VaultViewModel) {
             descripcion = "Elige el matiz cromático con el que se dibujarán las líneas de contorno",
             icono = Icons.Filled.Tune,
             colorIcono = ColorSeguridad,
-            inicialmenteAbierta = false
+            inicialmenteAbierta = seccionDestino == "09.3.5",
+            idEtiqueta = "09.3.5",
+            mostrarId = ajustes.mostrarIdsAjustes,
+            modifier = Modifier.bringIntoViewRequester(reqEstilo)
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -314,6 +371,12 @@ fun PantallaFormas(vm: VaultViewModel) {
                     }
                 }
             }
+            ComponenteBotonFila(
+                titulo = "Restablecer",
+                alPulsar = {
+                    vm.ajustarEstiloBorde("marcado")
+                }
+            )
         }
 
         // 6. Slider de Espaciado entre Componentes
@@ -322,7 +385,10 @@ fun PantallaFormas(vm: VaultViewModel) {
             descripcion = "Ajusta la separación vertical entre secciones, tarjetas y bloques",
             icono = Icons.Filled.SpaceDashboard,
             colorIcono = ColorAcento,
-            inicialmenteAbierta = false
+            inicialmenteAbierta = seccionDestino == "09.3.6",
+            idEtiqueta = "09.3.6",
+            mostrarId = ajustes.mostrarIdsAjustes,
+            modifier = Modifier.bringIntoViewRequester(reqEspaciado)
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -351,15 +417,22 @@ fun PantallaFormas(vm: VaultViewModel) {
                 Text("14 dp (Equilibrado)", color = TextoSecundario, style = MaterialTheme.typography.bodySmall)
                 Text("24 dp (Amplio)", color = TextoSecundario, style = MaterialTheme.typography.bodySmall)
             }
+            ComponenteBotonFila(
+                titulo = "Restablecer",
+                alPulsar = {
+                    vm.ajustarEspaciadoComponentes(14f)
+                }
+            )
         }
 
         // 7. Botón de restauración
-        BotonBorde(
-            texto = "Restablecer bordes y formas predeterminados",
-            icono = Icons.Filled.Refresh
-        ) {
-            haptica.toque()
-            vm.restablecerFormas()
+        ComponenteGrupo {
+            ComponenteBotonFila(
+                titulo = "Restablecer módulo",
+                alPulsar = {
+                    vm.restablecerFormas()
+                }
+            )
         }
 
         Spacer(Modifier.height(16.dp))

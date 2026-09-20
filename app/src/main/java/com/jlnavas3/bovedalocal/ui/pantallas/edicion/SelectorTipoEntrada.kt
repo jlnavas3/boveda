@@ -42,6 +42,8 @@ import androidx.compose.ui.unit.dp
 import com.jlnavas3.bovedalocal.data.TipoEntrada
 import com.jlnavas3.bovedalocal.ui.componentes.MenuDesplegableBoveda
 import com.jlnavas3.bovedalocal.ui.componentes.SeparadorOpcionMenu
+import androidx.compose.ui.unit.sp
+import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
 import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
 import com.jlnavas3.bovedalocal.ui.theme.ColorTitulos
@@ -72,40 +74,39 @@ fun SelectorTipoEntrada(
     }
     val texto = tipoActual.etiqueta
 
+    val esOscuro = androidx.compose.foundation.isSystemInDarkTheme()
+    val fondoCaja = if (esOscuro) Color(0xFF161518) else Color(0xFFF4F4F6)
+    val bordeCaja = if (abierto) ColorAcento else (if (esOscuro) Color(0xFF333238) else Color(0xFFDFDFE3))
+
     Box(modifier = Modifier.fillMaxWidth()) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(52.dp)
+                .height(42.dp)
                 .clip(forma)
-                .background(Superficie)
-                .then(
-                    if (GrosorBorde > 0.dp && (abierto || ColorBordeActual != Color.Transparent))
-                        Modifier.border(GrosorBorde, if (abierto) ColorTitulos else ColorBordeActual, forma)
-                    else Modifier
-                )
+                .background(fondoCaja)
                 .clickable { abierto = true }
-                .padding(horizontal = 16.dp),
+                .padding(horizontal = 12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(
                 imageVector = icono,
                 contentDescription = null,
-                tint = if (abierto) ColorIconosInternos else TextoSecundario,
-                modifier = Modifier.size(24.dp)
+                tint = if (abierto) ColorAcento else ColorIconosInternos,
+                modifier = Modifier.size(20.dp)
             )
-            Spacer(Modifier.width(12.dp))
+            Spacer(Modifier.width(10.dp))
             Text(
                 text = texto,
                 color = TextoPrincipal,
-                style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold),
+                style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold, fontSize = 14.sp),
                 modifier = Modifier.weight(1f)
             )
             Icon(
                 imageVector = if (abierto) Icons.Filled.ExpandLess else Icons.Filled.ExpandMore,
                 contentDescription = "Desplegar tipos de entrada",
                 tint = TextoSecundario,
-                modifier = Modifier.size(22.dp)
+                modifier = Modifier.size(18.dp)
             )
         }
 

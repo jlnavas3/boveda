@@ -48,6 +48,15 @@ data class DatosPasskey(
 @Serializable
 data class CambioContrasena(val contrasena: String, val cambiadaEn: Long)
 
+/** Registro en el historial temporal de contraseñas generadas recientemente. */
+@Serializable
+data class RegistroClaveGenerada(
+    val id: String = java.util.UUID.randomUUID().toString(),
+    val clave: String,
+    val generadaEn: Long = System.currentTimeMillis(),
+    val origen: String = "Generador Rápido"
+)
+
 @Serializable
 enum class TipoCampo {
     TEXTO,

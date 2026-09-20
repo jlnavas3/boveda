@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+    <shortcut
+        android:shortcutId="nueva_entrada"
+        android:enabled="true"
+        android:icon="@drawable/ic_shortcut_nueva_entrada"
+        android:shortcutShortLabel="@string/shortcut_nueva_entrada"
+        android:shortcutLongLabel="@string/shortcut_nueva_entrada">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetPackage="com.jlnavas3.bovedalocal"
+            android:targetClass="com.jlnavas3.bovedalocal.ui.MainActivity">
+            <extra android:name="accion_shortcut" android:value="nueva_entrada" />
+        </intent>
+    </shortcut>
+    <shortcut
+        android:shortcutId="buscar"
+        android:enabled="true"
+        android:icon="@drawable/ic_shortcut_buscar"
+        android:shortcutShortLabel="@string/shortcut_buscar"
+        android:shortcutLongLabel="@string/shortcut_buscar">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetPackage="com.jlnavas3.bovedalocal"
+            android:targetClass="com.jlnavas3.bovedalocal.ui.MainActivity">
+            <extra android:name="accion_shortcut" android:value="buscar" />
+        </intent>
+    </shortcut>
+    <shortcut
+        android:shortcutId="escanear_qr"
+        android:enabled="true"
+        android:icon="@drawable/ic_shortcut_escanear"
+        android:shortcutShortLabel="@string/shortcut_escanear"
+        android:shortcutLongLabel="@string/shortcut_escanear">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetPackage="com.jlnavas3.bovedalocal"
+            android:targetClass="com.jlnavas3.bovedalocal.ui.MainActivity">
+            <extra android:name="accion_shortcut" android:value="escanear_qr" />
+        </intent>
+    </shortcut>
+    <shortcut
+        android:shortcutId="generador_rapido"
+        android:enabled="true"
+        android:icon="@drawable/ic_shortcut_generador"
+        android:shortcutShortLabel="@string/shortcut_generador"
+        android:shortcutLongLabel="@string/shortcut_generador">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetPackage="com.jlnavas3.bovedalocal"
+            android:targetClass="com.jlnavas3.bovedalocal.ui.MainActivity">
+            <extra android:name="accion_shortcut" android:value="generador_rapido" />
+        </intent>
+    </shortcut>
+</shortcuts>
