@@ -56,6 +56,7 @@ import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ProveedorResaltadoAjustes
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjustesFondo
 import com.jlnavas3.bovedalocal.ui.theme.Ambar
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
+import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
 import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
 import com.jlnavas3.bovedalocal.ui.theme.ColorSeguridad
 import com.jlnavas3.bovedalocal.ui.theme.ColorSobreAcento
@@ -212,7 +213,7 @@ fun PantallaKitEmergencia(
                     ComponenteSwitch(
                         titulo = "Incluir notas seguras",
                         icono = Icons.Filled.Description,
-                        colorIcono = Ambar,
+                        colorIcono = ColorIconosInternos,
                         activo = incluirNotas,
                         idFila = "02.3.3",
                         mostrarId = ajustes.mostrarIdsAjustes,
@@ -267,7 +268,7 @@ fun PantallaKitEmergencia(
                             Icon(
                                 imageVector = Icons.Filled.Description,
                                 contentDescription = null,
-                                tint = ColorAcento,
+                                tint = ColorIconosInternos,
                                 modifier = Modifier.size(20.dp)
                             )
                             Spacer(Modifier.width(8.dp))

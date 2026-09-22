@@ -72,6 +72,30 @@ data class AjustesApp(
     val widgetColorContador: String = "#FFFFFF",
     val widgetColorCodigo: String = "#FFB300",
     val widgetColorTituloIcono: String = "#FFFFFF",
+    val widgetHaptica: Boolean = true,
+    val widgetHapticaIntensidad: Float = 0.20f,
+    // Configuración Widget 1x1 ("Generador Rápido")
+    val widget1x1Haptica: Boolean = true,
+    val widget1x1HapticaIntensidad: Float = 0.20f,
+    val widget1x1Modo: String = "aleatoria",
+    val widget1x1Longitud: Int = 20,
+    val widget1x1Patron: String = "XXXXX-XXXXX-XXXXX-XXXXX",
+    val widget1x1Simbolos: String = "!@#$%&*()_-=+[]{}?/,.:;",
+    val widget1x1CopiarPortapapeles: Boolean = true,
+    val widget1x1MostrarToast: Boolean = true,
+    val widget1x1GrosorBordeDp: Float = 0f,
+    val widget1x1CurvaturaEsquinasDp: Float = 15f,
+    val widget1x1TransparenciaFondo: Float = 1.0f,
+    val widget1x1TamanoDp: Float = 55f,
+    val widget1x1AnchoDp: Float = 55f,
+    val widget1x1AltoDp: Float = 51f,
+    val widget1x1BloquearProporcion: Boolean = false,
+    val widget1x1OffsetX: Float = 0f,
+    val widget1x1OffsetY: Float = 4f,
+    val widget1x1Alineamiento: String = "arriba", // "arriba", "centro", "abajo", "izquierda", "derecha"
+    val widget1x1ColorBorde: String = "#33332E",
+    val widget1x1ColorIcono: String = "#E6FCFF",
+    val widget1x1ColorFondo: String = "#2E3333",
     // Personalización de tipografía y textos
     val escalaTexto: Float = 1.0f,
     val pesoTexto: String = "normal",
@@ -80,7 +104,7 @@ data class AjustesApp(
     val interlineadoFactor: Float = 1.0f,
     val familiaFuente: String = "sans",
     /** Sincronización con Material You (Monet) en Android 12+ (API 31+). */
-    val colorDinamicoSistema: Boolean = false,
+    val colorDinamicoSistema: Boolean = true,
     // Configuración Quick Settings Tile ("Generador Rápido")
     val tileModo: String = "longitud",
     val tileLongitud: Int = 20,
@@ -88,6 +112,7 @@ data class AjustesApp(
     val tileCopiarPortapapeles: Boolean = true,
     val tileMostrarToast: Boolean = true,
     val tileHaptica: Boolean = true,
+    val tileHapticaIntensidad: Float = 0.8f,
     // Colores semánticos de secciones funcionales
     val colorSeguridad: String = "",
     val colorArgon2: String = "",
@@ -163,7 +188,15 @@ data class AjustesApp(
     // Configuración visual y física de la puerta de bóveda
     val puertaVelocidad: Float = 1.0f,
     val puertaGrosorAnillos: Float = 1.0f,
-    val puertaColor: String = ""
+    val puertaColor: String = "",
+    // Resaltado / Alumbrado visual de filas y grupos en navegación de ajustes
+    val alumbradoActivo: Boolean = true,
+    val alumbradoIntensidad: Float = 0.5f,
+    val alumbradoRepeticiones: Int = 2,
+    val alumbradoDuracionMs: Int = 600,
+    // Vibración háptica global de la app
+    val hapticaApp: Boolean = true,
+    val hapticaAppIntensidad: Float = 0.10f
 )
 
 
@@ -193,11 +226,14 @@ class AlmacenAjustes(contexto: Context) {
     val ajustes: StateFlow<AjustesApp> = _ajustes
 
     private val prefListener = SharedPreferences.OnSharedPreferenceChangeListener { _, _ ->
-        _ajustes.value = leer()
+        val nuevo = leer()
+        _ajustes.value = nuevo
+        com.jlnavas3.bovedalocal.util.Haptica.sincronizar(nuevo)
     }
 
     init {
         prefs.registerOnSharedPreferenceChangeListener(prefListener)
+        com.jlnavas3.bovedalocal.util.Haptica.sincronizar(_ajustes.value)
     }
 
     fun recargar() {
@@ -338,19 +374,43 @@ class AlmacenAjustes(contexto: Context) {
             widgetColorContador = prefs.getString("widget_color_contador", "#FFFFFF") ?: "#FFFFFF",
             widgetColorCodigo = prefs.getString("widget_color_codigo", "#FFB300") ?: "#FFB300",
             widgetColorTituloIcono = prefs.getString("widget_color_titulo_icono", "#FFFFFF") ?: "#FFFFFF",
+            widgetHaptica = prefs.getBoolean("widget_haptica", true),
+            widgetHapticaIntensidad = prefs.getFloat("widget_haptica_intensidad", 0.20f),
+            widget1x1Haptica = prefs.getBoolean("widget_1x1_haptica", true),
+            widget1x1HapticaIntensidad = prefs.getFloat("widget_1x1_haptica_intensidad", 0.20f),
+            widget1x1Modo = prefs.getString("widget_1x1_modo", "aleatoria") ?: "aleatoria",
+            widget1x1Longitud = prefs.getInt("widget_1x1_longitud", 20),
+            widget1x1Patron = prefs.getString("widget_1x1_patron", "XXXXX-XXXXX-XXXXX-XXXXX") ?: "XXXXX-XXXXX-XXXXX-XXXXX",
+            widget1x1Simbolos = prefs.getString("widget_1x1_simbolos", "!@#$%&*()_-=+[]{}?/,.:;") ?: "!@#$%&*()_-=+[]{}?/,.:;",
+            widget1x1CopiarPortapapeles = prefs.getBoolean("widget_1x1_copiar_portapapeles", true),
+            widget1x1MostrarToast = prefs.getBoolean("widget_1x1_mostrar_toast", true),
+            widget1x1GrosorBordeDp = prefs.getFloat("widget_1x1_grosor_borde_dp", 0f),
+            widget1x1CurvaturaEsquinasDp = prefs.getFloat("widget_1x1_curvatura_esquinas_dp", 15f),
+            widget1x1TransparenciaFondo = prefs.getFloat("widget_1x1_transparencia_fondo", 1.0f),
+            widget1x1TamanoDp = prefs.getFloat("widget_1x1_ancho_dp", prefs.getFloat("widget_1x1_tamano_dp", 55f)),
+            widget1x1AnchoDp = prefs.getFloat("widget_1x1_ancho_dp", prefs.getFloat("widget_1x1_tamano_dp", 55f)),
+            widget1x1AltoDp = prefs.getFloat("widget_1x1_alto_dp", prefs.getFloat("widget_1x1_tamano_dp", 51f)),
+            widget1x1BloquearProporcion = prefs.getBoolean("widget_1x1_bloquear_proporcion", false),
+            widget1x1OffsetX = prefs.getFloat("widget_1x1_offset_x", 0f),
+            widget1x1OffsetY = prefs.getFloat("widget_1x1_offset_y", 4f),
+            widget1x1Alineamiento = prefs.getString("widget_1x1_alineamiento", "arriba") ?: "arriba",
+            widget1x1ColorBorde = prefs.getString("widget_1x1_color_borde", "#33332E") ?: "#33332E",
+            widget1x1ColorIcono = prefs.getString("widget_1x1_color_icono", "#E6FCFF") ?: "#E6FCFF",
+            widget1x1ColorFondo = prefs.getString("widget_1x1_color_fondo", "#2E3333") ?: "#2E3333",
             escalaTexto = prefs.getFloat("escala_texto", 1.0f),
             pesoTexto = prefs.getString("peso_texto", "normal") ?: "normal",
             cursivaTexto = prefs.getBoolean("cursiva_texto", false),
             espaciadoLetrasSp = prefs.getFloat("espaciado_letras_sp", 0.0f),
             interlineadoFactor = prefs.getFloat("interlineado_factor", 1.0f),
             familiaFuente = prefs.getString("familia_fuente", "sans") ?: "sans",
-            colorDinamicoSistema = prefs.getBoolean("color_dinamico_sistema", false),
+            colorDinamicoSistema = prefs.getBoolean("color_dinamico_sistema", true),
             tileModo = prefs.getString("tile_modo", "longitud") ?: "longitud",
             tileLongitud = prefs.getInt("tile_longitud", 20),
             tilePatron = prefs.getString("tile_patron", "XXXXX-XXXXX-XXXXX-XXXXX") ?: "XXXXX-XXXXX-XXXXX-XXXXX",
             tileCopiarPortapapeles = prefs.getBoolean("tile_copiar", true),
             tileMostrarToast = prefs.getBoolean("tile_toast", true),
             tileHaptica = prefs.getBoolean("tile_haptica", true),
+            tileHapticaIntensidad = prefs.getFloat("tile_haptica_intensidad", 0.8f),
             colorSeguridad = prefs.getString("color_seguridad", "") ?: "",
             colorArgon2 = prefs.getString("color_argon2", "") ?: "",
             colorCamara = prefs.getString("color_camara", "") ?: "",
@@ -423,7 +483,13 @@ class AlmacenAjustes(contexto: Context) {
             engranajesColorEje = prefs.getString("engranajes_color_eje", "#141316") ?: "#141316",
             puertaVelocidad = prefs.getFloat("puerta_velocidad", 1.0f),
             puertaGrosorAnillos = prefs.getFloat("puerta_grosor_anillos", 1.0f),
-            puertaColor = prefs.getString("puerta_color", "") ?: ""
+            puertaColor = prefs.getString("puerta_color", "") ?: "",
+            alumbradoActivo = prefs.getBoolean("alumbrado_activo", true),
+            alumbradoIntensidad = prefs.getFloat("alumbrado_intensidad", 0.5f),
+            alumbradoRepeticiones = prefs.getInt("alumbrado_repeticiones", 2),
+            alumbradoDuracionMs = prefs.getInt("alumbrado_duracion_ms", 600),
+            hapticaApp = prefs.getBoolean("haptica_app", true),
+            hapticaAppIntensidad = prefs.getFloat("haptica_app_intensidad", 0.10f)
         )
     }
 
@@ -463,6 +529,29 @@ class AlmacenAjustes(contexto: Context) {
             .putString("widget_color_contador", nuevo.widgetColorContador)
             .putString("widget_color_codigo", nuevo.widgetColorCodigo)
             .putString("widget_color_titulo_icono", nuevo.widgetColorTituloIcono)
+            .putBoolean("widget_haptica", nuevo.widgetHaptica)
+            .putFloat("widget_haptica_intensidad", nuevo.widgetHapticaIntensidad)
+            .putBoolean("widget_1x1_haptica", nuevo.widget1x1Haptica)
+            .putFloat("widget_1x1_haptica_intensidad", nuevo.widget1x1HapticaIntensidad)
+            .putString("widget_1x1_modo", nuevo.widget1x1Modo)
+            .putInt("widget_1x1_longitud", nuevo.widget1x1Longitud)
+            .putString("widget_1x1_patron", nuevo.widget1x1Patron)
+            .putString("widget_1x1_simbolos", nuevo.widget1x1Simbolos)
+            .putBoolean("widget_1x1_copiar_portapapeles", nuevo.widget1x1CopiarPortapapeles)
+            .putBoolean("widget_1x1_mostrar_toast", nuevo.widget1x1MostrarToast)
+            .putFloat("widget_1x1_grosor_borde_dp", nuevo.widget1x1GrosorBordeDp)
+            .putFloat("widget_1x1_curvatura_esquinas_dp", nuevo.widget1x1CurvaturaEsquinasDp)
+            .putFloat("widget_1x1_transparencia_fondo", nuevo.widget1x1TransparenciaFondo)
+            .putFloat("widget_1x1_tamano_dp", nuevo.widget1x1AnchoDp)
+            .putFloat("widget_1x1_ancho_dp", nuevo.widget1x1AnchoDp)
+            .putFloat("widget_1x1_alto_dp", nuevo.widget1x1AltoDp)
+            .putBoolean("widget_1x1_bloquear_proporcion", nuevo.widget1x1BloquearProporcion)
+            .putFloat("widget_1x1_offset_x", nuevo.widget1x1OffsetX)
+            .putFloat("widget_1x1_offset_y", nuevo.widget1x1OffsetY)
+            .putString("widget_1x1_alineamiento", nuevo.widget1x1Alineamiento)
+            .putString("widget_1x1_color_borde", nuevo.widget1x1ColorBorde)
+            .putString("widget_1x1_color_icono", nuevo.widget1x1ColorIcono)
+            .putString("widget_1x1_color_fondo", nuevo.widget1x1ColorFondo)
             .putFloat("escala_texto", nuevo.escalaTexto)
             .putString("peso_texto", nuevo.pesoTexto)
             .putBoolean("cursiva_texto", nuevo.cursivaTexto)
@@ -476,6 +565,7 @@ class AlmacenAjustes(contexto: Context) {
             .putBoolean("tile_copiar", nuevo.tileCopiarPortapapeles)
             .putBoolean("tile_toast", nuevo.tileMostrarToast)
             .putBoolean("tile_haptica", nuevo.tileHaptica)
+            .putFloat("tile_haptica_intensidad", nuevo.tileHapticaIntensidad)
             .putString("color_seguridad", nuevo.colorSeguridad)
             .putString("color_argon2", nuevo.colorArgon2)
             .putString("color_camara", nuevo.colorCamara)
@@ -542,8 +632,15 @@ class AlmacenAjustes(contexto: Context) {
             .putFloat("puerta_velocidad", nuevo.puertaVelocidad)
             .putFloat("puerta_grosor_anillos", nuevo.puertaGrosorAnillos)
             .putString("puerta_color", nuevo.puertaColor)
+            .putBoolean("alumbrado_activo", nuevo.alumbradoActivo)
+            .putFloat("alumbrado_intensidad", nuevo.alumbradoIntensidad)
+            .putInt("alumbrado_repeticiones", nuevo.alumbradoRepeticiones)
+            .putInt("alumbrado_duracion_ms", nuevo.alumbradoDuracionMs)
+            .putBoolean("haptica_app", nuevo.hapticaApp)
+            .putFloat("haptica_app_intensidad", nuevo.hapticaAppIntensidad)
             .apply()
         _ajustes.value = nuevo
+        com.jlnavas3.bovedalocal.util.Haptica.sincronizar(nuevo)
     }
 
     companion object {
@@ -583,9 +680,17 @@ class AlmacenAjustes(contexto: Context) {
         val OPCIONES_RECORDATORIO_EXPORTACION = listOf(
             0 to "Nunca",
             -30 to "Cada 30 minutos (prueba)",
+            7 to "Cada 7 días",
             30 to "Cada 30 días",
             60 to "Cada 60 días",
             90 to "Cada 90 días"
+        )
+        val OPCIONES_MAX_COPIAS_BACKUP_AUTO = listOf(
+            5 to "5 copias",
+            10 to "10 copias",
+            20 to "20 copias",
+            100 to "100 copias",
+            0 to "Infinitas"
         )
         val OPCIONES_DENSIDAD_LISTA = listOf(
             "predeterminada" to "Predeterminada",

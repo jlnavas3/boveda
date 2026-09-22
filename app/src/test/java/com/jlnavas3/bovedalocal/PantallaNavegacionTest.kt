@@ -224,4 +224,194 @@ class PantallaNavegacionTest {
         assertEquals(Pantalla.Registro("05.2"), resolverId("05.2"))
         assertEquals(Pantalla.AcercaDe("05.3"), resolverId("05.3"))
     }
+
+    @Test
+    fun `retroceso jerarquico multinivel desde 03_2_G2 lleva a 03_2 y luego a 00 y luego a Lista`() {
+        fun padreDe(p: Pantalla): Pantalla? = when (p) {
+            is Pantalla.CalibracionAnimacion -> Pantalla.Tema("03.2.G2")
+            is Pantalla.Tema -> Pantalla.Ajustes("03.2")
+            is Pantalla.Ajustes -> Pantalla.Lista
+            else -> null
+        }
+
+        val pila = ArrayDeque<Pantalla>()
+        var pantallaActual: Pantalla = Pantalla.Lista
+
+        fun ir(pantalla: Pantalla) {
+            if (pantalla != pantallaActual) {
+                val padre = padreDe(pantalla)
+                val origen = when {
+                    pantallaActual is Pantalla.Ajustes -> {
+                        val p = padreDe(pantalla)
+                        if (p is Pantalla.Ajustes && !p.seccionId.isNullOrBlank()) p else pantallaActual
+                    }
+                    else -> padre ?: pantallaActual
+                }
+                if (pantallaActual is Pantalla.Lista && origen !is Pantalla.Lista) {
+                    pila.addLast(Pantalla.Lista)
+                }
+                pila.addLast(origen)
+            }
+            pantallaActual = pantalla
+        }
+
+        fun retroceder(): Boolean {
+            val anterior = pila.removeLastOrNull()
+            val padre = padreDe(pantallaActual)
+            val destino = when {
+                anterior is Pantalla.Ajustes && !anterior.seccionId.isNullOrBlank() -> anterior
+                padre != null -> padre
+                anterior != null -> anterior
+                else -> null
+            }
+            if (destino != null) {
+                pantallaActual = destino
+                return true
+            }
+            return false
+        }
+
+        // Flujo: Lista -> Ajustes ("00") -> Tema ("03.2") -> Calibración ("03.2.G2")
+        assertEquals(Pantalla.Lista, pantallaActual)
+        ir(Pantalla.Ajustes())
+        assertEquals(Pantalla.Ajustes(), pantallaActual)
+
+        ir(Pantalla.Tema("03.2"))
+        assertEquals(Pantalla.Tema("03.2"), pantallaActual)
+
+        ir(Pantalla.CalibracionAnimacion())
+        assertEquals(Pantalla.CalibracionAnimacion(), pantallaActual)
+
+        // 1er Retroceso: debe llevar a Tema con ID 03.2.G2 para enfocar el grupo
+        assertTrue(retroceder())
+        assertEquals(Pantalla.Tema("03.2.G2"), pantallaActual)
+
+        // 2do Retroceso: debe llevar a Ajustes con ID 03.2 para enfocar la tarjeta
+        assertTrue(retroceder())
+        assertEquals(Pantalla.Ajustes("03.2"), pantallaActual)
+
+        // 3er Retroceso: debe llevar a Lista principal
+        assertTrue(retroceder())
+        assertEquals(Pantalla.Lista, pantallaActual)
+
+        // 4to Retroceso: ya en Lista, retroceder devuelve false (sale de la app)
+        assertEquals(false, retroceder())
+        assertEquals(Pantalla.Lista, pantallaActual)
+    }
+
+    @Test
+    fun `clic en advertencia de copia 02_1_4 y retroceso jerarquico`() {
+        fun padreDe(p: Pantalla): Pantalla? = when (p) {
+            is Pantalla.CopiaSeguridad -> Pantalla.Ajustes("02.1")
+            is Pantalla.Ajustes -> Pantalla.Lista
+            else -> null
+        }
+
+        val pila = ArrayDeque<Pantalla>()
+        var pantallaActual: Pantalla = Pantalla.Lista
+
+        fun ir(pantalla: Pantalla) {
+            if (pantalla != pantallaActual) {
+                val padre = padreDe(pantalla)
+                val origen = padre ?: pantallaActual
+                if (pantallaActual is Pantalla.Lista && origen !is Pantalla.Lista) {
+                    pila.addLast(Pantalla.Lista)
+                }
+                pila.addLast(origen)
+            }
+            pantallaActual = pantalla
+        }
+
+        fun retroceder(): Boolean {
+            val anterior = pila.removeLastOrNull()
+            val padre = padreDe(pantallaActual)
+            val destino = when {
+                anterior is Pantalla.Ajustes && !anterior.seccionId.isNullOrBlank() -> anterior
+                padre != null -> padre
+                anterior != null -> anterior
+                else -> null
+            }
+            if (destino != null) {
+                pantallaActual = destino
+                return true
+            }
+            return false
+        }
+
+        // Desde Lista, clic en banner lleva a CopiaSeguridad("02.1.4")
+        ir(Pantalla.CopiaSeguridad("02.1.4"))
+        assertEquals(Pantalla.CopiaSeguridad("02.1.4"), pantallaActual)
+
+        // 1er Retroceso: vuelve al nivel superior Ajustes ("00") con sección "02.1"
+        assertTrue(retroceder())
+        assertEquals(Pantalla.Ajustes("02.1"), pantallaActual)
+
+        // 2do Retroceso: vuelve a Lista principal
+        assertTrue(retroceder())
+        assertEquals(Pantalla.Lista, pantallaActual)
+
+        // 3er Retroceso: en Lista devuelve false
+        assertEquals(false, retroceder())
+    }
+
+    @Test
+    fun `todas las opciones abiertas desde el menu lateral regresan a Lista principal`() {
+        val rutasMenuLateral = listOf(
+            Pantalla.Generador,
+            Pantalla.HistorialClaves,
+            Pantalla.Passkeys,
+            Pantalla.Autenticador,
+            Pantalla.SaludBoveda,
+            Pantalla.Duplicados,
+            Pantalla.Papelera,
+            Pantalla.Ajustes,
+            Pantalla.Registro,
+            Pantalla.AcercaDe
+        )
+
+        fun padreDe(p: Pantalla): Pantalla? = when (p) {
+            is Pantalla.SaludBoveda -> if (!p.seccionId.isNullOrBlank()) Pantalla.Ajustes(p.seccionId) else Pantalla.Lista
+            is Pantalla.Duplicados -> if (!p.seccionId.isNullOrBlank()) Pantalla.Ajustes(p.seccionId) else Pantalla.Lista
+            is Pantalla.Papelera -> if (!p.seccionId.isNullOrBlank()) Pantalla.Ajustes(p.seccionId) else Pantalla.Lista
+            is Pantalla.HistorialClaves -> if (!p.seccionId.isNullOrBlank()) Pantalla.Ajustes(p.seccionId) else Pantalla.Lista
+            is Pantalla.Registro -> if (!p.seccionId.isNullOrBlank()) Pantalla.Ajustes(p.seccionId) else Pantalla.Lista
+            is Pantalla.AcercaDe -> if (!p.seccionId.isNullOrBlank()) Pantalla.Ajustes(p.seccionId) else Pantalla.Lista
+            is Pantalla.Ajustes -> Pantalla.Lista
+            is Pantalla.Generador -> Pantalla.Lista
+            is Pantalla.Passkeys -> Pantalla.Lista
+            is Pantalla.Autenticador -> Pantalla.Lista
+            else -> null
+        }
+
+        for (destino in rutasMenuLateral) {
+            val pila = ArrayDeque<Pantalla>()
+            var pantallaActual: Pantalla = Pantalla.Lista
+
+            // Simular irDesdeMenuLateral
+            pila.clear()
+            pila.addLast(Pantalla.Lista)
+            pantallaActual = destino
+
+            fun retroceder(): Boolean {
+                val anterior = pila.removeLastOrNull()
+                val padre = padreDe(pantallaActual)
+                val target = when {
+                    anterior is Pantalla.Ajustes && !anterior.seccionId.isNullOrBlank() -> anterior
+                    anterior is Pantalla.Lista -> Pantalla.Lista
+                    padre != null -> padre
+                    anterior != null -> anterior
+                    else -> null
+                }
+                if (target != null) {
+                    pantallaActual = target
+                    return true
+                }
+                return false
+            }
+
+            assertTrue("Debe retroceder exitosamente desde $destino", retroceder())
+            assertEquals("Al volver de $destino debe llegar a Lista principal", Pantalla.Lista, pantallaActual)
+            assertEquals("Estando en Lista, no debe retroceder más", false, retroceder())
+        }
+    }
 }

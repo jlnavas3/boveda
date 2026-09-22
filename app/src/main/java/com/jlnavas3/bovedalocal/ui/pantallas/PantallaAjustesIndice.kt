@@ -51,6 +51,7 @@ import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteSwitch
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ProveedorResaltadoAjustes
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjustesFondo
 import com.jlnavas3.bovedalocal.ui.theme.Ambar
+import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
 import com.jlnavas3.bovedalocal.ui.theme.Borde
 import com.jlnavas3.bovedalocal.ui.theme.ColorSobreAcento
 import com.jlnavas3.bovedalocal.ui.theme.FormaCampo
@@ -453,7 +454,7 @@ fun PantallaAjustesIndice(
                         ComponenteSwitch(
                             titulo = "Resaltar entradas al deslizar",
                             icono = Icons.Filled.Highlight,
-                            colorIcono = Ambar,
+                            colorIcono = ColorIconosInternos,
                             activo = ajustes.indiceResaltarEntradas,
                             idFila = "03.4.12",
                             mostrarId = ajustes.mostrarIdsAjustes,

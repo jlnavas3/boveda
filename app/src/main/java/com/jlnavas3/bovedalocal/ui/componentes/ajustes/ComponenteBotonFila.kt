@@ -11,7 +11,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjusteGris
-import com.jlnavas3.bovedalocal.ui.theme.Ambar
+import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
 
 /**
  * Fila de acción para Ajustes (restablecer o ejecutar comandos) diseñada al estilo
@@ -29,7 +29,7 @@ fun ComponenteBotonFila(
     alPulsar: () -> Unit,
     modifier: Modifier = Modifier,
     icono: ImageVector? = Icons.Filled.RestartAlt,
-    colorIcono: Color? = Ambar,
+    colorIcono: Color? = ColorIconosInternos,
     colorTinteIcono: Color = Color.White,
     valorTexto: String? = null,
     idFila: String? = null,

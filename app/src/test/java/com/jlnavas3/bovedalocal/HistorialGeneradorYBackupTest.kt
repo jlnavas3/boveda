@@ -96,6 +96,10 @@ class HistorialGeneradorYBackupTest {
             // Deben quedar los 4 más nuevos (4, 5, 6, 7)
             assertEquals("boveda-auto-20260914-120000.boveda", restantes[0].name)
             assertEquals("boveda-auto-20260917-120000.boveda", restantes[3].name)
+
+            // Rotar con maxCopias = 0 (infinitas) no debe borrar nada
+            GestorBackupAutomatico.rotarBackups(tempDir, maxCopias = 0)
+            assertEquals(4, tempDir.listFiles()?.size)
         } finally {
             tempDir.deleteRecursively()
         }

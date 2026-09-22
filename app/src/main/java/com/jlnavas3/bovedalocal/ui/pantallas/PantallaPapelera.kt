@@ -88,9 +88,11 @@ fun PantallaPapelera(
     seccionDestino: String? = null
 ) {
     val papelera = (estado as? EstadoBoveda.Desbloqueada)?.papelera ?: emptyList()
+    val entradasActivas = (estado as? EstadoBoveda.Desbloqueada)?.entradas ?: emptyList()
     val ahora = remember { System.currentTimeMillis() }
     var confirmarVaciar by remember { mutableStateOf(false) }
     var aBorrarDefinitivo by remember { mutableStateOf<Entrada?>(null) }
+    var conflictoRestaurar by remember { mutableStateOf<Entrada?>(null) }
 
     Column(
         modifier = Modifier
@@ -153,8 +155,14 @@ fun PantallaPapelera(
                                     entrada = entrada,
                                     diasRestantes = diasRestantes,
                                     alRestaurar = {
-                                        vm.restaurarDeLaPapelera(entrada.id)
-                                        vm.avisar("Entrada restaurada")
+                                        val conflicto = entradasActivas.find {
+                                            it.id == entrada.id || (it.titulo.trim().equals(entrada.titulo.trim(), ignoreCase = true) && it.usuario.trim() == entrada.usuario.trim())
+                                        }
+                                        if (conflicto != null) {
+                                            conflictoRestaurar = entrada
+                                        } else {
+                                            vm.restaurarDeLaPapelera(entrada.id)
+                                        }
                                     },
                                     alBorrarDefinitivo = { aBorrarDefinitivo = entrada }
                                 )
@@ -239,6 +247,67 @@ fun PantallaPapelera(
             },
             dismissButton = {
                 TextButton(onClick = { aBorrarDefinitivo = null }) {
+                    Text("Cancelar", color = ColorAjusteGris)
+                }
+            }
+        )
+    }
+
+    conflictoRestaurar?.let { entrada ->
+        AlertDialog(
+            onDismissRequest = { conflictoRestaurar = null },
+            shape = RoundedCornerShape(20.dp),
+            containerColor = ColorTarjetaAjustes,
+            tonalElevation = 0.dp,
+            title = {
+                Text(
+                    text = "Entrada ya existente",
+                    color = ColorTextoAjustes,
+                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
+                )
+            },
+            text = {
+                Column {
+                    Text(
+                        text = "Ya existe una entrada activa con el nombre \"${entrada.titulo.ifBlank { "Sin título" }}\" en tu bóveda.",
+                        color = ColorTextoAjustes,
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                    Spacer(Modifier.height(10.dp))
+                    Text(
+                        text = "¿Deseas sustituir la existente o conservar ambas creando una copia independiente?",
+                        color = ColorAjusteGris,
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                }
+            },
+            confirmButton = {
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    TextButton(
+                        onClick = {
+                            val id = entrada.id
+                            conflictoRestaurar = null
+                            vm.restaurarDeLaPapelera(id, sustituir = true)
+                        }
+                    ) {
+                        Text("Sustituir", color = Peligro, fontWeight = FontWeight.SemiBold)
+                    }
+                    TextButton(
+                        onClick = {
+                            val id = entrada.id
+                            conflictoRestaurar = null
+                            vm.restaurarDeLaPapelera(id, sustituir = false)
+                        }
+                    ) {
+                        Text("Duplicar", color = ColorAcento, fontWeight = FontWeight.Bold)
+                    }
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { conflictoRestaurar = null }) {
                     Text("Cancelar", color = ColorAjusteGris)
                 }
             }

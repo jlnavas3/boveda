@@ -27,6 +27,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -70,6 +71,7 @@ fun ComponenteSlider(
     colorAcento: Color = ColorAcento
 ) {
     val estadoAlumbrado = recordarEstadoAlumbrado(idFila)
+    val coordinador = LocalCoordinadorResaltado.current
     val tieneBadgeId = mostrarId && !idFila.isNullOrBlank()
 
     Column(
@@ -77,6 +79,14 @@ fun ComponenteSlider(
             .fillMaxWidth()
             .bringIntoViewRequester(estadoAlumbrado.bringIntoViewRequester)
             .background(estadoAlumbrado.colorFondoAnimado.value)
+            .onGloballyPositioned { coords ->
+                coordinador?.registrarYEjecutarSiCoincide(
+                    id = idFila,
+                    itemCoordinates = coords,
+                    estadoAlumbrado = estadoAlumbrado,
+                    colorAcento = colorAcento
+                )
+            }
             .padding(horizontal = 16.dp, vertical = 12.dp)
     ) {
         // Cabecera: Icono + Título/ID + Píldora de Valor

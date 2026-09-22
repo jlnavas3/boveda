@@ -1,5 +1,6 @@
 package com.jlnavas3.bovedalocal.ui.pantallas
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -222,6 +223,14 @@ fun PantallaLista(vm: VaultViewModel, estado: EstadoBoveda) {
         seleccionados = emptySet()
     }
 
+    BackHandler(enabled = estadoCajon.isOpen || modoSeleccion || busqueda.isNotEmpty()) {
+        when {
+            estadoCajon.isOpen -> cerrarMenu()
+            modoSeleccion -> salirDeSeleccion()
+            busqueda.isNotEmpty() -> vm.buscar("")
+        }
+    }
+
     fun alternarSeleccion(id: String) {
         seleccionados = if (seleccionados.contains(id)) seleccionados - id else seleccionados + id
         if (seleccionados.isEmpty()) modoSeleccion = false
@@ -275,7 +284,7 @@ fun PantallaLista(vm: VaultViewModel, estado: EstadoBoveda) {
                     totalDuplicadas = totalDuplicadas,
                     perfilArgon2 = vm.repositorio.perfilArgon2Actual(),
                     mostrarIds = ajustes.mostrarIdsAjustes,
-                    alIr = { destino -> cerrarMenu(); vm.ir(destino) },
+                    alIr = { destino -> cerrarMenu(); vm.irDesdeMenuLateral(destino) },
                     alBloquear = { cerrarMenu(); haptica.toque(); vm.bloquear() }
                 )
             }
@@ -494,7 +503,7 @@ fun PantallaLista(vm: VaultViewModel, estado: EstadoBoveda) {
                 Box(modifier = Modifier.padding(horizontal = 20.dp)) {
                     BannerRecordatorioExportacion(
                         info = recordatorio,
-                        alIr = { vm.ir(Pantalla.CopiaSeguridad("02.1")) }
+                        alIr = { vm.ir(Pantalla.CopiaSeguridad("02.1.4")) }
                     )
                 }
             }

@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AllInclusive
 import androidx.compose.material.icons.filled.Autorenew
 import androidx.compose.material.icons.filled.Block
 import androidx.compose.material.icons.filled.CalendarMonth
@@ -26,6 +27,7 @@ import androidx.compose.material.icons.filled.Event
 import androidx.compose.material.icons.filled.EventRepeat
 import androidx.compose.material.icons.filled.FileDownload
 import androidx.compose.material.icons.filled.FileUpload
+import androidx.compose.material.icons.filled.FilterNone
 import androidx.compose.material.icons.filled.Folder
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Today
@@ -33,6 +35,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -43,6 +46,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import com.jlnavas3.bovedalocal.BovedaApp
 import com.jlnavas3.bovedalocal.data.AlmacenAjustes
 import com.jlnavas3.bovedalocal.ui.Pantalla
@@ -59,7 +64,9 @@ import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteSelectorModal
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteSeparador
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.TipoCampoTexto
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.OpcionSelectorModal
+import com.jlnavas3.bovedalocal.ui.componentes.ajustes.LocalCoordinadorResaltado
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ProveedorResaltadoAjustes
+import com.jlnavas3.bovedalocal.ui.componentes.ajustes.contenedorScrollAjustes
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjustesFondo
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.DialogoContrasena
 import com.jlnavas3.bovedalocal.ui.theme.Ambar
@@ -111,7 +118,14 @@ fun PantallaCopiaSeguridad(
 
     val scrollState = rememberScrollState()
 
-    ProveedorResaltadoAjustes(seccionDestino) {
+    LaunchedEffect(Unit) {
+        withContext(Dispatchers.IO) {
+            com.jlnavas3.bovedalocal.data.GestorBackupAutomatico.indexarBackups(contexto)
+        }
+    }
+
+    ProveedorResaltadoAjustes(seccionDestino, scrollState) {
+        val coordinador = LocalCoordinadorResaltado.current
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -130,6 +144,7 @@ fun PantallaCopiaSeguridad(
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f)
+                    .contenedorScrollAjustes(coordinador)
                     .verticalScroll(scrollState)
                     .padding(horizontal = 16.dp, vertical = 12.dp)
             ) {
@@ -202,6 +217,24 @@ fun PantallaCopiaSeguridad(
                         }
                     }
 
+                    val opcionesMaxCopias = remember {
+                        AlmacenAjustes.OPCIONES_MAX_COPIAS_BACKUP_AUTO.map { (max, etiqueta) ->
+                            val desc = when (max) {
+                                5 -> "Mantiene las últimas 5 copias generadas"
+                                10 -> "Mantiene las últimas 10 copias generadas"
+                                20 -> "Mantiene las últimas 20 copias generadas"
+                                100 -> "Mantiene un historial amplio de 100 copias"
+                                0 -> "Conserva todas las copias automáticas sin eliminarlas"
+                                else -> "$max copias"
+                            }
+                            val icono = when (max) {
+                                0 -> Icons.Filled.AllInclusive
+                                else -> Icons.Filled.FilterNone
+                            }
+                            OpcionSelectorModal(max, etiqueta, etiqueta, desc, icono)
+                        }
+                    }
+
                     ComponenteSelectorModal(
                         titulo = "Frecuencia de copia",
                         descripcionModal = "Periodicidad con la que se genera un respaldo cifrado en Descargas",
@@ -217,7 +250,24 @@ fun PantallaCopiaSeguridad(
                         }
                     )
 
-                    if (ajustes.backupAutoFrecuenciaDias > 0) {
+                    val mostrarSeccionAuto = ajustes.backupAutoFrecuenciaDias > 0 || seccionDestino == "02.1.4" || seccionDestino == "02.1.G2"
+
+                    if (mostrarSeccionAuto) {
+                        ComponenteSeparador()
+                        ComponenteSelectorModal(
+                            titulo = "Copias a respaldar",
+                            descripcionModal = "Número de copias automáticas que se conservan antes de rotar y borrar las más antiguas",
+                            icono = Icons.Filled.FilterNone,
+                            colorIcono = ColorExportacion,
+                            idFila = "02.1.3b",
+                            mostrarId = ajustes.mostrarIdsAjustes,
+                            valorSeleccionado = ajustes.backupAutoMaxCopias,
+                            opciones = opcionesMaxCopias,
+                            alSeleccionar = { max ->
+                                haptica.tic()
+                                vm.ajustarBackupAutoMaxCopias(max)
+                            }
+                        )
                         ComponenteSeparador()
                         Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)) {
                             ComponenteCampoTexto(
@@ -248,8 +298,13 @@ fun PantallaCopiaSeguridad(
                             } else {
                                 "Última copia: Aún no realizada"
                             }
+                            val textoRotacion = if (ajustes.backupAutoMaxCopias <= 0) {
+                                "Rotación: Infinitas"
+                            } else {
+                                "Rotación máxima: ${ajustes.backupAutoMaxCopias} copias"
+                            }
                             Text(
-                                "$textoUltima (Rotación máxima: ${ajustes.backupAutoMaxCopias} copias)",
+                                "$textoUltima ($textoRotacion)",
                                 color = TextoSecundario,
                                 style = MaterialTheme.typography.bodySmall
                             )
@@ -261,13 +316,14 @@ fun PantallaCopiaSeguridad(
                             alPulsar = {
                                 haptica.toque()
                                 vm.ajustarBackupAutoFrecuenciaDias(0)
+                                vm.ajustarBackupAutoMaxCopias(5)
                                 vm.ajustarBackupAutoPasswordCifrado("")
                                 vm.ajustarBackupAutoPatronNombre("{99}-backup-{FECHA}")
                             }
                         )
                     }
 
-                    if (ajustes.backupAutoFrecuenciaDias > 0) {
+                    if (mostrarSeccionAuto) {
                         ComponenteSeparador()
                         ComponenteNavegacion(
                             titulo = "Ejecutar copia automática ahora",
@@ -297,6 +353,7 @@ fun PantallaCopiaSeguridad(
                             val desc = when (dias) {
                                 0 -> "No mostrar avisos por falta de respaldo"
                                 -30 -> "Modo de prueba rápido (notifica cada media hora)"
+                                7 -> "Aviso semanal para respaldos frecuentes"
                                 30 -> "Frecuencia recomendada para copias manuales"
                                 60 -> "Aviso bimestral si la bóveda no cambia a menudo"
                                 90 -> "Aviso trimestral para mínimo mantenimiento"
@@ -305,6 +362,7 @@ fun PantallaCopiaSeguridad(
                             val icono = when (dias) {
                                 0 -> Icons.Filled.Block
                                 -30 -> Icons.Filled.Today
+                                7 -> Icons.Filled.DateRange
                                 30 -> Icons.Filled.CalendarToday
                                 60 -> Icons.Filled.CalendarMonth
                                 else -> Icons.Filled.EventRepeat

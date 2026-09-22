@@ -21,21 +21,32 @@ object GeneradorRapidoHelper {
         val appContext = context.applicationContext
         val repo = com.jlnavas3.bovedalocal.data.VaultRepository.obtener(appContext)
         val ajustes = repo.ajustes.actual
-        val clave = if (ajustes.tileModo == "patron") {
-            PasswordGenerator.generarPorPatron(ajustes.tilePatron)
+        val esWidget1x1 = origen == "Widget 1x1"
+
+        val modo = if (esWidget1x1) ajustes.widget1x1Modo else ajustes.tileModo
+        val longitud = if (esWidget1x1) ajustes.widget1x1Longitud else ajustes.tileLongitud
+        val patron = if (esWidget1x1) ajustes.widget1x1Patron else ajustes.tilePatron
+        val copiar = if (esWidget1x1) ajustes.widget1x1CopiarPortapapeles else ajustes.tileCopiarPortapapeles
+        val mostrarToast = if (esWidget1x1) ajustes.widget1x1MostrarToast else ajustes.tileMostrarToast
+        val hapticaActiva = if (esWidget1x1) ajustes.widget1x1Haptica else ajustes.tileHaptica
+        val hapticaIntensidad = if (esWidget1x1) ajustes.widget1x1HapticaIntensidad else ajustes.tileHapticaIntensidad
+
+        val clave = if (modo == "patron") {
+            PasswordGenerator.generarPorPatron(patron)
         } else {
             PasswordGenerator.generarAleatoria(
                 OpcionesGenerador(
-                    longitud = ajustes.tileLongitud,
+                    longitud = longitud,
                     mayusculas = true,
                     minusculas = true,
                     digitos = true,
-                    simbolos = true
+                    simbolos = true,
+                    simbolosPersonalizados = if (esWidget1x1) ajustes.widget1x1Simbolos else PasswordGenerator.SIMBOLOS
                 )
             )
         }
 
-        if (ajustes.tileCopiarPortapapeles) {
+        if (copiar) {
             val cm = appContext.getSystemService(Context.CLIPBOARD_SERVICE) as? ClipboardManager
             if (cm != null) {
                 val clip = ClipData.newPlainText("Contraseña generada", clave)
@@ -46,12 +57,12 @@ object GeneradorRapidoHelper {
             Diagnostico.apuntar("bóveda", "Contraseña generada desde $origen")
         }
 
-        if (ajustes.tileHaptica) {
-            ejecutarVibracion(appContext)
+        if (hapticaActiva) {
+            com.jlnavas3.bovedalocal.util.Haptica.vibrarExterno(appContext, activo = true, intensidad = hapticaIntensidad)
         }
 
-        if (ajustes.tileMostrarToast) {
-            val mensaje = if (ajustes.tileCopiarPortapapeles) {
+        if (mostrarToast) {
+            val mensaje = if (copiar) {
                 "Contraseña generada y copiada al portapapeles"
             } else {
                 "Clave generada: $clave"
@@ -92,27 +103,13 @@ object GeneradorRapidoHelper {
 
     fun ejecutarVibracion(context: Context) {
         try {
-            val v = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                val vm = context.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as? VibratorManager
-                vm?.defaultVibrator
-            } else {
-                @Suppress("DEPRECATION")
-                context.getSystemService(Context.VIBRATOR_SERVICE) as? Vibrator
-            } ?: return
-
-            if (v.hasVibrator()) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    val efecto = if (v.hasAmplitudeControl()) {
-                        VibrationEffect.createOneShot(45, 200)
-                    } else {
-                        VibrationEffect.createOneShot(45, VibrationEffect.DEFAULT_AMPLITUDE)
-                    }
-                    v.vibrate(efecto)
-                } else {
-                    @Suppress("DEPRECATION")
-                    v.vibrate(45)
-                }
-            }
+            val repo = com.jlnavas3.bovedalocal.data.VaultRepository.obtener(context.applicationContext)
+            val ajustes = repo.ajustes.actual
+            com.jlnavas3.bovedalocal.util.Haptica.vibrarExterno(
+                context = context,
+                activo = ajustes.tileHaptica,
+                intensidad = ajustes.tileHapticaIntensidad
+            )
         } catch (_: Exception) {
         }
     }

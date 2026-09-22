@@ -109,17 +109,14 @@ fun MenuLateral(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Box(
-                modifier = Modifier
-                    .size(44.dp)
-                    .clip(RoundedCornerShape(13.dp))
-                    .background(ColorAcento),
+                modifier = Modifier.size(40.dp),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
                     imageVector = Icons.Filled.Lock,
                     contentDescription = null,
-                    tint = Color.White,
-                    modifier = Modifier.size(22.dp)
+                    tint = ColorIconosInternos,
+                    modifier = Modifier.size(26.dp)
                 )
             }
 
@@ -194,7 +191,7 @@ fun MenuLateral(
                     colorIcono = ColorGenerador,
                     idEtiqueta = "04.5",
                     mostrarId = mostrarIds
-                ) { alIr(Pantalla.HistorialClaves("04.5")) }
+                ) { alIr(Pantalla.HistorialClaves) }
 
                 if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
                     SeparadorItemMenu()
@@ -226,19 +223,19 @@ fun MenuLateral(
                     colorIcono = ColorSalud,
                     idEtiqueta = "02.4",
                     mostrarId = mostrarIds
-                ) { alIr(Pantalla.SaludBoveda("02.4")) }
+                ) { alIr(Pantalla.SaludBoveda) }
 
                 SeparadorItemMenu()
 
                 ItemMenu(
                     texto = "Limpiar duplicados",
                     icono = Icons.Filled.ContentCopy,
-                    colorIcono = if (totalDuplicadas > 0) Peligro else ColorAcento,
+                    colorIcono = if (totalDuplicadas > 0) Peligro else ColorIconosInternos,
                     badge = if (totalDuplicadas > 0) totalDuplicadas.toString() else null,
-                    colorBadge = if (totalDuplicadas > 0) Peligro else ColorAcento,
+                    colorBadge = if (totalDuplicadas > 0) Peligro else ColorIconosInternos,
                     idEtiqueta = "02.5",
                     mostrarId = mostrarIds
-                ) { alIr(Pantalla.Duplicados("02.5")) }
+                ) { alIr(Pantalla.Duplicados) }
 
                 SeparadorItemMenu()
 
@@ -250,7 +247,7 @@ fun MenuLateral(
                     colorBadge = ColorPapelera,
                     idEtiqueta = "02.6",
                     mostrarId = mostrarIds
-                ) { alIr(Pantalla.Papelera("02.6")) }
+                ) { alIr(Pantalla.Papelera) }
             }
 
             // Grupo 3: Sistema
@@ -271,7 +268,7 @@ fun MenuLateral(
                     colorIcono = ColorExportacion,
                     idEtiqueta = "05.2",
                     mostrarId = mostrarIds
-                ) { alIr(Pantalla.Registro("05.2")) }
+                ) { alIr(Pantalla.Registro) }
 
                 SeparadorItemMenu()
 
@@ -281,7 +278,7 @@ fun MenuLateral(
                     colorIcono = ColorSeguridad,
                     idEtiqueta = "05.3",
                     mostrarId = mostrarIds
-                ) { alIr(Pantalla.AcercaDe("05.3")) }
+                ) { alIr(Pantalla.AcercaDe) }
             }
         }
 
@@ -412,17 +409,14 @@ fun ItemMenu(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Box(
-            modifier = Modifier
-                .size(34.dp)
-                .clip(RoundedCornerShape(10.dp))
-                .background(colorIcono),
+            modifier = Modifier.size(32.dp),
             contentAlignment = Alignment.Center
         ) {
             Icon(
                 imageVector = icono,
                 contentDescription = null,
-                tint = Color.White,
-                modifier = Modifier.size(18.dp)
+                tint = colorIcono,
+                modifier = Modifier.size(22.dp)
             )
         }
 

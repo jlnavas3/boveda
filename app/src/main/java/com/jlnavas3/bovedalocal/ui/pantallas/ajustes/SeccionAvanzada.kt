@@ -20,6 +20,7 @@ import com.jlnavas3.bovedalocal.ui.Pantalla
 import com.jlnavas3.bovedalocal.ui.VaultViewModel
 import com.jlnavas3.bovedalocal.ui.componentes.BotonColorido
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
+import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
 import com.jlnavas3.bovedalocal.ui.theme.ColorPapelera
 import com.jlnavas3.bovedalocal.ui.theme.ColorSeguridad
 import com.jlnavas3.bovedalocal.ui.theme.Peligro
@@ -43,7 +44,7 @@ fun SeccionAvanzada(
         icono = Icons.AutoMirrored.Filled.Sort,
         descripcion = "Navegación rápida con efecto de ola estilo Niagara y personalización completa.",
         inicialmenteAbierta = seccionDestino == "11.1" || seccionDestino == "11",
-        colorIcono = ColorAcento,
+        colorIcono = ColorIconosInternos,
         idEtiqueta = "11.1",
         mostrarId = ajustes.mostrarIdsAjustes
     ) {
@@ -96,7 +97,7 @@ fun SeccionAvanzada(
         icono = Icons.Filled.Tune,
         descripcion = "Opciones técnicas y de identificación para atajos y diagnóstico.",
         inicialmenteAbierta = seccionDestino == "11.3",
-        colorIcono = ColorAcento,
+        colorIcono = ColorIconosInternos,
         idEtiqueta = "11.3",
         mostrarId = ajustes.mostrarIdsAjustes
     ) {

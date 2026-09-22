@@ -173,19 +173,31 @@ fun Color.aHex(): String {
 private var paletaAcentoActiva by mutableStateOf<PaletaAcento?>(PaletaAcento.AMBAR)
 private var colorAcentoManual by mutableStateOf<Color?>(null)
 private var colorAcentoFuerteManual by mutableStateOf<Color?>(null)
+private var colorDinamicoMonet by mutableStateOf<Color?>(null)
+private var colorDinamicoFuerteMonet by mutableStateOf<Color?>(null)
 private var colorIconosBase by mutableStateOf<Color?>(null)
 private var colorTitulosBase by mutableStateOf<Color?>(null)
 private var colorTarjetasBase by mutableStateOf<Color?>(null)
 
 var ColorAcento: Color
-    get() = colorAcentoManual ?: paletaAcentoActiva?.base ?: PaletaAcento.AMBAR.base
+    get() {
+        if (colorDinamicoSistemaBase && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && colorDinamicoMonet != null) {
+            return colorDinamicoMonet!!
+        }
+        return colorAcentoManual ?: paletaAcentoActiva?.base ?: PaletaAcento.AMBAR.base
+    }
     set(valor) {
         colorAcentoManual = valor
         colorAcentoFuerteManual = valor
     }
 
 var ColorAcentoFuerte: Color
-    get() = colorAcentoFuerteManual ?: paletaAcentoActiva?.fuerte ?: PaletaAcento.AMBAR.fuerte
+    get() {
+        if (colorDinamicoSistemaBase && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && colorDinamicoFuerteMonet != null) {
+            return colorDinamicoFuerteMonet!!
+        }
+        return colorAcentoFuerteManual ?: paletaAcentoActiva?.fuerte ?: PaletaAcento.AMBAR.fuerte
+    }
     set(valor) { colorAcentoFuerteManual = valor }
 
 val ColorSobreAcento: Color get() = colorContraste(ColorAcento)
@@ -217,7 +229,7 @@ val DegradadoAmbar: Brush get() = Brush.horizontalGradient(listOf(ColorAcento, C
 
 fun degradadoAmbarVertical() = Brush.verticalGradient(listOf(ColorAcento, ColorAcentoFuerte))
 
-private var colorDinamicoSistemaBase by mutableStateOf(false)
+private var colorDinamicoSistemaBase by mutableStateOf(true)
 
 var ColorDinamicoSistema: Boolean
     get() = colorDinamicoSistemaBase
@@ -477,7 +489,36 @@ fun aplicarPersonalizacionTemaCompleto(ajustes: com.jlnavas3.bovedalocal.data.Aj
     aplicarPersonalizacionColores(ajustes)
     aplicarPersonalizacionFormas(ajustes)
     aplicarPersonalizacionTipografia(ajustes)
+    alumbradoActivoBase = ajustes.alumbradoActivo
+    alumbradoIntensidadBase = ajustes.alumbradoIntensidad
+    alumbradoRepeticionesBase = ajustes.alumbradoRepeticiones
+    alumbradoDuracionMsBase = ajustes.alumbradoDuracionMs
 }
+
+// -------------------------------------------------------------------------------------------------
+// Tokens Dinámicos de Alumbrado de Navegación en Ajustes (Snapshot State en tiempo real)
+// -------------------------------------------------------------------------------------------------
+
+private var alumbradoActivoBase by mutableStateOf(true)
+private var alumbradoIntensidadBase by mutableStateOf(0.5f)
+private var alumbradoRepeticionesBase by mutableStateOf(2)
+private var alumbradoDuracionMsBase by mutableStateOf(600)
+
+var AlumbradoActivo: Boolean
+    get() = alumbradoActivoBase
+    set(valor) { alumbradoActivoBase = valor }
+
+var AlumbradoIntensidad: Float
+    get() = alumbradoIntensidadBase
+    set(valor) { alumbradoIntensidadBase = valor }
+
+var AlumbradoRepeticiones: Int
+    get() = alumbradoRepeticionesBase
+    set(valor) { alumbradoRepeticionesBase = valor }
+
+var AlumbradoDuracionMs: Int
+    get() = alumbradoDuracionMsBase
+    set(valor) { alumbradoDuracionMsBase = valor }
 
 /** Paletas de acento que puede elegir el usuario en Ajustes > Apariencia: optimizadas para contraste en tema oscuro y claro. */
 enum class PaletaAcento(
@@ -703,9 +744,9 @@ fun BovedaTheme(temaApp: String = "sistema", contenido: @Composable () -> Unit) 
     val usarDinamico = colorDinamicoSistemaBase && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
     val esquema = if (usarDinamico) {
         val dinamico = if (esOscuroActivo) dynamicDarkColorScheme(contexto) else dynamicLightColorScheme(contexto)
-        LaunchedEffect(dinamico.primary) {
-            ColorAcento = dinamico.primary
-            ColorAcentoFuerte = dinamico.primaryContainer
+        if (colorDinamicoMonet != dinamico.primary || colorDinamicoFuerteMonet != dinamico.primaryContainer) {
+            colorDinamicoMonet = dinamico.primary
+            colorDinamicoFuerteMonet = dinamico.primaryContainer
         }
         dinamico.copy(
             surface = Superficie,
@@ -716,6 +757,10 @@ fun BovedaTheme(temaApp: String = "sistema", contenido: @Composable () -> Unit) 
             outline = Borde
         )
     } else {
+        if (colorDinamicoMonet != null || colorDinamicoFuerteMonet != null) {
+            colorDinamicoMonet = null
+            colorDinamicoFuerteMonet = null
+        }
         esquemaActual
     }
 

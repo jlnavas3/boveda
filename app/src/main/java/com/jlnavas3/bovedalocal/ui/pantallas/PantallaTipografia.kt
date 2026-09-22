@@ -71,6 +71,7 @@ import com.jlnavas3.bovedalocal.ui.theme.ColorSobreAcento
 import com.jlnavas3.bovedalocal.ui.theme.ColorTarjetas
 import com.jlnavas3.bovedalocal.ui.theme.ColorTitulos
 import com.jlnavas3.bovedalocal.ui.theme.EspaciadoComponentes
+import com.jlnavas3.bovedalocal.ui.theme.EstiloMono
 import com.jlnavas3.bovedalocal.ui.theme.EstiloMonoGrande
 import com.jlnavas3.bovedalocal.ui.theme.FormaBoton
 import com.jlnavas3.bovedalocal.ui.theme.FormaPequena
@@ -121,62 +122,10 @@ fun PantallaTipografia(
         subtitulo = "Personaliza fuentes, escalas y pesos en tiempo real",
         alVolver = { vm.volverAtras() },
         conScroll = true,
-        espaciado = EspaciadoComponentes
-    ) {
-        // 1. Tarjeta de vista previa en tiempo real
-        TarjetaBovedaDesplegable(
-            titulo = "Vista previa",
-            descripcion = "Observa en vivo el tamaño, peso, familia y espaciado de las fuentes",
-            icono = Icons.Filled.TextFields,
-            colorIcono = ColorSalud,
-            inicialmenteAbierta = seccionDestino == "09.5.1",
-            idEtiqueta = "09.5.1",
-            mostrarId = ajustes.mostrarIdsAjustes,
-            modifier = Modifier.bringIntoViewRequester(reqPreview)
-        ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = "Banco Nacional",
-                    color = ColorTitulos,
-                    style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold)
-                )
-                Box(
-                    modifier = Modifier
-                        .clip(FormaPequena)
-                        .background(Menta.copy(alpha = 0.15f))
-                        .padding(horizontal = 8.dp, vertical = 3.dp)
-                ) {
-                    Text(
-                        text = "Seguridad Alta",
-                        color = Menta,
-                        style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold)
-                    )
-                }
-            }
-            Text(
-                text = "usuario.principal@correo.com • Modificado hace 2 días",
-                color = TextoSecundario,
-                style = MaterialTheme.typography.bodyMedium
-            )
-            Spacer(Modifier.height(6.dp))
-            // Caja monoespaciada con contraseña
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(FormaBoton)
-                    .background(Obsidiana)
-                    .then(
-                        if (GrosorBorde > 0.dp) {
-                            Modifier.border(GrosorBorde, ColorBordeActual, FormaBoton)
-                        } else {
-                            Modifier
-                        }
-                    )
-                    .padding(horizontal = 14.dp, vertical = 10.dp)
+        espaciado = EspaciadoComponentes,
+        cabeceraFlotante = {
+            ContenedorTarjeta(
+                paddingInterno = 10.dp
             ) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -184,44 +133,71 @@ fun PantallaTipografia(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "k9#mP$2vL@xQ!8zW",
-                        color = ColorAcento,
-                        style = EstiloMonoGrande.copy(fontWeight = FontWeight.Bold)
+                        text = "Banco Nacional",
+                        color = ColorTitulos,
+                        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
                     )
-                    Icon(
-                        imageVector = Icons.Filled.ContentCopy,
-                        contentDescription = "Copiar",
-                        tint = ColorIconosInternos,
-                        modifier = Modifier.size(18.dp)
-                    )
+                    Box(
+                        modifier = Modifier
+                            .clip(FormaPequena)
+                            .background(Menta.copy(alpha = 0.15f))
+                            .padding(horizontal = 7.dp, vertical = 2.dp)
+                    ) {
+                        Text(
+                            text = "Seguridad Alta",
+                            color = Menta,
+                            style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold)
+                        )
+                    }
                 }
-            }
-            Spacer(Modifier.height(4.dp))
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(10.dp)
-            ) {
-                Box(modifier = Modifier.weight(1f)) {
-                    BotonAmbar(
-                        texto = "Acción Principal",
-                        icono = Icons.Filled.Key
-                    ) { haptica.tic() }
-                }
-                Box(modifier = Modifier.weight(1f)) {
-                    BotonBorde(
-                        texto = "Detalles",
-                        icono = Icons.Filled.Info
-                    ) { haptica.tic() }
+                Text(
+                    text = "usuario.principal@correo.com • Modificado hace 2 días",
+                    color = TextoSecundario,
+                    style = MaterialTheme.typography.bodySmall
+                )
+                Spacer(Modifier.height(2.dp))
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(FormaBoton)
+                        .background(Obsidiana)
+                        .then(
+                            if (GrosorBorde > 0.dp) {
+                                Modifier.border(GrosorBorde, ColorBordeActual, FormaBoton)
+                            } else {
+                                Modifier
+                            }
+                        )
+                        .padding(horizontal = 10.dp, vertical = 6.dp)
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "k9#mP$2vL@xQ!8zW",
+                            color = ColorAcento,
+                            style = EstiloMono.copy(fontWeight = FontWeight.Bold)
+                        )
+                        Icon(
+                            imageVector = Icons.Filled.ContentCopy,
+                            contentDescription = "Copiar",
+                            tint = ColorIconosInternos,
+                            modifier = Modifier.size(16.dp)
+                        )
+                    }
                 }
             }
         }
+    ) {
 
         // 2. Presets rápidos de tipografía
         TarjetaBovedaDesplegable(
             titulo = "Estilos predefinidos",
             descripcion = "Combinaciones optimizadas para lectura, terminales o accesibilidad",
             icono = Icons.Filled.AutoAwesome,
-            colorIcono = ColorAcento,
+            colorIcono = ColorIconosInternos,
             inicialmenteAbierta = seccionDestino == "09.5.2",
             idEtiqueta = "09.5.2",
             mostrarId = ajustes.mostrarIdsAjustes,
@@ -489,7 +465,7 @@ fun PantallaTipografia(
             titulo = "Espaciado e interlineado",
             descripcion = "Separación entre letras y altura de línea",
             icono = Icons.Filled.FormatLineSpacing,
-            colorIcono = ColorAcento,
+            colorIcono = ColorIconosInternos,
             inicialmenteAbierta = seccionDestino == "09.5.6",
             idEtiqueta = "09.5.6",
             mostrarId = ajustes.mostrarIdsAjustes,

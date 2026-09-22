@@ -2,23 +2,17 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/widget_generador_root"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:clickable="true"
+    android:focusable="true">
 
-    <FrameLayout
-        android:id="@+id/widget_generador_contenedor"
-        android:layout_width="54dp"
-        android:layout_height="54dp"
-        android:layout_gravity="center"
-        android:background="@drawable/bg_widget_generador"
+    <ImageView
+        android:id="@+id/widget_generador_imagen"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:contentDescription="Generador Rápido"
         android:clickable="true"
-        android:focusable="true">
-
-        <ImageView
-            android:id="@+id/widget_generador_icono"
-            android:layout_width="28dp"
-            android:layout_height="28dp"
-            android:layout_gravity="center"
-            android:contentDescription="Generador Rápido"
-            android:src="@drawable/ic_widget_generador" />
-    </FrameLayout>
+        android:focusable="true"
+        android:scaleType="fitXY" />
 </FrameLayout>
+

@@ -27,7 +27,8 @@ fun ComponenteNavegacion(
     idFila: String? = null,
     mostrarId: Boolean = false,
     valorTexto: String? = null,
-    habilitado: Boolean = true
+    habilitado: Boolean = true,
+    estadoAlumbrado: EstadoAlumbradoFila? = null
 ) {
     ComponenteFila(
         titulo = titulo,
@@ -40,6 +41,7 @@ fun ComponenteNavegacion(
         valorTexto = valorTexto,
         habilitado = habilitado,
         alPulsar = alPulsar,
+        estadoAlumbrado = estadoAlumbrado,
         contenidoFinal = {
             Icon(
                 imageVector = Icons.Filled.ChevronRight,

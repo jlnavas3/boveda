@@ -40,6 +40,7 @@ import com.jlnavas3.bovedalocal.data.CampoPersonalizado
 import com.jlnavas3.bovedalocal.data.PresetsCampos
 import com.jlnavas3.bovedalocal.data.TipoEntrada
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
+import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
 import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
 import com.jlnavas3.bovedalocal.ui.theme.ColorTitulos
 import com.jlnavas3.bovedalocal.ui.theme.FormaBoton
@@ -71,7 +72,7 @@ fun DialogoPresetsRapidos(
                 Icon(
                     imageVector = Icons.Filled.DynamicForm,
                     contentDescription = null,
-                    tint = ColorAcento,
+                    tint = ColorIconosInternos,
                     modifier = Modifier.size(20.dp)
                 )
                 Spacer(Modifier.width(8.dp))

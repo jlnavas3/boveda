@@ -82,22 +82,32 @@ class VaultViewModel(app: Application) : AndroidViewModel(app), VaultAjustesDele
     private val _navegandoAtras = MutableStateFlow(false)
     val navegandoAtras: StateFlow<Boolean> = _navegandoAtras
 
+    /** Recuerda el widget seleccionado (0 = 2FA, 1 = 1x1) en la pantalla de ajustes de widgets */
+    var ultimoWidgetAjustesSeleccionado: Int = 0
+
     /** Devuelve la pantalla padre a la que debe retornar una subsección jerárquica. */
     fun padreDe(pantalla: Pantalla): Pantalla? = when (pantalla) {
-        // Grupo 01: Seguridad -> Ajustes
-        is Pantalla.Seguridad -> Pantalla.Ajustes("01.1")
-        is Pantalla.AjustesSenuelo -> Pantalla.Ajustes("01.2")
-        is Pantalla.AjustesAutodestruccion -> Pantalla.Ajustes("01.3")
-        is Pantalla.Argon2id -> Pantalla.Ajustes("01.4")
+        // Nivel 3 -> Nivel 2
+        is Pantalla.CalibracionAnimacion -> Pantalla.Tema("03.2.G2")
+        is Pantalla.CalibracionWidgetTotp -> {
+            ultimoWidgetAjustesSeleccionado = 0
+            Pantalla.AjustesWidget("03.3.3")
+        }
+        is Pantalla.CalibracionWidget1x1 -> {
+            ultimoWidgetAjustesSeleccionado = 1
+            Pantalla.AjustesWidget("03.3.3")
+        }
 
-        // Grupo 02: Cuentas y Datos -> Ajustes
+        // Nivel 2: Cuentas y Datos -> Ajustes (Nivel 1)
         is Pantalla.CopiaSeguridad -> Pantalla.Ajustes("02.1")
         is Pantalla.CsvGoogle -> Pantalla.Ajustes("02.2")
         is Pantalla.KitEmergencia -> Pantalla.Ajustes("02.3")
+        is Pantalla.SaludBoveda -> if (!pantalla.seccionId.isNullOrBlank()) Pantalla.Ajustes(pantalla.seccionId) else Pantalla.Lista
+        is Pantalla.Duplicados -> if (!pantalla.seccionId.isNullOrBlank()) Pantalla.Ajustes(pantalla.seccionId) else Pantalla.Lista
+        is Pantalla.Papelera -> if (!pantalla.seccionId.isNullOrBlank()) Pantalla.Ajustes(pantalla.seccionId) else Pantalla.Lista
 
-        // Grupo 03: Personalización -> Ajustes
+        // Nivel 2: Personalización -> Ajustes (Nivel 1)
         is Pantalla.Tema -> Pantalla.Ajustes("03.2")
-        is Pantalla.CalibracionAnimacion -> Pantalla.Tema("03.2.G2")
         is Pantalla.AjustesWidget -> Pantalla.Ajustes("03.3")
         is Pantalla.Formas -> Pantalla.Ajustes("03.3")
         is Pantalla.AjustesIndice -> Pantalla.Ajustes("03.4")
@@ -105,46 +115,79 @@ class VaultViewModel(app: Application) : AndroidViewModel(app), VaultAjustesDele
         is Pantalla.OrganizacionLista -> Pantalla.Ajustes("03.5")
         is Pantalla.FormatosCampos -> Pantalla.Ajustes("03.6")
 
-        // Grupo 04: Funciones -> Ajustes
+        // Nivel 2: Seguridad -> Ajustes (Nivel 1)
+        is Pantalla.Seguridad -> Pantalla.Ajustes("01.1")
+        is Pantalla.AjustesSenuelo -> Pantalla.Ajustes("01.2")
+        is Pantalla.AjustesAutodestruccion -> Pantalla.Ajustes("01.3")
+        is Pantalla.Argon2id -> Pantalla.Ajustes("01.4")
+
+        // Nivel 2: Funciones -> Ajustes (Nivel 1)
         is Pantalla.AjustesAutenticador -> Pantalla.Ajustes("04.1")
         is Pantalla.AjustesCamara -> Pantalla.Ajustes("04.2")
         is Pantalla.TileRapido -> Pantalla.Ajustes("04.3")
+        is Pantalla.HistorialClaves -> if (!pantalla.seccionId.isNullOrBlank()) Pantalla.Ajustes(pantalla.seccionId) else Pantalla.Lista
 
-        // Grupo 05: Sistema -> Ajustes
+        // Nivel 2: Sistema -> Ajustes (Nivel 1)
         is Pantalla.Avanzada -> Pantalla.Ajustes("05.1")
+        is Pantalla.Registro -> if (!pantalla.seccionId.isNullOrBlank()) Pantalla.Ajustes(pantalla.seccionId) else Pantalla.Lista
+        is Pantalla.AcercaDe -> if (!pantalla.seccionId.isNullOrBlank()) Pantalla.Ajustes(pantalla.seccionId) else Pantalla.Lista
 
-        // Pantallas de la barra lateral -> Retornan a la Lista principal
+        // Nivel 1: Ajustes -> Lista (Nivel 0)
+        is Pantalla.Ajustes -> Pantalla.Lista
+
+        // Pantallas abiertas directamente desde Lista
         is Pantalla.Generador -> Pantalla.Lista
-        is Pantalla.HistorialClaves -> Pantalla.Lista
         is Pantalla.Passkeys -> Pantalla.Lista
         is Pantalla.Autenticador -> Pantalla.Lista
-        is Pantalla.SaludBoveda -> Pantalla.Lista
-        is Pantalla.Duplicados -> Pantalla.Lista
-        is Pantalla.Papelera -> Pantalla.Lista
-        is Pantalla.Registro -> Pantalla.Lista
-        is Pantalla.AcercaDe -> Pantalla.Lista
+        is Pantalla.Detalle -> Pantalla.Lista
         else -> null
     }
 
     fun ir(pantalla: Pantalla) {
         _navegandoAtras.value = false
         if (pantalla != _pantalla.value) {
-            // Si salimos de Ajustes hacia una subpantalla hija con padre conocido,
-            // guardamos en la pila el estado contextual con el ID de retorno para que
-            // al volver atrás regrese a la tarjeta padre desplegada.
-            val origen = if (_pantalla.value is Pantalla.Ajustes) {
-                val padre = padreDe(pantalla)
-                if (padre is Pantalla.Ajustes && !padre.seccionId.isNullOrBlank()) {
-                    padre
-                } else {
-                    _pantalla.value
+            // Guardamos en la pila el estado contextual con el ID de retorno para que
+            // al volver atrás regrese a la tarjeta padre o pantalla superior desplegada.
+            val origen = when {
+                _pantalla.value is Pantalla.Ajustes -> {
+                    val idHijo = when (pantalla) {
+                        is Pantalla.Generador -> "04.4"
+                        is Pantalla.Passkeys -> "04.6"
+                        is Pantalla.Autenticador -> "04.7"
+                        else -> null
+                    }
+                    if (idHijo != null) {
+                        Pantalla.Ajustes(idHijo)
+                    } else {
+                        val padre = padreDe(pantalla)
+                        if (padre is Pantalla.Ajustes && !padre.seccionId.isNullOrBlank()) padre
+                        else _pantalla.value
+                    }
                 }
-            } else {
-                _pantalla.value
+                _pantalla.value is Pantalla.Lista -> {
+                    val padre = padreDe(pantalla)
+                    if (padre is Pantalla.Ajustes && !padre.seccionId.isNullOrBlank()) padre
+                    else Pantalla.Lista
+                }
+                else -> {
+                    val padre = padreDe(pantalla)
+                    padre ?: _pantalla.value
+                }
+            }
+            if (_pantalla.value is Pantalla.Lista && origen !is Pantalla.Lista) {
+                pila.addLast(Pantalla.Lista)
             }
             pila.addLast(origen)
             if (pila.size > 20) pila.removeFirst()
         }
+        _pantalla.value = pantalla
+    }
+
+    /** Navega a una opción abierta desde el menú lateral, asegurando retorno directo al listado principal. */
+    fun irDesdeMenuLateral(pantalla: Pantalla) {
+        _navegandoAtras.value = false
+        pila.clear()
+        pila.addLast(Pantalla.Lista)
         _pantalla.value = pantalla
     }
 
@@ -193,10 +236,15 @@ class VaultViewModel(app: Application) : AndroidViewModel(app), VaultAjustesDele
         _navegandoAtras.value = false
         if (destino != _pantalla.value) {
             // Si venimos de Ajustes, guardamos el origen contextual con el ID que lo disparó
-            val origen = if (_pantalla.value is Pantalla.Ajustes) {
-                Pantalla.Ajustes(limpio)
-            } else {
-                _pantalla.value
+            val origen = when {
+                _pantalla.value is Pantalla.Ajustes -> Pantalla.Ajustes(limpio)
+                else -> {
+                    val padre = padreDe(destino)
+                    padre ?: _pantalla.value
+                }
+            }
+            if (_pantalla.value is Pantalla.Lista && origen !is Pantalla.Lista) {
+                pila.addLast(Pantalla.Lista)
             }
             pila.addLast(origen)
             if (pila.size > 20) pila.removeFirst()
@@ -221,15 +269,30 @@ class VaultViewModel(app: Application) : AndroidViewModel(app), VaultAjustesDele
      */
     fun retroceder(): Boolean {
         val anterior = pila.removeLastOrNull()
-        if (anterior != null) {
-            _navegandoAtras.value = true
-            _pantalla.value = anterior
-            return true
+        val padre = padreDe(_pantalla.value)
+
+        val destino = when {
+            _pantalla.value is Pantalla.Editar || _pantalla.value is Pantalla.Escaner -> {
+                anterior ?: padre
+            }
+            anterior is Pantalla.Ajustes && !anterior.seccionId.isNullOrBlank() -> {
+                anterior
+            }
+            anterior is Pantalla.Lista -> {
+                Pantalla.Lista
+            }
+            padre != null -> {
+                padre
+            }
+            anterior != null -> {
+                anterior
+            }
+            else -> null
         }
-        val fallback = padreDe(_pantalla.value)
-        if (fallback != null) {
+
+        if (destino != null) {
             _navegandoAtras.value = true
-            _pantalla.value = fallback
+            _pantalla.value = destino
             return true
         }
         return false
@@ -682,13 +745,14 @@ class VaultViewModel(app: Application) : AndroidViewModel(app), VaultAjustesDele
 
     // ------------------------------------------------------------- papelera
 
-    fun restaurarDeLaPapelera(id: String) {
+    fun restaurarDeLaPapelera(id: String, sustituir: Boolean = false) {
         ejecutar {
-            val ent = withContext(Dispatchers.IO) { repositorio.entrada(id) }
+            val ent = withContext(Dispatchers.IO) { repositorio.papelera().firstOrNull { it.id == id } }
             val tipoDesc = ent?.tipo?.etiqueta?.lowercase() ?: "entrada"
-            withContext(Dispatchers.IO) { repositorio.restaurarDeLaPapelera(id) }
-            Diagnostico.apuntar("papelera", "Entrada ($tipoDesc) restaurada desde la papelera a la bóveda")
-            _aviso.value = "Entrada restaurada"
+            withContext(Dispatchers.IO) { repositorio.restaurarDeLaPapelera(id, sustituir) }
+            val mensajeAccion = if (sustituir) "sustituida" else "restaurada"
+            Diagnostico.apuntar("papelera", "Entrada ($tipoDesc) $mensajeAccion desde la papelera a la bóveda")
+            _aviso.value = if (sustituir) "Entrada sustituida" else "Entrada restaurada"
         }
     }
 

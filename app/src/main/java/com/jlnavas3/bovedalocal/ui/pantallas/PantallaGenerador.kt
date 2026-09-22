@@ -163,7 +163,7 @@ fun PantallaGenerador(vm: VaultViewModel) {
                     Icon(
                         imageVector = Icons.Filled.Add,
                         contentDescription = "Crear nueva entrada con esta contraseña",
-                        tint = ColorAcento,
+                        tint = ColorIconosInternos,
                         modifier = Modifier.size(22.dp)
                     )
                 }

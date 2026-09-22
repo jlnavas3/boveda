@@ -748,7 +748,7 @@ private fun DialogoCambioRapidoClave(
                         Icon(
                             imageVector = Icons.Filled.Refresh,
                             contentDescription = "Regenerar clave",
-                            tint = ColorAcento,
+                            tint = ColorIconosInternos,
                             modifier = Modifier.size(20.dp)
                         )
                     }

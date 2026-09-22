@@ -34,9 +34,17 @@ class AjustesMappersTest {
         val dias = opciones.map { it.first }
         assertTrue(dias.contains(0)) // Nunca
         assertTrue(dias.contains(-30)) // Cada 30 minutos (prueba)
+        assertTrue(dias.contains(7)) // Cada 7 días
         assertTrue(dias.contains(30))
         assertTrue(dias.contains(60))
         assertTrue(dias.contains(90))
+    }
+
+    @Test
+    fun opcionesMaxCopiasBackupAuto_contieneValoresEsperados() {
+        val opciones = AlmacenAjustes.OPCIONES_MAX_COPIAS_BACKUP_AUTO
+        val valores = opciones.map { it.first }
+        assertEquals(listOf(5, 10, 20, 100, 0), valores)
     }
 
     @Test
@@ -78,4 +86,33 @@ class AjustesMappersTest {
         assertNotNull(motores.firstOrNull { it.clave == "compatible" })
         assertNotNull(motores.firstOrNull { it.clave == "camerax" })
     }
+
+    @Test
+    fun widget1x1Ajustes_valoresPorDefectoSonCorrectos() {
+        val ajustes = com.jlnavas3.bovedalocal.data.AjustesApp()
+        assertEquals(0f, ajustes.widget1x1GrosorBordeDp)
+        assertEquals(15f, ajustes.widget1x1CurvaturaEsquinasDp)
+        assertEquals(1.0f, ajustes.widget1x1TransparenciaFondo)
+        assertEquals(55f, ajustes.widget1x1TamanoDp)
+        assertEquals(55f, ajustes.widget1x1AnchoDp)
+        assertEquals(51f, ajustes.widget1x1AltoDp)
+        assertEquals(false, ajustes.widget1x1BloquearProporcion)
+        assertEquals(0f, ajustes.widget1x1OffsetX)
+        assertEquals(4f, ajustes.widget1x1OffsetY)
+        assertEquals("arriba", ajustes.widget1x1Alineamiento)
+        assertEquals("#33332E", ajustes.widget1x1ColorBorde)
+        assertEquals("#E6FCFF", ajustes.widget1x1ColorIcono)
+        assertEquals("#2E3333", ajustes.widget1x1ColorFondo)
+        assertEquals("aleatoria", ajustes.widget1x1Modo)
+    }
+
+    @Test
+    fun passwordGenerator_simbolosPorDefectoValidos() {
+        val simbolos = com.jlnavas3.bovedalocal.crypto.PasswordGenerator.SIMBOLOS
+        assertTrue(simbolos.isNotEmpty())
+        assertTrue(simbolos.contains("#"))
+        assertTrue(simbolos.contains("$"))
+        assertTrue(simbolos.contains("!"))
+    }
 }
+

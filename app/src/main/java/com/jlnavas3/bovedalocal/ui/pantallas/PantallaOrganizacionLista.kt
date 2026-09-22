@@ -29,7 +29,7 @@ import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteSeparador
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteSwitch
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ProveedorResaltadoAjustes
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjustesFondo
-import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
+import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
 import com.jlnavas3.bovedalocal.util.Haptica
 
 /**
@@ -83,7 +83,7 @@ fun PantallaOrganizacionLista(
                     ComponenteSwitch(
                         titulo = "Agrupar cuentas por sitio",
                         icono = Icons.Filled.Tune,
-                        colorIcono = ColorAcento,
+                        colorIcono = ColorIconosInternos,
                         activo = ajustes.agruparPorSitio,
                         idFila = "03.5.1",
                         mostrarId = ajustes.mostrarIdsAjustes,
@@ -106,7 +106,7 @@ fun PantallaOrganizacionLista(
                     ComponenteRadio(
                         titulo = "Predeterminada",
                         icono = Icons.Filled.Tune,
-                        colorIcono = ColorAcento,
+                        colorIcono = ColorIconosInternos,
                         seleccionado = ajustes.densidadLista == "predeterminada" || (ajustes.densidadLista != "comoda" && ajustes.densidadLista != "compacta"),
                         idFila = "03.5.2",
                         mostrarId = ajustes.mostrarIdsAjustes,
@@ -119,7 +119,7 @@ fun PantallaOrganizacionLista(
                     ComponenteRadio(
                         titulo = "Cómoda",
                         icono = Icons.Filled.Tune,
-                        colorIcono = ColorAcento,
+                        colorIcono = ColorIconosInternos,
                         seleccionado = ajustes.densidadLista == "comoda",
                         idFila = "03.5.3",
                         mostrarId = ajustes.mostrarIdsAjustes,
@@ -132,7 +132,7 @@ fun PantallaOrganizacionLista(
                     ComponenteRadio(
                         titulo = "Compacta",
                         icono = Icons.Filled.Tune,
-                        colorIcono = ColorAcento,
+                        colorIcono = ColorIconosInternos,
                         seleccionado = ajustes.densidadLista == "compacta",
                         idFila = "03.5.4",
                         mostrarId = ajustes.mostrarIdsAjustes,
@@ -157,7 +157,7 @@ fun PantallaOrganizacionLista(
                         ComponenteRadio(
                             titulo = criterio.etiqueta,
                             icono = Icons.AutoMirrored.Filled.Sort,
-                            colorIcono = ColorAcento,
+                            colorIcono = ColorIconosInternos,
                             seleccionado = ajustes.criterioOrdenacion == criterio.name,
                             idFila = "03.5.${5 + index}",
                             mostrarId = ajustes.mostrarIdsAjustes,

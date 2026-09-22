@@ -323,7 +323,7 @@ fun PantallaRegistro(
                     ) {
                         DropdownMenuItem(
                             leadingIcon = {
-                                Icon(Icons.AutoMirrored.Filled.Sort, contentDescription = null, tint = ColorAcento, modifier = Modifier.size(20.dp))
+                                Icon(Icons.AutoMirrored.Filled.Sort, contentDescription = null, tint = ColorIconosInternos, modifier = Modifier.size(20.dp))
                             },
                             text = { Text("Ordenar por...", color = TextoPrincipal) },
                             onClick = {
@@ -347,7 +347,7 @@ fun PantallaRegistro(
                         SeparadorOpcionMenu()
                         DropdownMenuItem(
                             leadingIcon = {
-                                Icon(Icons.Filled.Share, contentDescription = null, tint = ColorAcento, modifier = Modifier.size(20.dp))
+                                Icon(Icons.Filled.Share, contentDescription = null, tint = ColorIconosInternos, modifier = Modifier.size(20.dp))
                             },
                             text = { Text("Compartir registro", color = TextoPrincipal) },
                             onClick = {

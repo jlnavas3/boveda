@@ -2,6 +2,10 @@ package com.jlnavas3.bovedalocal.ui
 
 import android.app.Application
 import com.jlnavas3.bovedalocal.data.VaultRepository
+import com.jlnavas3.bovedalocal.ui.theme.AlumbradoActivo
+import com.jlnavas3.bovedalocal.ui.theme.AlumbradoDuracionMs
+import com.jlnavas3.bovedalocal.ui.theme.AlumbradoIntensidad
+import com.jlnavas3.bovedalocal.ui.theme.AlumbradoRepeticiones
 import com.jlnavas3.bovedalocal.ui.theme.PaletaAcento
 import com.jlnavas3.bovedalocal.ui.theme.aplicarPaletaAcento
 import com.jlnavas3.bovedalocal.ui.theme.aplicarPersonalizacionColores
@@ -39,6 +43,9 @@ interface VaultAjustesDelegate {
 
     fun ajustarTileHaptica(haptica: Boolean) = repositorio.ajustes.actualizar { it.copy(tileHaptica = haptica) }
 
+    fun ajustarTileHapticaIntensidad(intensidad: Float) =
+        repositorio.ajustes.actualizar { it.copy(tileHapticaIntensidad = intensidad.coerceIn(0.01f, 1.0f)) }
+
     fun ajustarMotorCamara(clave: String) = repositorio.ajustes.actualizar { it.copy(motorCamara = clave) }
 
     fun ajustarNombrePersonalizado(nombre: String) =
@@ -53,13 +60,24 @@ interface VaultAjustesDelegate {
     /** Cambia el acento del tema Y el color del icono del launcher (mismo dibujo, otro degradado). */
     fun ajustarColorApp(paleta: PaletaAcento) {
         aplicarPaletaAcento(paleta)
-        repositorio.ajustes.actualizar { it.copy(colorAcento = paleta.clave, iconoLauncher = paleta.clave) }
+        repositorio.ajustes.actualizar {
+            it.copy(
+                colorAcento = paleta.clave,
+                iconoLauncher = paleta.clave,
+                colorDinamicoSistema = false
+            )
+        }
         CambiadorIcono.aplicar(obtenerApp(), paleta.clave)
         aplicarPersonalizacionColores(repositorio.ajustes.actual)
     }
 
     fun ajustarColorAcento(hexOClave: String) {
-        repositorio.ajustes.actualizar { it.copy(colorAcento = hexOClave) }
+        repositorio.ajustes.actualizar {
+            it.copy(
+                colorAcento = hexOClave,
+                colorDinamicoSistema = false
+            )
+        }
         aplicarPersonalizacionColores(repositorio.ajustes.actual)
     }
 
@@ -226,7 +244,7 @@ interface VaultAjustesDelegate {
                 colorIconosInternos = "",
                 colorTitulos = "",
                 colorTarjetas = "",
-                colorDinamicoSistema = false,
+                colorDinamicoSistema = true,
                 colorSeguridad = "",
                 colorArgon2 = "",
                 colorCamara = "",
@@ -517,6 +535,186 @@ interface VaultAjustesDelegate {
         com.jlnavas3.bovedalocal.widget.WidgetTotpFavoritos.actualizarTodos(obtenerApp())
     }
 
+    fun ajustarWidgetHaptica(activo: Boolean) =
+        repositorio.ajustes.actualizar { it.copy(widgetHaptica = activo) }
+
+    fun ajustarWidgetHapticaIntensidad(intensidad: Float) =
+        repositorio.ajustes.actualizar { it.copy(widgetHapticaIntensidad = intensidad.coerceIn(0.01f, 1.0f)) }
+
+    fun ajustarWidget1x1Haptica(activo: Boolean) =
+        repositorio.ajustes.actualizar { it.copy(widget1x1Haptica = activo) }
+
+    fun ajustarWidget1x1HapticaIntensidad(intensidad: Float) =
+        repositorio.ajustes.actualizar { it.copy(widget1x1HapticaIntensidad = intensidad.coerceIn(0.01f, 1.0f)) }
+
+    fun ajustarWidget1x1Modo(modo: String) =
+        repositorio.ajustes.actualizar { it.copy(widget1x1Modo = modo) }
+
+    fun ajustarWidget1x1Longitud(longitud: Int) =
+        repositorio.ajustes.actualizar { it.copy(widget1x1Longitud = longitud) }
+
+    fun ajustarWidget1x1Patron(patron: String) =
+        repositorio.ajustes.actualizar { it.copy(widget1x1Patron = patron) }
+
+    fun ajustarWidget1x1Simbolos(simbolos: String) {
+        repositorio.ajustes.actualizar { it.copy(widget1x1Simbolos = simbolos) }
+    }
+
+    fun ajustarWidget1x1CopiarPortapapeles(activo: Boolean) =
+        repositorio.ajustes.actualizar { it.copy(widget1x1CopiarPortapapeles = activo) }
+
+    fun ajustarWidget1x1MostrarToast(activo: Boolean) =
+        repositorio.ajustes.actualizar { it.copy(widget1x1MostrarToast = activo) }
+
+    fun ajustarWidget1x1GrosorBorde(grosor: Float) {
+        repositorio.ajustes.actualizar { it.copy(widget1x1GrosorBordeDp = grosor) }
+        com.jlnavas3.bovedalocal.widget.WidgetGeneradorRapido.actualizarTodos(obtenerApp())
+    }
+
+    fun ajustarWidget1x1CurvaturaEsquinas(curvatura: Float) {
+        repositorio.ajustes.actualizar { it.copy(widget1x1CurvaturaEsquinasDp = curvatura) }
+        com.jlnavas3.bovedalocal.widget.WidgetGeneradorRapido.actualizarTodos(obtenerApp())
+    }
+
+    fun ajustarWidget1x1TransparenciaFondo(transparencia: Float) {
+        repositorio.ajustes.actualizar { it.copy(widget1x1TransparenciaFondo = transparencia) }
+        com.jlnavas3.bovedalocal.widget.WidgetGeneradorRapido.actualizarTodos(obtenerApp())
+    }
+
+    fun ajustarWidget1x1Tamano(tamano: Float) {
+        repositorio.ajustes.actualizar {
+            it.copy(
+                widget1x1TamanoDp = tamano,
+                widget1x1AnchoDp = tamano,
+                widget1x1AltoDp = tamano
+            )
+        }
+        com.jlnavas3.bovedalocal.widget.WidgetGeneradorRapido.actualizarTodos(obtenerApp())
+    }
+
+    fun ajustarWidget1x1Ancho(ancho: Float) {
+        repositorio.ajustes.actualizar {
+            if (it.widget1x1BloquearProporcion) {
+                it.copy(widget1x1AnchoDp = ancho, widget1x1AltoDp = ancho, widget1x1TamanoDp = ancho)
+            } else {
+                it.copy(widget1x1AnchoDp = ancho, widget1x1TamanoDp = ancho)
+            }
+        }
+        com.jlnavas3.bovedalocal.widget.WidgetGeneradorRapido.actualizarTodos(obtenerApp())
+    }
+
+    fun ajustarWidget1x1Alto(alto: Float) {
+        repositorio.ajustes.actualizar {
+            if (it.widget1x1BloquearProporcion) {
+                it.copy(widget1x1AnchoDp = alto, widget1x1AltoDp = alto, widget1x1TamanoDp = alto)
+            } else {
+                it.copy(widget1x1AltoDp = alto)
+            }
+        }
+        com.jlnavas3.bovedalocal.widget.WidgetGeneradorRapido.actualizarTodos(obtenerApp())
+    }
+
+    fun ajustarWidget1x1BloquearProporcion(bloquear: Boolean) {
+        repositorio.ajustes.actualizar {
+            if (bloquear) {
+                it.copy(widget1x1BloquearProporcion = true, widget1x1AltoDp = it.widget1x1AnchoDp)
+            } else {
+                it.copy(widget1x1BloquearProporcion = false)
+            }
+        }
+        com.jlnavas3.bovedalocal.widget.WidgetGeneradorRapido.actualizarTodos(obtenerApp())
+    }
+
+    fun ajustarWidget1x1OffsetX(offset: Float) {
+        repositorio.ajustes.actualizar { it.copy(widget1x1OffsetX = offset) }
+        com.jlnavas3.bovedalocal.widget.WidgetGeneradorRapido.actualizarTodos(obtenerApp())
+    }
+
+    fun ajustarWidget1x1OffsetY(offset: Float) {
+        repositorio.ajustes.actualizar { it.copy(widget1x1OffsetY = offset) }
+        com.jlnavas3.bovedalocal.widget.WidgetGeneradorRapido.actualizarTodos(obtenerApp())
+    }
+
+    fun ajustarWidget1x1PresetTamano(dp: Float) {
+        repositorio.ajustes.actualizar {
+            it.copy(
+                widget1x1AnchoDp = dp,
+                widget1x1AltoDp = dp,
+                widget1x1TamanoDp = dp
+            )
+        }
+        com.jlnavas3.bovedalocal.widget.WidgetGeneradorRapido.actualizarTodos(obtenerApp())
+    }
+
+    fun ajustarWidget1x1Alineamiento(alineamiento: String) {
+        repositorio.ajustes.actualizar { it.copy(widget1x1Alineamiento = alineamiento) }
+        com.jlnavas3.bovedalocal.widget.WidgetGeneradorRapido.actualizarTodos(obtenerApp())
+    }
+
+    fun ajustarWidget1x1ColorBorde(colorHex: String) {
+        repositorio.ajustes.actualizar { it.copy(widget1x1ColorBorde = colorHex) }
+        com.jlnavas3.bovedalocal.widget.WidgetGeneradorRapido.actualizarTodos(obtenerApp())
+    }
+
+    fun ajustarWidget1x1ColorIcono(colorHex: String) {
+        repositorio.ajustes.actualizar { it.copy(widget1x1ColorIcono = colorHex) }
+        com.jlnavas3.bovedalocal.widget.WidgetGeneradorRapido.actualizarTodos(obtenerApp())
+    }
+
+    fun ajustarWidget1x1ColorFondo(colorHex: String) {
+        repositorio.ajustes.actualizar { it.copy(widget1x1ColorFondo = colorHex) }
+        com.jlnavas3.bovedalocal.widget.WidgetGeneradorRapido.actualizarTodos(obtenerApp())
+    }
+
+    fun aplicarPresetHonorWidget1x1() {
+        repositorio.ajustes.actualizar {
+            it.copy(
+                widget1x1GrosorBordeDp = 0f,
+                widget1x1CurvaturaEsquinasDp = 15f,
+                widget1x1AnchoDp = 55f,
+                widget1x1AltoDp = 51f,
+                widget1x1TamanoDp = 55f,
+                widget1x1BloquearProporcion = false,
+                widget1x1OffsetX = 0f,
+                widget1x1OffsetY = 4f,
+                widget1x1ColorBorde = "#33332E",
+                widget1x1ColorIcono = "#E6FCFF",
+                widget1x1ColorFondo = "#2E3333",
+                widget1x1Modo = "aleatoria"
+            )
+        }
+        com.jlnavas3.bovedalocal.widget.WidgetGeneradorRapido.actualizarTodos(obtenerApp())
+    }
+
+    fun restablecerAjustesWidget1x1() {
+        repositorio.ajustes.actualizar {
+            it.copy(
+                widget1x1Haptica = true,
+                widget1x1HapticaIntensidad = 0.20f,
+                widget1x1Modo = "aleatoria",
+                widget1x1Longitud = 20,
+                widget1x1Patron = "XXXXX-XXXXX-XXXXX-XXXXX",
+                widget1x1Simbolos = "!@#$%&*()_-=+[]{}?/,.:;",
+                widget1x1CopiarPortapapeles = true,
+                widget1x1MostrarToast = true,
+                widget1x1GrosorBordeDp = 0f,
+                widget1x1CurvaturaEsquinasDp = 15f,
+                widget1x1TransparenciaFondo = 1.0f,
+                widget1x1TamanoDp = 55f,
+                widget1x1AnchoDp = 55f,
+                widget1x1AltoDp = 51f,
+                widget1x1BloquearProporcion = false,
+                widget1x1OffsetX = 0f,
+                widget1x1OffsetY = 4f,
+                widget1x1Alineamiento = "arriba",
+                widget1x1ColorBorde = "#33332E",
+                widget1x1ColorIcono = "#E6FCFF",
+                widget1x1ColorFondo = "#2E3333"
+            )
+        }
+        com.jlnavas3.bovedalocal.widget.WidgetGeneradorRapido.actualizarTodos(obtenerApp())
+    }
+
     fun restablecerAjustesWidget() {
         repositorio.ajustes.actualizar {
             it.copy(
@@ -526,7 +724,9 @@ interface VaultAjustesDelegate {
                 widgetColorBorde = "#FFB300",
                 widgetColorContador = "#FFFFFF",
                 widgetColorCodigo = "#FFB300",
-                widgetColorTituloIcono = "#FFFFFF"
+                widgetColorTituloIcono = "#FFFFFF",
+                widgetHaptica = true,
+                widgetHapticaIntensidad = 0.20f
             )
         }
         com.jlnavas3.bovedalocal.widget.WidgetTotpFavoritos.actualizarTodos(obtenerApp())
@@ -585,6 +785,35 @@ interface VaultAjustesDelegate {
     fun ajustarMostrarIdsAjustes(mostrar: Boolean) {
         repositorio.ajustes.actualizar { it.copy(mostrarIdsAjustes = mostrar) }
     }
+
+    fun ajustarAlumbradoActivo(activo: Boolean) {
+        repositorio.ajustes.actualizar { it.copy(alumbradoActivo = activo) }
+        AlumbradoActivo = activo
+    }
+
+    fun ajustarAlumbradoIntensidad(intensidad: Float) {
+        val valor = intensidad.coerceIn(0.1f, 1.0f)
+        repositorio.ajustes.actualizar { it.copy(alumbradoIntensidad = valor) }
+        AlumbradoIntensidad = valor
+    }
+
+    fun ajustarAlumbradoRepeticiones(repeticiones: Int) {
+        val valor = repeticiones.coerceIn(1, 5)
+        repositorio.ajustes.actualizar { it.copy(alumbradoRepeticiones = valor) }
+        AlumbradoRepeticiones = valor
+    }
+
+    fun ajustarAlumbradoDuracionMs(duracionMs: Int) {
+        val valor = duracionMs.coerceIn(300, 2000)
+        repositorio.ajustes.actualizar { it.copy(alumbradoDuracionMs = valor) }
+        AlumbradoDuracionMs = valor
+    }
+
+    fun ajustarHapticaApp(activo: Boolean) =
+        repositorio.ajustes.actualizar { it.copy(hapticaApp = activo) }
+
+    fun ajustarHapticaAppIntensidad(intensidad: Float) =
+        repositorio.ajustes.actualizar { it.copy(hapticaAppIntensidad = intensidad.coerceIn(0.01f, 1.0f)) }
 
     fun recargarAjustes() {
         repositorio.ajustes.recargar()

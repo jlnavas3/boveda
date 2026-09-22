@@ -576,7 +576,7 @@ fun TarjetaAjuste(
     icono: ImageVector,
     descripcion: String,
     inicialmenteAbierta: Boolean = false,
-    colorIcono: Color = ColorAcento,
+    colorIcono: Color = ColorIconosInternos,
     idEtiqueta: String? = null,
     mostrarId: Boolean = false,
     abiertaControlada: Boolean? = null,
@@ -611,7 +611,7 @@ fun SelectorAjuste(
     icono: ImageVector,
     seleccionado: String,
     opciones: List<OpcionAjuste>,
-    colorIcono: Color = ColorAcento,
+    colorIcono: Color = ColorIconosInternos,
     idEtiqueta: String? = null,
     mostrarId: Boolean = false,
     alSeleccionar: (String) -> Unit

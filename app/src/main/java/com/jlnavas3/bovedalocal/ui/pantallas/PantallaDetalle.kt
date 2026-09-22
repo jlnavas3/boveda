@@ -461,7 +461,7 @@ fun PantallaDetalle(vm: VaultViewModel, id: String) {
                                 Icon(
                                     imageVector = Icons.AutoMirrored.Filled.OpenInNew,
                                     contentDescription = "Abrir enlace",
-                                    tint = ColorAcento,
+                                    tint = ColorIconosInternos,
                                     modifier = Modifier.size(19.dp)
                                 )
                             }

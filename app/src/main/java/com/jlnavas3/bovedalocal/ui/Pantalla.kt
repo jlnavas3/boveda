@@ -40,6 +40,16 @@ sealed interface Pantalla {
         override fun equals(other: Any?): Boolean = other is CalibracionAnimacion && other.seccionId == seccionId
         override fun hashCode(): Int = seccionId?.hashCode() ?: 0
     }
+    open class CalibracionWidgetTotp(val seccionId: String? = null) : Pantalla {
+        companion object : CalibracionWidgetTotp(null)
+        override fun equals(other: Any?): Boolean = other is CalibracionWidgetTotp && other.seccionId == seccionId
+        override fun hashCode(): Int = seccionId?.hashCode() ?: 0
+    }
+    open class CalibracionWidget1x1(val seccionId: String? = null) : Pantalla {
+        companion object : CalibracionWidget1x1(null)
+        override fun equals(other: Any?): Boolean = other is CalibracionWidget1x1 && other.seccionId == seccionId
+        override fun hashCode(): Int = seccionId?.hashCode() ?: 0
+    }
     open class Formas(val seccionId: String? = null) : Pantalla {
         companion object : Formas(null)
         override fun equals(other: Any?): Boolean = other is Formas && other.seccionId == seccionId

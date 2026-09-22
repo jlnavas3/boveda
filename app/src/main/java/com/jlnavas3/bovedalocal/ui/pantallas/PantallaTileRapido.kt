@@ -16,12 +16,14 @@ import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.Key
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Tune
+import androidx.compose.material.icons.filled.Vibration
 import androidx.compose.material.icons.filled.Widgets
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import kotlin.math.roundToInt
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
@@ -37,6 +39,7 @@ import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteGrupo
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteNavegacion
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteSelectorModal
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteSeparador
+import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteSlider
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteSwitch
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.OpcionSelectorModal
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ProveedorResaltadoAjustes
@@ -192,6 +195,42 @@ fun PantallaTileRapido(
 
                     ComponenteSeparador()
 
+                    ComponenteSwitch(
+                        titulo = "Vibración táctil",
+                        icono = Icons.Filled.Vibration,
+                        colorIcono = ColorGenerador,
+                        idFila = "04.3.5",
+                        mostrarId = ajustes.mostrarIdsAjustes,
+                        activo = ajustes.tileHaptica,
+                        alCambiar = {
+                            haptica.tic()
+                            vm.ajustarTileHaptica(it)
+                        }
+                    )
+
+                    if (ajustes.tileHaptica) {
+                        ComponenteSeparador()
+                        ComponenteSlider(
+                            titulo = "Intensidad de vibración",
+                            valor = ajustes.tileHapticaIntensidad,
+                            valorTexto = "${(ajustes.tileHapticaIntensidad * 100).roundToInt()}%",
+                            rango = 0.01f..1.0f,
+                            pasos = 99,
+                            etiquetaMin = "1% (Mínima)",
+                            etiquetaMax = "100%",
+                            idFila = "04.3.6",
+                            mostrarId = ajustes.mostrarIdsAjustes,
+                            icono = Icons.Filled.Vibration,
+                            colorIcono = ColorGenerador,
+                            alCambiar = {
+                                vm.ajustarTileHapticaIntensidad(it)
+                                haptica.probar(it)
+                            }
+                        )
+                    }
+
+                    ComponenteSeparador()
+
                     ComponenteBotonFila(
                         titulo = "Restablecer grupo",
                         alPulsar = {
@@ -201,6 +240,7 @@ fun PantallaTileRapido(
                             vm.ajustarTileCopiarPortapapeles(true)
                             vm.ajustarTileMostrarToast(true)
                             vm.ajustarTileHaptica(true)
+                            vm.ajustarTileHapticaIntensidad(0.8f)
                         }
                     )
                 }
@@ -218,7 +258,7 @@ fun PantallaTileRapido(
                         titulo = "Personalizar widgets de escritorio",
                         icono = Icons.Filled.Widgets,
                         colorIcono = ColorGenerador,
-                        idFila = "04.3.5",
+                        idFila = "04.3.7",
                         mostrarId = ajustes.mostrarIdsAjustes,
                         alPulsar = {
                             haptica.tic()

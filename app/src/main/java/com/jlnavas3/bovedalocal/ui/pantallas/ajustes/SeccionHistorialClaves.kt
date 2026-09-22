@@ -34,6 +34,7 @@ import com.jlnavas3.bovedalocal.data.AlmacenAjustes
 import com.jlnavas3.bovedalocal.ui.Pantalla
 import com.jlnavas3.bovedalocal.ui.VaultViewModel
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
+import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
 import com.jlnavas3.bovedalocal.ui.theme.ColorGenerador
 import com.jlnavas3.bovedalocal.ui.theme.FormaCampo
 import com.jlnavas3.bovedalocal.ui.theme.TextoPrincipal
@@ -74,7 +75,7 @@ fun SeccionHistorialClaves(
             Icon(
                 Icons.Filled.History,
                 contentDescription = null,
-                tint = ColorAcento,
+                tint = ColorIconosInternos,
                 modifier = Modifier.size(20.dp)
             )
             Spacer(Modifier.width(12.dp))

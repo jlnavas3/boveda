@@ -1,6 +1,9 @@
+@file:OptIn(androidx.compose.foundation.ExperimentalFoundationApi::class)
+
 package com.jlnavas3.bovedalocal.ui.componentes.ajustes
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -10,6 +13,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.relocation.bringIntoViewRequester
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -19,6 +23,7 @@ import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -54,8 +59,23 @@ fun ComponenteGrupo(
 ) {
     val tieneBadgeGrupo = mostrarId && !idGrupo.isNullOrBlank()
     val colorBadgeGrupo = colorParaGrupoId(idGrupo)
+    val estadoAlumbrado = recordarEstadoAlumbrado(idGrupo)
+    val coordinador = LocalCoordinadorResaltado.current
+    val colorAcento = com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 
-    Column(modifier = modifier.fillMaxWidth()) {
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .bringIntoViewRequester(estadoAlumbrado.bringIntoViewRequester)
+            .onGloballyPositioned { coords ->
+                coordinador?.registrarYEjecutarSiCoincide(
+                    id = idGrupo,
+                    itemCoordinates = coords,
+                    estadoAlumbrado = estadoAlumbrado,
+                    colorAcento = colorAcento
+                )
+            }
+    ) {
         // Encabezado del grupo
         if (!etiqueta.isNullOrBlank() || tieneBadgeGrupo) {
             Column(
@@ -112,6 +132,7 @@ fun ComponenteGrupo(
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(18.dp))
                     .background(ColorTarjetaAjustes)
+                    .background(estadoAlumbrado.colorFondoAnimado.value)
             ) {
                 contenido()
             }

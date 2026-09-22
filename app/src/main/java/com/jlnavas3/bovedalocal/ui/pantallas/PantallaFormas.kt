@@ -118,61 +118,61 @@ fun PantallaFormas(
         subtitulo = "Personaliza curvaturas, trazos y espaciados en tiempo real",
         alVolver = { vm.volverAtras() },
         conScroll = true,
-        espaciado = EspaciadoComponentes
-    ) {
-        // 1. Tarjeta de vista previa interactiva en tiempo real
-        TarjetaBovedaDesplegable(
-            titulo = "Vista previa",
-            descripcion = "Observa en vivo las esquinas, trazos y espaciados de los componentes",
-            icono = Icons.Filled.FormatShapes,
-            colorIcono = ColorSalud,
-            inicialmenteAbierta = seccionDestino == "09.3.1",
-            idEtiqueta = "09.3.1",
-            mostrarId = ajustes.mostrarIdsAjustes,
-            modifier = Modifier.bringIntoViewRequester(reqPreview)
-        ) {
-            Text(
-                text = "Tarjeta Interactiva",
-                color = ColorTitulos,
-                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
-            )
-            Text(
-                text = "La curvatura actual es de ${ajustes.curvaturaEsquinasDp.roundToInt()} dp y el borde tiene un trazo de ${String.format("%.1f", ajustes.grosorBordeDp)} dp.",
-                color = TextoSecundario,
-                style = MaterialTheme.typography.bodyMedium
-            )
-            Spacer(Modifier.height(4.dp))
-            CampoBoveda(
-                valor = textoPrueba,
-                etiqueta = "Campo de entrada con borde dinámico",
-                alCambiar = { textoPrueba = it }
-            )
-            Spacer(Modifier.height(4.dp))
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(10.dp)
+        espaciado = EspaciadoComponentes,
+        cabeceraFlotante = {
+            ContenedorTarjeta(
+                paddingInterno = 10.dp
             ) {
-                Box(modifier = Modifier.weight(1f)) {
-                    BotonAmbar(
-                        texto = "Botón Principal",
-                        icono = Icons.Filled.Star
-                    ) { haptica.tic() }
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "Tarjeta Interactiva",
+                        color = ColorTitulos,
+                        style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold)
+                    )
+                    Text(
+                        text = "${ajustes.curvaturaEsquinasDp.roundToInt()} dp · ${String.format(java.util.Locale.US, "%.1f", ajustes.grosorBordeDp)} dp",
+                        color = ColorAcento,
+                        style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold)
+                    )
                 }
-                Box(modifier = Modifier.weight(1f)) {
-                    BotonBorde(
-                        texto = "Secundario",
-                        icono = Icons.Filled.Tune
-                    ) { haptica.tic() }
+                Spacer(Modifier.height(6.dp))
+                CampoBoveda(
+                    valor = textoPrueba,
+                    etiqueta = "Campo de entrada dinámico",
+                    alCambiar = { textoPrueba = it }
+                )
+                Spacer(Modifier.height(6.dp))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Box(modifier = Modifier.weight(1f)) {
+                        BotonAmbar(
+                            texto = "Principal",
+                            icono = Icons.Filled.Star
+                        ) { haptica.tic() }
+                    }
+                    Box(modifier = Modifier.weight(1f)) {
+                        BotonBorde(
+                            texto = "Secundario",
+                            icono = Icons.Filled.Tune
+                        ) { haptica.tic() }
+                    }
                 }
             }
         }
+    ) {
 
         // 2. Presets rápidos de diseño
         TarjetaBovedaDesplegable(
             titulo = "Estilos predefinidos",
             descripcion = "Aplica combinaciones armónicas de esquinas y trazos en un solo toque",
             icono = Icons.Filled.AutoAwesome,
-            colorIcono = ColorAcento,
+            colorIcono = ColorIconosInternos,
             inicialmenteAbierta = seccionDestino == "09.3.2",
             idEtiqueta = "09.3.2",
             mostrarId = ajustes.mostrarIdsAjustes,
@@ -384,7 +384,7 @@ fun PantallaFormas(
             titulo = "Espaciado y separación",
             descripcion = "Ajusta la separación vertical entre secciones, tarjetas y bloques",
             icono = Icons.Filled.SpaceDashboard,
-            colorIcono = ColorAcento,
+            colorIcono = ColorIconosInternos,
             inicialmenteAbierta = seccionDestino == "09.3.6",
             idEtiqueta = "09.3.6",
             mostrarId = ajustes.mostrarIdsAjustes,

@@ -573,7 +573,7 @@ fun EtiquetaSeccion(
     texto: String,
     modifier: Modifier = Modifier,
     icono: ImageVector? = null,
-    colorIcono: Color = ColorAcento
+    colorIcono: Color = ColorIconosInternos
 ) {
     if (icono != null) {
         val colorLegible = colorLegibleParaTema(colorIcono)

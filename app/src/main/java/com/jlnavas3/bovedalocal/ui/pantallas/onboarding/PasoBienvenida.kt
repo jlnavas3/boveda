@@ -60,6 +60,7 @@ import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteSelectorModal
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteSeparador
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.OpcionSelectorModal
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
+import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
 import com.jlnavas3.bovedalocal.ui.theme.ColorArgon2
 import com.jlnavas3.bovedalocal.ui.theme.ColorSeguridad
 import com.jlnavas3.bovedalocal.ui.theme.ColorSobreAcento
@@ -197,8 +198,8 @@ fun PasoBienvenida(
                 titulo = "Crear mi bóveda",
                 alPulsar = alIniciarCreacion,
                 icono = Icons.Filled.VpnKey,
-                colorIcono = ColorAcento,
-                colorTinteIcono = ColorSobreAcento
+                colorIcono = ColorSeguridad,
+                colorTinteIcono = Color.White
             )
         }
     }
@@ -298,7 +299,7 @@ private fun DialogoGarantiasSeguridad(alCerrar: () -> Unit) {
                             icono = Icons.Filled.WifiOff,
                             titulo = "Cero conexión a Internet (Air-Gapped)",
                             descripcion = "La aplicación carece por completo de permisos de red en el sistema operativo. Tus secretos jamás abandonan físicamente este dispositivo: no existen servidores remotos ni telemetría.",
-                            colorIcono = ColorAcento
+                            colorIcono = ColorIconosInternos
                         )
 
                         FilaPilarSeguridad(
@@ -375,7 +376,7 @@ private fun FilaPilarSeguridad(
     icono: ImageVector,
     titulo: String,
     descripcion: String,
-    colorIcono: Color = ColorAcento
+    colorIcono: Color = ColorIconosInternos
 ) {
     Row(
         modifier = Modifier

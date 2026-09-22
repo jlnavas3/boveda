@@ -74,7 +74,9 @@ import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteNavegacion
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteRadio
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteSeparador
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteSwitch
+import com.jlnavas3.bovedalocal.ui.componentes.ajustes.LocalCoordinadorResaltado
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ProveedorResaltadoAjustes
+import com.jlnavas3.bovedalocal.ui.componentes.ajustes.contenedorScrollAjustes
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjustesFondo
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.FilaAjuste
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.FilaOpcionRadio
@@ -137,15 +139,8 @@ import com.jlnavas3.bovedalocal.ui.theme.aHex
 import com.jlnavas3.bovedalocal.ui.theme.colorContraste
 import com.jlnavas3.bovedalocal.util.Haptica
 
-private data class InfoSeccionFuncional(
-    val id: String,
-    val nombre: String,
-    val descripcion: String,
-    val icono: ImageVector,
-    val colorActual: Color,
-    val colorPorDefecto: Color,
-    val mutador: (Color) -> Unit
-)
+
+
 
 @OptIn(androidx.compose.foundation.ExperimentalFoundationApi::class)
 @Composable
@@ -159,12 +154,9 @@ fun PantallaTema(
     val ajustes by vm.ajustes.collectAsStateWithLifecycle()
 
     var dialogoConfirmarIcono by remember { mutableStateOf<PaletaAcento?>(null) }
-    var seccionElegida by remember { mutableStateOf(0) }
-    var dropdownSeccionesAbierto by remember { mutableStateOf(false) }
 
     val reqDinamico = remember { BringIntoViewRequester() }
     val reqAcento = remember { BringIntoViewRequester() }
-    val reqFuncional = remember { BringIntoViewRequester() }
     val reqLauncher = remember { BringIntoViewRequester() }
 
     LaunchedEffect(seccionDestino) {
@@ -172,101 +164,16 @@ fun PantallaTema(
             when {
                 seccionDestino == "09.2.2" -> reqDinamico.bringIntoView()
                 seccionDestino == "09.2.3" -> reqAcento.bringIntoView()
-                seccionDestino == "09.2.7" -> reqFuncional.bringIntoView()
                 seccionDestino == "09.2.8" -> reqLauncher.bringIntoView()
                 seccionDestino.startsWith("09.2.") && seccionDestino != "09.2" -> reqAcento.bringIntoView()
             }
         }
     }
 
-    val seccionesFuncionales = listOf(
-        InfoSeccionFuncional(
-            id = "seguridad",
-            nombre = "Seguridad y Diagnóstico",
-            descripcion = "Auditoría de seguridad, informes y cifrado militar",
-            icono = Icons.Filled.Security,
-            colorActual = ColorSeguridad,
-            colorPorDefecto = Color(0xFF0284C7),
-            mutador = { vm.ajustarColorSeguridad(it.aHex()) }
-        ),
-        InfoSeccionFuncional(
-            id = "argon2",
-            nombre = "Cifrado Argon2id",
-            descripcion = "Intensidad de memoria, hilos e iteraciones criptográficas",
-            icono = Icons.Filled.Memory,
-            colorActual = ColorArgon2,
-            colorPorDefecto = Color(0xFF2563EB),
-            mutador = { vm.ajustarColorArgon2(it.aHex()) }
-        ),
-        InfoSeccionFuncional(
-            id = "camara",
-            nombre = "Cámara y Escáner QR",
-            descripcion = "Lector óptico de códigos 2FA y motor de captura",
-            icono = Icons.Filled.CameraAlt,
-            colorActual = ColorCamara,
-            colorPorDefecto = Color(0xFF06B6D4),
-            mutador = { vm.ajustarColorCamara(it.aHex()) }
-        ),
-        InfoSeccionFuncional(
-            id = "generador",
-            nombre = "Generador de Contraseñas",
-            descripcion = "Generación de claves seguras, entropía y dados",
-            icono = Icons.Filled.AutoAwesome,
-            colorActual = ColorGenerador,
-            colorPorDefecto = Color(0xFF0D9488),
-            mutador = { vm.ajustarColorGenerador(it.aHex()) }
-        ),
-        InfoSeccionFuncional(
-            id = "2fa",
-            nombre = "Autenticador 2FA / TOTP",
-            descripcion = "Códigos temporales y sincronización de reloj",
-            icono = Icons.Filled.Timer,
-            colorActual = Color2FA,
-            colorPorDefecto = Color(0xFFF97316),
-            mutador = { vm.ajustarColor2FA(it.aHex()) }
-        ),
-        InfoSeccionFuncional(
-            id = "passkeys",
-            nombre = "Passkeys WebAuthn",
-            descripcion = "Credenciales FIDO2 y llaves de paso criptográficas",
-            icono = Icons.Filled.Fingerprint,
-            colorActual = ColorPasskeys,
-            colorPorDefecto = Color(0xFF8B5CF6),
-            mutador = { vm.ajustarColorPasskeys(it.aHex()) }
-        ),
-        InfoSeccionFuncional(
-            id = "salud",
-            nombre = "Salud de la Bóveda",
-            descripcion = "Detección de claves duplicadas, débiles y caducadas",
-            icono = Icons.Filled.HealthAndSafety,
-            colorActual = ColorSalud,
-            colorPorDefecto = Color(0xFF10B981),
-            mutador = { vm.ajustarColorSalud(it.aHex()) }
-        ),
-        InfoSeccionFuncional(
-            id = "papelera",
-            nombre = "Papelera de Reciclaje",
-            descripcion = "Cuentas eliminadas y purga definitiva de entradas",
-            icono = Icons.Filled.Delete,
-            colorActual = ColorPapelera,
-            colorPorDefecto = Color(0xFFEF4444),
-            mutador = { vm.ajustarColorPapelera(it.aHex()) }
-        ),
-        InfoSeccionFuncional(
-            id = "exportacion",
-            nombre = "Copia y Exportación",
-            descripcion = "Archivos de respaldo cifrados y kit de emergencia",
-            icono = Icons.Filled.Backup,
-            colorActual = ColorExportacion,
-            colorPorDefecto = Color(0xFF6366F1),
-            mutador = { vm.ajustarColorExportacion(it.aHex()) }
-        )
-    )
-
-
     val scrollState = rememberScrollState()
 
-    ProveedorResaltadoAjustes(seccionDestino) {
+    ProveedorResaltadoAjustes(seccionDestino, scrollState) {
+        val coordinador = LocalCoordinadorResaltado.current
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -285,6 +192,7 @@ fun PantallaTema(
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f)
+                    .contenedorScrollAjustes(coordinador)
                     .verticalScroll(scrollState)
                     .padding(horizontal = 16.dp, vertical = 12.dp)
             ) {
@@ -372,7 +280,7 @@ fun PantallaTema(
                     ComponenteBotonFila(
                         titulo = "Calibración",
                         icono = Icons.Filled.Tune,
-                        colorIcono = ColorAcento,
+                        colorIcono = ColorIconosInternos,
                         idFila = "03.2.6",
                         mostrarId = ajustes.mostrarIdsAjustes,
                         alPulsar = {
@@ -395,7 +303,7 @@ fun PantallaTema(
                     modifier = Modifier.bringIntoViewRequester(reqDinamico)
                 ) {
                     ComponenteSwitch(
-                        titulo = "Material You (Monet)",
+                        titulo = "Material You",
                         icono = Icons.Filled.AutoAwesome,
                         colorIcono = Color(0xFF00897B),
                         activo = ajustes.colorDinamicoSistema,
@@ -415,7 +323,11 @@ fun PantallaTema(
                 etiqueta = "Color de acento principal",
                 idGrupo = "03.2.G4",
                 mostrarId = ajustes.mostrarIdsAjustes,
-                descripcion = "Afecta a los botones destacados, elementos activos y selectores",
+                descripcion = if (ajustes.colorDinamicoSistema) {
+                    "Material You está activo. Seleccionar un color manual desactivará el color dinámico del sistema."
+                } else {
+                    "Afecta a los botones destacados, elementos activos y selectores"
+                },
                 modifier = Modifier.bringIntoViewRequester(reqAcento)
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {
@@ -431,138 +343,6 @@ fun PantallaTema(
                     titulo = "Restablecer",
                     alPulsar = {
                         vm.ajustarColorAcento("ambar")
-                    }
-                )
-            }
-
-            // 3. Colores por sección funcional
-            Spacer(Modifier.height(18.dp))
-            val seccionActual = seccionesFuncionales[seccionElegida.coerceIn(0, seccionesFuncionales.size - 1)]
-            ComponenteGrupo(
-                etiqueta = "Colores por módulo funcional",
-                idGrupo = "03.2.G5",
-                mostrarId = ajustes.mostrarIdsAjustes,
-                descripcion = "Identidad cromática de cada módulo en la barra lateral y listados",
-                modifier = Modifier.bringIntoViewRequester(reqFuncional)
-            ) {
-                Column(modifier = Modifier.padding(16.dp)) {
-                    // Selector Dropdown de Sección Funcional
-                    Box(modifier = Modifier.fillMaxWidth()) {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clip(FormaCampo)
-                                .background(Superficie)
-                                .then(
-                                    if (GrosorBorde > 0.dp) {
-                                        Modifier.border(
-                                            GrosorBorde,
-                                            if (dropdownSeccionesAbierto) ColorTitulos else ColorBordeActual,
-                                            FormaCampo
-                                        )
-                                    } else {
-                                        Modifier
-                                    }
-                                )
-                                .clickable { dropdownSeccionesAbierto = true }
-                                .padding(horizontal = 12.dp, vertical = 10.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Box(
-                                modifier = Modifier
-                                    .size(36.dp)
-                                    .clip(FormaPequena)
-                                    .background(seccionActual.colorActual.copy(alpha = 0.14f)),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Icon(
-                                    imageVector = seccionActual.icono,
-                                    contentDescription = null,
-                                    tint = seccionActual.colorActual,
-                                    modifier = Modifier.size(20.dp)
-                                )
-                            }
-                            Spacer(Modifier.width(12.dp))
-                            Column(modifier = Modifier.weight(1f)) {
-                                Text(
-                                    text = seccionActual.nombre,
-                                    color = TextoPrincipal,
-                                    style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.SemiBold)
-                                )
-                                Text(
-                                    text = seccionActual.descripcion,
-                                    color = TextoSecundario,
-                                    style = MaterialTheme.typography.bodySmall,
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis
-                                )
-                            }
-                            Icon(
-                                imageVector = if (dropdownSeccionesAbierto) Icons.Filled.ExpandLess else Icons.Filled.ExpandMore,
-                                contentDescription = "Cambiar sección",
-                                tint = TextoSecundario
-                            )
-                        }
-
-                        MenuDesplegableBoveda(
-                            expanded = dropdownSeccionesAbierto,
-                            onDismissRequest = { dropdownSeccionesAbierto = false }
-                        ) {
-                            seccionesFuncionales.forEachIndexed { idx, sec ->
-                                DropdownMenuItem(
-                                    text = {
-                                        Row(verticalAlignment = Alignment.CenterVertically) {
-                                            Box(
-                                                modifier = Modifier
-                                                    .size(28.dp)
-                                                    .clip(FormaPequena)
-                                                    .background(sec.colorActual.copy(alpha = 0.14f)),
-                                                contentAlignment = Alignment.Center
-                                            ) {
-                                                Icon(
-                                                    imageVector = sec.icono,
-                                                    contentDescription = null,
-                                                    tint = sec.colorActual,
-                                                    modifier = Modifier.size(16.dp)
-                                                )
-                                            }
-                                            Spacer(Modifier.width(10.dp))
-                                            Column {
-                                                Text(sec.nombre, color = TextoPrincipal, style = MaterialTheme.typography.bodyMedium)
-                                                Text(sec.descripcion, color = TextoSecundario, style = MaterialTheme.typography.bodySmall)
-                                            }
-                                        }
-                                    },
-                                    onClick = {
-                                        haptica.toque()
-                                        seccionElegida = idx
-                                        dropdownSeccionesAbierto = false
-                                    }
-                                )
-                                if (idx < seccionesFuncionales.size - 1) SeparadorOpcionMenu()
-                            }
-                        }
-                    }
-
-                    Spacer(Modifier.height(10.dp))
-                    Text(
-                        text = "Color actual: ${seccionActual.colorActual.aHex()}",
-                        color = TextoSecundario,
-                        style = MaterialTheme.typography.bodySmall
-                    )
-                    Spacer(Modifier.height(8.dp))
-                    SelectorColorEnTiempoReal(
-                        colorInicial = seccionActual.colorActual,
-                        titulo = seccionActual.nombre
-                    ) { nuevoColor ->
-                        seccionActual.mutador(nuevoColor)
-                    }
-                }
-                ComponenteSeparador()
-                ComponenteBotonFila(
-                    titulo = "Restablecer",
-                    alPulsar = {
-                        seccionActual.mutador(seccionActual.colorPorDefecto)
                     }
                 )
             }

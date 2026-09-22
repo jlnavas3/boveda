@@ -59,6 +59,7 @@ import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteSeparador
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.OpcionSelectorModal
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.TipoCampoTexto
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
+import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
 import com.jlnavas3.bovedalocal.ui.theme.ColorArgon2
 import com.jlnavas3.bovedalocal.ui.theme.ColorSobreAcento
 import com.jlnavas3.bovedalocal.ui.theme.ColorTitulos
@@ -141,7 +142,7 @@ fun PasoCrearContrasena(
                     tipo = TipoCampoTexto.CONTRASENA,
                     mostrarIcono = true,
                     icono = Icons.Filled.Lock,
-                    colorIcono = ColorAcento,
+                    colorIcono = ColorIconosInternos,
                     mostrarContrasena = mostrarContrasena,
                     alAlternarMostrarContrasena = { mostrarContrasena = !mostrarContrasena },
                     monoespaciada = mostrarContrasena
@@ -156,7 +157,7 @@ fun PasoCrearContrasena(
                     tipo = TipoCampoTexto.CONTRASENA,
                     mostrarIcono = true,
                     icono = Icons.Filled.Lock,
-                    colorIcono = ColorAcento,
+                    colorIcono = ColorIconosInternos,
                     mostrarContrasena = mostrarRepetida,
                     alAlternarMostrarContrasena = { mostrarRepetida = !mostrarRepetida },
                     monoespaciada = mostrarRepetida
@@ -197,7 +198,7 @@ fun PasoCrearContrasena(
                             Icon(
                                 imageVector = Icons.Filled.Share,
                                 contentDescription = "Compartir",
-                                tint = ColorAcento,
+                                tint = ColorIconosInternos,
                                 modifier = Modifier.size(20.dp)
                             )
                         }
@@ -227,8 +228,8 @@ fun PasoCrearContrasena(
                 titulo = "Consejo: Generación rápida",
                 alPulsar = { mostrarModalConsejo = true },
                 icono = Icons.Filled.Lightbulb,
-                colorIcono = ColorAcento,
-                colorTinteIcono = ColorSobreAcento,
+                colorIcono = ColorIconosInternos,
+                colorTinteIcono = Color.White,
                 valorTexto = "Tile / Widget"
             )
 

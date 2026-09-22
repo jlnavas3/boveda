@@ -28,6 +28,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -50,6 +51,7 @@ import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteSeparador
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.TipoCampoTexto
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjusteGris
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
+import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
 import com.jlnavas3.bovedalocal.ui.theme.ColorSobreAcento
 import com.jlnavas3.bovedalocal.ui.theme.ColorTitulos
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
@@ -177,7 +179,7 @@ fun PantallaDesbloqueo(vm: VaultViewModel, actividad: FragmentActivity) {
                             alCambiar = { if (!abriendo) contrasena = it },
                             tipo = TipoCampoTexto.CONTRASENA,
                             mostrarIcono = true,
-                            colorIcono = ColorAcento,
+                            colorIcono = ColorIconosInternos,
                             mostrarContrasena = mostrar,
                             alAlternarMostrarContrasena = { if (!abriendo) mostrar = !mostrar },
                             monoespaciada = mostrar,
@@ -195,8 +197,8 @@ fun PantallaDesbloqueo(vm: VaultViewModel, actividad: FragmentActivity) {
                         titulo = if (abriendo) "Abriendo..." else "Abrir bóveda",
                         alPulsar = { ejecutarDesbloqueo() },
                         icono = Icons.Filled.LockOpen,
-                        colorIcono = if (botonActivo) ColorAcento else ColorAjusteGris.copy(alpha = 0.35f),
-                        colorTinteIcono = if (botonActivo) ColorSobreAcento else ColorAjusteGris,
+                        colorIcono = if (botonActivo) ColorIconosInternos else ColorAjusteGris.copy(alpha = 0.35f),
+                        colorTinteIcono = if (botonActivo) Color.White else ColorAjusteGris,
                         habilitado = botonActivo
                     )
 
@@ -206,8 +208,8 @@ fun PantallaDesbloqueo(vm: VaultViewModel, actividad: FragmentActivity) {
                             titulo = flujo.etiquetaBoton(),
                             alPulsar = { lanzarBiometria() },
                             icono = Icons.Filled.Fingerprint,
-                            colorIcono = ColorAcento,
-                            colorTinteIcono = ColorSobreAcento,
+                            colorIcono = Color(0xFF1E88E5),
+                            colorTinteIcono = Color.White,
                             habilitado = !abriendo
                         )
                     }

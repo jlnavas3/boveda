@@ -10,6 +10,7 @@ data class OpcionesGenerador(
     val minusculas: Boolean = true,
     val digitos: Boolean = true,
     val simbolos: Boolean = true,
+    val simbolosPersonalizados: String = PasswordGenerator.SIMBOLOS,
     val modoFrase: Boolean = false,
     val palabras: Int = 5,
     val separadorFrase: String = "-",
@@ -35,7 +36,10 @@ object PasswordGenerator {
         if (opciones.mayusculas) append(MAYUSCULAS)
         if (opciones.minusculas) append(MINUSCULAS)
         if (opciones.digitos) append(DIGITOS)
-        if (opciones.simbolos) append(SIMBOLOS)
+        if (opciones.simbolos) {
+            val s = if (opciones.simbolosPersonalizados.isNotEmpty()) opciones.simbolosPersonalizados else SIMBOLOS
+            append(s)
+        }
     }
 
     fun generar(opciones: OpcionesGenerador): String = when {
@@ -81,11 +85,12 @@ object PasswordGenerator {
 
     fun generarAleatoria(opciones: OpcionesGenerador): String {
         val longitud = opciones.longitud.coerceIn(8, 64)
+        val simbolosEfectivos = if (opciones.simbolosPersonalizados.isNotEmpty()) opciones.simbolosPersonalizados else SIMBOLOS
         val grupos = buildList {
             if (opciones.mayusculas) add(MAYUSCULAS)
             if (opciones.minusculas) add(MINUSCULAS)
             if (opciones.digitos) add(DIGITOS)
-            if (opciones.simbolos) add(SIMBOLOS)
+            if (opciones.simbolos && simbolosEfectivos.isNotEmpty()) add(simbolosEfectivos)
         }.ifEmpty { listOf(MINUSCULAS) }
         val todos = grupos.joinToString("")
         val salida = CharArray(longitud)

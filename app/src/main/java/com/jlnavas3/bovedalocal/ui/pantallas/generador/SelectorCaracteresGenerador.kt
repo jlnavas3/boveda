@@ -220,7 +220,11 @@ fun SelectorCaracteresGenerador(
                                     haptica.tic()
                                     alCambiarOpciones(opciones.copy(digitos = !opciones.digitos))
                                 },
-                                Triple("Símbolos (#$!)", "! @ # $ % & * - _ + =", opciones.simbolos) to {
+                                Triple(
+                                    "Símbolos (#$!)",
+                                    if (opciones.simbolosPersonalizados.isNotBlank()) opciones.simbolosPersonalizados else "! @ # $ % & * - _ + =",
+                                    opciones.simbolos
+                                ) to {
                                     haptica.tic()
                                     alCambiarOpciones(opciones.copy(simbolos = !opciones.simbolos))
                                 }

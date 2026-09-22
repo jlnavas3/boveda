@@ -482,15 +482,13 @@ class WidgetTotpFavoritos : AppWidgetProvider() {
 
         private fun ejecutarVibracion(context: Context) {
             try {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                    val vm = context.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as? VibratorManager
-                    vm?.defaultVibrator?.vibrate(VibrationEffect.createPredefined(VibrationEffect.EFFECT_CLICK))
-                } else {
-                    @Suppress("DEPRECATION")
-                    val v = context.getSystemService(Context.VIBRATOR_SERVICE) as? Vibrator
-                    @Suppress("DEPRECATION")
-                    v?.vibrate(30)
-                }
+                val repo = com.jlnavas3.bovedalocal.data.VaultRepository.obtener(context.applicationContext)
+                val ajustes = repo.ajustes.actual
+                com.jlnavas3.bovedalocal.util.Haptica.vibrarExterno(
+                    context = context,
+                    activo = ajustes.widgetHaptica,
+                    intensidad = ajustes.widgetHapticaIntensidad
+                )
             } catch (_: Exception) {
             }
         }

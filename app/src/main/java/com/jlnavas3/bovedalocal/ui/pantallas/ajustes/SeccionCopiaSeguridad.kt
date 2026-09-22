@@ -49,6 +49,7 @@ import com.jlnavas3.bovedalocal.ui.componentes.BotonColorido
 import com.jlnavas3.bovedalocal.ui.componentes.CampoBoveda
 import com.jlnavas3.bovedalocal.ui.theme.Ambar
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
+import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
 import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
 import com.jlnavas3.bovedalocal.ui.theme.ColorExportacion
 import com.jlnavas3.bovedalocal.ui.theme.FormaCampo
@@ -164,6 +165,25 @@ fun SeccionCopiaSeguridad(
         )
 
         if (ajustes.backupAutoFrecuenciaDias > 0) {
+            val seleccionadoMaxCopias = AlmacenAjustes.OPCIONES_MAX_COPIAS_BACKUP_AUTO
+                .find { it.first == ajustes.backupAutoMaxCopias }?.second
+                ?: "${ajustes.backupAutoMaxCopias} copias"
+
+            val opcionesMaxCopias = AlmacenAjustes.OPCIONES_MAX_COPIAS_BACKUP_AUTO.map { (max, etiqueta) ->
+                OpcionAjuste(max.toString(), etiqueta, Icons.Filled.Backup)
+            }
+
+            SelectorAjuste(
+                titulo = "Copias a respaldar",
+                icono = Icons.Filled.Backup,
+                seleccionado = seleccionadoMaxCopias,
+                opciones = opcionesMaxCopias,
+                alSeleccionar = { valor ->
+                    haptica.tic()
+                    vm.ajustarBackupAutoMaxCopias(valor.toInt())
+                }
+            )
+
             com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteCampoTexto(
                 valor = ajustes.backupAutoPasswordCifrado,
                 etiqueta = "Contraseña para la copia automática",
@@ -205,7 +225,7 @@ fun SeccionCopiaSeguridad(
                         Icon(
                             Icons.Filled.Folder,
                             contentDescription = null,
-                            tint = ColorAcento,
+                            tint = ColorIconosInternos,
                             modifier = Modifier.size(18.dp)
                         )
                         Spacer(Modifier.width(8.dp))
@@ -222,8 +242,13 @@ fun SeccionCopiaSeguridad(
                     } else {
                         "Última copia: Aún no realizada"
                     }
+                    val textoRotacion = if (ajustes.backupAutoMaxCopias <= 0) {
+                        "Rotación: Infinitas"
+                    } else {
+                        "Rotación máxima: ${ajustes.backupAutoMaxCopias} copias"
+                    }
                     Text(
-                        "$textoUltima (Rotación máxima: ${ajustes.backupAutoMaxCopias} copias)",
+                        "$textoUltima ($textoRotacion)",
                         color = TextoSecundario,
                         style = MaterialTheme.typography.bodySmall
                     )
@@ -244,6 +269,7 @@ fun SeccionCopiaSeguridad(
         BotonRestablecerItem {
             haptica.toque()
             vm.ajustarBackupAutoFrecuenciaDias(0)
+            vm.ajustarBackupAutoMaxCopias(5)
             vm.ajustarBackupAutoPasswordCifrado("")
             vm.ajustarBackupAutoPatronNombre("{99}-backup-{FECHA}")
         }

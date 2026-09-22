@@ -668,7 +668,7 @@ fun OpcionFiltro(texto: String, icono: ImageVector, activo: Boolean, alPulsar: (
             )
         },
         trailingIcon = {
-            if (activo) Icon(Icons.Filled.Check, contentDescription = null, tint = ColorAcento, modifier = Modifier.size(18.dp))
+            if (activo) Icon(Icons.Filled.Check, contentDescription = null, tint = ColorIconosInternos, modifier = Modifier.size(18.dp))
         },
         onClick = alPulsar
     )
@@ -695,7 +695,7 @@ fun SelectorOrdenacion(
             Icon(
                 Icons.AutoMirrored.Filled.Sort,
                 contentDescription = "Ordenar lista",
-                tint = if (desplegado) ColorAcento else TextoSecundario,
+                tint = if (desplegado) ColorIconosInternos else TextoSecundario,
                 modifier = Modifier.size(20.dp)
             )
         }
@@ -714,11 +714,11 @@ fun SelectorOrdenacion(
                         Icon(
                             Icons.AutoMirrored.Filled.Sort,
                             contentDescription = null,
-                            tint = if (activo) ColorAcento else TextoSecundario
+                            tint = if (activo) ColorIconosInternos else TextoSecundario
                         )
                     },
                     trailingIcon = if (activo) {
-                        { Icon(Icons.Filled.Check, contentDescription = null, tint = ColorAcento, modifier = Modifier.size(18.dp)) }
+                        { Icon(Icons.Filled.Check, contentDescription = null, tint = ColorIconosInternos, modifier = Modifier.size(18.dp)) }
                     } else null,
                     text = {
                         Text(

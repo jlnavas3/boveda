@@ -31,6 +31,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.sp
 import com.jlnavas3.bovedalocal.ui.theme.EscalaTexto
 import com.jlnavas3.bovedalocal.ui.theme.EstiloMono
@@ -190,6 +195,7 @@ fun ContenedorPrincipal(
     paddingHorizontal: Dp = 20.dp,
     paddingVertical: Dp = 16.dp,
     espaciado: Dp = EspaciadoComponentes,
+    cabeceraFlotante: (@Composable () -> Unit)? = null,
     contenido: @Composable ColumnScope.() -> Unit
 ) {
     val scrollState = rememberScrollState()
@@ -211,18 +217,56 @@ fun ContenedorPrincipal(
 
         val modScroll = if (conScroll) Modifier.verticalScroll(scrollState) else Modifier
 
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f)
-                .then(modScroll)
-                .padding(horizontal = paddingHorizontal, vertical = paddingVertical),
-            verticalArrangement = Arrangement.spacedBy(espaciado)
-        ) {
-            if (!subtitulo.isNullOrBlank()) {
-                DescripcionPantalla(subtitulo = subtitulo)
+        if (cabeceraFlotante != null) {
+            val density = LocalDensity.current
+            var alturaCabeceraDp by remember { mutableStateOf(140.dp) }
+
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .then(modScroll)
+                        .padding(horizontal = paddingHorizontal)
+                        .padding(top = alturaCabeceraDp + 8.dp, bottom = paddingVertical),
+                    verticalArrangement = Arrangement.spacedBy(espaciado)
+                ) {
+                    if (!subtitulo.isNullOrBlank()) {
+                        DescripcionPantalla(subtitulo = subtitulo)
+                    }
+                    contenido()
+                }
+
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.TopCenter)
+                        .fillMaxWidth()
+                        .background(Obsidiana)
+                        .onGloballyPositioned { coords ->
+                            alturaCabeceraDp = with(density) { coords.size.height.toDp() }
+                        }
+                        .padding(horizontal = paddingHorizontal, vertical = 6.dp)
+                ) {
+                    cabeceraFlotante()
+                }
             }
-            contenido()
+        } else {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
+                    .then(modScroll)
+                    .padding(horizontal = paddingHorizontal, vertical = paddingVertical),
+                verticalArrangement = Arrangement.spacedBy(espaciado)
+            ) {
+                if (!subtitulo.isNullOrBlank()) {
+                    DescripcionPantalla(subtitulo = subtitulo)
+                }
+                contenido()
+            }
         }
     }
 }
@@ -237,7 +281,7 @@ fun ContenedorSeccion(
     modifier: Modifier = Modifier,
     subtitulo: String? = null,
     icono: ImageVector? = null,
-    colorIcono: Color = ColorAcento,
+    colorIcono: Color = ColorIconosInternos,
     colorTitulo: Color = ColorTitulos,
     espaciado: Dp = 10.dp,
     contenido: @Composable ColumnScope.() -> Unit

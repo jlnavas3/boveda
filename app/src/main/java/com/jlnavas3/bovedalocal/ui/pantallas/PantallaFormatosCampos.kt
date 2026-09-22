@@ -41,6 +41,7 @@ import com.jlnavas3.bovedalocal.ui.componentes.ajustes.OpcionSelectorModal
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ProveedorResaltadoAjustes
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjustesFondo
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
+import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
 import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
 import com.jlnavas3.bovedalocal.ui.theme.ColorGenerador
 import com.jlnavas3.bovedalocal.ui.theme.ColorPasskeys
@@ -157,7 +158,7 @@ fun PantallaFormatosCampos(
                         titulo = "Formato de fecha",
                         descripcionModal = "Elige cómo visualizar las fechas registradas en tus cuentas",
                         icono = Icons.Filled.CalendarToday,
-                        colorIcono = ColorAcento,
+                        colorIcono = ColorIconosInternos,
                         idFila = "03.6.1",
                         mostrarId = ajustes.mostrarIdsAjustes,
                         valorSeleccionado = ajustes.formatoFecha,

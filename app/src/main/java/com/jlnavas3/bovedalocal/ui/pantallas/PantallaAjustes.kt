@@ -60,7 +60,9 @@ import com.jlnavas3.bovedalocal.ui.componentes.BarraSuperiorPantalla
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteGrupo
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteNavegacion
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteSeparador
+import com.jlnavas3.bovedalocal.ui.componentes.ajustes.LocalCoordinadorResaltado
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ProveedorResaltadoAjustes
+import com.jlnavas3.bovedalocal.ui.componentes.ajustes.contenedorScrollAjustes
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.BarraBusquedaAjustes
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjustesFondo
 import com.jlnavas3.bovedalocal.ui.componentes.CampoBoveda
@@ -305,7 +307,8 @@ fun PantallaAjustes(
         }
     }
 
-    ProveedorResaltadoAjustes(seccionDestino) {
+    ProveedorResaltadoAjustes(seccionDestino, scrollState) {
+        val coordinador = LocalCoordinadorResaltado.current
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -324,6 +327,7 @@ fun PantallaAjustes(
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f)
+                    .contenedorScrollAjustes(coordinador)
                     .verticalScroll(scrollState)
                     .padding(horizontal = 16.dp, vertical = 8.dp)
             ) {

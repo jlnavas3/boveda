@@ -27,6 +27,7 @@ import com.jlnavas3.bovedalocal.ui.VaultViewModel
 import com.jlnavas3.bovedalocal.ui.componentes.BotonColorido
 import com.jlnavas3.bovedalocal.ui.componentes.CampoBoveda
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
+import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
 import com.jlnavas3.bovedalocal.ui.theme.TextoPrincipal
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
 import com.jlnavas3.bovedalocal.util.Haptica
@@ -43,7 +44,7 @@ fun SeccionApariencia(
         titulo = "Apariencia",
         icono = Icons.Filled.Palette,
         descripcion = "Tema, color, nombre, densidad y organización de la lista.",
-        colorIcono = ColorAcento,
+        colorIcono = ColorIconosInternos,
         inicialmenteAbierta = inicialmenteAbierta || (seccionDestino != null && seccionDestino.startsWith("09")),
         idEtiqueta = "09",
         mostrarId = ajustes.mostrarIdsAjustes
@@ -56,7 +57,7 @@ fun SeccionApariencia(
             icono = Icons.Filled.Badge,
             descripcion = "Nombre personalizado visible únicamente dentro de la aplicación.",
             inicialmenteAbierta = seccionDestino == "09.1",
-            colorIcono = ColorAcento,
+            colorIcono = ColorIconosInternos,
             idEtiqueta = "09.1",
             mostrarId = ajustes.mostrarIdsAjustes
         ) {
@@ -95,7 +96,7 @@ fun SeccionApariencia(
             icono = Icons.Filled.Palette,
             descripcion = "Modo claro/oscuro y personalización completa de paleta cromática.",
             inicialmenteAbierta = seccionDestino == "09.2",
-            colorIcono = ColorAcento,
+            colorIcono = ColorIconosInternos,
             idEtiqueta = "09.2",
             mostrarId = ajustes.mostrarIdsAjustes
         ) {
@@ -142,7 +143,7 @@ fun SeccionApariencia(
             icono = Icons.Filled.SquareFoot,
             descripcion = "Curvatura de esquinas, grosores de trazo y espaciados entre componentes.",
             inicialmenteAbierta = seccionDestino == "09.3",
-            colorIcono = ColorAcento,
+            colorIcono = ColorIconosInternos,
             idEtiqueta = "09.3",
             mostrarId = ajustes.mostrarIdsAjustes
         ) {
@@ -170,7 +171,7 @@ fun SeccionApariencia(
             icono = Icons.Filled.Widgets,
             descripcion = "Bordes, curvatura de esquinas y transparencia de fondo del widget.",
             inicialmenteAbierta = seccionDestino == "09.4",
-            colorIcono = ColorAcento,
+            colorIcono = ColorIconosInternos,
             idEtiqueta = "09.4",
             mostrarId = ajustes.mostrarIdsAjustes
         ) {
@@ -198,7 +199,7 @@ fun SeccionApariencia(
             icono = Icons.Filled.TextFields,
             descripcion = "Tamaño de fuentes, peso, interlineado y familias tipográficas.",
             inicialmenteAbierta = seccionDestino == "09.5",
-            colorIcono = ColorAcento,
+            colorIcono = ColorIconosInternos,
             idEtiqueta = "09.5",
             mostrarId = ajustes.mostrarIdsAjustes
         ) {
@@ -226,7 +227,7 @@ fun SeccionApariencia(
             icono = Icons.Filled.Tune,
             descripcion = "Altura y compactación de las filas en la pantalla principal.",
             inicialmenteAbierta = seccionDestino == "09.6",
-            colorIcono = ColorAcento,
+            colorIcono = ColorIconosInternos,
             idEtiqueta = "09.6",
             mostrarId = ajustes.mostrarIdsAjustes
         ) {
@@ -258,7 +259,7 @@ fun SeccionApariencia(
             icono = Icons.Filled.Layers,
             descripcion = "Organización y agrupamiento automático de cuentas del mismo dominio.",
             inicialmenteAbierta = seccionDestino == "09.7",
-            colorIcono = ColorAcento,
+            colorIcono = ColorIconosInternos,
             idEtiqueta = "09.7",
             mostrarId = ajustes.mostrarIdsAjustes
         ) {

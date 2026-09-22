@@ -125,6 +125,7 @@ class VaultRepository private constructor(contexto: Context) {
             params = cabecera.params
             claveMaestra = clave
             contenido = leido
+            sanearDuplicadosSiExisten()
             purgarPapeleraVencida()
             publicar()
         }
@@ -144,6 +145,7 @@ class VaultRepository private constructor(contexto: Context) {
             params = cabecera.params
             claveMaestra = clave.copyOf()
             contenido = leido
+            sanearDuplicadosSiExisten()
             purgarPapeleraVencida()
             publicar()
         }
@@ -262,12 +264,100 @@ class VaultRepository private constructor(contexto: Context) {
         }
     }
 
-    /** Saca una entrada de la papelera y la devuelve a la lista activa. */
-    fun restaurarDeLaPapelera(id: String) {
+    /**
+     * Revisa si hay IDs duplicados en la bóveda (p. ej. por restauraciones previas o corrupción)
+     * y les asigna un nuevo ID y prefijo para garantizar la integridad y evitar cierres de la app.
+     */
+    private fun sanearDuplicadosSiExisten() {
+        val idsVistos = mutableSetOf<String>()
+        var huboCambios = false
+        val saneadas = mutableListOf<Entrada>()
+
+        for (ent in contenido.entradas) {
+            if (idsVistos.contains(ent.id)) {
+                huboCambios = true
+                val nuevoTitulo = if (ent.titulo.startsWith("Copia de ", ignoreCase = true)) {
+                    ent.titulo
+                } else {
+                    "Copia de ${ent.titulo}"
+                }
+                val reparada = ent.copy(
+                    id = nuevoId(),
+                    titulo = nuevoTitulo,
+                    modificadaEn = System.currentTimeMillis()
+                )
+                idsVistos.add(reparada.id)
+                saneadas.add(reparada)
+                Diagnostico.apuntar("seguridad", "Entrada duplicada corregida automáticamente: ${ent.titulo}")
+            } else {
+                idsVistos.add(ent.id)
+                saneadas.add(ent)
+            }
+        }
+
+        if (huboCambios) {
+            contenido = contenido.copy(entradas = saneadas)
+            persistir()
+        }
+    }
+
+    /** Saca una entrada de la papelera y la devuelve a la lista activa con opción de sustituir o duplicar. */
+    fun restaurarDeLaPapelera(id: String, sustituir: Boolean = false) {
         synchronized(candado) {
             val entrada = contenido.papelera.firstOrNull { it.id == id } ?: return
+            val existeMismoId = contenido.entradas.any { it.id == id }
+            val existeMismoTituloYUsuario = contenido.entradas.any {
+                it.titulo.trim().equals(entrada.titulo.trim(), ignoreCase = true) &&
+                it.usuario.trim() == entrada.usuario.trim()
+            }
+
+            val entradaParaActiva = if (existeMismoId || existeMismoTituloYUsuario) {
+                if (sustituir) {
+                    entrada.copy(eliminadaEn = 0L, modificadaEn = System.currentTimeMillis())
+                } else {
+                    val nuevoTitulo = if (entrada.titulo.startsWith("Copia de ", ignoreCase = true)) {
+                        entrada.titulo
+                    } else {
+                        "Copia de ${entrada.titulo}"
+                    }
+                    entrada.copy(
+                        id = nuevoId(),
+                        titulo = nuevoTitulo,
+                        eliminadaEn = 0L,
+                        modificadaEn = System.currentTimeMillis()
+                    )
+                }
+            } else {
+                entrada.copy(eliminadaEn = 0L)
+            }
+
+            val nuevasEntradas = if (sustituir && (existeMismoId || existeMismoTituloYUsuario)) {
+                contenido.entradas.map { ent ->
+                    if (ent.id == id || (ent.titulo.trim().equals(entrada.titulo.trim(), ignoreCase = true) && ent.usuario.trim() == entrada.usuario.trim())) {
+                        entradaParaActiva.copy(id = ent.id)
+                    } else {
+                        ent
+                    }
+                }
+            } else {
+                contenido.entradas + entradaParaActiva
+            }
+
+            // Asegurar que no quede ningún ID duplicado bajo ninguna circunstancia
+            val filtradasSinDuplicados = mutableListOf<Entrada>()
+            val idsVistos = mutableSetOf<String>()
+            for (ent in nuevasEntradas) {
+                if (idsVistos.add(ent.id)) {
+                    filtradasSinDuplicados.add(ent)
+                } else {
+                    val sana = ent.copy(id = nuevoId())
+                    idsVistos.add(sana.id)
+                    filtradasSinDuplicados.add(sana)
+                }
+            }
+
             contenido = contenido.copy(
-                entradas = contenido.entradas + entrada.copy(eliminadaEn = 0L),
+                entradas = filtradasSinDuplicados,
                 papelera = contenido.papelera.filterNot { it.id == id }
             )
             persistir()
@@ -406,7 +496,11 @@ class VaultRepository private constructor(contexto: Context) {
                     nuevas++
                 }
             }
-            contenido = contenido.copy(entradas = porId.values.sortedBy { it.titulo.lowercase() })
+            val idsImportados = importado.entradas.map { it.id }.toSet()
+            contenido = contenido.copy(
+                entradas = porId.values.sortedBy { it.titulo.lowercase() },
+                papelera = contenido.papelera.filterNot { idsImportados.contains(it.id) }
+            )
             persistir()
             publicar()
         }

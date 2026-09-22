@@ -56,6 +56,7 @@ import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjustesFondo
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.SeparadorFilaSimple
 import com.jlnavas3.bovedalocal.ui.theme.Ambar
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
+import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
 import com.jlnavas3.bovedalocal.ui.theme.ColorSeguridad
 import com.jlnavas3.bovedalocal.ui.theme.ColorSobreAcento
 import com.jlnavas3.bovedalocal.ui.theme.FormaTarjeta
@@ -286,7 +287,7 @@ fun PantallaAjustesSenuelo(
                         ComponenteBotonFila(
                             titulo = "Restablecer cuentas de ejemplo",
                             icono = Icons.Filled.Refresh,
-                            colorIcono = Ambar,
+                            colorIcono = ColorIconosInternos,
                             idFila = "01.2.3",
                             mostrarId = ajustes.mostrarIdsAjustes,
                             alPulsar = {

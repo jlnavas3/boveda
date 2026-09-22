@@ -63,6 +63,7 @@ import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ProveedorResaltadoAjustes
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjustesFondo
 import com.jlnavas3.bovedalocal.ui.theme.Ambar
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
+import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
 import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
 import com.jlnavas3.bovedalocal.ui.theme.ColorTitulos
 import com.jlnavas3.bovedalocal.ui.theme.FormaCampo
@@ -472,7 +473,7 @@ fun PantallaCalibracionAnimacion(
                         ComponenteNavegacion(
                             titulo = "Copiar valores",
                             icono = Icons.Filled.ContentCopy,
-                            colorIcono = ColorAcento,
+                            colorIcono = ColorIconosInternos,
                             alPulsar = {
                                 val textoConfig = buildString {
                                     appendLine("=== CONFIGURACIÓN DE ENGRANAJES ===")

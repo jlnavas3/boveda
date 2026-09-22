@@ -1,6 +1,7 @@
 package com.jlnavas3.bovedalocal.data
 
 import android.content.Context
+import android.media.MediaScannerConnection
 import android.os.Environment
 import com.jlnavas3.bovedalocal.crypto.Zeroizar
 import com.jlnavas3.bovedalocal.util.Diagnostico
@@ -22,6 +23,26 @@ object GestorBackupAutomatico {
         val dirInterno = File(context.getExternalFilesDir(null), "Backups")
         if (!dirInterno.exists()) dirInterno.mkdirs()
         return dirInterno
+    }
+
+    /**
+     * Notifica a MediaScanner sobre los archivos existentes en la carpeta de respaldos
+     * para que aparezcan en el explorador de archivos del sistema (Descargas/Recientes).
+     */
+    fun indexarBackups(context: Context) {
+        try {
+            val dir = obtenerDirectorioBackups(context)
+            val archivos = dir.listFiles { _, name ->
+                name.endsWith(".boveda", ignoreCase = true) || name.endsWith(".bvda", ignoreCase = true)
+            } ?: return
+            if (archivos.isNotEmpty()) {
+                val rutas = archivos.map { it.absolutePath }.toTypedArray()
+                val mimes = Array(rutas.size) { "application/octet-stream" }
+                MediaScannerConnection.scanFile(context, rutas, mimes, null)
+            }
+        } catch (e: Exception) {
+            Diagnostico.apuntar("backup", "Aviso al indexar copias en MediaScanner: ${e.message}")
+        }
     }
 
     fun debeEjecutar(ajustes: AjustesApp): Boolean {
@@ -64,8 +85,22 @@ object GestorBackupAutomatico {
 
             archivoDestino.writeBytes(datosCifrados)
 
-            val maxCopias = ajustes.backupAutoMaxCopias.coerceAtLeast(1)
-            rotarBackups(dir, maxCopias)
+            // Registrar en MediaStore/MediaScanner inmediatamente para visibilidad en selector del sistema
+            try {
+                MediaScannerConnection.scanFile(
+                    context,
+                    arrayOf(archivoDestino.absolutePath),
+                    arrayOf("application/octet-stream"),
+                    null
+                )
+            } catch (e: Exception) {
+                Diagnostico.apuntar("backup", "Aviso: no se pudo notificar a MediaScanner: ${e.message}")
+            }
+
+            val maxCopias = ajustes.backupAutoMaxCopias
+            if (maxCopias > 0) {
+                rotarBackups(dir, maxCopias, context)
+            }
 
             repositorio.ajustes.actualizar {
                 it.copy(
@@ -102,13 +137,19 @@ object GestorBackupAutomatico {
         return if (maxEncontrado <= 0) 1 else maxEncontrado + 1
     }
 
-    fun rotarBackups(dir: File, maxCopias: Int) {
+    fun rotarBackups(dir: File, maxCopias: Int, context: Context? = null) {
+        if (maxCopias <= 0) return
         val archivos = dir.listFiles { _, name -> name.endsWith(".boveda", ignoreCase = true) || name.endsWith(".bvda", ignoreCase = true) } ?: return
         if (archivos.size > maxCopias) {
             archivos.sortBy { it.lastModified() }
             val aBorrar = archivos.take(archivos.size - maxCopias)
             for (f in aBorrar) {
-                f.delete()
+                val ruta = f.absolutePath
+                if (f.delete() && context != null) {
+                    try {
+                        MediaScannerConnection.scanFile(context, arrayOf(ruta), null, null)
+                    } catch (_: Exception) {}
+                }
             }
         }
     }

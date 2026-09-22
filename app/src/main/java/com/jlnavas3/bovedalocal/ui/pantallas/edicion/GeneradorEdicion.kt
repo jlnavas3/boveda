@@ -20,6 +20,7 @@ import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.Pattern
+import androidx.compose.material.icons.filled.RestartAlt
 import androidx.compose.material.icons.filled.Shuffle
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
@@ -50,6 +51,7 @@ import com.jlnavas3.bovedalocal.ui.componentes.EtiquetaSeccion
 import com.jlnavas3.bovedalocal.ui.componentes.MenuDesplegableBoveda
 import com.jlnavas3.bovedalocal.ui.componentes.SeparadorOpcionMenu
 import com.jlnavas3.bovedalocal.ui.pantallas.generador.SelectorCaracteresGenerador
+import com.jlnavas3.bovedalocal.ui.pantallas.generador.SelectorPlantillaPatron
 import com.jlnavas3.bovedalocal.ui.theme.Ambar
 import com.jlnavas3.bovedalocal.ui.theme.Borde
 import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
@@ -251,6 +253,14 @@ fun GeneradorEnLineaEdicion(
             )
         }
         opcionesGenerador.modoPatron -> {
+            SelectorPlantillaPatron(
+                patronActual = opcionesGenerador.patron,
+                alSeleccionarPlantilla = {
+                    haptica.tic()
+                    alCambiarOpciones(opcionesGenerador.copy(patron = it))
+                }
+            )
+            Spacer(Modifier.height(8.dp))
             CampoBoveda(
                 valor = opcionesGenerador.patron,
                 etiqueta = "Patrón (ej. XXXXX-XXXXX-XXXXX-XXXXX-XXXXX)",
@@ -319,6 +329,66 @@ fun GeneradorEnLineaEdicion(
                     haptica = haptica,
                     modifier = Modifier.weight(1f)
                 )
+            }
+
+            var mostrarCampoSimbolos by remember { mutableStateOf(false) }
+
+            if (opcionesGenerador.simbolos) {
+                Spacer(Modifier.height(8.dp))
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(androidx.compose.foundation.shape.RoundedCornerShape(8.dp))
+                        .clickable {
+                            haptica.tic()
+                            mostrarCampoSimbolos = !mostrarCampoSimbolos
+                        }
+                        .padding(vertical = 4.dp, horizontal = 2.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = if (mostrarCampoSimbolos) "Ocultar símbolos personalizados" else "Personalizar símbolos permitidos",
+                        color = ColorTitulos,
+                        style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.SemiBold)
+                    )
+                    Icon(
+                        imageVector = if (mostrarCampoSimbolos) Icons.Filled.ExpandLess else Icons.Filled.ExpandMore,
+                        contentDescription = if (mostrarCampoSimbolos) "Ocultar" else "Mostrar",
+                        tint = TextoSecundario,
+                        modifier = Modifier.size(18.dp)
+                    )
+                }
+
+                if (mostrarCampoSimbolos) {
+                    Spacer(Modifier.height(4.dp))
+                    CampoBoveda(
+                        valor = opcionesGenerador.simbolosPersonalizados,
+                        etiqueta = "Símbolos permitidos (#$!)",
+                        alCambiar = { alCambiarOpciones(opcionesGenerador.copy(simbolosPersonalizados = it)) },
+                        monoespaciada = true,
+                        trailingIcon = {
+                            Icon(
+                                imageVector = Icons.Filled.RestartAlt,
+                                contentDescription = "Restaurar símbolos por defecto",
+                                tint = ColorIconosInternos,
+                                modifier = Modifier
+                                    .size(20.dp)
+                                    .clip(androidx.compose.foundation.shape.CircleShape)
+                                    .clickable {
+                                        haptica.exito()
+                                        alCambiarOpciones(opcionesGenerador.copy(simbolosPersonalizados = PasswordGenerator.SIMBOLOS))
+                                    }
+                            )
+                        }
+                    )
+                    Spacer(Modifier.height(2.dp))
+                    Text(
+                        "Excluye o personaliza los símbolos requeridos por el servicio",
+                        color = TextoSecundario,
+                        style = MaterialTheme.typography.bodySmall
+                    )
+                }
             }
         }
     }
