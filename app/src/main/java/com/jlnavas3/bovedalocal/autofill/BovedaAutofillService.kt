@@ -66,6 +66,7 @@ class BovedaAutofillService : AutofillService() {
                 intent,
                 PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_MUTABLE
             )
+            @Suppress("DEPRECATION")
             respuesta.setAuthentication(
                 ids,
                 pendiente.intentSender,

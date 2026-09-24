@@ -1,7 +1,9 @@
 package com.jlnavas3.bovedalocal.util
 
 import android.content.Context
+import android.media.AudioAttributes
 import android.os.Build
+import android.os.VibrationAttributes
 import android.os.VibrationEffect
 import android.os.Vibrator
 import android.os.VibratorManager
@@ -75,17 +77,12 @@ class Haptica(contexto: Context) {
         val v = vibrador ?: return
         if (!v.hasVibrator()) return
         try {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                val efecto = if (v.hasAmplitudeControl()) {
-                    VibrationEffect.createOneShot(duracion, amplitud.coerceIn(1, 255))
-                } else {
-                    VibrationEffect.createOneShot(duracion, VibrationEffect.DEFAULT_AMPLITUDE)
-                }
-                v.vibrate(efecto)
+            val efecto = if (v.hasAmplitudeControl()) {
+                VibrationEffect.createOneShot(duracion, amplitud.coerceIn(1, 255))
             } else {
-                @Suppress("DEPRECATION")
-                v.vibrate(duracion)
+                VibrationEffect.createOneShot(duracion, VibrationEffect.DEFAULT_AMPLITUDE)
             }
+            v.vibrate(efecto)
         } catch (_: Exception) {
             try {
                 @Suppress("DEPRECATION")
@@ -98,18 +95,13 @@ class Haptica(contexto: Context) {
         val v = vibrador ?: return
         if (!v.hasVibrator()) return
         try {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                if (v.hasAmplitudeControl()) {
-                    v.vibrate(VibrationEffect.createWaveform(tiempos, amplitudes, -1))
-                } else {
-                    val defaultAmplitudes = IntArray(amplitudes.size) { i ->
-                        if (amplitudes[i] > 0) VibrationEffect.DEFAULT_AMPLITUDE else 0
-                    }
-                    v.vibrate(VibrationEffect.createWaveform(tiempos, defaultAmplitudes, -1))
-                }
+            if (v.hasAmplitudeControl()) {
+                v.vibrate(VibrationEffect.createWaveform(tiempos, amplitudes, -1))
             } else {
-                @Suppress("DEPRECATION")
-                v.vibrate(tiempos, -1)
+                val defaultAmplitudes = IntArray(amplitudes.size) { i ->
+                    if (amplitudes[i] > 0) VibrationEffect.DEFAULT_AMPLITUDE else 0
+                }
+                v.vibrate(VibrationEffect.createWaveform(tiempos, defaultAmplitudes, -1))
             }
         } catch (_: Exception) {
             try {
@@ -139,7 +131,7 @@ class Haptica(contexto: Context) {
                 val amplitud = (1 + 254 * ((factor - 0.01f) / 0.99f)).roundToInt().coerceIn(1, 255)
                 val duracion = (35 * (0.35f + 0.65f * factor)).toLong().coerceAtLeast(8L)
 
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                     val gestor = context.getSystemService(VibratorManager::class.java)
                     val vibrador = gestor?.defaultVibrator
                     if (vibrador != null && vibrador.hasVibrator()) {
@@ -148,12 +140,29 @@ class Haptica(contexto: Context) {
                         } else {
                             VibrationEffect.createPredefined(VibrationEffect.EFFECT_CLICK)
                         }
-                        val attrs = android.os.VibrationAttributes.Builder()
-                            .setUsage(android.os.VibrationAttributes.USAGE_ALARM)
+                        val attrs = VibrationAttributes.Builder()
+                            .setUsage(VibrationAttributes.USAGE_ALARM)
                             .build()
                         vibrador.vibrate(efecto, attrs)
                     }
-                } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                    val gestor = context.getSystemService(VibratorManager::class.java)
+                    val vibrador = gestor?.defaultVibrator
+                    if (vibrador != null && vibrador.hasVibrator()) {
+                        val efecto = if (vibrador.hasAmplitudeControl()) {
+                            VibrationEffect.createOneShot(duracion, amplitud)
+                        } else {
+                            VibrationEffect.createPredefined(VibrationEffect.EFFECT_CLICK)
+                        }
+                        @Suppress("DEPRECATION")
+                        val audioAttrs = AudioAttributes.Builder()
+                            .setUsage(AudioAttributes.USAGE_ALARM)
+                            .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                            .build()
+                        @Suppress("DEPRECATION")
+                        vibrador.vibrate(efecto, audioAttrs)
+                    }
+                } else {
                     @Suppress("DEPRECATION")
                     val vibrador = context.getSystemService(Context.VIBRATOR_SERVICE) as? Vibrator
                     if (vibrador != null && vibrador.hasVibrator()) {
@@ -162,21 +171,20 @@ class Haptica(contexto: Context) {
                         } else {
                             VibrationEffect.createOneShot(duracion, VibrationEffect.DEFAULT_AMPLITUDE)
                         }
-                        val audioAttrs = android.media.AudioAttributes.Builder()
-                            .setUsage(android.media.AudioAttributes.USAGE_ALARM)
-                            .setContentType(android.media.AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                        @Suppress("DEPRECATION")
+                        val audioAttrs = AudioAttributes.Builder()
+                            .setUsage(AudioAttributes.USAGE_ALARM)
+                            .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
                             .build()
+                        @Suppress("DEPRECATION")
                         vibrador.vibrate(efecto, audioAttrs)
                     }
-                } else {
-                    @Suppress("DEPRECATION")
-                    val vibrador = context.getSystemService(Context.VIBRATOR_SERVICE) as? Vibrator
-                    vibrador?.vibrate(duracion)
                 }
             } catch (_: Exception) {
                 try {
                     @Suppress("DEPRECATION")
                     val v = context.getSystemService(Context.VIBRATOR_SERVICE) as? Vibrator
+                    @Suppress("DEPRECATION")
                     v?.vibrate(35L)
                 } catch (_: Exception) {}
             }

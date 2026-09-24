@@ -773,10 +773,12 @@ fun BovedaTheme(temaApp: String = "sistema", contenido: @Composable () -> Unit) 
                 // En modo oscuro (esOscuroActivo == true): isAppearanceLightStatusBars = false (íconos blancos)
                 insetsController.isAppearanceLightStatusBars = !esOscuroActivo
                 insetsController.isAppearanceLightNavigationBars = !esOscuroActivo
-                @Suppress("DEPRECATION")
-                ventana.statusBarColor = Obsidiana.toArgb()
-                @Suppress("DEPRECATION")
-                ventana.navigationBarColor = Obsidiana.toArgb()
+                if (Build.VERSION.SDK_INT < 35) {
+                    @Suppress("DEPRECATION")
+                    ventana.statusBarColor = Obsidiana.toArgb()
+                    @Suppress("DEPRECATION")
+                    ventana.navigationBarColor = Obsidiana.toArgb()
+                }
             }
         }
     }

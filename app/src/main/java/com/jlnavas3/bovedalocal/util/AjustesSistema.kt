@@ -62,8 +62,10 @@ object AjustesSistema {
                 Settings.EXTRA_BIOMETRIC_AUTHENTICATORS_ALLOWED,
                 BiometricManager.Authenticators.BIOMETRIC_STRONG or BiometricManager.Authenticators.BIOMETRIC_WEAK
             )
+        } else {
+            @Suppress("DEPRECATION")
+            candidatos += Intent(Settings.ACTION_FINGERPRINT_ENROLL)
         }
-        candidatos += Intent(Settings.ACTION_FINGERPRINT_ENROLL)
         candidatos += Intent(Settings.ACTION_SECURITY_SETTINGS)
         candidatos += Intent(Settings.ACTION_SETTINGS)
         return abrirPrimero(contexto, candidatos)
