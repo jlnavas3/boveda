@@ -3,6 +3,9 @@
 # Esta regla no se puede tocar.
 -keep class com.lambdapioneer.argon2kt.** { *; }
 
+# Mantener la clase Application para que R8 no la ofusque en AGP 9
+-keep class com.jlnavas3.bovedalocal.BovedaApp
+
 # kotlinx.serialization trae sus propias reglas dentro del .jar, y aqui los
 # serializadores se piden a mano (ContenidoBoveda.serializer()), no por reflexion,
 # asi que R8 los rastrea solo. Lo unico que hay que sujetar son los serializadores
