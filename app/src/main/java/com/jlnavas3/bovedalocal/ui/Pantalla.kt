@@ -130,6 +130,17 @@ sealed interface Pantalla {
         override fun equals(other: Any?): Boolean = other is CsvGoogle && other.seccionId == seccionId
         override fun hashCode(): Int = seccionId?.hashCode() ?: 0
     }
+    data class ConfirmarMigracion(val urlMigracion: String) : Pantalla
+    open class ExportarSelectivo(val seccionInicial: String = "todos") : Pantalla {
+        companion object : ExportarSelectivo("todos")
+        override fun equals(other: Any?): Boolean = other is ExportarSelectivo && other.seccionInicial == seccionInicial
+        override fun hashCode(): Int = seccionInicial.hashCode()
+    }
+    open class ColoresDatos(val seccionId: String? = null) : Pantalla {
+        companion object : ColoresDatos(null)
+        override fun equals(other: Any?): Boolean = other is ColoresDatos && other.seccionId == seccionId
+        override fun hashCode(): Int = seccionId?.hashCode() ?: 0
+    }
     open class Argon2id(val seccionId: String? = null) : Pantalla {
         companion object : Argon2id(null)
         override fun equals(other: Any?): Boolean = other is Argon2id && other.seccionId == seccionId

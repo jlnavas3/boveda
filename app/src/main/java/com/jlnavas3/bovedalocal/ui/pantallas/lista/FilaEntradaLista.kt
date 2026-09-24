@@ -176,6 +176,7 @@ fun FilaEntrada(
     tamanoMonograma: Int = 46,
     resaltado: Boolean = false,
     separarDigitosTotp: Boolean = false,
+    mostrarIndicadores: Boolean = true,
     enGrupo: Boolean = false,
     esUltimoEnGrupo: Boolean = false
 ) {
@@ -245,6 +246,13 @@ fun FilaEntrada(
                     onLongClick = { if (!seleccionActiva) alPulsarLargo() }
                 )
         ) {
+            if (mostrarIndicadores) {
+                IndicadorContenidoTarjeta(
+                    entrada = entrada,
+                    modifier = Modifier.align(Alignment.TopCenter)
+                )
+            }
+
             Row(
                 modifier = Modifier
                     .fillMaxSize()

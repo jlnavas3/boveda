@@ -196,7 +196,16 @@ data class AjustesApp(
     val alumbradoDuracionMs: Int = 600,
     // Vibración háptica global de la app
     val hapticaApp: Boolean = true,
-    val hapticaAppIntensidad: Float = 0.10f
+    val hapticaAppIntensidad: Float = 0.10f,
+    // Indicadores superiores de contenido en tarjetas de la lista
+    val mostrarIndicadoresContenido: Boolean = true,
+    // Colores aislados exclusivos para datos e indicadores de tarjetas
+    val colorDatosUsuario: String = "#0284C7",
+    val colorDatosContrasena: String = "#0D9488",
+    val colorDatos2FA: String = "#F97316",
+    val colorDatosPasskey: String = "#8B5CF6",
+    val colorDatosWeb: String = "#06B6D4",
+    val colorDatosApp: String = "#10B981"
 )
 
 
@@ -489,7 +498,14 @@ class AlmacenAjustes(contexto: Context) {
             alumbradoRepeticiones = prefs.getInt("alumbrado_repeticiones", 2),
             alumbradoDuracionMs = prefs.getInt("alumbrado_duracion_ms", 600),
             hapticaApp = prefs.getBoolean("haptica_app", true),
-            hapticaAppIntensidad = prefs.getFloat("haptica_app_intensidad", 0.10f)
+            hapticaAppIntensidad = prefs.getFloat("haptica_app_intensidad", 0.10f),
+            mostrarIndicadoresContenido = prefs.getBoolean("mostrar_indicadores_contenido", true),
+            colorDatosUsuario = prefs.getString("color_datos_usuario", "#0284C7") ?: "#0284C7",
+            colorDatosContrasena = prefs.getString("color_datos_contrasena", "#0D9488") ?: "#0D9488",
+            colorDatos2FA = prefs.getString("color_datos_2fa", "#F97316") ?: "#F97316",
+            colorDatosPasskey = prefs.getString("color_datos_passkey", "#8B5CF6") ?: "#8B5CF6",
+            colorDatosWeb = prefs.getString("color_datos_web", "#06B6D4") ?: "#06B6D4",
+            colorDatosApp = prefs.getString("color_datos_app", "#10B981") ?: "#10B981"
         )
     }
 
@@ -638,6 +654,13 @@ class AlmacenAjustes(contexto: Context) {
             .putInt("alumbrado_duracion_ms", nuevo.alumbradoDuracionMs)
             .putBoolean("haptica_app", nuevo.hapticaApp)
             .putFloat("haptica_app_intensidad", nuevo.hapticaAppIntensidad)
+            .putBoolean("mostrar_indicadores_contenido", nuevo.mostrarIndicadoresContenido)
+            .putString("color_datos_usuario", nuevo.colorDatosUsuario)
+            .putString("color_datos_contrasena", nuevo.colorDatosContrasena)
+            .putString("color_datos_2fa", nuevo.colorDatos2FA)
+            .putString("color_datos_passkey", nuevo.colorDatosPasskey)
+            .putString("color_datos_web", nuevo.colorDatosWeb)
+            .putString("color_datos_app", nuevo.colorDatosApp)
             .apply()
         _ajustes.value = nuevo
         com.jlnavas3.bovedalocal.util.Haptica.sincronizar(nuevo)

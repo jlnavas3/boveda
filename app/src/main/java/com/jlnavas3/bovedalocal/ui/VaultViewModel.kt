@@ -11,6 +11,7 @@ import com.jlnavas3.bovedalocal.data.EstadoBoveda
 import com.jlnavas3.bovedalocal.data.FrenoIntentos
 import com.jlnavas3.bovedalocal.data.TipoEntrada
 import com.jlnavas3.bovedalocal.data.VaultRepository
+import com.jlnavas3.bovedalocal.util.CuentaGoogleAuth
 import com.jlnavas3.bovedalocal.util.Diagnostico
 import com.jlnavas3.bovedalocal.util.Portapapeles
 import kotlinx.coroutines.Dispatchers
@@ -832,6 +833,52 @@ class VaultViewModel(app: Application) : AndroidViewModel(app), VaultAjustesDele
         Diagnostico.apuntar("2fa", "Nueva entrada creada con doble factor (TOTP)")
         ir(Pantalla.Autenticador)
         return true
+    }
+
+    fun importarCuentasGoogleAuth(cuentas: List<CuentaGoogleAuth>): Int {
+        var procesadas = 0
+        val entradasExistentes = repositorio.entradas()
+
+        cuentas.filter { it.seleccionada }.forEach { cuenta ->
+            val secretoB32 = cuenta.secretoBase32.uppercase().trim()
+            val coincidencia = entradasExistentes.firstOrNull { e ->
+                val eSecreto = e.secretoTotp?.uppercase()?.trim()
+                (eSecreto != null && eSecreto == secretoB32) ||
+                (e.usuario.equals(cuenta.cuenta, ignoreCase = true) && e.totpEmisor.equals(cuenta.emisor, ignoreCase = true) && cuenta.emisor.isNotBlank())
+            }
+
+            if (coincidencia != null) {
+                val actualizada = coincidencia.copy(
+                    secretoTotp = secretoB32,
+                    totpEmisor = cuenta.emisor.ifBlank { coincidencia.totpEmisor },
+                    totpDigitos = cuenta.digitos,
+                    totpPeriodo = cuenta.periodo,
+                    totpAlgoritmo = cuenta.algoritmo
+                )
+                repositorio.guardarEntrada(actualizada)
+            } else {
+                val nueva = Entrada(
+                    id = repositorio.nuevoId(),
+                    tipo = TipoEntrada.LOGIN,
+                    titulo = cuenta.titulo,
+                    usuario = cuenta.cuenta,
+                    secretoTotp = secretoB32,
+                    totpEmisor = cuenta.emisor,
+                    totpDigitos = cuenta.digitos,
+                    totpPeriodo = cuenta.periodo,
+                    totpAlgoritmo = cuenta.algoritmo
+                )
+                repositorio.guardarEntrada(nueva)
+            }
+            procesadas++
+        }
+
+        if (procesadas > 0) {
+            Diagnostico.apuntar("2fa", "Procesadas $procesadas cuentas de Google Authenticator")
+            avisar("Se importaron $procesadas cuentas de Google Authenticator")
+            ir(Pantalla.Autenticador)
+        }
+        return procesadas
     }
 
     // ------------------------------------------------------------ portapapeles

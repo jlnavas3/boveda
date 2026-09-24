@@ -15,6 +15,39 @@ val propsFirma = Properties().apply {
 }
 val hayFirma = propsFirma.getProperty("storeFile") != null
 
+// Función para incrementar la versión Patch respetando el límite de 50 (luego pasa a Minor.1)
+fun autoIncrementarVersionRelease(rootProjectDir: File) {
+    val versionFile = rootProjectDir.resolve("version.properties")
+    val p = Properties()
+    if (versionFile.exists()) {
+        versionFile.inputStream().use { p.load(it) }
+    }
+    val major = p.getProperty("major", "1").toInt()
+    var minor = p.getProperty("minor", "0").toInt()
+    var patch = p.getProperty("patch", "0").toInt()
+
+    patch += 1
+    if (patch > 50) {
+        minor += 1
+        patch = 1
+    }
+
+    p.setProperty("major", major.toString())
+    p.setProperty("minor", minor.toString())
+    p.setProperty("patch", patch.toString())
+
+    versionFile.outputStream().use { p.store(it, "Versionado Semantico Boveda Local") }
+}
+
+// Si se está ejecutando una tarea de compilación Release, auto-incrementamos la versión antes de calcularla
+val esCompilacionRelease = gradle.startParameter.taskNames.any {
+    it.contains("assembleRelease", ignoreCase = true) || it.contains("bundleRelease", ignoreCase = true)
+}
+
+if (esCompilacionRelease) {
+    autoIncrementarVersionRelease(rootProject.file("."))
+}
+
 // Sistema de versionado automático
 val versionProps = Properties().apply {
     val versionFile = rootProject.file("version.properties")
@@ -33,7 +66,7 @@ val gitCommits = try {
     vBuildManual
 }
 val vBuild = if (gitCommits > 0) gitCommits else vBuildManual
-val codigoVersion = vMajor * 100000 + vMinor * 10000 + vPatch * 1000 + vBuild
+val codigoVersion = vMajor * 10000000 + vMinor * 100000 + vPatch * 1000 + vBuild
 val nombreVersion = "$vMajor.$vMinor.$vPatch"
 
 android {
@@ -121,12 +154,12 @@ android {
 
 dependencies {
     implementation("androidx.core:core-ktx:1.15.0")
-    implementation("androidx.activity:activity-compose:1.9.3")
+    implementation("androidx.activity:activity-compose:1.10.0")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.7")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.7")
     implementation("androidx.lifecycle:lifecycle-runtime-compose:2.8.7")
 
-    val composeBom = platform("androidx.compose:compose-bom:2024.06.00")
+    val composeBom = platform("androidx.compose:compose-bom:2024.12.01")
     implementation(composeBom)
     implementation("androidx.compose.ui:ui")
     implementation("androidx.compose.ui:ui-graphics")
@@ -171,15 +204,13 @@ tasks.register("mostrarVersion") {
 }
 
 tasks.register("bumpPatch") {
-    description = "Incrementa la versión PATCH (ej. 1.0.0 -> 1.0.1) en version.properties"
+    description = "Incrementa la versión PATCH (máximo 50, luego pasa a MINOR.1) en version.properties"
     doLast {
-        val versionFile = rootProject.file("version.properties")
-        val p = Properties()
-        if (versionFile.exists()) versionFile.inputStream().use { p.load(it) }
-        val nuevoPatch = p.getProperty("patch", "0").toInt() + 1
-        p.setProperty("patch", nuevoPatch.toString())
-        versionFile.outputStream().use { p.store(it, "Versionado Semantico Boveda Local") }
-        println("Versión PATCH incrementada a $nuevoPatch -> ${p.getProperty("major")}.${p.getProperty("minor")}.$nuevoPatch")
+        autoIncrementarVersionRelease(rootProject.file("."))
+        val p = Properties().apply {
+            rootProject.file("version.properties").inputStream().use { load(it) }
+        }
+        println("Versión PATCH incrementada a: ${p.getProperty("major")}.${p.getProperty("minor")}.${p.getProperty("patch")}")
     }
 }
 

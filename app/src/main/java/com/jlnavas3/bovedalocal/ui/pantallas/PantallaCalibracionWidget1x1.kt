@@ -22,6 +22,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.FormatAlignLeft
 import androidx.compose.material.icons.automirrored.filled.FormatAlignRight
+import androidx.compose.material.icons.automirrored.filled.RotateLeft
 import androidx.compose.material.icons.filled.AspectRatio
 import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.BorderColor
@@ -585,7 +586,7 @@ fun PantallaCalibracionWidget1x1(
                 ComponenteGrupo {
                     ComponenteBotonFila(
                         titulo = "Restablecer aspecto predeterminado",
-                        icono = Icons.Filled.RotateLeft,
+                        icono = Icons.AutoMirrored.Filled.RotateLeft,
                         colorIcono = ColorIconosInternos,
                         alPulsar = {
                             haptica.exito()

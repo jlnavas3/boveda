@@ -317,6 +317,24 @@ fun PantallaTema(
                 }
             }
 
+            // Colores de campos y datos
+            Spacer(Modifier.height(18.dp))
+            ComponenteGrupo(
+                etiqueta = "Colores de campos y datos",
+                idGrupo = "03.2.G3.5",
+                mostrarId = ajustes.mostrarIdsAjustes,
+                descripcion = "Personaliza los colores individuales para Usuario, Contraseña, 2FA, Passkey, Web y Apps"
+            ) {
+                ComponenteNavegacion(
+                    titulo = "Colores de campos y datos",
+                    icono = Icons.Filled.Palette,
+                    colorIcono = ColorAcento,
+                    idFila = "03.2.1",
+                    mostrarId = ajustes.mostrarIdsAjustes,
+                    alPulsar = { vm.ir(Pantalla.ColoresDatos()) }
+                )
+            }
+
             // 2. Color de acento principal
             Spacer(Modifier.height(18.dp))
             ComponenteGrupo(

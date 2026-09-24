@@ -51,7 +51,8 @@
         android:roundIcon="@mipmap/ic_launcher"
         android:supportsRtl="false"
         android:theme="@style/Theme.BovedaLocal"
-        tools:targetApi="34">
+        tools:targetApi="34"
+        tools:ignore="CredentialDependency">
 
         <activity
             android:name=".ui.MainActivity"

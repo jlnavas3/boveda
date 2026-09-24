@@ -409,10 +409,13 @@ class VaultRepository private constructor(contexto: Context) {
         }
     }
 
-    fun passkeys(): List<Entrada> = contenido.entradas.filter { it.passkey != null }
+    fun passkeys(): List<Entrada> = contenido.entradas.filter { it.eliminadaEn == 0L && it.passkey != null }
 
     fun passkeysDe(rpId: String): List<Entrada> =
-        passkeys().filter { it.passkey?.rpId.equals(rpId, ignoreCase = true) }
+        passkeys().filter { entrada ->
+            (entrada.passkey?.rpId?.equals(rpId, ignoreCase = true) == true) ||
+            entrada.urls.any { u -> com.jlnavas3.bovedalocal.util.Dominios.coincide(u, rpId) || u.contains(rpId, ignoreCase = true) }
+        }
 
     /** Todas las etiquetas que ya se han usado, para sugerirlas al editar. */
     fun etiquetasUsadas(): List<String> =
@@ -462,6 +465,24 @@ class VaultRepository private constructor(contexto: Context) {
         val instantanea = synchronized(candado) {
             if (claveMaestra == null) throw IllegalStateException("La bóveda está bloqueada")
             contenido
+        }
+        val saltExport = VaultCrypto.nuevoSalt()
+        val clave = VaultCrypto.derivarClave(passwordExportacion, saltExport, KdfParams.PREDETERMINADOS)
+        val plano = json.encodeToString(ContenidoBoveda.serializer(), instantanea).toByteArray(Charsets.UTF_8)
+        val salida = VaultCrypto.cifrar(plano, clave, saltExport, KdfParams.PREDETERMINADOS)
+        Zeroizar.borrar(plano)
+        Zeroizar.borrar(clave)
+        return salida
+    }
+
+    fun exportarSelectivo(idsEntradas: Set<String>, passwordExportacion: CharArray): ByteArray {
+        val instantanea = synchronized(candado) {
+            if (claveMaestra == null) throw IllegalStateException("La bóveda está bloqueada")
+            val entradasFiltradas = contenido.entradas.filter { idsEntradas.contains(it.id) }
+            ContenidoBoveda(
+                version = contenido.version,
+                entradas = entradasFiltradas
+            )
         }
         val saltExport = VaultCrypto.nuevoSalt()
         val clave = VaultCrypto.derivarClave(passwordExportacion, saltExport, KdfParams.PREDETERMINADOS)

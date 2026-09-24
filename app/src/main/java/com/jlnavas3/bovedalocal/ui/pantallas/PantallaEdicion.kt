@@ -19,7 +19,12 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Android
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Fingerprint
+import androidx.compose.material.icons.filled.Language
+import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Security
+import androidx.compose.material.icons.filled.Timer
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -51,6 +56,7 @@ import com.jlnavas3.bovedalocal.ui.VaultViewModel
 import com.jlnavas3.bovedalocal.ui.componentes.BarraFuerza
 import com.jlnavas3.bovedalocal.ui.componentes.BarraSuperiorPantalla
 import com.jlnavas3.bovedalocal.ui.componentes.BotonBorde
+import com.jlnavas3.bovedalocal.ui.componentes.BotonIconoCabecera
 import com.jlnavas3.bovedalocal.ui.componentes.CampoBoveda
 import com.jlnavas3.bovedalocal.ui.componentes.DescripcionPantalla
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteCampoTexto
@@ -72,11 +78,19 @@ import com.jlnavas3.bovedalocal.ui.pantallas.edicion.SeccionEtiquetasEdicion
 import com.jlnavas3.bovedalocal.ui.pantallas.edicion.SelectorTipoEntrada
 import com.jlnavas3.bovedalocal.ui.theme.Ambar
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
+import com.jlnavas3.bovedalocal.ui.theme.ColorDatos2FA
+import com.jlnavas3.bovedalocal.ui.theme.ColorDatosApp
+import com.jlnavas3.bovedalocal.ui.theme.ColorDatosContrasena
+import com.jlnavas3.bovedalocal.ui.theme.ColorDatosPasskey
+import com.jlnavas3.bovedalocal.ui.theme.ColorDatosUsuario
+import com.jlnavas3.bovedalocal.ui.theme.ColorDatosWeb
 import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
 import com.jlnavas3.bovedalocal.ui.theme.ColorPasskeys
 import com.jlnavas3.bovedalocal.ui.theme.ColorSobreAcento
 import com.jlnavas3.bovedalocal.ui.theme.ColorTitulos
 import com.jlnavas3.bovedalocal.ui.theme.EstiloMono
+import androidx.compose.runtime.LaunchedEffect
+import com.jlnavas3.bovedalocal.ui.pantallas.edicion.SelectorAppModal
 import com.jlnavas3.bovedalocal.ui.theme.FormaPequena
 import com.jlnavas3.bovedalocal.ui.theme.Menta
 import com.jlnavas3.bovedalocal.ui.theme.Peligro
@@ -85,8 +99,10 @@ import com.jlnavas3.bovedalocal.ui.theme.TextoPrincipal
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
 import com.jlnavas3.bovedalocal.ui.theme.colorLegibleParaTema
 import com.jlnavas3.bovedalocal.ui.theme.fondoBadgeParaTema
+import com.jlnavas3.bovedalocal.util.AppInstalada
 import com.jlnavas3.bovedalocal.util.ContrasenasComunes
 import com.jlnavas3.bovedalocal.util.EnlaceEditable
+import com.jlnavas3.bovedalocal.util.GestorAppsInstaladas
 import com.jlnavas3.bovedalocal.util.Haptica
 import com.jlnavas3.bovedalocal.util.LanzadorEnlaces
 import com.jlnavas3.bovedalocal.util.MedidorFuerza
@@ -107,11 +123,18 @@ fun PantallaEdicion(vm: VaultViewModel, id: String?, contrasenaInicial: String) 
         val items = original?.urls?.map { LanzadorEnlaces.desglosarParaEdicion(it) } ?: emptyList()
         mutableStateListOf<EnlaceEditable>().apply {
             if (items.isNotEmpty()) addAll(items)
-            else add(EnlaceEditable(valor = ""))
         }
+    }
+    var mostrarSelectorApp by remember { mutableStateOf(false) }
+    var indiceEnlaceSeleccionado by remember { mutableStateOf<Int?>(null) }
+    var listaAppsInstaladas by remember { mutableStateOf<List<AppInstalada>>(emptyList()) }
+
+    LaunchedEffect(Unit) {
+        listaAppsInstaladas = GestorAppsInstaladas.obtenerAppsInstaladas(contexto)
     }
     var notas by remember { mutableStateOf(original?.notas ?: "") }
     var totp by remember { mutableStateOf(original?.secretoTotp ?: "") }
+    var mostrarSecretoTotp by remember { mutableStateOf(false) }
     var favorito by remember { mutableStateOf(original?.favorito ?: false) }
     var etiquetas by remember { mutableStateOf(original?.etiquetas ?: emptyList()) }
     var camposPersonalizados by remember { mutableStateOf(original?.camposPersonalizados ?: emptyList()) }
@@ -168,13 +191,13 @@ fun PantallaEdicion(vm: VaultViewModel, id: String?, contrasenaInicial: String) 
             conSeparador = scrollState.value > 0,
             colorFondo = ColorAjustesFondo,
             acciones = {
-                IconButton(onClick = { guardarEntrada() }, enabled = puedeGuardar) {
-                    Icon(
-                        imageVector = Icons.Filled.Check,
-                        contentDescription = "Guardar",
-                        tint = if (puedeGuardar) ColorAcento else ColorIconosInternos.copy(alpha = 0.3f)
-                    )
-                }
+                BotonIconoCabecera(
+                    onClick = { guardarEntrada() },
+                    icono = Icons.Filled.Check,
+                    descripcion = "Guardar",
+                    tint = if (puedeGuardar) ColorAcento else ColorIconosInternos.copy(alpha = 0.3f),
+                    habilitado = puedeGuardar
+                )
             }
         )
 
@@ -214,12 +237,56 @@ fun PantallaEdicion(vm: VaultViewModel, id: String?, contrasenaInicial: String) 
                     )
 
                     when (tipo) {
-                        TipoEntrada.LOGIN -> {
+                        TipoEntrada.LOGIN, TipoEntrada.PASSKEY -> {
+                            val passkeyInfo = original?.passkey
+                            if (passkeyInfo != null) {
+                                Spacer(Modifier.height(12.dp))
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .clip(FormaPequena)
+                                        .background(fondoBadgeParaTema(ColorPasskeys))
+                                        .padding(10.dp),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Filled.Fingerprint,
+                                        contentDescription = "Passkey activa",
+                                        tint = ColorPasskeys,
+                                        modifier = Modifier.size(22.dp)
+                                    )
+                                    Column(modifier = Modifier.weight(1f)) {
+                                        Text(
+                                            text = "Passkey WebAuthn registrada",
+                                            style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
+                                            color = colorLegibleParaTema(ColorPasskeys)
+                                        )
+                                        Text(
+                                            text = "rpId: ${passkeyInfo.rpId}",
+                                            style = EstiloMono.copy(fontSize = 11.sp),
+                                            color = colorLegibleParaTema(ColorPasskeys).copy(alpha = 0.85f),
+                                            maxLines = 1,
+                                            overflow = TextOverflow.Ellipsis
+                                        )
+                                        Text(
+                                            text = "Algoritmo: ${passkeyInfo.algoritmo}",
+                                            style = EstiloMono.copy(fontSize = 11.sp),
+                                            color = colorLegibleParaTema(ColorPasskeys).copy(alpha = 0.85f),
+                                            maxLines = 1,
+                                            overflow = TextOverflow.Ellipsis
+                                        )
+                                    }
+                                }
+                            }
                             Spacer(Modifier.height(12.dp))
                             ComponenteCampoTexto(
                                 valor = usuario,
                                 etiqueta = "Usuario o correo",
                                 alCambiar = { usuario = it },
+                                mostrarIcono = true,
+                                icono = Icons.Filled.Person,
+                                colorBordeIzquierdo = ColorDatosUsuario,
                                 botonLimpiar = true
                             )
                             Spacer(Modifier.height(12.dp))
@@ -228,6 +295,9 @@ fun PantallaEdicion(vm: VaultViewModel, id: String?, contrasenaInicial: String) 
                                 etiqueta = "Contraseña",
                                 alCambiar = { contrasena = it },
                                 tipo = TipoCampoTexto.CONTRASENA,
+                                mostrarIcono = true,
+                                icono = Icons.Filled.Lock,
+                                colorBordeIzquierdo = ColorDatosContrasena,
                                 mostrarContrasena = mostrarContrasena,
                                 alAlternarMostrarContrasena = { mostrarContrasena = !mostrarContrasena },
                                 monoespaciada = true
@@ -310,46 +380,46 @@ fun PantallaEdicion(vm: VaultViewModel, id: String?, contrasenaInicial: String) 
                                 alCambiarCampos = { camposPersonalizados = it }
                             )
                         }
-                        TipoEntrada.NOTA, TipoEntrada.PASSKEY -> {
-                            // Para nota y passkey, notas es el campo principal
+                        TipoEntrada.NOTA -> {
+                            // Para nota, el campo principal es la nota
                         }
                     }
                 }
             }
 
-            // Grupo: Sitios o aplicaciones (solo para Login)
-            if (tipo == TipoEntrada.LOGIN) {
+            // Grupo: Sitios o aplicaciones
+            if (tipo == TipoEntrada.LOGIN || tipo == TipoEntrada.PASSKEY) {
                 Spacer(Modifier.height(16.dp))
                 GrupoAjustes(etiqueta = "Sitios o aplicaciones") {
                     Column(modifier = Modifier.padding(14.dp)) {
-                        listaEnlaces.forEachIndexed { index, enlace ->
-                            val paquete = remember(enlace.valor) { LanzadorEnlaces.extraerPaquete(enlace.valor) }
-                            val esApp = paquete != null && LanzadorEnlaces.estaInstalada(contexto, paquete)
-                            val nombreApp = remember(enlace.valor, contexto) {
-                                if (paquete != null && esApp) LanzadorEnlaces.obtenerNombreApp(contexto, paquete) else null
-                            }
+                        if (listaEnlaces.isNotEmpty()) {
+                            listaEnlaces.forEachIndexed { index, enlace ->
+                                val paquete = remember(enlace.valor) { LanzadorEnlaces.extraerPaquete(enlace.valor) }
+                                val esApp = paquete != null && LanzadorEnlaces.estaInstalada(contexto, paquete)
+                                val nombreApp = remember(enlace.valor, contexto) {
+                                    if (paquete != null && esApp) LanzadorEnlaces.obtenerNombreApp(contexto, paquete) else null
+                                }
 
-                            Column(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(bottom = 10.dp)
-                            ) {
-                                ComponenteCampoTexto(
-                                    valor = enlace.valor,
-                                    etiqueta = if (listaEnlaces.size > 1) "Sitio web o app #${index + 1}" else "Sitio web o app",
-                                    alCambiar = { nuevoTexto ->
-                                        listaEnlaces[index] = enlace.copy(valor = nuevoTexto)
-                                    },
-                                    tipo = TipoCampoTexto.ENLACE,
-                                    trailingIcon = {
-                                        if (listaEnlaces.size > 1 || enlace.valor.isNotEmpty()) {
+                                Column(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(bottom = 10.dp)
+                                ) {
+                                    val esAppEnlace = enlace.valor.startsWith("androidapp://", ignoreCase = true) || enlace.valor.startsWith("androidapp:", ignoreCase = true)
+                                    ComponenteCampoTexto(
+                                        valor = enlace.valor,
+                                        etiqueta = if (listaEnlaces.size > 1) "Sitio web o app #${index + 1}" else "Sitio web o app",
+                                        alCambiar = { nuevoTexto ->
+                                            listaEnlaces[index] = enlace.copy(valor = nuevoTexto)
+                                        },
+                                        tipo = TipoCampoTexto.ENLACE,
+                                        mostrarIcono = true,
+                                        icono = if (esAppEnlace) Icons.Filled.Android else Icons.Filled.Language,
+                                        colorBordeIzquierdo = if (esAppEnlace) ColorDatosApp else ColorDatosWeb,
+                                        trailingIcon = {
                                             IconButton(
                                                 onClick = {
-                                                    if (listaEnlaces.size > 1) {
-                                                        listaEnlaces.removeAt(index)
-                                                    } else {
-                                                        listaEnlaces[0] = EnlaceEditable(valor = "")
-                                                    }
+                                                    listaEnlaces.removeAt(index)
                                                 }
                                             ) {
                                                 Icon(
@@ -360,71 +430,85 @@ fun PantallaEdicion(vm: VaultViewModel, id: String?, contrasenaInicial: String) 
                                                 )
                                             }
                                         }
-                                    }
-                                )
+                                    )
 
-                                if (enlace.hashOriginal != null) {
-                                    Spacer(Modifier.height(4.dp))
-                                    Row(
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .clip(FormaPequena)
-                                            .background(fondoBadgeParaTema(ColorPasskeys))
-                                            .padding(horizontal = 10.dp, vertical = 5.dp),
-                                        verticalAlignment = Alignment.CenterVertically,
-                                        horizontalArrangement = Arrangement.spacedBy(6.dp)
-                                    ) {
-                                        Icon(
-                                            imageVector = Icons.Filled.Security,
-                                            contentDescription = "Certificado DAL",
-                                            tint = ColorPasskeys,
-                                            modifier = Modifier.size(14.dp)
-                                        )
-                                        Text(
-                                            text = "Certificado DAL: ${enlace.hashOriginal}",
-                                            style = EstiloMono.copy(fontSize = 11.sp),
-                                            color = colorLegibleParaTema(ColorPasskeys),
-                                            maxLines = 1,
-                                            overflow = TextOverflow.Ellipsis
-                                        )
+                                    if (enlace.hashOriginal != null) {
+                                        Spacer(Modifier.height(4.dp))
+                                        Row(
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .clip(FormaPequena)
+                                                .background(fondoBadgeParaTema(ColorPasskeys))
+                                                .padding(horizontal = 10.dp, vertical = 5.dp),
+                                            verticalAlignment = Alignment.CenterVertically,
+                                            horizontalArrangement = Arrangement.spacedBy(6.dp)
+                                        ) {
+                                            Icon(
+                                                imageVector = Icons.Filled.Security,
+                                                contentDescription = "Certificado DAL",
+                                                tint = ColorPasskeys,
+                                                modifier = Modifier.size(14.dp)
+                                            )
+                                            Text(
+                                                text = "Certificado DAL: ${enlace.hashOriginal}",
+                                                style = EstiloMono.copy(fontSize = 11.sp),
+                                                color = colorLegibleParaTema(ColorPasskeys),
+                                                maxLines = 1,
+                                                overflow = TextOverflow.Ellipsis
+                                            )
+                                        }
                                     }
-                                }
 
-                                if (esApp && nombreApp != null) {
-                                    Spacer(Modifier.height(4.dp))
-                                    Row(
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .clip(FormaPequena)
-                                            .background(fondoBadgeParaTema(Menta))
-                                            .padding(horizontal = 10.dp, vertical = 5.dp),
-                                        verticalAlignment = Alignment.CenterVertically,
-                                        horizontalArrangement = Arrangement.spacedBy(6.dp)
-                                    ) {
-                                        Icon(
-                                            imageVector = Icons.Filled.Android,
-                                            contentDescription = "App detectada",
-                                            tint = Menta,
-                                            modifier = Modifier.size(14.dp)
-                                        )
-                                        Text(
-                                            text = "App detectada: $nombreApp",
-                                            style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Medium),
-                                            color = colorLegibleParaTema(Menta),
-                                            maxLines = 1,
-                                            overflow = TextOverflow.Ellipsis
-                                        )
+                                    if (esApp && nombreApp != null) {
+                                        Spacer(Modifier.height(4.dp))
+                                        Row(
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .clip(FormaPequena)
+                                                .background(fondoBadgeParaTema(Menta))
+                                                .padding(horizontal = 10.dp, vertical = 5.dp),
+                                            verticalAlignment = Alignment.CenterVertically,
+                                            horizontalArrangement = Arrangement.spacedBy(6.dp)
+                                        ) {
+                                            Icon(
+                                                imageVector = Icons.Filled.Android,
+                                                contentDescription = "App detectada",
+                                                tint = Menta,
+                                                modifier = Modifier.size(14.dp)
+                                            )
+                                            Text(
+                                                text = "App detectada: $nombreApp",
+                                                style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Medium),
+                                                color = colorLegibleParaTema(Menta),
+                                                maxLines = 1,
+                                                overflow = TextOverflow.Ellipsis
+                                            )
+                                        }
                                     }
                                 }
                             }
                         }
 
-                        BotonBorde(
-                            texto = "Añadir otro sitio o app",
-                            icono = Icons.Filled.Add,
-                            modifier = Modifier.fillMaxWidth()
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
-                            listaEnlaces.add(EnlaceEditable(valor = ""))
+                            BotonBorde(
+                                texto = "Añadir sitio web",
+                                icono = Icons.Filled.Add,
+                                modifier = Modifier.weight(1f)
+                            ) {
+                                listaEnlaces.add(EnlaceEditable(valor = ""))
+                            }
+
+                            BotonBorde(
+                                texto = "Explorar app",
+                                icono = Icons.Filled.Android,
+                                modifier = Modifier.weight(1f)
+                            ) {
+                                indiceEnlaceSeleccionado = null
+                                mostrarSelectorApp = true
+                            }
                         }
                     }
                 }
@@ -434,8 +518,17 @@ fun PantallaEdicion(vm: VaultViewModel, id: String?, contrasenaInicial: String) 
                     Column(modifier = Modifier.padding(14.dp)) {
                         ComponenteCampoTexto(
                             valor = totp,
-                            etiqueta = "Secreto TOTP en Base32",
+                            etiqueta = "Clave secreta 2FA (TOTP)",
                             alCambiar = { totp = it.uppercase() },
+                            tipo = TipoCampoTexto.CONTRASENA,
+                            mostrarIcono = true,
+                            icono = Icons.Filled.Timer,
+                            colorBordeIzquierdo = ColorDatos2FA,
+                            mostrarContrasena = mostrarSecretoTotp,
+                            alAlternarMostrarContrasena = {
+                                haptica.tic()
+                                mostrarSecretoTotp = !mostrarSecretoTotp
+                            },
                             monoespaciada = true
                         )
                         if (!totpValido) {
@@ -506,5 +599,24 @@ fun PantallaEdicion(vm: VaultViewModel, id: String?, contrasenaInicial: String) 
 
             Spacer(Modifier.height(24.dp))
         }
+    }
+
+    if (mostrarSelectorApp) {
+        SelectorAppModal(
+            alDescartar = { mostrarSelectorApp = false },
+            alSeleccionarApp = { paquete ->
+                val idx = indiceEnlaceSeleccionado
+                if (idx != null && idx in listaEnlaces.indices) {
+                    listaEnlaces[idx] = listaEnlaces[idx].copy(valor = paquete)
+                } else {
+                    if (listaEnlaces.size == 1 && listaEnlaces[0].valor.isBlank()) {
+                        listaEnlaces[0] = EnlaceEditable(valor = paquete)
+                    } else {
+                        listaEnlaces.add(EnlaceEditable(valor = paquete))
+                    }
+                }
+                mostrarSelectorApp = false
+            }
+        )
     }
 }

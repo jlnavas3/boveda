@@ -18,6 +18,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.RotateLeft
 import androidx.compose.material.icons.filled.CropSquare
 import androidx.compose.material.icons.filled.LineWeight
 import androidx.compose.material.icons.filled.Lock
@@ -465,7 +466,7 @@ fun PantallaCalibracionWidgetTotp(
                 ComponenteGrupo {
                     ComponenteBotonFila(
                         titulo = "Restablecer aspecto predeterminado",
-                        icono = Icons.Filled.RotateLeft,
+                        icono = Icons.AutoMirrored.Filled.RotateLeft,
                         colorIcono = ColorIconosInternos,
                         alPulsar = {
                             haptica.exito()

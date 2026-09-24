@@ -301,6 +301,55 @@ interface VaultAjustesDelegate {
         aplicarPresetFormas(curvatura = 6f, grosor = 0.8f, estilo = "marcado", espaciado = 14f)
     }
 
+    // --- Personalización de Colores de Datos e Indicadores ---
+    fun ajustarMostrarIndicadoresContenido(mostrar: Boolean) {
+        repositorio.ajustes.actualizar { it.copy(mostrarIndicadoresContenido = mostrar) }
+    }
+
+    fun ajustarColorDatosUsuario(colorHex: String) {
+        repositorio.ajustes.actualizar { it.copy(colorDatosUsuario = colorHex) }
+        aplicarPersonalizacionColores(repositorio.ajustes.actual)
+    }
+
+    fun ajustarColorDatosContrasena(colorHex: String) {
+        repositorio.ajustes.actualizar { it.copy(colorDatosContrasena = colorHex) }
+        aplicarPersonalizacionColores(repositorio.ajustes.actual)
+    }
+
+    fun ajustarColorDatos2FA(colorHex: String) {
+        repositorio.ajustes.actualizar { it.copy(colorDatos2FA = colorHex) }
+        aplicarPersonalizacionColores(repositorio.ajustes.actual)
+    }
+
+    fun ajustarColorDatosPasskey(colorHex: String) {
+        repositorio.ajustes.actualizar { it.copy(colorDatosPasskey = colorHex) }
+        aplicarPersonalizacionColores(repositorio.ajustes.actual)
+    }
+
+    fun ajustarColorDatosWeb(colorHex: String) {
+        repositorio.ajustes.actualizar { it.copy(colorDatosWeb = colorHex) }
+        aplicarPersonalizacionColores(repositorio.ajustes.actual)
+    }
+
+    fun ajustarColorDatosApp(colorHex: String) {
+        repositorio.ajustes.actualizar { it.copy(colorDatosApp = colorHex) }
+        aplicarPersonalizacionColores(repositorio.ajustes.actual)
+    }
+
+    fun restablecerColoresDatos() {
+        repositorio.ajustes.actualizar {
+            it.copy(
+                colorDatosUsuario = "#0284C7",
+                colorDatosContrasena = "#0D9488",
+                colorDatos2FA = "#F97316",
+                colorDatosPasskey = "#8B5CF6",
+                colorDatosWeb = "#06B6D4",
+                colorDatosApp = "#10B981"
+            )
+        }
+        aplicarPersonalizacionColores(repositorio.ajustes.actual)
+    }
+
     // --- Personalización de Tipografía y Textos ---
     fun ajustarEscalaTexto(escala: Float) {
         repositorio.ajustes.actualizar { it.copy(escalaTexto = escala) }

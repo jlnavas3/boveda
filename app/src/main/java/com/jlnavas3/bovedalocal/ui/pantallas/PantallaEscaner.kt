@@ -49,7 +49,7 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
@@ -65,6 +65,7 @@ import com.jlnavas3.bovedalocal.camara.MotorCamara
 import com.jlnavas3.bovedalocal.camara.MotorCamaraLegado
 import com.jlnavas3.bovedalocal.camara.MotorCameraX
 import com.jlnavas3.bovedalocal.camara.PermisoCamara
+import com.jlnavas3.bovedalocal.ui.Pantalla
 import com.jlnavas3.bovedalocal.ui.VaultViewModel
 import com.jlnavas3.bovedalocal.ui.componentes.BotonAmbar
 import com.jlnavas3.bovedalocal.ui.componentes.BotonBorde
@@ -82,6 +83,7 @@ import com.jlnavas3.bovedalocal.ui.theme.TextoPrincipal
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
 import com.jlnavas3.bovedalocal.util.AjustesSistema
 import com.jlnavas3.bovedalocal.util.Diagnostico
+import com.jlnavas3.bovedalocal.util.GoogleAuthMigration
 import com.jlnavas3.bovedalocal.util.Haptica
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -119,6 +121,11 @@ fun PantallaEscaner(
 
     /** Devuelve true si el texto valía y el 2FA se guardó. Deja [qrPasskey] al día en todos los casos. */
     fun procesarTexto(texto: String, origen: String): Boolean {
+        if (GoogleAuthMigration.esEnlaceMigracion(texto)) {
+            Diagnostico.apuntar("2fa", "Escaneo detectó un paquete de migración de Google Authenticator")
+            vm.ir(Pantalla.ConfirmarMigracion(texto))
+            return true
+        }
         qrPasskey = LectorQr.esQrDePasskey(texto)
         if (qrPasskey) {
             Diagnostico.apuntar("2fa", "Escaneo detectó un QR de Passkey en lugar de TOTP")
@@ -370,9 +377,7 @@ private fun ZonaCamara(
 
     val alFrame: (ByteArray, Int, Int) -> Unit = { datos, ancho, alto ->
         if (!yaLeido.get()) {
-            // El intento invertido (QR claro sobre negro) cuesta otra pasada: uno de cada cuatro frames.
-            val n = contadorFrames.incrementAndGet()
-            val texto = LectorQr.decodificarLuminancia(datos, ancho, alto, probarInvertido = n % 4 == 0)
+            val texto = LectorQr.decodificarLuminancia(datos, ancho, alto, probarInvertido = true)
             if (texto != null && yaLeido.compareAndSet(false, true)) {
                 val origen = "la cámara (${motorActual.clave})"
                 principal.post {

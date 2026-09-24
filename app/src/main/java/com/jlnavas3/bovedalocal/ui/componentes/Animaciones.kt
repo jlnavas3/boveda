@@ -944,7 +944,7 @@ private fun crearPathsVentanas(
         val c1y = centro.y + rHub * kotlin.math.sin(phi2)
         val b1x = centro.x + (rHub + dr) * kotlin.math.cos(phi2)
         val b1y = centro.y + (rHub + dr) * kotlin.math.sin(phi2)
-        p.quadraticBezierTo(c1x, c1y, b1x, b1y)
+        p.quadraticTo(c1x, c1y, b1x, b1y)
 
         // 3. Arista radial derecha
         val b2x = centro.x + (rRim - dr) * kotlin.math.cos(phi2)
@@ -956,7 +956,7 @@ private fun crearPathsVentanas(
         val c2y = centro.y + rRim * kotlin.math.sin(phi2)
         val d2x = centro.x + rRim * kotlin.math.cos(phi2 - dphiOut)
         val d2y = centro.y + rRim * kotlin.math.sin(phi2 - dphiOut)
-        p.quadraticBezierTo(c2x, c2y, d2x, d2y)
+        p.quadraticTo(c2x, c2y, d2x, d2y)
 
         // 5. Arco exterior en rRim
         val aIniOut = phi2 - dphiOut
@@ -974,7 +974,7 @@ private fun crearPathsVentanas(
         val c3y = centro.y + rRim * kotlin.math.sin(phi1)
         val e2x = centro.x + (rRim - dr) * kotlin.math.cos(phi1)
         val e2y = centro.y + (rRim - dr) * kotlin.math.sin(phi1)
-        p.quadraticBezierTo(c3x, c3y, e2x, e2y)
+        p.quadraticTo(c3x, c3y, e2x, e2y)
 
         // 7. Arista radial izquierda
         val e1x = centro.x + (rHub + dr) * kotlin.math.cos(phi1)
@@ -984,7 +984,7 @@ private fun crearPathsVentanas(
         // 8. Esquina interior-izquierda
         val c4x = centro.x + rHub * kotlin.math.cos(phi1)
         val c4y = centro.y + rHub * kotlin.math.sin(phi1)
-        p.quadraticBezierTo(c4x, c4y, a1x, a1y)
+        p.quadraticTo(c4x, c4y, a1x, a1y)
 
         p.close()
         lista.add(p)

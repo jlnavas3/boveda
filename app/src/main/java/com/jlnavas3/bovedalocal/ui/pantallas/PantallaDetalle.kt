@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -63,6 +64,7 @@ import com.jlnavas3.bovedalocal.ui.Pantalla
 import com.jlnavas3.bovedalocal.ui.VaultViewModel
 import com.jlnavas3.bovedalocal.ui.componentes.BarraSuperiorPantalla
 import com.jlnavas3.bovedalocal.ui.componentes.BotonColorido
+import com.jlnavas3.bovedalocal.ui.componentes.BotonIconoCabecera
 import com.jlnavas3.bovedalocal.ui.componentes.DialogoCompartirQr
 import com.jlnavas3.bovedalocal.ui.componentes.Monograma
 import com.jlnavas3.bovedalocal.ui.componentes.contrasenaColoreada
@@ -77,6 +79,12 @@ import com.jlnavas3.bovedalocal.ui.theme.Ambar
 import com.jlnavas3.bovedalocal.ui.theme.Borde
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
+import com.jlnavas3.bovedalocal.ui.theme.ColorDatos2FA
+import com.jlnavas3.bovedalocal.ui.theme.ColorDatosApp
+import com.jlnavas3.bovedalocal.ui.theme.ColorDatosContrasena
+import com.jlnavas3.bovedalocal.ui.theme.ColorDatosPasskey
+import com.jlnavas3.bovedalocal.ui.theme.ColorDatosUsuario
+import com.jlnavas3.bovedalocal.ui.theme.ColorDatosWeb
 import com.jlnavas3.bovedalocal.ui.theme.ColorGenerador
 import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
 import com.jlnavas3.bovedalocal.ui.theme.ColorPasskeys
@@ -168,41 +176,28 @@ fun PantallaDetalle(vm: VaultViewModel, id: String) {
             conSeparador = scrollState.value > 0,
             colorFondo = ColorAjustesFondo,
             acciones = {
-                IconButton(onClick = { haptica.tic(); mostrarDialogoQr = true }) {
-                    Icon(
-                        imageVector = Icons.Filled.QrCode,
-                        contentDescription = "Compartir por código QR",
-                        tint = ColorIconosInternos,
-                        modifier = Modifier.size(24.dp)
-                    )
-                }
-                IconButton(
+                BotonIconoCabecera(
+                    onClick = { haptica.tic(); mostrarDialogoQr = true },
+                    icono = Icons.Filled.QrCode,
+                    descripcion = "Compartir por código QR"
+                )
+                BotonIconoCabecera(
                     onClick = { haptica.tic(); vm.alternarFavorito(entrada.id) },
-                    modifier = Modifier.clip(CircleShape)
-                ) {
-                    Icon(
-                        imageVector = Icons.Filled.Star,
-                        contentDescription = if (entrada.favorito) "Quitar de favoritos" else "Marcar como favorito",
-                        tint = if (entrada.favorito) Ambar else ColorIconosInternos.copy(alpha = 0.35f),
-                        modifier = Modifier.size(26.dp)
-                    )
-                }
-                IconButton(onClick = { haptica.tic(); vm.ir(Pantalla.Editar(entrada.id)) }) {
-                    Icon(
-                        imageVector = Icons.Filled.Edit,
-                        contentDescription = "Editar",
-                        tint = ColorIconosInternos,
-                        modifier = Modifier.size(24.dp)
-                    )
-                }
-                IconButton(onClick = { haptica.tic(); confirmarBorrado = true }) {
-                    Icon(
-                        imageVector = Icons.Filled.Delete,
-                        contentDescription = "Mover a papelera",
-                        tint = Peligro,
-                        modifier = Modifier.size(24.dp)
-                    )
-                }
+                    icono = Icons.Filled.Star,
+                    descripcion = if (entrada.favorito) "Quitar de favoritos" else "Marcar como favorito",
+                    tint = if (entrada.favorito) Ambar else ColorIconosInternos.copy(alpha = 0.4f)
+                )
+                BotonIconoCabecera(
+                    onClick = { haptica.tic(); vm.ir(Pantalla.Editar(entrada.id)) },
+                    icono = Icons.Filled.Edit,
+                    descripcion = "Editar"
+                )
+                BotonIconoCabecera(
+                    onClick = { haptica.tic(); confirmarBorrado = true },
+                    icono = Icons.Filled.Delete,
+                    descripcion = "Mover a papelera",
+                    tint = Peligro
+                )
             }
         )
 
@@ -268,30 +263,39 @@ fun PantallaDetalle(vm: VaultViewModel, id: String) {
             if (tieneCredenciales) {
                 GrupoAjustes(etiqueta = "Credenciales") {
                     if (entrada.usuario.isNotBlank()) {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 16.dp, vertical = 12.dp),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ) {
-                            Column(modifier = Modifier.weight(1f)) {
-                                Text(
-                                    text = "Usuario o correo",
-                                    style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.SemiBold),
-                                    color = TextoSecundario
-                                )
-                                Spacer(Modifier.height(4.dp))
-                                Text(
-                                    text = entrada.usuario,
-                                    style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Medium),
-                                    color = TextoPrincipal
-                                )
-                            }
-                            BotonCopiar(copiado = ultimaCopia == "usuario") {
-                                haptica.toque()
-                                vm.copiar("Usuario", entrada.usuario, sensible = false)
-                                ultimaCopia = "usuario"
+                        Box(modifier = Modifier.fillMaxWidth()) {
+                            Box(
+                                modifier = Modifier
+                                    .width(4.5.dp)
+                                    .fillMaxHeight()
+                                    .align(Alignment.CenterStart)
+                                    .background(ColorDatosUsuario)
+                            )
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 16.dp, vertical = 12.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Column(modifier = Modifier.weight(1f)) {
+                                    Text(
+                                        text = "Usuario o correo",
+                                        style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.SemiBold),
+                                        color = TextoSecundario
+                                    )
+                                    Spacer(Modifier.height(4.dp))
+                                    Text(
+                                        text = entrada.usuario,
+                                        style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Medium),
+                                        color = TextoPrincipal
+                                    )
+                                }
+                                BotonCopiar(copiado = ultimaCopia == "usuario") {
+                                    haptica.toque()
+                                    vm.copiar("Usuario", entrada.usuario, sensible = false)
+                                    ultimaCopia = "usuario"
+                                }
                             }
                         }
                     }
@@ -301,54 +305,63 @@ fun PantallaDetalle(vm: VaultViewModel, id: String) {
                     }
 
                     if (entrada.contrasena.isNotBlank()) {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 16.dp, vertical = 12.dp),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ) {
-                            Column(modifier = Modifier.weight(1f)) {
-                                Text(
-                                    text = "Contraseña · ${entrada.contrasena.length} caracteres",
-                                    style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.SemiBold),
-                                    color = TextoSecundario
-                                )
-                                Spacer(Modifier.height(4.dp))
-                                if (revelada) {
+                        Box(modifier = Modifier.fillMaxWidth()) {
+                            Box(
+                                modifier = Modifier
+                                    .width(4.5.dp)
+                                    .fillMaxHeight()
+                                    .align(Alignment.CenterStart)
+                                    .background(ColorDatosContrasena)
+                            )
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 16.dp, vertical = 12.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Column(modifier = Modifier.weight(1f)) {
                                     Text(
-                                        text = contrasenaColoreada(entrada.contrasena),
-                                        style = EstiloMono,
-                                        modifier = Modifier.fillMaxWidth()
+                                        text = "Contraseña · ${entrada.contrasena.length} caracteres",
+                                        style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.SemiBold),
+                                        color = TextoSecundario
                                     )
-                                } else {
-                                    Text(
-                                        text = "•".repeat(entrada.contrasena.length.coerceIn(8, 24)),
-                                        style = EstiloMonoGrande.copy(letterSpacing = 2.sp),
-                                        color = TextoSecundario,
-                                        maxLines = 1,
-                                        softWrap = false,
-                                        overflow = TextOverflow.Clip,
-                                        modifier = Modifier.fillMaxWidth()
-                                    )
+                                    Spacer(Modifier.height(4.dp))
+                                    if (revelada) {
+                                        Text(
+                                            text = contrasenaColoreada(entrada.contrasena),
+                                            style = EstiloMono,
+                                            modifier = Modifier.fillMaxWidth()
+                                        )
+                                    } else {
+                                        Text(
+                                            text = "•".repeat(entrada.contrasena.length.coerceIn(8, 24)),
+                                            style = EstiloMonoGrande.copy(letterSpacing = 2.sp),
+                                            color = TextoSecundario,
+                                            maxLines = 1,
+                                            softWrap = false,
+                                            overflow = TextOverflow.Clip,
+                                            modifier = Modifier.fillMaxWidth()
+                                        )
+                                    }
                                 }
-                            }
-                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                IconButton(onClick = {
-                                    haptica.toque()
-                                    revelada = !revelada
-                                }) {
-                                    Icon(
-                                        imageVector = if (revelada) Icons.Filled.VisibilityOff else Icons.Filled.Visibility,
-                                        contentDescription = if (revelada) "Ocultar contraseña" else "Mostrar contraseña",
-                                        tint = ColorIconosInternos,
-                                        modifier = Modifier.size(24.dp)
-                                    )
-                                }
-                                BotonCopiar(copiado = ultimaCopia == "contrasena") {
-                                    haptica.exito()
-                                    vm.copiar("Contraseña", entrada.contrasena, sensible = true)
-                                    ultimaCopia = "contrasena"
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    IconButton(onClick = {
+                                        haptica.toque()
+                                        revelada = !revelada
+                                    }) {
+                                        Icon(
+                                            imageVector = if (revelada) Icons.Filled.VisibilityOff else Icons.Filled.Visibility,
+                                            contentDescription = if (revelada) "Ocultar contraseña" else "Mostrar contraseña",
+                                            tint = ColorIconosInternos,
+                                            modifier = Modifier.size(24.dp)
+                                        )
+                                    }
+                                    BotonCopiar(copiado = ultimaCopia == "contrasena") {
+                                        haptica.exito()
+                                        vm.copiar("Contraseña", entrada.contrasena, sensible = true)
+                                        ultimaCopia = "contrasena"
+                                    }
                                 }
                             }
                         }
@@ -388,30 +401,31 @@ fun PantallaDetalle(vm: VaultViewModel, id: String) {
 
                         if (index > 0) SeparadorFilaSimple()
 
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clickable {
-                                    haptica.toque()
-                                    LanzadorEnlaces.abrir(contexto, url, onAviso = { vm.avisar(it) })
-                                }
-                                .padding(horizontal = 16.dp, vertical = 12.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Box(
+                        Box(modifier = Modifier.fillMaxWidth()) {
+                            Row(
                                 modifier = Modifier
-                                    .size(38.dp)
-                                    .clip(FormaPequena)
-                                    .background(fondoBadgeParaTema(if (esApp) ColorPasskeys else ColorGenerador)),
-                                contentAlignment = Alignment.Center
+                                    .fillMaxWidth()
+                                    .clickable {
+                                        haptica.toque()
+                                        LanzadorEnlaces.abrir(contexto, url, onAviso = { vm.avisar(it) })
+                                    }
+                                    .padding(horizontal = 16.dp, vertical = 12.dp),
+                                verticalAlignment = Alignment.CenterVertically
                             ) {
-                                Icon(
-                                    imageVector = if (esApp) Icons.Filled.Android else Icons.Filled.Language,
-                                    contentDescription = null,
-                                    tint = colorLegibleParaTema(if (esApp) ColorPasskeys else ColorGenerador),
-                                    modifier = Modifier.size(20.dp)
-                                )
-                            }
+                                Box(
+                                    modifier = Modifier
+                                        .size(38.dp)
+                                        .clip(FormaPequena)
+                                        .background(fondoBadgeParaTema(if (esApp) ColorDatosApp else ColorDatosWeb)),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Icon(
+                                        imageVector = if (esApp) Icons.Filled.Android else Icons.Filled.Language,
+                                        contentDescription = null,
+                                        tint = colorLegibleParaTema(if (esApp) ColorDatosApp else ColorDatosWeb),
+                                        modifier = Modifier.size(20.dp)
+                                    )
+                                }
                             Spacer(Modifier.width(12.dp))
                             Column(modifier = Modifier.weight(1f)) {
                                 Text(
@@ -466,7 +480,15 @@ fun PantallaDetalle(vm: VaultViewModel, id: String) {
                                 )
                             }
                         }
+                        Box(
+                            modifier = Modifier
+                                .width(4.5.dp)
+                                .fillMaxHeight()
+                                .align(Alignment.CenterStart)
+                                .background(if (esApp) ColorDatosApp else ColorDatosWeb)
+                        )
                     }
+                }
                 }
                 Spacer(Modifier.height(16.dp))
             }

@@ -31,6 +31,23 @@ interface VaultBackupDelegate {
         }
     }
 
+    fun exportarSelectivo(idsEntradas: Set<String>, password: String, escritor: (ByteArray) -> Unit) {
+        ejecutar {
+            val chars = password.toCharArray()
+            try {
+                val datos = withContext(Dispatchers.Default) { repositorio.exportarSelectivo(idsEntradas, chars) }
+                withContext(Dispatchers.IO) { escritor(datos) }
+                Diagnostico.apuntar("bóveda", "Exportación selectiva cifrada (${idsEntradas.size} entradas) completada correctamente")
+                avisoInterno.value = "Exportadas ${idsEntradas.size} entradas seleccionadas"
+            } catch (e: Exception) {
+                Diagnostico.apuntar("bóveda", "Fallo al exportar copia selectiva: ${e.message ?: "error desconocido"}", e)
+                errorInterno.value = "No se pudo exportar: ${e.message ?: "error desconocido"}"
+            } finally {
+                Zeroizar.borrar(chars)
+            }
+        }
+    }
+
     fun importar(password: String, lector: () -> ByteArray) {
         ejecutar {
             val chars = password.toCharArray()

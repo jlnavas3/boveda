@@ -12,22 +12,27 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import com.jlnavas3.bovedalocal.ui.theme.ColorDatos2FA
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.HelpOutline
 import androidx.compose.material.icons.automirrored.filled.Sort
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.ContentCopy
+import androidx.compose.material.icons.filled.FileDownload
+import androidx.compose.material.icons.filled.FileUpload
 import androidx.compose.material.icons.filled.HelpOutline
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.QrCodeScanner
@@ -76,6 +81,7 @@ import com.jlnavas3.bovedalocal.ui.pantallas.lista.BarraBusquedaAnimada
 import com.jlnavas3.bovedalocal.ui.pantallas.lista.ChipFiltroActivo
 import com.jlnavas3.bovedalocal.ui.pantallas.lista.DialogoOrdenacionLista
 import com.jlnavas3.bovedalocal.ui.theme.Ambar
+import com.jlnavas3.bovedalocal.ui.theme.ColorExportacion
 import com.jlnavas3.bovedalocal.ui.theme.Color2FA
 import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
 import com.jlnavas3.bovedalocal.ui.theme.ColorTitulos
@@ -277,7 +283,31 @@ fun PantallaAutenticador(vm: VaultViewModel, estado: EstadoBoveda) {
                         SeparadorOpcionMenu()
                         DropdownMenuItem(
                             leadingIcon = {
-                                Icon(Icons.Filled.HelpOutline, contentDescription = null, tint = Color2FA, modifier = Modifier.size(20.dp))
+                                Icon(Icons.Filled.FileDownload, contentDescription = null, tint = Color2FA, modifier = Modifier.size(20.dp))
+                            },
+                            text = { Text("Exportación selectiva", color = TextoPrincipal) },
+                            onClick = {
+                                menuOpcionesDesplegado = false
+                                haptica.tic()
+                                vm.ir(Pantalla.ExportarSelectivo("2fa"))
+                            }
+                        )
+                        SeparadorOpcionMenu()
+                        DropdownMenuItem(
+                            leadingIcon = {
+                                Icon(Icons.Filled.FileUpload, contentDescription = null, tint = ColorExportacion, modifier = Modifier.size(20.dp))
+                            },
+                            text = { Text("Importar de Google Authenticator", color = TextoPrincipal) },
+                            onClick = {
+                                menuOpcionesDesplegado = false
+                                haptica.tic()
+                                vm.ir(Pantalla.Escaner())
+                            }
+                        )
+                        SeparadorOpcionMenu()
+                        DropdownMenuItem(
+                            leadingIcon = {
+                                Icon(Icons.AutoMirrored.Filled.HelpOutline, contentDescription = null, tint = Color2FA, modifier = Modifier.size(20.dp))
                             },
                             text = { Text("¿Cómo funciona el 2FA?", color = TextoPrincipal) },
                             onClick = {
@@ -428,17 +458,25 @@ fun PantallaAutenticador(vm: VaultViewModel, estado: EstadoBoveda) {
 
                         if (index > 0) SeparadorFilaSimple()
 
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clickable {
-                                    haptica.exito()
-                                    vm.copiar("Código 2FA", codigo, true)
-                                }
-                                .padding(horizontal = 16.dp, vertical = 14.dp),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ) {
+                        Box(modifier = Modifier.fillMaxWidth()) {
+                            Box(
+                                modifier = Modifier
+                                    .width(4.dp)
+                                    .fillMaxHeight()
+                                    .align(Alignment.CenterStart)
+                                    .background(ColorDatos2FA)
+                            )
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clickable {
+                                        haptica.exito()
+                                        vm.copiar("Código 2FA", codigo, true)
+                                    }
+                                    .padding(horizontal = 16.dp, vertical = 14.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
                             Column(modifier = Modifier.weight(1f)) {
                                 Text(
                                     text = entrada.totpEmisor.ifBlank { entrada.titulo },
@@ -509,6 +547,7 @@ fun PantallaAutenticador(vm: VaultViewModel, estado: EstadoBoveda) {
                             }
                         }
                     }
+                }
                 }
             }
 

@@ -277,6 +277,14 @@ fun aplicarPersonalizacionColores(ajustes: com.jlnavas3.bovedalocal.data.Ajustes
     colorSaludBase = parsearColorO(ajustes.colorSalud, Color(0xFF10B981))
     colorPapeleraBase = parsearColorO(ajustes.colorPapelera, Color(0xFFEF4444))
     colorExportacionBase = parsearColorO(ajustes.colorExportacion, Color(0xFF6366F1))
+
+    // Colores aislados exclusivos para datos e indicadores de tarjetas
+    colorDatosUsuarioBase = parsearColorO(ajustes.colorDatosUsuario, Color(0xFF0284C7))
+    colorDatosContrasenaBase = parsearColorO(ajustes.colorDatosContrasena, Color(0xFF0D9488))
+    colorDatos2FABase = parsearColorO(ajustes.colorDatos2FA, Color(0xFFF97316))
+    colorDatosPasskeyBase = parsearColorO(ajustes.colorDatosPasskey, Color(0xFF8B5CF6))
+    colorDatosWebBase = parsearColorO(ajustes.colorDatosWeb, Color(0xFF06B6D4))
+    colorDatosAppBase = parsearColorO(ajustes.colorDatosApp, Color(0xFF10B981))
 }
 
 // Colores Semánticos de Secciones Funcionales
@@ -289,6 +297,38 @@ private var colorGeneradorBase by mutableStateOf(Color(0xFF0D9488))
 private var colorSaludBase by mutableStateOf(Color(0xFF10B981))
 private var colorPapeleraBase by mutableStateOf(Color(0xFFEF4444))
 private var colorExportacionBase by mutableStateOf(Color(0xFF6366F1))
+
+// Colores Aislados Exclusivos para Datos e Indicadores de Tarjetas
+private var colorDatosUsuarioBase by mutableStateOf(Color(0xFF0284C7))
+private var colorDatosContrasenaBase by mutableStateOf(Color(0xFF0D9488))
+private var colorDatos2FABase by mutableStateOf(Color(0xFFF97316))
+private var colorDatosPasskeyBase by mutableStateOf(Color(0xFF8B5CF6))
+private var colorDatosWebBase by mutableStateOf(Color(0xFF06B6D4))
+private var colorDatosAppBase by mutableStateOf(Color(0xFF10B981))
+
+var ColorDatosUsuario: Color
+    get() = colorDatosUsuarioBase
+    set(valor) { colorDatosUsuarioBase = valor }
+
+var ColorDatosContrasena: Color
+    get() = colorDatosContrasenaBase
+    set(valor) { colorDatosContrasenaBase = valor }
+
+var ColorDatos2FA: Color
+    get() = colorDatos2FABase
+    set(valor) { colorDatos2FABase = valor }
+
+var ColorDatosPasskey: Color
+    get() = colorDatosPasskeyBase
+    set(valor) { colorDatosPasskeyBase = valor }
+
+var ColorDatosWeb: Color
+    get() = colorDatosWebBase
+    set(valor) { colorDatosWebBase = valor }
+
+var ColorDatosApp: Color
+    get() = colorDatosAppBase
+    set(valor) { colorDatosAppBase = valor }
 
 var ColorSeguridad: Color
     get() = colorSeguridadBase

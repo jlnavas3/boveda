@@ -8,12 +8,14 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import com.jlnavas3.bovedalocal.ui.theme.ColorDatosContrasena
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -394,7 +396,15 @@ private fun TarjetaGrupoDuplicado(
     val etiquetaGrupo = "${grupo.claveVisual.uppercase()} · $origen · ${grupo.tipo.titulo.uppercase()}"
 
     GrupoAjustes(etiqueta = etiquetaGrupo) {
-        Column(modifier = Modifier.padding(16.dp)) {
+        Box(modifier = Modifier.fillMaxWidth()) {
+            Box(
+                modifier = Modifier
+                    .width(4.dp)
+                    .fillMaxHeight()
+                    .align(Alignment.CenterStart)
+                    .background(ColorDatosContrasena)
+            )
+            Column(modifier = Modifier.padding(16.dp)) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
@@ -579,6 +589,7 @@ private fun TarjetaGrupoDuplicado(
             }
         }
     }
+}
 }
 
 @Composable

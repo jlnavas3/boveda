@@ -16,6 +16,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.RotateLeft
 import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
@@ -232,7 +233,7 @@ fun PantallaAjustesWidget(
                     ComponenteGrupo {
                         ComponenteBotonFila(
                             titulo = "Restablecer valores del widget 2FA",
-                            icono = Icons.Filled.RotateLeft,
+                            icono = Icons.AutoMirrored.Filled.RotateLeft,
                             colorIcono = ColorIconosInternos,
                             alPulsar = {
                                 haptica.exito()
@@ -493,7 +494,7 @@ fun PantallaAjustesWidget(
                     ComponenteGrupo {
                         ComponenteBotonFila(
                             titulo = "Restablecer valores del widget 1x1",
-                            icono = Icons.Filled.RotateLeft,
+                            icono = Icons.AutoMirrored.Filled.RotateLeft,
                             colorIcono = ColorIconosInternos,
                             alPulsar = {
                                 haptica.exito()

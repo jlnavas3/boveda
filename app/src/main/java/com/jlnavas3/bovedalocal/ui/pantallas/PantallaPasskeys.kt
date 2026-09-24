@@ -7,17 +7,21 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import com.jlnavas3.bovedalocal.ui.theme.ColorDatosPasskey
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -26,6 +30,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForwardIos
 import androidx.compose.material.icons.automirrored.filled.Sort
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.FileDownload
 import androidx.compose.material.icons.filled.Fingerprint
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Search
@@ -216,6 +221,18 @@ fun PantallaPasskeys(vm: VaultViewModel) {
                                 soloFavoritos = !soloFavoritos
                             }
                         )
+                        SeparadorOpcionMenu()
+                        DropdownMenuItem(
+                            leadingIcon = {
+                                Icon(Icons.Filled.FileDownload, contentDescription = null, tint = ColorPasskeys, modifier = Modifier.size(20.dp))
+                            },
+                            text = { Text("Exportación selectiva", color = TextoPrincipal) },
+                            onClick = {
+                                menuOpcionesDesplegado = false
+                                haptica.tic()
+                                vm.ir(Pantalla.ExportarSelectivo("passkeys"))
+                            }
+                        )
                         if (soloFavoritos || criterioOrdenacion != CriterioOrdenacion.NOMBRE_AZ || textoBusqueda.isNotBlank()) {
                             SeparadorOpcionMenu()
                             DropdownMenuItem(
@@ -337,16 +354,24 @@ fun PantallaPasskeys(vm: VaultViewModel) {
                     passkeysFiltradas.forEachIndexed { index, entrada ->
                         val datos = entrada.passkey ?: return@forEachIndexed
                         if (index > 0) SeparadorFilaSimple()
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clickable {
-                                    haptica.toque()
-                                    vm.ir(Pantalla.Detalle(entrada.id))
-                                }
-                                .padding(horizontal = 16.dp, vertical = 12.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
+                        Box(modifier = Modifier.fillMaxWidth()) {
+                            Box(
+                                modifier = Modifier
+                                    .width(4.dp)
+                                    .fillMaxHeight()
+                                    .align(Alignment.CenterStart)
+                                    .background(ColorDatosPasskey)
+                            )
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clickable {
+                                        haptica.toque()
+                                        vm.ir(Pantalla.Detalle(entrada.id))
+                                    }
+                                    .padding(horizontal = 16.dp, vertical = 12.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
                             Monograma(
                                 titulo = datos.rpName.ifBlank { datos.rpId },
                                 semilla = datos.rpId,
@@ -406,6 +431,7 @@ fun PantallaPasskeys(vm: VaultViewModel) {
                         }
                     }
                 }
+            }
             }
 
             Spacer(Modifier.height(32.dp))

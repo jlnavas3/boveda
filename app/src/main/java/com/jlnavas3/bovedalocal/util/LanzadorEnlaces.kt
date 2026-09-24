@@ -152,6 +152,7 @@ object LanzadorEnlaces {
     /** Añade https:// si el usuario ingresó un dominio sin esquema. */
     fun normalizarUrlWeb(texto: String): String {
         val limpio = texto.trim()
+        if (limpio.contains("://")) return limpio
         return if (!limpio.startsWith("http://", ignoreCase = true) &&
             !limpio.startsWith("https://", ignoreCase = true)
         ) {
@@ -168,6 +169,38 @@ object LanzadorEnlaces {
     fun abrir(contexto: Context, entradaUrl: String, onAviso: (String) -> Unit = {}) {
         val limpio = entradaUrl.trim()
         if (limpio.isBlank()) return
+
+        // Caso directo para esquemas de tiendas de aplicaciones (market://)
+        if (limpio.startsWith("market://", ignoreCase = true)) {
+            val intentMarket = Intent(Intent.ACTION_VIEW, Uri.parse(limpio)).apply {
+                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            }
+            try {
+                contexto.startActivity(intentMarket)
+                Diagnostico.apuntar("enlaces", "Abriendo tienda de aplicaciones: $limpio")
+                return
+            } catch (e: Exception) {
+                val urlFallback = if (limpio.contains("search?q=", ignoreCase = true)) {
+                    val consulta = limpio.substringAfter("search?q=")
+                    "https://play.google.com/store/search?q=$consulta&c=apps"
+                } else if (limpio.contains("details?id=", ignoreCase = true)) {
+                    val idPkg = limpio.substringAfter("details?id=")
+                    "https://play.google.com/store/apps/details?id=$idPkg"
+                } else {
+                    "https://play.google.com/store"
+                }
+                try {
+                    val intentWeb = Intent(Intent.ACTION_VIEW, Uri.parse(urlFallback)).apply {
+                        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    }
+                    contexto.startActivity(intentWeb)
+                    return
+                } catch (e2: Exception) {
+                    onAviso("No se encontró tienda de aplicaciones para abrir: $limpio")
+                    return
+                }
+            }
+        }
 
         val paquete = extraerPaquete(limpio)
         if (paquete != null) {

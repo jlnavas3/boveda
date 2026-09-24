@@ -29,6 +29,7 @@ import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteSeparador
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteSwitch
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ProveedorResaltadoAjustes
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjustesFondo
+import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
 import com.jlnavas3.bovedalocal.util.Haptica
 
@@ -73,15 +74,15 @@ fun PantallaOrganizacionLista(
                 DescripcionPantalla(subtitulo = "Configura el agrupamiento por sitio, tamaño de filas y ordenación")
                 Spacer(Modifier.height(10.dp))
 
-                // 1. Agrupamiento por sitio
+                // 1. Agrupamiento por sitio e indicadores
                 ComponenteGrupo(
-                    etiqueta = "Agrupamiento",
+                    etiqueta = "Agrupamiento e indicadores",
                     idGrupo = "03.5.G1",
                     mostrarId = ajustes.mostrarIdsAjustes,
-                    descripcion = "Combina cuentas que pertenecen al mismo servicio o dominio"
+                    descripcion = "Organización visual de las tarjetas y cuentas en el listado"
                 ) {
                     ComponenteSwitch(
-                        titulo = "Agrupar cuentas por sitio",
+                        titulo = "Agrupar cuentas",
                         icono = Icons.Filled.Tune,
                         colorIcono = ColorIconosInternos,
                         activo = ajustes.agruparPorSitio,
@@ -90,6 +91,19 @@ fun PantallaOrganizacionLista(
                         alCambiar = {
                             haptica.tic()
                             vm.ajustarAgruparPorSitio(it)
+                        }
+                    )
+                    ComponenteSeparador()
+                    ComponenteSwitch(
+                        titulo = "Indicadores de contenido en tarjetas",
+                        icono = Icons.Filled.Tune,
+                        colorIcono = ColorAcento,
+                        activo = ajustes.mostrarIndicadoresContenido,
+                        idFila = "03.5.2",
+                        mostrarId = ajustes.mostrarIdsAjustes,
+                        alCambiar = {
+                            haptica.tic()
+                            vm.ajustarMostrarIndicadoresContenido(it)
                         }
                     )
                 }

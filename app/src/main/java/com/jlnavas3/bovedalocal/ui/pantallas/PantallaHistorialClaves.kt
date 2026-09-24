@@ -45,6 +45,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -55,7 +56,9 @@ import com.jlnavas3.bovedalocal.ui.VaultViewModel
 import com.jlnavas3.bovedalocal.ui.componentes.BarraSuperiorPantalla
 import com.jlnavas3.bovedalocal.ui.componentes.DescripcionPantalla
 import com.jlnavas3.bovedalocal.ui.componentes.TarjetaBoveda
+import com.jlnavas3.bovedalocal.ui.componentes.contrasenaColoreada
 import com.jlnavas3.bovedalocal.ui.theme.Ambar
+import com.jlnavas3.bovedalocal.ui.theme.ColorDatosContrasena
 import com.jlnavas3.bovedalocal.ui.theme.ColorGenerador
 import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
 import com.jlnavas3.bovedalocal.ui.theme.ColorTarjetas
@@ -385,7 +388,7 @@ private fun FilaClaveHistorial(
                 else -> 14.sp
             }
             Text(
-                text = if (visible) item.clave else "•".repeat(item.clave.length.coerceIn(8, 26)),
+                text = if (visible) contrasenaColoreada(item.clave) else buildAnnotatedString { append("•".repeat(item.clave.length.coerceIn(8, 26))) },
                 style = EstiloMono.copy(fontWeight = FontWeight.SemiBold, fontSize = tamanoTexto),
                 color = ColorTitulos,
                 maxLines = 1,

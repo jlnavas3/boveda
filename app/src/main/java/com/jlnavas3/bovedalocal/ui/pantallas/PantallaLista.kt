@@ -39,6 +39,7 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
+import androidx.compose.material.icons.filled.FileDownload
 import androidx.compose.material.icons.filled.Fingerprint
 import androidx.compose.material.icons.filled.HealthAndSafety
 import androidx.compose.material.icons.filled.History
@@ -268,13 +269,23 @@ fun PantallaLista(vm: VaultViewModel, estado: EstadoBoveda) {
         com.jlnavas3.bovedalocal.data.AnalizadorDuplicados.analizar(entradas).sumOf { it.entradasSecundarias.size }
     }
 
+    val formaCajon = RoundedCornerShape(topEnd = 24.dp, bottomEnd = 24.dp)
+    val modifierBordeCajon = if (GrosorBorde > 0.dp && ColorBordeActual != Color.Transparent) {
+        Modifier.border(GrosorBorde, ColorBordeActual.copy(alpha = 0.5f), formaCajon)
+    } else {
+        Modifier
+    }
+
     ModalNavigationDrawer(
         drawerState = estadoCajon,
+        scrimColor = Color.Black.copy(alpha = 0.68f),
         drawerContent = {
             ModalDrawerSheet(
-                modifier = Modifier.fillMaxWidth(0.88f),
-                drawerShape = RoundedCornerShape(topEnd = 24.dp, bottomEnd = 24.dp),
-                drawerContainerColor = com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjustesFondo,
+                modifier = Modifier
+                    .fillMaxWidth(0.82f)
+                    .then(modifierBordeCajon),
+                drawerShape = formaCajon,
+                drawerContainerColor = Superficie,
                 windowInsets = WindowInsets(0, 0, 0, 0)
             ) {
                 MenuLateral(
@@ -434,6 +445,52 @@ fun PantallaLista(vm: VaultViewModel, estado: EstadoBoveda) {
                                 menuOpcionesDesplegado = false
                                 haptica.tic()
                                 vm.alternarSoloFavoritos()
+                            }
+                        )
+                        SeparadorOpcionMenu()
+                        DropdownMenuItem(
+                            leadingIcon = {
+                                Icon(Icons.Filled.Tune, contentDescription = null, tint = Ambar, modifier = Modifier.size(20.dp))
+                            },
+                            text = {
+                                Text(
+                                    if (ajustes.agruparPorSitio) "Desagrupar cuentas" else "Agrupar cuentas",
+                                    color = TextoPrincipal
+                                )
+                            },
+                            onClick = {
+                                menuOpcionesDesplegado = false
+                                haptica.tic()
+                                vm.ir(Pantalla.OrganizacionLista("03.5.1"))
+                            }
+                        )
+                        SeparadorOpcionMenu()
+                        DropdownMenuItem(
+                            leadingIcon = {
+                                Icon(Icons.Filled.Tune, contentDescription = null, tint = Ambar, modifier = Modifier.size(20.dp))
+                            },
+                            text = {
+                                Text(
+                                    if (ajustes.mostrarIndicadoresContenido) "Esconder indicadores" else "Mostrar indicadores",
+                                    color = TextoPrincipal
+                                )
+                            },
+                            onClick = {
+                                menuOpcionesDesplegado = false
+                                haptica.tic()
+                                vm.ir(Pantalla.OrganizacionLista("03.5.2"))
+                            }
+                        )
+                        SeparadorOpcionMenu()
+                        DropdownMenuItem(
+                            leadingIcon = {
+                                Icon(Icons.Filled.FileDownload, contentDescription = null, tint = Ambar, modifier = Modifier.size(20.dp))
+                            },
+                            text = { Text("Exportación selectiva", color = TextoPrincipal) },
+                            onClick = {
+                                menuOpcionesDesplegado = false
+                                haptica.tic()
+                                vm.ir(Pantalla.ExportarSelectivo("todos"))
                             }
                         )
                         if (filtro != null || soloFavoritos || filtroEtiqueta != null) {
@@ -694,6 +751,7 @@ fun PantallaLista(vm: VaultViewModel, estado: EstadoBoveda) {
                                             tamanoMonograma = densidadMonograma,
                                             resaltado = coincideLetraHijo,
                                             separarDigitosTotp = ajustes.totpSepararDigitos,
+                                            mostrarIndicadores = ajustes.mostrarIndicadoresContenido,
                                             enGrupo = true,
                                             esUltimoEnGrupo = indiceHijo == totalHijos - 1
                                         )
@@ -723,6 +781,7 @@ fun PantallaLista(vm: VaultViewModel, estado: EstadoBoveda) {
                                     tamanoMonograma = densidadMonograma,
                                     resaltado = coincideLetra,
                                     separarDigitosTotp = ajustes.totpSepararDigitos,
+                                    mostrarIndicadores = ajustes.mostrarIndicadoresContenido,
                                     enGrupo = false
                                 )
                                 is com.jlnavas3.bovedalocal.util.ItemAgrupado.Hijo -> Unit

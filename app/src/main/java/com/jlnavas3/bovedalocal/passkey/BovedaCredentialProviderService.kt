@@ -123,7 +123,7 @@ class BovedaCredentialProviderService : CredentialProviderService() {
                     return@forEach
                 }
                 repositorio.entradas().filter { entrada ->
-                    entrada.tipo == TipoEntrada.LOGIN &&
+                    (entrada.tipo == TipoEntrada.LOGIN || entrada.tipo == TipoEntrada.PASSKEY) &&
                         entrada.contrasena.isNotBlank() &&
                         entrada.urls.any { Dominios.coincide(it, objetivo) } &&
                         (opcion.allowedUserIds.isEmpty() || opcion.allowedUserIds.contains(entrada.usuario))

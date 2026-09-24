@@ -97,6 +97,12 @@ fun SeccionCopiaSeguridad(
         ) { alExportar() }
         Spacer(Modifier.height(10.dp))
         BotonColorido(
+            texto = "Exportación selectiva",
+            color = ColorExportacion,
+            icono = Icons.Filled.FileDownload
+        ) { vm.ir(Pantalla.ExportarSelectivo("todos")) }
+        Spacer(Modifier.height(10.dp))
+        BotonColorido(
             texto = "Importar bóveda cifrada",
             color = ColorExportacion,
             icono = Icons.Filled.FileUpload

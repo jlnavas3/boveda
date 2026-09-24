@@ -4,15 +4,19 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.ContentCopy
@@ -39,6 +43,7 @@ import com.jlnavas3.bovedalocal.data.Entrada
 import com.jlnavas3.bovedalocal.ui.componentes.IndicadorTotpTarta
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.GrupoAjustes
 import com.jlnavas3.bovedalocal.ui.theme.Color2FA
+import com.jlnavas3.bovedalocal.ui.theme.ColorDatos2FA
 import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
 import com.jlnavas3.bovedalocal.ui.theme.ColorTitulos
 import com.jlnavas3.bovedalocal.ui.theme.EstiloMonoGrande
@@ -95,75 +100,84 @@ fun TarjetaTotpDetalle(
     }
 
     GrupoAjustes(etiqueta = "Código de verificación (2FA)") {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clickable {
+        Box(modifier = Modifier.fillMaxWidth()) {
+            Box(
+                modifier = Modifier
+                    .width(4.dp)
+                    .fillMaxHeight()
+                    .align(Alignment.CenterStart)
+                    .background(ColorDatos2FA)
+            )
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable {
+                        haptica.exito()
+                        copiado = true
+                        alCopiarTotp(codigo)
+                    }
+                    .padding(horizontal = 16.dp, vertical = 14.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = "CÓDIGO TEMPORAL (TOTP)",
+                        style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
+                        color = Color2FA
+                    )
+                    Spacer(Modifier.height(4.dp))
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(10.dp)
+                    ) {
+                        Text(
+                            text = codigoVisible,
+                            style = EstiloMonoGrande.copy(fontWeight = FontWeight.Bold, fontSize = 26.sp),
+                            color = ColorTitulos
+                        )
+                        IndicadorTotpTarta(
+                            segundosRestantes = segundosRestantes,
+                            periodo = periodo,
+                            tamano = 18.dp
+                        )
+                    }
+                    Spacer(Modifier.height(3.dp))
+                    Text(
+                        text = "Toca para copiar · Se renueva en $segundosRestantes s",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = TextoSecundario
+                    )
+                }
+                IconButton(onClick = {
                     haptica.exito()
                     copiado = true
                     alCopiarTotp(codigo)
-                }
-                .padding(horizontal = 16.dp, vertical = 14.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = "CÓDIGO TEMPORAL (TOTP)",
-                    style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
-                    color = Color2FA
-                )
-                Spacer(Modifier.height(4.dp))
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(10.dp)
-                ) {
-                    Text(
-                        text = codigoVisible,
-                        style = EstiloMonoGrande.copy(fontWeight = FontWeight.Bold, fontSize = 26.sp),
-                        color = ColorTitulos
-                    )
-                    IndicadorTotpTarta(
-                        segundosRestantes = segundosRestantes,
-                        periodo = periodo,
-                        tamano = 18.dp
-                    )
-                }
-                Spacer(Modifier.height(3.dp))
-                Text(
-                    text = "Toca para copiar · Se renueva en $segundosRestantes s",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = TextoSecundario
-                )
-            }
-            IconButton(onClick = {
-                haptica.exito()
-                copiado = true
-                alCopiarTotp(codigo)
-            }) {
-                AnimatedVisibility(
-                    visible = copiado,
-                    enter = scaleIn(spring(dampingRatio = 0.5f)),
-                    exit = scaleOut(spring(dampingRatio = 0.6f))
-                ) {
-                    Icon(
-                        Icons.Filled.Check,
-                        contentDescription = "Copiado",
-                        tint = Menta,
-                        modifier = Modifier.size(24.dp)
-                    )
-                }
-                AnimatedVisibility(
-                    visible = !copiado,
-                    enter = scaleIn(spring(dampingRatio = 0.5f)),
-                    exit = scaleOut(spring(dampingRatio = 0.6f))
-                ) {
-                    Icon(
-                        Icons.Filled.ContentCopy,
-                        contentDescription = "Copiar código",
-                        tint = ColorIconosInternos,
-                        modifier = Modifier.size(24.dp)
-                    )
+                }) {
+                    AnimatedVisibility(
+                        visible = copiado,
+                        enter = scaleIn(spring(dampingRatio = 0.5f)),
+                        exit = scaleOut(spring(dampingRatio = 0.6f))
+                    ) {
+                        Icon(
+                            Icons.Filled.Check,
+                            contentDescription = "Copiado",
+                            tint = Menta,
+                            modifier = Modifier.size(24.dp)
+                        )
+                    }
+                    AnimatedVisibility(
+                        visible = !copiado,
+                        enter = scaleIn(spring(dampingRatio = 0.5f)),
+                        exit = scaleOut(spring(dampingRatio = 0.6f))
+                    ) {
+                        Icon(
+                            Icons.Filled.ContentCopy,
+                            contentDescription = "Copiar código",
+                            tint = ColorIconosInternos,
+                            modifier = Modifier.size(24.dp)
+                        )
+                    }
                 }
             }
         }

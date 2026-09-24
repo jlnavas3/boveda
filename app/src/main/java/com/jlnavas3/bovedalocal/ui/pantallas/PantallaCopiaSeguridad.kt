@@ -169,10 +169,20 @@ fun PantallaCopiaSeguridad(
                     )
                     ComponenteSeparador()
                     ComponenteNavegacion(
+                        titulo = "Exportación selectiva",
+                        icono = Icons.Filled.FileDownload,
+                        colorIcono = ColorExportacion,
+                        valorTexto = ".bvda",
+                        idFila = "02.1.2",
+                        mostrarId = ajustes.mostrarIdsAjustes,
+                        alPulsar = { vm.ir(Pantalla.ExportarSelectivo("todos")) }
+                    )
+                    ComponenteSeparador()
+                    ComponenteNavegacion(
                         titulo = "Importar copia de seguridad",
                         icono = Icons.Filled.FileUpload,
                         colorIcono = ColorExportacion,
-                        idFila = "02.1.2",
+                        idFila = "02.1.3",
                         mostrarId = ajustes.mostrarIdsAjustes,
                         alPulsar = {
                             BovedaApp.salidaPendiente(contexto)

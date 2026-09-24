@@ -78,6 +78,7 @@ import androidx.core.content.pm.ShortcutManagerCompat
 import androidx.core.graphics.drawable.IconCompat
 import com.jlnavas3.bovedalocal.R
 import com.jlnavas3.bovedalocal.quicksettings.GeneradorRapidoHelper
+import com.jlnavas3.bovedalocal.ui.pantallas.PantallaConfirmarMigracion
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
@@ -341,6 +342,9 @@ fun RaizBoveda(vm: VaultViewModel, actividad: FragmentActivity) {
                     is Pantalla.Seguridad -> com.jlnavas3.bovedalocal.ui.pantallas.PantallaSeguridad(vm, actividad, destino.seccionId)
                     is Pantalla.CopiaSeguridad -> com.jlnavas3.bovedalocal.ui.pantallas.PantallaCopiaSeguridad(vm, destino.seccionId)
                     is Pantalla.CsvGoogle -> com.jlnavas3.bovedalocal.ui.pantallas.PantallaCsvGoogle(vm, destino.seccionId)
+                    is Pantalla.ConfirmarMigracion -> PantallaConfirmarMigracion(vm, destino.urlMigracion)
+                    is Pantalla.ExportarSelectivo -> com.jlnavas3.bovedalocal.ui.pantallas.PantallaExportarSelectivo(vm, destino.seccionInicial)
+                    is Pantalla.ColoresDatos -> com.jlnavas3.bovedalocal.ui.pantallas.PantallaColoresDatos(vm, destino.seccionId)
                     is Pantalla.Argon2id -> com.jlnavas3.bovedalocal.ui.pantallas.PantallaArgon2id(vm, destino.seccionId)
                     is Pantalla.AjustesAutenticador -> com.jlnavas3.bovedalocal.ui.pantallas.PantallaAjustesAutenticador(vm, destino.seccionId)
                     is Pantalla.AjustesCamara -> com.jlnavas3.bovedalocal.ui.pantallas.PantallaAjustesCamara(vm, destino.seccionId)

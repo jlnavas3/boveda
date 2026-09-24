@@ -19,6 +19,7 @@ import com.jlnavas3.bovedalocal.data.TipoEntrada
 import com.jlnavas3.bovedalocal.data.VaultRepository
 import com.jlnavas3.bovedalocal.ui.theme.BovedaTheme
 import com.jlnavas3.bovedalocal.util.Diagnostico
+import com.jlnavas3.bovedalocal.util.Dominios
 
 /** Confirma y crea una passkey nueva pedida por una web o app. */
 @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
@@ -98,17 +99,25 @@ class PasskeyCreateActivity : FragmentActivity() {
                 clavePrivada = WebAuthn.aB64Url(par.privadaPkcs8),
                 usuario = datos.usuario
             )
-            repositorio.guardarEntrada(
-                Entrada(
-                    id = repositorio.nuevoId(),
-                    tipo = TipoEntrada.PASSKEY,
-                    titulo = datos.rpName.ifBlank { datos.rpId },
-                    usuario = datos.usuario,
-                    urls = listOf(datos.rpId),
-                    passkey = passkey
-                )
+
+            val existente = repositorio.entradas().firstOrNull { e ->
+                (e.usuario.equals(datos.usuario, ignoreCase = true) || datos.usuario.isBlank()) &&
+                e.urls.any { u -> Dominios.coincide(u, datos.rpId) || u.contains(datos.rpId, ignoreCase = true) }
+            }
+
+            val entrada = existente?.copy(
+                passkey = passkey,
+                modificadaEn = System.currentTimeMillis()
+            ) ?: Entrada(
+                id = repositorio.nuevoId(),
+                tipo = TipoEntrada.PASSKEY,
+                titulo = datos.rpName.ifBlank { datos.rpId },
+                usuario = datos.usuario,
+                urls = listOf(datos.rpId),
+                passkey = passkey
             )
-            Diagnostico.apuntar("passkey", "Nueva passkey creada y almacenada en la bóveda")
+            repositorio.guardarEntrada(entrada)
+            Diagnostico.apuntar("passkey", "Passkey guardada o vinculada correctamente en la bóveda")
 
             val respuesta = Intent()
             PendingIntentHandler.setCreateCredentialResponse(

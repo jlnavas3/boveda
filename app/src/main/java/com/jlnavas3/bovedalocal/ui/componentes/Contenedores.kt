@@ -51,6 +51,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorTarjetaAjustes
 import com.jlnavas3.bovedalocal.ui.theme.Borde
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
@@ -68,6 +69,36 @@ import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
 import com.jlnavas3.bovedalocal.ui.theme.colorLegibleParaTema
 import com.jlnavas3.bovedalocal.ui.theme.colorParaGrupoId
 import com.jlnavas3.bovedalocal.ui.theme.fondoBadgeParaTema
+
+/**
+ * Botón de icono estandarizado para las cabeceras de pantalla (40.dp, recorte circular, icono de 20.dp).
+ */
+@Composable
+fun BotonIconoCabecera(
+    onClick: () -> Unit,
+    icono: ImageVector,
+    descripcion: String,
+    modifier: Modifier = Modifier,
+    tint: Color = ColorIconosInternos,
+    colorFondo: Color = ColorTarjetaAjustes,
+    habilitado: Boolean = true
+) {
+    IconButton(
+        onClick = onClick,
+        enabled = habilitado,
+        modifier = modifier
+            .size(40.dp)
+            .clip(CircleShape)
+            .background(if (habilitado) colorFondo else colorFondo.copy(alpha = 0.5f))
+    ) {
+        Icon(
+            imageVector = icono,
+            contentDescription = descripcion,
+            tint = if (habilitado) tint else tint.copy(alpha = 0.4f),
+            modifier = Modifier.size(20.dp)
+        )
+    }
+}
 
 /**
  * Barra superior fija de navegación (Sticky Top Bar) para pantallas secundarias.
@@ -96,18 +127,12 @@ fun BarraSuperiorPantalla(
                 .padding(horizontal = 12.dp, vertical = 8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            IconButton(
+            BotonIconoCabecera(
                 onClick = alVolver,
-                modifier = Modifier.size(44.dp)
-            ) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                    contentDescription = "Volver atrás",
-                    tint = ColorIconosInternos,
-                    modifier = Modifier.size(24.dp)
-                )
-            }
-            Spacer(Modifier.width(6.dp))
+                icono = Icons.AutoMirrored.Filled.ArrowBack,
+                descripcion = "Volver atrás"
+            )
+            Spacer(Modifier.width(8.dp))
             Column(
                 modifier = Modifier.weight(1f),
                 verticalArrangement = Arrangement.Center
