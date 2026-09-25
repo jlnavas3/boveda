@@ -21,6 +21,7 @@ import com.jlnavas3.bovedalocal.ui.theme.ColorDatosContrasena
 import com.jlnavas3.bovedalocal.ui.theme.ColorDatosPasskey
 import com.jlnavas3.bovedalocal.ui.theme.ColorDatosUsuario
 import com.jlnavas3.bovedalocal.ui.theme.ColorDatosWeb
+import com.jlnavas3.bovedalocal.util.LanzadorEnlaces
 
 private data class SegmentoIndicador(
     val activo: Boolean,
@@ -49,14 +50,15 @@ fun IndicadorContenidoTarjeta(
         val tieneContrasena = entrada.contrasena.isNotBlank()
         val tiene2FA = !entrada.secretoTotp.isNullOrBlank()
         val tienePasskey = entrada.passkey != null
-        val tieneWeb = entrada.urls.any {
-            !it.startsWith("androidapp://", ignoreCase = true) &&
-            !it.startsWith("androidapp:", ignoreCase = true) &&
-            (it.contains(".") || it.startsWith("http", ignoreCase = true))
+        val urlsClasificadas = entrada.urls.map { url ->
+            url to LanzadorEnlaces.extraerPaquete(url)
         }
-        val tieneApp = entrada.urls.any {
-            it.startsWith("androidapp://", ignoreCase = true) ||
-            it.startsWith("androidapp:", ignoreCase = true)
+        val tieneWeb = urlsClasificadas.any { (url, paquete) ->
+            paquete == null &&
+                (url.contains(".") || url.startsWith("http", ignoreCase = true))
+        }
+        val tieneApp = urlsClasificadas.any { (_, paquete) ->
+            paquete != null
         }
 
         listOf(

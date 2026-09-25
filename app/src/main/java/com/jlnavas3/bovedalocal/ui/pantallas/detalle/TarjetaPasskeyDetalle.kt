@@ -22,6 +22,7 @@ import com.jlnavas3.bovedalocal.ui.theme.ColorDatosPasskey
 import com.jlnavas3.bovedalocal.ui.theme.ColorTitulos
 import com.jlnavas3.bovedalocal.ui.theme.Menta
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
+import com.jlnavas3.bovedalocal.ui.theme.fondoBadgeParaTema
 
 @Composable
 fun TarjetaPasskeyDetalle(
@@ -30,14 +31,11 @@ fun TarjetaPasskeyDetalle(
 ) {
     val servicio = passkey.rpName.ifBlank { passkey.rpId }
     GrupoAjustes(etiqueta = "Llave de acceso (Passkey)") {
-        Box(modifier = Modifier.fillMaxWidth()) {
-            Box(
-                modifier = Modifier
-                    .width(4.dp)
-                    .fillMaxHeight()
-                    .align(Alignment.CenterStart)
-                    .background(ColorDatosPasskey)
-            )
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(fondoBadgeParaTema(ColorDatosPasskey))
+        ) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -71,6 +69,15 @@ fun TarjetaPasskeyDetalle(
                     "La clave privada permanece cifrada en hardware local y nunca se exporta en texto claro.",
                     color = Menta,
                     style = MaterialTheme.typography.bodySmall
+                )
+            }
+            Box(modifier = Modifier.matchParentSize()) {
+                Box(
+                    modifier = Modifier
+                        .width(4.5.dp)
+                        .fillMaxHeight()
+                        .align(Alignment.CenterStart)
+                        .background(ColorDatosPasskey)
                 )
             }
         }

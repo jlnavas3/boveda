@@ -263,14 +263,11 @@ fun PantallaDetalle(vm: VaultViewModel, id: String) {
             if (tieneCredenciales) {
                 GrupoAjustes(etiqueta = "Credenciales") {
                     if (entrada.usuario.isNotBlank()) {
-                        Box(modifier = Modifier.fillMaxWidth()) {
-                            Box(
-                                modifier = Modifier
-                                    .width(4.5.dp)
-                                    .fillMaxHeight()
-                                    .align(Alignment.CenterStart)
-                                    .background(ColorDatosUsuario)
-                            )
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .background(fondoBadgeParaTema(ColorDatosUsuario))
+                        ) {
                             Row(
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -297,6 +294,15 @@ fun PantallaDetalle(vm: VaultViewModel, id: String) {
                                     ultimaCopia = "usuario"
                                 }
                             }
+                            Box(modifier = Modifier.matchParentSize()) {
+                                Box(
+                                    modifier = Modifier
+                                        .width(4.5.dp)
+                                        .fillMaxHeight()
+                                        .align(Alignment.CenterStart)
+                                        .background(ColorDatosUsuario)
+                                )
+                            }
                         }
                     }
 
@@ -305,14 +311,11 @@ fun PantallaDetalle(vm: VaultViewModel, id: String) {
                     }
 
                     if (entrada.contrasena.isNotBlank()) {
-                        Box(modifier = Modifier.fillMaxWidth()) {
-                            Box(
-                                modifier = Modifier
-                                    .width(4.5.dp)
-                                    .fillMaxHeight()
-                                    .align(Alignment.CenterStart)
-                                    .background(ColorDatosContrasena)
-                            )
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .background(fondoBadgeParaTema(ColorDatosContrasena))
+                        ) {
                             Row(
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -364,6 +367,15 @@ fun PantallaDetalle(vm: VaultViewModel, id: String) {
                                     }
                                 }
                             }
+                            Box(modifier = Modifier.matchParentSize()) {
+                                Box(
+                                    modifier = Modifier
+                                        .width(4.5.dp)
+                                        .fillMaxHeight()
+                                        .align(Alignment.CenterStart)
+                                        .background(ColorDatosContrasena)
+                                )
+                            }
                         }
                     }
                 }
@@ -398,10 +410,15 @@ fun PantallaDetalle(vm: VaultViewModel, id: String) {
                         val nombreApp = remember(url, contexto) {
                             if (paquete != null && estaInstalada) LanzadorEnlaces.obtenerNombreApp(contexto, paquete) else null
                         }
+                        val colorDato = if (esApp) ColorDatosApp else ColorDatosWeb
 
                         if (index > 0) SeparadorFilaSimple()
 
-                        Box(modifier = Modifier.fillMaxWidth()) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .background(fondoBadgeParaTema(colorDato))
+                        ) {
                             Row(
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -416,79 +433,81 @@ fun PantallaDetalle(vm: VaultViewModel, id: String) {
                                     modifier = Modifier
                                         .size(38.dp)
                                         .clip(FormaPequena)
-                                        .background(fondoBadgeParaTema(if (esApp) ColorDatosApp else ColorDatosWeb)),
+                                        .background(fondoBadgeParaTema(colorDato)),
                                     contentAlignment = Alignment.Center
                                 ) {
                                     Icon(
                                         imageVector = if (esApp) Icons.Filled.Android else Icons.Filled.Language,
                                         contentDescription = null,
-                                        tint = colorLegibleParaTema(if (esApp) ColorDatosApp else ColorDatosWeb),
+                                        tint = colorLegibleParaTema(colorDato),
                                         modifier = Modifier.size(20.dp)
                                     )
                                 }
-                            Spacer(Modifier.width(12.dp))
-                            Column(modifier = Modifier.weight(1f)) {
-                                Text(
-                                    text = nombreApp ?: paquete ?: url,
-                                    style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold),
-                                    color = TextoPrincipal,
-                                    maxLines = 1,
-                                    softWrap = false,
-                                    overflow = TextOverflow.Clip
-                                )
-                                Spacer(Modifier.height(2.dp))
-                                val subtitulo = when {
-                                    esApp && estaInstalada -> "App instalada · Toca para abrir"
-                                    esApp -> "App no instalada · Ver en Google Play"
-                                    else -> "Sitio web · Toca para abrir"
+                                Spacer(Modifier.width(12.dp))
+                                Column(modifier = Modifier.weight(1f)) {
+                                    Text(
+                                        text = nombreApp ?: paquete ?: url,
+                                        style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold),
+                                        color = TextoPrincipal,
+                                        maxLines = 1,
+                                        softWrap = false,
+                                        overflow = TextOverflow.Clip
+                                    )
+                                    Spacer(Modifier.height(2.dp))
+                                    val subtitulo = when {
+                                        esApp && estaInstalada -> "App instalada · Toca para abrir"
+                                        esApp -> "App no instalada · Ver en Google Play"
+                                        else -> "Sitio web · Toca para abrir"
+                                    }
+                                    Text(
+                                        text = subtitulo,
+                                        style = MaterialTheme.typography.labelSmall.copy(fontSize = 11.sp),
+                                        color = if (esApp && estaInstalada) Menta else TextoSecundario,
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis
+                                    )
                                 }
-                                Text(
-                                    text = subtitulo,
-                                    style = MaterialTheme.typography.labelSmall.copy(fontSize = 11.sp),
-                                    color = if (esApp && estaInstalada) Menta else TextoSecundario,
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis
-                                )
+                                Spacer(Modifier.width(4.dp))
+                                IconButton(
+                                    onClick = {
+                                        haptica.toque()
+                                        vm.copiar("Enlace", url, sensible = false)
+                                    },
+                                    modifier = Modifier.size(34.dp)
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Filled.ContentCopy,
+                                        contentDescription = "Copiar enlace",
+                                        tint = ColorIconosInternos,
+                                        modifier = Modifier.size(18.dp)
+                                    )
+                                }
+                                IconButton(
+                                    onClick = {
+                                        haptica.toque()
+                                        LanzadorEnlaces.abrir(contexto, url, onAviso = { vm.avisar(it) })
+                                    },
+                                    modifier = Modifier.size(34.dp)
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.AutoMirrored.Filled.OpenInNew,
+                                        contentDescription = "Abrir enlace",
+                                        tint = ColorIconosInternos,
+                                        modifier = Modifier.size(19.dp)
+                                    )
+                                }
                             }
-                            Spacer(Modifier.width(4.dp))
-                            IconButton(
-                                onClick = {
-                                    haptica.toque()
-                                    vm.copiar("Enlace", url, sensible = false)
-                                },
-                                modifier = Modifier.size(34.dp)
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Filled.ContentCopy,
-                                    contentDescription = "Copiar enlace",
-                                    tint = ColorIconosInternos,
-                                    modifier = Modifier.size(18.dp)
-                                )
-                            }
-                            IconButton(
-                                onClick = {
-                                    haptica.toque()
-                                    LanzadorEnlaces.abrir(contexto, url, onAviso = { vm.avisar(it) })
-                                },
-                                modifier = Modifier.size(34.dp)
-                            ) {
-                                Icon(
-                                    imageVector = Icons.AutoMirrored.Filled.OpenInNew,
-                                    contentDescription = "Abrir enlace",
-                                    tint = ColorIconosInternos,
-                                    modifier = Modifier.size(19.dp)
+                            Box(modifier = Modifier.matchParentSize()) {
+                                Box(
+                                    modifier = Modifier
+                                        .width(4.5.dp)
+                                        .fillMaxHeight()
+                                        .align(Alignment.CenterStart)
+                                        .background(colorDato)
                                 )
                             }
                         }
-                        Box(
-                            modifier = Modifier
-                                .width(4.5.dp)
-                                .fillMaxHeight()
-                                .align(Alignment.CenterStart)
-                                .background(if (esApp) ColorDatosApp else ColorDatosWeb)
-                        )
                     }
-                }
                 }
                 Spacer(Modifier.height(16.dp))
             }
@@ -508,26 +527,41 @@ fun PantallaDetalle(vm: VaultViewModel, id: String) {
             // Grupo 5: Notas
             if (entrada.notas.isNotBlank()) {
                 GrupoAjustes(etiqueta = "Notas") {
-                    Column(
+                    Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(16.dp)
+                            .background(fondoBadgeParaTema(ColorAcento))
                     ) {
-                        Text(
-                            text = entrada.notas,
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = TextoPrincipal
-                        )
-                        Spacer(Modifier.height(8.dp))
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.End
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp)
                         ) {
-                            BotonCopiar(copiado = ultimaCopia == "notas") {
-                                haptica.toque()
-                                vm.copiar("Notas", entrada.notas, sensible = false)
-                                ultimaCopia = "notas"
+                            Text(
+                                text = entrada.notas,
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = TextoPrincipal
+                            )
+                            Spacer(Modifier.height(8.dp))
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.End
+                            ) {
+                                BotonCopiar(copiado = ultimaCopia == "notas") {
+                                    haptica.toque()
+                                    vm.copiar("Notas", entrada.notas, sensible = false)
+                                    ultimaCopia = "notas"
+                                }
                             }
+                        }
+                        Box(modifier = Modifier.matchParentSize()) {
+                            Box(
+                                modifier = Modifier
+                                    .width(4.5.dp)
+                                    .fillMaxHeight()
+                                    .align(Alignment.CenterStart)
+                                    .background(ColorAcento)
+                            )
                         }
                     }
                 }

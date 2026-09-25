@@ -6,11 +6,14 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -40,6 +43,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -88,6 +92,7 @@ import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
 import com.jlnavas3.bovedalocal.ui.theme.ColorPasskeys
 import com.jlnavas3.bovedalocal.ui.theme.ColorSobreAcento
 import com.jlnavas3.bovedalocal.ui.theme.ColorTitulos
+import com.jlnavas3.bovedalocal.ui.theme.esOscuroActivo
 import com.jlnavas3.bovedalocal.ui.theme.EstiloMono
 import androidx.compose.runtime.LaunchedEffect
 import com.jlnavas3.bovedalocal.ui.pantallas.edicion.SelectorAppModal
@@ -233,6 +238,7 @@ fun PantallaEdicion(vm: VaultViewModel, id: String?, contrasenaInicial: String) 
                         valor = titulo,
                         etiqueta = "Título",
                         alCambiar = { titulo = it },
+                        colorBordeIzquierdo = ColorAcento,
                         botonLimpiar = true
                     )
 
@@ -241,40 +247,59 @@ fun PantallaEdicion(vm: VaultViewModel, id: String?, contrasenaInicial: String) 
                             val passkeyInfo = original?.passkey
                             if (passkeyInfo != null) {
                                 Spacer(Modifier.height(12.dp))
-                                Row(
+                                val esOscuro = esOscuroActivo
+                                val colorFondoCampo = if (esOscuro) Color(0xFF242327) else Color(0xFFF1F2F5)
+                                Box(
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .clip(FormaPequena)
-                                        .background(fondoBadgeParaTema(ColorPasskeys))
-                                        .padding(10.dp),
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                        .background(colorFondoCampo)
                                 ) {
-                                    Icon(
-                                        imageVector = Icons.Filled.Fingerprint,
-                                        contentDescription = "Passkey activa",
-                                        tint = ColorPasskeys,
-                                        modifier = Modifier.size(22.dp)
-                                    )
-                                    Column(modifier = Modifier.weight(1f)) {
-                                        Text(
-                                            text = "Passkey WebAuthn registrada",
-                                            style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
-                                            color = colorLegibleParaTema(ColorPasskeys)
+                                    Row(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(start = 16.dp, end = 10.dp, top = 10.dp, bottom = 10.dp),
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.Filled.Fingerprint,
+                                            contentDescription = "Passkey activa",
+                                            tint = colorLegibleParaTema(ColorDatosPasskey),
+                                            modifier = Modifier.size(22.dp)
                                         )
-                                        Text(
-                                            text = "rpId: ${passkeyInfo.rpId}",
-                                            style = EstiloMono.copy(fontSize = 11.sp),
-                                            color = colorLegibleParaTema(ColorPasskeys).copy(alpha = 0.85f),
-                                            maxLines = 1,
-                                            overflow = TextOverflow.Ellipsis
-                                        )
-                                        Text(
-                                            text = "Algoritmo: ${passkeyInfo.algoritmo}",
-                                            style = EstiloMono.copy(fontSize = 11.sp),
-                                            color = colorLegibleParaTema(ColorPasskeys).copy(alpha = 0.85f),
-                                            maxLines = 1,
-                                            overflow = TextOverflow.Ellipsis
+                                        Column(modifier = Modifier.weight(1f)) {
+                                            Text(
+                                                text = "Passkey WebAuthn registrada",
+                                                style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
+                                                color = colorLegibleParaTema(ColorDatosPasskey)
+                                            )
+                                            Text(
+                                                text = "rpId: ${passkeyInfo.rpId}",
+                                                style = EstiloMono.copy(fontSize = 11.sp),
+                                                color = colorLegibleParaTema(ColorDatosPasskey).copy(alpha = 0.85f),
+                                                maxLines = 1,
+                                                overflow = TextOverflow.Ellipsis
+                                            )
+                                            Text(
+                                                text = "Algoritmo: ${passkeyInfo.algoritmo}",
+                                                style = EstiloMono.copy(fontSize = 11.sp),
+                                                color = colorLegibleParaTema(ColorDatosPasskey).copy(alpha = 0.85f),
+                                                maxLines = 1,
+                                                overflow = TextOverflow.Ellipsis
+                                            )
+                                        }
+                                    }
+                                    Box(
+                                        modifier = Modifier.matchParentSize()
+                                    ) {
+                                        Box(
+                                            modifier = Modifier
+                                                .width(4.5.dp)
+                                                .fillMaxHeight()
+                                                .align(Alignment.CenterStart)
+                                                .clip(RoundedCornerShape(topStart = 10.dp, bottomStart = 10.dp))
+                                                .background(ColorDatosPasskey)
                                         )
                                     }
                                 }
@@ -395,8 +420,9 @@ fun PantallaEdicion(vm: VaultViewModel, id: String?, contrasenaInicial: String) 
                         if (listaEnlaces.isNotEmpty()) {
                             listaEnlaces.forEachIndexed { index, enlace ->
                                 val paquete = remember(enlace.valor) { LanzadorEnlaces.extraerPaquete(enlace.valor) }
-                                val esApp = paquete != null && LanzadorEnlaces.estaInstalada(contexto, paquete)
-                                val nombreApp = remember(enlace.valor, contexto) {
+                                val esAppEnlace = paquete != null
+                                val esApp = remember(paquete, contexto) { paquete != null && LanzadorEnlaces.estaInstalada(contexto, paquete) }
+                                val nombreApp = remember(paquete, contexto, esApp) {
                                     if (paquete != null && esApp) LanzadorEnlaces.obtenerNombreApp(contexto, paquete) else null
                                 }
 
@@ -405,7 +431,6 @@ fun PantallaEdicion(vm: VaultViewModel, id: String?, contrasenaInicial: String) 
                                         .fillMaxWidth()
                                         .padding(bottom = 10.dp)
                                 ) {
-                                    val esAppEnlace = enlace.valor.startsWith("androidapp://", ignoreCase = true) || enlace.valor.startsWith("androidapp:", ignoreCase = true)
                                     ComponenteCampoTexto(
                                         valor = enlace.valor,
                                         etiqueta = if (listaEnlaces.size > 1) "Sitio web o app #${index + 1}" else "Sitio web o app",
@@ -547,7 +572,8 @@ fun PantallaEdicion(vm: VaultViewModel, id: String?, contrasenaInicial: String) 
                         valor = notas,
                         etiqueta = "Notas y detalles",
                         alCambiar = { notas = it },
-                        tipo = TipoCampoTexto.MULTILINEA
+                        tipo = TipoCampoTexto.MULTILINEA,
+                        colorBordeIzquierdo = ColorAcento
                     )
                 }
             }

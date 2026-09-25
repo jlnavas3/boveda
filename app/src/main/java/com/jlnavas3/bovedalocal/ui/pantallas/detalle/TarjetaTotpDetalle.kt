@@ -49,6 +49,7 @@ import com.jlnavas3.bovedalocal.ui.theme.ColorTitulos
 import com.jlnavas3.bovedalocal.ui.theme.EstiloMonoGrande
 import com.jlnavas3.bovedalocal.ui.theme.Menta
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
+import com.jlnavas3.bovedalocal.ui.theme.fondoBadgeParaTema
 import com.jlnavas3.bovedalocal.util.Haptica
 import kotlinx.coroutines.delay
 
@@ -100,14 +101,11 @@ fun TarjetaTotpDetalle(
     }
 
     GrupoAjustes(etiqueta = "Código de verificación (2FA)") {
-        Box(modifier = Modifier.fillMaxWidth()) {
-            Box(
-                modifier = Modifier
-                    .width(4.dp)
-                    .fillMaxHeight()
-                    .align(Alignment.CenterStart)
-                    .background(ColorDatos2FA)
-            )
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(fondoBadgeParaTema(ColorDatos2FA))
+        ) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -179,6 +177,15 @@ fun TarjetaTotpDetalle(
                         )
                     }
                 }
+            }
+            Box(modifier = Modifier.matchParentSize()) {
+                Box(
+                    modifier = Modifier
+                        .width(4.5.dp)
+                        .fillMaxHeight()
+                        .align(Alignment.CenterStart)
+                        .background(ColorDatos2FA)
+                )
             }
         }
     }

@@ -40,6 +40,9 @@ import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.FileDownload
+import androidx.compose.material.icons.filled.FileUpload
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material.icons.filled.Fingerprint
 import androidx.compose.material.icons.filled.HealthAndSafety
 import androidx.compose.material.icons.filled.History
@@ -493,6 +496,30 @@ fun PantallaLista(vm: VaultViewModel, estado: EstadoBoveda) {
                                 vm.ir(Pantalla.ExportarSelectivo("todos"))
                             }
                         )
+                        SeparadorOpcionMenu()
+                        DropdownMenuItem(
+                            leadingIcon = {
+                                Icon(Icons.Filled.FileUpload, contentDescription = null, tint = Ambar, modifier = Modifier.size(20.dp))
+                            },
+                            text = { Text("Importar copia de seguridad", color = TextoPrincipal) },
+                            onClick = {
+                                menuOpcionesDesplegado = false
+                                haptica.tic()
+                                vm.ir(Pantalla.CopiaSeguridad("02.1.3"))
+                            }
+                        )
+                        SeparadorOpcionMenu()
+                        DropdownMenuItem(
+                            leadingIcon = {
+                                Icon(Icons.Filled.FileUpload, contentDescription = null, tint = Ambar, modifier = Modifier.size(20.dp))
+                            },
+                            text = { Text("Importar contraseñas de Google", color = TextoPrincipal) },
+                            onClick = {
+                                menuOpcionesDesplegado = false
+                                haptica.tic()
+                                vm.ir(Pantalla.CsvGoogle("02.2.1"))
+                            }
+                        )
                         if (filtro != null || soloFavoritos || filtroEtiqueta != null) {
                             SeparadorOpcionMenu()
                             DropdownMenuItem(
@@ -634,6 +661,42 @@ fun PantallaLista(vm: VaultViewModel, estado: EstadoBoveda) {
                 ) {
                     if (entradas.isEmpty()) {
                         IlustracionVacio()
+                        Spacer(Modifier.height(20.dp))
+                        Button(
+                            onClick = {
+                                haptica.tic()
+                                vm.ir(Pantalla.CopiaSeguridad("02.1.3"))
+                            },
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Ambar,
+                                contentColor = ColorSobreAcento
+                            ),
+                            modifier = Modifier
+                                .align(Alignment.CenterHorizontally)
+                                .padding(horizontal = 24.dp)
+                        ) {
+                            Icon(Icons.Filled.FileUpload, contentDescription = null, modifier = Modifier.size(18.dp))
+                            Spacer(Modifier.width(8.dp))
+                            Text("Importar copia de seguridad")
+                        }
+                        Spacer(Modifier.height(12.dp))
+                        Button(
+                            onClick = {
+                                haptica.tic()
+                                vm.ir(Pantalla.CsvGoogle("02.2.1"))
+                            },
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Ambar,
+                                contentColor = ColorSobreAcento
+                            ),
+                            modifier = Modifier
+                                .align(Alignment.CenterHorizontally)
+                                .padding(horizontal = 24.dp)
+                        ) {
+                            Icon(Icons.Filled.FileUpload, contentDescription = null, modifier = Modifier.size(18.dp))
+                            Spacer(Modifier.width(8.dp))
+                            Text("Importar contraseñas de Google")
+                        }
                     } else {
                         Text(
                             "Nada coincide con esa búsqueda",

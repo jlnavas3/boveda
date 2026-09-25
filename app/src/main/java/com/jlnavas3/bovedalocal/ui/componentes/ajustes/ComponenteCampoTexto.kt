@@ -1,7 +1,10 @@
 package com.jlnavas3.bovedalocal.ui.componentes.ajustes
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -226,6 +229,15 @@ fun ComponenteCampoTexto(
         }
     }
 
+    val interactionSource = remember { MutableInteractionSource() }
+    val isFocused by interactionSource.collectIsFocusedAsState()
+
+    val borderModifier = if (colorBordeIzquierdo != null && isFocused) {
+        Modifier.border(1.dp, colorBordeIzquierdo.copy(alpha = 0.35f), forma)
+    } else {
+        Modifier
+    }
+
     val bloqueCampo = @Composable {
         if (formateadorMascara != null) {
             var tfv by remember {
@@ -268,7 +280,8 @@ fun ComponenteCampoTexto(
                 keyboardOptions = opcionesTeclado,
                 keyboardActions = keyboardActions,
                 shape = forma,
-                colors = coloresSinBordes
+                colors = coloresSinBordes,
+                interactionSource = interactionSource
             )
         } else {
             TextField(
@@ -296,7 +309,8 @@ fun ComponenteCampoTexto(
                 keyboardOptions = opcionesTeclado,
                 keyboardActions = keyboardActions,
                 shape = forma,
-                colors = coloresSinBordes
+                colors = coloresSinBordes,
+                interactionSource = interactionSource
             )
         }
     }
@@ -307,6 +321,7 @@ fun ComponenteCampoTexto(
                 .fillMaxWidth()
                 .clip(forma)
                 .background(colorFondoCampo)
+                .then(borderModifier)
                 .then(
                     if (alPulsar != null && habilitado) {
                         Modifier.clickable { alPulsar() }
@@ -318,13 +333,17 @@ fun ComponenteCampoTexto(
             bloqueCampo()
             if (colorBordeIzquierdo != null) {
                 Box(
-                    modifier = Modifier
-                        .width(4.5.dp)
-                        .fillMaxHeight()
-                        .align(Alignment.CenterStart)
-                        .clip(RoundedCornerShape(topStart = 10.dp, bottomStart = 10.dp))
-                        .background(colorBordeIzquierdo)
-                )
+                    modifier = Modifier.matchParentSize()
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .width(4.5.dp)
+                            .fillMaxHeight()
+                            .align(Alignment.CenterStart)
+                            .clip(RoundedCornerShape(topStart = 10.dp, bottomStart = 10.dp))
+                            .background(colorBordeIzquierdo)
+                    )
+                }
             }
         }
 
