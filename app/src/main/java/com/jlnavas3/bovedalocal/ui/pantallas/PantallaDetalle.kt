@@ -1,47 +1,28 @@
 package com.jlnavas3.bovedalocal.ui.pantallas
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.spring
-import androidx.compose.animation.scaleIn
-import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.automirrored.filled.OpenInNew
-import androidx.compose.material.icons.filled.Android
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.Language
 import androidx.compose.material.icons.filled.QrCode
 import androidx.compose.material.icons.filled.Star
-import androidx.compose.material.icons.filled.Visibility
-import androidx.compose.material.icons.filled.VisibilityOff
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import com.jlnavas3.bovedalocal.ui.componentes.DialogoConfirmacionBoveda
-import com.jlnavas3.bovedalocal.ui.componentes.TipoBotonTexto
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -53,10 +34,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.jlnavas3.bovedalocal.data.EstadoBoveda
 import com.jlnavas3.bovedalocal.data.normalizarEtiqueta
@@ -66,42 +44,30 @@ import com.jlnavas3.bovedalocal.ui.componentes.BarraSuperiorPantalla
 import com.jlnavas3.bovedalocal.ui.componentes.BotonColorido
 import com.jlnavas3.bovedalocal.ui.componentes.BotonIconoCabecera
 import com.jlnavas3.bovedalocal.ui.componentes.DialogoCompartirQr
-import com.jlnavas3.bovedalocal.ui.componentes.Monograma
-import com.jlnavas3.bovedalocal.ui.componentes.contrasenaColoreada
+import com.jlnavas3.bovedalocal.ui.componentes.DialogoConfirmacionBoveda
+import com.jlnavas3.bovedalocal.ui.componentes.TipoBotonTexto
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjustesFondo
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.GrupoAjustes
-import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.SeparadorFilaSimple
+import com.jlnavas3.bovedalocal.ui.pantallas.detalle.CabeceraHeroDetalle
 import com.jlnavas3.bovedalocal.ui.pantallas.detalle.TarjetaCamposDetalle
+import com.jlnavas3.bovedalocal.ui.pantallas.detalle.TarjetaCredencialesDetalle
 import com.jlnavas3.bovedalocal.ui.pantallas.detalle.TarjetaHistorialDetalle
+import com.jlnavas3.bovedalocal.ui.pantallas.detalle.TarjetaNotasDetalle
 import com.jlnavas3.bovedalocal.ui.pantallas.detalle.TarjetaPasskeyDetalle
+import com.jlnavas3.bovedalocal.ui.pantallas.detalle.TarjetaSitiosYAppsDetalle
 import com.jlnavas3.bovedalocal.ui.pantallas.detalle.TarjetaTotpDetalle
 import com.jlnavas3.bovedalocal.ui.theme.Ambar
 import com.jlnavas3.bovedalocal.ui.theme.Borde
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
-import com.jlnavas3.bovedalocal.ui.theme.ColorDatos2FA
-import com.jlnavas3.bovedalocal.ui.theme.ColorDatosApp
-import com.jlnavas3.bovedalocal.ui.theme.ColorDatosContrasena
-import com.jlnavas3.bovedalocal.ui.theme.ColorDatosPasskey
-import com.jlnavas3.bovedalocal.ui.theme.ColorDatosUsuario
-import com.jlnavas3.bovedalocal.ui.theme.ColorDatosWeb
-import com.jlnavas3.bovedalocal.ui.theme.ColorGenerador
 import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
-import com.jlnavas3.bovedalocal.ui.theme.ColorPasskeys
-import com.jlnavas3.bovedalocal.ui.theme.ColorTitulos
-import com.jlnavas3.bovedalocal.ui.theme.EstiloMono
-import com.jlnavas3.bovedalocal.ui.theme.EstiloMonoGrande
 import com.jlnavas3.bovedalocal.ui.theme.FormaPequena
 import com.jlnavas3.bovedalocal.ui.theme.GrosorBorde
-import com.jlnavas3.bovedalocal.ui.theme.Menta
 import com.jlnavas3.bovedalocal.ui.theme.Peligro
 import com.jlnavas3.bovedalocal.ui.theme.TextoPrincipal
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
-import com.jlnavas3.bovedalocal.ui.theme.colorLegibleParaTema
-import com.jlnavas3.bovedalocal.ui.theme.fondoBadgeParaTema
 import com.jlnavas3.bovedalocal.util.Diagnostico
 import com.jlnavas3.bovedalocal.util.Haptica
-import com.jlnavas3.bovedalocal.util.LanzadorEnlaces
 import kotlinx.coroutines.delay
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -209,176 +175,37 @@ fun PantallaDetalle(vm: VaultViewModel, id: String) {
                 .padding(horizontal = 16.dp, vertical = 8.dp)
         ) {
             // Cabecera Hero de identidad
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 8.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Monograma(
-                    titulo = entrada.titulo.ifBlank { "?" },
-                    semilla = entrada.urls.firstOrNull() ?: entrada.passkey?.rpId ?: entrada.titulo,
-                    tamano = 60
-                )
-                Spacer(Modifier.height(10.dp))
-                Text(
-                    text = entrada.titulo.ifBlank { "Sin título" },
-                    style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
-                    color = ColorTitulos,
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis
-                )
-                Spacer(Modifier.height(4.dp))
-                Box(
-                    modifier = Modifier
-                        .clip(FormaPequena)
-                        .background(ColorAcento.copy(alpha = 0.12f))
-                        .padding(horizontal = 10.dp, vertical = 3.dp)
-                ) {
-                    Text(
-                        text = entrada.tipo.etiqueta,
-                        style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Medium),
-                        color = ColorAcento
-                    )
-                }
-            }
-
-            if (entrada.tipo == com.jlnavas3.bovedalocal.data.TipoEntrada.WIFI) {
-                Spacer(Modifier.height(8.dp))
-                BotonColorido(
-                    texto = "Compartir Wi-Fi por código QR",
-                    color = ColorAcento,
-                    icono = Icons.Filled.QrCode,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
+            CabeceraHeroDetalle(
+                entrada = entrada,
+                alMostrarQr = {
                     haptica.tic()
                     mostrarDialogoQr = true
                 }
-            }
+            )
 
             Spacer(Modifier.height(14.dp))
 
-            // Grupo 1: Credenciales principales (siempre visibles, sin acordeones)
-            val tieneCredenciales = entrada.usuario.isNotBlank() || entrada.contrasena.isNotBlank()
-            if (tieneCredenciales) {
-                GrupoAjustes(etiqueta = "Credenciales") {
-                    if (entrada.usuario.isNotBlank()) {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .background(fondoBadgeParaTema(ColorDatosUsuario))
-                        ) {
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(horizontal = 16.dp, vertical = 12.dp),
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.SpaceBetween
-                            ) {
-                                Column(modifier = Modifier.weight(1f)) {
-                                    Text(
-                                        text = "Usuario o correo",
-                                        style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.SemiBold),
-                                        color = TextoSecundario
-                                    )
-                                    Spacer(Modifier.height(4.dp))
-                                    Text(
-                                        text = entrada.usuario,
-                                        style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Medium),
-                                        color = TextoPrincipal
-                                    )
-                                }
-                                BotonCopiar(copiado = ultimaCopia == "usuario") {
-                                    haptica.toque()
-                                    vm.copiar("Usuario", entrada.usuario, sensible = false)
-                                    ultimaCopia = "usuario"
-                                }
-                            }
-                            Box(modifier = Modifier.matchParentSize()) {
-                                Box(
-                                    modifier = Modifier
-                                        .width(4.5.dp)
-                                        .fillMaxHeight()
-                                        .align(Alignment.CenterStart)
-                                        .background(ColorDatosUsuario)
-                                )
-                            }
-                        }
-                    }
-
-                    if (entrada.usuario.isNotBlank() && entrada.contrasena.isNotBlank()) {
-                        SeparadorFilaSimple()
-                    }
-
-                    if (entrada.contrasena.isNotBlank()) {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .background(fondoBadgeParaTema(ColorDatosContrasena))
-                        ) {
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(horizontal = 16.dp, vertical = 12.dp),
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.SpaceBetween
-                            ) {
-                                Column(modifier = Modifier.weight(1f)) {
-                                    Text(
-                                        text = "Contraseña · ${entrada.contrasena.length} caracteres",
-                                        style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.SemiBold),
-                                        color = TextoSecundario
-                                    )
-                                    Spacer(Modifier.height(4.dp))
-                                    if (revelada) {
-                                        Text(
-                                            text = contrasenaColoreada(entrada.contrasena),
-                                            style = EstiloMono,
-                                            modifier = Modifier.fillMaxWidth()
-                                        )
-                                    } else {
-                                        Text(
-                                            text = "•".repeat(entrada.contrasena.length.coerceIn(8, 24)),
-                                            style = EstiloMonoGrande.copy(letterSpacing = 2.sp),
-                                            color = TextoSecundario,
-                                            maxLines = 1,
-                                            softWrap = false,
-                                            overflow = TextOverflow.Clip,
-                                            modifier = Modifier.fillMaxWidth()
-                                        )
-                                    }
-                                }
-                                Row(verticalAlignment = Alignment.CenterVertically) {
-                                    IconButton(onClick = {
-                                        haptica.toque()
-                                        revelada = !revelada
-                                    }) {
-                                        Icon(
-                                            imageVector = if (revelada) Icons.Filled.VisibilityOff else Icons.Filled.Visibility,
-                                            contentDescription = if (revelada) "Ocultar contraseña" else "Mostrar contraseña",
-                                            tint = ColorIconosInternos,
-                                            modifier = Modifier.size(24.dp)
-                                        )
-                                    }
-                                    BotonCopiar(copiado = ultimaCopia == "contrasena") {
-                                        haptica.exito()
-                                        vm.copiar("Contraseña", entrada.contrasena, sensible = true)
-                                        ultimaCopia = "contrasena"
-                                    }
-                                }
-                            }
-                            Box(modifier = Modifier.matchParentSize()) {
-                                Box(
-                                    modifier = Modifier
-                                        .width(4.5.dp)
-                                        .fillMaxHeight()
-                                        .align(Alignment.CenterStart)
-                                        .background(ColorDatosContrasena)
-                                )
-                            }
-                        }
-                    }
+            // Grupo 1: Credenciales principales
+            TarjetaCredencialesDetalle(
+                entrada = entrada,
+                revelada = revelada,
+                ultimaCopia = ultimaCopia,
+                alAlternarRevelada = {
+                    haptica.toque()
+                    revelada = !revelada
+                },
+                alCopiarUsuario = {
+                    haptica.toque()
+                    vm.copiar("Usuario", entrada.usuario, sensible = false)
+                    ultimaCopia = "usuario"
+                },
+                alCopiarContrasena = {
+                    haptica.exito()
+                    vm.copiar("Contraseña", entrada.contrasena, sensible = true)
+                    ultimaCopia = "contrasena"
                 }
+            )
+            if (entrada.usuario.isNotBlank() || entrada.contrasena.isNotBlank()) {
                 Spacer(Modifier.height(16.dp))
             }
 
@@ -396,119 +223,14 @@ fun PantallaDetalle(vm: VaultViewModel, id: String) {
             }
 
             // Grupo 3: Sitios y apps asociados (si existen)
-            val listaUrls = remember(entrada.urls) {
-                entrada.urls.flatMap { it.split(",", "\n", ";") }.map { it.trim() }.filter { it.isNotEmpty() }
-            }
-            if (listaUrls.isNotEmpty()) {
-                GrupoAjustes(etiqueta = "Sitios web y apps (${listaUrls.size})") {
-                    listaUrls.forEachIndexed { index, url ->
-                        val paquete = remember(url) { LanzadorEnlaces.extraerPaquete(url) }
-                        val esApp = paquete != null
-                        val estaInstalada = remember(url, contexto) {
-                            if (paquete != null) LanzadorEnlaces.estaInstalada(contexto, paquete) else false
-                        }
-                        val nombreApp = remember(url, contexto) {
-                            if (paquete != null && estaInstalada) LanzadorEnlaces.obtenerNombreApp(contexto, paquete) else null
-                        }
-                        val colorDato = if (esApp) ColorDatosApp else ColorDatosWeb
-
-                        if (index > 0) SeparadorFilaSimple()
-
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .background(fondoBadgeParaTema(colorDato))
-                        ) {
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .clickable {
-                                        haptica.toque()
-                                        LanzadorEnlaces.abrir(contexto, url, onAviso = { vm.avisar(it) })
-                                    }
-                                    .padding(horizontal = 16.dp, vertical = 12.dp),
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Box(
-                                    modifier = Modifier
-                                        .size(38.dp)
-                                        .clip(FormaPequena)
-                                        .background(fondoBadgeParaTema(colorDato)),
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    Icon(
-                                        imageVector = if (esApp) Icons.Filled.Android else Icons.Filled.Language,
-                                        contentDescription = null,
-                                        tint = colorLegibleParaTema(colorDato),
-                                        modifier = Modifier.size(20.dp)
-                                    )
-                                }
-                                Spacer(Modifier.width(12.dp))
-                                Column(modifier = Modifier.weight(1f)) {
-                                    Text(
-                                        text = nombreApp ?: paquete ?: url,
-                                        style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold),
-                                        color = TextoPrincipal,
-                                        maxLines = 1,
-                                        softWrap = false,
-                                        overflow = TextOverflow.Clip
-                                    )
-                                    Spacer(Modifier.height(2.dp))
-                                    val subtitulo = when {
-                                        esApp && estaInstalada -> "App instalada · Toca para abrir"
-                                        esApp -> "App no instalada · Ver en Google Play"
-                                        else -> "Sitio web · Toca para abrir"
-                                    }
-                                    Text(
-                                        text = subtitulo,
-                                        style = MaterialTheme.typography.labelSmall.copy(fontSize = 11.sp),
-                                        color = if (esApp && estaInstalada) Menta else TextoSecundario,
-                                        maxLines = 1,
-                                        overflow = TextOverflow.Ellipsis
-                                    )
-                                }
-                                Spacer(Modifier.width(4.dp))
-                                IconButton(
-                                    onClick = {
-                                        haptica.toque()
-                                        vm.copiar("Enlace", url, sensible = false)
-                                    },
-                                    modifier = Modifier.size(34.dp)
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.Filled.ContentCopy,
-                                        contentDescription = "Copiar enlace",
-                                        tint = ColorIconosInternos,
-                                        modifier = Modifier.size(18.dp)
-                                    )
-                                }
-                                IconButton(
-                                    onClick = {
-                                        haptica.toque()
-                                        LanzadorEnlaces.abrir(contexto, url, onAviso = { vm.avisar(it) })
-                                    },
-                                    modifier = Modifier.size(34.dp)
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.AutoMirrored.Filled.OpenInNew,
-                                        contentDescription = "Abrir enlace",
-                                        tint = ColorIconosInternos,
-                                        modifier = Modifier.size(19.dp)
-                                    )
-                                }
-                            }
-                            Box(modifier = Modifier.matchParentSize()) {
-                                Box(
-                                    modifier = Modifier
-                                        .width(4.5.dp)
-                                        .fillMaxHeight()
-                                        .align(Alignment.CenterStart)
-                                        .background(colorDato)
-                                )
-                            }
-                        }
-                    }
-                }
+            TarjetaSitiosYAppsDetalle(
+                urls = entrada.urls,
+                alCopiarUrl = { url ->
+                    vm.copiar("Enlace", url, sensible = false)
+                },
+                alAvisar = { vm.avisar(it) }
+            )
+            if (entrada.urls.any { it.isNotBlank() }) {
                 Spacer(Modifier.height(16.dp))
             }
 
@@ -525,46 +247,16 @@ fun PantallaDetalle(vm: VaultViewModel, id: String) {
             }
 
             // Grupo 5: Notas
-            if (entrada.notas.isNotBlank()) {
-                GrupoAjustes(etiqueta = "Notas") {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .background(fondoBadgeParaTema(ColorAcento))
-                    ) {
-                        Column(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(16.dp)
-                        ) {
-                            Text(
-                                text = entrada.notas,
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = TextoPrincipal
-                            )
-                            Spacer(Modifier.height(8.dp))
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.End
-                            ) {
-                                BotonCopiar(copiado = ultimaCopia == "notas") {
-                                    haptica.toque()
-                                    vm.copiar("Notas", entrada.notas, sensible = false)
-                                    ultimaCopia = "notas"
-                                }
-                            }
-                        }
-                        Box(modifier = Modifier.matchParentSize()) {
-                            Box(
-                                modifier = Modifier
-                                    .width(4.5.dp)
-                                    .fillMaxHeight()
-                                    .align(Alignment.CenterStart)
-                                    .background(ColorAcento)
-                            )
-                        }
-                    }
+            TarjetaNotasDetalle(
+                notas = entrada.notas,
+                ultimaCopia = ultimaCopia,
+                alCopiarNotas = {
+                    haptica.toque()
+                    vm.copiar("Notas", entrada.notas, sensible = false)
+                    ultimaCopia = "notas"
                 }
+            )
+            if (entrada.notas.isNotBlank()) {
                 Spacer(Modifier.height(16.dp))
             }
 
@@ -619,7 +311,7 @@ fun PantallaDetalle(vm: VaultViewModel, id: String) {
                 Spacer(Modifier.height(16.dp))
             }
 
-            // Metadatos: Fechas de creación y edición (apiladas verticalmente y compactas para no colisionar)
+            // Metadatos: Fechas de creación y edición
             if (entrada.creadaEn > 0L || entrada.modificadaEn > 0L) {
                 Column(
                     modifier = Modifier
@@ -669,25 +361,5 @@ fun PantallaDetalle(vm: VaultViewModel, id: String) {
             entrada = entrada,
             alCerrar = { mostrarDialogoQr = false }
         )
-    }
-}
-
-@Composable
-private fun BotonCopiar(copiado: Boolean, alPulsar: () -> Unit) {
-    IconButton(onClick = alPulsar) {
-        AnimatedVisibility(
-            visible = copiado,
-            enter = scaleIn(spring(dampingRatio = 0.5f)),
-            exit = scaleOut(spring(dampingRatio = 0.6f))
-        ) {
-            Icon(Icons.Filled.Check, contentDescription = "Copiado", tint = Menta)
-        }
-        AnimatedVisibility(
-            visible = !copiado,
-            enter = scaleIn(spring(dampingRatio = 0.5f)),
-            exit = scaleOut(spring(dampingRatio = 0.6f))
-        ) {
-            Icon(Icons.Filled.ContentCopy, contentDescription = "Copiar", tint = ColorIconosInternos)
-        }
     }
 }
