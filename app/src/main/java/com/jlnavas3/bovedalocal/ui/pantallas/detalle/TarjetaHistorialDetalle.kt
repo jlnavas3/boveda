@@ -21,12 +21,12 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Restore
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
+import com.jlnavas3.bovedalocal.ui.componentes.DialogoConfirmacionBoveda
+import com.jlnavas3.bovedalocal.ui.componentes.TipoBotonTexto
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -120,63 +120,41 @@ fun TarjetaHistorialDetalle(
     }
 
     if (claveARestaurar != null) {
-        AlertDialog(
-            onDismissRequest = { claveARestaurar = null },
-            shape = RoundedCornerShape(20.dp),
-            containerColor = ColorTarjetaAjustes,
-            tonalElevation = 0.dp,
-            title = { Text("¿Restaurar esta contraseña?", color = TextoPrincipal) },
-            text = {
-                Text("Esta contraseña pasará a ser la contraseña activa de \"${entrada.titulo}\". La que tienes actualmente no se perderá: se conservará en este mismo historial.", color = TextoSecundario)
-            },
-            confirmButton = {
-                TextButton(onClick = {
-                    val nuevaClave = claveARestaurar
-                    claveARestaurar = null
-                    if (nuevaClave != null) {
-                        haptica.exito()
-                        vm.guardar(entrada.copy(contrasena = nuevaClave))
-                    }
-                }) {
-                    Text("Restaurar", color = Ambar, fontWeight = FontWeight.Bold)
+        DialogoConfirmacionBoveda(
+            titulo = "¿Restaurar esta contraseña?",
+            mensaje = "Esta contraseña pasará a ser la contraseña activa de \"${entrada.titulo}\". La que tienes actualmente no se perderá: se conservará en este mismo historial.",
+            textoConfirmar = "Restaurar",
+            tipoConfirmacion = TipoBotonTexto.PRIMARIO,
+            iconoHeader = Icons.Filled.Restore,
+            alConfirmar = {
+                val nuevaClave = claveARestaurar
+                claveARestaurar = null
+                if (nuevaClave != null) {
+                    haptica.exito()
+                    vm.guardar(entrada.copy(contrasena = nuevaClave))
                 }
             },
-            dismissButton = {
-                TextButton(onClick = { claveARestaurar = null }) {
-                    Text("Cancelar", color = TextoSecundario)
-                }
-            }
+            alDescartar = { claveARestaurar = null }
         )
     }
 
     if (claveAEliminar != null) {
-        AlertDialog(
-            onDismissRequest = { claveAEliminar = null },
-            shape = RoundedCornerShape(20.dp),
-            containerColor = ColorTarjetaAjustes,
-            tonalElevation = 0.dp,
-            title = { Text("¿Eliminar esta contraseña del historial?", color = TextoPrincipal) },
-            text = {
-                Text("Esta contraseña anterior se eliminará permanentemente. Esta acción no se puede deshacer.", color = TextoSecundario)
-            },
-            confirmButton = {
-                TextButton(onClick = {
-                    val clave = claveAEliminar
-                    claveAEliminar = null
-                    if (clave != null) {
-                        haptica.error()
-                        val nuevoHistorial = entrada.historialContrasenas.filterNot { it.contrasena == clave }
-                        vm.guardar(entrada.copy(historialContrasenas = nuevoHistorial))
-                    }
-                }) {
-                    Text("Eliminar", color = Peligro, fontWeight = FontWeight.Bold)
+        DialogoConfirmacionBoveda(
+            titulo = "¿Eliminar esta contraseña del historial?",
+            mensaje = "Esta contraseña anterior se eliminará permanentemente. Esta acción no se puede deshacer.",
+            textoConfirmar = "Eliminar",
+            tipoConfirmacion = TipoBotonTexto.PELIGRO,
+            iconoHeader = Icons.Filled.Delete,
+            alConfirmar = {
+                val clave = claveAEliminar
+                claveAEliminar = null
+                if (clave != null) {
+                    haptica.error()
+                    val nuevoHistorial = entrada.historialContrasenas.filterNot { it.contrasena == clave }
+                    vm.guardar(entrada.copy(historialContrasenas = nuevoHistorial))
                 }
             },
-            dismissButton = {
-                TextButton(onClick = { claveAEliminar = null }) {
-                    Text("Cancelar", color = TextoSecundario)
-                }
-            }
+            alDescartar = { claveAEliminar = null }
         )
     }
 }

@@ -21,10 +21,10 @@ import androidx.compose.material.icons.filled.Memory
 import androidx.compose.material.icons.filled.Security
 import androidx.compose.material.icons.filled.Shield
 import androidx.compose.material.icons.filled.Timer
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
+import com.jlnavas3.bovedalocal.ui.componentes.DialogoConfirmacionBoveda
+import com.jlnavas3.bovedalocal.ui.componentes.TipoBotonTexto
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -328,33 +328,18 @@ fun PantallaSeguridad(
     }
 
     if (confirmarDesactivarSecure) {
-        val esOscuro = androidx.compose.foundation.isSystemInDarkTheme()
-        val colorDialogo = if (esOscuro) Color(0xFF212023) else Color(0xFFFFFFFF)
-        AlertDialog(
-            onDismissRequest = { confirmarDesactivarSecure = false },
-            containerColor = colorDialogo,
-            tonalElevation = 0.dp,
-            shape = androidx.compose.foundation.shape.RoundedCornerShape(20.dp),
-            title = { Text("¿Desactivar protección de pantalla?", color = TextoPrincipal) },
-            text = {
-                Text(
-                    "Al desactivar FLAG_SECURE, las capturas de pantalla y la vista en aplicaciones recientes estarán permitidas. Tus datos sensibles podrían quedar expuestos ante aplicaciones espía o grabaciones de pantalla.",
-                    color = TextoSecundario,
-                    style = MaterialTheme.typography.bodyMedium
-                )
+        DialogoConfirmacionBoveda(
+            titulo = "¿Desactivar protección de pantalla?",
+            mensaje = "Al desactivar FLAG_SECURE, las capturas de pantalla y la vista en aplicaciones recientes estarán permitidas. Tus datos sensibles podrían quedar expuestos ante aplicaciones espía o grabaciones de pantalla.",
+            textoConfirmar = "Desactivar",
+            tipoConfirmacion = TipoBotonTexto.PELIGRO,
+            iconoHeader = Icons.Filled.Security,
+            alConfirmar = {
+                confirmarDesactivarSecure = false
+                vm.ajustarProteccionPantalla(false)
+                haptica.tic()
             },
-            confirmButton = {
-                TextButton(onClick = {
-                    confirmarDesactivarSecure = false
-                    vm.ajustarProteccionPantalla(false)
-                    haptica.tic()
-                }) { Text("Desactivar", color = Peligro) }
-            },
-            dismissButton = {
-                TextButton(onClick = { confirmarDesactivarSecure = false }) {
-                    Text("Cancelar", color = TextoSecundario)
-                }
-            }
+            alDescartar = { confirmarDesactivarSecure = false }
         )
     }
 }

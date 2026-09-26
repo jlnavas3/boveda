@@ -20,10 +20,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.AlertDialog
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Fingerprint
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.Scaffold
+import com.jlnavas3.bovedalocal.ui.componentes.DialogoConfirmacionBoveda
+import com.jlnavas3.bovedalocal.ui.componentes.TipoBotonTexto
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
@@ -407,39 +410,24 @@ private fun DialogoOfrecerBiometria(vm: VaultViewModel, actividad: FragmentActiv
         }
     }
 
-    val esOscuro = androidx.compose.foundation.isSystemInDarkTheme()
-    val colorDialogo = if (esOscuro) Color(0xFF212023) else Color(0xFFFFFFFF)
-
-    AlertDialog(
-        onDismissRequest = { vm.cerrarOfertaBiometria() },
-        containerColor = colorDialogo,
-        tonalElevation = 0.dp,
-        shape = androidx.compose.foundation.shape.RoundedCornerShape(20.dp),
-        title = { Text(if (compatible) "¿Abrir con tu huella o tu PIN?" else "¿Abrir con tu huella?", color = TextoPrincipal) },
-        text = {
-            Text(
-                if (compatible) {
-                    "Este móvil no ofrece huella de Clase 3, así que iría en modo compatible: Android comprueba " +
-                        "tu huella o el PIN y la app abre la bóveda. La clave maestra queda envuelta por el Keystore " +
-                        "y no sale del móvil, pero no queda atada al chip como en el modo fuerte. Tu contraseña " +
-                        "maestra sigue siendo la única llave real."
-                } else {
-                    "Tu contraseña maestra seguirá siendo la única llave: la huella solo la desenvuelve, " +
-                        "guardada por el Keystore de Android y atada a este móvil. Si cambias la biometría del " +
-                        "dispositivo, deja de valer y toca escribir la contraseña."
-                },
-                color = TextoSecundario,
-                style = MaterialTheme.typography.bodyMedium
-            )
+    DialogoConfirmacionBoveda(
+        titulo = if (compatible) "¿Abrir con tu huella o tu PIN?" else "¿Abrir con tu huella?",
+        mensaje = if (compatible) {
+            "Este móvil no ofrece huella de Clase 3, así que iría en modo compatible: Android comprueba " +
+                "tu huella o el PIN y la app abre la bóveda. La clave maestra queda envuelta por el Keystore " +
+                "y no sale del móvil, pero no queda atada al chip como en el modo fuerte. Tu contraseña " +
+                "maestra sigue siendo la única llave real."
+        } else {
+            "Tu contraseña maestra seguirá siendo la única llave: la huella solo la desenvuelve, " +
+                "guardada por el Keystore de Android y atada a este móvil. Si cambias la biometría del " +
+                "dispositivo, deja de valer y toca escribir la contraseña."
         },
-        confirmButton = {
-            TextButton(onClick = { activar() }) { Text("Activar", color = Ambar) }
-        },
-        dismissButton = {
-            TextButton(onClick = { vm.cerrarOfertaBiometria() }) {
-                Text("Ahora no", color = TextoSecundario)
-            }
-        }
+        textoConfirmar = "Activar",
+        textoCancelar = "Ahora no",
+        tipoConfirmacion = TipoBotonTexto.PRIMARIO,
+        iconoHeader = Icons.Filled.Fingerprint,
+        alConfirmar = { activar() },
+        alDescartar = { vm.cerrarOfertaBiometria() }
     )
 }
 
@@ -450,37 +438,27 @@ private fun DialogoOfrecerBiometria(vm: VaultViewModel, actividad: FragmentActiv
  */
 @Composable
 private fun DialogoOfrecerGestor(vm: VaultViewModel, actividad: FragmentActivity) {
-    val esOscuro = androidx.compose.foundation.isSystemInDarkTheme()
-    val colorDialogo = if (esOscuro) Color(0xFF212023) else Color(0xFFFFFFFF)
+    val mensaje = remember {
+        buildAnnotatedString {
+            append("Android no deja que una app se ponga sola: lo tienes que activar tú. Te abro la pantalla de \"Contraseñas y llaves de acceso\" y marcas ")
+            withStyle(SpanStyle(fontWeight = FontWeight.Bold)) { append("Bóveda local") }
+            append(".\n\nSin esto no aparezco al rellenar contraseñas ni al crear una llave de acceso. Lo puedes hacer más tarde desde Ajustes.")
+        }.text
+    }
 
-    AlertDialog(
-        onDismissRequest = { vm.cerrarOfertaGestor() },
-        containerColor = colorDialogo,
-        tonalElevation = 0.dp,
-        shape = androidx.compose.foundation.shape.RoundedCornerShape(20.dp),
-        title = { Text("¿Me pones como gestor?", color = TextoPrincipal) },
-        text = {
-            Text(
-                buildAnnotatedString {
-                    append("Android no deja que una app se ponga sola: lo tienes que activar tú. Te abro la pantalla de \"Contraseñas y llaves de acceso\" y marcas ")
-                    withStyle(SpanStyle(fontWeight = FontWeight.Bold)) { append("Bóveda local") }
-                    append(".\n\nSin esto no aparezco al rellenar contraseñas ni al crear una llave de acceso. Lo puedes hacer más tarde desde Ajustes.")
-                },
-                color = TextoSecundario
-            )
-        },
-        confirmButton = {
-            TextButton(onClick = {
-                if (!AjustesSistema.abrirProveedorCredenciales(actividad)) {
-                    vm.avisar("No encuentro esa pantalla en este móvil")
-                }
-                vm.cerrarOfertaGestor()
-            }) { Text("Abrir ajustes", color = Ambar) }
-        },
-        dismissButton = {
-            TextButton(onClick = { vm.cerrarOfertaGestor() }) {
-                Text("Ahora no", color = TextoSecundario)
+    DialogoConfirmacionBoveda(
+        titulo = "¿Me pones como gestor?",
+        mensaje = mensaje,
+        textoConfirmar = "Abrir ajustes",
+        textoCancelar = "Ahora no",
+        tipoConfirmacion = TipoBotonTexto.PRIMARIO,
+        iconoHeader = Icons.Filled.Settings,
+        alConfirmar = {
+            if (!AjustesSistema.abrirProveedorCredenciales(actividad)) {
+                vm.avisar("No encuentro esa pantalla en este móvil")
             }
-        }
+            vm.cerrarOfertaGestor()
+        },
+        alDescartar = { vm.cerrarOfertaGestor() }
     )
 }

@@ -52,8 +52,10 @@ import com.jlnavas3.bovedalocal.ui.FlujoBiometria
 import com.jlnavas3.bovedalocal.ui.Pantalla
 import com.jlnavas3.bovedalocal.ui.VaultViewModel
 import com.jlnavas3.bovedalocal.ui.componentes.BotonColorido
+import com.jlnavas3.bovedalocal.ui.componentes.DialogoConfirmacionBoveda
 import com.jlnavas3.bovedalocal.ui.componentes.MenuDesplegableBoveda
 import com.jlnavas3.bovedalocal.ui.componentes.SeparadorOpcionMenu
+import com.jlnavas3.bovedalocal.ui.componentes.TipoBotonTexto
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.ColorArgon2
 import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
@@ -119,35 +121,18 @@ fun SeccionSeguridad(
             }
         )
         if (confirmarDesactivar) {
-            val colorDialogo = if (esOscuro) Color(0xFF212023) else Color(0xFFFFFFFF)
-            androidx.compose.material3.AlertDialog(
-                onDismissRequest = { confirmarDesactivar = false },
-                containerColor = colorDialogo,
-                tonalElevation = 0.dp,
-                shape = androidx.compose.foundation.shape.RoundedCornerShape(20.dp),
-                title = { Text("¿Desactivar protección de pantalla?", color = TextoPrincipal) },
-                text = {
-                    Text(
-                        "Al desactivar FLAG_SECURE, las capturas de pantalla y la vista previa en " +
-                            "aplicaciones recientes estarán permitidas. Tus contraseñas y datos " +
-                            "sensibles podrían quedar visibles en grabaciones de pantalla.\n\n" +
-                            "Puedes volver a activarla en cualquier momento.",
-                        color = TextoSecundario,
-                        style = MaterialTheme.typography.bodyMedium
-                    )
+            DialogoConfirmacionBoveda(
+                titulo = "¿Desactivar protección de pantalla?",
+                mensaje = "Al desactivar FLAG_SECURE, las capturas de pantalla y la vista previa en aplicaciones recientes estarán permitidas. Tus contraseñas y datos sensibles podrían quedar visibles en grabaciones de pantalla.\n\nPuedes volver a activarla en cualquier momento.",
+                textoConfirmar = "Desactivar",
+                tipoConfirmacion = TipoBotonTexto.PELIGRO,
+                iconoHeader = Icons.Filled.Security,
+                alConfirmar = {
+                    confirmarDesactivar = false
+                    vm.ajustarProteccionPantalla(false)
+                    haptica.tic()
                 },
-                confirmButton = {
-                    androidx.compose.material3.TextButton(onClick = {
-                        confirmarDesactivar = false
-                        vm.ajustarProteccionPantalla(false)
-                        haptica.tic()
-                    }) { Text("Desactivar", color = Peligro) }
-                },
-                dismissButton = {
-                    androidx.compose.material3.TextButton(onClick = { confirmarDesactivar = false }) {
-                        Text("Cancelar", color = TextoSecundario)
-                    }
-                }
+                alDescartar = { confirmarDesactivar = false }
             )
         }
 

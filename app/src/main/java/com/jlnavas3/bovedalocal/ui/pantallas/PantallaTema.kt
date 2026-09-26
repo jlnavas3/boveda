@@ -50,9 +50,11 @@ import android.widget.Toast
 import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.RestartAlt
 import androidx.compose.material.icons.filled.Tune
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
+import com.jlnavas3.bovedalocal.ui.componentes.DialogoConfirmacionBoveda
+import com.jlnavas3.bovedalocal.ui.componentes.MenuDesplegableBoveda
+import com.jlnavas3.bovedalocal.ui.componentes.TipoBotonTexto
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
@@ -445,32 +447,19 @@ fun PantallaTema(
 }
 
     dialogoConfirmarIcono?.let { paleta ->
-        val esOscuro = androidx.compose.foundation.isSystemInDarkTheme()
-        val colorDialogo = if (esOscuro) Color(0xFF212023) else Color(0xFFFFFFFF)
-        AlertDialog(
-            onDismissRequest = { dialogoConfirmarIcono = null },
-            containerColor = colorDialogo,
-            tonalElevation = 0.dp,
-            shape = RoundedCornerShape(20.dp),
-            title = { Text("Cambiar icono a \"${paleta.etiqueta}\"", color = TextoPrincipal) },
-            text = {
-                Text(
-                    "Android cerrará la aplicación por un instante para que el launcher actualice su icono. Ya quedará guardado antes de cerrarse.",
-                    color = TextoSecundario,
-                    style = MaterialTheme.typography.bodyMedium
-                )
+        DialogoConfirmacionBoveda(
+            titulo = "Cambiar icono a \"${paleta.etiqueta}\"",
+            mensaje = "Android cerrará la aplicación por un instante para que el launcher actualice su icono. Ya quedará guardado antes de cerrarse.",
+            textoConfirmar = "Cambiar y cerrar",
+            tipoConfirmacion = TipoBotonTexto.PRIMARIO,
+            iconoHeader = Icons.Filled.Palette,
+            alConfirmar = {
+                val elegido = paleta
+                dialogoConfirmarIcono = null
+                vm.ajustarIconoLauncher(elegido.clave)
+                actividad?.finishAffinity()
             },
-            confirmButton = {
-                TextButton(onClick = {
-                    val elegido = paleta
-                    dialogoConfirmarIcono = null
-                    vm.ajustarIconoLauncher(elegido.clave)
-                    actividad?.finishAffinity()
-                }) { Text("Cambiar y cerrar", color = ColorAcento) }
-            },
-            dismissButton = {
-                TextButton(onClick = { dialogoConfirmarIcono = null }) { Text("Cancelar", color = TextoSecundario) }
-            }
+            alDescartar = { dialogoConfirmarIcono = null }
         )
     }
 }

@@ -10,6 +10,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -59,8 +60,12 @@ import androidx.compose.ui.text.input.VisualTransformation
 import com.jlnavas3.bovedalocal.util.FormateadorCampos
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.PopupProperties
+import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteCampoTexto
+import com.jlnavas3.bovedalocal.ui.componentes.ajustes.TipoCampoTexto
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjusteGris
 import com.jlnavas3.bovedalocal.ui.theme.Ambar
 import com.jlnavas3.bovedalocal.ui.theme.AmbarFuerte
@@ -96,6 +101,7 @@ import com.jlnavas3.bovedalocal.ui.theme.fondoBadgeParaTema
 import com.jlnavas3.bovedalocal.util.Dominios
 import com.jlnavas3.bovedalocal.util.Haptica
 import kotlin.math.abs
+import kotlin.math.round
 
 fun coloresMonograma(semilla: String): Pair<Color, Color> {
     val base = Dominios.raiz(semilla).ifEmpty { semilla }.lowercase()
@@ -325,256 +331,14 @@ fun TarjetaBovedaDesplegable(
 }
 
 @Composable
-fun BotonAmbar(
-    texto: String,
-    modifier: Modifier = Modifier,
-    activo: Boolean = true,
-    icono: ImageVector? = null,
-    alPulsar: () -> Unit
-) {
-    val escala by animateFloatAsState(
-        targetValue = if (activo) 1f else 0.98f,
-        animationSpec = spring(dampingRatio = 0.6f, stiffness = Spring.StiffnessMedium),
-        label = "escalaBoton"
-    )
-    val forma = FormaBoton
-    val colorTexto = if (activo) ColorSobreAcento else TextoSecundario
+fun SeparadorOpcionMenu(modifier: Modifier = Modifier) {
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .height(42.dp)
-            .clip(forma)
-            .background(if (activo) DegradadoAmbar else Brush.horizontalGradient(listOf(Borde, Borde)))
-            .then(
-                if (GrosorBorde > 0.dp && !activo) {
-                    Modifier.border(GrosorBorde, Borde, forma)
-                } else {
-                    Modifier
-                }
-            )
-            .clickable(enabled = activo) { alPulsar() },
-        contentAlignment = Alignment.Center
-    ) {
-        if (icono != null) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 12.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center
-            ) {
-                Icon(
-                    imageVector = icono,
-                    contentDescription = null,
-                    tint = colorTexto,
-                    modifier = Modifier.size(18.dp)
-                )
-                Spacer(Modifier.width(8.dp))
-                Text(
-                    text = texto,
-                    color = colorTexto,
-                    style = MaterialTheme.typography.bodyMedium.copy(
-                        fontSize = (14 * escala * EscalaTexto).sp,
-                        fontWeight = FontWeight.SemiBold
-                    ),
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                    textAlign = TextAlign.Center
-                )
-            }
-        } else {
-            Text(
-                text = texto,
-                color = colorTexto,
-                style = MaterialTheme.typography.bodyMedium.copy(
-                    fontSize = (14 * escala * EscalaTexto).sp,
-                    fontWeight = FontWeight.SemiBold
-                ),
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                textAlign = TextAlign.Center,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp)
-            )
-        }
-    }
-}
-
-@Composable
-fun BotonBorde(
-    texto: String,
-    modifier: Modifier = Modifier,
-    color: Color = TextoPrincipal,
-    icono: ImageVector? = null,
-    alPulsar: () -> Unit
-) {
-    val forma = RoundedCornerShape(12.dp)
-    val fondoBoton = if (esOscuroActivo) Color(0xFF2A292E) else Color(0xFFEFEFF3)
-    Box(
-        modifier = modifier
-            .fillMaxWidth()
-            .height(42.dp)
-            .clip(forma)
-            .background(fondoBoton)
-            .clickable { alPulsar() },
-        contentAlignment = Alignment.Center
-    ) {
-        if (icono != null) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 12.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center
-            ) {
-                Icon(
-                    imageVector = icono,
-                    contentDescription = null,
-                    tint = color,
-                    modifier = Modifier.size(18.dp)
-                )
-                Spacer(Modifier.width(8.dp))
-                Text(
-                    text = texto,
-                    color = color,
-                    style = MaterialTheme.typography.bodyMedium.copy(
-                        fontSize = (14 * EscalaTexto).sp,
-                        fontWeight = FontWeight.SemiBold
-                    ),
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                    textAlign = TextAlign.Center
-                )
-            }
-        } else {
-            Text(
-                text = texto,
-                color = color,
-                style = MaterialTheme.typography.bodyMedium.copy(
-                    fontSize = (14 * EscalaTexto).sp,
-                    fontWeight = FontWeight.SemiBold
-                ),
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                textAlign = TextAlign.Center,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp)
-            )
-        }
-    }
-}
-
-@Composable
-fun BotonPeligro(
-    texto: String,
-    modifier: Modifier = Modifier,
-    icono: ImageVector? = null,
-    alPulsar: () -> Unit
-) {
-    BotonBorde(
-        texto = texto,
-        modifier = modifier,
-        color = Peligro,
-        icono = icono,
-        alPulsar = alPulsar
+            .height(0.8.dp)
+            .background(if (esOscuroActivo) Color(0xFF2D2C30) else Color(0xFFEBEBEB))
     )
 }
-
-enum class VarianteBoton { PRIMARIO, SECUNDARIO, PELIGRO }
-
-@Composable
-fun BotonBoveda(
-    texto: String,
-    alPulsar: () -> Unit,
-    modifier: Modifier = Modifier,
-    variante: VarianteBoton = VarianteBoton.PRIMARIO,
-    activo: Boolean = true,
-    icono: ImageVector? = null
-) {
-    when (variante) {
-        VarianteBoton.PRIMARIO -> BotonAmbar(texto = texto, modifier = modifier, activo = activo, icono = icono, alPulsar = alPulsar)
-        VarianteBoton.SECUNDARIO -> BotonBorde(texto = texto, modifier = modifier, icono = icono, alPulsar = alPulsar)
-        VarianteBoton.PELIGRO -> BotonPeligro(texto = texto, modifier = modifier, icono = icono, alPulsar = alPulsar)
-    }
-}
-
-/**
- * Casilla de verificación (Checkbox) unificada para toda la app.
- * Encapsula la háptica y los colores del tema.
- */
-@Composable
-fun CheckboxBoveda(
-    checked: Boolean,
-    onCheckedChange: ((Boolean) -> Unit)?,
-    modifier: Modifier = Modifier,
-    enabled: Boolean = true,
-    colorAcento: Color = ColorAcento
-) {
-    val contexto = LocalContext.current
-    val haptica = remember { Haptica(contexto) }
-
-    Checkbox(
-        checked = checked,
-        onCheckedChange = { nuevoValor ->
-            haptica.tic()
-            onCheckedChange?.invoke(nuevoValor)
-        },
-        modifier = modifier,
-        enabled = enabled,
-        colors = CheckboxDefaults.colors(
-            checkedColor = colorAcento,
-            uncheckedColor = TextoSecundario,
-            checkmarkColor = ColorSobreAcento
-        )
-    )
-}
-
-@Composable
-fun CampoBoveda(
-    valor: String,
-    etiqueta: String,
-    alCambiar: (String) -> Unit,
-    modifier: Modifier = Modifier,
-    esContrasena: Boolean = false,
-    mostrarContrasena: Boolean = false,
-    alAlternarMostrarContrasena: (() -> Unit)? = null,
-    monoespaciada: Boolean = false,
-    varias: Boolean = false,
-    tecladoNumerico: Boolean = false,
-    keyboardType: KeyboardType? = null,
-    readOnly: Boolean = false,
-    trailingIcon: (@Composable () -> Unit)? = null,
-    alPulsar: (() -> Unit)? = null,
-    formateadorMascara: ((String) -> String)? = null
-) {
-    val tipo = when {
-        esContrasena -> com.jlnavas3.bovedalocal.ui.componentes.ajustes.TipoCampoTexto.CONTRASENA
-        tecladoNumerico -> com.jlnavas3.bovedalocal.ui.componentes.ajustes.TipoCampoTexto.NUMERICO
-        varias -> com.jlnavas3.bovedalocal.ui.componentes.ajustes.TipoCampoTexto.MULTILINEA
-        else -> com.jlnavas3.bovedalocal.ui.componentes.ajustes.TipoCampoTexto.TEXTO
-    }
-    com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteCampoTexto(
-        valor = valor,
-        etiqueta = etiqueta,
-        alCambiar = alCambiar,
-        modifier = modifier,
-        tipo = tipo,
-        esContrasena = esContrasena,
-        mostrarContrasena = if (alAlternarMostrarContrasena != null) mostrarContrasena else null,
-        alAlternarMostrarContrasena = alAlternarMostrarContrasena,
-        monoespaciada = monoespaciada,
-        varias = varias,
-        tecladoNumerico = tecladoNumerico,
-        keyboardType = keyboardType,
-        readOnly = readOnly,
-        trailingIcon = trailingIcon,
-        alPulsar = alPulsar,
-        formateadorMascara = formateadorMascara
-    )
-}
-
 
 @Composable
 fun BarraFuerza(
@@ -634,7 +398,7 @@ fun BarraFuerza(
                             .padding(horizontal = 6.dp, vertical = 2.dp)
                     ) {
                         Text(
-                            text = "${kotlin.math.round(bits).toInt()} bits",
+                            text = "${round(bits).toInt()} bits",
                             color = color,
                             style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold)
                         )
@@ -704,13 +468,12 @@ fun MenuDesplegableBoveda(
     expanded: Boolean,
     onDismissRequest: () -> Unit,
     modifier: Modifier = Modifier,
-    offset: androidx.compose.ui.unit.DpOffset = androidx.compose.ui.unit.DpOffset(0.dp, 0.dp),
-    properties: androidx.compose.ui.window.PopupProperties = androidx.compose.ui.window.PopupProperties(focusable = true),
-    content: @Composable androidx.compose.foundation.layout.ColumnScope.() -> Unit
+    offset: DpOffset = androidx.compose.ui.unit.DpOffset(0.dp, 0.dp),
+    properties: PopupProperties = PopupProperties(focusable = true),
+    content: @Composable ColumnScope.() -> Unit
 ) {
     val forma = RoundedCornerShape(14.dp)
     val fondoMenu = if (esOscuroActivo) Color(0xFF262529) else Color(0xFFFFFFFF)
-    val bordeMenu = if (esOscuroActivo) Color(0xFF38373C) else Color(0xFFE2E2E2)
 
     DropdownMenu(
         expanded = expanded,
@@ -725,149 +488,46 @@ fun MenuDesplegableBoveda(
     }
 }
 
-/**
- * Divisor / separador sutil entre opciones de un menú desplegable, adaptado dinámicamente
- * al tema claro u oscuro para no resaltar excesivamente ni quedar invisible.
- */
 @Composable
-fun SeparadorOpcionMenu(modifier: Modifier = Modifier) {
-    Box(
-        modifier = modifier
-            .fillMaxWidth()
-            .height(0.8.dp)
-            .background(if (esOscuroActivo) Color(0xFF2D2C30) else Color(0xFFEBEBEB))
-    )
-}
-
-/**
- * Píldora o insignia de valor numérico/etiqueta con estilo nativo de Bóveda Local.
- */
-@Composable
-fun InsigniaValorBoveda(
-    texto: String,
+fun CampoBoveda(
+    valor: String,
+    etiqueta: String,
+    alCambiar: (String) -> Unit,
     modifier: Modifier = Modifier,
-    colorAcento: Color = ColorAcento
+    esContrasena: Boolean = false,
+    mostrarContrasena: Boolean = false,
+    alAlternarMostrarContrasena: (() -> Unit)? = null,
+    monoespaciada: Boolean = false,
+    varias: Boolean = false,
+    tecladoNumerico: Boolean = false,
+    keyboardType: KeyboardType? = null,
+    readOnly: Boolean = false,
+    trailingIcon: (@Composable () -> Unit)? = null,
+    alPulsar: (() -> Unit)? = null,
+    formateadorMascara: ((String) -> String)? = null
 ) {
-    Box(
-        modifier = modifier
-            .clip(CircleShape)
-            .background(colorAcento.copy(alpha = 0.15f))
-            .padding(horizontal = 12.dp, vertical = 4.dp),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(
-            text = texto,
-            color = colorAcento,
-            style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold)
-        )
+    val tipo = when {
+        esContrasena -> TipoCampoTexto.CONTRASENA
+        tecladoNumerico -> TipoCampoTexto.NUMERICO
+        varias -> TipoCampoTexto.MULTILINEA
+        else -> TipoCampoTexto.TEXTO
     }
-}
-
-enum class TipoBotonTexto { PRIMARIO, SECUNDARIO, PELIGRO }
-
-/**
- * Botón de texto unificado para diálogos, modales y acciones secundarias.
- * Encapsula la háptica, tipografía y colores según la variante semántica.
- */
-@Composable
-fun BotonTextoBoveda(
-    texto: String,
-    alPulsar: () -> Unit,
-    modifier: Modifier = Modifier,
-    tipo: TipoBotonTexto = TipoBotonTexto.PRIMARIO,
-    colorPersonalizado: Color? = null,
-    habilitado: Boolean = true
-) {
-    val contexto = LocalContext.current
-    val haptica = remember { Haptica(contexto) }
-
-    val colorEfectivo = colorPersonalizado ?: when (tipo) {
-        TipoBotonTexto.PRIMARIO -> ColorAcento
-        TipoBotonTexto.SECUNDARIO -> TextoSecundario
-        TipoBotonTexto.PELIGRO -> Peligro
-    }
-
-    TextButton(
-        onClick = {
-            if (tipo == TipoBotonTexto.PELIGRO) haptica.exito() else haptica.tic()
-            alPulsar()
-        },
-        enabled = habilitado,
-        modifier = modifier
-    ) {
-        Text(
-            text = texto,
-            color = if (habilitado) colorEfectivo else ColorAjusteGris,
-            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold)
-        )
-    }
-}
-
-/**
- * Diálogo de confirmación estándar y elegante para la aplicación.
- * Sigue la estética unificada con fondo adaptativo claro/oscuro, esquinas redondeadas de 20dp,
- * tonalElevation 0.dp y botones usando `BotonTextoBoveda`.
- */
-@Composable
-fun DialogoConfirmacionBoveda(
-    titulo: String,
-    mensaje: String,
-    textoConfirmar: String,
-    alConfirmar: () -> Unit,
-    alDescartar: () -> Unit,
-    textoCancelar: String = "Cancelar",
-    tipoConfirmacion: TipoBotonTexto = TipoBotonTexto.PRIMARIO,
-    iconoHeader: ImageVector? = null
-) {
-    val fondoDialogo = if (esOscuroActivo) Color(0xFF212023) else Color(0xFFFFFFFF)
-
-    AlertDialog(
-        onDismissRequest = alDescartar,
-        containerColor = fondoDialogo,
-        tonalElevation = 0.dp,
-        shape = RoundedCornerShape(20.dp),
-        icon = if (iconoHeader != null) {
-            {
-                val tintColor = when (tipoConfirmacion) {
-                    TipoBotonTexto.PELIGRO -> Peligro
-                    TipoBotonTexto.SECUNDARIO -> TextoSecundario
-                    TipoBotonTexto.PRIMARIO -> ColorAcento
-                }
-                Icon(
-                    imageVector = iconoHeader,
-                    contentDescription = null,
-                    tint = tintColor,
-                    modifier = Modifier.size(28.dp)
-                )
-            }
-        } else null,
-        title = {
-            Text(
-                text = titulo,
-                color = TextoPrincipal,
-                style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold)
-            )
-        },
-        text = {
-            Text(
-                text = mensaje,
-                color = TextoSecundario,
-                style = MaterialTheme.typography.bodyMedium
-            )
-        },
-        confirmButton = {
-            BotonTextoBoveda(
-                texto = textoConfirmar,
-                alPulsar = alConfirmar,
-                tipo = tipoConfirmacion
-            )
-        },
-        dismissButton = {
-            BotonTextoBoveda(
-                texto = textoCancelar,
-                alPulsar = alDescartar,
-                tipo = TipoBotonTexto.SECUNDARIO
-            )
-        }
+    ComponenteCampoTexto(
+        valor = valor,
+        etiqueta = etiqueta,
+        alCambiar = alCambiar,
+        modifier = modifier,
+        tipo = tipo,
+        esContrasena = esContrasena,
+        mostrarContrasena = if (alAlternarMostrarContrasena != null) mostrarContrasena else null,
+        alAlternarMostrarContrasena = alAlternarMostrarContrasena,
+        monoespaciada = monoespaciada,
+        varias = varias,
+        tecladoNumerico = tecladoNumerico,
+        keyboardType = keyboardType,
+        readOnly = readOnly,
+        trailingIcon = trailingIcon,
+        alPulsar = alPulsar,
+        formateadorMascara = formateadorMascara
     )
 }

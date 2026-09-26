@@ -28,6 +28,8 @@ import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
 
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.graphics.Color
+import com.jlnavas3.bovedalocal.ui.componentes.DialogoConfirmacionBoveda
+import com.jlnavas3.bovedalocal.ui.componentes.TipoBotonTexto
 import com.jlnavas3.bovedalocal.ui.theme.esOscuroActivo
 
 private val colorDialogo: Color @Composable get() = if (esOscuroActivo) Color(0xFF212023) else Color(0xFFFFFFFF)
@@ -38,32 +40,17 @@ fun DialogoModoCompatible(
     alDescartar: () -> Unit,
     alConfirmar: () -> Unit
 ) {
-    AlertDialog(
-        onDismissRequest = alDescartar,
-        shape = RoundedCornerShape(20.dp),
-        containerColor = colorDialogo,
-        tonalElevation = 0.dp,
-        title = { Text("Modo compatible", color = TextoPrincipal) },
-        text = {
-            Text(
-                motivo + "\n\nEn este modo la huella o el PIN los comprueba Android y la app abre la bóveda. " +
-                    "La clave maestra sigue envuelta por el Keystore y no sale del móvil, pero no queda atada " +
-                    "al chip como en el modo fuerte: es algo más débil. Tu contraseña maestra sigue siendo la " +
-                    "única llave real, y puedes volver al modo fuerte cuando quieras.",
-                color = TextoSecundario,
-                style = MaterialTheme.typography.bodyMedium
-            )
-        },
-        confirmButton = {
-            TextButton(onClick = alConfirmar) {
-                Text("Activar modo compatible", color = ColorAcento)
-            }
-        },
-        dismissButton = {
-            TextButton(onClick = alDescartar) {
-                Text("Ahora no", color = TextoSecundario)
-            }
-        }
+    DialogoConfirmacionBoveda(
+        titulo = "Modo compatible",
+        mensaje = motivo + "\n\nEn este modo la huella o el PIN los comprueba Android y la app abre la bóveda. " +
+            "La clave maestra sigue envuelta por el Keystore y no sale del móvil, pero no queda atada " +
+            "al chip como en el modo fuerte: es algo más débil. Tu contraseña maestra sigue siendo la " +
+            "única llave real, y puedes volver al modo fuerte cuando quieras.",
+        textoConfirmar = "Activar modo compatible",
+        textoCancelar = "Ahora no",
+        tipoConfirmacion = TipoBotonTexto.PRIMARIO,
+        alConfirmar = alConfirmar,
+        alDescartar = alDescartar
     )
 }
 
@@ -111,31 +98,15 @@ fun DialogoImportarCsv(
     alDescartar: () -> Unit,
     alConfirmar: () -> Unit
 ) {
-    AlertDialog(
-        onDismissRequest = alDescartar,
-        shape = RoundedCornerShape(20.dp),
-        containerColor = colorDialogo,
-        tonalElevation = 0.dp,
-        title = { Text("Importar CSV", color = TextoPrincipal) },
-        text = {
-            Text(
-                "El CSV que exportan Google, Chrome, Bitwarden o LastPass va sin cifrar: cualquiera que " +
-                    "lo abra ve las contraseñas en claro. Elige el archivo, se cifra al entrar en la bóveda, " +
-                    "y después borra ese CSV de donde lo tengas guardado.",
-                color = TextoSecundario,
-                style = MaterialTheme.typography.bodyMedium
-            )
-        },
-        confirmButton = {
-            TextButton(onClick = alConfirmar) {
-                Text("Elegir archivo", color = ColorAcento)
-            }
-        },
-        dismissButton = {
-            TextButton(onClick = alDescartar) {
-                Text("Cancelar", color = TextoSecundario)
-            }
-        }
+    DialogoConfirmacionBoveda(
+        titulo = "Importar CSV",
+        mensaje = "El CSV que exportan Google, Chrome, Bitwarden o LastPass va sin cifrar: cualquiera que " +
+            "lo abra ve las contraseñas en claro. Elige el archivo, se cifra al entrar en la bóveda, " +
+            "y después borra ese CSV de donde lo tengas guardado.",
+        textoConfirmar = "Elegir archivo",
+        tipoConfirmacion = TipoBotonTexto.PRIMARIO,
+        alConfirmar = alConfirmar,
+        alDescartar = alDescartar
     )
 }
 

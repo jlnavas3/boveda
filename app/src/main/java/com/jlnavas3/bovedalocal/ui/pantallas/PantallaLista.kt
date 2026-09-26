@@ -57,6 +57,9 @@ import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.Timer
 import androidx.compose.material.icons.filled.Tune
 import androidx.compose.material3.AlertDialog
+import com.jlnavas3.bovedalocal.ui.componentes.DialogoConfirmacionBoveda
+import com.jlnavas3.bovedalocal.ui.componentes.MenuDesplegableBoveda
+import com.jlnavas3.bovedalocal.ui.componentes.TipoBotonTexto
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -925,24 +928,19 @@ fun PantallaLista(vm: VaultViewModel, estado: EstadoBoveda) {
     val colorDialogo = if (esOscuro) Color(0xFF212023) else Color(0xFFFFFFFF)
 
     if (dialogoBorrarSeleccion) {
-        AlertDialog(
-            onDismissRequest = { dialogoBorrarSeleccion = false },
-            containerColor = colorDialogo,
-            tonalElevation = 0.dp,
-            shape = androidx.compose.foundation.shape.RoundedCornerShape(20.dp),
-            title = { Text("¿Mover ${seleccionados.size} entradas a la papelera?", color = TextoPrincipal) },
-            text = { Text("Se pueden restaurar desde la papelera durante 30 días.", color = TextoSecundario) },
-            confirmButton = {
-                TextButton(onClick = {
-                    dialogoBorrarSeleccion = false
-                    val idsABorrar = seleccionados
-                    salirDeSeleccion()
-                    vm.eliminarVarias(idsABorrar)
-                }) { Text("Mover a la papelera", color = Peligro) }
+        DialogoConfirmacionBoveda(
+            titulo = "¿Mover ${seleccionados.size} entradas a la papelera?",
+            mensaje = "Se pueden restaurar desde la papelera durante 30 días.",
+            textoConfirmar = "Mover a la papelera",
+            tipoConfirmacion = TipoBotonTexto.PELIGRO,
+            iconoHeader = Icons.Filled.Delete,
+            alConfirmar = {
+                dialogoBorrarSeleccion = false
+                val idsABorrar = seleccionados
+                salirDeSeleccion()
+                vm.eliminarVarias(idsABorrar)
             },
-            dismissButton = {
-                TextButton(onClick = { dialogoBorrarSeleccion = false }) { Text("Cancelar", color = TextoSecundario) }
-            }
+            alDescartar = { dialogoBorrarSeleccion = false }
         )
     }
 
