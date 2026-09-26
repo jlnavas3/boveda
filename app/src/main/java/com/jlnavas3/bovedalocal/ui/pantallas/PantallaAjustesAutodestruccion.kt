@@ -57,6 +57,7 @@ import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjustesFondo
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.SeparadorFilaSimple
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.ColorSobreAcento
+import com.jlnavas3.bovedalocal.ui.theme.ColorTitulos
 import com.jlnavas3.bovedalocal.ui.theme.FormaTarjeta
 import com.jlnavas3.bovedalocal.ui.theme.Peligro
 import com.jlnavas3.bovedalocal.ui.theme.SuperficieAlta
@@ -191,7 +192,7 @@ fun PantallaAjustesAutodestruccion(
                         activo = activo,
                         idFila = "01.3.1",
                         mostrarId = ajustes.mostrarIdsAjustes,
-                        colorActivo = Peligro,
+                        colorActivo = ColorAcento,
                         alCambiar = { nuevoEstado ->
                             haptica.tic()
                             activo = nuevoEstado
@@ -208,7 +209,7 @@ fun PantallaAjustesAutodestruccion(
                         Column(modifier = Modifier.padding(16.dp)) {
                             Text(
                                 text = if (datosAutodestruccion.hashHex.isNotBlank()) "Cambiar PIN de Autodestrucción" else "Definir nuevo PIN de Autodestrucción",
-                                color = ColorAcento,
+                                color = ColorTitulos,
                                 style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold)
                             )
 
@@ -222,7 +223,8 @@ fun PantallaAjustesAutodestruccion(
                                 esContrasena = true,
                                 mostrarContrasena = verPin,
                                 alAlternarMostrarContrasena = { verPin = !verPin },
-                                mostrarIcono = true
+                                mostrarIcono = true,
+                                colorIcono = Peligro
                             )
 
                             Spacer(Modifier.height(8.dp))
@@ -235,7 +237,8 @@ fun PantallaAjustesAutodestruccion(
                                 esContrasena = true,
                                 mostrarContrasena = verPin,
                                 alAlternarMostrarContrasena = { verPin = !verPin },
-                                mostrarIcono = true
+                                mostrarIcono = true,
+                                colorIcono = Peligro
                             )
 
                             if (datosAutodestruccion.hashHex.isNotBlank()) {

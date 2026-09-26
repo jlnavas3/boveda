@@ -58,6 +58,7 @@ import com.jlnavas3.bovedalocal.ui.theme.Ambar
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
 import com.jlnavas3.bovedalocal.ui.theme.ColorSeguridad
+import com.jlnavas3.bovedalocal.ui.theme.ColorTitulos
 import com.jlnavas3.bovedalocal.ui.theme.ColorSobreAcento
 import com.jlnavas3.bovedalocal.ui.theme.FormaTarjeta
 import com.jlnavas3.bovedalocal.ui.theme.Peligro
@@ -169,7 +170,7 @@ fun PantallaAjustesSenuelo(
                         activo = activo,
                         idFila = "01.2.1",
                         mostrarId = ajustes.mostrarIdsAjustes,
-                        colorActivo = ColorSeguridad,
+                        colorActivo = ColorAcento,
                         alCambiar = { nuevoEstado ->
                             haptica.tic()
                             activo = nuevoEstado
@@ -186,7 +187,7 @@ fun PantallaAjustesSenuelo(
                         Column(modifier = Modifier.padding(16.dp)) {
                             Text(
                                 text = if (datosSenuelo.hashHex.isNotBlank()) "Cambiar PIN / Clave de coacción" else "Definir PIN de coacción",
-                                color = ColorAcento,
+                                color = ColorTitulos,
                                 style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold)
                             )
 
@@ -200,7 +201,8 @@ fun PantallaAjustesSenuelo(
                                 esContrasena = true,
                                 mostrarContrasena = verPin,
                                 alAlternarMostrarContrasena = { verPin = !verPin },
-                                mostrarIcono = true
+                                mostrarIcono = true,
+                                colorIcono = ColorSeguridad
                             )
                         }
 

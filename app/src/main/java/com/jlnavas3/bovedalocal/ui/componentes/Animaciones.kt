@@ -75,10 +75,12 @@ import java.security.SecureRandom
 private val GLIFOS = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789!@#\$%&*?/-_=+".toCharArray()
 private val aleatorio = SecureRandom()
 
+val ColorDigitos = Color(0xFFFFB74D)
+
 fun contrasenaColoreada(texto: String): AnnotatedString = buildAnnotatedString {
     texto.forEach { c ->
         val color = when {
-            c.isDigit() -> Ambar
+            c.isDigit() -> ColorDigitos
             c.isLetter() -> TextoPrincipal
             else -> Menta
         }

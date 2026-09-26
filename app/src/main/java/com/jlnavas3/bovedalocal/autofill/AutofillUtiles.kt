@@ -139,6 +139,7 @@ object AutofillUtiles {
 
     fun presentacion(contexto: Context, titulo: String, subtitulo: String): RemoteViews =
         RemoteViews(contexto.packageName, R.layout.autofill_item).apply {
+            setImageViewResource(R.id.icono_autofill, R.drawable.ic_candado_boveda)
             setTextViewText(R.id.titulo, titulo)
             setTextViewText(R.id.subtitulo, subtitulo)
         }

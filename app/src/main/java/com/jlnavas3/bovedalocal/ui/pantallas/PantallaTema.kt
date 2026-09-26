@@ -328,8 +328,8 @@ fun PantallaTema(
                 ComponenteNavegacion(
                     titulo = "Colores de campos y datos",
                     icono = Icons.Filled.Palette,
-                    colorIcono = ColorAcento,
-                    idFila = "03.2.1",
+                    colorIcono = Color(0xFF8E24AA),
+                    idFila = "03.2.8",
                     mostrarId = ajustes.mostrarIdsAjustes,
                     alPulsar = { vm.ir(Pantalla.ColoresDatos()) }
                 )

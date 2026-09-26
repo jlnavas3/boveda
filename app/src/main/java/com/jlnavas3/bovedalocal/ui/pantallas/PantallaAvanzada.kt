@@ -228,7 +228,7 @@ fun PantallaAvanzada(
                     ComponenteSwitch(
                         titulo = "Vibración háptica en la app",
                         icono = Icons.Filled.Vibration,
-                        colorIcono = ColorAcento,
+                        colorIcono = Color(0xFF00897B),
                         idFila = "05.1.9",
                         mostrarId = ajustes.mostrarIdsAjustes,
                         activo = ajustes.hapticaApp,
@@ -252,7 +252,8 @@ fun PantallaAvanzada(
                             idFila = "05.1.10",
                             mostrarId = ajustes.mostrarIdsAjustes,
                             icono = Icons.Filled.Vibration,
-                            colorIcono = ColorAcento,
+                            colorIcono = Color(0xFF00897B),
+                            colorAcento = Color(0xFF00897B),
                             alCambiar = {
                                 vm.ajustarHapticaAppIntensidad(it)
                                 haptica.probar(it)
@@ -264,7 +265,7 @@ fun PantallaAvanzada(
                         ComponenteNavegacion(
                             titulo = "Probar vibración",
                             icono = Icons.Filled.Vibration,
-                            colorIcono = ColorAcento,
+                            colorIcono = Color(0xFF00897B),
                             idFila = "05.1.11",
                             mostrarId = ajustes.mostrarIdsAjustes,
                             alPulsar = {

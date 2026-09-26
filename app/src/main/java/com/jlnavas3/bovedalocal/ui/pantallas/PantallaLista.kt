@@ -357,6 +357,24 @@ fun PantallaLista(vm: VaultViewModel, estado: EstadoBoveda) {
                     )
                 }
 
+                // Botón Bloquear (Candado)
+                IconButton(
+                    onClick = { haptica.toque(); vm.bloquear() },
+                    modifier = Modifier
+                        .size(40.dp)
+                        .clip(CircleShape)
+                        .background(Peligro.copy(alpha = 0.12f))
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.Lock,
+                        contentDescription = "Bloquear bóveda",
+                        tint = Peligro,
+                        modifier = Modifier.size(20.dp)
+                    )
+                }
+
+                Spacer(Modifier.width(6.dp))
+
                 // Botón Búsqueda (Lupa)
                 IconButton(
                     onClick = {
@@ -537,24 +555,6 @@ fun PantallaLista(vm: VaultViewModel, estado: EstadoBoveda) {
                             )
                         }
                     }
-                }
-
-                Spacer(Modifier.width(6.dp))
-
-                // Botón Bloquear
-                IconButton(
-                    onClick = { haptica.toque(); vm.bloquear() },
-                    modifier = Modifier
-                        .size(40.dp)
-                        .clip(CircleShape)
-                        .background(Peligro.copy(alpha = 0.12f))
-                ) {
-                    Icon(
-                        imageVector = Icons.Filled.Lock,
-                        contentDescription = "Bloquear bóveda",
-                        tint = Peligro,
-                        modifier = Modifier.size(20.dp)
-                    )
                 }
             }
 

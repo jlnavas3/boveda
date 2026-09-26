@@ -15,6 +15,7 @@ import androidx.compose.material.icons.filled.Tune
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -97,7 +98,7 @@ fun PantallaOrganizacionLista(
                     ComponenteSwitch(
                         titulo = "Indicadores de contenido en tarjetas",
                         icono = Icons.Filled.Tune,
-                        colorIcono = ColorAcento,
+                        colorIcono = Color(0xFF5C6BC0),
                         activo = ajustes.mostrarIndicadoresContenido,
                         idFila = "03.5.2",
                         mostrarId = ajustes.mostrarIdsAjustes,

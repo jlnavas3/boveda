@@ -233,7 +233,7 @@ fun PantallaKitEmergencia(
                 ) {
                     BotonColorido(
                         texto = "Imprimir / PDF",
-                        color = ColorAcento,
+                        color = ColorSeguridad,
                         icono = Icons.Filled.Print,
                         modifier = Modifier.weight(1f)
                     ) {
