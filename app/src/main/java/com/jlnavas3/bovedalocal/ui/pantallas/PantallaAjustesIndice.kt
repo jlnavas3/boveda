@@ -60,7 +60,6 @@ import com.jlnavas3.bovedalocal.ui.theme.Superficie
 import com.jlnavas3.bovedalocal.ui.theme.SuperficieAlta
 import com.jlnavas3.bovedalocal.ui.theme.TextoPrincipal
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
-import com.jlnavas3.bovedalocal.ui.theme.esOscuroActivo
 import com.jlnavas3.bovedalocal.util.Haptica
 
 /**
@@ -198,28 +197,8 @@ fun PantallaAjustesIndice(
 
                     // 2. Efecto de ola Niagara
                     val amplitud = ajustes.indiceAmplitudOlaDp
-                    val textoAmplitud = when {
-                        amplitud <= 0f -> "Recto (sin ola)"
-                        amplitud < 45f -> "Curva sutil"
-                        amplitud < 85f -> "Equilibrado"
-                        amplitud <= 115f -> "Ola amplia (predeterminado)"
-                        else -> "Super exagerado"
-                    }
                     val radio = ajustes.indiceRadioOlaDp
-                    val textoRadio = when {
-                        radio < 140f -> "Concentrado"
-                        radio < 220f -> "Arco medio"
-                        radio <= 265f -> "Arco amplio (predeterminado)"
-                        else -> "Abarca todo el abecedario"
-                    }
                     val escala = ajustes.indiceEscalaLetras
-                    val textoEscala = when {
-                        escala <= 1.05f -> "Sin aumento"
-                        escala < 1.45f -> "Crecimiento suave"
-                        escala <= 1.8f -> "Letras destacadas (predeterminado)"
-                        escala < 2.3f -> "Letras grandes en cresta"
-                        else -> "Letras gigantescas"
-                    }
                     val escalaStr = "%.1f".format(java.util.Locale.US, escala)
 
                     ComponenteGrupo(
@@ -243,7 +222,7 @@ fun PantallaAjustesIndice(
                             ComponenteSlider(
                                 titulo = "Amplitud de la curvatura",
                                 valor = amplitud,
-                                valorTexto = "${amplitud.toInt()} dp ($textoAmplitud)",
+                                valorTexto = "${amplitud.toInt()} dp",
                                 rango = 0f..130f,
                                 idFila = "03.4.2",
                                 mostrarId = ajustes.mostrarIdsAjustes,
@@ -254,7 +233,7 @@ fun PantallaAjustesIndice(
                             ComponenteSlider(
                                 titulo = "Alcance vertical",
                                 valor = radio,
-                                valorTexto = "${radio.toInt()} dp ($textoRadio)",
+                                valorTexto = "${radio.toInt()} dp",
                                 rango = 80f..300f,
                                 idFila = "03.4.3",
                                 mostrarId = ajustes.mostrarIdsAjustes,
@@ -265,7 +244,7 @@ fun PantallaAjustesIndice(
                             ComponenteSlider(
                                 titulo = "Aumento de letras en cresta",
                                 valor = escala,
-                                valorTexto = "${escalaStr}x ($textoEscala)",
+                                valorTexto = "${escalaStr}x",
                                 rango = 1.0f..2.6f,
                                 idFila = "03.4.4",
                                 mostrarId = ajustes.mostrarIdsAjustes,
@@ -289,17 +268,7 @@ fun PantallaAjustesIndice(
 
                     // 3. Círculo en la cresta
                     val tamanoCirculo = ajustes.indiceTamanoCirculoDp
-                    val textoTamano = when {
-                        tamanoCirculo < 65f -> "Compacto y discreto"
-                        tamanoCirculo <= 85f -> "Estándar equilibrado (predeterminado)"
-                        else -> "Grande y vistoso"
-                    }
                     val offset = ajustes.indiceOffsetCirculoDp
-                    val textoOffset = when {
-                        offset < 80f -> "Cerca de la franja"
-                        offset < 130f -> "Proyección flotante"
-                        else -> "Casi a media pantalla"
-                    }
 
                     ComponenteGrupo(
                         etiqueta = "Círculo en la cresta",
@@ -322,7 +291,7 @@ fun PantallaAjustesIndice(
                             ComponenteSlider(
                                 titulo = "Tamaño del círculo",
                                 valor = tamanoCirculo,
-                                valorTexto = "${tamanoCirculo.toInt()} dp ($textoTamano)",
+                                valorTexto = "${tamanoCirculo.toInt()} dp",
                                 rango = 50f..110f,
                                 idFila = "03.4.6",
                                 mostrarId = ajustes.mostrarIdsAjustes,
@@ -333,7 +302,7 @@ fun PantallaAjustesIndice(
                             ComponenteSlider(
                                 titulo = "Desplazamiento del círculo",
                                 valor = offset,
-                                valorTexto = "${offset.toInt()} dp ($textoOffset)",
+                                valorTexto = "${offset.toInt()} dp",
                                 rango = 50f..160f,
                                 idFila = "03.4.7",
                                 mostrarId = ajustes.mostrarIdsAjustes,
@@ -356,30 +325,7 @@ fun PantallaAjustesIndice(
 
                     // 4. Tacto, háptica y contraste
                     val anchoTactil = ajustes.indiceAnchoTactilDp
-                    val textoAnchoTactil = when {
-                        anchoTactil < 35f -> "Estrecho (solo sobre letras)"
-                        anchoTactil <= 55f -> "Estándar cómodo (predeterminado)"
-                        anchoTactil < 75f -> "Área amplia"
-                        else -> "Extremadamente amplio"
-                    }
                     val tono = ajustes.indiceTonoLetras
-                    val textoTono = if (esOscuroActivo) {
-                        when {
-                            tono < 25f -> "Muy tenue / discreto"
-                            tono < 45f -> "Oscuro suave"
-                            tono <= 65f -> "Equilibrado (predeterminado)"
-                            tono < 85f -> "Claro y nítido"
-                            else -> "Máximo brillo / blanco puro"
-                        }
-                    } else {
-                        when {
-                            tono < 25f -> "Muy tenue / discreto"
-                            tono < 45f -> "Gris suave"
-                            tono <= 65f -> "Equilibrado (predeterminado)"
-                            tono < 85f -> "Oscuro y nítido"
-                            else -> "Máximo contraste / negro definido"
-                        }
-                    }
 
                     ComponenteGrupo(
                         etiqueta = "Tacto, háptica y contraste",
@@ -401,7 +347,7 @@ fun PantallaAjustesIndice(
                         ComponenteSlider(
                             titulo = "Zona táctil de arrastre",
                             valor = anchoTactil,
-                            valorTexto = "${anchoTactil.toInt()} dp ($textoAnchoTactil)",
+                            valorTexto = "${anchoTactil.toInt()} dp",
                             rango = 26f..90f,
                             idFila = "03.4.9",
                             mostrarId = ajustes.mostrarIdsAjustes,
@@ -412,7 +358,7 @@ fun PantallaAjustesIndice(
                         ComponenteSlider(
                             titulo = "Tono y contraste de letras",
                             valor = tono,
-                            valorTexto = "${tono.toInt()}% ($textoTono)",
+                            valorTexto = "${tono.toInt()}%",
                             rango = 10f..100f,
                             idFila = "03.4.10",
                             mostrarId = ajustes.mostrarIdsAjustes,

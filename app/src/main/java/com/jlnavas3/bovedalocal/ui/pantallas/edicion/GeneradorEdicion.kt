@@ -66,6 +66,7 @@ import com.jlnavas3.bovedalocal.ui.theme.TextoPrincipal
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
 import com.jlnavas3.bovedalocal.util.Haptica
 import androidx.compose.foundation.shape.RoundedCornerShape
+import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.SwitchBoveda
 import com.jlnavas3.bovedalocal.ui.theme.esOscuroActivo
 import kotlin.math.roundToInt
 
@@ -77,17 +78,9 @@ fun OpcionGeneradorCompacta(
 ) {
     Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.width(78.dp)) {
         Text(texto, color = TextoSecundario, style = MaterialTheme.typography.labelSmall, maxLines = 1)
-        Switch(
+        SwitchBoveda(
             checked = activo,
-            onCheckedChange = alCambiar,
-            colors = SwitchDefaults.colors(
-                checkedThumbColor = ColorSobreAcento,
-                checkedTrackColor = Ambar,
-                checkedBorderColor = Ambar,
-                uncheckedThumbColor = TextoSecundario,
-                uncheckedTrackColor = SuperficieAlta,
-                uncheckedBorderColor = TextoSecundario
-            )
+            onCheckedChange = alCambiar
         )
     }
 }

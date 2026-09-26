@@ -120,7 +120,7 @@ fun ComponenteSlider(
                         fontWeight = FontWeight.Normal,
                         fontSize = 15.5.sp
                     ),
-                    maxLines = 1,
+                    maxLines = 2,
                     overflow = TextOverflow.Ellipsis
                 )
 

@@ -378,9 +378,7 @@ fun PantallaCalibracionWidget1x1(
                     ComponenteSlider(
                         titulo = "Ajuste fino vertical (Y)",
                         valor = ajustes.widget1x1OffsetY,
-                        valorTexto = if (ajustes.widget1x1OffsetY > 0) "+${ajustes.widget1x1OffsetY.roundToInt()} dp (bajar)"
-                        else if (ajustes.widget1x1OffsetY < 0) "${ajustes.widget1x1OffsetY.roundToInt()} dp (subir)"
-                        else "0 dp (centro)",
+                        valorTexto = "${ajustes.widget1x1OffsetY.roundToInt()} dp",
                         alCambiar = {
                             haptica.tic()
                             vm.ajustarWidget1x1OffsetY(it)
@@ -400,9 +398,7 @@ fun PantallaCalibracionWidget1x1(
                     ComponenteSlider(
                         titulo = "Ajuste fino horizontal (X)",
                         valor = ajustes.widget1x1OffsetX,
-                        valorTexto = if (ajustes.widget1x1OffsetX > 0) "+${ajustes.widget1x1OffsetX.roundToInt()} dp (derecha)"
-                        else if (ajustes.widget1x1OffsetX < 0) "${ajustes.widget1x1OffsetX.roundToInt()} dp (izquierda)"
-                        else "0 dp (centro)",
+                        valorTexto = "${ajustes.widget1x1OffsetX.roundToInt()} dp",
                         alCambiar = {
                             haptica.tic()
                             vm.ajustarWidget1x1OffsetX(it)
