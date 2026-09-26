@@ -1,116 +1,61 @@
 package com.jlnavas3.bovedalocal.ui.pantallas
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Android
 import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Fingerprint
-import androidx.compose.material.icons.filled.Language
-import androidx.compose.material.icons.filled.Lock
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Security
-import androidx.compose.material.icons.filled.Timer
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Switch
-import androidx.compose.material3.SwitchDefaults
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.jlnavas3.bovedalocal.crypto.Base32
 import com.jlnavas3.bovedalocal.crypto.OpcionesGenerador
-import com.jlnavas3.bovedalocal.crypto.PasswordGenerator
 import com.jlnavas3.bovedalocal.data.Entrada
 import com.jlnavas3.bovedalocal.data.TipoEntrada
 import com.jlnavas3.bovedalocal.data.normalizarEtiqueta
 import com.jlnavas3.bovedalocal.ui.VaultViewModel
-import com.jlnavas3.bovedalocal.ui.componentes.BarraFuerza
 import com.jlnavas3.bovedalocal.ui.componentes.BarraSuperiorPantalla
-import com.jlnavas3.bovedalocal.ui.componentes.BotonBorde
 import com.jlnavas3.bovedalocal.ui.componentes.BotonIconoCabecera
-import com.jlnavas3.bovedalocal.ui.componentes.CampoBoveda
 import com.jlnavas3.bovedalocal.ui.componentes.DescripcionPantalla
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteCampoTexto
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.TipoCampoTexto
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjustesFondo
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.GrupoAjustes
-import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.SeparadorFilaSimple
-import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.SwitchBoveda
 import com.jlnavas3.bovedalocal.ui.pantallas.edicion.FormularioEdicionCuentaBancaria
 import com.jlnavas3.bovedalocal.ui.pantallas.edicion.FormularioEdicionIdentidad
 import com.jlnavas3.bovedalocal.ui.pantallas.edicion.FormularioEdicionServidor
 import com.jlnavas3.bovedalocal.ui.pantallas.edicion.FormularioEdicionTarjeta
 import com.jlnavas3.bovedalocal.ui.pantallas.edicion.FormularioEdicionWallet
 import com.jlnavas3.bovedalocal.ui.pantallas.edicion.FormularioEdicionWifi
-import com.jlnavas3.bovedalocal.ui.pantallas.edicion.GeneradorEnLineaEdicion
 import com.jlnavas3.bovedalocal.ui.pantallas.edicion.GestorCamposBase
 import com.jlnavas3.bovedalocal.ui.pantallas.edicion.SeccionCamposPersonalizados
-import com.jlnavas3.bovedalocal.ui.pantallas.edicion.SeccionEtiquetasEdicion
+import com.jlnavas3.bovedalocal.ui.pantallas.edicion.SeccionCredencialesEdicion
+import com.jlnavas3.bovedalocal.ui.pantallas.edicion.SeccionOrganizacionEdicion
+import com.jlnavas3.bovedalocal.ui.pantallas.edicion.SeccionSitiosYAppsEdicion
 import com.jlnavas3.bovedalocal.ui.pantallas.edicion.SelectorTipoEntrada
-import com.jlnavas3.bovedalocal.ui.theme.Ambar
-import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
-import com.jlnavas3.bovedalocal.ui.theme.ColorDatos2FA
-import com.jlnavas3.bovedalocal.ui.theme.ColorDatosApp
-import com.jlnavas3.bovedalocal.ui.theme.ColorDatosContrasena
-import com.jlnavas3.bovedalocal.ui.theme.ColorDatosPasskey
-import com.jlnavas3.bovedalocal.ui.theme.ColorDatosUsuario
-import com.jlnavas3.bovedalocal.ui.theme.ColorDatosWeb
-import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
-import com.jlnavas3.bovedalocal.ui.theme.ColorPasskeys
-import com.jlnavas3.bovedalocal.ui.theme.ColorSobreAcento
-import com.jlnavas3.bovedalocal.ui.theme.ColorTitulos
-import com.jlnavas3.bovedalocal.ui.theme.esOscuroActivo
-import com.jlnavas3.bovedalocal.ui.theme.EstiloMono
-import androidx.compose.runtime.LaunchedEffect
+import com.jlnavas3.bovedalocal.ui.pantallas.edicion.SeccionTotpEdicion
 import com.jlnavas3.bovedalocal.ui.pantallas.edicion.SelectorAppModal
-import com.jlnavas3.bovedalocal.ui.theme.FormaPequena
-import com.jlnavas3.bovedalocal.ui.theme.Menta
-import com.jlnavas3.bovedalocal.ui.theme.Peligro
-import com.jlnavas3.bovedalocal.ui.theme.SuperficieAlta
-import com.jlnavas3.bovedalocal.ui.theme.TextoPrincipal
-import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
-import com.jlnavas3.bovedalocal.ui.theme.colorLegibleParaTema
-import com.jlnavas3.bovedalocal.ui.theme.fondoBadgeParaTema
+import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
+import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
 import com.jlnavas3.bovedalocal.util.AppInstalada
-import com.jlnavas3.bovedalocal.util.ContrasenasComunes
 import com.jlnavas3.bovedalocal.util.EnlaceEditable
 import com.jlnavas3.bovedalocal.util.GestorAppsInstaladas
 import com.jlnavas3.bovedalocal.util.Haptica
 import com.jlnavas3.bovedalocal.util.LanzadorEnlaces
-import com.jlnavas3.bovedalocal.util.MedidorFuerza
 
 @Composable
 fun PantallaEdicion(vm: VaultViewModel, id: String?, contrasenaInicial: String) {
@@ -147,8 +92,6 @@ fun PantallaEdicion(vm: VaultViewModel, id: String?, contrasenaInicial: String) 
     val etiquetasSugeridas = remember { vm.etiquetasUsadas() }
 
     val totpValido = totp.isBlank() || Base32.esValido(totp)
-    val fuerza = remember(contrasena) { MedidorFuerza.medir(contrasena) }
-    val esComun = remember(contrasena) { ContrasenasComunes.esComun(contexto, contrasena) }
     val puedeGuardar = titulo.isNotBlank() && totpValido
     val scrollState = rememberScrollState()
 
@@ -244,121 +187,16 @@ fun PantallaEdicion(vm: VaultViewModel, id: String?, contrasenaInicial: String) 
 
                     when (tipo) {
                         TipoEntrada.LOGIN, TipoEntrada.PASSKEY -> {
-                            val passkeyInfo = original?.passkey
-                            if (passkeyInfo != null) {
-                                Spacer(Modifier.height(12.dp))
-                                val esOscuro = esOscuroActivo
-                                val colorFondoCampo = if (esOscuro) Color(0xFF242327) else Color(0xFFF1F2F5)
-                                Box(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .clip(FormaPequena)
-                                        .background(colorFondoCampo)
-                                ) {
-                                    Row(
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .padding(start = 16.dp, end = 10.dp, top = 10.dp, bottom = 10.dp),
-                                        verticalAlignment = Alignment.CenterVertically,
-                                        horizontalArrangement = Arrangement.spacedBy(8.dp)
-                                    ) {
-                                        Icon(
-                                            imageVector = Icons.Filled.Fingerprint,
-                                            contentDescription = "Passkey activa",
-                                            tint = colorLegibleParaTema(ColorDatosPasskey),
-                                            modifier = Modifier.size(22.dp)
-                                        )
-                                        Column(modifier = Modifier.weight(1f)) {
-                                            Text(
-                                                text = "Passkey WebAuthn registrada",
-                                                style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
-                                                color = colorLegibleParaTema(ColorDatosPasskey)
-                                            )
-                                            Text(
-                                                text = "rpId: ${passkeyInfo.rpId}",
-                                                style = EstiloMono.copy(fontSize = 11.sp),
-                                                color = colorLegibleParaTema(ColorDatosPasskey).copy(alpha = 0.85f),
-                                                maxLines = 1,
-                                                overflow = TextOverflow.Ellipsis
-                                            )
-                                            Text(
-                                                text = "Algoritmo: ${passkeyInfo.algoritmo}",
-                                                style = EstiloMono.copy(fontSize = 11.sp),
-                                                color = colorLegibleParaTema(ColorDatosPasskey).copy(alpha = 0.85f),
-                                                maxLines = 1,
-                                                overflow = TextOverflow.Ellipsis
-                                            )
-                                        }
-                                    }
-                                    Box(
-                                        modifier = Modifier.matchParentSize()
-                                    ) {
-                                        Box(
-                                            modifier = Modifier
-                                                .width(4.5.dp)
-                                                .fillMaxHeight()
-                                                .align(Alignment.CenterStart)
-                                                .clip(RoundedCornerShape(topStart = 10.dp, bottomStart = 10.dp))
-                                                .background(ColorDatosPasskey)
-                                        )
-                                    }
-                                }
-                            }
-                            Spacer(Modifier.height(12.dp))
-                            ComponenteCampoTexto(
-                                valor = usuario,
-                                etiqueta = "Usuario o correo",
-                                alCambiar = { usuario = it },
-                                mostrarIcono = true,
-                                icono = Icons.Filled.Person,
-                                colorBordeIzquierdo = ColorDatosUsuario,
-                                botonLimpiar = true
-                            )
-                            Spacer(Modifier.height(12.dp))
-                            ComponenteCampoTexto(
-                                valor = contrasena,
-                                etiqueta = "Contraseña",
-                                alCambiar = { contrasena = it },
-                                tipo = TipoCampoTexto.CONTRASENA,
-                                mostrarIcono = true,
-                                icono = Icons.Filled.Lock,
-                                colorBordeIzquierdo = ColorDatosContrasena,
+                            SeccionCredencialesEdicion(
+                                passkey = original?.passkey,
+                                usuario = usuario,
+                                alCambiarUsuario = { usuario = it },
+                                contrasena = contrasena,
+                                alCambiarContrasena = { contrasena = it },
                                 mostrarContrasena = mostrarContrasena,
                                 alAlternarMostrarContrasena = { mostrarContrasena = !mostrarContrasena },
-                                monoespaciada = true
-                            )
-
-                            if (contrasena.isNotEmpty()) {
-                                Spacer(Modifier.height(8.dp))
-                                BarraFuerza(
-                                    fraccion = fuerza.fraccion,
-                                    etiqueta = fuerza.etiqueta,
-                                    tiempo = fuerza.tiempo,
-                                    bits = fuerza.bits
-                                )
-                                if (esComun) {
-                                    Spacer(Modifier.height(6.dp))
-                                    Text(
-                                        "Está entre las contraseñas más repetidas en filtraciones conocidas: cualquiera la prueba primero.",
-                                        color = Peligro,
-                                        style = MaterialTheme.typography.bodyMedium
-                                    )
-                                }
-                            }
-
-                            Spacer(Modifier.height(12.dp))
-
-                            GeneradorEnLineaEdicion(
                                 opcionesGenerador = opcionesGenerador,
-                                alCambiarOpciones = { nuevas ->
-                                    opcionesGenerador = nuevas
-                                    mostrarContrasena = true
-                                    contrasena = PasswordGenerator.generar(nuevas)
-                                },
-                                alGenerarContrasena = { nueva ->
-                                    mostrarContrasena = true
-                                    contrasena = nueva
-                                },
+                                alCambiarOpcionesGenerador = { opcionesGenerador = it },
                                 haptica = haptica
                             )
                         }
@@ -415,153 +253,25 @@ fun PantallaEdicion(vm: VaultViewModel, id: String?, contrasenaInicial: String) 
             // Grupo: Sitios o aplicaciones
             if (tipo == TipoEntrada.LOGIN || tipo == TipoEntrada.PASSKEY) {
                 Spacer(Modifier.height(16.dp))
-                GrupoAjustes(etiqueta = "Sitios o aplicaciones") {
-                    Column(modifier = Modifier.padding(14.dp)) {
-                        if (listaEnlaces.isNotEmpty()) {
-                            listaEnlaces.forEachIndexed { index, enlace ->
-                                val paquete = remember(enlace.valor) { LanzadorEnlaces.extraerPaquete(enlace.valor) }
-                                val esAppEnlace = paquete != null
-                                val esApp = remember(paquete, contexto) { paquete != null && LanzadorEnlaces.estaInstalada(contexto, paquete) }
-                                val nombreApp = remember(paquete, contexto, esApp) {
-                                    if (paquete != null && esApp) LanzadorEnlaces.obtenerNombreApp(contexto, paquete) else null
-                                }
-
-                                Column(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(bottom = 10.dp)
-                                ) {
-                                    ComponenteCampoTexto(
-                                        valor = enlace.valor,
-                                        etiqueta = if (listaEnlaces.size > 1) "Sitio web o app #${index + 1}" else "Sitio web o app",
-                                        alCambiar = { nuevoTexto ->
-                                            listaEnlaces[index] = enlace.copy(valor = nuevoTexto)
-                                        },
-                                        tipo = TipoCampoTexto.ENLACE,
-                                        mostrarIcono = true,
-                                        icono = if (esAppEnlace) Icons.Filled.Android else Icons.Filled.Language,
-                                        colorBordeIzquierdo = if (esAppEnlace) ColorDatosApp else ColorDatosWeb,
-                                        trailingIcon = {
-                                            IconButton(
-                                                onClick = {
-                                                    listaEnlaces.removeAt(index)
-                                                }
-                                            ) {
-                                                Icon(
-                                                    imageVector = Icons.Filled.Close,
-                                                    contentDescription = "Eliminar sitio o app",
-                                                    tint = TextoSecundario,
-                                                    modifier = Modifier.size(20.dp)
-                                                )
-                                            }
-                                        }
-                                    )
-
-                                    if (enlace.hashOriginal != null) {
-                                        Spacer(Modifier.height(4.dp))
-                                        Row(
-                                            modifier = Modifier
-                                                .fillMaxWidth()
-                                                .clip(FormaPequena)
-                                                .background(fondoBadgeParaTema(ColorPasskeys))
-                                                .padding(horizontal = 10.dp, vertical = 5.dp),
-                                            verticalAlignment = Alignment.CenterVertically,
-                                            horizontalArrangement = Arrangement.spacedBy(6.dp)
-                                        ) {
-                                            Icon(
-                                                imageVector = Icons.Filled.Security,
-                                                contentDescription = "Certificado DAL",
-                                                tint = ColorPasskeys,
-                                                modifier = Modifier.size(14.dp)
-                                            )
-                                            Text(
-                                                text = "Certificado DAL: ${enlace.hashOriginal}",
-                                                style = EstiloMono.copy(fontSize = 11.sp),
-                                                color = colorLegibleParaTema(ColorPasskeys),
-                                                maxLines = 1,
-                                                overflow = TextOverflow.Ellipsis
-                                            )
-                                        }
-                                    }
-
-                                    if (esApp && nombreApp != null) {
-                                        Spacer(Modifier.height(4.dp))
-                                        Row(
-                                            modifier = Modifier
-                                                .fillMaxWidth()
-                                                .clip(FormaPequena)
-                                                .background(fondoBadgeParaTema(Menta))
-                                                .padding(horizontal = 10.dp, vertical = 5.dp),
-                                            verticalAlignment = Alignment.CenterVertically,
-                                            horizontalArrangement = Arrangement.spacedBy(6.dp)
-                                        ) {
-                                            Icon(
-                                                imageVector = Icons.Filled.Android,
-                                                contentDescription = "App detectada",
-                                                tint = Menta,
-                                                modifier = Modifier.size(14.dp)
-                                            )
-                                            Text(
-                                                text = "App detectada: $nombreApp",
-                                                style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Medium),
-                                                color = colorLegibleParaTema(Menta),
-                                                maxLines = 1,
-                                                overflow = TextOverflow.Ellipsis
-                                            )
-                                        }
-                                    }
-                                }
-                            }
-                        }
-
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(8.dp)
-                        ) {
-                            BotonBorde(
-                                texto = "Añadir sitio web",
-                                icono = Icons.Filled.Add,
-                                modifier = Modifier.weight(1f)
-                            ) {
-                                listaEnlaces.add(EnlaceEditable(valor = ""))
-                            }
-
-                            BotonBorde(
-                                texto = "Explorar app",
-                                icono = Icons.Filled.Android,
-                                modifier = Modifier.weight(1f)
-                            ) {
-                                indiceEnlaceSeleccionado = null
-                                mostrarSelectorApp = true
-                            }
-                        }
+                SeccionSitiosYAppsEdicion(
+                    listaEnlaces = listaEnlaces,
+                    alSolicitarExplorarApp = { idx ->
+                        indiceEnlaceSeleccionado = idx
+                        mostrarSelectorApp = true
                     }
-                }
+                )
 
                 Spacer(Modifier.height(16.dp))
-                GrupoAjustes(etiqueta = "Autenticador 2FA (Opcional)") {
-                    Column(modifier = Modifier.padding(14.dp)) {
-                        ComponenteCampoTexto(
-                            valor = totp,
-                            etiqueta = "Clave secreta 2FA (TOTP)",
-                            alCambiar = { totp = it.uppercase() },
-                            tipo = TipoCampoTexto.CONTRASENA,
-                            mostrarIcono = true,
-                            icono = Icons.Filled.Timer,
-                            colorBordeIzquierdo = ColorDatos2FA,
-                            mostrarContrasena = mostrarSecretoTotp,
-                            alAlternarMostrarContrasena = {
-                                haptica.tic()
-                                mostrarSecretoTotp = !mostrarSecretoTotp
-                            },
-                            monoespaciada = true
-                        )
-                        if (!totpValido) {
-                            Spacer(Modifier.height(6.dp))
-                            Text("Ese secreto no es Base32 válido", color = Peligro, style = MaterialTheme.typography.bodyMedium)
-                        }
-                    }
-                }
+                SeccionTotpEdicion(
+                    totp = totp,
+                    alCambiarTotp = { totp = it },
+                    mostrarSecretoTotp = mostrarSecretoTotp,
+                    alAlternarMostrarSecreto = {
+                        haptica.tic()
+                        mostrarSecretoTotp = !mostrarSecretoTotp
+                    },
+                    totpValido = totpValido
+                )
             }
 
             // Grupo: Notas
@@ -595,33 +305,13 @@ fun PantallaEdicion(vm: VaultViewModel, id: String?, contrasenaInicial: String) 
 
             // Grupo: Organización
             Spacer(Modifier.height(16.dp))
-            GrupoAjustes(etiqueta = "Organización") {
-                Column(modifier = Modifier.padding(14.dp)) {
-                    SeccionEtiquetasEdicion(
-                        etiquetas = etiquetas,
-                        alCambiarEtiquetas = { etiquetas = it },
-                        etiquetasSugeridas = etiquetasSugeridas
-                    )
-
-                    Spacer(Modifier.height(14.dp))
-                    SeparadorFilaSimple()
-                    Spacer(Modifier.height(10.dp))
-
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Column(modifier = Modifier.weight(1f)) {
-                            Text("Favorito", color = TextoPrincipal, style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold))
-                            Text("Aparece fijado arriba en la lista", color = TextoSecundario, style = MaterialTheme.typography.bodySmall)
-                        }
-                        SwitchBoveda(
-                            checked = favorito,
-                            onCheckedChange = { favorito = it; haptica.tic() }
-                        )
-                    }
-                }
-            }
+            SeccionOrganizacionEdicion(
+                etiquetas = etiquetas,
+                alCambiarEtiquetas = { etiquetas = it },
+                etiquetasSugeridas = etiquetasSugeridas,
+                favorito = favorito,
+                alAlternarFavorito = { favorito = it; haptica.tic() }
+            )
 
             Spacer(Modifier.height(24.dp))
         }
