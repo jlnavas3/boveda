@@ -24,12 +24,11 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Timer
-import androidx.compose.material3.Checkbox
-import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import com.jlnavas3.bovedalocal.ui.componentes.CheckboxBoveda
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
@@ -241,16 +240,11 @@ fun PantallaConfirmarMigracion(
                                 modifier = Modifier.fillMaxWidth(),
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
-                                Checkbox(
+                                CheckboxBoveda(
                                     checked = cuenta.seleccionada,
                                     onCheckedChange = { checked ->
-                                        haptica.tic()
                                         listaCuentas[index] = cuenta.copy(seleccionada = checked)
-                                    },
-                                    colors = CheckboxDefaults.colors(
-                                        checkedColor = ColorAcento,
-                                        uncheckedColor = TextoSecundario
-                                    )
+                                    }
                                 )
 
                                 Spacer(Modifier.width(8.dp))

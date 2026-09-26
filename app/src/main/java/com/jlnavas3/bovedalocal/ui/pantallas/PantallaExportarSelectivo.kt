@@ -42,12 +42,12 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.DoneAll
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Checkbox
-import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
+import com.jlnavas3.bovedalocal.ui.componentes.BotonTextoBoveda
+import com.jlnavas3.bovedalocal.ui.componentes.CheckboxBoveda
+import com.jlnavas3.bovedalocal.ui.componentes.TipoBotonTexto
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
@@ -444,17 +444,12 @@ fun PantallaExportarSelectivo(
                                 modifier = Modifier.fillMaxWidth(),
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
-                                Checkbox(
+                                CheckboxBoveda(
                                     checked = marcada,
                                     onCheckedChange = { checked ->
-                                        haptica.tic()
                                         if (checked) idsSeleccionados.add(entrada.id)
                                         else idsSeleccionados.remove(entrada.id)
-                                    },
-                                    colors = CheckboxDefaults.colors(
-                                        checkedColor = ColorAcento,
-                                        uncheckedColor = TextoSecundario
-                                    )
+                                    }
                                 )
 
                                 Spacer(Modifier.width(6.dp))
@@ -716,22 +711,24 @@ private fun DialogoClaveExportarSelectivo(
             }
         },
         confirmButton = {
-            TextButton(
-                onClick = {
+            BotonTextoBoveda(
+                texto = "Exportar .bvda",
+                alPulsar = {
                     if (claveValida) {
                         haptica.exito()
                         alConfirmar(nombreFinalResuelto, clavePassword, guardarEnDirectorioAuto)
                     }
                 },
-                enabled = claveValida
-            ) {
-                Text("Exportar .bvda", color = if (claveValida) ColorAcento else TextoSecundario, fontWeight = FontWeight.Bold)
-            }
+                tipo = TipoBotonTexto.PRIMARIO,
+                habilitado = claveValida
+            )
         },
         dismissButton = {
-            TextButton(onClick = alDescartar) {
-                Text("Cancelar", color = TextoSecundario)
-            }
+            BotonTextoBoveda(
+                texto = "Cancelar",
+                alPulsar = alDescartar,
+                tipo = TipoBotonTexto.SECUNDARIO
+            )
         }
     )
 }

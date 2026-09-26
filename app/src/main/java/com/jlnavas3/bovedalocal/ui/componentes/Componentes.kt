@@ -25,6 +25,8 @@ import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -462,6 +464,71 @@ fun BotonBorde(
             )
         }
     }
+}
+
+@Composable
+fun BotonPeligro(
+    texto: String,
+    modifier: Modifier = Modifier,
+    icono: ImageVector? = null,
+    alPulsar: () -> Unit
+) {
+    BotonBorde(
+        texto = texto,
+        modifier = modifier,
+        color = Peligro,
+        icono = icono,
+        alPulsar = alPulsar
+    )
+}
+
+enum class VarianteBoton { PRIMARIO, SECUNDARIO, PELIGRO }
+
+@Composable
+fun BotonBoveda(
+    texto: String,
+    alPulsar: () -> Unit,
+    modifier: Modifier = Modifier,
+    variante: VarianteBoton = VarianteBoton.PRIMARIO,
+    activo: Boolean = true,
+    icono: ImageVector? = null
+) {
+    when (variante) {
+        VarianteBoton.PRIMARIO -> BotonAmbar(texto = texto, modifier = modifier, activo = activo, icono = icono, alPulsar = alPulsar)
+        VarianteBoton.SECUNDARIO -> BotonBorde(texto = texto, modifier = modifier, icono = icono, alPulsar = alPulsar)
+        VarianteBoton.PELIGRO -> BotonPeligro(texto = texto, modifier = modifier, icono = icono, alPulsar = alPulsar)
+    }
+}
+
+/**
+ * Casilla de verificación (Checkbox) unificada para toda la app.
+ * Encapsula la háptica y los colores del tema.
+ */
+@Composable
+fun CheckboxBoveda(
+    checked: Boolean,
+    onCheckedChange: ((Boolean) -> Unit)?,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    colorAcento: Color = ColorAcento
+) {
+    val contexto = LocalContext.current
+    val haptica = remember { Haptica(contexto) }
+
+    Checkbox(
+        checked = checked,
+        onCheckedChange = { nuevoValor ->
+            haptica.tic()
+            onCheckedChange?.invoke(nuevoValor)
+        },
+        modifier = modifier,
+        enabled = enabled,
+        colors = CheckboxDefaults.colors(
+            checkedColor = colorAcento,
+            uncheckedColor = TextoSecundario,
+            checkmarkColor = ColorSobreAcento
+        )
+    )
 }
 
 @Composable
