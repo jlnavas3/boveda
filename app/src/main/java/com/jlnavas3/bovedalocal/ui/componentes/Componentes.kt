@@ -104,14 +104,29 @@ fun coloresMonograma(semilla: String): Pair<Color, Color> {
 
 @Composable
 fun Monograma(titulo: String, semilla: String, tamano: Int = 46) {
-    val (a, b) = coloresMonograma(semilla.ifBlank { titulo })
-    val colorTexto = colorContraste(a)
+    val (a, b) = remember(semilla, titulo) { coloresMonograma(semilla.ifBlank { titulo }) }
+    val pincelFondo = remember(a, b) { Brush.linearGradient(listOf(a, b)) }
+    val colorTexto = remember(a) { colorContraste(a) }
     val forma = CircleShape
+
+    val letras = remember(titulo) {
+        val t = titulo.trim()
+        if (t.isEmpty()) "?"
+        else {
+            val partes = t.split(' ').filter { it.isNotEmpty() }
+            if (partes.size >= 2) {
+                "${partes[0].first().uppercaseChar()}${partes[1].first().uppercaseChar()}"
+            } else {
+                "${partes[0].first().uppercaseChar()}"
+            }
+        }
+    }
+
     Box(
         modifier = Modifier
             .size(tamano.dp)
             .clip(forma)
-            .background(Brush.linearGradient(listOf(a, b)))
+            .background(pincelFondo)
             .then(
                 if (GrosorBorde > 0.dp && ColorBordeActual != Color.Transparent) {
                     Modifier.border(GrosorBorde, ColorBordeActual.copy(alpha = 0.35f), forma)
@@ -121,10 +136,6 @@ fun Monograma(titulo: String, semilla: String, tamano: Int = 46) {
             ),
         contentAlignment = Alignment.Center
     ) {
-        val letras = titulo.trim().split(Regex("\\s+"))
-            .filter { it.isNotEmpty() }
-            .take(2)
-            .joinToString("") { it.first().uppercase() }
         Text(
             text = letras,
             color = colorTexto,

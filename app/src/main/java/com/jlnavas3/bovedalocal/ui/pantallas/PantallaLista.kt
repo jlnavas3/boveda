@@ -169,6 +169,8 @@ import com.jlnavas3.bovedalocal.ui.theme.SuperficieAlta
 import com.jlnavas3.bovedalocal.ui.theme.TextoPrincipal
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
 import com.jlnavas3.bovedalocal.util.Haptica
+import com.jlnavas3.bovedalocal.util.ItemAgrupado
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -743,6 +745,14 @@ fun PantallaLista(vm: VaultViewModel, estado: EstadoBoveda) {
                     } else null
                 }
 
+                var segundosUnix by remember { mutableStateOf(System.currentTimeMillis() / 1000) }
+                LaunchedEffect(Unit) {
+                    while (true) {
+                        segundosUnix = System.currentTimeMillis() / 1000
+                        delay(1000)
+                    }
+                }
+
                 Box(modifier = Modifier.fillMaxSize()) {
                     LazyColumn(
                         state = estadoLista,
@@ -754,13 +764,23 @@ fun PantallaLista(vm: VaultViewModel, estado: EstadoBoveda) {
                         ),
                         verticalArrangement = Arrangement.spacedBy(espaciadoFilas)
                     ) {
-                        itemsIndexed(itemsAMostrar, key = { _, item ->
-                            when (item) {
-                                is com.jlnavas3.bovedalocal.util.ItemAgrupado.Suelto -> item.entrada.id
-                                is com.jlnavas3.bovedalocal.util.ItemAgrupado.Grupo -> "grupo-${item.clave}"
-                                is com.jlnavas3.bovedalocal.util.ItemAgrupado.Hijo -> "hijo-${item.entrada.id}"
+                        itemsIndexed(
+                            itemsAMostrar,
+                            key = { _, item ->
+                                when (item) {
+                                    is ItemAgrupado.Suelto -> item.entrada.id
+                                    is ItemAgrupado.Grupo -> "grupo-${item.clave}"
+                                    is ItemAgrupado.Hijo -> "hijo-${item.entrada.id}"
+                                }
+                            },
+                            contentType = { _, item ->
+                                when (item) {
+                                    is ItemAgrupado.Suelto -> 0
+                                    is ItemAgrupado.Grupo -> 1
+                                    is ItemAgrupado.Hijo -> 2
+                                }
                             }
-                        }) { indice, item ->
+                        ) { indice, item ->
                             val coincideLetra = if (!ajustes.indiceResaltarEntradas || letraArrastrada == null) {
                                 false
                             } else if (ajustes.indiceResaltarSoloPrimera) {
@@ -810,6 +830,7 @@ fun PantallaLista(vm: VaultViewModel, estado: EstadoBoveda) {
                                             },
                                             alPulsarLargo = { entrarEnSeleccion(entradaHija.id) },
                                             alAlternarSeleccion = { alternarSeleccion(entradaHija.id) },
+                                            segundosUnix = segundosUnix,
                                             alturaFila = densidadAltura,
                                             tamanoMonograma = densidadMonograma,
                                             resaltado = coincideLetraHijo,
@@ -840,6 +861,7 @@ fun PantallaLista(vm: VaultViewModel, estado: EstadoBoveda) {
                                     },
                                     alPulsarLargo = { entrarEnSeleccion(item.entrada.id) },
                                     alAlternarSeleccion = { alternarSeleccion(item.entrada.id) },
+                                    segundosUnix = segundosUnix,
                                     alturaFila = densidadAltura,
                                     tamanoMonograma = densidadMonograma,
                                     resaltado = coincideLetra,

@@ -60,6 +60,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
@@ -172,6 +173,7 @@ fun FilaEntrada(
     alCopiarCodigo: (String) -> Unit = {},
     alPulsarLargo: () -> Unit,
     alAlternarSeleccion: () -> Unit,
+    segundosUnix: Long = System.currentTimeMillis() / 1000,
     alturaFila: Dp = 74.dp,
     tamanoMonograma: Int = 46,
     resaltado: Boolean = false,
@@ -190,17 +192,8 @@ fun FilaEntrada(
 
     val contenidoFila: @Composable () -> Unit = {
         val secreto = entrada.secretoTotp
-        var ahora by remember(secreto) { mutableStateOf(System.currentTimeMillis() / 1000) }
+        val ahora = segundosUnix
         val tieneTotp = !seleccionActiva && !secreto.isNullOrBlank()
-
-        if (tieneTotp) {
-            LaunchedEffect(secreto) {
-                while (true) {
-                    ahora = System.currentTimeMillis() / 1000
-                    kotlinx.coroutines.delay(500)
-                }
-            }
-        }
 
         val periodo = entrada.totpPeriodo.toLong().coerceAtLeast(10L)
         val codigo = remember(ahora / periodo, secreto, entrada.totpDigitos, entrada.totpAlgoritmo) {
@@ -483,24 +476,22 @@ fun FilaEntrada(
         val haptica = remember { Haptica(contexto) }
         val scope = rememberCoroutineScope()
         val animOffset = remember { Animatable(0f) }
-        var anchoFilaPx by remember { mutableFloatStateOf(0f) }
         var dioHapticaTope by remember { mutableStateOf(false) }
 
         LaunchedEffect(entrada.id) {
             animOffset.snapTo(0f)
         }
 
-        val topeMaximo = anchoFilaPx * 0.45f
-        val topeActual by rememberUpdatedState(topeMaximo)
+        val densidad = LocalDensity.current
+        val topeMaximo = remember(densidad) { with(densidad) { 160.dp.toPx() } }
 
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(alturaFila)
-                .onSizeChanged { anchoFilaPx = it.width.toFloat() }
         ) {
             val offsetActual = animOffset.value
-            val limite = topeActual
+            val limite = topeMaximo
             val progreso = if (limite > 0f) (abs(offsetActual) / limite).coerceIn(0f, 1f) else 0f
             val escala = 0.85f + 0.20f * progreso
             val opacidad = 0.4f + 0.6f * progreso
@@ -573,7 +564,7 @@ fun FilaEntrada(
                                 dioHapticaTope = false
                             },
                             onDragEnd = {
-                                val maximo = topeActual
+                                val maximo = topeMaximo
                                 if (maximo > 0f) {
                                     val alcanzado = abs(animOffset.value) >= maximo * 0.94f
                                     if (alcanzado) {
@@ -608,7 +599,7 @@ fun FilaEntrada(
                                 }
                             },
                             onHorizontalDrag = { change, dragAmount ->
-                                val maximo = topeActual
+                                val maximo = topeMaximo
                                 if (maximo > 0f) {
                                     change.consume()
                                     val nuevoOffset = (animOffset.value + dragAmount).coerceIn(-maximo, maximo)
