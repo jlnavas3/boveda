@@ -3,6 +3,7 @@ package com.jlnavas3.bovedalocal.ui.pantallas.lista
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -10,8 +11,6 @@ import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.gestures.awaitHorizontalTouchSlopOrCancellation
-import androidx.compose.foundation.gestures.detectHorizontalDragGestures
-import androidx.compose.ui.input.pointer.positionChange
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -34,35 +33,26 @@ import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.CreditCard
 import androidx.compose.material.icons.filled.Description
 import androidx.compose.material.icons.filled.Dns
-import androidx.compose.material.icons.filled.ExpandLess
-import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.Fingerprint
-import androidx.compose.material.icons.filled.Key
-import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Star
-import androidx.compose.material.icons.filled.Timer
 import androidx.compose.material.icons.filled.Wifi
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.input.pointer.positionChange
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
@@ -71,27 +61,15 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.jlnavas3.bovedalocal.crypto.Base32
-import com.jlnavas3.bovedalocal.crypto.Totp
 import com.jlnavas3.bovedalocal.data.Entrada
 import com.jlnavas3.bovedalocal.data.TipoEntrada
-import com.jlnavas3.bovedalocal.ui.componentes.AnilloTotp
-import com.jlnavas3.bovedalocal.ui.componentes.IndicadorTotpTarta
 import com.jlnavas3.bovedalocal.ui.componentes.Monograma
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorTarjetaAjustes
 import com.jlnavas3.bovedalocal.ui.theme.Ambar
 import com.jlnavas3.bovedalocal.ui.theme.Borde
 import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
-import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
 import com.jlnavas3.bovedalocal.ui.theme.ColorPasskeys
 import com.jlnavas3.bovedalocal.ui.theme.ColorSobreAcento
-import com.jlnavas3.bovedalocal.ui.theme.ColorTarjetas
-import com.jlnavas3.bovedalocal.ui.theme.ColorTitulos
-import com.jlnavas3.bovedalocal.ui.theme.EstiloMono
-import com.jlnavas3.bovedalocal.ui.theme.FormaPequena
-import com.jlnavas3.bovedalocal.ui.theme.FormaTarjeta
-import com.jlnavas3.bovedalocal.ui.theme.GrosorBorde
-import com.jlnavas3.bovedalocal.ui.theme.Menta
 import com.jlnavas3.bovedalocal.ui.theme.TextoPrincipal
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
 import com.jlnavas3.bovedalocal.util.Haptica
@@ -99,131 +77,7 @@ import kotlinx.coroutines.launch
 import kotlin.math.abs
 import kotlin.math.roundToInt
 
-@Composable
-fun FilaGrupoSitio(
-    clave: String,
-    cantidad: Int,
-    expandido: Boolean,
-    alturaFila: Dp = 74.dp,
-    tamanoMonograma: Int = 46,
-    resaltado: Boolean = false,
-    alAlternar: () -> Unit
-) {
-    val compacta = alturaFila.value <= 48f
-    val forma = RoundedCornerShape(16.dp)
-    val tamanoIcono = if (compacta) 32 else if (alturaFila.value <= 64f) 36 else 40
-
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(alturaFila)
-            .clip(forma)
-            .background(if (resaltado) Ambar.copy(alpha = 0.16f) else ColorTarjetaAjustes)
-            .then(
-                if (resaltado) Modifier.border(1.5.dp, Ambar, forma) else Modifier
-            )
-            .clickable { alAlternar() }
-            .padding(horizontal = 14.dp, vertical = 6.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Box(
-            modifier = Modifier
-                .size(tamanoIcono.dp)
-                .clip(CircleShape)
-                .background(Color(0xFF5C6BC0)),
-            contentAlignment = Alignment.Center
-        ) {
-            Icon(
-                imageVector = Icons.Filled.Dns,
-                contentDescription = null,
-                tint = Color.White,
-                modifier = Modifier.size((tamanoIcono * 0.52f).dp)
-            )
-        }
-        Spacer(Modifier.width(12.dp))
-        Column(modifier = Modifier.weight(1f)) {
-            Text(
-                clave,
-                style = if (compacta) MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold) else MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold),
-                color = if (resaltado) Ambar else TextoPrincipal,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
-            Text(
-                "$cantidad ${if (cantidad == 1) "cuenta" else "cuentas"}",
-                style = if (compacta) MaterialTheme.typography.labelSmall else MaterialTheme.typography.bodySmall,
-                color = TextoSecundario,
-                maxLines = 1
-            )
-        }
-        Icon(
-            if (expandido) Icons.Filled.ExpandLess else Icons.Filled.ExpandMore,
-            contentDescription = if (expandido) "Contraer" else "Expandir",
-            tint = if (resaltado) Ambar else ColorIconosInternos
-        )
-    }
-}
-
-@Composable
-private fun ContenidoTotpEnFila(
-    secreto: String,
-    segundosUnix: Long,
-    periodo: Long,
-    digitos: Int,
-    algoritmo: String,
-    separarDigitosTotp: Boolean,
-    compacta: Boolean,
-    alCopiarCodigo: (String) -> Unit
-) {
-    val codigo = remember(segundosUnix / periodo, secreto, digitos, algoritmo) {
-        if (secreto.isBlank()) ""
-        else {
-            try {
-                Totp.codigo(
-                    secreto = Base32.decodificar(secreto),
-                    segundosUnix = segundosUnix,
-                    digitos = digitos,
-                    periodo = periodo,
-                    algoritmo = algoritmo
-                )
-            } catch (e: Exception) {
-                "------"
-            }
-        }
-    }
-
-    if (codigo.isNotBlank()) {
-        val codigoVisible = if (separarDigitosTotp && codigo.length == 6) {
-            "${codigo.take(3)} ${codigo.drop(3)}"
-        } else {
-            codigo
-        }
-        Spacer(Modifier.width(8.dp))
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.clickable { alCopiarCodigo(codigo) }
-        ) {
-            Text(
-                text = codigoVisible,
-                style = if (compacta) {
-                    EstiloMono.copy(fontWeight = FontWeight.Bold, fontSize = 13.sp)
-                } else {
-                    EstiloMono.copy(fontWeight = FontWeight.Bold, fontSize = 14.sp)
-                },
-                color = ColorTitulos
-            )
-            Spacer(Modifier.width(5.dp))
-            IndicadorTotpTarta(
-                segundosRestantes = Totp.segundosRestantes(segundosUnix, periodo),
-                periodo = periodo,
-                tamano = if (compacta) 11.dp else 12.dp,
-                colorPersonalizado = Color(0xFF9E9E9E)
-            )
-        }
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class, androidx.compose.foundation.ExperimentalFoundationApi::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun FilaEntrada(
     entrada: Entrada,
@@ -519,65 +373,17 @@ fun FilaEntrada(
             val offsetActual = animOffset.value
             val limite = topeMaximo
             val progreso = if (limite > 0f) (abs(offsetActual) / limite).coerceIn(0f, 1f) else 0f
-            val escala = 0.85f + 0.20f * progreso
-            val opacidad = 0.4f + 0.6f * progreso
 
             if (offsetActual > 0f) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .clip(forma)
-                        .background(Menta.copy(alpha = 0.14f + 0.10f * progreso))
-                        .padding(horizontal = 20.dp),
-                    contentAlignment = Alignment.CenterStart
-                ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.scale(escala)
-                    ) {
-                        Icon(
-                            Icons.Filled.Person,
-                            contentDescription = null,
-                            tint = Menta.copy(alpha = opacidad),
-                            modifier = Modifier.size(20.dp)
-                        )
-                        Spacer(Modifier.width(8.dp))
-                        Text(
-                            "Copiar usuario",
-                            color = Menta.copy(alpha = opacidad),
-                            style = MaterialTheme.typography.bodyMedium,
-                            fontWeight = FontWeight.SemiBold
-                        )
-                    }
-                }
+                FondoDeslizamientoUsuario(
+                    forma = forma,
+                    progreso = progreso
+                )
             } else if (offsetActual < 0f) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .clip(forma)
-                        .background(Ambar.copy(alpha = 0.14f + 0.10f * progreso))
-                        .padding(horizontal = 20.dp),
-                    contentAlignment = Alignment.CenterEnd
-                ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.scale(escala)
-                    ) {
-                        Text(
-                            "Copiar contraseña",
-                            color = Ambar.copy(alpha = opacidad),
-                            style = MaterialTheme.typography.bodyMedium,
-                            fontWeight = FontWeight.SemiBold
-                        )
-                        Spacer(Modifier.width(8.dp))
-                        Icon(
-                            Icons.Filled.Key,
-                            contentDescription = null,
-                            tint = Ambar.copy(alpha = opacidad),
-                            modifier = Modifier.size(20.dp)
-                        )
-                    }
-                }
+                FondoDeslizamientoContrasena(
+                    forma = forma,
+                    progreso = progreso
+                )
             }
 
             Box(
