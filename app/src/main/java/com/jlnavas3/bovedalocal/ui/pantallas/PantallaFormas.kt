@@ -29,9 +29,8 @@ import androidx.compose.material.icons.filled.Tune
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Slider
-import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Text
+import com.jlnavas3.bovedalocal.ui.componentes.ajustes.SliderBoveda
 import androidx.compose.foundation.relocation.BringIntoViewRequester
 import androidx.compose.foundation.relocation.bringIntoViewRequester
 import androidx.compose.runtime.Composable
@@ -254,16 +253,12 @@ fun PantallaFormas(
                 Text("Radio de esquinas", color = TextoPrincipal, style = MaterialTheme.typography.bodyLarge)
                 IndicadorValor("${ajustes.curvaturaEsquinasDp.roundToInt()} dp")
             }
-            Slider(
+            SliderBoveda(
                 value = ajustes.curvaturaEsquinasDp,
                 onValueChange = { vm.ajustarCurvaturaEsquinas(it) },
                 valueRange = 0f..32f,
                 steps = 31,
-                colors = SliderDefaults.colors(
-                    thumbColor = ColorAcento,
-                    activeTrackColor = ColorAcento,
-                    inactiveTrackColor = ColorBordeActual.copy(alpha = 0.3f)
-                )
+                colorAcento = ColorAcento
             )
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -300,16 +295,12 @@ fun PantallaFormas(
                 Text("Ancho de trazo", color = TextoPrincipal, style = MaterialTheme.typography.bodyLarge)
                 IndicadorValor(if (ajustes.grosorBordeDp == 0f) "Sin borde" else "${String.format("%.1f", ajustes.grosorBordeDp)} dp")
             }
-            Slider(
+            SliderBoveda(
                 value = ajustes.grosorBordeDp,
                 onValueChange = { vm.ajustarGrosorBorde(it) },
                 valueRange = 0f..4f,
                 steps = 15,
-                colors = SliderDefaults.colors(
-                    thumbColor = ColorAcento,
-                    activeTrackColor = ColorAcento,
-                    inactiveTrackColor = ColorBordeActual.copy(alpha = 0.3f)
-                )
+                colorAcento = ColorAcento
             )
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -398,16 +389,12 @@ fun PantallaFormas(
                 Text("Separación vertical", color = TextoPrincipal, style = MaterialTheme.typography.bodyLarge)
                 IndicadorValor("${ajustes.espaciadoComponentesDp.roundToInt()} dp")
             }
-            Slider(
+            SliderBoveda(
                 value = ajustes.espaciadoComponentesDp,
                 onValueChange = { vm.ajustarEspaciadoComponentes(it) },
                 valueRange = 6f..24f,
                 steps = 17,
-                colors = SliderDefaults.colors(
-                    thumbColor = ColorAcento,
-                    activeTrackColor = ColorAcento,
-                    inactiveTrackColor = ColorBordeActual.copy(alpha = 0.3f)
-                )
+                colorAcento = ColorAcento
             )
             Row(
                 modifier = Modifier.fillMaxWidth(),

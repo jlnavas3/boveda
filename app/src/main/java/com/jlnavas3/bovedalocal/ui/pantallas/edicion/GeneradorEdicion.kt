@@ -25,11 +25,8 @@ import androidx.compose.material.icons.filled.Shuffle
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Slider
-import androidx.compose.material3.SliderDefaults
-import androidx.compose.material3.Switch
-import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
+import com.jlnavas3.bovedalocal.ui.componentes.ajustes.SliderBoveda
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -227,7 +224,7 @@ fun GeneradorEnLineaEdicion(
     when {
         opcionesGenerador.modoFrase -> {
             EtiquetaSeccion("Palabras Diceware: ${opcionesGenerador.palabras}")
-            Slider(
+            SliderBoveda(
                 value = opcionesGenerador.palabras.toFloat(),
                 onValueChange = {
                     val nuevo = it.roundToInt().coerceIn(3, 12)
@@ -237,12 +234,7 @@ fun GeneradorEnLineaEdicion(
                     }
                 },
                 valueRange = 3f..12f,
-                steps = 8,
-                colors = SliderDefaults.colors(
-                    thumbColor = Ambar,
-                    activeTrackColor = Ambar,
-                    inactiveTrackColor = Borde
-                )
+                steps = 8
             )
         }
         opcionesGenerador.modoPatron -> {
@@ -294,7 +286,7 @@ fun GeneradorEnLineaEdicion(
                             style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold)
                         )
                     }
-                    Slider(
+                    SliderBoveda(
                         value = opcionesGenerador.longitud.toFloat(),
                         onValueChange = {
                             val nuevo = it.roundToInt().coerceIn(8, 64)
@@ -303,12 +295,7 @@ fun GeneradorEnLineaEdicion(
                                 alCambiarOpciones(opcionesGenerador.copy(longitud = nuevo))
                             }
                         },
-                        valueRange = 8f..64f,
-                        colors = SliderDefaults.colors(
-                            thumbColor = Ambar,
-                            activeTrackColor = Ambar,
-                            inactiveTrackColor = Borde
-                        )
+                        valueRange = 8f..64f
                     )
                 }
 

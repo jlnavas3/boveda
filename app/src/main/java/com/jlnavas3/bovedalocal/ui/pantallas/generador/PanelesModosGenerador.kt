@@ -23,8 +23,6 @@ import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.RestartAlt
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Slider
-import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -59,15 +57,9 @@ import com.jlnavas3.bovedalocal.ui.theme.Superficie
 import com.jlnavas3.bovedalocal.ui.theme.SuperficieAlta
 import com.jlnavas3.bovedalocal.ui.theme.TextoPrincipal
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
+import com.jlnavas3.bovedalocal.ui.componentes.ajustes.SliderBoveda
 import com.jlnavas3.bovedalocal.util.Haptica
 import kotlin.math.roundToInt
-
-@Composable
-fun coloresSlider() = SliderDefaults.colors(
-    thumbColor = Ambar,
-    activeTrackColor = Ambar,
-    inactiveTrackColor = Borde
-)
 
 @Composable
 fun ColumnaInterruptor(
@@ -109,7 +101,7 @@ fun PanelModoAleatorio(
 ) {
     Column(modifier = Modifier.fillMaxWidth()) {
         EtiquetaSeccion("Longitud: ${opciones.longitud} caracteres")
-        Slider(
+        SliderBoveda(
             value = opciones.longitud.toFloat(),
             onValueChange = {
                 val nuevo = it.roundToInt().coerceIn(8, 64)
@@ -118,8 +110,7 @@ fun PanelModoAleatorio(
                     alCambiarOpciones(opciones.copy(longitud = nuevo))
                 }
             },
-            valueRange = 8f..64f,
-            colors = coloresSlider()
+            valueRange = 8f..64f
         )
 
         var mostrarCampoSimbolos by remember { mutableStateOf(false) }
@@ -201,7 +192,7 @@ fun PanelModoDiceware(
 ) {
     Column(modifier = Modifier.fillMaxWidth()) {
         EtiquetaSeccion("Número de palabras: ${opciones.palabras}")
-        Slider(
+        SliderBoveda(
             value = opciones.palabras.toFloat(),
             onValueChange = {
                 val nuevo = it.roundToInt().coerceIn(3, 12)
@@ -211,8 +202,7 @@ fun PanelModoDiceware(
                 }
             },
             valueRange = 3f..12f,
-            steps = 8,
-            colors = coloresSlider()
+            steps = 8
         )
         Spacer(Modifier.height(10.dp))
         EtiquetaSeccion("Separador")

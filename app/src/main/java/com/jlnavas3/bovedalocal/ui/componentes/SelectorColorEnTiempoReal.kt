@@ -25,6 +25,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Text
+import com.jlnavas3.bovedalocal.ui.componentes.ajustes.SliderBoveda
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -154,7 +155,7 @@ fun SelectorColorEnTiempoReal(
                     .clip(RoundedCornerShape(7.dp))
                     .background(degradadoArcoiris)
             )
-            Slider(
+            SliderBoveda(
                 value = hue,
                 onValueChange = { nuevaHue ->
                     hue = nuevaHue
@@ -173,7 +174,7 @@ fun SelectorColorEnTiempoReal(
         // Control deslizante de SATURACIÓN
         Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
             Text("Saturación", color = TextoSecundario, style = MaterialTheme.typography.labelSmall)
-            Slider(
+            SliderBoveda(
                 value = sat,
                 onValueChange = { nuevaSat ->
                     sat = nuevaSat
@@ -181,18 +182,14 @@ fun SelectorColorEnTiempoReal(
                     alCambiarColor(nuevo)
                 },
                 valueRange = 0.05f..1f,
-                colors = SliderDefaults.colors(
-                    thumbColor = colorActual,
-                    activeTrackColor = colorActual,
-                    inactiveTrackColor = Borde
-                )
+                colorAcento = colorActual
             )
         }
 
         // Control deslizante de BRILLO / LUMINOSIDAD
         Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
             Text("Brillo", color = TextoSecundario, style = MaterialTheme.typography.labelSmall)
-            Slider(
+            SliderBoveda(
                 value = valLum,
                 onValueChange = { nuevoVal ->
                     valLum = nuevoVal
@@ -200,11 +197,7 @@ fun SelectorColorEnTiempoReal(
                     alCambiarColor(nuevo)
                 },
                 valueRange = 0.15f..1f,
-                colors = SliderDefaults.colors(
-                    thumbColor = colorActual,
-                    activeTrackColor = colorActual,
-                    inactiveTrackColor = Borde
-                )
+                colorAcento = colorActual
             )
         }
     }

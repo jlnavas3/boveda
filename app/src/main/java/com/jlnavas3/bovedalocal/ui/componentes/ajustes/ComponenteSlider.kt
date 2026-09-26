@@ -18,8 +18,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Slider
-import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -168,19 +166,13 @@ fun ComponenteSlider(
         Spacer(Modifier.height(4.dp))
 
         // Barra deslizadora
-        Slider(
+        SliderBoveda(
             value = valor,
             onValueChange = alCambiar,
             valueRange = rango,
             steps = pasos,
             enabled = habilitado,
-            colors = SliderDefaults.colors(
-                thumbColor = colorAcento,
-                activeTrackColor = colorAcento,
-                inactiveTrackColor = ColorBordeActual.copy(alpha = 0.3f),
-                disabledThumbColor = ColorAjusteGris,
-                disabledActiveTrackColor = ColorAjusteGris.copy(alpha = 0.4f)
-            ),
+            colorAcento = colorAcento,
             modifier = Modifier.fillMaxWidth()
         )
 

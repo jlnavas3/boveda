@@ -31,11 +31,8 @@ import androidx.compose.material.icons.filled.TextFields
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Slider
-import androidx.compose.material3.SliderDefaults
-import androidx.compose.material3.Switch
-import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
+import com.jlnavas3.bovedalocal.ui.componentes.ajustes.SliderBoveda
 import androidx.compose.foundation.relocation.BringIntoViewRequester
 import androidx.compose.foundation.relocation.bringIntoViewRequester
 import androidx.compose.runtime.Composable
@@ -308,16 +305,12 @@ fun PantallaTipografia(
                 Text("Escalado global", color = TextoPrincipal, style = MaterialTheme.typography.bodyLarge)
                 IndicadorValor(textoPorcentaje)
             }
-            Slider(
+            SliderBoveda(
                 value = ajustes.escalaTexto,
                 onValueChange = { vm.ajustarEscalaTexto(it) },
                 valueRange = 0.80f..1.35f,
                 steps = 10,
-                colors = SliderDefaults.colors(
-                    thumbColor = ColorAcento,
-                    activeTrackColor = ColorAcento,
-                    inactiveTrackColor = ColorBordeActual.copy(alpha = 0.3f)
-                )
+                colorAcento = ColorAcento
             )
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -479,16 +472,12 @@ fun PantallaTipografia(
                 Text("Espaciado horizontal (Kerning)", color = TextoPrincipal, style = MaterialTheme.typography.bodyLarge)
                 IndicadorValor(if (ajustes.espaciadoLetrasSp == 0f) "0.0 sp (Normal)" else "${String.format("%+.1f", ajustes.espaciadoLetrasSp)} sp")
             }
-            Slider(
+            SliderBoveda(
                 value = ajustes.espaciadoLetrasSp,
                 onValueChange = { vm.ajustarEspaciadoLetras(it) },
                 valueRange = -0.5f..2.0f,
                 steps = 24,
-                colors = SliderDefaults.colors(
-                    thumbColor = ColorAcento,
-                    activeTrackColor = ColorAcento,
-                    inactiveTrackColor = ColorBordeActual.copy(alpha = 0.3f)
-                )
+                colorAcento = ColorAcento
             )
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -509,16 +498,12 @@ fun PantallaTipografia(
                 Text("Factor de interlineado", color = TextoPrincipal, style = MaterialTheme.typography.bodyLarge)
                 IndicadorValor("${String.format("%.2f", ajustes.interlineadoFactor)}x")
             }
-            Slider(
+            SliderBoveda(
                 value = ajustes.interlineadoFactor,
                 onValueChange = { vm.ajustarInterlineadoFactor(it) },
                 valueRange = 0.85f..1.40f,
                 steps = 10,
-                colors = SliderDefaults.colors(
-                    thumbColor = ColorAcento,
-                    activeTrackColor = ColorAcento,
-                    inactiveTrackColor = ColorBordeActual.copy(alpha = 0.3f)
-                )
+                colorAcento = ColorAcento
             )
             Row(
                 modifier = Modifier.fillMaxWidth(),
