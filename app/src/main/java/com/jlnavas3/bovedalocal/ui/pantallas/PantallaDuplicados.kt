@@ -33,7 +33,6 @@ import androidx.compose.material.icons.filled.DoneAll
 import androidx.compose.material.icons.filled.LockReset
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
@@ -41,6 +40,8 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import com.jlnavas3.bovedalocal.ui.componentes.DialogoConfirmacionBoveda
+import com.jlnavas3.bovedalocal.ui.componentes.TipoBotonTexto
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -336,40 +337,17 @@ fun PantallaDuplicados(
     }
 
     if (confirmarLimpiezaMasiva) {
-        AlertDialog(
-            onDismissRequest = { confirmarLimpiezaMasiva = false },
-            shape = RoundedCornerShape(20.dp),
-            containerColor = ColorTarjetaAjustes,
-            tonalElevation = 0.dp,
-            title = {
-                Text(
-                    text = "Limpiar $totalSobrantesIdenticas copias idénticas",
-                    color = ColorTextoAjustes,
-                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
-                )
+        DialogoConfirmacionBoveda(
+            titulo = "Limpiar $totalSobrantesIdenticas copias idénticas",
+            mensaje = "Se enviarán $totalSobrantesIdenticas entradas duplicadas a la papelera, conservando automáticamente la copia más completa y reciente de cada servicio. Podrás recuperarlas de la papelera en los próximos 30 días si lo necesitas.",
+            textoConfirmar = "Limpiar ahora",
+            tipoConfirmacion = TipoBotonTexto.PRIMARIO,
+            iconoHeader = Icons.Filled.Delete,
+            alConfirmar = {
+                confirmarLimpiezaMasiva = false
+                vm.eliminarDuplicadasExactasMasivo(gruposIdenticos)
             },
-            text = {
-                Text(
-                    text = "Se enviarán $totalSobrantesIdenticas entradas duplicadas a la papelera, conservando automáticamente la copia más completa y reciente de cada servicio. Podrás recuperarlas de la papelera en los próximos 30 días si lo necesitas.",
-                    color = ColorAjusteGris,
-                    style = MaterialTheme.typography.bodyMedium
-                )
-            },
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        confirmarLimpiezaMasiva = false
-                        vm.eliminarDuplicadasExactasMasivo(gruposIdenticos)
-                    }
-                ) {
-                    Text("Limpiar ahora", color = Menta, fontWeight = FontWeight.Bold)
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = { confirmarLimpiezaMasiva = false }) {
-                    Text("Cancelar", color = ColorAjusteGris)
-                }
-            }
+            alDescartar = { confirmarLimpiezaMasiva = false }
         )
     }
 }

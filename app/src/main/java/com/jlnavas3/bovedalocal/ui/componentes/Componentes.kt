@@ -24,6 +24,7 @@ import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -31,6 +32,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextFieldDefaults
 import com.jlnavas3.bovedalocal.ui.theme.esOscuroActivo
 import androidx.compose.runtime.Composable
@@ -44,6 +46,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.TextRange
@@ -56,6 +59,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjusteGris
 import com.jlnavas3.bovedalocal.ui.theme.Ambar
 import com.jlnavas3.bovedalocal.ui.theme.AmbarFuerte
 import com.jlnavas3.bovedalocal.ui.theme.Borde
@@ -88,6 +92,7 @@ import com.jlnavas3.bovedalocal.ui.theme.colorContraste
 import com.jlnavas3.bovedalocal.ui.theme.colorLegibleParaTema
 import com.jlnavas3.bovedalocal.ui.theme.fondoBadgeParaTema
 import com.jlnavas3.bovedalocal.util.Dominios
+import com.jlnavas3.bovedalocal.util.Haptica
 import kotlin.math.abs
 
 fun coloresMonograma(semilla: String): Pair<Color, Color> {
@@ -664,5 +669,138 @@ fun SeparadorOpcionMenu(modifier: Modifier = Modifier) {
             .fillMaxWidth()
             .height(0.8.dp)
             .background(if (esOscuroActivo) Color(0xFF2D2C30) else Color(0xFFEBEBEB))
+    )
+}
+
+/**
+ * Píldora o insignia de valor numérico/etiqueta con estilo nativo de Bóveda Local.
+ */
+@Composable
+fun InsigniaValorBoveda(
+    texto: String,
+    modifier: Modifier = Modifier,
+    colorAcento: Color = ColorAcento
+) {
+    Box(
+        modifier = modifier
+            .clip(CircleShape)
+            .background(colorAcento.copy(alpha = 0.15f))
+            .padding(horizontal = 12.dp, vertical = 4.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = texto,
+            color = colorAcento,
+            style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold)
+        )
+    }
+}
+
+enum class TipoBotonTexto { PRIMARIO, SECUNDARIO, PELIGRO }
+
+/**
+ * Botón de texto unificado para diálogos, modales y acciones secundarias.
+ * Encapsula la háptica, tipografía y colores según la variante semántica.
+ */
+@Composable
+fun BotonTextoBoveda(
+    texto: String,
+    alPulsar: () -> Unit,
+    modifier: Modifier = Modifier,
+    tipo: TipoBotonTexto = TipoBotonTexto.PRIMARIO,
+    colorPersonalizado: Color? = null,
+    habilitado: Boolean = true
+) {
+    val contexto = LocalContext.current
+    val haptica = remember { Haptica(contexto) }
+
+    val colorEfectivo = colorPersonalizado ?: when (tipo) {
+        TipoBotonTexto.PRIMARIO -> ColorAcento
+        TipoBotonTexto.SECUNDARIO -> TextoSecundario
+        TipoBotonTexto.PELIGRO -> Peligro
+    }
+
+    TextButton(
+        onClick = {
+            if (tipo == TipoBotonTexto.PELIGRO) haptica.exito() else haptica.tic()
+            alPulsar()
+        },
+        enabled = habilitado,
+        modifier = modifier
+    ) {
+        Text(
+            text = texto,
+            color = if (habilitado) colorEfectivo else ColorAjusteGris,
+            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold)
+        )
+    }
+}
+
+/**
+ * Diálogo de confirmación estándar y elegante para la aplicación.
+ * Sigue la estética unificada con fondo adaptativo claro/oscuro, esquinas redondeadas de 20dp,
+ * tonalElevation 0.dp y botones usando `BotonTextoBoveda`.
+ */
+@Composable
+fun DialogoConfirmacionBoveda(
+    titulo: String,
+    mensaje: String,
+    textoConfirmar: String,
+    alConfirmar: () -> Unit,
+    alDescartar: () -> Unit,
+    textoCancelar: String = "Cancelar",
+    tipoConfirmacion: TipoBotonTexto = TipoBotonTexto.PRIMARIO,
+    iconoHeader: ImageVector? = null
+) {
+    val fondoDialogo = if (esOscuroActivo) Color(0xFF212023) else Color(0xFFFFFFFF)
+
+    AlertDialog(
+        onDismissRequest = alDescartar,
+        containerColor = fondoDialogo,
+        tonalElevation = 0.dp,
+        shape = RoundedCornerShape(20.dp),
+        icon = if (iconoHeader != null) {
+            {
+                val tintColor = when (tipoConfirmacion) {
+                    TipoBotonTexto.PELIGRO -> Peligro
+                    TipoBotonTexto.SECUNDARIO -> TextoSecundario
+                    TipoBotonTexto.PRIMARIO -> ColorAcento
+                }
+                Icon(
+                    imageVector = iconoHeader,
+                    contentDescription = null,
+                    tint = tintColor,
+                    modifier = Modifier.size(28.dp)
+                )
+            }
+        } else null,
+        title = {
+            Text(
+                text = titulo,
+                color = TextoPrincipal,
+                style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold)
+            )
+        },
+        text = {
+            Text(
+                text = mensaje,
+                color = TextoSecundario,
+                style = MaterialTheme.typography.bodyMedium
+            )
+        },
+        confirmButton = {
+            BotonTextoBoveda(
+                texto = textoConfirmar,
+                alPulsar = alConfirmar,
+                tipo = tipoConfirmacion
+            )
+        },
+        dismissButton = {
+            BotonTextoBoveda(
+                texto = textoCancelar,
+                alPulsar = alDescartar,
+                tipo = TipoBotonTexto.SECUNDARIO
+            )
+        }
     )
 }

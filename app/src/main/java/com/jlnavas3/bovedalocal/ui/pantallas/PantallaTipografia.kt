@@ -32,6 +32,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import com.jlnavas3.bovedalocal.ui.componentes.InsigniaValorBoveda
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.SliderBoveda
 import androidx.compose.foundation.relocation.BringIntoViewRequester
 import androidx.compose.foundation.relocation.bringIntoViewRequester
@@ -303,7 +304,7 @@ fun PantallaTipografia(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text("Escalado global", color = TextoPrincipal, style = MaterialTheme.typography.bodyLarge)
-                IndicadorValor(textoPorcentaje)
+                InsigniaValorBoveda(textoPorcentaje)
             }
             SliderBoveda(
                 value = ajustes.escalaTexto,
@@ -470,7 +471,7 @@ fun PantallaTipografia(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text("Espaciado horizontal (Kerning)", color = TextoPrincipal, style = MaterialTheme.typography.bodyLarge)
-                IndicadorValor(if (ajustes.espaciadoLetrasSp == 0f) "0.0 sp (Normal)" else "${String.format("%+.1f", ajustes.espaciadoLetrasSp)} sp")
+                InsigniaValorBoveda(if (ajustes.espaciadoLetrasSp == 0f) "0.0 sp (Normal)" else "${String.format("%+.1f", ajustes.espaciadoLetrasSp)} sp")
             }
             SliderBoveda(
                 value = ajustes.espaciadoLetrasSp,
@@ -496,7 +497,7 @@ fun PantallaTipografia(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text("Factor de interlineado", color = TextoPrincipal, style = MaterialTheme.typography.bodyLarge)
-                IndicadorValor("${String.format("%.2f", ajustes.interlineadoFactor)}x")
+                InsigniaValorBoveda("${String.format("%.2f", ajustes.interlineadoFactor)}x")
             }
             SliderBoveda(
                 value = ajustes.interlineadoFactor,
@@ -569,21 +570,5 @@ private fun ChipPresetTipografia(
                 style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.sp)
             )
         }
-    }
-}
-
-@Composable
-private fun IndicadorValor(texto: String) {
-    Box(
-        modifier = Modifier
-            .clip(CircleShape)
-            .background(ColorAcento.copy(alpha = 0.15f))
-            .padding(horizontal = 12.dp, vertical = 4.dp)
-    ) {
-        Text(
-            text = texto,
-            color = ColorAcento,
-            style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold)
-        )
     }
 }

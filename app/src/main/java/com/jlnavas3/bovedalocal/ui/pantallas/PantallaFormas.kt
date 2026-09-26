@@ -30,6 +30,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import com.jlnavas3.bovedalocal.ui.componentes.InsigniaValorBoveda
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.SliderBoveda
 import androidx.compose.foundation.relocation.BringIntoViewRequester
 import androidx.compose.foundation.relocation.bringIntoViewRequester
@@ -251,7 +252,7 @@ fun PantallaFormas(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text("Radio de esquinas", color = TextoPrincipal, style = MaterialTheme.typography.bodyLarge)
-                IndicadorValor("${ajustes.curvaturaEsquinasDp.roundToInt()} dp")
+                InsigniaValorBoveda("${ajustes.curvaturaEsquinasDp.roundToInt()} dp")
             }
             SliderBoveda(
                 value = ajustes.curvaturaEsquinasDp,
@@ -293,7 +294,7 @@ fun PantallaFormas(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text("Ancho de trazo", color = TextoPrincipal, style = MaterialTheme.typography.bodyLarge)
-                IndicadorValor(if (ajustes.grosorBordeDp == 0f) "Sin borde" else "${String.format("%.1f", ajustes.grosorBordeDp)} dp")
+                InsigniaValorBoveda(if (ajustes.grosorBordeDp == 0f) "Sin borde" else "${String.format("%.1f", ajustes.grosorBordeDp)} dp")
             }
             SliderBoveda(
                 value = ajustes.grosorBordeDp,
@@ -387,7 +388,7 @@ fun PantallaFormas(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text("Separación vertical", color = TextoPrincipal, style = MaterialTheme.typography.bodyLarge)
-                IndicadorValor("${ajustes.espaciadoComponentesDp.roundToInt()} dp")
+                InsigniaValorBoveda("${ajustes.espaciadoComponentesDp.roundToInt()} dp")
             }
             SliderBoveda(
                 value = ajustes.espaciadoComponentesDp,
@@ -459,21 +460,5 @@ private fun ChipPresetForma(
                 style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.sp)
             )
         }
-    }
-}
-
-@Composable
-private fun IndicadorValor(texto: String) {
-    Box(
-        modifier = Modifier
-            .clip(CircleShape)
-            .background(ColorAcento.copy(alpha = 0.15f))
-            .padding(horizontal = 12.dp, vertical = 4.dp)
-    ) {
-        Text(
-            text = texto,
-            color = ColorAcento,
-            style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold)
-        )
     }
 }

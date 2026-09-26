@@ -36,12 +36,12 @@ import androidx.compose.material.icons.filled.QrCode
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
+import com.jlnavas3.bovedalocal.ui.componentes.DialogoConfirmacionBoveda
+import com.jlnavas3.bovedalocal.ui.componentes.TipoBotonTexto
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -649,25 +649,18 @@ fun PantallaDetalle(vm: VaultViewModel, id: String) {
     }
 
     if (confirmarBorrado) {
-        val esOscuro = androidx.compose.foundation.isSystemInDarkTheme()
-        val colorDialogo = if (esOscuro) Color(0xFF212023) else Color(0xFFFFFFFF)
-        AlertDialog(
-            onDismissRequest = { confirmarBorrado = false },
-            shape = androidx.compose.foundation.shape.RoundedCornerShape(20.dp),
-            containerColor = colorDialogo,
-            tonalElevation = 0.dp,
-            title = { Text("¿Mover a la papelera?", color = TextoPrincipal) },
-            text = { Text("Se puede restaurar desde Ajustes > Papelera durante 30 días; pasado ese tiempo se borra permanentemente.", color = TextoSecundario) },
-            confirmButton = {
-                TextButton(onClick = {
-                    confirmarBorrado = false
-                    haptica.error()
-                    vm.eliminar(entrada.id)
-                }) { Text("Mover a la papelera", color = Peligro) }
+        DialogoConfirmacionBoveda(
+            titulo = "¿Mover a la papelera?",
+            mensaje = "Se puede restaurar desde Ajustes > Papelera durante 30 días; pasado ese tiempo se borra permanentemente.",
+            textoConfirmar = "Mover a la papelera",
+            tipoConfirmacion = TipoBotonTexto.PELIGRO,
+            iconoHeader = Icons.Filled.Delete,
+            alConfirmar = {
+                confirmarBorrado = false
+                haptica.error()
+                vm.eliminar(entrada.id)
             },
-            dismissButton = {
-                TextButton(onClick = { confirmarBorrado = false }) { Text("Cancelar", color = TextoSecundario) }
-            }
+            alDescartar = { confirmarBorrado = false }
         )
     }
 

@@ -26,12 +26,12 @@ import androidx.compose.material.icons.filled.Timer
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material.icons.filled.WarningAmber
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
+import com.jlnavas3.bovedalocal.ui.componentes.DialogoConfirmacionBoveda
+import com.jlnavas3.bovedalocal.ui.componentes.TipoBotonTexto
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -242,32 +242,17 @@ fun PantallaHistorialClaves(
     }
 
     if (confirmarVaciar) {
-        val colorDialogo = if (esOscuroActivo) Color(0xFF212023) else Color(0xFFFFFFFF)
-        AlertDialog(
-            onDismissRequest = { confirmarVaciar = false },
-            shape = RoundedCornerShape(20.dp),
-            containerColor = colorDialogo,
-            tonalElevation = 0.dp,
-            title = { Text("¿Vaciar historial de contraseñas?", color = ColorTitulos) },
-            text = {
-                Text(
-                    "Se borrarán permanentemente todas las contraseñas generadas registradas en el historial.",
-                    color = TextoPrincipal
-                )
+        DialogoConfirmacionBoveda(
+            titulo = "¿Vaciar historial de contraseñas?",
+            mensaje = "Se borrarán permanentemente todas las contraseñas generadas registradas en el historial.",
+            textoConfirmar = "Vaciar todo",
+            tipoConfirmacion = TipoBotonTexto.PELIGRO,
+            iconoHeader = Icons.Filled.Delete,
+            alConfirmar = {
+                confirmarVaciar = false
+                vm.vaciarHistorialClaves()
             },
-            confirmButton = {
-                TextButton(onClick = {
-                    confirmarVaciar = false
-                    vm.vaciarHistorialClaves()
-                }) {
-                    Text("Vaciar todo", color = Peligro, fontWeight = FontWeight.Bold)
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = { confirmarVaciar = false }) {
-                    Text("Cancelar", color = TextoSecundario)
-                }
-            }
+            alDescartar = { confirmarVaciar = false }
         )
     }
 }

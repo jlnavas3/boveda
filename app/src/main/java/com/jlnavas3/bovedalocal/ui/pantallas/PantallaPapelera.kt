@@ -38,7 +38,11 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
+import com.jlnavas3.bovedalocal.ui.componentes.BotonTextoBoveda
+import com.jlnavas3.bovedalocal.ui.componentes.DialogoConfirmacionBoveda
+import com.jlnavas3.bovedalocal.ui.componentes.TipoBotonTexto
+import com.jlnavas3.bovedalocal.ui.theme.TextoPrincipal
+import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -76,6 +80,7 @@ import com.jlnavas3.bovedalocal.ui.theme.ColorSeguridad
 import com.jlnavas3.bovedalocal.ui.theme.Menta
 import com.jlnavas3.bovedalocal.ui.theme.Peligro
 import com.jlnavas3.bovedalocal.ui.theme.colorLegibleParaTema
+import com.jlnavas3.bovedalocal.ui.theme.esOscuroActivo
 import com.jlnavas3.bovedalocal.ui.theme.fondoBadgeParaTema
 import java.util.concurrent.TimeUnit
 
@@ -175,108 +180,63 @@ fun PantallaPapelera(
     }
 
     if (confirmarVaciar) {
-        AlertDialog(
-            onDismissRequest = { confirmarVaciar = false },
-            shape = RoundedCornerShape(20.dp),
-            containerColor = ColorTarjetaAjustes,
-            tonalElevation = 0.dp,
-            title = {
-                Text(
-                    text = "¿Vaciar toda la papelera?",
-                    color = ColorTextoAjustes,
-                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
-                )
+        DialogoConfirmacionBoveda(
+            titulo = "¿Vaciar toda la papelera?",
+            mensaje = "Se destruirán definitivamente todas las ${papelera.size} entradas. Esta acción no se puede deshacer.",
+            textoConfirmar = "Vaciar definitivamente",
+            tipoConfirmacion = TipoBotonTexto.PELIGRO,
+            iconoHeader = Icons.Filled.Delete,
+            alConfirmar = {
+                confirmarVaciar = false
+                vm.vaciarPapelera()
+                vm.avisar("Papelera vaciada")
             },
-            text = {
-                Text(
-                    text = "Se destruirán definitivamente todas las ${papelera.size} entradas. Esta acción no se puede deshacer.",
-                    color = ColorAjusteGris,
-                    style = MaterialTheme.typography.bodyMedium
-                )
-            },
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        confirmarVaciar = false
-                        vm.vaciarPapelera()
-                        vm.avisar("Papelera vaciada")
-                    }
-                ) {
-                    Text("Vaciar definitivamente", color = Peligro, fontWeight = FontWeight.Bold)
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = { confirmarVaciar = false }) {
-                    Text("Cancelar", color = ColorAjusteGris)
-                }
-            }
+            alDescartar = { confirmarVaciar = false }
         )
     }
 
     aBorrarDefinitivo?.let { entrada ->
-        AlertDialog(
-            onDismissRequest = { aBorrarDefinitivo = null },
-            shape = RoundedCornerShape(20.dp),
-            containerColor = ColorTarjetaAjustes,
-            tonalElevation = 0.dp,
-            title = {
-                Text(
-                    text = "¿Borrar definitivamente?",
-                    color = ColorTextoAjustes,
-                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
-                )
+        DialogoConfirmacionBoveda(
+            titulo = "¿Borrar definitivamente?",
+            mensaje = "Se destruirá permanentemente \"${entrada.titulo.ifBlank { "Sin título" }}\". Esta acción no se puede deshacer.",
+            textoConfirmar = "Destruir",
+            tipoConfirmacion = TipoBotonTexto.PELIGRO,
+            iconoHeader = Icons.Filled.Delete,
+            alConfirmar = {
+                val id = entrada.id
+                aBorrarDefinitivo = null
+                vm.borrarDefinitivamente(id)
+                vm.avisar("Entrada destruida")
             },
-            text = {
-                Text(
-                    text = "Se destruirá permanentemente \"${entrada.titulo.ifBlank { "Sin título" }}\". Esta acción no se puede deshacer.",
-                    color = ColorAjusteGris,
-                    style = MaterialTheme.typography.bodyMedium
-                )
-            },
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        val id = entrada.id
-                        aBorrarDefinitivo = null
-                        vm.borrarDefinitivamente(id)
-                        vm.avisar("Entrada destruida")
-                    }
-                ) {
-                    Text("Destruir", color = Peligro, fontWeight = FontWeight.Bold)
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = { aBorrarDefinitivo = null }) {
-                    Text("Cancelar", color = ColorAjusteGris)
-                }
-            }
+            alDescartar = { aBorrarDefinitivo = null }
         )
     }
 
     conflictoRestaurar?.let { entrada ->
+        val fondoDialogo = if (esOscuroActivo) Color(0xFF212023) else Color(0xFFFFFFFF)
         AlertDialog(
             onDismissRequest = { conflictoRestaurar = null },
             shape = RoundedCornerShape(20.dp),
-            containerColor = ColorTarjetaAjustes,
+            containerColor = fondoDialogo,
             tonalElevation = 0.dp,
             title = {
                 Text(
                     text = "Entrada ya existente",
-                    color = ColorTextoAjustes,
-                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
+                    color = TextoPrincipal,
+                    style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold)
                 )
             },
             text = {
                 Column {
                     Text(
                         text = "Ya existe una entrada activa con el nombre \"${entrada.titulo.ifBlank { "Sin título" }}\" en tu bóveda.",
-                        color = ColorTextoAjustes,
+                        color = TextoPrincipal,
                         style = MaterialTheme.typography.bodyMedium
                     )
                     Spacer(Modifier.height(10.dp))
                     Text(
                         text = "¿Deseas sustituir la existente o conservar ambas creando una copia independiente?",
-                        color = ColorAjusteGris,
+                        color = TextoSecundario,
                         style = MaterialTheme.typography.bodyMedium
                     )
                 }
@@ -286,30 +246,32 @@ fun PantallaPapelera(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    TextButton(
-                        onClick = {
+                    BotonTextoBoveda(
+                        texto = "Sustituir",
+                        tipo = TipoBotonTexto.PELIGRO,
+                        alPulsar = {
                             val id = entrada.id
                             conflictoRestaurar = null
                             vm.restaurarDeLaPapelera(id, sustituir = true)
                         }
-                    ) {
-                        Text("Sustituir", color = Peligro, fontWeight = FontWeight.SemiBold)
-                    }
-                    TextButton(
-                        onClick = {
+                    )
+                    BotonTextoBoveda(
+                        texto = "Duplicar",
+                        tipo = TipoBotonTexto.PRIMARIO,
+                        alPulsar = {
                             val id = entrada.id
                             conflictoRestaurar = null
                             vm.restaurarDeLaPapelera(id, sustituir = false)
                         }
-                    ) {
-                        Text("Duplicar", color = ColorAcento, fontWeight = FontWeight.Bold)
-                    }
+                    )
                 }
             },
             dismissButton = {
-                TextButton(onClick = { conflictoRestaurar = null }) {
-                    Text("Cancelar", color = ColorAjusteGris)
-                }
+                BotonTextoBoveda(
+                    texto = "Cancelar",
+                    tipo = TipoBotonTexto.SECUNDARIO,
+                    alPulsar = { conflictoRestaurar = null }
+                )
             }
         )
     }
