@@ -7,7 +7,11 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.gestures.awaitEachGesture
+import androidx.compose.foundation.gestures.awaitFirstDown
+import androidx.compose.foundation.gestures.awaitHorizontalTouchSlopOrCancellation
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
+import androidx.compose.ui.input.pointer.positionChange
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -160,6 +164,65 @@ fun FilaGrupoSitio(
     }
 }
 
+@Composable
+private fun ContenidoTotpEnFila(
+    secreto: String,
+    segundosUnix: Long,
+    periodo: Long,
+    digitos: Int,
+    algoritmo: String,
+    separarDigitosTotp: Boolean,
+    compacta: Boolean,
+    alCopiarCodigo: (String) -> Unit
+) {
+    val codigo = remember(segundosUnix / periodo, secreto, digitos, algoritmo) {
+        if (secreto.isBlank()) ""
+        else {
+            try {
+                Totp.codigo(
+                    secreto = Base32.decodificar(secreto),
+                    segundosUnix = segundosUnix,
+                    digitos = digitos,
+                    periodo = periodo,
+                    algoritmo = algoritmo
+                )
+            } catch (e: Exception) {
+                "------"
+            }
+        }
+    }
+
+    if (codigo.isNotBlank()) {
+        val codigoVisible = if (separarDigitosTotp && codigo.length == 6) {
+            "${codigo.take(3)} ${codigo.drop(3)}"
+        } else {
+            codigo
+        }
+        Spacer(Modifier.width(8.dp))
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.clickable { alCopiarCodigo(codigo) }
+        ) {
+            Text(
+                text = codigoVisible,
+                style = if (compacta) {
+                    EstiloMono.copy(fontWeight = FontWeight.Bold, fontSize = 13.sp)
+                } else {
+                    EstiloMono.copy(fontWeight = FontWeight.Bold, fontSize = 14.sp)
+                },
+                color = ColorTitulos
+            )
+            Spacer(Modifier.width(5.dp))
+            IndicadorTotpTarta(
+                segundosRestantes = Totp.segundosRestantes(segundosUnix, periodo),
+                periodo = periodo,
+                tamano = if (compacta) 11.dp else 12.dp,
+                colorPersonalizado = Color(0xFF9E9E9E)
+            )
+        }
+    }
+}
+
 @OptIn(ExperimentalMaterial3Api::class, androidx.compose.foundation.ExperimentalFoundationApi::class)
 @Composable
 fun FilaEntrada(
@@ -192,26 +255,7 @@ fun FilaEntrada(
 
     val contenidoFila: @Composable () -> Unit = {
         val secreto = entrada.secretoTotp
-        val ahora = segundosUnix
         val tieneTotp = !seleccionActiva && !secreto.isNullOrBlank()
-
-        val periodo = entrada.totpPeriodo.toLong().coerceAtLeast(10L)
-        val codigo = remember(ahora / periodo, secreto, entrada.totpDigitos, entrada.totpAlgoritmo) {
-            if (secreto.isNullOrBlank()) ""
-            else {
-                try {
-                    Totp.codigo(
-                        secreto = Base32.decodificar(secreto),
-                        segundosUnix = ahora,
-                        digitos = entrada.totpDigitos,
-                        periodo = periodo,
-                        algoritmo = entrada.totpAlgoritmo
-                    )
-                } catch (e: Exception) {
-                    "------"
-                }
-            }
-        }
 
         val fondoFila = if (seleccionado) {
             Ambar.copy(alpha = 0.22f)
@@ -395,35 +439,17 @@ fun FilaEntrada(
                             modifier = Modifier.weight(1f, fill = false)
                         )
 
-                        if (tieneTotp && codigo.isNotBlank()) {
-                            val codigoVisible = if (separarDigitosTotp && codigo.length == 6) {
-                                "${codigo.take(3)} ${codigo.drop(3)}"
-                            } else {
-                                codigo
-                            }
-                            Spacer(Modifier.width(8.dp))
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                modifier = Modifier
-                                    .clickable { alCopiarCodigo(codigo) }
-                            ) {
-                                Text(
-                                    text = codigoVisible,
-                                    style = if (compacta) {
-                                        EstiloMono.copy(fontWeight = FontWeight.Bold, fontSize = 13.sp)
-                                    } else {
-                                        EstiloMono.copy(fontWeight = FontWeight.Bold, fontSize = 14.sp)
-                                    },
-                                    color = ColorTitulos
-                                )
-                                Spacer(Modifier.width(5.dp))
-                                IndicadorTotpTarta(
-                                    segundosRestantes = Totp.segundosRestantes(ahora, periodo),
-                                    periodo = periodo,
-                                    tamano = if (compacta) 11.dp else 12.dp,
-                                    colorPersonalizado = Color(0xFF9E9E9E)
-                                )
-                            }
+                        if (tieneTotp) {
+                            ContenidoTotpEnFila(
+                                secreto = secreto,
+                                segundosUnix = segundosUnix,
+                                periodo = entrada.totpPeriodo.toLong().coerceAtLeast(10L),
+                                digitos = entrada.totpDigitos,
+                                algoritmo = entrada.totpAlgoritmo,
+                                separarDigitosTotp = separarDigitosTotp,
+                                compacta = compacta,
+                                alCopiarCodigo = alCopiarCodigo
+                            )
                         }
                     }
 
@@ -559,11 +585,39 @@ fun FilaEntrada(
                     .fillMaxSize()
                     .offset { IntOffset(animOffset.value.roundToInt(), 0) }
                     .pointerInput(Unit) {
-                        detectHorizontalDragGestures(
-                            onDragStart = {
+                        awaitEachGesture {
+                            val down = awaitFirstDown(requireUnconsumed = false)
+                            val change = awaitHorizontalTouchSlopOrCancellation(down.id) { change, _ ->
+                                change.consume()
+                            }
+                            if (change != null) {
                                 dioHapticaTope = false
-                            },
-                            onDragEnd = {
+                                var dragOffset = animOffset.value
+                                while (true) {
+                                    val event = awaitPointerEvent()
+                                    val dragChange = event.changes.firstOrNull { it.id == change.id } ?: break
+                                    if (dragChange.pressed) {
+                                        val dragAmount = dragChange.positionChange().x
+                                        if (dragAmount != 0f) {
+                                            dragChange.consume()
+                                            val maximo = topeMaximo
+                                            if (maximo > 0f) {
+                                                dragOffset = (dragOffset + dragAmount).coerceIn(-maximo, maximo)
+                                                scope.launch { animOffset.snapTo(dragOffset) }
+
+                                                val enTope = abs(dragOffset) >= maximo * 0.96f
+                                                if (enTope && !dioHapticaTope) {
+                                                    haptica.tic()
+                                                    dioHapticaTope = true
+                                                } else if (!enTope && dioHapticaTope) {
+                                                    dioHapticaTope = false
+                                                }
+                                            }
+                                        }
+                                    } else {
+                                        break
+                                    }
+                                }
                                 val maximo = topeMaximo
                                 if (maximo > 0f) {
                                     val alcanzado = abs(animOffset.value) >= maximo * 0.94f
@@ -585,36 +639,8 @@ fun FilaEntrada(
                                         )
                                     )
                                 }
-                            },
-                            onDragCancel = {
-                                dioHapticaTope = false
-                                scope.launch {
-                                    animOffset.animateTo(
-                                        targetValue = 0f,
-                                        animationSpec = spring(
-                                            dampingRatio = Spring.DampingRatioLowBouncy,
-                                            stiffness = Spring.StiffnessMedium
-                                        )
-                                    )
-                                }
-                            },
-                            onHorizontalDrag = { change, dragAmount ->
-                                val maximo = topeMaximo
-                                if (maximo > 0f) {
-                                    change.consume()
-                                    val nuevoOffset = (animOffset.value + dragAmount).coerceIn(-maximo, maximo)
-                                    scope.launch { animOffset.snapTo(nuevoOffset) }
-
-                                    val enTope = abs(nuevoOffset) >= maximo * 0.96f
-                                    if (enTope && !dioHapticaTope) {
-                                        haptica.tic()
-                                        dioHapticaTope = true
-                                    } else if (!enTope && dioHapticaTope) {
-                                        dioHapticaTope = false
-                                    }
-                                }
                             }
-                        )
+                        }
                     }
             ) {
                 contenidoFila()
