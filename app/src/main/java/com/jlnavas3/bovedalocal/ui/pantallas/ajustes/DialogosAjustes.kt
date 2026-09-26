@@ -1,5 +1,6 @@
 package com.jlnavas3.bovedalocal.ui.pantallas.ajustes
 
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
@@ -146,5 +147,46 @@ fun DialogoBorrarBoveda(
         iconoHeader = Icons.Filled.DeleteForever,
         alConfirmar = alConfirmar,
         alDescartar = alDescartar
+    )
+}
+
+@Composable
+fun DialogoContrasena(
+    titulo: String,
+    descripcion: String,
+    textoBoton: String,
+    alConfirmar: (String) -> Unit,
+    alCancelar: () -> Unit
+) {
+    var valor by remember { mutableStateOf("") }
+    var mostrarContrasena by remember { mutableStateOf(false) }
+    val esOscuro = isSystemInDarkTheme()
+    val colorDialogo = if (esOscuro) Color(0xFF212023) else Color(0xFFFFFFFF)
+    AlertDialog(
+        onDismissRequest = alCancelar,
+        containerColor = colorDialogo,
+        tonalElevation = 0.dp,
+        shape = RoundedCornerShape(20.dp),
+        title = { Text(titulo, color = TextoPrincipal) },
+        text = {
+            Column {
+                Text(descripcion, color = TextoSecundario, style = MaterialTheme.typography.bodyMedium)
+                Spacer(Modifier.height(12.dp))
+                CampoBoveda(
+                    valor = valor,
+                    etiqueta = "Contraseña",
+                    alCambiar = { valor = it },
+                    esContrasena = true,
+                    mostrarContrasena = mostrarContrasena,
+                    alAlternarMostrarContrasena = { mostrarContrasena = !mostrarContrasena }
+                )
+            }
+        },
+        confirmButton = {
+            TextButton(enabled = valor.length >= 8, onClick = { alConfirmar(valor) }) {
+                Text(textoBoton, color = ColorAcento)
+            }
+        },
+        dismissButton = { TextButton(onClick = alCancelar) { Text("Cancelar") } }
     )
 }
