@@ -69,6 +69,7 @@ import com.jlnavas3.bovedalocal.ui.theme.SuperficieAlta
 import com.jlnavas3.bovedalocal.ui.theme.TextoPrincipal
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
 import androidx.compose.ui.unit.sp
+import com.jlnavas3.bovedalocal.ui.componentes.SwitchBoveda
 import com.jlnavas3.bovedalocal.ui.theme.EstiloMono
 import com.jlnavas3.bovedalocal.ui.theme.colorContraste
 import com.jlnavas3.bovedalocal.ui.theme.colorLegibleParaTema
@@ -527,19 +528,12 @@ fun SwitchBoveda(
     enabled: Boolean = true,
     colorActivo: Color = Ambar
 ) {
-    Switch(
+    SwitchBoveda(
         checked = checked,
         onCheckedChange = onCheckedChange,
         modifier = modifier,
         enabled = enabled,
-        colors = SwitchDefaults.colors(
-            checkedThumbColor = ColorSobreAcento,
-            checkedTrackColor = colorActivo,
-            checkedBorderColor = Color.Transparent,
-            uncheckedThumbColor = ColorAjusteGris,
-            uncheckedTrackColor = if (esOscuroActivo) Color(0xFF333238) else Color(0xFFE5E5EA),
-            uncheckedBorderColor = Color.Transparent
-        )
+        colorActivo = colorActivo
     )
 }
 

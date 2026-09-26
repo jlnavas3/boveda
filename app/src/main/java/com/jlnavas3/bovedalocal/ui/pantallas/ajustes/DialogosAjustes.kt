@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.DeleteForever
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
@@ -116,33 +117,18 @@ fun DialogoBorradoManualCsv(
     alDescartar: () -> Unit,
     alConfirmar: () -> Unit
 ) {
-    AlertDialog(
-        onDismissRequest = alDescartar,
-        shape = RoundedCornerShape(20.dp),
-        containerColor = colorDialogo,
-        tonalElevation = 0.dp,
-        icon = { Icon(Icons.Filled.Warning, contentDescription = null, tint = Peligro) },
-        title = { Text("Eliminar archivo sin cifrar", color = TextoPrincipal, fontWeight = FontWeight.Bold) },
-        text = {
-            Text(
-                "Por directivas de seguridad de Android, la aplicación no cuenta con permisos directos del sistema de archivos para borrar el documento automáticamente.\n\n" +
-                "Te recomendamos FUERTEMENTE abrir la app 'Archivos' o 'Descargas' de tu teléfono y eliminar manualmente el archivo:\n\n" +
-                "📁 $rutaArchivo\n\n" +
-                "Este archivo contiene todas tus contraseñas de Google en texto plano y no debe permanecer en el almacenamiento del dispositivo.",
-                color = TextoSecundario,
-                style = MaterialTheme.typography.bodyMedium
-            )
-        },
-        confirmButton = {
-            TextButton(onClick = alConfirmar) {
-                Text("Ya lo he eliminado / Entendido", color = ColorAcento)
-            }
-        },
-        dismissButton = {
-            TextButton(onClick = alDescartar) {
-                Text("Cerrar", color = TextoSecundario)
-            }
-        }
+    DialogoConfirmacionBoveda(
+        titulo = "Eliminar archivo sin cifrar",
+        mensaje = "Por directivas de seguridad de Android, la aplicación no cuenta con permisos directos del sistema de archivos para borrar el documento automáticamente.\n\n" +
+            "Te recomendamos FUERTEMENTE abrir la app 'Archivos' o 'Descargas' de tu teléfono y eliminar manualmente el archivo:\n\n" +
+            "📁 $rutaArchivo\n\n" +
+            "Este archivo contiene todas tus contraseñas de Google en texto plano y no debe permanecer en el almacenamiento del dispositivo.",
+        textoConfirmar = "Ya lo he eliminado / Entendido",
+        textoCancelar = "Cerrar",
+        tipoConfirmacion = TipoBotonTexto.PRIMARIO,
+        iconoHeader = Icons.Filled.Warning,
+        alConfirmar = alConfirmar,
+        alDescartar = alDescartar
     )
 }
 
@@ -151,18 +137,14 @@ fun DialogoBorrarBoveda(
     alDescartar: () -> Unit,
     alConfirmar: () -> Unit
 ) {
-    AlertDialog(
-        onDismissRequest = alDescartar,
-        shape = RoundedCornerShape(20.dp),
-        containerColor = colorDialogo,
-        tonalElevation = 0.dp,
-        title = { Text("¿Borrar la bóveda entera?", color = TextoPrincipal) },
-        text = { Text("Se elimina el archivo cifrado y la clave de la huella. Si no tienes copia, no hay vuelta atrás.", color = TextoSecundario) },
-        confirmButton = {
-            TextButton(onClick = alConfirmar) {
-                Text("Borrar todo", color = Peligro)
-            }
-        },
-        dismissButton = { TextButton(onClick = alDescartar) { Text("Cancelar", color = TextoSecundario) } }
+    DialogoConfirmacionBoveda(
+        titulo = "¿Borrar la bóveda entera?",
+        mensaje = "Se elimina el archivo cifrado y la clave de la huella. Si no tienes copia, no hay vuelta atrás.",
+        textoConfirmar = "Borrar todo",
+        textoCancelar = "Cancelar",
+        tipoConfirmacion = TipoBotonTexto.PELIGRO,
+        iconoHeader = Icons.Filled.DeleteForever,
+        alConfirmar = alConfirmar,
+        alDescartar = alDescartar
     )
 }
