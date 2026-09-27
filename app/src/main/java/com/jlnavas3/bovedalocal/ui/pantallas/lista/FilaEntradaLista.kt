@@ -1,16 +1,10 @@
 package com.jlnavas3.bovedalocal.ui.pantallas.lista
 
-import androidx.compose.animation.core.Animatable
-import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.spring
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
-import androidx.compose.foundation.gestures.awaitEachGesture
-import androidx.compose.foundation.gestures.awaitFirstDown
-import androidx.compose.foundation.gestures.awaitHorizontalTouchSlopOrCancellation
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,64 +13,41 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountBalance
-import androidx.compose.material.icons.filled.AccountBalanceWallet
-import androidx.compose.material.icons.filled.Badge
 import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.CreditCard
-import androidx.compose.material.icons.filled.Description
-import androidx.compose.material.icons.filled.Dns
-import androidx.compose.material.icons.filled.Fingerprint
 import androidx.compose.material.icons.filled.Star
-import androidx.compose.material.icons.filled.Wifi
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.input.pointer.positionChange
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.jlnavas3.bovedalocal.data.Entrada
 import com.jlnavas3.bovedalocal.data.TipoEntrada
-import com.jlnavas3.bovedalocal.ui.componentes.Monograma
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorTarjetaAjustes
 import com.jlnavas3.bovedalocal.ui.theme.Ambar
 import com.jlnavas3.bovedalocal.ui.theme.Borde
 import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
-import com.jlnavas3.bovedalocal.ui.theme.ColorPasskeys
 import com.jlnavas3.bovedalocal.ui.theme.ColorSobreAcento
 import com.jlnavas3.bovedalocal.ui.theme.TextoPrincipal
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
-import com.jlnavas3.bovedalocal.util.Haptica
-import kotlinx.coroutines.launch
-import kotlin.math.abs
-import kotlin.math.roundToInt
 
+/**
+ * Fila visual de una credencial o entrada dentro del listado principal de la bóveda.
+ */
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun FilaEntrada(
@@ -166,108 +137,10 @@ fun FilaEntrada(
                 }
 
                 // Avatar Squircle / Icono representativo a la izquierda
-                Box(
-                    modifier = Modifier.size(tamanoIcono.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    when (entrada.tipo) {
-                        TipoEntrada.PASSKEY -> {
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .clip(CircleShape)
-                                    .background(ColorPasskeys),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Icon(Icons.Filled.Fingerprint, contentDescription = null, tint = Color.White, modifier = Modifier.size((tamanoIcono * 0.52f).dp))
-                            }
-                        }
-                        TipoEntrada.NOTA -> {
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .clip(CircleShape)
-                                    .background(Color(0xFF0288D1)),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Icon(Icons.Filled.Description, contentDescription = null, tint = Color.White, modifier = Modifier.size((tamanoIcono * 0.52f).dp))
-                            }
-                        }
-                        TipoEntrada.TARJETA -> {
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .clip(CircleShape)
-                                    .background(Color(0xFFE91E63)),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Icon(Icons.Filled.CreditCard, contentDescription = null, tint = Color.White, modifier = Modifier.size((tamanoIcono * 0.52f).dp))
-                            }
-                        }
-                        TipoEntrada.WIFI -> {
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .clip(CircleShape)
-                                    .background(Color(0xFF00897B)),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Icon(Icons.Filled.Wifi, contentDescription = null, tint = Color.White, modifier = Modifier.size((tamanoIcono * 0.52f).dp))
-                            }
-                        }
-                        TipoEntrada.CUENTA_BANCARIA -> {
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .clip(CircleShape)
-                                    .background(Color(0xFF3949AB)),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Icon(Icons.Filled.AccountBalance, contentDescription = null, tint = Color.White, modifier = Modifier.size((tamanoIcono * 0.52f).dp))
-                            }
-                        }
-                        TipoEntrada.SERVIDOR -> {
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .clip(CircleShape)
-                                    .background(Color(0xFF546E7A)),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Icon(Icons.Filled.Dns, contentDescription = null, tint = Color.White, modifier = Modifier.size((tamanoIcono * 0.52f).dp))
-                            }
-                        }
-                        TipoEntrada.WALLET -> {
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .clip(CircleShape)
-                                    .background(Color(0xFFFFB300)),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Icon(Icons.Filled.AccountBalanceWallet, contentDescription = null, tint = Color.White, modifier = Modifier.size((tamanoIcono * 0.52f).dp))
-                            }
-                        }
-                        TipoEntrada.IDENTIDAD -> {
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .clip(CircleShape)
-                                    .background(Color(0xFF00ACC1)),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Icon(Icons.Filled.Badge, contentDescription = null, tint = Color.White, modifier = Modifier.size((tamanoIcono * 0.52f).dp))
-                            }
-                        }
-                        else -> {
-                            Monograma(
-                                titulo = entrada.titulo.ifBlank { "?" },
-                                semilla = entrada.urls.firstOrNull() ?: entrada.usuario.ifBlank { entrada.titulo },
-                                tamano = tamanoIcono
-                            )
-                        }
-                    }
-                }
+                IconoTipoEntrada(
+                    entrada = entrada,
+                    tamanoIcono = tamanoIcono
+                )
 
                 Spacer(Modifier.width(12.dp))
 
@@ -352,105 +225,13 @@ fun FilaEntrada(
     if (seleccionActiva) {
         contenidoFila()
     } else {
-        val contexto = LocalContext.current
-        val haptica = remember { Haptica(contexto) }
-        val scope = rememberCoroutineScope()
-        val animOffset = remember { Animatable(0f) }
-        var dioHapticaTope by remember { mutableStateOf(false) }
-
-        LaunchedEffect(entrada.id) {
-            animOffset.snapTo(0f)
-        }
-
-        val densidad = LocalDensity.current
-        val topeMaximo = remember(densidad) { with(densidad) { 160.dp.toPx() } }
-
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(alturaFila)
-        ) {
-            val offsetActual = animOffset.value
-            val limite = topeMaximo
-            val progreso = if (limite > 0f) (abs(offsetActual) / limite).coerceIn(0f, 1f) else 0f
-
-            if (offsetActual > 0f) {
-                FondoDeslizamientoUsuario(
-                    forma = forma,
-                    progreso = progreso
-                )
-            } else if (offsetActual < 0f) {
-                FondoDeslizamientoContrasena(
-                    forma = forma,
-                    progreso = progreso
-                )
-            }
-
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .offset { IntOffset(animOffset.value.roundToInt(), 0) }
-                    .pointerInput(Unit) {
-                        awaitEachGesture {
-                            val down = awaitFirstDown(requireUnconsumed = false)
-                            val change = awaitHorizontalTouchSlopOrCancellation(down.id) { change, _ ->
-                                change.consume()
-                            }
-                            if (change != null) {
-                                dioHapticaTope = false
-                                var dragOffset = animOffset.value
-                                while (true) {
-                                    val event = awaitPointerEvent()
-                                    val dragChange = event.changes.firstOrNull { it.id == change.id } ?: break
-                                    if (dragChange.pressed) {
-                                        val dragAmount = dragChange.positionChange().x
-                                        if (dragAmount != 0f) {
-                                            dragChange.consume()
-                                            val maximo = topeMaximo
-                                            if (maximo > 0f) {
-                                                dragOffset = (dragOffset + dragAmount).coerceIn(-maximo, maximo)
-                                                scope.launch { animOffset.snapTo(dragOffset) }
-
-                                                val enTope = abs(dragOffset) >= maximo * 0.96f
-                                                if (enTope && !dioHapticaTope) {
-                                                    haptica.tic()
-                                                    dioHapticaTope = true
-                                                } else if (!enTope && dioHapticaTope) {
-                                                    dioHapticaTope = false
-                                                }
-                                            }
-                                        }
-                                    } else {
-                                        break
-                                    }
-                                }
-                                val maximo = topeMaximo
-                                if (maximo > 0f) {
-                                    val alcanzado = abs(animOffset.value) >= maximo * 0.94f
-                                    if (alcanzado) {
-                                        if (animOffset.value > 0f) {
-                                            alCopiarUsuario()
-                                        } else {
-                                            alCopiarContrasena()
-                                        }
-                                    }
-                                }
-                                dioHapticaTope = false
-                                scope.launch {
-                                    animOffset.animateTo(
-                                        targetValue = 0f,
-                                        animationSpec = spring(
-                                            dampingRatio = Spring.DampingRatioLowBouncy,
-                                            stiffness = Spring.StiffnessMedium
-                                        )
-                                    )
-                                }
-                            }
-                        }
-                    }
-            ) {
-                contenidoFila()
-            }
-        }
+        ContenedorDeslizamientoFila(
+            entradaId = entrada.id,
+            alturaFila = alturaFila,
+            forma = forma,
+            alCopiarUsuario = alCopiarUsuario,
+            alCopiarContrasena = alCopiarContrasena,
+            contenido = contenidoFila
+        )
     }
 }
