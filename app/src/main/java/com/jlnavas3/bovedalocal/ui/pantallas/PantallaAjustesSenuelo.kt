@@ -57,10 +57,10 @@ fun PantallaAjustesSenuelo(
     LaunchedEffect(seccionDestino) {
         if (seccionDestino != null) {
             when {
-                seccionDestino == "01.1.1" -> reqExplicacion.bringIntoView()
-                seccionDestino == "01.1.2" -> reqPin.bringIntoView()
-                seccionDestino == "01.1.3" -> reqCuentas.bringIntoView()
-                seccionDestino.startsWith("01.1.") && seccionDestino != "01.1" -> reqPin.bringIntoView()
+                seccionDestino == "01.3.1" -> reqExplicacion.bringIntoView()
+                seccionDestino == "01.3.2" -> reqPin.bringIntoView()
+                seccionDestino == "01.3.3" -> reqCuentas.bringIntoView()
+                seccionDestino.startsWith("01.3.") && seccionDestino != "01.3" -> reqPin.bringIntoView()
             }
         }
     }
@@ -72,8 +72,8 @@ fun PantallaAjustesSenuelo(
                 .background(ColorAjustesFondo)
         ) {
             BarraSuperiorPantalla(
-                titulo = "Bóveda señuelo",
-                idEtiqueta = "01.2",
+                titulo = "Modo señuelo",
+                idEtiqueta = "01.3",
                 mostrarId = ajustes.mostrarIdsAjustes,
                 alVolver = { vm.volverAtras() },
                 conSeparador = scrollState.value > 0,

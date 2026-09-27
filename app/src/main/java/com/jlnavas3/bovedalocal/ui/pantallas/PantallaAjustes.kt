@@ -25,6 +25,7 @@ import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ProveedorResaltadoAjustes
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.contenedorScrollAjustes
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.BarraBusquedaAjustes
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjustesFondo
+import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.DialogoCambioMaestra
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.DialogoNombreBoveda
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.DialogoProveedorPasskeys
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.VistaGruposAjustesHub
@@ -42,13 +43,15 @@ fun PantallaAjustes(
     var textoBusqueda by remember { mutableStateOf("") }
     var dialogoNombreBoveda by remember { mutableStateOf(false) }
     var dialogoProveedorPasskeys by remember { mutableStateOf(false) }
+    var dialogoCambioMaestra by remember { mutableStateOf(false) }
 
     val todosLosElementos = remember(ajustes) {
         crearCatalogoAjustesHub(
             ajustes = ajustes,
             vm = vm,
             alAbrirNombreBoveda = { dialogoNombreBoveda = true },
-            alAbrirProveedorPasskeys = { dialogoProveedorPasskeys = true }
+            alAbrirProveedorPasskeys = { dialogoProveedorPasskeys = true },
+            alAbrirCambioMaestra = { dialogoCambioMaestra = true }
         )
     }
 
@@ -126,6 +129,16 @@ fun PantallaAjustes(
             actividad = actividad,
             vm = vm,
             alCerrar = { dialogoProveedorPasskeys = false }
+        )
+    }
+
+    if (dialogoCambioMaestra) {
+        DialogoCambioMaestra(
+            alDescartar = { dialogoCambioMaestra = false },
+            alConfirmar = { actual, nueva ->
+                dialogoCambioMaestra = false
+                vm.cambiarContrasenaMaestra(actual, nueva)
+            }
         )
     }
 }

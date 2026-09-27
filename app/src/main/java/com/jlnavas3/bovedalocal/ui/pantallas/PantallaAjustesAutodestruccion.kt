@@ -57,8 +57,8 @@ fun PantallaAjustesAutodestruccion(
     LaunchedEffect(seccionDestino) {
         if (seccionDestino != null) {
             when {
-                seccionDestino == "01.3.1" -> reqPin.bringIntoView()
-                seccionDestino.startsWith("01.3.") && seccionDestino != "01.3" -> reqPin.bringIntoView()
+                seccionDestino == "01.4.1" -> reqPin.bringIntoView()
+                seccionDestino.startsWith("01.4.") && seccionDestino != "01.4" -> reqPin.bringIntoView()
             }
         }
     }
@@ -70,8 +70,8 @@ fun PantallaAjustesAutodestruccion(
                 .background(ColorAjustesFondo)
         ) {
             BarraSuperiorPantalla(
-                titulo = "PIN de autodestrucción",
-                idEtiqueta = "01.3",
+                titulo = "Autodestrucción",
+                idEtiqueta = "01.4",
                 mostrarId = ajustes.mostrarIdsAjustes,
                 alVolver = { vm.volverAtras() },
                 conSeparador = scrollState.value > 0,

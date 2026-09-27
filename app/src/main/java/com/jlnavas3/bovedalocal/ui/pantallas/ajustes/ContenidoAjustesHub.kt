@@ -5,17 +5,29 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Backup
+import androidx.compose.material.icons.filled.Build
+import androidx.compose.material.icons.filled.Layers
+import androidx.compose.material.icons.filled.Palette
+import androidx.compose.material.icons.filled.Security
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteGrupo
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteNavegacion
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteSeparador
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
 
-data class InfoGrupoAjustes(val nombre: String, val idGrupo: String)
+data class InfoGrupoAjustes(
+    val nombre: String,
+    val idGrupo: String,
+    val icono: ImageVector
+)
 
 @Composable
 fun VistaResultadosBusquedaAjustes(
@@ -64,12 +76,14 @@ fun VistaGruposAjustesHub(
     modifier: Modifier = Modifier
 ) {
     val grupos = listOf(
-        InfoGrupoAjustes("Seguridad", "01"),
-        InfoGrupoAjustes("Cuentas y Datos", "02"),
-        InfoGrupoAjustes("Personalización", "03"),
-        InfoGrupoAjustes("Funciones", "04"),
-        InfoGrupoAjustes("Sistema", "05")
+        InfoGrupoAjustes("Seguridad", "01", Icons.Filled.Security),
+        InfoGrupoAjustes("Apariencia", "02", Icons.Filled.Palette),
+        InfoGrupoAjustes("Lista de cuentas", "03", Icons.Filled.Layers),
+        InfoGrupoAjustes("Herramientas", "04", Icons.Filled.Build),
+        InfoGrupoAjustes("Copias y datos", "05", Icons.Filled.Backup),
+        InfoGrupoAjustes("Sistema", "06", Icons.Filled.Settings)
     )
+
     Column(modifier = modifier) {
         grupos.forEachIndexed { gIndex, grupo ->
             val elementosDelGrupo = todosLosElementos.filter { it.grupo == grupo.nombre }
@@ -77,6 +91,7 @@ fun VistaGruposAjustesHub(
                 if (gIndex > 0) Spacer(Modifier.height(14.dp))
                 ComponenteGrupo(
                     etiqueta = grupo.nombre,
+                    icono = grupo.icono,
                     idGrupo = grupo.idGrupo,
                     mostrarId = mostrarIds
                 ) {

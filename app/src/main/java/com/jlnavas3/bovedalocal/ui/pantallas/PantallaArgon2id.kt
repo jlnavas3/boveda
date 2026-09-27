@@ -27,17 +27,14 @@ import com.jlnavas3.bovedalocal.crypto.PerfilArgon2
 import com.jlnavas3.bovedalocal.ui.VaultViewModel
 import com.jlnavas3.bovedalocal.ui.componentes.BarraSuperiorPantalla
 import com.jlnavas3.bovedalocal.ui.componentes.DescripcionPantalla
-import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteBotonFila
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteGrupo
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteSelectorModal
-import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteSeparador
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.OpcionSelectorModal
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ProveedorResaltadoAjustes
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjustesFondo
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.DialogoContrasena
 import com.jlnavas3.bovedalocal.ui.theme.ColorArgon2
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
-import com.jlnavas3.bovedalocal.util.Diagnostico
 import com.jlnavas3.bovedalocal.util.Haptica
 
 @Composable
@@ -58,8 +55,8 @@ fun PantallaArgon2id(
                 .background(ColorAjustesFondo)
         ) {
             BarraSuperiorPantalla(
-                titulo = "Cifrado Argon2id",
-                idEtiqueta = "01.4",
+                titulo = "Cifrado",
+                idEtiqueta = "01.5",
                 mostrarId = ajustes.mostrarIdsAjustes,
                 alVolver = { vm.volverAtras() },
                 conSeparador = scrollState.value > 0,
@@ -73,16 +70,26 @@ fun PantallaArgon2id(
                     .verticalScroll(scrollState)
                     .padding(horizontal = 16.dp, vertical = 12.dp)
             ) {
-                DescripcionPantalla(subtitulo = "Parámetros de derivación de claves contra ataques de fuerza bruta y hardware GPU/ASIC")
+                DescripcionPantalla(subtitulo = "Parámetros Argon2id de resistencia KDF ante fuerza bruta")
                 Spacer(Modifier.height(10.dp))
 
+                val perfilActual = vm.repositorio.perfilArgon2Actual()
+
                 ComponenteGrupo(
-                    etiqueta = "Perfil de derivación de clave",
-                    idGrupo = "01.4.G1",
+                    etiqueta = "Perfil de derivación",
+                    icono = Icons.Filled.Memory,
+                    colorIcono = ColorArgon2,
+                    alRestablecer = {
+                        if (perfilActual != PerfilArgon2.ESTANDAR) {
+                            perfilPendiente = PerfilArgon2.ESTANDAR
+                        } else {
+                            vm.avisar("Ya estás usando el perfil Estándar recomendado")
+                        }
+                    },
+                    idGrupo = "01.5.G1",
                     mostrarId = ajustes.mostrarIdsAjustes,
                     descripcion = "Resistencia computacional ante ataques de fuerza bruta y granjas GPU/ASIC"
                 ) {
-                    val perfilActual = vm.repositorio.perfilArgon2Actual()
                     val opcionesArgon2 = remember {
                         PerfilArgon2.entries.map { perfil ->
                             val icono = if (perfil == PerfilArgon2.ULTRASEGURO) Icons.Filled.Shield else Icons.Filled.Memory
@@ -98,43 +105,50 @@ fun PantallaArgon2id(
 
                     ComponenteSelectorModal(
                         titulo = "Perfil Argon2id",
-                        descripcionModal = "Selecciona el perfil criptográfico para proteger la bóveda",
-                        icono = Icons.Filled.Memory,
-                        colorIcono = ColorArgon2,
-                        idFila = "01.4.1",
+                        descripcionModal = "Elige el nivel de resistencia del algoritmo KDF",
+                        icono = null,
+                        idFila = "01.5.1",
                         mostrarId = ajustes.mostrarIdsAjustes,
                         valorSeleccionado = perfilActual,
                         opciones = opcionesArgon2,
-                        alSeleccionar = { nuevo ->
-                            if (nuevo != perfilActual) {
-                                if (vm.repositorio.estaDesbloqueada) {
-                                    perfilPendiente = nuevo
-                                } else {
-                                    vm.repositorio.ajustes.actualizar { it.copy(perfilArgon2 = nuevo.clave) }
-                                    Diagnostico.apuntar("bóveda", "Perfil Argon2id predeterminado establecido en ${nuevo.titulo}")
-                                    vm.avisar("Perfil de cifrado predeterminado: ${nuevo.titulo}")
-                                }
+                        alSeleccionar = { nuevoPerfil ->
+                            if (nuevoPerfil != perfilActual) {
+                                perfilPendiente = nuevoPerfil
                             }
                         }
                     )
+                }
 
-                    ComponenteSeparador()
+                Spacer(Modifier.height(18.dp))
 
-                    ComponenteBotonFila(
-                        titulo = "Restablecer",
-                        alPulsar = {
-                            val perfilDef = PerfilArgon2.ESTANDAR
-                            if (perfilActual != perfilDef) {
-                                if (vm.repositorio.estaDesbloqueada) {
-                                    perfilPendiente = perfilDef
-                                } else {
-                                    vm.repositorio.ajustes.actualizar { it.copy(perfilArgon2 = perfilDef.clave) }
-                                    Diagnostico.apuntar("bóveda", "Perfil Argon2id predeterminado establecido en ${perfilDef.titulo}")
-                                    vm.avisar("Perfil de cifrado predeterminado: ${perfilDef.titulo}")
-                                }
-                            }
-                        }
-                    )
+                // Tarjeta técnica informativa
+                ComponenteGrupo(
+                    etiqueta = "Detalles técnicos",
+                    idGrupo = "01.5.G2",
+                    mostrarId = ajustes.mostrarIdsAjustes
+                ) {
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        Text(
+                            text = "Memoria RAM: ${perfilActual.memoriaKiB / 1024} MB",
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                        Spacer(Modifier.height(4.dp))
+                        Text(
+                            text = "Iteraciones: ${perfilActual.iteraciones}",
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                        Spacer(Modifier.height(4.dp))
+                        Text(
+                            text = "Paralelismo: ${perfilActual.paralelismo} hilos",
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                        Spacer(Modifier.height(8.dp))
+                        Text(
+                            text = perfilActual.detalle,
+                            color = TextoSecundario,
+                            style = MaterialTheme.typography.bodySmall
+                        )
+                    }
                 }
 
                 Spacer(Modifier.height(32.dp))
@@ -142,20 +156,22 @@ fun PantallaArgon2id(
         }
     }
 
-    perfilPendiente?.let { objetivo ->
+    perfilPendiente?.let { perfil ->
         DialogoContrasena(
-            titulo = "Aplicar ${objetivo.titulo}",
-            descripcion = "Para re-cifrar la bóveda con ${objetivo.resumen}, introduce tu contraseña maestra.\n\nNota criptográfica: La huella dactilar no conoce tu contraseña (solo custodia la llave en Keystore). Se requiere tu contraseña maestra para re-derivar la clave con ${objetivo.memoriaKiB / 1024} MiB de memoria.",
-            textoBoton = "Re-cifrar bóveda",
-            alConfirmar = { pass ->
-                vm.reForjarBoveda(pass, objetivo) { exito ->
+            titulo = "Confirmar cambio de perfil Argon2id",
+            descripcion = "Se re-cifrará toda la base de datos con el perfil ${perfil.titulo} (${perfil.memoriaKiB / 1024} MB RAM, ${perfil.iteraciones} iteraciones). Introduce tu contraseña maestra:",
+            textoBoton = "Aplicar perfil",
+            alCancelar = { perfilPendiente = null },
+            alConfirmar = { clave ->
+                vm.reForjarBoveda(clave, perfil) { exito ->
                     if (exito) {
                         haptica.exito()
-                        perfilPendiente = null
+                    } else {
+                        haptica.error()
                     }
                 }
-            },
-            alCancelar = { perfilPendiente = null }
+                perfilPendiente = null
+            }
         )
     }
 }

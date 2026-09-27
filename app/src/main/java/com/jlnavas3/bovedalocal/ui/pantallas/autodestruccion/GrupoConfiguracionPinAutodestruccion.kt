@@ -22,9 +22,9 @@ import androidx.compose.ui.unit.dp
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteBotonFila
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteCampoTexto
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteGrupo
+import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteSeparador
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteSwitch
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.TipoCampoTexto
-import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.SeparadorFilaSimple
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.ColorTitulos
 import com.jlnavas3.bovedalocal.ui.theme.Peligro
@@ -46,27 +46,28 @@ fun GrupoConfiguracionPinAutodestruccion(
     modifier: Modifier = Modifier
 ) {
     ComponenteGrupo(
-        etiqueta = "Configuración del PIN",
-        idGrupo = "01.3.G2",
+        etiqueta = "PIN de emergencia",
+        icono = Icons.Filled.DeleteForever,
+        colorIcono = Peligro,
+        idGrupo = "01.4.G2",
         mostrarId = mostrarIdsAjustes,
         modifier = modifier
     ) {
         ComponenteSwitch(
-            titulo = "Activar PIN de Autodestrucción",
-            icono = Icons.Filled.DeleteForever,
-            colorIcono = Peligro,
+            titulo = "Activar autodestrucción",
+            icono = null,
             activo = activo,
-            idFila = "01.3.1",
+            idFila = "01.4.1",
             mostrarId = mostrarIdsAjustes,
             colorActivo = ColorAcento,
             alCambiar = alCambiarActivo
         )
 
         if (activo) {
-            SeparadorFilaSimple()
+            ComponenteSeparador(sangriaInicio = 16.dp)
             Column(modifier = Modifier.padding(16.dp)) {
                 Text(
-                    text = if (tieneHashGuardado) "Cambiar PIN de Autodestrucción" else "Definir nuevo PIN de Autodestrucción",
+                    text = if (tieneHashGuardado) "Cambiar PIN de autodestrucción" else "Definir nuevo PIN de autodestrucción",
                     color = ColorTitulos,
                     style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold)
                 )
@@ -81,8 +82,7 @@ fun GrupoConfiguracionPinAutodestruccion(
                     esContrasena = true,
                     mostrarContrasena = verPin,
                     alAlternarMostrarContrasena = alAlternarVerPin,
-                    mostrarIcono = true,
-                    colorIcono = Peligro
+                    mostrarIcono = false
                 )
 
                 Spacer(Modifier.height(8.dp))
@@ -95,8 +95,7 @@ fun GrupoConfiguracionPinAutodestruccion(
                     esContrasena = true,
                     mostrarContrasena = verPin,
                     alAlternarMostrarContrasena = alAlternarVerPin,
-                    mostrarIcono = true,
-                    colorIcono = Peligro
+                    mostrarIcono = false
                 )
 
                 if (tieneHashGuardado) {
@@ -121,13 +120,13 @@ fun GrupoConfiguracionPinAutodestruccion(
                 }
             }
 
-            SeparadorFilaSimple()
+            ComponenteSeparador(sangriaInicio = 16.dp)
 
             ComponenteBotonFila(
                 titulo = "Guardar PIN de autodestrucción",
                 icono = Icons.Filled.DeleteForever,
                 colorIcono = Peligro,
-                idFila = "01.3.2",
+                idFila = "01.4.2",
                 mostrarId = mostrarIdsAjustes,
                 alPulsar = alGuardarPin
             )
