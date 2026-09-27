@@ -14,7 +14,6 @@ import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Event
 import androidx.compose.material.icons.filled.EventRepeat
 import androidx.compose.material.icons.filled.FilterNone
-import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Today
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -28,7 +27,6 @@ import androidx.compose.ui.unit.dp
 import com.jlnavas3.bovedalocal.data.AjustesApp
 import com.jlnavas3.bovedalocal.data.AlmacenAjustes
 import com.jlnavas3.bovedalocal.ui.VaultViewModel
-import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteBotonFila
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteCampoTexto
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteGrupo
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteNavegacion
@@ -54,9 +52,19 @@ fun GrupoCopiaAutomaticaLocal(
     Column(modifier = modifier) {
         ComponenteGrupo(
             etiqueta = "Copia automática local",
-            idGrupo = "02.1.G2",
+            icono = Icons.Filled.Autorenew,
+            colorIcono = ColorExportacion,
+            idGrupo = "05.1.G2",
             mostrarId = ajustes.mostrarIdsAjustes,
-            descripcion = "Copias periódicas cifradas en Descargas con rotación de versiones"
+            descripcion = "Copias periódicas cifradas en Descargas con rotación",
+            alRestablecer = {
+                haptica.tic()
+                vm.ajustarBackupAutoFrecuenciaDias(0)
+                vm.ajustarBackupAutoMaxCopias(5)
+                vm.ajustarBackupAutoPasswordCifrado("")
+                vm.ajustarBackupAutoPatronNombre("{99}-backup-{FECHA}")
+                vm.avisar("Copia automática restablecida")
+            }
         ) {
             val opcionesFrecuencia = remember {
                 AlmacenAjustes.OPCIONES_FRECUENCIA_BACKUP_AUTO.map { (dias, etiqueta) ->
@@ -101,9 +109,8 @@ fun GrupoCopiaAutomaticaLocal(
             ComponenteSelectorModal(
                 titulo = "Frecuencia de copia",
                 descripcionModal = "Periodicidad con la que se genera un respaldo cifrado en Descargas",
-                icono = Icons.Filled.Autorenew,
-                colorIcono = ColorExportacion,
-                idFila = "02.1.3",
+                icono = null,
+                idFila = "05.1.4",
                 mostrarId = ajustes.mostrarIdsAjustes,
                 valorSeleccionado = ajustes.backupAutoFrecuenciaDias,
                 opciones = opcionesFrecuencia,
@@ -113,16 +120,15 @@ fun GrupoCopiaAutomaticaLocal(
                 }
             )
 
-            val mostrarSeccionAuto = ajustes.backupAutoFrecuenciaDias > 0 || seccionDestino == "02.1.4" || seccionDestino == "02.1.G2"
+            val mostrarSeccionAuto = ajustes.backupAutoFrecuenciaDias > 0 || seccionDestino == "05.1.5" || seccionDestino == "05.1.6" || seccionDestino == "05.1.G2"
 
             if (mostrarSeccionAuto) {
-                ComponenteSeparador()
+                ComponenteSeparador(sangriaInicio = 16.dp)
                 ComponenteSelectorModal(
                     titulo = "Copias a respaldar",
                     descripcionModal = "Número de copias automáticas que se conservan antes de rotar y borrar las más antiguas",
-                    icono = Icons.Filled.FilterNone,
-                    colorIcono = ColorExportacion,
-                    idFila = "02.1.3b",
+                    icono = null,
+                    idFila = "05.1.5",
                     mostrarId = ajustes.mostrarIdsAjustes,
                     valorSeleccionado = ajustes.backupAutoMaxCopias,
                     opciones = opcionesMaxCopias,
@@ -131,7 +137,7 @@ fun GrupoCopiaAutomaticaLocal(
                         vm.ajustarBackupAutoMaxCopias(max)
                     }
                 )
-                ComponenteSeparador()
+                ComponenteSeparador(sangriaInicio = 16.dp)
                 Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)) {
                     var mostrarPassBackupAuto by remember { mutableStateOf(false) }
                     ComponenteCampoTexto(
@@ -174,26 +180,11 @@ fun GrupoCopiaAutomaticaLocal(
                     )
                 }
 
-                ComponenteSeparador()
-                ComponenteBotonFila(
-                    titulo = "Restablecer grupo",
-                    alPulsar = {
-                        haptica.toque()
-                        vm.ajustarBackupAutoFrecuenciaDias(0)
-                        vm.ajustarBackupAutoMaxCopias(5)
-                        vm.ajustarBackupAutoPasswordCifrado("")
-                        vm.ajustarBackupAutoPatronNombre("{99}-backup-{FECHA}")
-                    }
-                )
-            }
-
-            if (mostrarSeccionAuto) {
-                ComponenteSeparador()
+                ComponenteSeparador(sangriaInicio = 16.dp)
                 ComponenteNavegacion(
                     titulo = "Ejecutar copia automática ahora",
-                    icono = Icons.Filled.PlayArrow,
-                    colorIcono = ColorExportacion,
-                    idFila = "02.1.4",
+                    icono = null,
+                    idFila = "05.1.6",
                     mostrarId = ajustes.mostrarIdsAjustes,
                     alPulsar = {
                         haptica.toque()

@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.relocation.BringIntoViewRequester
+import androidx.compose.foundation.relocation.bringIntoViewRequester
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
@@ -25,7 +26,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.jlnavas3.bovedalocal.data.EstadoBoveda
 import com.jlnavas3.bovedalocal.ui.VaultViewModel
 import com.jlnavas3.bovedalocal.ui.componentes.BarraSuperiorPantalla
-import com.jlnavas3.bovedalocal.ui.componentes.DescripcionPantalla
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ProveedorResaltadoAjustes
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjustesFondo
 import com.jlnavas3.bovedalocal.ui.pantallas.emergencia.BannerRespaldoOffline
@@ -54,8 +54,8 @@ fun PantallaKitEmergencia(
     LaunchedEffect(seccionDestino) {
         if (seccionDestino != null) {
             when {
-                seccionDestino == "02.3.1" -> reqOpciones.bringIntoView()
-                seccionDestino.startsWith("02.3.") && seccionDestino != "02.3" -> reqOpciones.bringIntoView()
+                seccionDestino == "05.3.1" -> reqOpciones.bringIntoView()
+                seccionDestino.startsWith("05.3.") && seccionDestino != "05.3" -> reqOpciones.bringIntoView()
             }
         }
     }
@@ -88,7 +88,7 @@ fun PantallaKitEmergencia(
         ) {
             BarraSuperiorPantalla(
                 titulo = "Kit de emergencia",
-                idEtiqueta = "02.3",
+                idEtiqueta = "05.3",
                 mostrarId = ajustes.mostrarIdsAjustes,
                 alVolver = { vm.volverAtras() },
                 conSeparador = scrollState.value > 0,
@@ -102,13 +102,10 @@ fun PantallaKitEmergencia(
                     .verticalScroll(scrollState)
                     .padding(horizontal = 16.dp, vertical = 12.dp)
             ) {
-                DescripcionPantalla(subtitulo = "Hoja de respaldo físico para imprimir y guardar en caja fuerte")
-                Spacer(Modifier.height(10.dp))
-
                 // Banner informativo
                 BannerRespaldoOffline(mostrarIdsAjustes = ajustes.mostrarIdsAjustes)
 
-                Spacer(Modifier.height(16.dp))
+                Spacer(Modifier.height(14.dp))
 
                 // Opciones de configuración
                 GrupoOpcionesDocumento(
@@ -127,10 +124,11 @@ fun PantallaKitEmergencia(
                     alCambiarIncluirNotas = {
                         haptica.tic()
                         incluirNotas = it
-                    }
+                    },
+                    modifier = Modifier.bringIntoViewRequester(reqOpciones)
                 )
 
-                Spacer(Modifier.height(16.dp))
+                Spacer(Modifier.height(14.dp))
 
                 // Botones de acción principales
                 BotonesAccionKitEmergencia(
@@ -146,10 +144,13 @@ fun PantallaKitEmergencia(
                     }
                 )
 
-                Spacer(Modifier.height(16.dp))
+                Spacer(Modifier.height(14.dp))
 
                 // Vista previa del documento
-                SeccionVistaPreviaKit(textoPreview = textoPreview)
+                SeccionVistaPreviaKit(
+                    textoPreview = textoPreview,
+                    mostrarIdsAjustes = ajustes.mostrarIdsAjustes
+                )
 
                 Spacer(Modifier.height(32.dp))
             }

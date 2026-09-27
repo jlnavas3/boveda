@@ -3,9 +3,9 @@ package com.jlnavas3.bovedalocal.ui.pantallas.copia
 import android.content.Context
 import androidx.activity.result.ActivityResultLauncher
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.FileDownload
-import androidx.compose.material.icons.filled.FileUpload
+import androidx.compose.material.icons.filled.Backup
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.unit.dp
 import com.jlnavas3.bovedalocal.BovedaApp
 import com.jlnavas3.bovedalocal.data.AjustesApp
 import com.jlnavas3.bovedalocal.ui.Pantalla
@@ -25,35 +25,34 @@ fun GrupoAccionesCopiaCifrada(
 ) {
     ComponenteGrupo(
         etiqueta = "Copia cifrada (.bvda)",
-        idGrupo = "02.1.G1",
+        icono = Icons.Filled.Backup,
+        colorIcono = ColorExportacion,
+        idGrupo = "05.1.G1",
         mostrarId = ajustes.mostrarIdsAjustes,
         descripcion = "Archivo seguro cifrado con Argon2id + ChaCha20-Poly1305"
     ) {
         ComponenteNavegacion(
             titulo = "Exportar bóveda cifrada",
-            icono = Icons.Filled.FileDownload,
-            colorIcono = ColorExportacion,
+            icono = null,
             valorTexto = ".bvda",
-            idFila = "02.1.1",
+            idFila = "05.1.1",
             mostrarId = ajustes.mostrarIdsAjustes,
             alPulsar = alSolicitarExportar
         )
-        ComponenteSeparador()
+        ComponenteSeparador(sangriaInicio = 16.dp)
         ComponenteNavegacion(
             titulo = "Exportación selectiva",
-            icono = Icons.Filled.FileDownload,
-            colorIcono = ColorExportacion,
+            icono = null,
             valorTexto = ".bvda",
-            idFila = "02.1.2",
+            idFila = "05.1.2",
             mostrarId = ajustes.mostrarIdsAjustes,
             alPulsar = { vm.ir(Pantalla.ExportarSelectivo("todos")) }
         )
-        ComponenteSeparador()
+        ComponenteSeparador(sangriaInicio = 16.dp)
         ComponenteNavegacion(
             titulo = "Importar copia de seguridad",
-            icono = Icons.Filled.FileUpload,
-            colorIcono = ColorExportacion,
-            idFila = "02.1.3",
+            icono = null,
+            idFila = "05.1.3",
             mostrarId = ajustes.mostrarIdsAjustes,
             alPulsar = {
                 BovedaApp.salidaPendiente(contexto)

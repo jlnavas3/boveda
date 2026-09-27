@@ -25,7 +25,9 @@ fun GrupoSeguridadArchivoCsvGoogle(
 ) {
     ComponenteGrupo(
         etiqueta = "Seguridad del archivo CSV",
-        idGrupo = "02.2.G2",
+        icono = Icons.Filled.Security,
+        colorIcono = Peligro,
+        idGrupo = "05.2.G2",
         mostrarId = mostrarId,
         descripcion = "Estado de protección contra fugas de texto claro",
         modifier = modifier

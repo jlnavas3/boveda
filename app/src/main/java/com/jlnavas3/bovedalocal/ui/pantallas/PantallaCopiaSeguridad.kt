@@ -26,7 +26,6 @@ import com.jlnavas3.bovedalocal.BovedaApp
 import com.jlnavas3.bovedalocal.data.GestorBackupAutomatico
 import com.jlnavas3.bovedalocal.ui.VaultViewModel
 import com.jlnavas3.bovedalocal.ui.componentes.BarraSuperiorPantalla
-import com.jlnavas3.bovedalocal.ui.componentes.DescripcionPantalla
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.LocalCoordinadorResaltado
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ProveedorResaltadoAjustes
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.contenedorScrollAjustes
@@ -93,7 +92,7 @@ fun PantallaCopiaSeguridad(
         ) {
             BarraSuperiorPantalla(
                 titulo = "Copia de seguridad",
-                idEtiqueta = "02.1",
+                idEtiqueta = "05.1",
                 mostrarId = ajustes.mostrarIdsAjustes,
                 alVolver = { vm.volverAtras() },
                 conSeparador = scrollState.value > 0,
@@ -108,9 +107,6 @@ fun PantallaCopiaSeguridad(
                     .verticalScroll(scrollState)
                     .padding(horizontal = 16.dp, vertical = 12.dp)
             ) {
-                DescripcionPantalla(subtitulo = "Exporta, restaura y respalda tus contraseñas de forma cifrada")
-                Spacer(Modifier.height(10.dp))
-
                 // Grupo 1: Acciones principales de respaldo (.bvda, selectiva, importar)
                 GrupoAccionesCopiaCifrada(
                     ajustes = ajustes,
@@ -120,7 +116,7 @@ fun PantallaCopiaSeguridad(
                     alSolicitarExportar = { dialogoExportar = true }
                 )
 
-                Spacer(Modifier.height(18.dp))
+                Spacer(Modifier.height(14.dp))
 
                 // Grupo 2: Copia automática rotativa
                 GrupoCopiaAutomaticaLocal(
@@ -130,7 +126,7 @@ fun PantallaCopiaSeguridad(
                     haptica = haptica
                 )
 
-                Spacer(Modifier.height(18.dp))
+                Spacer(Modifier.height(14.dp))
 
                 // Grupo 3: Recordatorio de exportación
                 GrupoRecordatorioRespaldo(

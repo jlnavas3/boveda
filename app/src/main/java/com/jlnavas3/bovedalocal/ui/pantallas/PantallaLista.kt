@@ -263,8 +263,8 @@ fun PantallaLista(vm: VaultViewModel, estado: EstadoBoveda) {
                         alIrOrganizacionGrupo = { vm.ir(Pantalla.OrganizacionLista("03.5.1")) },
                         alIrOrganizacionIndicadores = { vm.ir(Pantalla.OrganizacionLista("03.5.2")) },
                         alIrExportarSelectivo = { vm.ir(Pantalla.ExportarSelectivo("todos")) },
-                        alIrCopiaSeguridad = { vm.ir(Pantalla.CopiaSeguridad("02.1.3")) },
-                        alIrCsvGoogle = { vm.ir(Pantalla.CsvGoogle("02.2.1")) },
+                        alIrCopiaSeguridad = { vm.ir(Pantalla.CopiaSeguridad("05.1.3")) },
+                        alIrCsvGoogle = { vm.ir(Pantalla.CsvGoogle("05.2.1")) },
                         alRestablecerFiltros = {
                             vm.filtrarPorTipo(null)
                             if (soloFavoritos) vm.alternarSoloFavoritos()
@@ -301,7 +301,7 @@ fun PantallaLista(vm: VaultViewModel, estado: EstadoBoveda) {
                     Box(modifier = Modifier.padding(horizontal = 20.dp)) {
                         BannerRecordatorioExportacion(
                             info = recordatorio,
-                            alIr = { vm.ir(Pantalla.CopiaSeguridad("02.1.4")) }
+                            alIr = { vm.ir(Pantalla.CopiaSeguridad("05.1.6")) }
                         )
                     }
                 }
@@ -373,11 +373,11 @@ fun PantallaLista(vm: VaultViewModel, estado: EstadoBoveda) {
                         entradasVacias = entradas.isEmpty(),
                         alImportarCopia = {
                             haptica.tic()
-                            vm.ir(Pantalla.CopiaSeguridad("02.1.3"))
+                            vm.ir(Pantalla.CopiaSeguridad("05.1.3"))
                         },
                         alImportarCsvGoogle = {
                             haptica.tic()
-                            vm.ir(Pantalla.CsvGoogle("02.2.1"))
+                            vm.ir(Pantalla.CsvGoogle("05.2.1"))
                         }
                     )
                 } else {

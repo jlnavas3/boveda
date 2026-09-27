@@ -24,7 +24,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.jlnavas3.bovedalocal.BovedaApp
 import com.jlnavas3.bovedalocal.ui.VaultViewModel
 import com.jlnavas3.bovedalocal.ui.componentes.BarraSuperiorPantalla
-import com.jlnavas3.bovedalocal.ui.componentes.DescripcionPantalla
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ProveedorResaltadoAjustes
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjustesFondo
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.DialogoBorradoManualCsv
@@ -85,7 +84,7 @@ fun PantallaCsvGoogle(
         ) {
             BarraSuperiorPantalla(
                 titulo = "Contraseñas de Google",
-                idEtiqueta = "02.2",
+                idEtiqueta = "05.2",
                 mostrarId = ajustes.mostrarIdsAjustes,
                 alVolver = { vm.volverAtras() },
                 conSeparador = scrollState.value > 0,
@@ -99,9 +98,6 @@ fun PantallaCsvGoogle(
                     .verticalScroll(scrollState)
                     .padding(horizontal = 16.dp, vertical = 12.dp)
             ) {
-                DescripcionPantalla(subtitulo = "Importa contraseñas exportadas desde Google Password Manager")
-                Spacer(Modifier.height(10.dp))
-
                 // Grupo 1: Importación de CSV
                 GrupoImportacionCsvGoogle(
                     mostrarId = ajustes.mostrarIdsAjustes,
@@ -109,7 +105,7 @@ fun PantallaCsvGoogle(
                 )
 
                 if (ajustes.csvGoogleRuta.isNotBlank()) {
-                    Spacer(Modifier.height(18.dp))
+                    Spacer(Modifier.height(14.dp))
 
                     // Grupo 2: Seguridad del archivo descargado
                     GrupoSeguridadArchivoCsvGoogle(

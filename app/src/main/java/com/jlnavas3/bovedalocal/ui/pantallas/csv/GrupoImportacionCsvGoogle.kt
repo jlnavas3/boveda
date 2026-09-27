@@ -8,6 +8,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteBotonFila
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteGrupo
@@ -23,7 +24,9 @@ fun GrupoImportacionCsvGoogle(
 ) {
     ComponenteGrupo(
         etiqueta = "Importación",
-        idGrupo = "02.2.G1",
+        icono = Icons.Filled.FileUpload,
+        colorIcono = Color(0xFF0288D1),
+        idGrupo = "05.2.G1",
         mostrarId = mostrarId,
         descripcion = "Carga de archivo 'Google Passwords.csv' desde el almacenamiento",
         modifier = modifier
@@ -40,7 +43,7 @@ fun GrupoImportacionCsvGoogle(
             titulo = "Importar contraseñas de Google",
             colorIcono = ColorExportacion,
             icono = Icons.Filled.FileUpload,
-            idFila = "02.2.1",
+            idFila = "05.2.1",
             mostrarId = mostrarId,
             alPulsar = alIniciarImportacion
         )

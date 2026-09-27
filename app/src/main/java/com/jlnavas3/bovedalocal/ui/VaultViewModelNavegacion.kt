@@ -67,14 +67,19 @@ interface VaultNavegacionDelegate {
         is Pantalla.AjustesAutodestruccion -> Pantalla.Ajustes("01.4")
         is Pantalla.Argon2id -> Pantalla.Ajustes("01.5")
 
+        // Nivel 2: Copias y datos -> Ajustes (Nivel 1)
+        is Pantalla.CopiaSeguridad -> Pantalla.Ajustes("05.1")
+        is Pantalla.CsvGoogle -> Pantalla.Ajustes("05.2")
+        is Pantalla.KitEmergencia -> Pantalla.Ajustes("05.3")
+
         // Nivel 2: Funciones -> Ajustes (Nivel 1)
         is Pantalla.AjustesAutenticador -> Pantalla.Ajustes("04.1")
-        is Pantalla.AjustesCamara -> Pantalla.Ajustes("04.2")
-        is Pantalla.TileRapido -> Pantalla.Ajustes("04.3")
         is Pantalla.HistorialClaves -> if (!pantalla.seccionId.isNullOrBlank()) Pantalla.Ajustes(pantalla.seccionId) else Pantalla.Lista
+        is Pantalla.AjustesCamara -> Pantalla.Ajustes("04.3")
+        is Pantalla.TileRapido -> Pantalla.Ajustes("04.5")
 
         // Nivel 2: Sistema -> Ajustes (Nivel 1)
-        is Pantalla.Avanzada -> Pantalla.Ajustes("05.1")
+        is Pantalla.Avanzada -> Pantalla.Ajustes("06.1")
         is Pantalla.Registro -> if (!pantalla.seccionId.isNullOrBlank()) Pantalla.Ajustes(pantalla.seccionId) else Pantalla.Lista
         is Pantalla.AcercaDe -> if (!pantalla.seccionId.isNullOrBlank()) Pantalla.Ajustes(pantalla.seccionId) else Pantalla.Lista
 

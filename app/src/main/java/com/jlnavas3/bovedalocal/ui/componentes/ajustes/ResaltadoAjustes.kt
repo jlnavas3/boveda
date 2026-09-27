@@ -60,8 +60,8 @@ class CoordinadorResaltadoAjustes(
         // Equivalencias y jerarquías conocidas
         if (dest == "03.2.G2" && item == "03.2.6") return true
         if (dest == "03.2.6" && item == "03.2.G2") return true
-        if (dest == "02.1.G2" && item == "02.1.4") return true
-        if (dest == "02.1.4" && item == "02.1.G2") return true
+        if (dest == "05.1.G2" && item == "05.1.6") return true
+        if (dest == "05.1.6" && item == "05.1.G2") return true
         if (dest == "03.3.G1" && item == "03.3.3") return true
         if (dest == "03.3.3" && item == "03.3.G1") return true
 
@@ -229,7 +229,7 @@ fun recordarEstadoAlumbrado(idFila: String?): EstadoAlumbradoFila {
         if (!idFila.isNullOrBlank() && !destinoActual.isNullOrBlank() && coordinador == null) {
             val coincide = (idFila == destinoActual) ||
                 (destinoActual == "03.2.G2" && idFila == "03.2.6") ||
-                (destinoActual == "02.1.G2" && idFila == "02.1.4")
+                (destinoActual == "05.1.G2" && idFila == "05.1.6")
             if (coincide) {
                 delay(120)
                 try {

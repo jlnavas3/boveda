@@ -6,16 +6,15 @@ import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.EventRepeat
+import androidx.compose.material.icons.filled.NotificationsActive
 import androidx.compose.material.icons.filled.Today
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import com.jlnavas3.bovedalocal.data.AjustesApp
 import com.jlnavas3.bovedalocal.data.AlmacenAjustes
 import com.jlnavas3.bovedalocal.ui.VaultViewModel
-import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteBotonFila
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteGrupo
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteSelectorModal
-import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteSeparador
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.OpcionSelectorModal
 import com.jlnavas3.bovedalocal.ui.theme.ColorExportacion
 import com.jlnavas3.bovedalocal.util.Haptica
@@ -28,9 +27,16 @@ fun GrupoRecordatorioRespaldo(
 ) {
     ComponenteGrupo(
         etiqueta = "Recordatorio de respaldo",
-        idGrupo = "02.1.G3",
+        icono = Icons.Filled.NotificationsActive,
+        colorIcono = ColorExportacion,
+        idGrupo = "05.1.G3",
         mostrarId = ajustes.mostrarIdsAjustes,
-        descripcion = "Aviso periódico en la bóveda si pasa mucho tiempo sin exportar"
+        descripcion = "Aviso periódico en la bóveda si pasa mucho tiempo sin exportar",
+        alRestablecer = {
+            haptica.tic()
+            vm.ajustarRecordatorioExportacion(30)
+            vm.avisar("Recordatorio restablecido a 30 días")
+        }
     ) {
         val opcionesRecordatorio = remember {
             AlmacenAjustes.OPCIONES_RECORDATORIO_EXPORTACION.map { (dias, etiqueta) ->
@@ -58,25 +64,14 @@ fun GrupoRecordatorioRespaldo(
         ComponenteSelectorModal(
             titulo = "Frecuencia del recordatorio",
             descripcionModal = "Periodicidad con la que se avisa en la bóveda si no se ha exportado",
-            icono = Icons.Filled.EventRepeat,
-            colorIcono = ColorExportacion,
-            idFila = "02.1.5",
+            icono = null,
+            idFila = "05.1.7",
             mostrarId = ajustes.mostrarIdsAjustes,
             valorSeleccionado = ajustes.recordatorioExportacionDias,
             opciones = opcionesRecordatorio,
             alSeleccionar = { dias ->
                 haptica.tic()
                 vm.ajustarRecordatorioExportacion(dias)
-            }
-        )
-
-        ComponenteSeparador()
-
-        ComponenteBotonFila(
-            titulo = "Restablecer",
-            alPulsar = {
-                haptica.toque()
-                vm.ajustarRecordatorioExportacion(30)
             }
         )
     }
