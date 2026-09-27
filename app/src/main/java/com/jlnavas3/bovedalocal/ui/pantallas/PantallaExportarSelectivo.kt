@@ -1,44 +1,29 @@
 package com.jlnavas3.bovedalocal.ui.pantallas
 
-import android.content.ContentValues
-import android.media.MediaScannerConnection
-import android.os.Build
-import android.os.Environment
-import android.provider.MediaStore
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.jlnavas3.bovedalocal.BovedaApp
-import com.jlnavas3.bovedalocal.crypto.VaultCrypto
 import com.jlnavas3.bovedalocal.data.EstadoBoveda
-import com.jlnavas3.bovedalocal.data.GestorBackupAutomatico
 import com.jlnavas3.bovedalocal.ui.VaultViewModel
 import com.jlnavas3.bovedalocal.ui.componentes.BarraSuperiorPantalla
 import com.jlnavas3.bovedalocal.ui.componentes.BotonIconoCabecera
@@ -49,15 +34,13 @@ import com.jlnavas3.bovedalocal.ui.pantallas.exportar.BarraControlesSeleccionExp
 import com.jlnavas3.bovedalocal.ui.pantallas.exportar.BotonesAccionInferioresExportar
 import com.jlnavas3.bovedalocal.ui.pantallas.exportar.ChipsCategoriasExportacion
 import com.jlnavas3.bovedalocal.ui.pantallas.exportar.DialogoClaveExportarSelectivo
-import com.jlnavas3.bovedalocal.ui.pantallas.exportar.FilaEntradaExportarSelectivo
+import com.jlnavas3.bovedalocal.ui.pantallas.exportar.GuardadorBackupSelectivo
+import com.jlnavas3.bovedalocal.ui.pantallas.exportar.ListaEntradasExportarSelectivo
 import com.jlnavas3.bovedalocal.ui.pantallas.exportar.ProveedorCategoriasExportacion
 import com.jlnavas3.bovedalocal.ui.theme.Ambar
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
-import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
-import com.jlnavas3.bovedalocal.util.Diagnostico
 import com.jlnavas3.bovedalocal.util.Haptica
-import java.io.File
 
 /**
  * Pantalla de exportación selectiva que permite marcar entradas por categorías y
@@ -111,64 +94,6 @@ fun PantallaExportarSelectivo(
         if (uri != null) {
             vm.exportarSelectivo(idsSeleccionados.toSet(), passwordAUsar) { bytes ->
                 contexto.contentResolver.openOutputStream(uri)?.use { it.write(bytes) }
-            }
-        }
-    }
-
-    fun sanearNombreArchivo(nombre: String): String {
-        val limpio = nombre.replace(Regex("[\\\\/:*?\"<>|]"), "_").trim()
-        val conExt = if (limpio.endsWith(".bvda", ignoreCase = true)) limpio else "$limpio.bvda"
-        return conExt.ifBlank { "01-selectivo-backup.bvda" }
-    }
-
-    fun guardarDirectoEnAutoBackup(nombreBruto: String, password: String) {
-        val nombreArchivo = sanearNombreArchivo(nombreBruto)
-        vm.exportarSelectivo(idsSeleccionados.toSet(), password) { bytes ->
-            var guardadoExitoso = false
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                try {
-                    val values = ContentValues().apply {
-                        put(MediaStore.Downloads.DISPLAY_NAME, nombreArchivo)
-                        put(MediaStore.Downloads.MIME_TYPE, "application/octet-stream")
-                        put(MediaStore.Downloads.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS + "/BovedaLocal/Backups")
-                        put(MediaStore.Downloads.IS_PENDING, 1)
-                    }
-                    val uri = contexto.contentResolver.insert(
-                        MediaStore.Downloads.EXTERNAL_CONTENT_URI,
-                        values
-                    )
-                    if (uri != null) {
-                        contexto.contentResolver.openOutputStream(uri)?.use { stream ->
-                            stream.write(bytes)
-                        }
-                        values.clear()
-                        values.put(MediaStore.Downloads.IS_PENDING, 0)
-                        contexto.contentResolver.update(uri, values, null, null)
-                        guardadoExitoso = true
-                    }
-                } catch (e: Exception) {
-                    Diagnostico.apuntar("backup", "Fallo al guardar copia selectiva con MediaStore: ${e.message}")
-                    guardadoExitoso = false
-                }
-            }
-
-            if (!guardadoExitoso) {
-                try {
-                    val carpetaAuto = GestorBackupAutomatico.obtenerDirectorioBackups(contexto)
-                    val destino = File(carpetaAuto, nombreArchivo)
-                    VaultCrypto.escribirAtomico(destino, bytes)
-                    MediaScannerConnection.scanFile(contexto, arrayOf(destino.absolutePath), null, null)
-                    guardadoExitoso = true
-                } catch (e: Exception) {
-                    Diagnostico.apuntar("backup", "Fallo al guardar copia selectiva con File: ${e.message}")
-                }
-            }
-
-            if (guardadoExitoso) {
-                vm.avisar("Guardado en Descargas/BovedaLocal/Backups/$nombreArchivo")
-            } else {
-                vm.avisar("No se pudo guardar automáticamente. Usa el explorador de archivos.")
             }
         }
     }
@@ -284,40 +209,16 @@ fun PantallaExportarSelectivo(
             Spacer(Modifier.height(4.dp))
 
             // Lista de entradas filtradas por categoría
-            if (entradasPaginaBusqueda.isEmpty()) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(200.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = "No hay entradas registradas en esta categoría.",
-                        color = TextoSecundario,
-                        style = MaterialTheme.typography.bodyMedium
-                    )
-                }
-            } else {
-                LazyColumn(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .weight(1f),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    items(entradasPaginaBusqueda, key = { it.id }) { entrada ->
-                        val marcada = idsSeleccionados.contains(entrada.id)
-                        FilaEntradaExportarSelectivo(
-                            entrada = entrada,
-                            marcada = marcada,
-                            alAlternarMarcado = { checked ->
-                                haptica.tic()
-                                if (checked) idsSeleccionados.add(entrada.id)
-                                else idsSeleccionados.remove(entrada.id)
-                            }
-                        )
-                    }
-                }
-            }
+            ListaEntradasExportarSelectivo(
+                entradas = entradasPaginaBusqueda,
+                idsSeleccionados = idsSeleccionados,
+                alAlternarSeleccion = { id, checked ->
+                    haptica.tic()
+                    if (checked) idsSeleccionados.add(id)
+                    else idsSeleccionados.remove(id)
+                },
+                modifier = Modifier.weight(1f)
+            )
 
             Spacer(Modifier.height(12.dp))
 
@@ -346,7 +247,13 @@ fun PantallaExportarSelectivo(
                 dialogoExportar = false
                 passwordAUsar = clavePass
                 if (directoAuto) {
-                    guardarDirectoEnAutoBackup(nombreArchivoResolved, clavePass)
+                    GuardadorBackupSelectivo.ejecutarExportacionAuto(
+                        contexto = contexto,
+                        vm = vm,
+                        ids = idsSeleccionados.toSet(),
+                        password = clavePass,
+                        nombreBruto = nombreArchivoResolved
+                    )
                 } else {
                     BovedaApp.salidaPendiente(contexto)
                     try {
