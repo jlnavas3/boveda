@@ -1,9 +1,9 @@
-@file:OptIn(androidx.compose.foundation.ExperimentalFoundationApi::class)
+@file:OptIn(ExperimentalFoundationApi::class)
 
 package com.jlnavas3.bovedalocal.ui.componentes.ajustes
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -26,9 +26,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -50,7 +50,7 @@ import com.jlnavas3.bovedalocal.util.Haptica
  *
  * Características:
  * - Icono en contenedor redondeado tipo squircle con fondo de color distintivo.
- * - Título limpio y directo sin subtítulos redundantes.
+ * - Título y subtítulo descriptivo opcional.
  * - Badge de ID de fila discreto en formato monoespaciado (solo si mostrarId es true).
  * - Soporte nativo para auto-scroll y animación de destello de alumbrado ("glow")
  *   cuando es el destino objetivo.
@@ -59,6 +59,7 @@ import com.jlnavas3.bovedalocal.util.Haptica
 fun ComponenteFila(
     titulo: String,
     modifier: Modifier = Modifier,
+    subtitulo: String? = null,
     icono: ImageVector? = null,
     colorIcono: Color? = null,
     colorTinteIcono: Color = Color.White,
@@ -102,7 +103,7 @@ fun ComponenteFila(
             .then(modifierClick)
             .padding(
                 horizontal = 16.dp,
-                vertical = if (tieneBadgeId) 10.dp else 13.dp
+                vertical = if (tieneBadgeId || !subtitulo.isNullOrBlank()) 10.dp else 13.dp
             ),
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -126,7 +127,7 @@ fun ComponenteFila(
             Spacer(Modifier.width(12.dp))
         }
 
-        // Título + ID de fila (ocupa el espacio disponible empujando el valor al extremo derecho)
+        // Título + Subtítulo + ID de fila
         Column(
             modifier = Modifier
                 .weight(1f)
@@ -143,6 +144,17 @@ fun ComponenteFila(
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis
             )
+
+            if (!subtitulo.isNullOrBlank()) {
+                Spacer(Modifier.height(2.dp))
+                Text(
+                    text = subtitulo,
+                    color = ColorAjusteGris,
+                    style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp),
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
 
             if (tieneBadgeId) {
                 Spacer(Modifier.height(3.dp))
@@ -165,7 +177,7 @@ fun ComponenteFila(
             }
         }
 
-        // Bloque derecho: Valor textual + Slot final (ambos pegados al extremo derecho)
+        // Bloque derecho: Valor textual + Slot final
         Row(
             modifier = Modifier.widthIn(max = 160.dp),
             verticalAlignment = Alignment.CenterVertically,

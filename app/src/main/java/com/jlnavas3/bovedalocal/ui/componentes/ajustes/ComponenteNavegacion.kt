@@ -12,15 +12,15 @@ import androidx.compose.ui.unit.dp
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjusteGris
 
 /**
- * Fila de navegación para Ajustes al estilo Honor MagicOS / Samsung One UI
- * (como en la primera captura adjunta).
- * Contiene el icono squircle, el título, valor opcional y la flecha '>' a la derecha.
+ * Fila de navegación para Ajustes al estilo Honor MagicOS / Samsung One UI.
+ * Contiene el icono squircle opcional, el título, subtítulo opcional, valor opcional y la flecha '>' a la derecha.
  */
 @Composable
 fun ComponenteNavegacion(
     titulo: String,
     alPulsar: () -> Unit,
     modifier: Modifier = Modifier,
+    subtitulo: String? = null,
     icono: ImageVector? = null,
     colorIcono: Color? = null,
     colorTinteIcono: Color = Color.White,
@@ -33,6 +33,7 @@ fun ComponenteNavegacion(
     ComponenteFila(
         titulo = titulo,
         modifier = modifier,
+        subtitulo = subtitulo,
         icono = icono,
         colorIcono = colorIcono,
         colorTinteIcono = colorTinteIcono,

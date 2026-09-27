@@ -26,8 +26,6 @@ import com.jlnavas3.bovedalocal.ui.componentes.ajustes.BotonMenuOpcionesPantalla
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ProveedorResaltadoAjustes
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjustesFondo
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.DialogoBorrarBoveda
-import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.DialogoCambioMaestra
-import com.jlnavas3.bovedalocal.ui.pantallas.avanzada.GrupoCredencialMaestra
 import com.jlnavas3.bovedalocal.ui.pantallas.avanzada.GrupoDesarrolloReferencia
 import com.jlnavas3.bovedalocal.ui.pantallas.avanzada.GrupoRespuestaHaptica
 import com.jlnavas3.bovedalocal.ui.pantallas.avanzada.GrupoZonaPeligro
@@ -42,7 +40,6 @@ fun PantallaAvanzada(
     val haptica = remember { Haptica(contexto) }
     val ajustes by vm.ajustes.collectAsStateWithLifecycle()
 
-    var dialogoCambio by remember { mutableStateOf(false) }
     var dialogoBorrar by remember { mutableStateOf(false) }
 
     val scrollState = rememberScrollState()
@@ -63,7 +60,6 @@ fun PantallaAvanzada(
                 acciones = {
                     BotonMenuOpcionesPantalla(
                         grupos = listOf(
-                            AccionSaltoGrupo("06.1.G1", "Credencial maestra"),
                             AccionSaltoGrupo("06.1.G2", "Desarrollo y referencia"),
                             AccionSaltoGrupo("06.1.G3", "Respuesta táctil y vibración"),
                             AccionSaltoGrupo("06.1.G4", "Zona de peligro")
@@ -79,15 +75,7 @@ fun PantallaAvanzada(
                     .verticalScroll(scrollState)
                     .padding(horizontal = 16.dp, vertical = 12.dp)
             ) {
-                // Grupo 1: Credencial maestra
-                GrupoCredencialMaestra(
-                    mostrarIdsAjustes = ajustes.mostrarIdsAjustes,
-                    alSolicitarCambio = { dialogoCambio = true }
-                )
-
-                Spacer(Modifier.height(14.dp))
-
-                // Grupo 2: Desarrollo y referencia
+                // Grupo 1: Desarrollo y referencia
                 GrupoDesarrolloReferencia(
                     mostrarIdsAjustes = ajustes.mostrarIdsAjustes,
                     alumbradoActivo = ajustes.alumbradoActivo,
@@ -104,7 +92,7 @@ fun PantallaAvanzada(
 
                 Spacer(Modifier.height(14.dp))
 
-                // Grupo 3: Respuesta táctil y vibración
+                // Grupo 2: Respuesta táctil y vibración
                 GrupoRespuestaHaptica(
                     mostrarIdsAjustes = ajustes.mostrarIdsAjustes,
                     hapticaApp = ajustes.hapticaApp,
@@ -116,7 +104,7 @@ fun PantallaAvanzada(
 
                 Spacer(Modifier.height(14.dp))
 
-                // Grupo 4: Zona de peligro
+                // Grupo 3: Zona de peligro
                 GrupoZonaPeligro(
                     mostrarIdsAjustes = ajustes.mostrarIdsAjustes,
                     alSolicitarBorrado = { dialogoBorrar = true }
@@ -125,16 +113,6 @@ fun PantallaAvanzada(
                 Spacer(Modifier.height(32.dp))
             }
         }
-    }
-
-    if (dialogoCambio) {
-        DialogoCambioMaestra(
-            alDescartar = { dialogoCambio = false },
-            alConfirmar = { actual, nueva ->
-                dialogoCambio = false
-                vm.cambiarContrasenaMaestra(actual, nueva)
-            }
-        )
     }
 
     if (dialogoBorrar) {

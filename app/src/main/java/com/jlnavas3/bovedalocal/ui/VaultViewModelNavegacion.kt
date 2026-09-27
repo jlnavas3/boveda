@@ -62,6 +62,7 @@ interface VaultNavegacionDelegate {
         is Pantalla.Argon2id -> Pantalla.Ajustes("01.5")
 
         // Nivel 2: Copias y datos -> Ajustes (Nivel 1)
+        is Pantalla.AjustesCopiaAutomatica -> Pantalla.CopiaSeguridad("05.1.G2")
         is Pantalla.CopiaSeguridad -> Pantalla.Ajustes("05.1")
         is Pantalla.CsvGoogle -> Pantalla.Ajustes("05.2")
         is Pantalla.KitEmergencia -> Pantalla.Ajustes("05.3")
@@ -157,6 +158,7 @@ interface VaultNavegacionDelegate {
             limpio.startsWith("04.4") || limpio.startsWith("09.4") -> Pantalla.AjustesWidget(limpio)
             limpio.startsWith("04.5") -> Pantalla.TileRapido(limpio)
             limpio.startsWith("04.6") -> Pantalla.Passkeys
+            limpio.startsWith("05.1.4") -> Pantalla.AjustesCopiaAutomatica(limpio)
             limpio.startsWith("05.1") || limpio == "06" || limpio.startsWith("06.0") -> Pantalla.CopiaSeguridad(limpio)
             limpio.startsWith("05.2") || limpio == "08" || limpio.startsWith("08.0") -> Pantalla.CsvGoogle(limpio)
             limpio.startsWith("05.3") || limpio.startsWith("06.3") -> Pantalla.KitEmergencia(limpio)

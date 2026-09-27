@@ -65,6 +65,11 @@ sealed interface Pantalla {
         override fun equals(other: Any?): Boolean = other is Widget1x1Comportamiento && other.seccionId == seccionId
         override fun hashCode(): Int = seccionId?.hashCode() ?: 0
     }
+    open class AjustesCopiaAutomatica(val seccionId: String? = null) : Pantalla {
+        companion object : AjustesCopiaAutomatica(null)
+        override fun equals(other: Any?): Boolean = other is AjustesCopiaAutomatica && other.seccionId == seccionId
+        override fun hashCode(): Int = seccionId?.hashCode() ?: 0
+    }
     open class Tema(val seccionId: String? = null) : Pantalla {
         companion object : Tema(null)
         override fun equals(other: Any?): Boolean = other is Tema && other.seccionId == seccionId
