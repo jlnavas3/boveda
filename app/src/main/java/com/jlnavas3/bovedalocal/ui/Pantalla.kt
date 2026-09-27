@@ -50,6 +50,21 @@ sealed interface Pantalla {
         override fun equals(other: Any?): Boolean = other is AjustesWidget && other.seccionId == seccionId
         override fun hashCode(): Int = seccionId?.hashCode() ?: 0
     }
+    open class WidgetTotpAjustes(val seccionId: String? = null) : Pantalla {
+        companion object : WidgetTotpAjustes(null)
+        override fun equals(other: Any?): Boolean = other is WidgetTotpAjustes && other.seccionId == seccionId
+        override fun hashCode(): Int = seccionId?.hashCode() ?: 0
+    }
+    open class Widget1x1Modo(val seccionId: String? = null) : Pantalla {
+        companion object : Widget1x1Modo(null)
+        override fun equals(other: Any?): Boolean = other is Widget1x1Modo && other.seccionId == seccionId
+        override fun hashCode(): Int = seccionId?.hashCode() ?: 0
+    }
+    open class Widget1x1Comportamiento(val seccionId: String? = null) : Pantalla {
+        companion object : Widget1x1Comportamiento(null)
+        override fun equals(other: Any?): Boolean = other is Widget1x1Comportamiento && other.seccionId == seccionId
+        override fun hashCode(): Int = seccionId?.hashCode() ?: 0
+    }
     open class Tema(val seccionId: String? = null) : Pantalla {
         companion object : Tema(null)
         override fun equals(other: Any?): Boolean = other is Tema && other.seccionId == seccionId

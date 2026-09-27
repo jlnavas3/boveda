@@ -6,11 +6,9 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ContentCopy
+import androidx.compose.material.icons.filled.DashboardCustomize
 import androidx.compose.material.icons.filled.Key
-import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Tune
-import androidx.compose.material.icons.filled.Vibration
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -18,7 +16,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.jlnavas3.bovedalocal.data.AlmacenAjustes
-import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteBotonFila
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteCampoTexto
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteGrupo
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteSelectorModal
@@ -53,8 +50,11 @@ fun GrupoConfiguracionTile(
     modifier: Modifier = Modifier
 ) {
     ComponenteGrupo(
-        etiqueta = "Modo de generación",
-        idGrupo = "04.3.G1",
+        etiqueta = "Generación rápida",
+        icono = Icons.Filled.DashboardCustomize,
+        colorIcono = ColorGenerador,
+        alRestablecer = alRestablecerGrupo,
+        idGrupo = "04.5.G1",
         mostrarId = mostrarIdsAjustes,
         descripcion = "Añade el mosaico en la barra rápida de Android para generar con un toque",
         modifier = modifier
@@ -68,16 +68,15 @@ fun GrupoConfiguracionTile(
         ComponenteSelectorModal(
             titulo = "Modo de generación",
             descripcionModal = "Elige la estrategia de generación al pulsar el mosaico del sistema",
-            icono = Icons.Filled.Tune,
-            colorIcono = ColorGenerador,
-            idFila = "04.3.1",
+            icono = null,
+            idFila = "04.5.1",
             mostrarId = mostrarIdsAjustes,
             valorSeleccionado = tileModo,
             opciones = opcionesModo,
             alSeleccionar = alCambiarTileModo
         )
 
-        ComponenteSeparador()
+        ComponenteSeparador(sangriaInicio = 16.dp)
 
         if (tileModo == "longitud") {
             val opcionesLongitud = remember {
@@ -94,9 +93,8 @@ fun GrupoConfiguracionTile(
             ComponenteSelectorModal(
                 titulo = "Longitud de la clave",
                 descripcionModal = "Cantidad de caracteres generados para la nueva clave",
-                icono = Icons.Filled.Key,
-                colorIcono = ColorGenerador,
-                idFila = "04.3.2",
+                icono = null,
+                idFila = "04.5.2",
                 mostrarId = mostrarIdsAjustes,
                 valorSeleccionado = tileLongitud,
                 opciones = opcionesLongitud,
@@ -121,44 +119,42 @@ fun GrupoConfiguracionTile(
             }
         }
 
-        ComponenteSeparador()
+        ComponenteSeparador(sangriaInicio = 16.dp)
 
         ComponenteSwitch(
             titulo = "Copiar al portapapeles",
-            icono = Icons.Filled.ContentCopy,
-            colorIcono = ColorGenerador,
-            idFila = "04.3.3",
+            icono = null,
+            idFila = "04.5.3",
             mostrarId = mostrarIdsAjustes,
             activo = tileCopiarPortapapeles,
             alCambiar = alCambiarTileCopiarPortapapeles
         )
 
-        ComponenteSeparador()
+        ComponenteSeparador(sangriaInicio = 16.dp)
 
         ComponenteSwitch(
             titulo = "Aviso emergente (Toast)",
-            icono = Icons.Filled.Notifications,
-            colorIcono = ColorGenerador,
-            idFila = "04.3.4",
+            icono = null,
+            idFila = "04.5.4",
             mostrarId = mostrarIdsAjustes,
             activo = tileMostrarToast,
             alCambiar = alCambiarTileMostrarToast
         )
 
-        ComponenteSeparador()
+        ComponenteSeparador(sangriaInicio = 16.dp)
 
         ComponenteSwitch(
             titulo = "Vibración táctil",
-            icono = Icons.Filled.Vibration,
-            colorIcono = ColorGenerador,
-            idFila = "04.3.5",
+            icono = null,
+            idFila = "04.5.5",
             mostrarId = mostrarIdsAjustes,
             activo = tileHaptica,
             alCambiar = alCambiarTileHaptica
         )
 
         if (tileHaptica) {
-            ComponenteSeparador()
+            ComponenteSeparador(sangriaInicio = 16.dp)
+
             ComponenteSlider(
                 titulo = "Intensidad de vibración",
                 valor = tileHapticaIntensidad,
@@ -167,22 +163,18 @@ fun GrupoConfiguracionTile(
                 pasos = 99,
                 etiquetaMin = "1% (Mínima)",
                 etiquetaMax = "100%",
-                idFila = "04.3.6",
+                idFila = "04.5.6",
                 mostrarId = mostrarIdsAjustes,
-                icono = Icons.Filled.Vibration,
-                colorIcono = ColorGenerador,
+                icono = null,
+                alRestablecer = {
+                    alCambiarTileHapticaIntensidad(0.35f)
+                    haptica.probar(0.35f)
+                },
                 alCambiar = {
                     alCambiarTileHapticaIntensidad(it)
                     haptica.probar(it)
                 }
             )
         }
-
-        ComponenteSeparador()
-
-        ComponenteBotonFila(
-            titulo = "Restablecer grupo",
-            alPulsar = alRestablecerGrupo
-        )
     }
 }

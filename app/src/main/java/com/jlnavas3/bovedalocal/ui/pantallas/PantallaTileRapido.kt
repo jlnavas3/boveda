@@ -20,7 +20,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.jlnavas3.bovedalocal.ui.Pantalla
 import com.jlnavas3.bovedalocal.ui.VaultViewModel
 import com.jlnavas3.bovedalocal.ui.componentes.BarraSuperiorPantalla
-import com.jlnavas3.bovedalocal.ui.componentes.DescripcionPantalla
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ProveedorResaltadoAjustes
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjustesFondo
 import com.jlnavas3.bovedalocal.ui.pantallas.tile.GrupoConfiguracionTile
@@ -44,8 +43,8 @@ fun PantallaTileRapido(
                 .background(ColorAjustesFondo)
         ) {
             BarraSuperiorPantalla(
-                titulo = "Mosaico rápido de Android",
-                idEtiqueta = "04.3",
+                titulo = "Mosaico rápido",
+                idEtiqueta = "04.5",
                 mostrarId = ajustes.mostrarIdsAjustes,
                 alVolver = { vm.volverAtras() },
                 conSeparador = scrollState.value > 0,
@@ -59,9 +58,6 @@ fun PantallaTileRapido(
                     .verticalScroll(scrollState)
                     .padding(horizontal = 16.dp, vertical = 12.dp)
             ) {
-                DescripcionPantalla(subtitulo = "Genera contraseñas desde los ajustes rápidos de la cortina de Android")
-                Spacer(Modifier.height(10.dp))
-
                 // Grupo 1: Modo de generación y opciones del mosaico
                 GrupoConfiguracionTile(
                     mostrarIdsAjustes = ajustes.mostrarIdsAjustes,
@@ -101,6 +97,7 @@ fun PantallaTileRapido(
                     },
                     alCambiarTileHapticaIntensidad = { vm.ajustarTileHapticaIntensidad(it) },
                     alRestablecerGrupo = {
+                        haptica.tic()
                         vm.ajustarTileModo("longitud")
                         vm.ajustarTileLongitud(20)
                         vm.ajustarTilePatron("XXXXX-XXXXX-XXXXX-XXXXX")
@@ -108,6 +105,7 @@ fun PantallaTileRapido(
                         vm.ajustarTileMostrarToast(true)
                         vm.ajustarTileHaptica(true)
                         vm.ajustarTileHapticaIntensidad(0.8f)
+                        vm.avisar("Mosaico rápido restablecido")
                     }
                 )
 
@@ -118,7 +116,7 @@ fun PantallaTileRapido(
                     mostrarIdsAjustes = ajustes.mostrarIdsAjustes,
                     alNavegarWidgets = {
                         haptica.tic()
-                        vm.ir(Pantalla.AjustesWidget("03.3"))
+                        vm.ir(Pantalla.AjustesWidget("04.4"))
                     }
                 )
 

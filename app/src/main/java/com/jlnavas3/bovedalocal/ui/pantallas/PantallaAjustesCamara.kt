@@ -21,11 +21,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.jlnavas3.bovedalocal.camara.MotorCamara
 import com.jlnavas3.bovedalocal.ui.VaultViewModel
 import com.jlnavas3.bovedalocal.ui.componentes.BarraSuperiorPantalla
-import com.jlnavas3.bovedalocal.ui.componentes.DescripcionPantalla
-import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteBotonFila
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteGrupo
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteSelectorModal
-import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteSeparador
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.OpcionSelectorModal
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ProveedorResaltadoAjustes
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjustesFondo
@@ -49,8 +46,8 @@ fun PantallaAjustesCamara(
                 .background(ColorAjustesFondo)
         ) {
             BarraSuperiorPantalla(
-                titulo = "Cámara y escáner QR",
-                idEtiqueta = "04.2",
+                titulo = "Cámara y escáner",
+                idEtiqueta = "04.3",
                 mostrarId = ajustes.mostrarIdsAjustes,
                 alVolver = { vm.volverAtras() },
                 conSeparador = scrollState.value > 0,
@@ -64,12 +61,16 @@ fun PantallaAjustesCamara(
                     .verticalScroll(scrollState)
                     .padding(horizontal = 16.dp, vertical = 12.dp)
             ) {
-                DescripcionPantalla(subtitulo = "Configuración del motor óptico para escanear códigos QR y 2FA")
-                Spacer(Modifier.height(10.dp))
-
                 ComponenteGrupo(
                     etiqueta = "Motor de captura",
-                    idGrupo = "04.2.G1",
+                    icono = Icons.Filled.CameraAlt,
+                    colorIcono = ColorCamara,
+                    alRestablecer = {
+                        haptica.tic()
+                        vm.ajustarMotorCamara(MotorCamara.AUTOMATICO.clave)
+                        vm.avisar("Motor de cámara restablecido")
+                    },
+                    idGrupo = "04.3.G1",
                     mostrarId = ajustes.mostrarIdsAjustes,
                     descripcion = "CameraX conmutación automática o API Camera clásica compatible"
                 ) {
@@ -83,24 +84,14 @@ fun PantallaAjustesCamara(
                     ComponenteSelectorModal(
                         titulo = "Motor de cámara",
                         descripcionModal = "Elige la tecnología de captura óptica para lectura de códigos QR y TOTP",
-                        icono = Icons.Filled.CameraAlt,
-                        colorIcono = ColorCamara,
-                        idFila = "04.2.1",
+                        icono = null,
+                        idFila = "04.3.1",
                         mostrarId = ajustes.mostrarIdsAjustes,
                         valorSeleccionado = ajustes.motorCamara,
                         opciones = opcionesCamara,
                         alSeleccionar = { valor ->
                             haptica.tic()
                             vm.ajustarMotorCamara(valor)
-                        }
-                    )
-
-                    ComponenteSeparador()
-
-                    ComponenteBotonFila(
-                        titulo = "Restablecer",
-                        alPulsar = {
-                            vm.ajustarMotorCamara(MotorCamara.AUTOMATICO.clave)
                         }
                     )
                 }

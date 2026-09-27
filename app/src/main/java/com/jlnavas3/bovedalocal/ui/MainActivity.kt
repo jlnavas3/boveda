@@ -82,6 +82,9 @@ import androidx.core.graphics.drawable.IconCompat
 import com.jlnavas3.bovedalocal.R
 import com.jlnavas3.bovedalocal.quicksettings.GeneradorRapidoHelper
 import com.jlnavas3.bovedalocal.ui.pantallas.PantallaConfirmarMigracion
+import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.widget.PantallaWidget1x1Comportamiento
+import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.widget.PantallaWidget1x1Modo
+import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.widget.PantallaWidgetTotpAjustes
 import com.jlnavas3.bovedalocal.ui.pantallas.indice.PantallaIndiceCresta
 import com.jlnavas3.bovedalocal.ui.pantallas.indice.PantallaIndiceHaptica
 import com.jlnavas3.bovedalocal.ui.pantallas.indice.PantallaIndiceOla
@@ -333,6 +336,9 @@ fun RaizBoveda(vm: VaultViewModel, actividad: FragmentActivity) {
                     is Pantalla.IndiceHaptica -> PantallaIndiceHaptica(vm)
                     is Pantalla.IndiceResaltado -> PantallaIndiceResaltado(vm)
                     is Pantalla.AjustesWidget -> com.jlnavas3.bovedalocal.ui.pantallas.PantallaAjustesWidget(vm, destino.seccionId)
+                    is Pantalla.WidgetTotpAjustes -> PantallaWidgetTotpAjustes(vm, destino.seccionId)
+                    is Pantalla.Widget1x1Modo -> PantallaWidget1x1Modo(vm, destino.seccionId)
+                    is Pantalla.Widget1x1Comportamiento -> PantallaWidget1x1Comportamiento(vm, destino.seccionId)
                     is Pantalla.Tema -> com.jlnavas3.bovedalocal.ui.pantallas.PantallaTema(vm, destino.seccionId)
                     is Pantalla.CalibracionAnimacion -> com.jlnavas3.bovedalocal.ui.pantallas.PantallaCalibracionAnimacion(vm, destino.seccionId)
                     is Pantalla.CalibracionWidgetTotp -> com.jlnavas3.bovedalocal.ui.pantallas.PantallaCalibracionWidgetTotp(vm, destino.seccionId)

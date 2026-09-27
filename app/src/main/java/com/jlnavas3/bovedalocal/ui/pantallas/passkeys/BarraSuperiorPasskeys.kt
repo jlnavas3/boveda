@@ -66,11 +66,15 @@ fun BarraSuperiorPasskeys(
     alAlternarFavoritos: () -> Unit,
     alIrExportacionSelectiva: () -> Unit,
     alRestablecerFiltros: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    idEtiqueta: String = "04.6",
+    mostrarId: Boolean = false
 ) {
     Column(modifier = modifier) {
         BarraSuperiorPantalla(
             titulo = "Passkeys",
+            idEtiqueta = idEtiqueta,
+            mostrarId = mostrarId,
             alVolver = alVolver,
             conSeparador = conSeparador,
             colorFondo = ColorAjustesFondo,

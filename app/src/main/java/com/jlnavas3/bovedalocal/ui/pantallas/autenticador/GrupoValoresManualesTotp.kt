@@ -2,12 +2,13 @@ package com.jlnavas3.bovedalocal.ui.pantallas.autenticador
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Numbers
+import androidx.compose.material.icons.filled.Pin
 import androidx.compose.material.icons.filled.Security
 import androidx.compose.material.icons.filled.Timer
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteBotonFila
+import androidx.compose.ui.unit.dp
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteGrupo
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteSelectorModal
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteSeparador
@@ -31,6 +32,9 @@ fun GrupoValoresManualesTotp(
 ) {
     ComponenteGrupo(
         etiqueta = "Valores manuales predeterminados",
+        icono = Icons.Filled.Pin,
+        colorIcono = Color2FA,
+        alRestablecer = alRestablecerGrupo,
         idGrupo = "04.1.G1",
         mostrarId = mostrarId,
         descripcion = "Se aplican al introducir claves secretas Base32 sin código QR",
@@ -46,8 +50,7 @@ fun GrupoValoresManualesTotp(
         ComponenteSelectorModal(
             titulo = "Dígitos predeterminados",
             descripcionModal = "Número de cifras numéricas para códigos generados manualmente",
-            icono = Icons.Filled.Timer,
-            colorIcono = Color2FA,
+            icono = null,
             idFila = "04.1.1",
             mostrarId = mostrarId,
             valorSeleccionado = totpManualDigitos,
@@ -55,7 +58,7 @@ fun GrupoValoresManualesTotp(
             alSeleccionar = alCambiarDigitos
         )
 
-        ComponenteSeparador()
+        ComponenteSeparador(sangriaInicio = 16.dp)
 
         val opcionesPeriodo = remember {
             listOf(
@@ -67,8 +70,7 @@ fun GrupoValoresManualesTotp(
         ComponenteSelectorModal(
             titulo = "Período de renovación",
             descripcionModal = "Frecuencia con la que expira y cambia el código generado",
-            icono = Icons.Filled.Timer,
-            colorIcono = Color2FA,
+            icono = null,
             idFila = "04.1.2",
             mostrarId = mostrarId,
             valorSeleccionado = totpManualPeriodo,
@@ -76,7 +78,7 @@ fun GrupoValoresManualesTotp(
             alSeleccionar = alCambiarPeriodo
         )
 
-        ComponenteSeparador()
+        ComponenteSeparador(sangriaInicio = 16.dp)
 
         val opcionesHash = remember {
             listOf(
@@ -88,8 +90,7 @@ fun GrupoValoresManualesTotp(
         ComponenteSelectorModal(
             titulo = "Algoritmo de hash",
             descripcionModal = "Función criptográfica para calcular el código de verificación",
-            icono = Icons.Filled.Security,
-            colorIcono = Color2FA,
+            icono = null,
             idFila = "04.1.3",
             mostrarId = mostrarId,
             valorSeleccionado = totpManualAlgoritmo,
@@ -97,23 +98,15 @@ fun GrupoValoresManualesTotp(
             alSeleccionar = alCambiarAlgoritmo
         )
 
-        ComponenteSeparador()
+        ComponenteSeparador(sangriaInicio = 16.dp)
 
         ComponenteSwitch(
             titulo = "Separar dígitos (123 456)",
-            icono = Icons.Filled.Numbers,
-            colorIcono = Color2FA,
+            icono = null,
             idFila = "04.1.4",
             mostrarId = mostrarId,
             activo = totpSepararDigitos,
             alCambiar = alCambiarSepararDigitos
-        )
-
-        ComponenteSeparador()
-
-        ComponenteBotonFila(
-            titulo = "Restablecer grupo",
-            alPulsar = alRestablecerGrupo
         )
     }
 }

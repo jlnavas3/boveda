@@ -17,6 +17,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.jlnavas3.bovedalocal.ui.CriterioOrdenacion
 import com.jlnavas3.bovedalocal.ui.Pantalla
 import com.jlnavas3.bovedalocal.ui.VaultViewModel
@@ -36,6 +37,7 @@ import java.util.Locale
 fun PantallaPasskeys(vm: VaultViewModel) {
     val contexto = LocalContext.current
     val haptica = remember { Haptica(contexto) }
+    val ajustes by vm.ajustes.collectAsStateWithLifecycle()
     val todasLasPasskeys = remember(vm.repositorio.entradas()) { vm.repositorio.passkeys() }
     val formato = remember { SimpleDateFormat("d MMM yyyy", Locale.forLanguageTag("es-ES")) }
     val scrollState = rememberScrollState()
@@ -90,6 +92,8 @@ fun PantallaPasskeys(vm: VaultViewModel) {
             criterioOrdenacion = criterioOrdenacion,
             menuOpcionesDesplegado = menuOpcionesDesplegado,
             haptica = haptica,
+            idEtiqueta = "04.6",
+            mostrarId = ajustes.mostrarIdsAjustes,
             alVolver = { vm.volverAtras() },
             alAlternarBusqueda = {
                 busquedaVisible = !busquedaVisible
@@ -119,10 +123,9 @@ fun PantallaPasskeys(vm: VaultViewModel) {
             alRestablecerFiltros = {
                 menuOpcionesDesplegado = false
                 haptica.tic()
+                textoBusqueda = ""
                 soloFavoritos = false
                 criterioOrdenacion = CriterioOrdenacion.NOMBRE_AZ
-                textoBusqueda = ""
-                busquedaVisible = false
             }
         )
 
@@ -131,21 +134,20 @@ fun PantallaPasskeys(vm: VaultViewModel) {
                 .fillMaxWidth()
                 .weight(1f)
                 .verticalScroll(scrollState)
-                .padding(horizontal = 16.dp, vertical = 10.dp)
+                .padding(horizontal = 16.dp, vertical = 12.dp)
         ) {
-            DescripcionPantalla(subtitulo = "Llaves de acceso criptográficas ES256 en hardware local")
-            Spacer(Modifier.height(12.dp))
+            DescripcionPantalla(
+                subtitulo = if (passkeysFiltradas.isEmpty()) "Sin llaves registradas" else "${passkeysFiltradas.size} llave${if (passkeysFiltradas.size == 1) "" else "s"} de acceso FIDO2 almacenada${if (passkeysFiltradas.size == 1) "" else "s"}"
+            )
 
-            val etiquetaGrupo = if (passkeysFiltradas.size == todasLasPasskeys.size) {
-                "Llaves de acceso guardadas (${passkeysFiltradas.size})"
+            Spacer(Modifier.height(10.dp))
+
+            if (passkeysFiltradas.isEmpty()) {
+                EstadoVacioPasskeys(
+                    sinPasskeysEnTotal = todasLasPasskeys.isEmpty()
+                )
             } else {
-                "Llaves de acceso (${passkeysFiltradas.size} de ${todasLasPasskeys.size})"
-            }
-
-            GrupoAjustes(etiqueta = etiquetaGrupo) {
-                if (passkeysFiltradas.isEmpty()) {
-                    EstadoVacioPasskeys(sinPasskeysEnTotal = todasLasPasskeys.isEmpty())
-                } else {
+                GrupoAjustes {
                     passkeysFiltradas.forEachIndexed { index, entrada ->
                         if (index > 0) SeparadorFilaSimple()
                         FilaPasskey(
@@ -153,22 +155,26 @@ fun PantallaPasskeys(vm: VaultViewModel) {
                             formato = formato,
                             haptica = haptica,
                             alPulsar = { vm.ir(Pantalla.Detalle(entrada.id)) },
-                            alAlternarFavorito = { vm.alternarFavorito(entrada.id) }
+                            alAlternarFavorito = {
+                                haptica.tic()
+                                vm.alternarFavorito(entrada.id)
+                            }
                         )
                     }
                 }
             }
 
-            Spacer(Modifier.height(32.dp))
+            Spacer(Modifier.height(24.dp))
         }
     }
 
     if (mostrarDialogoOrdenacion) {
         DialogoOrdenacionLista(
             criterioActual = criterioOrdenacion,
-            alSeleccionarCriterio = { crit ->
+            alSeleccionarCriterio = { criterio ->
                 haptica.tic()
-                criterioOrdenacion = crit
+                criterioOrdenacion = criterio
+                mostrarDialogoOrdenacion = false
             },
             alCerrar = { mostrarDialogoOrdenacion = false }
         )

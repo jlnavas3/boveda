@@ -54,6 +54,11 @@ interface VaultNavegacionDelegate {
         is Pantalla.OrganizacionLista -> Pantalla.Ajustes("03.1")
         is Pantalla.AjustesIndice -> Pantalla.Ajustes("03.2")
         is Pantalla.FormatosCampos -> Pantalla.Ajustes("03.3")
+        is Pantalla.WidgetTotpAjustes,
+        is Pantalla.Widget1x1Modo,
+        is Pantalla.Widget1x1Comportamiento,
+        is Pantalla.CalibracionWidgetTotp,
+        is Pantalla.CalibracionWidget1x1 -> Pantalla.AjustesWidget("04.4")
         is Pantalla.AjustesWidget -> Pantalla.Ajustes("04.4")
 
         // Nivel 2: Seguridad -> Ajustes (Nivel 1)
@@ -145,6 +150,11 @@ interface VaultNavegacionDelegate {
             limpio.startsWith("04.1") || limpio == "07" || limpio.startsWith("07.0") -> Pantalla.AjustesAutenticador(limpio)
             limpio.startsWith("04.2") || limpio == "04" || limpio.startsWith("04.0") -> Pantalla.HistorialClaves(limpio)
             limpio.startsWith("04.3") || limpio == "05" || limpio.startsWith("05.0") -> Pantalla.AjustesCamara(limpio)
+            limpio.startsWith("04.4.1") -> Pantalla.WidgetTotpAjustes(limpio)
+            limpio.startsWith("04.4.2") -> Pantalla.CalibracionWidgetTotp(limpio)
+            limpio.startsWith("04.4.3") -> Pantalla.Widget1x1Modo(limpio)
+            limpio.startsWith("04.4.4") -> Pantalla.Widget1x1Comportamiento(limpio)
+            limpio.startsWith("04.4.5") -> Pantalla.CalibracionWidget1x1(limpio)
             limpio.startsWith("04.4") || limpio.startsWith("09.4") -> Pantalla.AjustesWidget(limpio)
             limpio.startsWith("04.5") -> Pantalla.TileRapido(limpio)
             limpio.startsWith("04.6") -> Pantalla.Passkeys

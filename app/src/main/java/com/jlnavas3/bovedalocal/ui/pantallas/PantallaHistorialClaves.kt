@@ -82,7 +82,7 @@ fun PantallaHistorialClaves(
         ) {
             BarraSuperiorPantalla(
                 titulo = "Historial de claves",
-                idEtiqueta = "04.5",
+                idEtiqueta = "04.2",
                 mostrarId = ajustes.mostrarIdsAjustes,
                 alVolver = { vm.volverAtras() },
                 acciones = {

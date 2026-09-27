@@ -16,15 +16,16 @@ fun GrupoAccesosRapidosTotp(
 ) {
     ComponenteGrupo(
         etiqueta = "Accesos rápidos",
+        icono = Icons.Filled.Widgets,
+        colorIcono = Color2FA,
         idGrupo = "04.1.G2",
         mostrarId = mostrarId,
         descripcion = "Atajos de integración directa en pantalla",
         modifier = modifier
     ) {
         ComponenteNavegacion(
-            titulo = "Personalizar widget de inicio",
-            icono = Icons.Filled.Widgets,
-            colorIcono = Color2FA,
+            titulo = "Personalizar widgets de escritorio",
+            icono = null,
             idFila = "04.1.5",
             mostrarId = mostrarId,
             alPulsar = alNavegarAjustesWidget
