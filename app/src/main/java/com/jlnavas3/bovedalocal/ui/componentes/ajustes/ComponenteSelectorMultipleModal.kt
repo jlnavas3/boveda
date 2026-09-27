@@ -1,7 +1,6 @@
 package com.jlnavas3.bovedalocal.ui.componentes.ajustes
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -19,7 +18,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -32,7 +30,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -47,43 +44,41 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjusteGris
+import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.SwitchBoveda
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.TextoPrincipal
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
 import com.jlnavas3.bovedalocal.util.Haptica
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 
 /**
- * Modelo de opción para el selector modal estilo Honor MagicOS / Samsung One UI.
+ * Modelo de opción para el selector múltiple modal (con switches) estilo Honor MagicOS / Samsung One UI.
  *
- * @param valor Valor subyacente.
- * @param etiquetaFila Texto conciso mostrado en la fila principal (para evitar truncamientos).
- * @param etiquetaModal Título de la opción en el diálogo modal (por defecto igual a [etiquetaFila]).
+ * @param valor Valor identificador único.
+ * @param etiquetaFila Texto conciso.
+ * @param etiquetaModal Título mostrado en el diálogo modal.
  * @param descripcionModal Subtítulo o ejemplo detallado mostrado dentro del modal.
  * @param icono Icono descriptivo opcional para la opción.
+ * @param activo Estado actual del interruptor.
  */
-data class OpcionSelectorModal<T>(
+data class OpcionSelectorMultipleModal<T>(
     val valor: T,
     val etiquetaFila: String,
     val etiquetaModal: String = etiquetaFila,
     val descripcionModal: String? = null,
-    val icono: ImageVector? = null
+    val icono: ImageVector? = null,
+    val activo: Boolean = false
 )
 
 /**
- * Componente reutilizable de fila con selector modal emergente estilo Samsung One UI & Honor MagicOS.
- *
- * - En la fila: Icono squircle, título limpio, valor actual y flechas arriba/abajo (UnfoldMore).
- * - Al pulsar: Abre un diálogo modal (centrado o fijado abajo) con esquinas pronunciadas (26.dp),
- *   sin bordes pesados ni sombras pero con fondo contrastado y scrim, con radio buttons One UI de acento.
+ * Componente reutilizable de fila con selector múltiple modal (con switches) emergente.
+ * Permite seleccionar varios elementos sin cerrar el modal al pulsar cada interruptor.
  */
 @Composable
-fun <T> ComponenteSelectorModal(
+fun <T> ComponenteSelectorMultipleModal(
     titulo: String,
-    valorSeleccionado: T,
-    opciones: List<OpcionSelectorModal<T>>,
-    alSeleccionar: (T) -> Unit,
+    valorTexto: String,
+    opciones: List<OpcionSelectorMultipleModal<T>>,
+    alAlternar: (T) -> Unit,
     modifier: Modifier = Modifier,
     descripcionModal: String? = null,
     icono: ImageVector? = null,
@@ -93,15 +88,12 @@ fun <T> ComponenteSelectorModal(
     mostrarId: Boolean = false,
     habilitado: Boolean = true,
     fijarAbajo: Boolean = false,
+    textoBotonCerrar: String = "Listo",
     tituloFila: String = titulo
 ) {
     val contexto = LocalContext.current
     val haptica = remember { Haptica(contexto) }
-    val scope = rememberCoroutineScope()
     var abierto by remember { mutableStateOf(false) }
-
-    val opcionActual = opciones.firstOrNull { it.valor == valorSeleccionado }
-    val textoFila = opcionActual?.etiquetaFila ?: valorSeleccionado.toString()
 
     ComponenteFila(
         titulo = tituloFila,
@@ -111,7 +103,7 @@ fun <T> ComponenteSelectorModal(
         colorTinteIcono = colorTinteIcono,
         idFila = idFila,
         mostrarId = mostrarId,
-        valorTexto = textoFila,
+        valorTexto = valorTexto,
         habilitado = habilitado,
         alPulsar = { if (habilitado) abierto = true },
         contenidoFinal = {
@@ -126,7 +118,6 @@ fun <T> ComponenteSelectorModal(
 
     if (abierto) {
         val esOscuro = isSystemInDarkTheme()
-        // Superficie con contraste suave sin bordes ni sombras pesadas
         val fondoModal = if (esOscuro) Color(0xFF222225) else Color.White
         val colorAcentoFinal = colorIcono ?: ColorAcento
 
@@ -162,7 +153,7 @@ fun <T> ComponenteSelectorModal(
                         .clickable(
                             interactionSource = remember { MutableInteractionSource() },
                             indication = null
-                        ) { /* Evita cerrar al pulsar dentro de la tarjeta */ }
+                        ) { /* Evita cerrar al pulsar dentro */ }
                         .padding(horizontal = 20.dp, vertical = 22.dp)
                 ) {
                     Column(modifier = Modifier.fillMaxWidth()) {
@@ -213,7 +204,7 @@ fun <T> ComponenteSelectorModal(
 
                         Spacer(Modifier.height(16.dp))
 
-                        // Lista de opciones con radio buttons
+                        // Lista de opciones con SwitchBoveda
                         Column(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -222,23 +213,17 @@ fun <T> ComponenteSelectorModal(
                             verticalArrangement = Arrangement.spacedBy(4.dp)
                         ) {
                             opciones.forEach { opcion ->
-                                val esSeleccionado = opcion.valor == valorSeleccionado
-
                                 Row(
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .clip(RoundedCornerShape(14.dp))
                                         .background(
-                                            if (esSeleccionado) colorAcentoFinal.copy(alpha = 0.12f)
+                                            if (opcion.activo) colorAcentoFinal.copy(alpha = 0.12f)
                                             else Color.Transparent
                                         )
                                         .clickable {
                                             haptica.tic()
-                                            alSeleccionar(opcion.valor)
-                                            scope.launch {
-                                                delay(120)
-                                                abierto = false
-                                            }
+                                            alAlternar(opcion.valor)
                                         }
                                         .padding(horizontal = 14.dp, vertical = 11.dp),
                                     verticalAlignment = Alignment.CenterVertically
@@ -247,7 +232,7 @@ fun <T> ComponenteSelectorModal(
                                         Icon(
                                             imageVector = opcion.icono,
                                             contentDescription = null,
-                                            tint = if (esSeleccionado) colorAcentoFinal else TextoSecundario,
+                                            tint = if (opcion.activo) colorAcentoFinal else TextoSecundario,
                                             modifier = Modifier.size(20.dp)
                                         )
                                         Spacer(Modifier.width(12.dp))
@@ -256,9 +241,9 @@ fun <T> ComponenteSelectorModal(
                                     Column(modifier = Modifier.weight(1f)) {
                                         Text(
                                             text = opcion.etiquetaModal,
-                                            color = if (esSeleccionado) colorAcentoFinal else TextoPrincipal,
+                                            color = if (opcion.activo) colorAcentoFinal else TextoPrincipal,
                                             style = MaterialTheme.typography.bodyMedium.copy(
-                                                fontWeight = if (esSeleccionado) FontWeight.SemiBold else FontWeight.Normal,
+                                                fontWeight = if (opcion.activo) FontWeight.SemiBold else FontWeight.Normal,
                                                 fontSize = 15.sp
                                             )
                                         )
@@ -274,16 +259,12 @@ fun <T> ComponenteSelectorModal(
 
                                     Spacer(Modifier.width(12.dp))
 
-                                    // Indicador Radio One UI
-                                    Box(
-                                        modifier = Modifier
-                                            .size(20.dp)
-                                            .clip(CircleShape)
-                                            .border(
-                                                width = if (esSeleccionado) 6.dp else 1.5.dp,
-                                                color = if (esSeleccionado) colorAcentoFinal else ColorAjusteGris.copy(alpha = 0.45f),
-                                                shape = CircleShape
-                                            )
+                                    SwitchBoveda(
+                                        checked = opcion.activo,
+                                        onCheckedChange = {
+                                            haptica.tic()
+                                            alAlternar(opcion.valor)
+                                        }
                                     )
                                 }
                             }
@@ -300,9 +281,9 @@ fun <T> ComponenteSelectorModal(
                                 onClick = { abierto = false }
                             ) {
                                 Text(
-                                    text = "Cancelar",
-                                    color = TextoSecundario,
-                                    style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.SemiBold)
+                                    text = textoBotonCerrar,
+                                    color = colorAcentoFinal,
+                                    style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold)
                                 )
                             }
                         }
