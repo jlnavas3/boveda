@@ -36,6 +36,7 @@ import com.jlnavas3.bovedalocal.ui.pantallas.acercade.GrupoMemoriaAlmacenamiento
 import com.jlnavas3.bovedalocal.ui.pantallas.acercade.IndicadorCargaAuditoria
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjustesFondo
 import com.jlnavas3.bovedalocal.util.AjustesSistema
+import com.jlnavas3.bovedalocal.util.DatosAuditoria
 import com.jlnavas3.bovedalocal.util.Haptica
 import com.jlnavas3.bovedalocal.util.InformeDiagnostico
 import com.jlnavas3.bovedalocal.util.Portapapeles
@@ -53,7 +54,7 @@ fun PantallaAcercaDe(
     val ajustes by vm.ajustes.collectAsStateWithLifecycle()
     val scrollState = rememberScrollState()
 
-    var datosAuditoria by remember { mutableStateOf<InformeDiagnostico.DatosAuditoria?>(null) }
+    var datosAuditoria by remember { mutableStateOf<DatosAuditoria?>(null) }
     var refresco by remember { mutableIntStateOf(0) }
 
     val reqAislamiento = remember { BringIntoViewRequester() }

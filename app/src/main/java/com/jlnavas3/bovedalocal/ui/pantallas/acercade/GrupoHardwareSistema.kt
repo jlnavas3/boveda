@@ -6,11 +6,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.GrupoAjustes
-import com.jlnavas3.bovedalocal.util.InformeDiagnostico
+import com.jlnavas3.bovedalocal.util.DatosAuditoria
 
 @Composable
 fun GrupoHardwareSistema(
-    datos: InformeDiagnostico.DatosAuditoria,
+    datos: DatosAuditoria,
     modifier: Modifier = Modifier
 ) {
     GrupoAjustes(

@@ -11,11 +11,6 @@ import com.jlnavas3.bovedalocal.data.BovedaSenuelo
 import com.jlnavas3.bovedalocal.data.VaultRepository
 import com.jlnavas3.bovedalocal.data.modoBiometriaActivo
 
-import android.app.ActivityManager
-import android.content.pm.PackageManager
-import com.jlnavas3.bovedalocal.crypto.KdfParams
-import com.jlnavas3.bovedalocal.crypto.PerfilArgon2
-
 /**
  * Lo que sabe Android de este móvil y que importa para la cámara y la huella. Es la
  * parte del informe que depende de Android; el registro en sí vive en [Diagnostico].
@@ -26,193 +21,8 @@ import com.jlnavas3.bovedalocal.crypto.PerfilArgon2
  */
 object InformeDiagnostico {
 
-    /**
-     * Una línea del estado en vivo. [ok] es null para líneas informativas (modelo, versión,
-     * motor ajustado...) y true/false para lo que sí es un sí-o-no comprobable ahora mismo,
-     * así la pantalla pinta ✔ o ✖ en vez de dejar que el usuario lo adivine leyendo texto.
-     */
-    data class Linea(
-        val texto: String,
-        val ok: Boolean? = null,
-        val indentada: Boolean = false,
-        val detalle: String? = null
-    )
-
-    data class DatosAuditoria(
-        val fabricante: String,
-        val modelo: String,
-        val dispositivo: String,
-        val placa: String,
-        val soc: String?,
-        val abis: String,
-        val nucleosCpu: Int,
-        val versionAndroid: String,
-        val apiSdk: Int,
-        val parcheSeguridad: String,
-        val compilacion: String,
-        val ramTotalMb: Long,
-        val ramLibreMb: Long,
-        val ramBaja: Boolean,
-        val heapMaxMb: Long,
-        val heapUsadoMb: Long,
-        val almacenamientoLibreMb: Long,
-        val almacenamientoTotalMb: Long,
-        val rutaBoveda: String,
-        val tamanoBovedaBytes: Long,
-        val tienePermisoInternet: Boolean,
-        val flagSecureActivo: Boolean,
-        val permisosDeclarados: List<String>,
-        val lineasBiometria: List<Linea>,
-        val lineasCamara: List<Linea>,
-        val perfilArgon2: PerfilArgon2,
-        val kdfParams: KdfParams
-    )
-
-    fun recopilarAuditoria(contexto: Context, repositorio: VaultRepository): DatosAuditoria {
-        val pm = contexto.packageManager
-        val permisos = try {
-            val pkg = pm.getPackageInfo(contexto.packageName, PackageManager.GET_PERMISSIONS)
-            pkg.requestedPermissions?.toList() ?: emptyList()
-        } catch (e: Exception) {
-            emptyList()
-        }
-        val tieneInternet = permisos.any { it.contains("INTERNET", ignoreCase = true) }
-
-        val actManager = contexto.getSystemService(Context.ACTIVITY_SERVICE) as? ActivityManager
-        val memInfo = ActivityManager.MemoryInfo()
-        actManager?.getMemoryInfo(memInfo)
-        val ramTotal = memInfo.totalMem / (1024 * 1024)
-        val ramLibre = memInfo.availMem / (1024 * 1024)
-
-        val rt = Runtime.getRuntime()
-        val heapMax = rt.maxMemory() / (1024 * 1024)
-        val heapTotal = rt.totalMemory() / (1024 * 1024)
-        val heapFree = rt.freeMemory() / (1024 * 1024)
-        val heapUsado = heapTotal - heapFree
-
-        val espacioLibre = try { contexto.filesDir.usableSpace / (1024 * 1024) } catch (e: Exception) { 0L }
-        val espacioTotal = try { contexto.filesDir.totalSpace / (1024 * 1024) } catch (e: Exception) { 0L }
-
-        val soc = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            try { Build.SOC_MODEL } catch (e: Exception) { null }
-        } else null
-
-        val ajustes = repositorio.ajustes.actual
-        val c = Biometria.capacidad(contexto)
-        val nivel = Biometria.decidirNivel(c)
-        val lineasBio = mutableListOf<Linea>()
-        lineasBio += Linea("Nivel biométrico: ${nivel.name.lowercase()}")
-        lineasBio += Linea("Clase 3 (fuerte): ${Biometria.explicar(c.fuerte)}", ok = c.fuerte == BiometricManager.BIOMETRIC_SUCCESS, indentada = true)
-        lineasBio += Linea("Clase 2 (débil): ${Biometria.explicar(c.debil)}", ok = c.debil == BiometricManager.BIOMETRIC_SUCCESS, indentada = true)
-        lineasBio += Linea("PIN/Credencial: ${Biometria.explicar(c.credencial)}", ok = c.credencial == BiometricManager.BIOMETRIC_SUCCESS, indentada = true)
-        val modo = ajustes.modoBiometriaActivo
-        val esSenuelo = repositorio.esModoSenuelo
-        val senueloConfig = if (!esSenuelo) BovedaSenuelo.cargar(contexto) else null
-        val senueloActivo = senueloConfig?.activo == true
-
-        if (esSenuelo) {
-            lineasBio += Linea(
-                texto = "Modo en app: desactivado",
-                ok = false,
-                indentada = true,
-                detalle = "No configurado en los ajustes de la bóveda"
-            )
-        } else {
-            if (senueloActivo) {
-                if (modo == null) {
-                    lineasBio += Linea(
-                        texto = "Modo en app: desactivado (Protección Bóveda Señuelo)",
-                        ok = true,
-                        indentada = true,
-                        detalle = "Desactivada para impedir bypass por coacción física"
-                    )
-                } else {
-                    lineasBio += Linea(
-                        texto = "Modo en app: ${modo.etiqueta}",
-                        ok = false,
-                        indentada = true,
-                        detalle = "Advertencia: abrirá siempre la bóveda real, debilitando la señuelo"
-                    )
-                    val presente = repositorio.biometria.estaConfigurada(modo)
-                    lineasBio += Linea(
-                        texto = "Keystore hardware-backed: ${if (presente) "configurado" else "no configurado"}",
-                        ok = presente,
-                        indentada = true
-                    )
-                }
-                lineasBio += Linea(
-                    texto = "Bóveda señuelo (PIN coacción): activa",
-                    ok = true,
-                    indentada = true,
-                    detalle = "PIN configurado con ${senueloConfig?.entradas?.size ?: 0} cuentas simuladas"
-                )
-            } else {
-                if (modo != null) {
-                    lineasBio += Linea(
-                        texto = "Modo en app: ${modo.etiqueta}",
-                        ok = true,
-                        indentada = true,
-                        detalle = "Activo y vinculado a clave de bóveda"
-                    )
-                    val presente = repositorio.biometria.estaConfigurada(modo)
-                    lineasBio += Linea(
-                        texto = "Keystore hardware-backed: ${if (presente) "configurado" else "no configurado"}",
-                        ok = presente,
-                        indentada = true
-                    )
-                } else {
-                    lineasBio += Linea(
-                        texto = "Modo en app: desactivado",
-                        ok = false,
-                        indentada = true,
-                        detalle = "Desactivado voluntariamente en Ajustes > Seguridad"
-                    )
-                }
-                lineasBio += Linea(
-                    texto = "Bóveda señuelo (PIN coacción): desactivada",
-                    ok = null,
-                    indentada = true,
-                    detalle = "Protección opcional contra extorsión (Ajustes > Seguridad)"
-                )
-            }
-        }
-
-        val camConcedida = PermisoCamara.concedido(contexto)
-        val lineasCam = mutableListOf<Linea>()
-        lineasCam += Linea("Permiso de cámara: ${if (camConcedida) "concedido" else "denegado"}", ok = camConcedida)
-        lineasCam += Linea("Motor activo: ${MotorCamara.desde(ajustes.motorCamara).etiqueta}", indentada = true)
-        lineasCam += camaras(contexto)
-
-        return DatosAuditoria(
-            fabricante = Build.MANUFACTURER,
-            modelo = Build.MODEL,
-            dispositivo = Build.DEVICE,
-            placa = Build.BOARD,
-            soc = soc,
-            abis = Build.SUPPORTED_ABIS.joinToString(", "),
-            nucleosCpu = rt.availableProcessors(),
-            versionAndroid = Build.VERSION.RELEASE,
-            apiSdk = Build.VERSION.SDK_INT,
-            parcheSeguridad = Build.VERSION.SECURITY_PATCH,
-            compilacion = Build.DISPLAY,
-            ramTotalMb = ramTotal,
-            ramLibreMb = ramLibre,
-            ramBaja = memInfo.lowMemory,
-            heapMaxMb = heapMax,
-            heapUsadoMb = heapUsado,
-            almacenamientoLibreMb = espacioLibre,
-            almacenamientoTotalMb = espacioTotal,
-            rutaBoveda = repositorio.archivoBoveda.absolutePath,
-            tamanoBovedaBytes = repositorio.archivoBoveda.length(),
-            tienePermisoInternet = tieneInternet,
-            flagSecureActivo = ajustes.proteccionPantalla,
-            permisosDeclarados = permisos,
-            lineasBiometria = lineasBio,
-            lineasCamara = lineasCam,
-            perfilArgon2 = repositorio.perfilArgon2Actual(),
-            kdfParams = repositorio.paramsActuales()
-        )
-    }
+    fun recopilarAuditoria(contexto: Context, repositorio: VaultRepository): DatosAuditoria =
+        RecolectorAuditoriaHardware.recopilarAuditoria(contexto, repositorio)
 
     fun cabecera(contexto: Context): String {
         val version = try {
@@ -314,7 +124,7 @@ object InformeDiagnostico {
         return lineas
     }
 
-    private fun camaras(contexto: Context): List<Linea> {
+    internal fun camaras(contexto: Context): List<Linea> {
         val gestor = contexto.getSystemService(Context.CAMERA_SERVICE) as? CameraManager
             ?: return listOf(Linea("camera2: servicio no disponible", ok = false, indentada = true))
         return try {
