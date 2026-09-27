@@ -26,7 +26,6 @@ import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.jlnavas3.bovedalocal.ui.VaultViewModel
 import com.jlnavas3.bovedalocal.ui.componentes.BarraSuperiorPantalla
-import com.jlnavas3.bovedalocal.ui.componentes.DescripcionPantalla
 import com.jlnavas3.bovedalocal.ui.pantallas.acercade.GrupoAcercaDeApp
 import com.jlnavas3.bovedalocal.ui.pantallas.acercade.GrupoAislamientoPrivacidad
 import com.jlnavas3.bovedalocal.ui.pantallas.acercade.GrupoBiometriaSensores
@@ -76,11 +75,11 @@ fun PantallaAcercaDe(
     LaunchedEffect(seccionDestino, datosAuditoria) {
         if (seccionDestino != null && datosAuditoria != null) {
             when {
-                seccionDestino == "11.3.1.1" -> reqAislamiento.bringIntoView()
-                seccionDestino == "11.3.1.2" || seccionDestino == "11.3.1.3" -> reqHardware.bringIntoView()
-                seccionDestino == "11.3.1.4" -> reqMemoria.bringIntoView()
-                seccionDestino == "11.3.1.5" -> reqCripto.bringIntoView()
-                seccionDestino.startsWith("11.3.1.") && seccionDestino != "11.3.1" -> reqAislamiento.bringIntoView()
+                seccionDestino == "06.3.1" || seccionDestino == "06.3.G1" -> reqAislamiento.bringIntoView()
+                seccionDestino == "06.3.2" || seccionDestino == "06.3.G2" -> reqCripto.bringIntoView()
+                seccionDestino == "06.3.3" || seccionDestino == "06.3.G3" -> reqHardware.bringIntoView()
+                seccionDestino == "06.3.4" || seccionDestino == "06.3.G4" -> reqMemoria.bringIntoView()
+                seccionDestino.startsWith("06.3.") && seccionDestino != "06.3" -> reqAislamiento.bringIntoView()
             }
         }
     }
@@ -92,6 +91,8 @@ fun PantallaAcercaDe(
     ) {
         BarraSuperiorPantalla(
             titulo = "Acerca de y diagnóstico",
+            idEtiqueta = "06.3",
+            mostrarId = ajustes.mostrarIdsAjustes,
             alVolver = { vm.volverAtras() },
             conSeparador = scrollState.value > 0,
             colorFondo = ColorAjustesFondo
@@ -108,16 +109,13 @@ fun PantallaAcercaDe(
                     .verticalScroll(scrollState)
                     .padding(horizontal = 16.dp, vertical = 12.dp)
             ) {
-                DescripcionPantalla(subtitulo = "Arquitectura 100% offline, parámetros criptográficos y estado del dispositivo")
-                Spacer(Modifier.height(10.dp))
-
                 // 1. Aislamiento y Privacidad
                 GrupoAislamientoPrivacidad(
                     datos = datos,
                     modifier = Modifier.bringIntoViewRequester(reqAislamiento)
                 )
 
-                Spacer(Modifier.height(16.dp))
+                Spacer(Modifier.height(14.dp))
 
                 // 2. Criptografía y Blindaje
                 GrupoCriptografiaBlindaje(
@@ -125,7 +123,7 @@ fun PantallaAcercaDe(
                     modifier = Modifier.bringIntoViewRequester(reqCripto)
                 )
 
-                Spacer(Modifier.height(16.dp))
+                Spacer(Modifier.height(14.dp))
 
                 // 3. Hardware y Sistema
                 GrupoHardwareSistema(
@@ -133,7 +131,7 @@ fun PantallaAcercaDe(
                     modifier = Modifier.bringIntoViewRequester(reqHardware)
                 )
 
-                Spacer(Modifier.height(16.dp))
+                Spacer(Modifier.height(14.dp))
 
                 // 4. Memoria y Almacenamiento
                 GrupoMemoriaAlmacenamiento(
@@ -141,12 +139,12 @@ fun PantallaAcercaDe(
                     modifier = Modifier.bringIntoViewRequester(reqMemoria)
                 )
 
-                Spacer(Modifier.height(16.dp))
+                Spacer(Modifier.height(14.dp))
 
                 // 5. Biometría y Sensores
                 GrupoBiometriaSensores(datos = datos)
 
-                Spacer(Modifier.height(16.dp))
+                Spacer(Modifier.height(14.dp))
 
                 // 6. Acerca de Bóveda Local y Acciones
                 GrupoAcercaDeApp(

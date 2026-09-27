@@ -291,14 +291,24 @@ fun crearCatalogoAjustesHub(
             alPulsar = { vm.ir(Pantalla.Avanzada("06.1")) }
         ),
         ElementoMenuAjustes(
-            titulo = "Acerca de",
-            subtitulo = "Versión, licencia de código abierto y autor",
+            titulo = "Registro de eventos",
+            subtitulo = "Auditoría de acciones, accesos y seguridad",
+            icono = Icons.Filled.History,
+            colorIcono = Color(0xFF00897B),
+            idEtiqueta = "06.2",
+            grupo = "Sistema",
+            palabrasClave = "registro eventos logs historial auditoria fallos accesos",
+            alPulsar = { vm.ir(Pantalla.Registro("06.2")) }
+        ),
+        ElementoMenuAjustes(
+            titulo = "Acerca de y diagnóstico",
+            subtitulo = "Versión, licencia de código abierto y auditoría",
             icono = Icons.Filled.Info,
             colorIcono = Color(0xFF607D8B),
-            idEtiqueta = "06.4",
+            idEtiqueta = "06.3",
             grupo = "Sistema",
-            palabrasClave = "acerca de version info licencia autor boveda",
-            alPulsar = { vm.ir(Pantalla.AcercaDe("06.4")) }
+            palabrasClave = "acerca de version info licencia autor boveda diagnostico auditoria",
+            alPulsar = { vm.ir(Pantalla.AcercaDe("06.3")) }
         )
     )
 }

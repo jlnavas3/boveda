@@ -16,16 +16,17 @@ fun GrupoCredencialMaestra(
 ) {
     ComponenteGrupo(
         etiqueta = "Credencial maestra",
-        idGrupo = "05.1.G1",
+        icono = Icons.Filled.Lock,
+        colorIcono = ColorSeguridad,
+        idGrupo = "06.1.G1",
         mostrarId = mostrarIdsAjustes,
         descripcion = "Al cambiar la contraseña maestra, la base de datos se re-cifra en tiempo real con Argon2id",
         modifier = modifier
     ) {
         ComponenteNavegacion(
             titulo = "Cambiar contraseña maestra",
-            icono = Icons.Filled.Lock,
-            colorIcono = ColorSeguridad,
-            idFila = "05.1.1",
+            icono = null,
+            idFila = "06.1.1",
             mostrarId = mostrarIdsAjustes,
             alPulsar = alSolicitarCambio
         )

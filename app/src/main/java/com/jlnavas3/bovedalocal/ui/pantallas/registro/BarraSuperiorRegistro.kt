@@ -52,14 +52,19 @@ fun BarraSuperiorRegistro(
     alCopiarRegistro: () -> Unit,
     alCompartirRegistro: () -> Unit,
     alBorrarRegistro: () -> Unit,
-    alRestablecerFiltros: () -> Unit
+    alRestablecerFiltros: () -> Unit,
+    modifier: Modifier = Modifier,
+    idEtiqueta: String = "06.2",
+    mostrarId: Boolean = false
 ) {
     val contexto = LocalContext.current
     val haptica = remember { Haptica(contexto) }
     var menuOpcionesDesplegado by remember { mutableStateOf(false) }
 
     BarraSuperiorPantalla(
-        titulo = "Registro",
+        titulo = "Registro de eventos",
+        idEtiqueta = idEtiqueta,
+        mostrarId = mostrarId,
         alVolver = alVolver,
         colorFondo = ColorAjustesFondo,
         acciones = {

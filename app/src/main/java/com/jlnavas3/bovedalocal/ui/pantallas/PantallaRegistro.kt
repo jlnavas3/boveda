@@ -42,6 +42,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.LifecycleResumeEffect
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.jlnavas3.bovedalocal.ui.VaultViewModel
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjusteGris
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjustesFondo
@@ -75,6 +76,7 @@ fun PantallaRegistro(
 ) {
     val contexto = LocalContext.current
     val haptica = remember { Haptica(contexto) }
+    val ajustes by vm.ajustes.collectAsStateWithLifecycle()
     var registro by remember { mutableStateOf<List<String>>(emptyList()) }
     var refresco by remember { mutableIntStateOf(0) }
     var busquedaVisible by remember { mutableStateOf(false) }
@@ -192,6 +194,8 @@ fun PantallaRegistro(
             filtroTexto = filtroTexto,
             categoriaSeleccionada = categoriaSeleccionada,
             tieneFiltrosActivos = tieneFiltrosActivos,
+            idEtiqueta = "06.2",
+            mostrarId = ajustes.mostrarIdsAjustes,
             alVolver = { vm.volverAtras() },
             alAlternarBusqueda = {
                 busquedaVisible = !busquedaVisible

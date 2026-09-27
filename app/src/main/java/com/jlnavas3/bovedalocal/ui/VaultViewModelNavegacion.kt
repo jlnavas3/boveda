@@ -161,7 +161,8 @@ interface VaultNavegacionDelegate {
             limpio.startsWith("05.2") || limpio == "08" || limpio.startsWith("08.0") -> Pantalla.CsvGoogle(limpio)
             limpio.startsWith("05.3") || limpio.startsWith("06.3") -> Pantalla.KitEmergencia(limpio)
             limpio.startsWith("06.1") || limpio.startsWith("11.1") || limpio == "11" -> Pantalla.Avanzada(limpio)
-            limpio.startsWith("06.4") || limpio.startsWith("11.3.1") -> Pantalla.AcercaDe(limpio)
+            limpio.startsWith("06.2") -> Pantalla.Registro(limpio)
+            limpio.startsWith("06.3") || limpio.startsWith("06.4") || limpio.startsWith("11.3.1") -> Pantalla.AcercaDe(limpio)
             else -> Pantalla.Ajustes(limpio)
         }
         navegandoAtrasInterno.value = false

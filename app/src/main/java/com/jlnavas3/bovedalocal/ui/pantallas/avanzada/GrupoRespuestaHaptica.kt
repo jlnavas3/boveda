@@ -5,6 +5,7 @@ import androidx.compose.material.icons.filled.Vibration
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteGrupo
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteNavegacion
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteSeparador
@@ -25,16 +26,23 @@ fun GrupoRespuestaHaptica(
 ) {
     ComponenteGrupo(
         etiqueta = "Respuesta táctil y vibración",
-        idGrupo = "05.1.G3",
+        icono = Icons.Filled.Vibration,
+        colorIcono = Color(0xFF00897B),
+        alRestablecer = {
+            haptica.tic()
+            alCambiarHapticaApp(true)
+            alCambiarIntensidad(0.7f)
+            haptica.probar(0.7f)
+        },
+        idGrupo = "06.1.G3",
         mostrarId = mostrarIdsAjustes,
         descripcion = "Vibración háptica general al interactuar con botones, switches y controles",
         modifier = modifier
     ) {
         ComponenteSwitch(
             titulo = "Vibración háptica en la app",
-            icono = Icons.Filled.Vibration,
-            colorIcono = Color(0xFF00897B),
-            idFila = "05.1.9",
+            icono = null,
+            idFila = "06.1.8",
             mostrarId = mostrarIdsAjustes,
             activo = hapticaApp,
             alCambiar = {
@@ -44,7 +52,7 @@ fun GrupoRespuestaHaptica(
         )
 
         if (hapticaApp) {
-            ComponenteSeparador()
+            ComponenteSeparador(sangriaInicio = 16.dp)
 
             ComponenteSlider(
                 titulo = "Intensidad de vibración",
@@ -54,10 +62,9 @@ fun GrupoRespuestaHaptica(
                 pasos = 99,
                 etiquetaMin = "1% (Mínima)",
                 etiquetaMax = "100%",
-                idFila = "05.1.10",
+                idFila = "06.1.9",
                 mostrarId = mostrarIdsAjustes,
-                icono = Icons.Filled.Vibration,
-                colorIcono = Color(0xFF00897B),
+                icono = null,
                 colorAcento = Color(0xFF00897B),
                 alCambiar = {
                     alCambiarIntensidad(it)
@@ -65,13 +72,12 @@ fun GrupoRespuestaHaptica(
                 }
             )
 
-            ComponenteSeparador()
+            ComponenteSeparador(sangriaInicio = 16.dp)
 
             ComponenteNavegacion(
                 titulo = "Probar vibración",
-                icono = Icons.Filled.Vibration,
-                colorIcono = Color(0xFF00897B),
-                idFila = "05.1.11",
+                icono = null,
+                idFila = "06.1.10",
                 mostrarId = mostrarIdsAjustes,
                 alPulsar = {
                     haptica.probar(hapticaAppIntensidad)

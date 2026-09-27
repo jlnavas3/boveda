@@ -161,7 +161,7 @@ fun MenuLateral(
                     texto = "Ajustes",
                     icono = Icons.Filled.Settings,
                     colorIcono = Color(0xFF546E7A),
-                    idEtiqueta = "06.0",
+                    idEtiqueta = "00",
                     mostrarId = mostrarIds
                 ) { alIr(Pantalla.Ajustes) }
 
@@ -171,7 +171,7 @@ fun MenuLateral(
                     texto = "Registro de eventos",
                     icono = Icons.Filled.History,
                     colorIcono = ColorExportacion,
-                    idEtiqueta = "05.2",
+                    idEtiqueta = "06.2",
                     mostrarId = mostrarIds
                 ) { alIr(Pantalla.Registro) }
 
@@ -181,7 +181,7 @@ fun MenuLateral(
                     texto = "Diagnóstico de seguridad",
                     icono = Icons.Filled.Security,
                     colorIcono = ColorSeguridad,
-                    idEtiqueta = "05.3",
+                    idEtiqueta = "06.3",
                     mostrarId = mostrarIds
                 ) { alIr(Pantalla.AcercaDe) }
             }

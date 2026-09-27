@@ -1,12 +1,12 @@
 package com.jlnavas3.bovedalocal.ui.pantallas.avanzada
 
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Highlight
 import androidx.compose.material.icons.filled.Tune
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteGrupo
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteNavegacion
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteSeparador
@@ -38,30 +38,38 @@ fun GrupoDesarrolloReferencia(
 
     ComponenteGrupo(
         etiqueta = "Desarrollo y referencia",
-        idGrupo = "05.1.G2",
+        icono = Icons.Filled.Tune,
+        colorIcono = Color(0xFFC2185B),
+        alRestablecer = {
+            haptica.tic()
+            alCambiarMostrarIds(false)
+            alCambiarAlumbradoActivo(true)
+            alCambiarIntensidad(0.7f)
+            alCambiarRepeticiones(2)
+            alCambiarDuracion(600)
+        },
+        idGrupo = "06.1.G2",
         mostrarId = mostrarIdsAjustes,
         descripcion = "Muestra una etiqueta con el código ID jerárquico de cada opción para facilitar soporte y automatización",
         modifier = modifier
     ) {
         ComponenteSwitch(
             titulo = "Identificadores de ajustes (IDs)",
-            icono = Icons.Filled.Tune,
-            colorIcono = Color(0xFFC2185B),
+            icono = null,
             activo = mostrarIdsAjustes,
-            idFila = "05.1.2",
+            idFila = "06.1.2",
             mostrarId = mostrarIdsAjustes,
             alCambiar = {
                 haptica.tic()
                 alCambiarMostrarIds(it)
             }
         )
-        ComponenteSeparador()
+        ComponenteSeparador(sangriaInicio = 16.dp)
         ComponenteSwitch(
             titulo = "Alumbrado de navegación",
-            icono = Icons.Filled.Highlight,
-            colorIcono = Color(0xFFE91E63),
+            icono = null,
             activo = alumbradoActivo,
-            idFila = "05.1.4",
+            idFila = "06.1.3",
             mostrarId = mostrarIdsAjustes,
             alCambiar = {
                 haptica.tic()
@@ -69,7 +77,7 @@ fun GrupoDesarrolloReferencia(
             }
         )
         if (alumbradoActivo) {
-            ComponenteSeparador()
+            ComponenteSeparador(sangriaInicio = 16.dp)
             ComponenteSlider(
                 titulo = "Intensidad del alumbrado",
                 valor = alumbradoIntensidad,
@@ -78,11 +86,12 @@ fun GrupoDesarrolloReferencia(
                 pasos = 8,
                 etiquetaMin = "10%",
                 etiquetaMax = "100%",
-                idFila = "05.1.5",
+                idFila = "06.1.4",
                 mostrarId = mostrarIdsAjustes,
+                icono = null,
                 alCambiar = alCambiarIntensidad
             )
-            ComponenteSeparador()
+            ComponenteSeparador(sangriaInicio = 16.dp)
             ComponenteSlider(
                 titulo = "Número de alumbrados",
                 valor = alumbradoRepeticiones.toFloat(),
@@ -91,14 +100,15 @@ fun GrupoDesarrolloReferencia(
                 pasos = 3,
                 etiquetaMin = "1",
                 etiquetaMax = "5",
-                idFila = "05.1.6",
+                idFila = "06.1.5",
                 mostrarId = mostrarIdsAjustes,
+                icono = null,
                 alCambiar = {
                     haptica.tic()
                     alCambiarRepeticiones(it.roundToInt())
                 }
             )
-            ComponenteSeparador()
+            ComponenteSeparador(sangriaInicio = 16.dp)
             ComponenteSlider(
                 titulo = "Duración por alumbrado",
                 valor = alumbradoDuracionMs.toFloat(),
@@ -111,19 +121,20 @@ fun GrupoDesarrolloReferencia(
                 pasos = 11,
                 etiquetaMin = "300 ms",
                 etiquetaMax = "1.5 s",
-                idFila = "05.1.7",
+                idFila = "06.1.6",
                 mostrarId = mostrarIdsAjustes,
+                icono = null,
                 alCambiar = {
                     alCambiarDuracion(it.roundToInt())
                 }
             )
-            ComponenteSeparador()
-            val estadoPrueba = recordarEstadoAlumbrado("05.1.8")
+            ComponenteSeparador(sangriaInicio = 16.dp)
+            val estadoPrueba = recordarEstadoAlumbrado("06.1.7")
             val colorAcentoPrueba = ColorAcento
             ComponenteNavegacion(
                 titulo = "Probar efecto de alumbrado",
-                icono = Icons.Filled.Highlight,
-                idFila = "05.1.8",
+                icono = null,
+                idFila = "06.1.7",
                 mostrarId = mostrarIdsAjustes,
                 estadoAlumbrado = estadoPrueba,
                 alPulsar = {

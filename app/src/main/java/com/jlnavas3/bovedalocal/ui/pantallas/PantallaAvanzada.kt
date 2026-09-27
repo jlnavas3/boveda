@@ -21,7 +21,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.jlnavas3.bovedalocal.ui.Pantalla
 import com.jlnavas3.bovedalocal.ui.VaultViewModel
 import com.jlnavas3.bovedalocal.ui.componentes.BarraSuperiorPantalla
-import com.jlnavas3.bovedalocal.ui.componentes.DescripcionPantalla
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ProveedorResaltadoAjustes
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjustesFondo
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.DialogoBorrarBoveda
@@ -54,7 +53,7 @@ fun PantallaAvanzada(
         ) {
             BarraSuperiorPantalla(
                 titulo = "Opciones avanzadas",
-                idEtiqueta = "05.1",
+                idEtiqueta = "06.1",
                 mostrarId = ajustes.mostrarIdsAjustes,
                 alVolver = { vm.volverAtras() },
                 conSeparador = scrollState.value > 0,
@@ -68,16 +67,13 @@ fun PantallaAvanzada(
                     .verticalScroll(scrollState)
                     .padding(horizontal = 16.dp, vertical = 12.dp)
             ) {
-                DescripcionPantalla(subtitulo = "Gestión de credenciales maestras, diagnóstico y zona de peligro")
-                Spacer(Modifier.height(10.dp))
-
                 // Grupo 1: Credencial maestra
                 GrupoCredencialMaestra(
                     mostrarIdsAjustes = ajustes.mostrarIdsAjustes,
                     alSolicitarCambio = { dialogoCambio = true }
                 )
 
-                Spacer(Modifier.height(18.dp))
+                Spacer(Modifier.height(14.dp))
 
                 // Grupo 2: Desarrollo y referencia
                 GrupoDesarrolloReferencia(
@@ -94,7 +90,7 @@ fun PantallaAvanzada(
                     haptica = haptica
                 )
 
-                Spacer(Modifier.height(18.dp))
+                Spacer(Modifier.height(14.dp))
 
                 // Grupo 3: Respuesta táctil y vibración
                 GrupoRespuestaHaptica(
@@ -106,7 +102,7 @@ fun PantallaAvanzada(
                     haptica = haptica
                 )
 
-                Spacer(Modifier.height(18.dp))
+                Spacer(Modifier.height(14.dp))
 
                 // Grupo 4: Zona de peligro
                 GrupoZonaPeligro(
