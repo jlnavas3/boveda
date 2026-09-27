@@ -18,7 +18,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.jlnavas3.bovedalocal.ui.VaultViewModel
 import com.jlnavas3.bovedalocal.ui.componentes.BarraSuperiorPantalla
-import com.jlnavas3.bovedalocal.ui.componentes.DescripcionPantalla
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ProveedorResaltadoAjustes
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjustesFondo
 import com.jlnavas3.bovedalocal.ui.pantallas.formatos.GrupoConfiguracionFormatos
@@ -48,8 +47,8 @@ fun PantallaFormatosCampos(
                 .background(ColorAjustesFondo)
         ) {
             BarraSuperiorPantalla(
-                titulo = "Formatos de campos",
-                idEtiqueta = "03.6",
+                titulo = "Plantillas de campos",
+                idEtiqueta = "03.3",
                 mostrarId = ajustes.mostrarIdsAjustes,
                 alVolver = { vm.volverAtras() },
                 conSeparador = scrollState.value > 0,
@@ -63,9 +62,6 @@ fun PantallaFormatosCampos(
                     .verticalScroll(scrollState)
                     .padding(horizontal = 16.dp, vertical = 12.dp)
             ) {
-                DescripcionPantalla(subtitulo = "Personaliza máscaras de teléfono, fechas, horas y separadores numéricos")
-                Spacer(Modifier.height(10.dp))
-
                 // Grupo 1: Vista previa en tiempo real
                 GrupoPreviaFormatos(
                     mostrarIdsAjustes = ajustes.mostrarIdsAjustes,
@@ -101,10 +97,12 @@ fun PantallaFormatosCampos(
                         vm.ajustarSeparadorDecimal(it)
                     },
                     alRestablecerGrupo = {
+                        haptica.tic()
                         vm.ajustarFormatoFecha("DD/MM/AAAA")
                         vm.ajustarFormatoHora("24h")
                         vm.ajustarFormatoTelefono("### ### ####")
                         vm.ajustarSeparadorDecimal(".")
+                        vm.avisar("Plantillas de campos restablecidas")
                     }
                 )
 

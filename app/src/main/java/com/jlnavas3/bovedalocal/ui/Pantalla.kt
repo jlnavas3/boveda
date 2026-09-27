@@ -25,6 +25,26 @@ sealed interface Pantalla {
         override fun equals(other: Any?): Boolean = other is AjustesIndice && other.seccionId == seccionId
         override fun hashCode(): Int = seccionId?.hashCode() ?: 0
     }
+    open class IndiceOla(val seccionId: String? = null) : Pantalla {
+        companion object : IndiceOla(null)
+        override fun equals(other: Any?): Boolean = other is IndiceOla && other.seccionId == seccionId
+        override fun hashCode(): Int = seccionId?.hashCode() ?: 0
+    }
+    open class IndiceCresta(val seccionId: String? = null) : Pantalla {
+        companion object : IndiceCresta(null)
+        override fun equals(other: Any?): Boolean = other is IndiceCresta && other.seccionId == seccionId
+        override fun hashCode(): Int = seccionId?.hashCode() ?: 0
+    }
+    open class IndiceHaptica(val seccionId: String? = null) : Pantalla {
+        companion object : IndiceHaptica(null)
+        override fun equals(other: Any?): Boolean = other is IndiceHaptica && other.seccionId == seccionId
+        override fun hashCode(): Int = seccionId?.hashCode() ?: 0
+    }
+    open class IndiceResaltado(val seccionId: String? = null) : Pantalla {
+        companion object : IndiceResaltado(null)
+        override fun equals(other: Any?): Boolean = other is IndiceResaltado && other.seccionId == seccionId
+        override fun hashCode(): Int = seccionId?.hashCode() ?: 0
+    }
     open class AjustesWidget(val seccionId: String? = null) : Pantalla {
         companion object : AjustesWidget(null)
         override fun equals(other: Any?): Boolean = other is AjustesWidget && other.seccionId == seccionId

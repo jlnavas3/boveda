@@ -4,10 +4,11 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Tune
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteGrupo
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteRadio
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteSeparador
-import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
 
 @Composable
 fun GrupoDensidadFilas(
@@ -17,38 +18,36 @@ fun GrupoDensidadFilas(
     modifier: Modifier = Modifier
 ) {
     ComponenteGrupo(
-        etiqueta = "Densidad de filas",
-        idGrupo = "03.5.G2",
+        etiqueta = "Densidad de lista",
+        icono = Icons.Filled.Tune,
+        colorIcono = Color(0xFF00ACC1),
+        idGrupo = "03.1.G2",
         mostrarId = mostrarId,
-        descripcion = "Altura y espacio vertical de cada fila en el listado",
         modifier = modifier
     ) {
         ComponenteRadio(
             titulo = "Predeterminada",
-            icono = Icons.Filled.Tune,
-            colorIcono = ColorIconosInternos,
+            icono = null,
             seleccionado = densidadLista == "predeterminada" || (densidadLista != "comoda" && densidadLista != "compacta"),
-            idFila = "03.5.2",
+            idFila = "03.1.3",
             mostrarId = mostrarId,
             alSeleccionar = { alSeleccionarDensidad("predeterminada") }
         )
-        ComponenteSeparador()
+        ComponenteSeparador(sangriaInicio = 16.dp)
         ComponenteRadio(
             titulo = "Cómoda",
-            icono = Icons.Filled.Tune,
-            colorIcono = ColorIconosInternos,
+            icono = null,
             seleccionado = densidadLista == "comoda",
-            idFila = "03.5.3",
+            idFila = "03.1.4",
             mostrarId = mostrarId,
             alSeleccionar = { alSeleccionarDensidad("comoda") }
         )
-        ComponenteSeparador()
+        ComponenteSeparador(sangriaInicio = 16.dp)
         ComponenteRadio(
             titulo = "Compacta",
-            icono = Icons.Filled.Tune,
-            colorIcono = ColorIconosInternos,
+            icono = null,
             seleccionado = densidadLista == "compacta",
-            idFila = "03.5.4",
+            idFila = "03.1.5",
             mostrarId = mostrarId,
             alSeleccionar = { alSeleccionarDensidad("compacta") }
         )

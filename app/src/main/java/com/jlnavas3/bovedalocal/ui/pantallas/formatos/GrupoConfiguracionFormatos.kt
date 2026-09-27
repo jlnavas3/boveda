@@ -1,6 +1,7 @@
 package com.jlnavas3.bovedalocal.ui.pantallas.formatos
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.FormatListBulleted
 import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.material.icons.filled.Numbers
 import androidx.compose.material.icons.filled.Phone
@@ -8,15 +9,12 @@ import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteBotonFila
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteGrupo
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteSelectorModal
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteSeparador
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.OpcionSelectorModal
-import com.jlnavas3.bovedalocal.ui.theme.ColorGenerador
-import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
-import com.jlnavas3.bovedalocal.ui.theme.ColorPasskeys
-import com.jlnavas3.bovedalocal.ui.theme.ColorSalud
 import com.jlnavas3.bovedalocal.util.FormateadorCampos
 
 @Composable
@@ -35,9 +33,11 @@ fun GrupoConfiguracionFormatos(
 ) {
     ComponenteGrupo(
         etiqueta = "Configuración de formatos",
-        idGrupo = "03.6.G2",
+        icono = Icons.AutoMirrored.Filled.FormatListBulleted,
+        colorIcono = Color(0xFFFFA000),
+        alRestablecer = alRestablecerGrupo,
+        idGrupo = "03.3.G2",
         mostrarId = mostrarIdsAjustes,
-        descripcion = "Formatos aplicados al registrar o consultar credenciales",
         modifier = modifier
     ) {
         val opcionesFecha = remember {
@@ -51,16 +51,15 @@ fun GrupoConfiguracionFormatos(
         ComponenteSelectorModal(
             titulo = "Formato de fecha",
             descripcionModal = "Elige cómo visualizar las fechas registradas en tus cuentas",
-            icono = Icons.Filled.CalendarToday,
-            colorIcono = ColorIconosInternos,
-            idFila = "03.6.1",
+            icono = null,
+            idFila = "03.3.1",
             mostrarId = mostrarIdsAjustes,
             valorSeleccionado = formatoFecha,
             opciones = opcionesFecha,
             alSeleccionar = alCambiarFormatoFecha
         )
 
-        ComponenteSeparador()
+        ComponenteSeparador(sangriaInicio = 16.dp)
 
         val opcionesHora = remember {
             listOf(
@@ -71,16 +70,15 @@ fun GrupoConfiguracionFormatos(
         ComponenteSelectorModal(
             titulo = "Formato de hora",
             descripcionModal = "Selecciona el estándar de representación horaria",
-            icono = Icons.Filled.Schedule,
-            colorIcono = ColorGenerador,
-            idFila = "03.6.2",
+            icono = null,
+            idFila = "03.3.2",
             mostrarId = mostrarIdsAjustes,
             valorSeleccionado = formatoHora,
             opciones = opcionesHora,
             alSeleccionar = alCambiarFormatoHora
         )
 
-        ComponenteSeparador()
+        ComponenteSeparador(sangriaInicio = 16.dp)
 
         val opcionesTelefono = remember {
             listOf(
@@ -94,16 +92,15 @@ fun GrupoConfiguracionFormatos(
         ComponenteSelectorModal(
             titulo = "Máscara de teléfono",
             descripcionModal = "Máscara visual aplicada automáticamente en campos telefónicos",
-            icono = Icons.Filled.Phone,
-            colorIcono = ColorPasskeys,
-            idFila = "03.6.3",
+            icono = null,
+            idFila = "03.3.3",
             mostrarId = mostrarIdsAjustes,
             valorSeleccionado = formatoTelefono,
             opciones = opcionesTelefono,
             alSeleccionar = alCambiarFormatoTelefono
         )
 
-        ComponenteSeparador()
+        ComponenteSeparador(sangriaInicio = 16.dp)
 
         val opcionesDecimal = remember {
             listOf(
@@ -114,20 +111,12 @@ fun GrupoConfiguracionFormatos(
         ComponenteSelectorModal(
             titulo = "Separador decimal",
             descripcionModal = "Símbolo numérico para fracciones decimales en importes y notas",
-            icono = Icons.Filled.Numbers,
-            colorIcono = ColorSalud,
-            idFila = "03.6.4",
+            icono = null,
+            idFila = "03.3.4",
             mostrarId = mostrarIdsAjustes,
             valorSeleccionado = separadorDecimal,
             opciones = opcionesDecimal,
             alSeleccionar = alCambiarSeparadorDecimal
-        )
-
-        ComponenteSeparador()
-
-        ComponenteBotonFila(
-            titulo = "Restablecer grupo",
-            alPulsar = alRestablecerGrupo
         )
     }
 }

@@ -82,6 +82,10 @@ import androidx.core.graphics.drawable.IconCompat
 import com.jlnavas3.bovedalocal.R
 import com.jlnavas3.bovedalocal.quicksettings.GeneradorRapidoHelper
 import com.jlnavas3.bovedalocal.ui.pantallas.PantallaConfirmarMigracion
+import com.jlnavas3.bovedalocal.ui.pantallas.indice.PantallaIndiceCresta
+import com.jlnavas3.bovedalocal.ui.pantallas.indice.PantallaIndiceHaptica
+import com.jlnavas3.bovedalocal.ui.pantallas.indice.PantallaIndiceOla
+import com.jlnavas3.bovedalocal.ui.pantallas.indice.PantallaIndiceResaltado
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
@@ -324,6 +328,10 @@ fun RaizBoveda(vm: VaultViewModel, actividad: FragmentActivity) {
                     is Pantalla.Escaner -> PantallaEscaner(vm, actividad, destino.entradaDestino, destino.soloManual)
                     is Pantalla.Ajustes -> PantallaAjustes(vm, actividad, destino.seccionId)
                     is Pantalla.AjustesIndice -> PantallaAjustesIndice(vm, destino.seccionId)
+                    is Pantalla.IndiceOla -> PantallaIndiceOla(vm)
+                    is Pantalla.IndiceCresta -> PantallaIndiceCresta(vm)
+                    is Pantalla.IndiceHaptica -> PantallaIndiceHaptica(vm)
+                    is Pantalla.IndiceResaltado -> PantallaIndiceResaltado(vm)
                     is Pantalla.AjustesWidget -> com.jlnavas3.bovedalocal.ui.pantallas.PantallaAjustesWidget(vm, destino.seccionId)
                     is Pantalla.Tema -> com.jlnavas3.bovedalocal.ui.pantallas.PantallaTema(vm, destino.seccionId)
                     is Pantalla.CalibracionAnimacion -> com.jlnavas3.bovedalocal.ui.pantallas.PantallaCalibracionAnimacion(vm, destino.seccionId)

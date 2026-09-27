@@ -11,6 +11,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Sort
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -21,25 +23,23 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.jlnavas3.bovedalocal.ui.Pantalla
 import com.jlnavas3.bovedalocal.ui.VaultViewModel
 import com.jlnavas3.bovedalocal.ui.componentes.BarraSuperiorPantalla
-import com.jlnavas3.bovedalocal.ui.componentes.DescripcionPantalla
 import com.jlnavas3.bovedalocal.ui.componentes.IndiceAlfabetico
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteBotonFila
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteGrupo
+import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteNavegacion
+import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteSeparador
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ProveedorResaltadoAjustes
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjustesFondo
-import com.jlnavas3.bovedalocal.ui.pantallas.indice.SeccionCirculoCresta
-import com.jlnavas3.bovedalocal.ui.pantallas.indice.SeccionEfectoOla
-import com.jlnavas3.bovedalocal.ui.pantallas.indice.SeccionResaltadoDeslizar
-import com.jlnavas3.bovedalocal.ui.pantallas.indice.SeccionTactoYHapticaIndice
 import com.jlnavas3.bovedalocal.ui.pantallas.indice.VistaPreviaIndiceInteractiva
 import com.jlnavas3.bovedalocal.util.Haptica
 
 /**
- * Pantalla dedicada a la configuración y personalización del abecedario lateral.
- * Dispone de la barra de letras real montada en el extremo derecho de la pantalla a altura completa,
- * permitiendo calibrar la ola, las escalas, el alcance, los tonos y la 'Ñ' con interacción táctil en vivo.
+ * Hub de calibración del índice A-Z lateral.
+ * Ofrece vista previa interactiva en vivo y accesos directos a las subpáginas
+ * especializadas de parametrización.
  */
 @Composable
 fun PantallaAjustesIndice(
@@ -76,8 +76,8 @@ fun PantallaAjustesIndice(
                 modifier = Modifier.fillMaxSize()
             ) {
                 BarraSuperiorPantalla(
-                    titulo = "Abecedario lateral",
-                    idEtiqueta = "03.4",
+                    titulo = "Índice A-Z",
+                    idEtiqueta = "03.2",
                     mostrarId = ajustes.mostrarIdsAjustes,
                     alVolver = { vm.volverAtras() },
                     conSeparador = scrollState.value > 0,
@@ -91,10 +91,7 @@ fun PantallaAjustesIndice(
                         .verticalScroll(scrollState)
                         .padding(start = 16.dp, end = 48.dp, top = 12.dp, bottom = 48.dp)
                 ) {
-                    DescripcionPantalla(subtitulo = "Personaliza la ola, escalas, háptica y apariencia")
-                    Spacer(Modifier.height(10.dp))
-
-                    // 1. Vista previa interactiva
+                    // Vista previa interactiva
                     VistaPreviaIndiceInteractiva(
                         ajustes = ajustes,
                         letraArrastrada = letraArrastrada,
@@ -103,39 +100,67 @@ fun PantallaAjustesIndice(
 
                     Spacer(Modifier.height(14.dp))
 
-                    // 2. Efecto de ola Niagara
-                    SeccionEfectoOla(
-                        ajustes = ajustes,
-                        vm = vm,
-                        haptica = haptica
-                    )
+                    // Grupo de navegación
+                    ComponenteGrupo(
+                        etiqueta = "Calibración lateral",
+                        icono = Icons.AutoMirrored.Filled.Sort,
+                        idGrupo = "03.2.G2",
+                        mostrarId = ajustes.mostrarIdsAjustes
+                    ) {
+                        ComponenteNavegacion(
+                            titulo = "Efecto de ola",
+                            icono = null,
+                            idFila = "03.2.1",
+                            mostrarId = ajustes.mostrarIdsAjustes,
+                            valorTexto = if (ajustes.indiceEfectoOla) "${ajustes.indiceAmplitudOlaDp}dp" else "Desactivado",
+                            alPulsar = {
+                                haptica.tic()
+                                vm.ir(Pantalla.IndiceOla("03.2.1"))
+                            }
+                        )
 
-                    Spacer(Modifier.height(14.dp))
+                        ComponenteSeparador(sangriaInicio = 16.dp)
 
-                    // 3. Círculo en la cresta
-                    SeccionCirculoCresta(
-                        ajustes = ajustes,
-                        vm = vm,
-                        haptica = haptica
-                    )
+                        ComponenteNavegacion(
+                            titulo = "Círculo y cresta",
+                            icono = null,
+                            idFila = "03.2.2",
+                            mostrarId = ajustes.mostrarIdsAjustes,
+                            valorTexto = if (ajustes.indiceMostrarCirculo) "${ajustes.indiceTamanoCirculoDp}dp" else "Desactivado",
+                            alPulsar = {
+                                haptica.tic()
+                                vm.ir(Pantalla.IndiceCresta("03.2.2"))
+                            }
+                        )
 
-                    Spacer(Modifier.height(14.dp))
+                        ComponenteSeparador(sangriaInicio = 16.dp)
 
-                    // 4. Tacto, háptica y contraste
-                    SeccionTactoYHapticaIndice(
-                        ajustes = ajustes,
-                        vm = vm,
-                        haptica = haptica
-                    )
+                        ComponenteNavegacion(
+                            titulo = "Tacto y háptica",
+                            icono = null,
+                            idFila = "03.2.3",
+                            mostrarId = ajustes.mostrarIdsAjustes,
+                            valorTexto = if (ajustes.indiceHaptica) "Activa" else "Muda",
+                            alPulsar = {
+                                haptica.tic()
+                                vm.ir(Pantalla.IndiceHaptica("03.2.3"))
+                            }
+                        )
 
-                    Spacer(Modifier.height(14.dp))
+                        ComponenteSeparador(sangriaInicio = 16.dp)
 
-                    // 5. Resaltado de entradas al arrastrar
-                    SeccionResaltadoDeslizar(
-                        ajustes = ajustes,
-                        vm = vm,
-                        haptica = haptica
-                    )
+                        ComponenteNavegacion(
+                            titulo = "Resaltado y selección",
+                            icono = null,
+                            idFila = "03.2.4",
+                            mostrarId = ajustes.mostrarIdsAjustes,
+                            valorTexto = if (ajustes.indiceResaltarEntradas) "Activo" else "Desactivado",
+                            alPulsar = {
+                                haptica.tic()
+                                vm.ir(Pantalla.IndiceResaltado("03.2.4"))
+                            }
+                        )
+                    }
 
                     Spacer(Modifier.height(14.dp))
 
@@ -143,7 +168,9 @@ fun PantallaAjustesIndice(
                         ComponenteBotonFila(
                             titulo = "Restablecer módulo",
                             alPulsar = {
+                                haptica.tic()
                                 vm.restablecerAjustesIndiceAlfabetico()
+                                vm.avisar("Índice A-Z restablecido")
                             }
                         )
                     }

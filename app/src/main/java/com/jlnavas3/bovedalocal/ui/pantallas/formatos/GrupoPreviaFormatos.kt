@@ -10,6 +10,8 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -37,10 +39,11 @@ fun GrupoPreviaFormatos(
     modifier: Modifier = Modifier
 ) {
     ComponenteGrupo(
-        etiqueta = "Vista previa en tiempo real",
-        idGrupo = "03.6.G1",
+        etiqueta = "Vista previa",
+        icono = Icons.Filled.Visibility,
+        colorIcono = Color(0xFFFFA000),
+        idGrupo = "03.3.G1",
         mostrarId = mostrarIdsAjustes,
-        descripcion = "Ejemplos de visualización con los formatos seleccionados",
         modifier = modifier
     ) {
         Column(modifier = Modifier.padding(16.dp)) {

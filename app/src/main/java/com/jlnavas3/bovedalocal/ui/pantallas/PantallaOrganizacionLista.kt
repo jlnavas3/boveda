@@ -19,7 +19,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.jlnavas3.bovedalocal.ui.CriterioOrdenacion
 import com.jlnavas3.bovedalocal.ui.VaultViewModel
 import com.jlnavas3.bovedalocal.ui.componentes.BarraSuperiorPantalla
-import com.jlnavas3.bovedalocal.ui.componentes.DescripcionPantalla
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ProveedorResaltadoAjustes
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjustesFondo
 import com.jlnavas3.bovedalocal.ui.pantallas.organizacion.GrupoAgrupamientoEIndicadores
@@ -28,7 +27,7 @@ import com.jlnavas3.bovedalocal.ui.pantallas.organizacion.GrupoOrdenacionPredete
 import com.jlnavas3.bovedalocal.util.Haptica
 
 /**
- * Pantalla dedicada a la Organización de la Lista Principal:
+ * Pantalla dedicada al Diseño de Lista:
  * - Agrupamiento de cuentas por servicio / subdominio.
  * - Densidad y altura de filas (predeterminada, cómoda, compacta).
  * - Criterio de ordenación predeterminado.
@@ -50,8 +49,8 @@ fun PantallaOrganizacionLista(
                 .background(ColorAjustesFondo)
         ) {
             BarraSuperiorPantalla(
-                titulo = "Organización de lista",
-                idEtiqueta = "03.5",
+                titulo = "Diseño de lista",
+                idEtiqueta = "03.1",
                 mostrarId = ajustes.mostrarIdsAjustes,
                 alVolver = { vm.volverAtras() },
                 conSeparador = scrollState.value > 0,
@@ -65,9 +64,6 @@ fun PantallaOrganizacionLista(
                     .verticalScroll(scrollState)
                     .padding(horizontal = 16.dp, vertical = 12.dp)
             ) {
-                DescripcionPantalla(subtitulo = "Configura el agrupamiento por sitio, tamaño de filas y ordenación")
-                Spacer(Modifier.height(10.dp))
-
                 // 1. Agrupamiento por sitio e indicadores
                 GrupoAgrupamientoEIndicadores(
                     mostrarId = ajustes.mostrarIdsAjustes,
@@ -106,9 +102,11 @@ fun PantallaOrganizacionLista(
                         vm.cambiarCriterioOrdenacion(criterio)
                     },
                     alRestablecerGrupo = {
+                        haptica.tic()
                         vm.ajustarAgruparPorSitio(false)
                         vm.ajustarDensidadLista("predeterminada")
                         vm.cambiarCriterioOrdenacion(CriterioOrdenacion.NOMBRE_AZ)
+                        vm.avisar("Valores de lista restablecidos")
                     }
                 )
 
