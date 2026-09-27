@@ -33,7 +33,6 @@ fun PantallaTipografiaEspaciado(
 
     ContenedorPrincipal(
         titulo = "Espaciado y separación",
-        subtitulo = "Separación entre caracteres y líneas",
         alVolver = { vm.volverAtras() },
         conScroll = true,
         espaciado = EspaciadoComponentes,

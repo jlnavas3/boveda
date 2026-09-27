@@ -31,7 +31,6 @@ fun PantallaFormasEstilo(
 
     ContenedorPrincipal(
         titulo = "Tono y estilo del borde",
-        subtitulo = "Matiz cromático de los contornos perimetrales",
         alVolver = { vm.volverAtras() },
         conScroll = true,
         espaciado = EspaciadoComponentes,

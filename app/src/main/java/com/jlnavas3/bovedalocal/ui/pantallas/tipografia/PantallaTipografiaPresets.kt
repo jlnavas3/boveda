@@ -48,7 +48,6 @@ fun PantallaTipografiaPresets(
 
     ContenedorPrincipal(
         titulo = "Estilos predefinidos",
-        subtitulo = "Combinaciones tipográficas armonizadas",
         alVolver = { vm.volverAtras() },
         conScroll = true,
         espaciado = EspaciadoComponentes,

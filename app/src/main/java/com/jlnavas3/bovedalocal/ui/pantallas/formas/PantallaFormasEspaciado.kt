@@ -45,7 +45,6 @@ fun PantallaFormasEspaciado(
 
     ContenedorPrincipal(
         titulo = "Espaciado y separación",
-        subtitulo = "Separación vertical entre secciones y bloques",
         alVolver = { vm.volverAtras() },
         conScroll = true,
         espaciado = EspaciadoComponentes,

@@ -21,6 +21,7 @@ import com.jlnavas3.bovedalocal.ui.theme.ColorGenerador
 import com.jlnavas3.bovedalocal.ui.theme.EspaciadoComponentes
 import com.jlnavas3.bovedalocal.util.Haptica
 import java.util.Locale
+import kotlin.math.abs
 import kotlin.math.roundToInt
 
 private data class OpcionEscalaRapida(
@@ -48,7 +49,6 @@ fun PantallaTipografiaEscala(
 
     ContenedorPrincipal(
         titulo = "Tamaño de fuente",
-        subtitulo = "Escala de lectura general de la aplicación",
         alVolver = { vm.volverAtras() },
         conScroll = true,
         espaciado = EspaciadoComponentes,
@@ -87,7 +87,7 @@ fun PantallaTipografiaEscala(
             etiqueta = "VALORES RÁPIDOS"
         ) {
             OPCIONES_ESCALA.forEachIndexed { indice, opcion ->
-                val activo = kotlin.math.abs(ajustes.escalaTexto - opcion.valor) < 0.04f
+                val activo = abs(ajustes.escalaTexto - opcion.valor) < 0.04f
 
                 ComponenteRadio(
                     titulo = opcion.nombre,

@@ -4,7 +4,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -15,10 +14,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Sort
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
@@ -26,8 +22,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.jlnavas3.bovedalocal.ui.Pantalla
 import com.jlnavas3.bovedalocal.ui.VaultViewModel
 import com.jlnavas3.bovedalocal.ui.componentes.BarraSuperiorPantalla
-import com.jlnavas3.bovedalocal.ui.componentes.IndiceAlfabetico
-import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteBotonFila
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteGrupo
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteNavegacion
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteSeparador
@@ -49,22 +43,7 @@ fun PantallaAjustesIndice(
     val contexto = LocalContext.current
     val haptica = remember { Haptica(contexto) }
     val ajustes by vm.ajustes.collectAsStateWithLifecycle()
-    var letraArrastrada by remember { mutableStateOf<Char?>('G') }
     val scrollState = rememberScrollState()
-
-    val mockItems = remember {
-        listOf(
-            "Amazon" to "Compras y suscripción",
-            "Apple" to "ID de Apple y iCloud",
-            "GitHub" to "Cuenta de desarrollo",
-            "Google" to "admin@gmail.com",
-            "Netflix" to "Suscripción familiar",
-            "Ñandú" to "Cuenta de prueba en español",
-            "Spotify" to "Música y podcasts",
-            "Twitter" to "@usuario_boveda",
-            "Zara" to "Moda y calzado"
-        )
-    }
 
     ProveedorResaltadoAjustes(seccionId) {
         Box(
@@ -89,14 +68,10 @@ fun PantallaAjustesIndice(
                         .fillMaxWidth()
                         .weight(1f)
                         .verticalScroll(scrollState)
-                        .padding(start = 16.dp, end = 48.dp, top = 12.dp, bottom = 48.dp)
+                        .padding(start = 16.dp, end = 16.dp, top = 12.dp, bottom = 48.dp)
                 ) {
                     // Vista previa interactiva
-                    VistaPreviaIndiceInteractiva(
-                        ajustes = ajustes,
-                        letraArrastrada = letraArrastrada,
-                        mockItems = mockItems
-                    )
+                    VistaPreviaIndiceInteractiva(ajustes = ajustes)
 
                     Spacer(Modifier.height(14.dp))
 
@@ -104,6 +79,11 @@ fun PantallaAjustesIndice(
                     ComponenteGrupo(
                         etiqueta = "Calibración lateral",
                         icono = Icons.AutoMirrored.Filled.Sort,
+                        alRestablecer = {
+                            haptica.tic()
+                            vm.restablecerAjustesIndiceAlfabetico()
+                            vm.avisar("Índice A-Z restablecido")
+                        },
                         idGrupo = "03.2.G2",
                         mostrarId = ajustes.mostrarIdsAjustes
                     ) {
@@ -162,43 +142,9 @@ fun PantallaAjustesIndice(
                         )
                     }
 
-                    Spacer(Modifier.height(14.dp))
-
-                    ComponenteGrupo {
-                        ComponenteBotonFila(
-                            titulo = "Restablecer módulo",
-                            alPulsar = {
-                                haptica.tic()
-                                vm.restablecerAjustesIndiceAlfabetico()
-                                vm.avisar("Índice A-Z restablecido")
-                            }
-                        )
-                    }
-
                     Spacer(Modifier.height(32.dp))
                 }
             }
-
-            // Barra lateral real en vivo
-            IndiceAlfabetico(
-                alSeleccionarLetra = { },
-                alCambiarLetraActiva = { letraArrastrada = it },
-                incluirEnie = ajustes.indiceIncluirEnie,
-                efectoOla = ajustes.indiceEfectoOla,
-                amplitudOlaDp = ajustes.indiceAmplitudOlaDp,
-                radioOlaDp = ajustes.indiceRadioOlaDp,
-                escalaMaximaLetras = ajustes.indiceEscalaLetras,
-                mostrarCirculo = ajustes.indiceMostrarCirculo,
-                tamanoCirculoDp = ajustes.indiceTamanoCirculoDp,
-                offsetCirculoDp = ajustes.indiceOffsetCirculoDp,
-                hapticaActiva = ajustes.indiceHaptica,
-                anchoZonaTactilDp = ajustes.indiceAnchoTactilDp,
-                tonoLetras = ajustes.indiceTonoLetras,
-                modifier = Modifier
-                    .align(Alignment.CenterEnd)
-                    .padding(top = 150.dp, bottom = 100.dp)
-                    .fillMaxHeight()
-            )
         }
     }
 }

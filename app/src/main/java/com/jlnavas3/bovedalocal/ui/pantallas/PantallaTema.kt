@@ -28,7 +28,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.jlnavas3.bovedalocal.ui.Pantalla
 import com.jlnavas3.bovedalocal.ui.VaultViewModel
 import com.jlnavas3.bovedalocal.ui.componentes.BarraSuperiorPantalla
-import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteBotonFila
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteGrupo
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteNavegacion
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.LocalCoordinadorResaltado
@@ -156,18 +155,6 @@ fun PantallaTema(
                     reqLauncher = reqLauncher,
                     alSolicitarCambioIcono = { paleta -> dialogoConfirmarIcono = paleta }
                 )
-
-                // 9. Botones de acción inferiores
-                Spacer(Modifier.height(14.dp))
-                ComponenteGrupo {
-                    ComponenteBotonFila(
-                        titulo = "Restablecer módulo",
-                        alPulsar = {
-                            haptica.tic()
-                            vm.restablecerColoresTema()
-                        }
-                    )
-                }
 
                 Spacer(Modifier.height(32.dp))
             }

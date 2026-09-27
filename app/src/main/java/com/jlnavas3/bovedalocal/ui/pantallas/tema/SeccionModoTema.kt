@@ -18,6 +18,7 @@ fun SeccionModoTema(
         etiqueta = "MODO DE TEMA",
         icono = Icons.Filled.BrightnessAuto,
         colorIcono = Color(0xFFFB8C00),
+        alRestablecer = { alCambiarTema("sistema") },
         idGrupo = "02.1.G1",
         mostrarId = ajustes.mostrarIdsAjustes
     ) {

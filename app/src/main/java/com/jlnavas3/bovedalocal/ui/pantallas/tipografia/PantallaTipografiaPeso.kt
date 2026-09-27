@@ -32,7 +32,6 @@ fun PantallaTipografiaPeso(
 
     ContenedorPrincipal(
         titulo = "Grosor y estilo",
-        subtitulo = "Peso visual de trazo y variante cursiva",
         alVolver = { vm.volverAtras() },
         conScroll = true,
         espaciado = EspaciadoComponentes,

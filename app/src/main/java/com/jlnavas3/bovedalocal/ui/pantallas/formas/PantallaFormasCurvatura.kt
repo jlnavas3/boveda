@@ -45,7 +45,6 @@ fun PantallaFormasCurvatura(
 
     ContenedorPrincipal(
         titulo = "Curvatura de esquinas",
-        subtitulo = "Redondeo perimetral en tarjetas, botones y campos",
         alVolver = { vm.volverAtras() },
         conScroll = true,
         espaciado = EspaciadoComponentes,

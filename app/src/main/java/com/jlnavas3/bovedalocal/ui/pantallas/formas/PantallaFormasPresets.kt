@@ -47,7 +47,6 @@ fun PantallaFormasPresets(
 
     ContenedorPrincipal(
         titulo = "Estilos predefinidos",
-        subtitulo = "Combinaciones armónicas de esquinas y trazos",
         alVolver = { vm.volverAtras() },
         conScroll = true,
         espaciado = EspaciadoComponentes,

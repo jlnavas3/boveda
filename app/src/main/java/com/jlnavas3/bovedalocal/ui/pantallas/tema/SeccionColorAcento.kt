@@ -37,6 +37,7 @@ fun SeccionColorDinamicoYSistema(
             etiqueta = "COLOR DINÁMICO",
             icono = Icons.Filled.AutoAwesome,
             colorIcono = Color(0xFF00897B),
+            alRestablecer = { alAlternarColorDinamico(true) },
             idGrupo = "02.1.G3",
             mostrarId = ajustes.mostrarIdsAjustes,
             modifier = Modifier.bringIntoViewRequester(reqDinamico)

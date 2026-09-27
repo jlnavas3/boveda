@@ -31,7 +31,6 @@ fun PantallaTipografiaFamilia(
 
     ContenedorPrincipal(
         titulo = "Familia tipográfica",
-        subtitulo = "Fuente tipográfica principal del sistema",
         alVolver = { vm.volverAtras() },
         conScroll = true,
         espaciado = EspaciadoComponentes,

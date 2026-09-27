@@ -22,6 +22,7 @@ fun SeccionAnimacionDesbloqueo(
         etiqueta = "PANTALLA DE DESBLOQUEO",
         icono = Icons.Filled.Lock,
         colorIcono = Color(0xFF5C6BC0),
+        alRestablecer = { alCambiarAnimacion("engranajes") },
         idGrupo = "02.1.G2",
         mostrarId = ajustes.mostrarIdsAjustes
     ) {

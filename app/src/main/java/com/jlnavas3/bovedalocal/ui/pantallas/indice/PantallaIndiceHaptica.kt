@@ -1,19 +1,15 @@
 package com.jlnavas3.bovedalocal.ui.pantallas.indice
 
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.height
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Vibration
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.jlnavas3.bovedalocal.ui.VaultViewModel
 import com.jlnavas3.bovedalocal.ui.componentes.ContenedorPrincipal
-import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteBotonFila
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteGrupo
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteSeparador
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteSlider
@@ -31,30 +27,24 @@ fun PantallaIndiceHaptica(
     val contexto = LocalContext.current
     val haptica = remember { Haptica(contexto) }
 
-    val mockItems = remember {
-        listOf(
-            "Amazon" to "Compras y suscripción",
-            "Apple" to "ID de Apple y iCloud",
-            "GitHub" to "Cuenta de desarrollo",
-            "Google" to "admin@gmail.com",
-            "Netflix" to "Suscripción familiar"
-        )
-    }
-
     ContenedorPrincipal(
         titulo = "Tacto y háptica",
         alVolver = { vm.volverAtras() },
         cabeceraFlotante = {
-            VistaPreviaIndiceInteractiva(
-                ajustes = ajustes,
-                letraArrastrada = 'G',
-                mockItems = mockItems
-            )
+            VistaPreviaIndiceInteractiva(ajustes = ajustes)
         }
     ) {
         ComponenteGrupo(
-            etiqueta = "Respuesta táctil y alfabeto",
+            etiqueta = "Respuesta táctil",
             icono = Icons.Filled.Vibration,
+            alRestablecer = {
+                haptica.tic()
+                vm.ajustarIndiceHaptica(true)
+                vm.ajustarIndiceIncluirEnie(true)
+                vm.ajustarIndiceAnchoTactilDp(28f)
+                vm.ajustarIndiceTonoLetras(0.7f)
+                vm.avisar("Valores de tacto restablecidos")
+            },
             idGrupo = "03.2.3",
             mostrarId = ajustes.mostrarIdsAjustes
         ) {
@@ -118,22 +108,6 @@ fun PantallaIndiceHaptica(
                 alCambiar = {
                     haptica.tic()
                     vm.ajustarIndiceTonoLetras(it)
-                }
-            )
-        }
-
-        Spacer(Modifier.height(14.dp))
-
-        ComponenteGrupo {
-            ComponenteBotonFila(
-                titulo = "Restablecer tacto",
-                alPulsar = {
-                    haptica.tic()
-                    vm.ajustarIndiceHaptica(true)
-                    vm.ajustarIndiceIncluirEnie(true)
-                    vm.ajustarIndiceAnchoTactilDp(28f)
-                    vm.ajustarIndiceTonoLetras(0.7f)
-                    vm.avisar("Valores de tacto restablecidos")
                 }
             )
         }

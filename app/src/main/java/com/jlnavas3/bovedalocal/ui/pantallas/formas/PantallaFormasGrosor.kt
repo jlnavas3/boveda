@@ -21,6 +21,7 @@ import com.jlnavas3.bovedalocal.ui.theme.ColorPasskeys
 import com.jlnavas3.bovedalocal.ui.theme.EspaciadoComponentes
 import com.jlnavas3.bovedalocal.util.Haptica
 import java.util.Locale
+import kotlin.math.abs
 
 private data class OpcionGrosorRapido(
     val nombre: String,
@@ -45,7 +46,6 @@ fun PantallaFormasGrosor(
 
     ContenedorPrincipal(
         titulo = "Grosor del borde",
-        subtitulo = "Ancho de trazo perimetral en tarjetas y controles",
         alVolver = { vm.volverAtras() },
         conScroll = true,
         espaciado = EspaciadoComponentes,
@@ -88,7 +88,7 @@ fun PantallaFormasGrosor(
             etiqueta = "VALORES RÁPIDOS"
         ) {
             OPCIONES_GROSOR.forEachIndexed { indice, opcion ->
-                val activo = kotlin.math.abs(ajustes.grosorBordeDp - opcion.valorDp) < 0.05f
+                val activo = abs(ajustes.grosorBordeDp - opcion.valorDp) < 0.05f
 
                 ComponenteRadio(
                     titulo = opcion.nombre,

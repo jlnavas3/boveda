@@ -16,7 +16,6 @@ import com.jlnavas3.bovedalocal.data.AlmacenAjustes
 import com.jlnavas3.bovedalocal.ui.Pantalla
 import com.jlnavas3.bovedalocal.ui.VaultViewModel
 import com.jlnavas3.bovedalocal.ui.componentes.ContenedorPrincipal
-import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteBotonFila
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteGrupo
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteNavegacion
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteSeparador
@@ -40,7 +39,6 @@ fun PantallaFormas(
 
     ContenedorPrincipal(
         titulo = "Formas y bordes",
-        subtitulo = "Personaliza curvaturas, trazos y espaciados",
         alVolver = { vm.volverAtras() },
         conScroll = true,
         espaciado = EspaciadoComponentes,
@@ -58,6 +56,7 @@ fun PantallaFormas(
             alRestablecer = {
                 haptica.tic()
                 vm.restablecerFormas()
+                vm.avisar("Geometría y bordes restablecidos")
             }
         ) {
             ComponenteNavegacion(
@@ -92,18 +91,6 @@ fun PantallaFormas(
                 valorTexto = "${ajustes.espaciadoComponentesDp.roundToInt()} dp",
                 icono = null,
                 alPulsar = { vm.ir(Pantalla.FormasEspaciado()) }
-            )
-        }
-
-        Spacer(Modifier.height(18.dp))
-
-        ComponenteGrupo {
-            ComponenteBotonFila(
-                titulo = "Restablecer módulo",
-                alPulsar = {
-                    haptica.tic()
-                    vm.restablecerFormas()
-                }
             )
         }
 

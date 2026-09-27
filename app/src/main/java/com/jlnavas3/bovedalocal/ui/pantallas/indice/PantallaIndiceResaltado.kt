@@ -1,19 +1,15 @@
 package com.jlnavas3.bovedalocal.ui.pantallas.indice
 
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.height
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Highlight
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.jlnavas3.bovedalocal.ui.VaultViewModel
 import com.jlnavas3.bovedalocal.ui.componentes.ContenedorPrincipal
-import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteBotonFila
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteGrupo
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteSeparador
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteSwitch
@@ -28,30 +24,22 @@ fun PantallaIndiceResaltado(
     val contexto = LocalContext.current
     val haptica = remember { Haptica(contexto) }
 
-    val mockItems = remember {
-        listOf(
-            "Amazon" to "Compras y suscripción",
-            "Apple" to "ID de Apple y iCloud",
-            "GitHub" to "Cuenta de desarrollo",
-            "Google" to "admin@gmail.com",
-            "Netflix" to "Suscripción familiar"
-        )
-    }
-
     ContenedorPrincipal(
         titulo = "Resaltado y selección",
         alVolver = { vm.volverAtras() },
         cabeceraFlotante = {
-            VistaPreviaIndiceInteractiva(
-                ajustes = ajustes,
-                letraArrastrada = 'G',
-                mockItems = mockItems
-            )
+            VistaPreviaIndiceInteractiva(ajustes = ajustes)
         }
     ) {
         ComponenteGrupo(
-            etiqueta = "Resaltado en lista",
+            etiqueta = "Resaltado alfabético",
             icono = Icons.Filled.Highlight,
+            alRestablecer = {
+                haptica.tic()
+                vm.ajustarIndiceResaltarEntradas(true)
+                vm.ajustarIndiceResaltarSoloPrimera(true)
+                vm.avisar("Valores de resaltado restablecidos")
+            },
             idGrupo = "03.2.4",
             mostrarId = ajustes.mostrarIdsAjustes
         ) {
@@ -80,20 +68,6 @@ fun PantallaIndiceResaltado(
                     }
                 )
             }
-        }
-
-        Spacer(Modifier.height(14.dp))
-
-        ComponenteGrupo {
-            ComponenteBotonFila(
-                titulo = "Restablecer resaltado",
-                alPulsar = {
-                    haptica.tic()
-                    vm.ajustarIndiceResaltarEntradas(true)
-                    vm.ajustarIndiceResaltarSoloPrimera(true)
-                    vm.avisar("Valores de resaltado restablecidos")
-                }
-            )
         }
     }
 }
