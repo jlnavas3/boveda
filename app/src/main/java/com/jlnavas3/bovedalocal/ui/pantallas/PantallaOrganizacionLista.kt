@@ -9,13 +9,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.Sort
-import androidx.compose.material.icons.filled.Tune
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -23,15 +20,11 @@ import com.jlnavas3.bovedalocal.ui.CriterioOrdenacion
 import com.jlnavas3.bovedalocal.ui.VaultViewModel
 import com.jlnavas3.bovedalocal.ui.componentes.BarraSuperiorPantalla
 import com.jlnavas3.bovedalocal.ui.componentes.DescripcionPantalla
-import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteBotonFila
-import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteGrupo
-import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteRadio
-import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteSeparador
-import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteSwitch
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ProveedorResaltadoAjustes
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjustesFondo
-import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
-import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
+import com.jlnavas3.bovedalocal.ui.pantallas.organizacion.GrupoAgrupamientoEIndicadores
+import com.jlnavas3.bovedalocal.ui.pantallas.organizacion.GrupoDensidadFilas
+import com.jlnavas3.bovedalocal.ui.pantallas.organizacion.GrupoOrdenacionPredeterminada
 import com.jlnavas3.bovedalocal.util.Haptica
 
 /**
@@ -46,7 +39,7 @@ fun PantallaOrganizacionLista(
     seccionId: String? = null
 ) {
     val contexto = LocalContext.current
-    val haptica = Haptica(contexto)
+    val haptica = remember { Haptica(contexto) }
     val ajustes by vm.ajustes.collectAsStateWithLifecycle()
     val scrollState = rememberScrollState()
 
@@ -76,124 +69,48 @@ fun PantallaOrganizacionLista(
                 Spacer(Modifier.height(10.dp))
 
                 // 1. Agrupamiento por sitio e indicadores
-                ComponenteGrupo(
-                    etiqueta = "Agrupamiento e indicadores",
-                    idGrupo = "03.5.G1",
+                GrupoAgrupamientoEIndicadores(
                     mostrarId = ajustes.mostrarIdsAjustes,
-                    descripcion = "Organización visual de las tarjetas y cuentas en el listado"
-                ) {
-                    ComponenteSwitch(
-                        titulo = "Agrupar cuentas",
-                        icono = Icons.Filled.Tune,
-                        colorIcono = ColorIconosInternos,
-                        activo = ajustes.agruparPorSitio,
-                        idFila = "03.5.1",
-                        mostrarId = ajustes.mostrarIdsAjustes,
-                        alCambiar = {
-                            haptica.tic()
-                            vm.ajustarAgruparPorSitio(it)
-                        }
-                    )
-                    ComponenteSeparador()
-                    ComponenteSwitch(
-                        titulo = "Indicadores de contenido en tarjetas",
-                        icono = Icons.Filled.Tune,
-                        colorIcono = Color(0xFF5C6BC0),
-                        activo = ajustes.mostrarIndicadoresContenido,
-                        idFila = "03.5.2",
-                        mostrarId = ajustes.mostrarIdsAjustes,
-                        alCambiar = {
-                            haptica.tic()
-                            vm.ajustarMostrarIndicadoresContenido(it)
-                        }
-                    )
-                }
+                    agruparPorSitio = ajustes.agruparPorSitio,
+                    mostrarIndicadoresContenido = ajustes.mostrarIndicadoresContenido,
+                    alCambiarAgruparPorSitio = {
+                        haptica.tic()
+                        vm.ajustarAgruparPorSitio(it)
+                    },
+                    alCambiarMostrarIndicadores = {
+                        haptica.tic()
+                        vm.ajustarMostrarIndicadoresContenido(it)
+                    }
+                )
 
                 Spacer(Modifier.height(14.dp))
 
                 // 2. Densidad de lista
-                ComponenteGrupo(
-                    etiqueta = "Densidad de filas",
-                    idGrupo = "03.5.G2",
+                GrupoDensidadFilas(
                     mostrarId = ajustes.mostrarIdsAjustes,
-                    descripcion = "Altura y espacio vertical de cada fila en el listado"
-                ) {
-                    ComponenteRadio(
-                        titulo = "Predeterminada",
-                        icono = Icons.Filled.Tune,
-                        colorIcono = ColorIconosInternos,
-                        seleccionado = ajustes.densidadLista == "predeterminada" || (ajustes.densidadLista != "comoda" && ajustes.densidadLista != "compacta"),
-                        idFila = "03.5.2",
-                        mostrarId = ajustes.mostrarIdsAjustes,
-                        alSeleccionar = {
-                            haptica.tic()
-                            vm.ajustarDensidadLista("predeterminada")
-                        }
-                    )
-                    ComponenteSeparador()
-                    ComponenteRadio(
-                        titulo = "Cómoda",
-                        icono = Icons.Filled.Tune,
-                        colorIcono = ColorIconosInternos,
-                        seleccionado = ajustes.densidadLista == "comoda",
-                        idFila = "03.5.3",
-                        mostrarId = ajustes.mostrarIdsAjustes,
-                        alSeleccionar = {
-                            haptica.tic()
-                            vm.ajustarDensidadLista("comoda")
-                        }
-                    )
-                    ComponenteSeparador()
-                    ComponenteRadio(
-                        titulo = "Compacta",
-                        icono = Icons.Filled.Tune,
-                        colorIcono = ColorIconosInternos,
-                        seleccionado = ajustes.densidadLista == "compacta",
-                        idFila = "03.5.4",
-                        mostrarId = ajustes.mostrarIdsAjustes,
-                        alSeleccionar = {
-                            haptica.tic()
-                            vm.ajustarDensidadLista("compacta")
-                        }
-                    )
-                }
+                    densidadLista = ajustes.densidadLista,
+                    alSeleccionarDensidad = { densidad ->
+                        haptica.tic()
+                        vm.ajustarDensidadLista(densidad)
+                    }
+                )
 
                 Spacer(Modifier.height(14.dp))
 
                 // 3. Ordenación predeterminada
-                ComponenteGrupo(
-                    etiqueta = "Ordenación predeterminada",
-                    idGrupo = "03.5.G3",
+                GrupoOrdenacionPredeterminada(
                     mostrarId = ajustes.mostrarIdsAjustes,
-                    descripcion = "Criterio de orden inicial de las cuentas en la bóveda"
-                ) {
-                    CriterioOrdenacion.entries.forEachIndexed { index, criterio ->
-                        if (index > 0) ComponenteSeparador()
-                        ComponenteRadio(
-                            titulo = criterio.etiqueta,
-                            icono = Icons.AutoMirrored.Filled.Sort,
-                            colorIcono = ColorIconosInternos,
-                            seleccionado = ajustes.criterioOrdenacion == criterio.name,
-                            idFila = "03.5.${5 + index}",
-                            mostrarId = ajustes.mostrarIdsAjustes,
-                            alSeleccionar = {
-                                haptica.tic()
-                                vm.cambiarCriterioOrdenacion(criterio)
-                            }
-                        )
+                    criterioSeleccionado = ajustes.criterioOrdenacion,
+                    alSeleccionarCriterio = { criterio ->
+                        haptica.tic()
+                        vm.cambiarCriterioOrdenacion(criterio)
+                    },
+                    alRestablecerGrupo = {
+                        vm.ajustarAgruparPorSitio(false)
+                        vm.ajustarDensidadLista("predeterminada")
+                        vm.cambiarCriterioOrdenacion(CriterioOrdenacion.NOMBRE_AZ)
                     }
-
-                    ComponenteSeparador()
-
-                    ComponenteBotonFila(
-                        titulo = "Restablecer grupo",
-                        alPulsar = {
-                            vm.ajustarAgruparPorSitio(false)
-                            vm.ajustarDensidadLista("predeterminada")
-                            vm.cambiarCriterioOrdenacion(CriterioOrdenacion.NOMBRE_AZ)
-                        }
-                    )
-                }
+                )
 
                 Spacer(Modifier.height(32.dp))
             }
