@@ -13,17 +13,13 @@ interface VaultNavegacionDelegate {
         is Pantalla.CalibracionAnimacion -> Pantalla.Tema("03.2.G2")
         is Pantalla.CalibracionWidgetTotp -> {
             ultimoWidgetAjustesSeleccionado = 0
-            Pantalla.AjustesWidget("03.3.3")
+            Pantalla.AjustesWidget("04.4.2")
         }
         is Pantalla.CalibracionWidget1x1 -> {
             ultimoWidgetAjustesSeleccionado = 1
-            Pantalla.AjustesWidget("03.3.3")
+            Pantalla.AjustesWidget("04.4.5")
         }
 
-        // Nivel 2: Cuentas y Datos -> Ajustes (Nivel 1)
-        is Pantalla.CopiaSeguridad -> Pantalla.Ajustes("02.1")
-        is Pantalla.CsvGoogle -> Pantalla.Ajustes("02.2")
-        is Pantalla.KitEmergencia -> Pantalla.Ajustes("02.3")
         is Pantalla.SaludBoveda -> if (!pantalla.seccionId.isNullOrBlank()) Pantalla.Ajustes(pantalla.seccionId) else Pantalla.Lista
         is Pantalla.Duplicados -> if (!pantalla.seccionId.isNullOrBlank()) Pantalla.Ajustes(pantalla.seccionId) else Pantalla.Lista
         is Pantalla.Papelera -> if (!pantalla.seccionId.isNullOrBlank()) Pantalla.Ajustes(pantalla.seccionId) else Pantalla.Lista
@@ -56,9 +52,7 @@ interface VaultNavegacionDelegate {
         is Pantalla.FormatosCampos -> Pantalla.Ajustes("03.3")
         is Pantalla.WidgetTotpAjustes,
         is Pantalla.Widget1x1Modo,
-        is Pantalla.Widget1x1Comportamiento,
-        is Pantalla.CalibracionWidgetTotp,
-        is Pantalla.CalibracionWidget1x1 -> Pantalla.AjustesWidget("04.4")
+        is Pantalla.Widget1x1Comportamiento -> Pantalla.AjustesWidget("04.4")
         is Pantalla.AjustesWidget -> Pantalla.Ajustes("04.4")
 
         // Nivel 2: Seguridad -> Ajustes (Nivel 1)
