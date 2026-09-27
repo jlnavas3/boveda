@@ -27,6 +27,8 @@ import com.jlnavas3.bovedalocal.crypto.PerfilArgon2
 import com.jlnavas3.bovedalocal.ui.VaultViewModel
 import com.jlnavas3.bovedalocal.ui.componentes.BarraSuperiorPantalla
 import com.jlnavas3.bovedalocal.ui.componentes.DescripcionPantalla
+import com.jlnavas3.bovedalocal.ui.componentes.ajustes.AccionSaltoGrupo
+import com.jlnavas3.bovedalocal.ui.componentes.ajustes.BotonMenuOpcionesPantalla
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteGrupo
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteSelectorModal
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.OpcionSelectorModal
@@ -60,7 +62,15 @@ fun PantallaArgon2id(
                 mostrarId = ajustes.mostrarIdsAjustes,
                 alVolver = { vm.volverAtras() },
                 conSeparador = scrollState.value > 0,
-                colorFondo = ColorAjustesFondo
+                colorFondo = ColorAjustesFondo,
+                acciones = {
+                    BotonMenuOpcionesPantalla(
+                        grupos = listOf(
+                            AccionSaltoGrupo("01.5.G1", "Perfil de derivación"),
+                            AccionSaltoGrupo("01.5.G2", "Detalles técnicos")
+                        )
+                    )
+                }
             )
 
             Column(

@@ -18,6 +18,8 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.jlnavas3.bovedalocal.ui.VaultViewModel
 import com.jlnavas3.bovedalocal.ui.componentes.BarraSuperiorPantalla
+import com.jlnavas3.bovedalocal.ui.componentes.ajustes.AccionSaltoGrupo
+import com.jlnavas3.bovedalocal.ui.componentes.ajustes.BotonMenuOpcionesPantalla
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ProveedorResaltadoAjustes
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjustesFondo
 import com.jlnavas3.bovedalocal.ui.pantallas.formatos.GrupoConfiguracionFormatos
@@ -52,7 +54,23 @@ fun PantallaFormatosCampos(
                 mostrarId = ajustes.mostrarIdsAjustes,
                 alVolver = { vm.volverAtras() },
                 conSeparador = scrollState.value > 0,
-                colorFondo = ColorAjustesFondo
+                colorFondo = ColorAjustesFondo,
+                acciones = {
+                    BotonMenuOpcionesPantalla(
+                        grupos = listOf(
+                            AccionSaltoGrupo("03.3.G1", "Vista previa"),
+                            AccionSaltoGrupo("03.3.G2", "Configuración de formatos")
+                        ),
+                        alRestablecerPantalla = {
+                            haptica.tic()
+                            vm.ajustarFormatoFecha("DD/MM/AAAA")
+                            vm.ajustarFormatoHora("24h")
+                            vm.ajustarFormatoTelefono("### ### ####")
+                            vm.ajustarSeparadorDecimal(".")
+                            vm.avisar("Plantillas de campos restablecidas")
+                        }
+                    )
+                }
             )
 
             Column(

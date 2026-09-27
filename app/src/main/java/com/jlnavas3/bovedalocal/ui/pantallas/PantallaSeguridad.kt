@@ -26,6 +26,8 @@ import com.jlnavas3.bovedalocal.ui.FlujoBiometria
 import com.jlnavas3.bovedalocal.ui.VaultViewModel
 import com.jlnavas3.bovedalocal.ui.componentes.BarraSuperiorPantalla
 import com.jlnavas3.bovedalocal.ui.componentes.DescripcionPantalla
+import com.jlnavas3.bovedalocal.ui.componentes.ajustes.AccionSaltoGrupo
+import com.jlnavas3.bovedalocal.ui.componentes.ajustes.BotonMenuOpcionesPantalla
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ProveedorResaltadoAjustes
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjustesFondo
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.DialogoModoCompatible
@@ -98,7 +100,23 @@ fun PantallaSeguridad(
                 mostrarId = ajustes.mostrarIdsAjustes,
                 alVolver = { vm.volverAtras() },
                 conSeparador = scrollState.value > 0,
-                colorFondo = ColorAjustesFondo
+                colorFondo = ColorAjustesFondo,
+                acciones = {
+                    BotonMenuOpcionesPantalla(
+                        grupos = listOf(
+                            AccionSaltoGrupo("01.1.G1", "Biometría"),
+                            AccionSaltoGrupo("01.1.G2", "Bloqueo de aplicación"),
+                            AccionSaltoGrupo("01.1.G3", "Portapapeles")
+                        ),
+                        alRestablecerPantalla = {
+                            haptica.tic()
+                            vm.ajustarAutoBloqueo(60)
+                            vm.ajustarProteccionPantalla(true)
+                            vm.ajustarPortapapeles(30)
+                            vm.avisar("Ajustes de biometría restablecidos")
+                        }
+                    )
+                }
             )
 
             Column(

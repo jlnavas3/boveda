@@ -27,6 +27,8 @@ import com.jlnavas3.bovedalocal.data.PinAutodestruccion
 import com.jlnavas3.bovedalocal.ui.VaultViewModel
 import com.jlnavas3.bovedalocal.ui.componentes.BarraSuperiorPantalla
 import com.jlnavas3.bovedalocal.ui.componentes.DescripcionPantalla
+import com.jlnavas3.bovedalocal.ui.componentes.ajustes.AccionSaltoGrupo
+import com.jlnavas3.bovedalocal.ui.componentes.ajustes.BotonMenuOpcionesPantalla
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ProveedorResaltadoAjustes
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjustesFondo
 import com.jlnavas3.bovedalocal.ui.pantallas.autodestruccion.AlertaCriticaAutodestruccion
@@ -75,7 +77,15 @@ fun PantallaAjustesAutodestruccion(
                 mostrarId = ajustes.mostrarIdsAjustes,
                 alVolver = { vm.volverAtras() },
                 conSeparador = scrollState.value > 0,
-                colorFondo = ColorAjustesFondo
+                colorFondo = ColorAjustesFondo,
+                acciones = {
+                    BotonMenuOpcionesPantalla(
+                        grupos = listOf(
+                            AccionSaltoGrupo("01.4.G1", "Información"),
+                            AccionSaltoGrupo("01.4.G2", "PIN de emergencia")
+                        )
+                    )
+                }
             )
 
             Column(

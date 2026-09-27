@@ -19,7 +19,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.jlnavas3.bovedalocal.ui.Pantalla
 import com.jlnavas3.bovedalocal.ui.VaultViewModel
 import com.jlnavas3.bovedalocal.ui.componentes.BarraSuperiorPantalla
-import com.jlnavas3.bovedalocal.ui.componentes.DescripcionPantalla
+import com.jlnavas3.bovedalocal.ui.componentes.ajustes.AccionSaltoGrupo
+import com.jlnavas3.bovedalocal.ui.componentes.ajustes.BotonMenuOpcionesPantalla
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ProveedorResaltadoAjustes
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjustesFondo
 import com.jlnavas3.bovedalocal.ui.pantallas.autenticador.GrupoAccesosRapidosTotp
@@ -43,12 +44,28 @@ fun PantallaAjustesAutenticador(
                 .background(ColorAjustesFondo)
         ) {
             BarraSuperiorPantalla(
-                titulo = "Autenticador 2FA",
+                titulo = "Autenticador (2FA)",
                 idEtiqueta = "04.1",
                 mostrarId = ajustes.mostrarIdsAjustes,
                 alVolver = { vm.volverAtras() },
                 conSeparador = scrollState.value > 0,
-                colorFondo = ColorAjustesFondo
+                colorFondo = ColorAjustesFondo,
+                acciones = {
+                    BotonMenuOpcionesPantalla(
+                        grupos = listOf(
+                            AccionSaltoGrupo("04.1.G1", "Valores manuales"),
+                            AccionSaltoGrupo("04.1.G2", "Accesos rápidos")
+                        ),
+                        alRestablecerPantalla = {
+                            haptica.tic()
+                            vm.ajustarTotpManualDigitos(6)
+                            vm.ajustarTotpManualPeriodo(30)
+                            vm.ajustarTotpManualAlgoritmo("HmacSHA1")
+                            vm.ajustarTotpSepararDigitos(true)
+                            vm.avisar("Autenticador (2FA) restablecido")
+                        }
+                    )
+                }
             )
 
             Column(
@@ -58,8 +75,6 @@ fun PantallaAjustesAutenticador(
                     .verticalScroll(scrollState)
                     .padding(horizontal = 16.dp, vertical = 12.dp)
             ) {
-                DescripcionPantalla(subtitulo = "Parámetros predeterminados para códigos TOTP generados manualmente")
-                Spacer(Modifier.height(10.dp))
 
                 // Grupo 1: Valores manuales
                 GrupoValoresManualesTotp(

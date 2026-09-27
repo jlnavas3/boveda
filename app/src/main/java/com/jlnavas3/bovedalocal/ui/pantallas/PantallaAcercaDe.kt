@@ -26,6 +26,8 @@ import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.jlnavas3.bovedalocal.ui.VaultViewModel
 import com.jlnavas3.bovedalocal.ui.componentes.BarraSuperiorPantalla
+import com.jlnavas3.bovedalocal.ui.componentes.ajustes.AccionSaltoGrupo
+import com.jlnavas3.bovedalocal.ui.componentes.ajustes.BotonMenuOpcionesPantalla
 import com.jlnavas3.bovedalocal.ui.pantallas.acercade.GrupoAcercaDeApp
 import com.jlnavas3.bovedalocal.ui.pantallas.acercade.GrupoAislamientoPrivacidad
 import com.jlnavas3.bovedalocal.ui.pantallas.acercade.GrupoBiometriaSensores
@@ -95,7 +97,19 @@ fun PantallaAcercaDe(
             mostrarId = ajustes.mostrarIdsAjustes,
             alVolver = { vm.volverAtras() },
             conSeparador = scrollState.value > 0,
-            colorFondo = ColorAjustesFondo
+            colorFondo = ColorAjustesFondo,
+            acciones = {
+                BotonMenuOpcionesPantalla(
+                    grupos = listOf(
+                        AccionSaltoGrupo("06.3.G1", "Aislamiento y privacidad"),
+                        AccionSaltoGrupo("06.3.G2", "Criptografía y blindaje"),
+                        AccionSaltoGrupo("06.3.G3", "Hardware y sistema"),
+                        AccionSaltoGrupo("06.3.G4", "Memoria y almacenamiento"),
+                        AccionSaltoGrupo("06.3.G5", "Biometría y sensores"),
+                        AccionSaltoGrupo("06.3.G6", "Acerca de Bóveda Local")
+                    )
+                )
+            }
         )
 
         val datos = datosAuditoria
@@ -112,6 +126,7 @@ fun PantallaAcercaDe(
                 // 1. Aislamiento y Privacidad
                 GrupoAislamientoPrivacidad(
                     datos = datos,
+                    mostrarIdsAjustes = ajustes.mostrarIdsAjustes,
                     modifier = Modifier.bringIntoViewRequester(reqAislamiento)
                 )
 
@@ -120,6 +135,7 @@ fun PantallaAcercaDe(
                 // 2. Criptografía y Blindaje
                 GrupoCriptografiaBlindaje(
                     datos = datos,
+                    mostrarIdsAjustes = ajustes.mostrarIdsAjustes,
                     modifier = Modifier.bringIntoViewRequester(reqCripto)
                 )
 
@@ -128,6 +144,7 @@ fun PantallaAcercaDe(
                 // 3. Hardware y Sistema
                 GrupoHardwareSistema(
                     datos = datos,
+                    mostrarIdsAjustes = ajustes.mostrarIdsAjustes,
                     modifier = Modifier.bringIntoViewRequester(reqHardware)
                 )
 
@@ -136,13 +153,17 @@ fun PantallaAcercaDe(
                 // 4. Memoria y Almacenamiento
                 GrupoMemoriaAlmacenamiento(
                     datos = datos,
+                    mostrarIdsAjustes = ajustes.mostrarIdsAjustes,
                     modifier = Modifier.bringIntoViewRequester(reqMemoria)
                 )
 
                 Spacer(Modifier.height(14.dp))
 
                 // 5. Biometría y Sensores
-                GrupoBiometriaSensores(datos = datos)
+                GrupoBiometriaSensores(
+                    datos = datos,
+                    mostrarIdsAjustes = ajustes.mostrarIdsAjustes
+                )
 
                 Spacer(Modifier.height(14.dp))
 
@@ -159,7 +180,8 @@ fun PantallaAcercaDe(
                         if (!AjustesSistema.abrirFichaApp(contexto)) {
                             vm.avisar("No se pudo abrir la ficha del sistema")
                         }
-                    }
+                    },
+                    mostrarIdsAjustes = ajustes.mostrarIdsAjustes
                 )
 
                 Spacer(Modifier.height(32.dp))

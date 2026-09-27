@@ -26,6 +26,8 @@ import com.jlnavas3.bovedalocal.BovedaApp
 import com.jlnavas3.bovedalocal.data.GestorBackupAutomatico
 import com.jlnavas3.bovedalocal.ui.VaultViewModel
 import com.jlnavas3.bovedalocal.ui.componentes.BarraSuperiorPantalla
+import com.jlnavas3.bovedalocal.ui.componentes.ajustes.AccionSaltoGrupo
+import com.jlnavas3.bovedalocal.ui.componentes.ajustes.BotonMenuOpcionesPantalla
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.LocalCoordinadorResaltado
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ProveedorResaltadoAjustes
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.contenedorScrollAjustes
@@ -96,7 +98,25 @@ fun PantallaCopiaSeguridad(
                 mostrarId = ajustes.mostrarIdsAjustes,
                 alVolver = { vm.volverAtras() },
                 conSeparador = scrollState.value > 0,
-                colorFondo = ColorAjustesFondo
+                colorFondo = ColorAjustesFondo,
+                acciones = {
+                    BotonMenuOpcionesPantalla(
+                        grupos = listOf(
+                            AccionSaltoGrupo("05.1.G1", "Copia cifrada (.bvda)"),
+                            AccionSaltoGrupo("05.1.G2", "Copia automática local"),
+                            AccionSaltoGrupo("05.1.G3", "Recordatorio de respaldo")
+                        ),
+                        alRestablecerPantalla = {
+                            haptica.tic()
+                            vm.ajustarBackupAutoFrecuenciaDias(0)
+                            vm.ajustarBackupAutoMaxCopias(5)
+                            vm.ajustarBackupAutoPasswordCifrado("")
+                            vm.ajustarBackupAutoPatronNombre("{99}-backup-{FECHA}")
+                            vm.ajustarRecordatorioExportacion(30)
+                            vm.avisar("Copia de seguridad restablecida")
+                        }
+                    )
+                }
             )
 
             Column(

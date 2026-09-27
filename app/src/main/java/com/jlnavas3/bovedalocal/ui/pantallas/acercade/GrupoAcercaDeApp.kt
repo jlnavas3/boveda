@@ -18,9 +18,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.jlnavas3.bovedalocal.ui.componentes.BotonColorido
-import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.GrupoAjustes
+import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteGrupo
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.SeparadorFilaSimple
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
+import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
 import com.jlnavas3.bovedalocal.ui.theme.ColorSeguridad
 import com.jlnavas3.bovedalocal.ui.theme.TextoPrincipal
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
@@ -29,10 +30,15 @@ import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
 fun GrupoAcercaDeApp(
     alCopiarAuditoria: () -> Unit,
     alAbrirFichaApp: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    mostrarIdsAjustes: Boolean = false
 ) {
-    GrupoAjustes(
+    ComponenteGrupo(
         etiqueta = "Acerca de Bóveda Local",
+        icono = Icons.Filled.Info,
+        colorIcono = ColorIconosInternos,
+        idGrupo = "06.3.G6",
+        mostrarId = mostrarIdsAjustes,
         modifier = modifier
     ) {
         Column(modifier = Modifier.padding(16.dp)) {

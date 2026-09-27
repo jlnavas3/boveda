@@ -4,23 +4,31 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Fingerprint
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.GrupoAjustes
+import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteGrupo
+import com.jlnavas3.bovedalocal.ui.theme.ColorSeguridad
 import com.jlnavas3.bovedalocal.ui.theme.TextoPrincipal
 import com.jlnavas3.bovedalocal.util.DatosAuditoria
 
 @Composable
 fun GrupoBiometriaSensores(
     datos: DatosAuditoria,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    mostrarIdsAjustes: Boolean = false
 ) {
-    GrupoAjustes(
+    ComponenteGrupo(
         etiqueta = "Biometría y sensores",
+        icono = Icons.Filled.Fingerprint,
+        colorIcono = ColorSeguridad,
+        idGrupo = "06.3.G5",
+        mostrarId = mostrarIdsAjustes,
         modifier = modifier
     ) {
         Column(modifier = Modifier.padding(16.dp)) {

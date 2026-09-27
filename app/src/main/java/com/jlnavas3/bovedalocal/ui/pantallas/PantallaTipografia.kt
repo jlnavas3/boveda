@@ -16,6 +16,8 @@ import com.jlnavas3.bovedalocal.data.AlmacenAjustes
 import com.jlnavas3.bovedalocal.ui.Pantalla
 import com.jlnavas3.bovedalocal.ui.VaultViewModel
 import com.jlnavas3.bovedalocal.ui.componentes.ContenedorPrincipal
+import com.jlnavas3.bovedalocal.ui.componentes.ajustes.AccionSaltoGrupo
+import com.jlnavas3.bovedalocal.ui.componentes.ajustes.BotonMenuOpcionesPantalla
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteGrupo
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteNavegacion
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteSeparador
@@ -43,6 +45,18 @@ fun PantallaTipografia(
         espaciado = EspaciadoComponentes,
         cabeceraFlotante = {
             PrevisualizacionTipografia()
+        },
+        acciones = {
+            BotonMenuOpcionesPantalla(
+                grupos = listOf(
+                    AccionSaltoGrupo("02.3.G1", "Texto y fuentes")
+                ),
+                alRestablecerPantalla = {
+                    haptica.tic()
+                    vm.restablecerTipografia()
+                    vm.avisar("Tipografía restablecida")
+                }
+            )
         }
     ) {
         ComponenteGrupo(

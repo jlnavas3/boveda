@@ -4,20 +4,28 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Shield
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.GrupoAjustes
+import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteGrupo
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.SeparadorFilaSimple
+import com.jlnavas3.bovedalocal.ui.theme.ColorSeguridad
 import com.jlnavas3.bovedalocal.util.DatosAuditoria
 
 @Composable
 fun GrupoAislamientoPrivacidad(
     datos: DatosAuditoria,
+    mostrarIdsAjustes: Boolean = false,
     modifier: Modifier = Modifier
 ) {
-    GrupoAjustes(
+    ComponenteGrupo(
         etiqueta = "Aislamiento y privacidad",
+        icono = Icons.Filled.Shield,
+        colorIcono = ColorSeguridad,
+        idGrupo = "06.3.G1",
+        mostrarId = mostrarIdsAjustes,
         modifier = modifier
     ) {
         Column(modifier = Modifier.padding(16.dp)) {

@@ -28,6 +28,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.jlnavas3.bovedalocal.ui.Pantalla
 import com.jlnavas3.bovedalocal.ui.VaultViewModel
 import com.jlnavas3.bovedalocal.ui.componentes.BarraSuperiorPantalla
+import com.jlnavas3.bovedalocal.ui.componentes.ajustes.AccionSaltoGrupo
+import com.jlnavas3.bovedalocal.ui.componentes.ajustes.BotonMenuOpcionesPantalla
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteGrupo
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteNavegacion
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.LocalCoordinadorResaltado
@@ -86,7 +88,24 @@ fun PantallaTema(
                 mostrarId = ajustes.mostrarIdsAjustes,
                 alVolver = { vm.volverAtras() },
                 conSeparador = scrollState.value > 0,
-                colorFondo = ColorAjustesFondo
+                colorFondo = ColorAjustesFondo,
+                acciones = {
+                    BotonMenuOpcionesPantalla(
+                        grupos = listOf(
+                            AccionSaltoGrupo("02.1.G1", "Modo de tema"),
+                            AccionSaltoGrupo("02.1.G2", "Pantalla de desbloqueo"),
+                            AccionSaltoGrupo("02.1.G3", "Color dinámico"),
+                            AccionSaltoGrupo("02.1.G3.5", "Campos y datos"),
+                            AccionSaltoGrupo("02.1.G4", "Color de acento"),
+                            AccionSaltoGrupo("02.1.G5", "Ícono en el launcher")
+                        ),
+                        alRestablecerPantalla = {
+                            haptica.tic()
+                            vm.restablecerColoresTema()
+                            vm.avisar("Tema y colores restablecidos")
+                        }
+                    )
+                }
             )
 
             Column(

@@ -2,19 +2,27 @@ package com.jlnavas3.bovedalocal.ui.pantallas.acercade
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.SdCard
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.GrupoAjustes
+import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteGrupo
 import com.jlnavas3.bovedalocal.util.DatosAuditoria
 
 @Composable
 fun GrupoMemoriaAlmacenamiento(
     datos: DatosAuditoria,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    mostrarIdsAjustes: Boolean = false
 ) {
-    GrupoAjustes(
+    ComponenteGrupo(
         etiqueta = "Memoria y almacenamiento local",
+        icono = Icons.Filled.SdCard,
+        colorIcono = Color(0xFF607D8B),
+        idGrupo = "06.3.G4",
+        mostrarId = mostrarIdsAjustes,
         modifier = modifier
     ) {
         Column(modifier = Modifier.padding(16.dp)) {

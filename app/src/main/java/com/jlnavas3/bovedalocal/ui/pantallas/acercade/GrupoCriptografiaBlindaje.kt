@@ -2,20 +2,28 @@ package com.jlnavas3.bovedalocal.ui.pantallas.acercade
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Memory
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.jlnavas3.bovedalocal.crypto.VaultCrypto
-import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.GrupoAjustes
+import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteGrupo
+import com.jlnavas3.bovedalocal.ui.theme.ColorArgon2
 import com.jlnavas3.bovedalocal.util.DatosAuditoria
 
 @Composable
 fun GrupoCriptografiaBlindaje(
     datos: DatosAuditoria,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    mostrarIdsAjustes: Boolean = false
 ) {
-    GrupoAjustes(
+    ComponenteGrupo(
         etiqueta = "Criptografía y blindaje",
+        icono = Icons.Filled.Memory,
+        colorIcono = ColorArgon2,
+        idGrupo = "06.3.G2",
+        mostrarId = mostrarIdsAjustes,
         modifier = modifier
     ) {
         Column(modifier = Modifier.padding(16.dp)) {

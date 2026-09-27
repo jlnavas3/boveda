@@ -22,6 +22,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.jlnavas3.bovedalocal.ui.Pantalla
 import com.jlnavas3.bovedalocal.ui.VaultViewModel
 import com.jlnavas3.bovedalocal.ui.componentes.BarraSuperiorPantalla
+import com.jlnavas3.bovedalocal.ui.componentes.ajustes.AccionSaltoGrupo
+import com.jlnavas3.bovedalocal.ui.componentes.ajustes.BotonMenuOpcionesPantalla
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteGrupo
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteNavegacion
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteSeparador
@@ -60,7 +62,19 @@ fun PantallaAjustesIndice(
                     mostrarId = ajustes.mostrarIdsAjustes,
                     alVolver = { vm.volverAtras() },
                     conSeparador = scrollState.value > 0,
-                    colorFondo = ColorAjustesFondo
+                    colorFondo = ColorAjustesFondo,
+                    acciones = {
+                        BotonMenuOpcionesPantalla(
+                            grupos = listOf(
+                                AccionSaltoGrupo("03.2.G2", "Calibración lateral")
+                            ),
+                            alRestablecerPantalla = {
+                                haptica.tic()
+                                vm.restablecerAjustesIndiceAlfabetico()
+                                vm.avisar("Índice A-Z restablecido")
+                            }
+                        )
+                    }
                 )
 
                 Column(

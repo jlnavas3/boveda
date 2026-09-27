@@ -1,11 +1,11 @@
-@file:OptIn(androidx.compose.foundation.ExperimentalFoundationApi::class)
+@file:OptIn(ExperimentalFoundationApi::class)
 
 package com.jlnavas3.bovedalocal.ui.componentes.ajustes
 
 import androidx.compose.animation.Animatable
 import androidx.compose.animation.core.FastOutSlowInEasing
-import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.relocation.BringIntoViewRequester
 import androidx.compose.runtime.Composable
@@ -19,14 +19,14 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.LayoutCoordinates
 import androidx.compose.ui.layout.onGloballyPositioned
+import com.jlnavas3.bovedalocal.ui.theme.AlumbradoActivo
+import com.jlnavas3.bovedalocal.ui.theme.AlumbradoDuracionMs
+import com.jlnavas3.bovedalocal.ui.theme.AlumbradoIntensidad
+import com.jlnavas3.bovedalocal.ui.theme.AlumbradoRepeticiones
+import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import com.jlnavas3.bovedalocal.ui.theme.AlumbradoActivo
-import com.jlnavas3.bovedalocal.ui.theme.AlumbradoIntensidad
-import com.jlnavas3.bovedalocal.ui.theme.AlumbradoRepeticiones
-import com.jlnavas3.bovedalocal.ui.theme.AlumbradoDuracionMs
-import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import kotlin.math.roundToInt
 
 /**
@@ -44,16 +44,18 @@ val LocalCoordinadorResaltado = compositionLocalOf<CoordinadorResaltadoAjustes?>
  * y el efecto visual de alumbrado (glow) en borde y fondo del elemento objetivo.
  */
 class CoordinadorResaltadoAjustes(
-    val seccionDestino: String?,
+    var seccionDestino: String?,
     val scrollState: ScrollState?,
     val coroutineScope: CoroutineScope
 ) {
     var contenedorCoordinates: LayoutCoordinates? = null
     private var destinoYaProcesado = false
 
+    private val elementosRegistrados = mutableMapOf<String, Pair<LayoutCoordinates, EstadoAlumbradoFila>>()
+
     fun coincideDestino(id: String?): Boolean {
         if (id.isNullOrBlank() || seccionDestino.isNullOrBlank()) return false
-        val dest = seccionDestino.trim()
+        val dest = seccionDestino!!.trim()
         val item = id.trim()
         if (dest == item) return true
 
@@ -68,12 +70,64 @@ class CoordinadorResaltadoAjustes(
         return false
     }
 
+    fun registrarElemento(id: String?, coordinates: LayoutCoordinates, estadoAlumbrado: EstadoAlumbradoFila) {
+        if (!id.isNullOrBlank()) {
+            elementosRegistrados[id.trim()] = Pair(coordinates, estadoAlumbrado)
+        }
+    }
+
+    fun resaltarAjuste(id: String, colorAcento: Color = ColorAcento) {
+        val idLimpio = id.trim()
+        val registrado = elementosRegistrados[idLimpio]
+        val scroll = scrollState
+        val contenedor = contenedorCoordinates
+
+        coroutineScope.launch {
+            if (registrado != null) {
+                val (itemCoords, estado) = registrado
+                if (scroll != null && contenedor != null && itemCoords.isAttached && contenedor.isAttached) {
+                    try {
+                        val posItemEnContenedor = contenedor.localPositionOf(itemCoords, Offset.Zero)
+                        val posicionAbsoluta = scroll.value + posItemEnContenedor.y
+                        val margenSuperiorPx = 24f
+                        val destinoScroll = (posicionAbsoluta - margenSuperiorPx)
+                            .coerceIn(0f, scroll.maxValue.toFloat())
+                            .roundToInt()
+
+                        scroll.animateScrollTo(
+                            value = destinoScroll,
+                            animationSpec = tween(durationMillis = 650, easing = FastOutSlowInEasing)
+                        )
+                    } catch (_: Exception) {
+                        try {
+                            estado.bringIntoViewRequester.bringIntoView()
+                        } catch (_: Exception) {}
+                    }
+                } else {
+                    try {
+                        estado.bringIntoViewRequester.bringIntoView()
+                    } catch (_: Exception) {}
+                }
+
+                estado.dispararEfectoAlumbrado(
+                    colorAcento = colorAcento,
+                    activo = AlumbradoActivo,
+                    intensidad = AlumbradoIntensidad,
+                    repeticiones = AlumbradoRepeticiones,
+                    duracionMs = AlumbradoDuracionMs
+                )
+            }
+        }
+    }
+
     fun registrarYEjecutarSiCoincide(
         id: String?,
         itemCoordinates: LayoutCoordinates,
         estadoAlumbrado: EstadoAlumbradoFila,
         colorAcento: Color
     ) {
+        registrarElemento(id, itemCoordinates, estadoAlumbrado)
+
         if (destinoYaProcesado || !coincideDestino(id)) return
         destinoYaProcesado = true
 
@@ -142,10 +196,12 @@ fun ProveedorResaltadoAjustes(
     contenido: @Composable () -> Unit
 ) {
     val coroutineScope = rememberCoroutineScope()
-    val coordinador = remember(seccionDestino, scrollState) {
-        if (!seccionDestino.isNullOrBlank()) {
-            CoordinadorResaltadoAjustes(seccionDestino, scrollState, coroutineScope)
-        } else null
+    val coordinador = remember(scrollState) {
+        CoordinadorResaltadoAjustes(seccionDestino, scrollState, coroutineScope)
+    }
+
+    LaunchedEffect(seccionDestino) {
+        coordinador.seccionDestino = seccionDestino
     }
 
     CompositionLocalProvider(

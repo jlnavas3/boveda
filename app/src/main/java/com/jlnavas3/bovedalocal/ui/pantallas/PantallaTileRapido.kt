@@ -20,6 +20,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.jlnavas3.bovedalocal.ui.Pantalla
 import com.jlnavas3.bovedalocal.ui.VaultViewModel
 import com.jlnavas3.bovedalocal.ui.componentes.BarraSuperiorPantalla
+import com.jlnavas3.bovedalocal.ui.componentes.ajustes.AccionSaltoGrupo
+import com.jlnavas3.bovedalocal.ui.componentes.ajustes.BotonMenuOpcionesPantalla
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ProveedorResaltadoAjustes
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjustesFondo
 import com.jlnavas3.bovedalocal.ui.pantallas.tile.GrupoConfiguracionTile
@@ -48,7 +50,26 @@ fun PantallaTileRapido(
                 mostrarId = ajustes.mostrarIdsAjustes,
                 alVolver = { vm.volverAtras() },
                 conSeparador = scrollState.value > 0,
-                colorFondo = ColorAjustesFondo
+                colorFondo = ColorAjustesFondo,
+                acciones = {
+                    BotonMenuOpcionesPantalla(
+                        grupos = listOf(
+                            AccionSaltoGrupo("04.5.G1", "Generación rápida"),
+                            AccionSaltoGrupo("04.5.G2", "Accesos rápidos")
+                        ),
+                        alRestablecerPantalla = {
+                            haptica.tic()
+                            vm.ajustarTileModo("longitud")
+                            vm.ajustarTileLongitud(20)
+                            vm.ajustarTilePatron("XXXXX-XXXXX-XXXXX-XXXXX")
+                            vm.ajustarTileCopiarPortapapeles(true)
+                            vm.ajustarTileMostrarToast(true)
+                            vm.ajustarTileHaptica(true)
+                            vm.ajustarTileHapticaIntensidad(0.8f)
+                            vm.avisar("Mosaico rápido restablecido")
+                        }
+                    )
+                }
             )
 
             Column(

@@ -16,6 +16,8 @@ import com.jlnavas3.bovedalocal.data.AlmacenAjustes
 import com.jlnavas3.bovedalocal.ui.Pantalla
 import com.jlnavas3.bovedalocal.ui.VaultViewModel
 import com.jlnavas3.bovedalocal.ui.componentes.ContenedorPrincipal
+import com.jlnavas3.bovedalocal.ui.componentes.ajustes.AccionSaltoGrupo
+import com.jlnavas3.bovedalocal.ui.componentes.ajustes.BotonMenuOpcionesPantalla
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteGrupo
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteNavegacion
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteSeparador
@@ -46,6 +48,18 @@ fun PantallaFormas(
             SimuladorTarjetaInteractiva(
                 ajustes = ajustes,
                 haptica = haptica
+            )
+        },
+        acciones = {
+            BotonMenuOpcionesPantalla(
+                grupos = listOf(
+                    AccionSaltoGrupo("02.2.G1", "Geometría y bordes")
+                ),
+                alRestablecerPantalla = {
+                    haptica.tic()
+                    vm.restablecerFormas()
+                    vm.avisar("Geometría y bordes restablecidos")
+                }
             )
         }
     ) {
