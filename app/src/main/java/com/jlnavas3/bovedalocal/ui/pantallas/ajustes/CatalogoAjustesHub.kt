@@ -48,13 +48,13 @@ fun crearCatalogoAjustesHub(
     return listOf(
         // Grupo: Seguridad
         ElementoMenuAjustes(
-            titulo = "Datos biométricos y contraseña",
-            subtitulo = "Huella dactilar, bloqueo automático y protección de pantalla",
+            titulo = "Biometría",
+            subtitulo = "Huella dactilar, bloqueo de app y portapapeles",
             icono = Icons.Filled.Fingerprint,
             colorIcono = Color(0xFF1E88E5),
             idEtiqueta = "01.1",
             grupo = "Seguridad",
-            palabrasClave = "huella biometria pin contrasena bloqueo inactividad flag secure pantalla",
+            palabrasClave = "huella biometria pin contrasena bloqueo inactividad flag secure pantalla portapapeles",
             alPulsar = { vm.ir(Pantalla.Seguridad("01.1")) }
         ),
         ElementoMenuAjustes(

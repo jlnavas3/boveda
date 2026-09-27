@@ -1,6 +1,5 @@
 package com.jlnavas3.bovedalocal.ui.pantallas
 
-import androidx.biometric.BiometricManager
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -31,8 +30,9 @@ import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ProveedorResaltadoAjustes
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjustesFondo
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.DialogoModoCompatible
 import com.jlnavas3.bovedalocal.ui.pantallas.seguridad.DialogoDesactivarSecure
-import com.jlnavas3.bovedalocal.ui.pantallas.seguridad.GrupoAccesoBiometria
-import com.jlnavas3.bovedalocal.ui.pantallas.seguridad.GrupoPrivacidadPortapapeles
+import com.jlnavas3.bovedalocal.ui.pantallas.seguridad.GrupoBiometria
+import com.jlnavas3.bovedalocal.ui.pantallas.seguridad.GrupoBloqueoApp
+import com.jlnavas3.bovedalocal.ui.pantallas.seguridad.GrupoPortapapeles
 import com.jlnavas3.bovedalocal.util.AjustesSistema
 import com.jlnavas3.bovedalocal.util.Biometria
 import com.jlnavas3.bovedalocal.util.Haptica
@@ -93,7 +93,7 @@ fun PantallaSeguridad(
                 .background(ColorAjustesFondo)
         ) {
             BarraSuperiorPantalla(
-                titulo = "Datos biométricos y contraseña",
+                titulo = "Biometría",
                 idEtiqueta = "01.1",
                 mostrarId = ajustes.mostrarIdsAjustes,
                 alVolver = { vm.volverAtras() },
@@ -108,18 +108,17 @@ fun PantallaSeguridad(
                     .verticalScroll(scrollState)
                     .padding(horizontal = 16.dp, vertical = 12.dp)
             ) {
-                DescripcionPantalla(subtitulo = "Protección de acceso, biometría y bloqueo automático")
+                DescripcionPantalla(subtitulo = "Autenticación, bloqueo automático y portapapeles")
                 Spacer(Modifier.height(10.dp))
 
-                // Grupo 1: Acceso y Biometría
-                GrupoAccesoBiometria(
+                // Grupo 1: Biometría
+                GrupoBiometria(
                     esSenuelo = esSenuelo,
                     biometriaActiva = ajustes.biometriaActiva,
                     nivel = nivel,
                     capacidad = capacidad,
                     modoActivo = modoActivo,
                     mostrarIdsAjustes = ajustes.mostrarIdsAjustes,
-                    autoBloqueoSegundos = ajustes.autoBloqueoSegundos,
                     alCambiarBiometria = { activar ->
                         if (activar) {
                             when (nivel) {
@@ -139,20 +138,20 @@ fun PantallaSeguridad(
                     alOfrecerCompatible = {
                         ofrecerCompatible("Si la huella falla en este dispositivo aunque Android la acepte, el modo compatible suele funcionar.")
                     },
-                    alActivarFuerte = { activarFuerte() },
-                    alAjustarAutoBloqueo = { valor ->
-                        haptica.tic()
-                        vm.ajustarAutoBloqueo(valor)
-                    }
+                    alActivarFuerte = { activarFuerte() }
                 )
 
                 Spacer(Modifier.height(18.dp))
 
-                // Grupo 2: Privacidad y Portapapeles
-                GrupoPrivacidadPortapapeles(
+                // Grupo 2: Bloqueo de aplicación
+                GrupoBloqueoApp(
+                    autoBloqueoSegundos = ajustes.autoBloqueoSegundos,
                     proteccionPantalla = ajustes.proteccionPantalla,
-                    portapapelesSegundos = ajustes.portapapelesSegundos,
                     mostrarIdsAjustes = ajustes.mostrarIdsAjustes,
+                    alAjustarAutoBloqueo = { valor ->
+                        haptica.tic()
+                        vm.ajustarAutoBloqueo(valor)
+                    },
                     alCambiarProteccionPantalla = { activar ->
                         if (activar) {
                             vm.ajustarProteccionPantalla(true)
@@ -161,14 +160,28 @@ fun PantallaSeguridad(
                             confirmarDesactivarSecure = true
                         }
                     },
+                    alRestablecer = {
+                        haptica.tic()
+                        vm.ajustarAutoBloqueo(60)
+                        vm.ajustarProteccionPantalla(true)
+                        vm.avisar("Valores de bloqueo restablecidos")
+                    }
+                )
+
+                Spacer(Modifier.height(18.dp))
+
+                // Grupo 3: Portapapeles
+                GrupoPortapapeles(
+                    portapapelesSegundos = ajustes.portapapelesSegundos,
+                    mostrarIdsAjustes = ajustes.mostrarIdsAjustes,
                     alAjustarPortapapeles = { valor ->
                         haptica.tic()
                         vm.ajustarPortapapeles(valor)
                     },
                     alRestablecer = {
-                        vm.ajustarAutoBloqueo(60)
+                        haptica.tic()
                         vm.ajustarPortapapeles(30)
-                        vm.ajustarProteccionPantalla(true)
+                        vm.avisar("Tiempo de portapapeles restablecido a 30s")
                     }
                 )
 

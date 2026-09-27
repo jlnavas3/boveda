@@ -1,9 +1,10 @@
-@file:OptIn(androidx.compose.foundation.ExperimentalFoundationApi::class)
+@file:OptIn(ExperimentalFoundationApi::class)
 
 package com.jlnavas3.bovedalocal.ui.componentes.ajustes
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,8 +14,12 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.relocation.bringIntoViewRequester
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.RestartAlt
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -23,13 +28,15 @@ import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjusteGris
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorTarjetaAjustes
+import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.EstiloMono
 import com.jlnavas3.bovedalocal.ui.theme.colorLegibleParaTema
 import com.jlnavas3.bovedalocal.ui.theme.colorParaGrupoId
@@ -40,17 +47,20 @@ val LocalColorGrupo = compositionLocalOf<Color?> { null }
 /**
  * Contenedor de tarjeta agrupada para Ajustes estilo Samsung One UI / Honor MagicOS.
  *
- * Incluye:
- * - Etiqueta de encabezado en mayúsculas discretas.
- * - ID de grupo opcional (solo visible si mostrarId es true).
+ * Características:
+ * - Cabecera con ícono pequeño opcional y etiqueta en mayúsculas discretas.
+ * - Botón minimalista de restablecer grupo a la derecha (RestartAlt) sin texto.
+ * - Badge de ID de grupo opcional (solo visible si mostrarId es true).
  * - Tarjeta con bordes redondeados (18.dp) y fondo de superficie limpio.
- * - Descripción o subtítulo opcional a nivel de grupo (por defecto como pie de tarjeta estilo One UI),
- *   lo que evita texto innecesario en cada fila.
+ * - Descripción o subtítulo opcional a nivel de grupo.
  */
 @Composable
 fun ComponenteGrupo(
     modifier: Modifier = Modifier,
     etiqueta: String? = null,
+    icono: ImageVector? = null,
+    colorIcono: Color? = null,
+    alRestablecer: (() -> Unit)? = null,
     idGrupo: String? = null,
     mostrarId: Boolean = false,
     descripcion: String? = null,
@@ -61,7 +71,7 @@ fun ComponenteGrupo(
     val colorBadgeGrupo = colorParaGrupoId(idGrupo)
     val estadoAlumbrado = recordarEstadoAlumbrado(idGrupo)
     val coordinador = LocalCoordinadorResaltado.current
-    val colorAcento = com.jlnavas3.bovedalocal.ui.theme.ColorAcento
+    val colorAcento = ColorAcento
 
     Column(
         modifier = modifier
@@ -77,38 +87,71 @@ fun ComponenteGrupo(
             }
     ) {
         // Encabezado del grupo
-        if (!etiqueta.isNullOrBlank() || tieneBadgeGrupo) {
-            Column(
+        if (!etiqueta.isNullOrBlank() || tieneBadgeGrupo || alRestablecer != null) {
+            Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(start = 16.dp, end = 16.dp, bottom = 8.dp, top = 6.dp),
-                verticalArrangement = Arrangement.spacedBy(4.dp)
+                    .padding(start = 16.dp, end = 12.dp, bottom = 8.dp, top = 6.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                if (!etiqueta.isNullOrBlank()) {
-                    Text(
-                        text = etiqueta.uppercase(),
-                        color = ColorAjusteGris,
-                        style = MaterialTheme.typography.labelSmall.copy(
-                            fontWeight = FontWeight.SemiBold,
-                            letterSpacing = 1.sp
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(6.dp),
+                    modifier = Modifier.weight(1f, fill = false)
+                ) {
+                    if (icono != null) {
+                        Icon(
+                            imageVector = icono,
+                            contentDescription = null,
+                            tint = colorIcono ?: ColorAjusteGris,
+                            modifier = Modifier.size(15.dp)
                         )
-                    )
+                    }
+
+                    if (!etiqueta.isNullOrBlank()) {
+                        Text(
+                            text = etiqueta.uppercase(),
+                            color = ColorAjusteGris,
+                            style = MaterialTheme.typography.labelSmall.copy(
+                                fontWeight = FontWeight.SemiBold,
+                                letterSpacing = 1.sp
+                            )
+                        )
+                    }
+
+                    if (tieneBadgeGrupo) {
+                        Box(
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(4.dp))
+                                .background(fondoBadgeParaTema(colorBadgeGrupo))
+                                .padding(horizontal = 6.dp, vertical = 2.dp)
+                        ) {
+                            Text(
+                                text = idGrupo!!,
+                                color = colorLegibleParaTema(colorBadgeGrupo),
+                                style = EstiloMono.copy(
+                                    fontSize = 10.sp,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            )
+                        }
+                    }
                 }
 
-                if (tieneBadgeGrupo) {
+                if (alRestablecer != null) {
                     Box(
                         modifier = Modifier
-                            .clip(RoundedCornerShape(4.dp))
-                            .background(fondoBadgeParaTema(colorBadgeGrupo))
-                            .padding(horizontal = 6.dp, vertical = 2.dp)
+                            .size(26.dp)
+                            .clip(RoundedCornerShape(6.dp))
+                            .clickable(onClick = alRestablecer),
+                        contentAlignment = Alignment.Center
                     ) {
-                        Text(
-                            text = idGrupo!!,
-                            color = colorLegibleParaTema(colorBadgeGrupo),
-                            style = EstiloMono.copy(
-                                fontSize = 10.sp,
-                                fontWeight = FontWeight.Bold
-                            )
+                        Icon(
+                            imageVector = Icons.Filled.RestartAlt,
+                            contentDescription = "Restablecer grupo",
+                            tint = ColorAjusteGris,
+                            modifier = Modifier.size(16.dp)
                         )
                     }
                 }
