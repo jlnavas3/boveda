@@ -56,13 +56,19 @@ import com.jlnavas3.bovedalocal.data.normalizarEtiqueta
 import com.jlnavas3.bovedalocal.ui.CriterioOrdenacion
 import com.jlnavas3.bovedalocal.ui.Pantalla
 import com.jlnavas3.bovedalocal.ui.VaultViewModel
-import com.jlnavas3.bovedalocal.ui.componentes.IndiceAlfabetico
-import com.jlnavas3.bovedalocal.ui.componentes.encontrarIndiceParaLetra
-import com.jlnavas3.bovedalocal.ui.componentes.letraInicialIndice
 import com.jlnavas3.bovedalocal.ui.pantallas.lista.BannerRecordatorioExportacion
 import com.jlnavas3.bovedalocal.ui.pantallas.lista.BarraBusquedaAnimada
 import com.jlnavas3.bovedalocal.ui.pantallas.lista.BarraSeleccion
 import com.jlnavas3.bovedalocal.ui.pantallas.lista.BarraSuperiorLista
+import com.jlnavas3.bovedalocal.ui.pantallas.lista.ChipFiltro
+import com.jlnavas3.bovedalocal.ui.pantallas.lista.ChipFiltroActivo
+import com.jlnavas3.bovedalocal.ui.pantallas.lista.CuerpoListaEntradas
+import com.jlnavas3.bovedalocal.ui.pantallas.lista.DialogoBorrarSeleccion
+import com.jlnavas3.bovedalocal.ui.pantallas.lista.DialogoFiltrosLista
+import com.jlnavas3.bovedalocal.ui.pantallas.lista.DialogoOrdenacionLista
+import com.jlnavas3.bovedalocal.ui.pantallas.lista.DialogoRenombrarSeleccion
+import com.jlnavas3.bovedalocal.ui.pantallas.lista.EstadoVacioLista
+import com.jlnavas3.bovedalocal.ui.pantallas.lista.MenuLateral
 import com.jlnavas3.bovedalocal.ui.pantallas.lista.ChipFiltro
 import com.jlnavas3.bovedalocal.ui.pantallas.lista.ChipFiltroActivo
 import com.jlnavas3.bovedalocal.ui.pantallas.lista.ComponenteGrupoLista
@@ -375,199 +381,45 @@ fun PantallaLista(vm: VaultViewModel, estado: EstadoBoveda) {
                         }
                     )
                 } else {
-                    val expandidoEnLista: (String) -> Boolean = { clave ->
-                        modoSeleccion || busqueda.isNotBlank() || gruposExpandidos.contains(clave)
-                    }
-                    val itemsAMostrar = remember(visibles, modoSeleccion, criterioOrdenacion, ajustes.agruparPorSitio) {
-                        construirItemsAgrupadosPorSitio(
-                            entradas = visibles,
-                            criterio = criterioOrdenacion,
-                            agrupar = ajustes.agruparPorSitio,
-                            expandido = { false }
-                        )
-                    }
-
-                    val estadoLista = rememberLazyListState()
-                    val mostrarIndice = ajustes.mostrarIndiceAlfabetico &&
-                        itemsAMostrar.size >= 5 &&
-                        criterioOrdenacion == CriterioOrdenacion.NOMBRE_AZ
-
-                    var letraArrastrada by remember { mutableStateOf<Char?>(null) }
-
-                    fun itemCoincideConLetra(item: ItemAgrupado, letra: Char?, incluirEnie: Boolean): Boolean {
-                        if (letra == null) return false
-                        val titulo = when (item) {
-                            is ItemAgrupado.Suelto -> item.entrada.titulo
-                            is ItemAgrupado.Grupo -> item.clave.removePrefix("www.")
-                            is ItemAgrupado.Hijo -> item.entrada.titulo
-                        }
-                        return letraInicialIndice(titulo, incluirEnie) == letra
-                    }
-
-                    val primerIndiceCoincidente = remember(itemsAMostrar, letraArrastrada, ajustes.indiceIncluirEnie, ajustes.indiceResaltarEntradas, ajustes.indiceResaltarSoloPrimera) {
-                        if (!ajustes.indiceResaltarEntradas || letraArrastrada == null) null
-                        else if (ajustes.indiceResaltarSoloPrimera) {
-                            itemsAMostrar.indexOfFirst { itemCoincideConLetra(it, letraArrastrada, ajustes.indiceIncluirEnie) }.takeIf { it >= 0 }
-                        } else null
-                    }
-
-                    var segundosUnix by remember { mutableStateOf(System.currentTimeMillis() / 1000) }
-                    LaunchedEffect(Unit) {
-                        while (true) {
-                            segundosUnix = System.currentTimeMillis() / 1000
-                            delay(1000)
-                        }
-                    }
-
-                    Box(modifier = Modifier.fillMaxSize()) {
-                        LazyColumn(
-                            state = estadoLista,
-                            modifier = Modifier.fillMaxSize(),
-                            contentPadding = PaddingValues(
-                                start = 20.dp,
-                                end = if (mostrarIndice) 36.dp else 20.dp,
-                                bottom = 110.dp
-                            ),
-                            verticalArrangement = Arrangement.spacedBy(espaciadoFilas)
-                        ) {
-                            itemsIndexed(
-                                itemsAMostrar,
-                                key = { _, item ->
-                                    when (item) {
-                                        is ItemAgrupado.Suelto -> item.entrada.id
-                                        is ItemAgrupado.Grupo -> "grupo-${item.clave}"
-                                        is ItemAgrupado.Hijo -> "hijo-${item.entrada.id}"
-                                    }
-                                },
-                                contentType = { _, item ->
-                                    when (item) {
-                                        is ItemAgrupado.Suelto -> 0
-                                        is ItemAgrupado.Grupo -> 1
-                                        is ItemAgrupado.Hijo -> 2
-                                    }
-                                }
-                            ) { indice, item ->
-                                val coincideLetra = if (!ajustes.indiceResaltarEntradas || letraArrastrada == null) {
-                                    false
-                                } else if (ajustes.indiceResaltarSoloPrimera) {
-                                    indice == primerIndiceCoincidente
-                                } else {
-                                    itemCoincideConLetra(item, letraArrastrada, ajustes.indiceIncluirEnie)
-                                }
-                                when (item) {
-                                    is ItemAgrupado.Grupo -> ComponenteGrupoLista(
-                                        clave = item.clave,
-                                        entradas = item.entradas,
-                                        expandido = expandidoEnLista(item.clave),
-                                        alturaFila = densidadAltura,
-                                        tamanoMonograma = densidadMonograma,
-                                        resaltado = coincideLetra,
-                                        alAlternar = {
-                                            haptica.tic()
-                                            gruposExpandidos = if (gruposExpandidos.contains(item.clave)) {
-                                                gruposExpandidos - item.clave
-                                            } else {
-                                                gruposExpandidos + item.clave
-                                            }
-                                        },
-                                        contenidoEntrada = { entradaHija, indiceHijo, totalHijos ->
-                                            val coincideLetraHijo = if (!ajustes.indiceResaltarEntradas || letraArrastrada == null) {
-                                                false
-                                            } else {
-                                                letraInicialIndice(entradaHija.titulo, ajustes.indiceIncluirEnie) == letraArrastrada
-                                            }
-                                            FilaEntrada(
-                                                entrada = entradaHija,
-                                                seleccionActiva = modoSeleccion,
-                                                seleccionado = seleccionados.contains(entradaHija.id),
-                                                alAbrir = { vm.ir(Pantalla.Detalle(entradaHija.id)) },
-                                                alCopiarUsuario = {
-                                                    haptica.toque()
-                                                    vm.copiar("Usuario", entradaHija.usuario, sensible = false)
-                                                },
-                                                alCopiarContrasena = {
-                                                    haptica.exito()
-                                                    vm.copiar("Contraseña", entradaHija.contrasena, sensible = true)
-                                                },
-                                                alFavorito = { haptica.tic(); vm.alternarFavorito(entradaHija.id) },
-                                                alCopiarCodigo = { codigo ->
-                                                    haptica.exito()
-                                                    vm.copiar("Código", codigo, sensible = true)
-                                                },
-                                                alPulsarLargo = { entrarEnSeleccion(entradaHija.id) },
-                                                alAlternarSeleccion = { alternarSeleccion(entradaHija.id) },
-                                                segundosUnix = segundosUnix,
-                                                alturaFila = densidadAltura,
-                                                tamanoMonograma = densidadMonograma,
-                                                resaltado = coincideLetraHijo,
-                                                separarDigitosTotp = ajustes.totpSepararDigitos,
-                                                mostrarIndicadores = ajustes.mostrarIndicadoresContenido,
-                                                enGrupo = true,
-                                                esUltimoEnGrupo = indiceHijo == totalHijos - 1
-                                            )
-                                        }
-                                    )
-                                    is ItemAgrupado.Suelto -> FilaEntrada(
-                                        entrada = item.entrada,
-                                        seleccionActiva = modoSeleccion,
-                                        seleccionado = seleccionados.contains(item.entrada.id),
-                                        alAbrir = { vm.ir(Pantalla.Detalle(item.entrada.id)) },
-                                        alCopiarUsuario = {
-                                            haptica.toque()
-                                            vm.copiar("Usuario", item.entrada.usuario, sensible = false)
-                                        },
-                                        alCopiarContrasena = {
-                                            haptica.exito()
-                                            vm.copiar("Contraseña", item.entrada.contrasena, sensible = true)
-                                        },
-                                        alFavorito = { haptica.tic(); vm.alternarFavorito(item.entrada.id) },
-                                        alCopiarCodigo = { codigo ->
-                                            haptica.exito()
-                                            vm.copiar("Código", codigo, sensible = true)
-                                        },
-                                        alPulsarLargo = { entrarEnSeleccion(item.entrada.id) },
-                                        alAlternarSeleccion = { alternarSeleccion(item.entrada.id) },
-                                        segundosUnix = segundosUnix,
-                                        alturaFila = densidadAltura,
-                                        tamanoMonograma = densidadMonograma,
-                                        resaltado = coincideLetra,
-                                        separarDigitosTotp = ajustes.totpSepararDigitos,
-                                        mostrarIndicadores = ajustes.mostrarIndicadoresContenido,
-                                        enGrupo = false
-                                    )
-                                    is ItemAgrupado.Hijo -> Unit
-                                }
+                    CuerpoListaEntradas(
+                        visibles = visibles,
+                        ajustes = ajustes,
+                        criterioOrdenacion = criterioOrdenacion,
+                        busqueda = busqueda,
+                        modoSeleccion = modoSeleccion,
+                        seleccionados = seleccionados,
+                        gruposExpandidos = gruposExpandidos,
+                        densidadAltura = densidadAltura,
+                        densidadMonograma = densidadMonograma,
+                        espaciadoFilas = espaciadoFilas,
+                        alAbrirEntrada = { vm.ir(Pantalla.Detalle(it)) },
+                        alCopiarUsuario = { usuario ->
+                            haptica.toque()
+                            vm.copiar("Usuario", usuario, sensible = false)
+                        },
+                        alCopiarContrasena = { contrasena ->
+                            haptica.exito()
+                            vm.copiar("Contraseña", contrasena, sensible = true)
+                        },
+                        alCopiarCodigoTotp = { codigo ->
+                            haptica.exito()
+                            vm.copiar("Código", codigo, sensible = true)
+                        },
+                        alAlternarFavorito = { id ->
+                            haptica.tic()
+                            vm.alternarFavorito(id)
+                        },
+                        alEntrarEnSeleccion = { entrarEnSeleccion(it) },
+                        alAlternarSeleccion = { alternarSeleccion(it) },
+                        alAlternarGrupo = { clave ->
+                            haptica.tic()
+                            gruposExpandidos = if (gruposExpandidos.contains(clave)) {
+                                gruposExpandidos - clave
+                            } else {
+                                gruposExpandidos + clave
                             }
                         }
-
-                        if (mostrarIndice) {
-                            IndiceAlfabetico(
-                                alSeleccionarLetra = { letra ->
-                                    val indice = encontrarIndiceParaLetra(itemsAMostrar, letra, ajustes.indiceIncluirEnie)
-                                    if (indice != null && indice in itemsAMostrar.indices) {
-                                        ambitoCorutina.launch {
-                                            estadoLista.scrollToItem(indice)
-                                        }
-                                    }
-                                },
-                                alCambiarLetraActiva = { letraArrastrada = it },
-                                incluirEnie = ajustes.indiceIncluirEnie,
-                                efectoOla = ajustes.indiceEfectoOla,
-                                amplitudOlaDp = ajustes.indiceAmplitudOlaDp,
-                                radioOlaDp = ajustes.indiceRadioOlaDp,
-                                escalaMaximaLetras = ajustes.indiceEscalaLetras,
-                                mostrarCirculo = ajustes.indiceMostrarCirculo,
-                                tamanoCirculoDp = ajustes.indiceTamanoCirculoDp,
-                                offsetCirculoDp = ajustes.indiceOffsetCirculoDp,
-                                hapticaActiva = ajustes.indiceHaptica,
-                                anchoZonaTactilDp = ajustes.indiceAnchoTactilDp,
-                                tonoLetras = ajustes.indiceTonoLetras,
-                                modifier = Modifier
-                                    .align(Alignment.CenterEnd)
-                                    .padding(top = 4.dp, bottom = 100.dp)
-                            )
-                        }
-                    }
+                    )
                 }
             }
 
