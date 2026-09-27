@@ -12,24 +12,10 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Clear
-import androidx.compose.material.icons.filled.DateRange
-import androidx.compose.material.icons.filled.Description
-import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.Link
-import androidx.compose.material.icons.filled.Lock
-import androidx.compose.material.icons.filled.Pin
-import androidx.compose.material.icons.filled.Schedule
-import androidx.compose.material.icons.filled.Visibility
-import androidx.compose.material.icons.filled.VisibilityOff
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -44,48 +30,21 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.OffsetMapping
-import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.TextFieldValue
-import androidx.compose.ui.text.input.TransformedText
-import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.jlnavas3.bovedalocal.ui.componentes.contrasenaColoreada
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.FormaPequena
 import com.jlnavas3.bovedalocal.ui.theme.Peligro
 import com.jlnavas3.bovedalocal.ui.theme.TextoPrincipal
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
-import com.jlnavas3.bovedalocal.ui.theme.colorLegibleParaTema
 import com.jlnavas3.bovedalocal.ui.theme.esOscuroActivo
 import com.jlnavas3.bovedalocal.util.FormateadorCampos
-
-private class ContrasenaColorVisualTransformation : VisualTransformation {
-    override fun filter(text: AnnotatedString): TransformedText {
-        val coloreado = contrasenaColoreada(text.text)
-        return TransformedText(coloreado, OffsetMapping.Identity)
-    }
-}
-
-/**
- * Tipos de campo de entrada para adaptación automática de teclado, iconos y transformación.
- */
-enum class TipoCampoTexto {
-    TEXTO,
-    NUMERICO,
-    CONTRASENA,
-    FECHA,
-    HORA,
-    ENLACE,
-    MULTILINEA
-}
 
 /**
  * Campo de texto reutilizable y sin bordes al estilo Honor MagicOS y Samsung One UI.
@@ -133,70 +92,48 @@ fun ComponenteCampoTexto(
     var verContrasenaInterno by remember { mutableStateOf(false) }
     val esVisible = mostrarContrasena ?: verContrasenaInterno
 
-    val iconoInicial = icono ?: when (tipo) {
-        TipoCampoTexto.TEXTO -> Icons.Filled.Edit
-        TipoCampoTexto.NUMERICO -> Icons.Filled.Pin
-        TipoCampoTexto.CONTRASENA -> Icons.Filled.Lock
-        TipoCampoTexto.FECHA -> Icons.Filled.DateRange
-        TipoCampoTexto.HORA -> Icons.Filled.Schedule
-        TipoCampoTexto.ENLACE -> Icons.Filled.Link
-        TipoCampoTexto.MULTILINEA -> Icons.Filled.Description
-    }
-
     val leadingIconComposable: (@Composable () -> Unit)? = if (mostrarIcono || icono != null) {
-        {
-            Icon(
-                imageVector = iconoInicial,
-                contentDescription = null,
-                tint = colorLegibleParaTema(colorIcono ?: ColorAcento, esOscuro),
-                modifier = Modifier.size(20.dp)
+        val iconoEfectivo = icono ?: IconosCampoTexto.resolverIconoPorDefecto(tipo)
+        val res: @Composable () -> Unit = {
+            IconosCampoTexto.IconoInicio(
+                icono = iconoEfectivo,
+                colorIcono = colorIcono,
+                esOscuro = esOscuro
             )
         }
+        res
     } else null
 
     val trailingIconComposable: (@Composable () -> Unit)? = when {
         trailingIcon != null -> trailingIcon
         esContrasena -> {
             {
-                IconButton(
-                    onClick = {
+                IconosCampoTexto.IconoAlternarContrasena(
+                    esVisible = esVisible,
+                    onToggle = {
                         if (alAlternarMostrarContrasena != null) {
                             alAlternarMostrarContrasena()
                         } else {
                             verContrasenaInterno = !verContrasenaInterno
                         }
                     }
-                ) {
-                    Icon(
-                        imageVector = if (esVisible) Icons.Filled.VisibilityOff else Icons.Filled.Visibility,
-                        contentDescription = if (esVisible) "Ocultar contraseña" else "Mostrar contraseña",
-                        tint = TextoSecundario,
-                        modifier = Modifier.size(20.dp)
-                    )
-                }
+                )
             }
         }
         botonLimpiar && valor.isNotEmpty() && !readOnly -> {
             {
-                IconButton(onClick = { alCambiar("") }) {
-                    Icon(
-                        imageVector = Icons.Filled.Clear,
-                        contentDescription = "Limpiar texto",
-                        tint = TextoSecundario,
-                        modifier = Modifier.size(18.dp)
-                    )
-                }
+                IconosCampoTexto.BotonLimpiarTexto(onLimpiar = { alCambiar("") })
             }
         }
         else -> null
     }
 
-    val tipoTecladoEfectivo = keyboardType ?: when {
-        tecladoNumerico || tipo == TipoCampoTexto.NUMERICO -> if (esContrasena) KeyboardType.NumberPassword else KeyboardType.Number
-        esContrasena || tipo == TipoCampoTexto.CONTRASENA -> KeyboardType.Password
-        tipo == TipoCampoTexto.ENLACE -> KeyboardType.Uri
-        else -> KeyboardType.Text
-    }
+    val tipoTecladoEfectivo = ConfiguradorCampoTexto.resolverTipoTeclado(
+        tipo = tipo,
+        tecladoNumerico = tecladoNumerico,
+        esContrasena = esContrasena,
+        keyboardTypeOverride = keyboardType
+    )
 
     val coloresSinBordes = TextFieldDefaults.colors(
         focusedContainerColor = Color.Transparent,
@@ -222,11 +159,7 @@ fun ComponenteCampoTexto(
     )
 
     val transformacionVisual = remember(esContrasena, esVisible) {
-        when {
-            esContrasena && !esVisible -> PasswordVisualTransformation()
-            esContrasena && esVisible -> ContrasenaColorVisualTransformation()
-            else -> VisualTransformation.None
-        }
+        ConfiguradorCampoTexto.resolverTransformacionVisual(esContrasena, esVisible)
     }
 
     val interactionSource = remember { MutableInteractionSource() }
@@ -237,6 +170,16 @@ fun ComponenteCampoTexto(
     } else {
         Modifier
     }
+
+    val estiloTexto = if (monoespaciada) {
+        MaterialTheme.typography.bodyMedium.copy(
+            fontFamily = FontFamily.Monospace,
+            fontSize = 14.5.sp
+        )
+    } else {
+        MaterialTheme.typography.bodyMedium.copy(fontSize = 15.sp)
+    }
+    val composablePlaceholder: (@Composable () -> Unit)? = placeholder?.let { { Text(it) } }
 
     val bloqueCampo = @Composable {
         if (formateadorMascara != null) {
@@ -259,21 +202,14 @@ fun ComponenteCampoTexto(
                     alCambiar(transformado.text)
                 },
                 label = { Text(etiqueta) },
-                placeholder = if (placeholder != null) { { Text(placeholder) } } else null,
+                placeholder = composablePlaceholder,
                 modifier = Modifier.fillMaxWidth(),
                 readOnly = readOnly,
                 enabled = habilitado,
                 isError = esError,
                 singleLine = !varias,
                 minLines = if (varias) 3 else 1,
-                textStyle = if (monoespaciada) {
-                    MaterialTheme.typography.bodyMedium.copy(
-                        fontFamily = FontFamily.Monospace,
-                        fontSize = 14.5.sp
-                    )
-                } else {
-                    MaterialTheme.typography.bodyMedium.copy(fontSize = 15.sp)
-                },
+                textStyle = estiloTexto,
                 visualTransformation = transformacionVisual,
                 leadingIcon = leadingIconComposable,
                 trailingIcon = trailingIconComposable,
@@ -288,21 +224,14 @@ fun ComponenteCampoTexto(
                 value = valor,
                 onValueChange = alCambiar,
                 label = { Text(etiqueta) },
-                placeholder = if (placeholder != null) { { Text(placeholder) } } else null,
+                placeholder = composablePlaceholder,
                 modifier = Modifier.fillMaxWidth(),
                 readOnly = readOnly,
                 enabled = habilitado,
                 isError = esError,
                 singleLine = !varias,
                 minLines = if (varias) 3 else 1,
-                textStyle = if (monoespaciada) {
-                    MaterialTheme.typography.bodyMedium.copy(
-                        fontFamily = FontFamily.Monospace,
-                        fontSize = 14.5.sp
-                    )
-                } else {
-                    MaterialTheme.typography.bodyMedium.copy(fontSize = 15.sp)
-                },
+                textStyle = estiloTexto,
                 visualTransformation = transformacionVisual,
                 leadingIcon = leadingIconComposable,
                 trailingIcon = trailingIconComposable,
