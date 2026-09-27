@@ -1,31 +1,30 @@
 package com.jlnavas3.bovedalocal.ui.pantallas
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.relocation.BringIntoViewRequester
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.TextFields
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.jlnavas3.bovedalocal.data.AlmacenAjustes
+import com.jlnavas3.bovedalocal.ui.Pantalla
 import com.jlnavas3.bovedalocal.ui.VaultViewModel
 import com.jlnavas3.bovedalocal.ui.componentes.ContenedorPrincipal
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteBotonFila
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteGrupo
+import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteNavegacion
+import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteSeparador
 import com.jlnavas3.bovedalocal.ui.pantallas.tipografia.PrevisualizacionTipografia
-import com.jlnavas3.bovedalocal.ui.pantallas.tipografia.SeccionEscalaTipografia
-import com.jlnavas3.bovedalocal.ui.pantallas.tipografia.SeccionEspaciadoTipografia
-import com.jlnavas3.bovedalocal.ui.pantallas.tipografia.SeccionFamiliaTipografia
-import com.jlnavas3.bovedalocal.ui.pantallas.tipografia.SeccionPesoYEstiloTipografia
-import com.jlnavas3.bovedalocal.ui.pantallas.tipografia.SeccionPresetsTipografia
 import com.jlnavas3.bovedalocal.ui.theme.EspaciadoComponentes
 import com.jlnavas3.bovedalocal.util.Haptica
+import java.util.Locale
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun PantallaTipografia(
     vm: VaultViewModel,
@@ -35,30 +34,12 @@ fun PantallaTipografia(
     val haptica = remember { Haptica(contexto) }
     val ajustes by vm.ajustes.collectAsStateWithLifecycle()
 
-    val reqPreview = remember { BringIntoViewRequester() }
-    val reqPresets = remember { BringIntoViewRequester() }
-    val reqEscala = remember { BringIntoViewRequester() }
-    val reqFamilia = remember { BringIntoViewRequester() }
-    val reqPeso = remember { BringIntoViewRequester() }
-    val reqEspaciado = remember { BringIntoViewRequester() }
-
-    LaunchedEffect(seccionDestino) {
-        if (seccionDestino != null) {
-            when {
-                seccionDestino == "09.5.1" -> reqPreview.bringIntoView()
-                seccionDestino == "09.5.2" -> reqPresets.bringIntoView()
-                seccionDestino == "09.5.3" -> reqEscala.bringIntoView()
-                seccionDestino == "09.5.4" -> reqFamilia.bringIntoView()
-                seccionDestino == "09.5.5" -> reqPeso.bringIntoView()
-                seccionDestino == "09.5.6" -> reqEspaciado.bringIntoView()
-                seccionDestino.startsWith("09.5.") && seccionDestino != "09.5" -> reqPresets.bringIntoView()
-            }
-        }
-    }
+    val familiaEtiqueta = AlmacenAjustes.OPCIONES_FAMILIA_FUENTE.firstOrNull { it.first == ajustes.familiaFuente }?.second ?: "Predeterminada"
+    val pesoEtiqueta = AlmacenAjustes.OPCIONES_PESO_TEXTO.firstOrNull { it.first == ajustes.pesoTexto }?.second ?: "Normal"
 
     ContenedorPrincipal(
-        titulo = "Tipografía y Textos",
-        subtitulo = "Personaliza fuentes, escalas y pesos en tiempo real",
+        titulo = "Tipografía",
+        subtitulo = "Personaliza fuentes, escalas y pesos",
         alVolver = { vm.volverAtras() },
         conScroll = true,
         espaciado = EspaciadoComponentes,
@@ -66,59 +47,62 @@ fun PantallaTipografia(
             PrevisualizacionTipografia()
         }
     ) {
-        // 2. Presets rápidos de tipografía
-        SeccionPresetsTipografia(
-            ajustes = ajustes,
-            vm = vm,
-            haptica = haptica,
-            seccionDestino = seccionDestino,
-            requester = reqPresets
-        )
+        ComponenteGrupo(
+            etiqueta = "TEXTO Y FUENTES",
+            icono = Icons.Filled.TextFields,
+            colorIcono = Color(0xFF26A69A),
+            alRestablecer = {
+                haptica.tic()
+                vm.restablecerTipografia()
+            }
+        ) {
+            ComponenteNavegacion(
+                titulo = "Estilos predefinidos",
+                icono = null,
+                alPulsar = { vm.ir(Pantalla.TipografiaPresets()) }
+            )
+            ComponenteSeparador()
+            ComponenteNavegacion(
+                titulo = "Tamaño de fuente",
+                valorTexto = "${String.format(Locale.US, "%.2f", ajustes.escalaTexto)}x",
+                icono = null,
+                alPulsar = { vm.ir(Pantalla.TipografiaEscala()) }
+            )
+            ComponenteSeparador()
+            ComponenteNavegacion(
+                titulo = "Familia tipográfica",
+                valorTexto = familiaEtiqueta,
+                icono = null,
+                alPulsar = { vm.ir(Pantalla.TipografiaFamilia()) }
+            )
+            ComponenteSeparador()
+            ComponenteNavegacion(
+                titulo = "Grosor y estilo",
+                valorTexto = if (ajustes.cursivaTexto) "$pesoEtiqueta · Cursiva" else pesoEtiqueta,
+                icono = null,
+                alPulsar = { vm.ir(Pantalla.TipografiaPeso()) }
+            )
+            ComponenteSeparador()
+            ComponenteNavegacion(
+                titulo = "Espaciado y separación",
+                valorTexto = "${String.format(Locale.US, "%.1f", ajustes.espaciadoLetrasSp)} sp",
+                icono = null,
+                alPulsar = { vm.ir(Pantalla.TipografiaEspaciado()) }
+            )
+        }
 
-        // 3. Slider de Escala de Texto
-        SeccionEscalaTipografia(
-            ajustes = ajustes,
-            vm = vm,
-            seccionDestino = seccionDestino,
-            requester = reqEscala
-        )
+        Spacer(Modifier.height(18.dp))
 
-        // 4. Selector de Familia Tipográfica
-        SeccionFamiliaTipografia(
-            ajustes = ajustes,
-            vm = vm,
-            haptica = haptica,
-            seccionDestino = seccionDestino,
-            requester = reqFamilia
-        )
-
-        // 5. Selector de Grosor y Estilo
-        SeccionPesoYEstiloTipografia(
-            ajustes = ajustes,
-            vm = vm,
-            haptica = haptica,
-            seccionDestino = seccionDestino,
-            requester = reqPeso
-        )
-
-        // 6. Espaciado e Interlineado
-        SeccionEspaciadoTipografia(
-            ajustes = ajustes,
-            vm = vm,
-            seccionDestino = seccionDestino,
-            requester = reqEspaciado
-        )
-
-        // 7. Botón de restauración
         ComponenteGrupo {
             ComponenteBotonFila(
                 titulo = "Restablecer módulo",
                 alPulsar = {
+                    haptica.tic()
                     vm.restablecerTipografia()
                 }
             )
         }
 
-        Spacer(Modifier.height(16.dp))
+        Spacer(Modifier.height(24.dp))
     }
 }

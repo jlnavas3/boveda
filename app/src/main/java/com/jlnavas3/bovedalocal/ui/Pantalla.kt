@@ -55,9 +55,59 @@ sealed interface Pantalla {
         override fun equals(other: Any?): Boolean = other is Formas && other.seccionId == seccionId
         override fun hashCode(): Int = seccionId?.hashCode() ?: 0
     }
+    open class FormasPresets(val seccionId: String? = null) : Pantalla {
+        companion object : FormasPresets(null)
+        override fun equals(other: Any?): Boolean = other is FormasPresets && other.seccionId == seccionId
+        override fun hashCode(): Int = seccionId?.hashCode() ?: 0
+    }
+    open class FormasCurvatura(val seccionId: String? = null) : Pantalla {
+        companion object : FormasCurvatura(null)
+        override fun equals(other: Any?): Boolean = other is FormasCurvatura && other.seccionId == seccionId
+        override fun hashCode(): Int = seccionId?.hashCode() ?: 0
+    }
+    open class FormasGrosor(val seccionId: String? = null) : Pantalla {
+        companion object : FormasGrosor(null)
+        override fun equals(other: Any?): Boolean = other is FormasGrosor && other.seccionId == seccionId
+        override fun hashCode(): Int = seccionId?.hashCode() ?: 0
+    }
+    open class FormasEstilo(val seccionId: String? = null) : Pantalla {
+        companion object : FormasEstilo(null)
+        override fun equals(other: Any?): Boolean = other is FormasEstilo && other.seccionId == seccionId
+        override fun hashCode(): Int = seccionId?.hashCode() ?: 0
+    }
+    open class FormasEspaciado(val seccionId: String? = null) : Pantalla {
+        companion object : FormasEspaciado(null)
+        override fun equals(other: Any?): Boolean = other is FormasEspaciado && other.seccionId == seccionId
+        override fun hashCode(): Int = seccionId?.hashCode() ?: 0
+    }
     open class Tipografia(val seccionId: String? = null) : Pantalla {
         companion object : Tipografia(null)
         override fun equals(other: Any?): Boolean = other is Tipografia && other.seccionId == seccionId
+        override fun hashCode(): Int = seccionId?.hashCode() ?: 0
+    }
+    open class TipografiaPresets(val seccionId: String? = null) : Pantalla {
+        companion object : TipografiaPresets(null)
+        override fun equals(other: Any?): Boolean = other is TipografiaPresets && other.seccionId == seccionId
+        override fun hashCode(): Int = seccionId?.hashCode() ?: 0
+    }
+    open class TipografiaEscala(val seccionId: String? = null) : Pantalla {
+        companion object : TipografiaEscala(null)
+        override fun equals(other: Any?): Boolean = other is TipografiaEscala && other.seccionId == seccionId
+        override fun hashCode(): Int = seccionId?.hashCode() ?: 0
+    }
+    open class TipografiaFamilia(val seccionId: String? = null) : Pantalla {
+        companion object : TipografiaFamilia(null)
+        override fun equals(other: Any?): Boolean = other is TipografiaFamilia && other.seccionId == seccionId
+        override fun hashCode(): Int = seccionId?.hashCode() ?: 0
+    }
+    open class TipografiaPeso(val seccionId: String? = null) : Pantalla {
+        companion object : TipografiaPeso(null)
+        override fun equals(other: Any?): Boolean = other is TipografiaPeso && other.seccionId == seccionId
+        override fun hashCode(): Int = seccionId?.hashCode() ?: 0
+    }
+    open class TipografiaEspaciado(val seccionId: String? = null) : Pantalla {
+        companion object : TipografiaEspaciado(null)
+        override fun equals(other: Any?): Boolean = other is TipografiaEspaciado && other.seccionId == seccionId
         override fun hashCode(): Int = seccionId?.hashCode() ?: 0
     }
     open class OrganizacionLista(val seccionId: String? = null) : Pantalla {

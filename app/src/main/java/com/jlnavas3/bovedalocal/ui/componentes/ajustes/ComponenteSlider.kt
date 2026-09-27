@@ -16,7 +16,10 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.relocation.bringIntoViewRequester
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.RestartAlt
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -66,7 +69,8 @@ fun ComponenteSlider(
     idFila: String? = null,
     mostrarId: Boolean = false,
     habilitado: Boolean = true,
-    colorAcento: Color = ColorAcento
+    colorAcento: Color = ColorAcento,
+    alRestablecer: (() -> Unit)? = null
 ) {
     val estadoAlumbrado = recordarEstadoAlumbrado(idFila)
     val coordinador = LocalCoordinadorResaltado.current
@@ -87,7 +91,7 @@ fun ComponenteSlider(
             }
             .padding(horizontal = 16.dp, vertical = 12.dp)
     ) {
-        // Cabecera: Icono + Título/ID + Píldora de Valor
+        // Cabecera: Icono + Título/ID + Píldora de Valor + Botón Reset Opcional
         Row(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
@@ -160,6 +164,22 @@ fun ComponenteSlider(
                         fontWeight = FontWeight.Bold
                     )
                 )
+            }
+
+            if (alRestablecer != null) {
+                Spacer(Modifier.width(4.dp))
+                IconButton(
+                    onClick = alRestablecer,
+                    modifier = Modifier.size(28.dp),
+                    enabled = habilitado
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.RestartAlt,
+                        contentDescription = "Restablecer",
+                        tint = if (habilitado) ColorAjusteGris else ColorAjusteGris.copy(alpha = 0.4f),
+                        modifier = Modifier.size(16.dp)
+                    )
+                }
             }
         }
 

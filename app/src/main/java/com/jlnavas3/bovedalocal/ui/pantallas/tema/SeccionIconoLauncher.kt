@@ -9,9 +9,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.relocation.BringIntoViewRequester
@@ -19,23 +17,20 @@ import androidx.compose.foundation.relocation.bringIntoViewRequester
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AppShortcut
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.jlnavas3.bovedalocal.data.AjustesApp
-import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteBotonFila
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteGrupo
-import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteSeparador
 import com.jlnavas3.bovedalocal.ui.theme.Borde
 import com.jlnavas3.bovedalocal.ui.theme.PaletaAcento
 import com.jlnavas3.bovedalocal.ui.theme.TextoPrincipal
-import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
 import com.jlnavas3.bovedalocal.ui.theme.colorContraste
 import com.jlnavas3.bovedalocal.util.Haptica
 
@@ -48,19 +43,19 @@ fun SeccionIconoLauncher(
     alSolicitarCambioIcono: (PaletaAcento) -> Unit
 ) {
     ComponenteGrupo(
-        etiqueta = "Ícono de la app en el launcher",
-        idGrupo = "03.2.G6",
+        etiqueta = "ÍCONO EN EL LAUNCHER",
+        icono = Icons.Filled.AppShortcut,
+        colorIcono = Color(0xFFE91E63),
+        idGrupo = "02.1.G5",
         mostrarId = ajustes.mostrarIdsAjustes,
-        descripcion = "Variante de icono para la pantalla de inicio y cajón de aplicaciones",
+        alRestablecer = {
+            if (ajustes.iconoLauncher != "ambar") {
+                alSolicitarCambioIcono(PaletaAcento.AMBAR)
+            }
+        },
         modifier = Modifier.bringIntoViewRequester(reqLauncher)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
-            Text(
-                "Android exige cambiar el icono del launcher mediante variantes del sistema. Al seleccionarlo, la app se reiniciará brevemente.",
-                color = TextoSecundario,
-                style = MaterialTheme.typography.bodySmall
-            )
-            Spacer(Modifier.height(12.dp))
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -99,14 +94,5 @@ fun SeccionIconoLauncher(
                 }
             }
         }
-        ComponenteSeparador()
-        ComponenteBotonFila(
-            titulo = "Restablecer",
-            alPulsar = {
-                if (ajustes.iconoLauncher != "ambar") {
-                    alSolicitarCambioIcono(PaletaAcento.AMBAR)
-                }
-            }
-        )
     }
 }

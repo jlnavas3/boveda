@@ -28,7 +28,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.jlnavas3.bovedalocal.ui.Pantalla
 import com.jlnavas3.bovedalocal.ui.VaultViewModel
 import com.jlnavas3.bovedalocal.ui.componentes.BarraSuperiorPantalla
-import com.jlnavas3.bovedalocal.ui.componentes.DescripcionPantalla
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteBotonFila
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteGrupo
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteNavegacion
@@ -84,7 +83,7 @@ fun PantallaTema(
         ) {
             BarraSuperiorPantalla(
                 titulo = "Tema y colores",
-                idEtiqueta = "03.2",
+                idEtiqueta = "02.1",
                 mostrarId = ajustes.mostrarIdsAjustes,
                 alVolver = { vm.volverAtras() },
                 conSeparador = scrollState.value > 0,
@@ -99,16 +98,13 @@ fun PantallaTema(
                     .verticalScroll(scrollState)
                     .padding(horizontal = 16.dp, vertical = 12.dp)
             ) {
-                DescripcionPantalla(subtitulo = "Modo de tema, paleta visual y colores semánticos por módulo")
-                Spacer(Modifier.height(10.dp))
-
                 // 0. Modo de tema (Sistema, Claro, Oscuro)
                 SeccionModoTema(
                     ajustes = ajustes,
                     alCambiarTema = { vm.ajustarTema(it) }
                 )
 
-                Spacer(Modifier.height(18.dp))
+                Spacer(Modifier.height(14.dp))
 
                 // Animación de pantalla bloqueada
                 SeccionAnimacionDesbloqueo(
@@ -127,25 +123,25 @@ fun PantallaTema(
                 )
 
                 // Colores de campos y datos
-                Spacer(Modifier.height(18.dp))
+                Spacer(Modifier.height(14.dp))
                 ComponenteGrupo(
-                    etiqueta = "Colores de campos y datos",
-                    idGrupo = "03.2.G3.5",
-                    mostrarId = ajustes.mostrarIdsAjustes,
-                    descripcion = "Personaliza los colores individuales para Usuario, Contraseña, 2FA, Passkey, Web y Apps"
+                    etiqueta = "CAMPOS Y DATOS",
+                    icono = Icons.Filled.Palette,
+                    colorIcono = Color(0xFF8E24AA),
+                    idGrupo = "02.1.G3.5",
+                    mostrarId = ajustes.mostrarIdsAjustes
                 ) {
                     ComponenteNavegacion(
                         titulo = "Colores de campos y datos",
-                        icono = Icons.Filled.Palette,
-                        colorIcono = Color(0xFF8E24AA),
-                        idFila = "03.2.8",
+                        icono = null,
+                        idFila = "02.1.8",
                         mostrarId = ajustes.mostrarIdsAjustes,
                         alPulsar = { vm.ir(Pantalla.ColoresDatos()) }
                     )
                 }
 
                 // 2. Color de acento principal
-                Spacer(Modifier.height(18.dp))
+                Spacer(Modifier.height(14.dp))
                 SeccionColorAcento(
                     ajustes = ajustes,
                     reqAcento = reqAcento,
@@ -153,7 +149,7 @@ fun PantallaTema(
                 )
 
                 // 4. Ícono de la app en el Launcher
-                Spacer(Modifier.height(18.dp))
+                Spacer(Modifier.height(14.dp))
                 SeccionIconoLauncher(
                     ajustes = ajustes,
                     haptica = haptica,
@@ -162,11 +158,12 @@ fun PantallaTema(
                 )
 
                 // 9. Botones de acción inferiores
-                Spacer(Modifier.height(18.dp))
+                Spacer(Modifier.height(14.dp))
                 ComponenteGrupo {
                     ComponenteBotonFila(
                         titulo = "Restablecer módulo",
                         alPulsar = {
+                            haptica.tic()
                             vm.restablecerColoresTema()
                         }
                     )

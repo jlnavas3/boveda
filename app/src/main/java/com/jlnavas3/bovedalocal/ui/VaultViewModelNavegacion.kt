@@ -28,14 +28,28 @@ interface VaultNavegacionDelegate {
         is Pantalla.Duplicados -> if (!pantalla.seccionId.isNullOrBlank()) Pantalla.Ajustes(pantalla.seccionId) else Pantalla.Lista
         is Pantalla.Papelera -> if (!pantalla.seccionId.isNullOrBlank()) Pantalla.Ajustes(pantalla.seccionId) else Pantalla.Lista
 
+        // Nivel 3: Subpáginas de Formas -> Formas (Nivel 2)
+        is Pantalla.FormasPresets,
+        is Pantalla.FormasCurvatura,
+        is Pantalla.FormasGrosor,
+        is Pantalla.FormasEstilo,
+        is Pantalla.FormasEspaciado -> Pantalla.Formas("02.2")
+
+        // Nivel 3: Subpáginas de Tipografía -> Tipografía (Nivel 2)
+        is Pantalla.TipografiaPresets,
+        is Pantalla.TipografiaEscala,
+        is Pantalla.TipografiaFamilia,
+        is Pantalla.TipografiaPeso,
+        is Pantalla.TipografiaEspaciado -> Pantalla.Tipografia("02.3")
+
         // Nivel 2: Personalización -> Ajustes (Nivel 1)
-        is Pantalla.Tema -> Pantalla.Ajustes("03.2")
-        is Pantalla.AjustesWidget -> Pantalla.Ajustes("03.3")
-        is Pantalla.Formas -> Pantalla.Ajustes("03.3")
-        is Pantalla.AjustesIndice -> Pantalla.Ajustes("03.4")
-        is Pantalla.Tipografia -> Pantalla.Ajustes("03.4")
-        is Pantalla.OrganizacionLista -> Pantalla.Ajustes("03.5")
-        is Pantalla.FormatosCampos -> Pantalla.Ajustes("03.6")
+        is Pantalla.Tema -> Pantalla.Ajustes("02.1")
+        is Pantalla.Formas -> Pantalla.Ajustes("02.2")
+        is Pantalla.Tipografia -> Pantalla.Ajustes("02.3")
+        is Pantalla.AjustesWidget -> Pantalla.Ajustes("04.4")
+        is Pantalla.AjustesIndice -> Pantalla.Ajustes("03.2")
+        is Pantalla.OrganizacionLista -> Pantalla.Ajustes("03.1")
+        is Pantalla.FormatosCampos -> Pantalla.Ajustes("03.3")
 
         // Nivel 2: Seguridad -> Ajustes (Nivel 1)
         is Pantalla.Seguridad -> Pantalla.Ajustes("01.1")
