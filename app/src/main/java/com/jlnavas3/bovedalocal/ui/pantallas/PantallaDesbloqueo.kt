@@ -9,16 +9,9 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Fingerprint
-import androidx.compose.material.icons.filled.LockOpen
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -28,12 +21,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.compose.LifecycleResumeEffect
@@ -42,19 +30,9 @@ import com.jlnavas3.bovedalocal.crypto.BiometricKeyStore
 import com.jlnavas3.bovedalocal.ui.FlujoBiometria
 import com.jlnavas3.bovedalocal.ui.VaultViewModel
 import com.jlnavas3.bovedalocal.ui.componentes.EngranajesBoveda
-import com.jlnavas3.bovedalocal.ui.componentes.PuertaBoveda
 import com.jlnavas3.bovedalocal.ui.componentes.aEngranajesConfig
-import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteBotonFila
-import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteCampoTexto
-import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteGrupo
-import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteSeparador
-import com.jlnavas3.bovedalocal.ui.componentes.ajustes.TipoCampoTexto
-import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjusteGris
-import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
-import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
-import com.jlnavas3.bovedalocal.ui.theme.ColorSobreAcento
-import com.jlnavas3.bovedalocal.ui.theme.ColorTitulos
-import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
+import com.jlnavas3.bovedalocal.ui.pantallas.desbloqueo.CabeceraDesbloqueo
+import com.jlnavas3.bovedalocal.ui.pantallas.desbloqueo.TarjetaFormularioDesbloqueo
 import com.jlnavas3.bovedalocal.util.Haptica
 
 @Composable
@@ -70,8 +48,6 @@ fun PantallaDesbloqueo(vm: VaultViewModel, actividad: FragmentActivity) {
     val ajustes by vm.ajustes.collectAsStateWithLifecycle()
     val flujo = remember { FlujoBiometria(actividad, vm.repositorio) }
 
-    // Se pregunta cada vez que la pantalla vuelve a primer plano, no una sola vez: un sensor
-    // ocupado por otra app o una huella recién registrada cambian la respuesta.
     var biometriaUsable by remember { mutableStateOf(false) }
     LifecycleResumeEffect(ajustes.biometriaActiva, ajustes.biometriaModo) {
         biometriaUsable = flujo.disponible()
@@ -120,8 +96,10 @@ fun PantallaDesbloqueo(vm: VaultViewModel, actividad: FragmentActivity) {
         }
     }
 
+    val esEngranajes = ajustes.animacionDesbloqueo == "engranajes"
+
     Box(modifier = Modifier.fillMaxSize()) {
-        if (ajustes.animacionDesbloqueo == "engranajes") {
+        if (esEngranajes) {
             EngranajesBoveda(
                 abierta = abriendo,
                 modifier = Modifier.fillMaxSize(),
@@ -136,11 +114,10 @@ fun PantallaDesbloqueo(vm: VaultViewModel, actividad: FragmentActivity) {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            if (ajustes.animacionDesbloqueo != "engranajes") {
-                PuertaBoveda(abierta = abriendo, tamano = 180)
-            } else {
-                Spacer(Modifier.height(250.dp))
-            }
+            CabeceraDesbloqueo(
+                abriendo = abriendo,
+                esAnimacionEngranajes = esEngranajes
+            )
 
             Column(
                 modifier = Modifier
@@ -148,72 +125,21 @@ fun PantallaDesbloqueo(vm: VaultViewModel, actividad: FragmentActivity) {
                     .padding(horizontal = 20.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Spacer(Modifier.height(18.dp))
-                Text(
-                    text = "Bóveda cerrada",
-                    style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
-                    color = ColorTitulos
-                )
-                Spacer(Modifier.height(6.dp))
-                Text(
-                    text = "Todo sigue cifrado en este dispositivo.",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = TextoSecundario,
-                    textAlign = TextAlign.Center
-                )
                 Spacer(Modifier.height(24.dp))
 
-                // Tarjeta de autenticación agrupada estilo Samsung One UI / Honor MagicOS
-                ComponenteGrupo(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .offset { IntOffset(sacudida.value.toInt(), 0) },
-                    etiqueta = "Acceso a la bóveda",
-                    descripcion = mensajeBiometria,
-                    descripcionComoPie = true
-                ) {
-                    Box(modifier = Modifier.padding(14.dp)) {
-                        ComponenteCampoTexto(
-                            valor = contrasena,
-                            etiqueta = "Contraseña maestra",
-                            alCambiar = { if (!abriendo) contrasena = it },
-                            tipo = TipoCampoTexto.CONTRASENA,
-                            mostrarIcono = true,
-                            colorIcono = ColorIconosInternos,
-                            mostrarContrasena = mostrar,
-                            alAlternarMostrarContrasena = { if (!abriendo) mostrar = !mostrar },
-                            monoespaciada = mostrar,
-                            imeAction = ImeAction.Done,
-                            keyboardActions = KeyboardActions(onDone = { ejecutarDesbloqueo() }),
-                            readOnly = abriendo
-                        )
-                    }
-
-                    ComponenteSeparador(sangriaInicio = 16.dp)
-
-                    val botonActivo = contrasena.isNotEmpty() && !abriendo
-
-                    ComponenteBotonFila(
-                        titulo = if (abriendo) "Abriendo..." else "Abrir bóveda",
-                        alPulsar = { ejecutarDesbloqueo() },
-                        icono = Icons.Filled.LockOpen,
-                        colorIcono = if (botonActivo) ColorIconosInternos else ColorAjusteGris.copy(alpha = 0.35f),
-                        colorTinteIcono = if (botonActivo) Color.White else ColorAjusteGris,
-                        habilitado = botonActivo
-                    )
-
-                    if (biometriaUsable) {
-                        ComponenteSeparador(sangriaInicio = 60.dp)
-                        ComponenteBotonFila(
-                            titulo = flujo.etiquetaBoton(),
-                            alPulsar = { lanzarBiometria() },
-                            icono = Icons.Filled.Fingerprint,
-                            colorIcono = Color(0xFF1E88E5),
-                            colorTinteIcono = Color.White,
-                            habilitado = !abriendo
-                        )
-                    }
-                }
+                TarjetaFormularioDesbloqueo(
+                    contrasena = contrasena,
+                    alCambiarContrasena = { contrasena = it },
+                    mostrarContrasena = mostrar,
+                    alAlternarMostrarContrasena = { mostrar = !mostrar },
+                    abriendo = abriendo,
+                    desplazamientoSacudidaX = sacudida.value,
+                    mensajeBiometria = mensajeBiometria,
+                    biometriaUsable = biometriaUsable,
+                    etiquetaBotonBiometria = flujo.etiquetaBoton(),
+                    alDesbloquear = { ejecutarDesbloqueo() },
+                    alLanzarBiometria = { lanzarBiometria() }
+                )
             }
         }
     }
