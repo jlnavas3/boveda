@@ -4,9 +4,9 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -14,6 +14,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DeleteSweep
+import androidx.compose.material.icons.filled.Tune
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
@@ -32,9 +33,11 @@ import com.jlnavas3.bovedalocal.ui.VaultViewModel
 import com.jlnavas3.bovedalocal.ui.componentes.BarraSuperiorPantalla
 import com.jlnavas3.bovedalocal.ui.componentes.DescripcionPantalla
 import com.jlnavas3.bovedalocal.ui.pantallas.historial.BannerAutodestruccionHistorial
+import com.jlnavas3.bovedalocal.ui.pantallas.historial.DialogoAjustesHistorial
 import com.jlnavas3.bovedalocal.ui.pantallas.historial.DialogoVaciarHistorial
 import com.jlnavas3.bovedalocal.ui.pantallas.historial.EstadoVacioHistorial
 import com.jlnavas3.bovedalocal.ui.pantallas.historial.FilaClaveHistorial
+import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
 import com.jlnavas3.bovedalocal.ui.theme.Peligro
 import com.jlnavas3.bovedalocal.util.Haptica
 import kotlinx.coroutines.delay
@@ -50,6 +53,7 @@ fun PantallaHistorialClaves(
     val haptica = remember { Haptica(contexto) }
     val ajustes by vm.ajustes.collectAsStateWithLifecycle()
     var confirmarVaciar by remember { mutableStateOf(false) }
+    var mostrarAjustes by remember { mutableStateOf(false) }
     var ahora by remember { mutableLongStateOf(System.currentTimeMillis()) }
 
     LaunchedEffect(Unit) {
@@ -78,19 +82,34 @@ fun PantallaHistorialClaves(
         ) {
             BarraSuperiorPantalla(
                 titulo = "Historial de claves",
+                idEtiqueta = "04.5",
+                mostrarId = ajustes.mostrarIdsAjustes,
                 alVolver = { vm.volverAtras() },
                 acciones = {
-                    if (clavesVigentes.isNotEmpty()) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
                         IconButton(onClick = {
-                            haptica.toque()
-                            confirmarVaciar = true
+                            haptica.tic()
+                            mostrarAjustes = true
                         }) {
                             Icon(
-                                imageVector = Icons.Filled.DeleteSweep,
-                                contentDescription = "Vaciar historial",
-                                tint = Peligro,
+                                imageVector = Icons.Filled.Tune,
+                                contentDescription = "Ajustes del historial",
+                                tint = ColorIconosInternos,
                                 modifier = Modifier.size(24.dp)
                             )
+                        }
+                        if (clavesVigentes.isNotEmpty()) {
+                            IconButton(onClick = {
+                                haptica.toque()
+                                confirmarVaciar = true
+                            }) {
+                                Icon(
+                                    imageVector = Icons.Filled.DeleteSweep,
+                                    contentDescription = "Vaciar historial",
+                                    tint = Peligro,
+                                    modifier = Modifier.size(24.dp)
+                                )
+                            }
                         }
                     }
                 }
@@ -103,25 +122,24 @@ fun PantallaHistorialClaves(
 
             BannerAutodestruccionHistorial(
                 autodestruccionActiva = ajustes.historialClavesVaciadoAuto,
-                tiempoAutoDestruccion = ajustes.historialClavesTiempoAutoDestruccion
+                tiempoAutoDestruccion = ajustes.historialClavesTiempoAutoDestruccion,
+                alPulsar = {
+                    haptica.tic()
+                    mostrarAjustes = true
+                }
             )
 
             Spacer(Modifier.height(10.dp))
 
             if (clavesVigentes.isEmpty()) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .weight(1f),
-                    contentAlignment = Alignment.Center
-                ) {
-                    EstadoVacioHistorial()
-                }
+                EstadoVacioHistorial(
+                    modifier = Modifier.weight(1f)
+                )
             } else {
                 LazyColumn(
                     modifier = Modifier.weight(1f),
-                    contentPadding = PaddingValues(bottom = 80.dp),
-                    verticalArrangement = Arrangement.spacedBy(10.dp)
+                    verticalArrangement = Arrangement.spacedBy(10.dp),
+                    contentPadding = PaddingValues(bottom = 80.dp)
                 ) {
                     items(clavesVigentes, key = { it.id }) { item ->
                         FilaClaveHistorial(
@@ -137,15 +155,41 @@ fun PantallaHistorialClaves(
                 }
             }
         }
-    }
 
-    if (confirmarVaciar) {
-        DialogoVaciarHistorial(
-            alConfirmar = {
-                confirmarVaciar = false
-                vm.vaciarHistorialClaves()
-            },
-            alDescartar = { confirmarVaciar = false }
-        )
+        if (confirmarVaciar) {
+            DialogoVaciarHistorial(
+                alConfirmar = {
+                    haptica.toque()
+                    vm.vaciarHistorialClaves()
+                    confirmarVaciar = false
+                },
+                alDescartar = { confirmarVaciar = false }
+            )
+        }
+
+        if (mostrarAjustes) {
+            DialogoAjustesHistorial(
+                ajustes = ajustes,
+                alCerrar = { mostrarAjustes = false },
+                alCambiarMax = { valor ->
+                    haptica.tic()
+                    vm.ajustarHistorialClavesMax(valor)
+                },
+                alCambiarVaciadoAuto = { activo ->
+                    haptica.tic()
+                    vm.ajustarHistorialClavesVaciadoAuto(activo)
+                },
+                alCambiarTiempoAutoDestruccion = { valor ->
+                    haptica.tic()
+                    vm.ajustarHistorialClavesTiempoAutoDestruccion(valor)
+                },
+                alRestablecer = {
+                    haptica.toque()
+                    vm.ajustarHistorialClavesMax(15)
+                    vm.ajustarHistorialClavesVaciadoAuto(true)
+                    vm.ajustarHistorialClavesTiempoAutoDestruccion(30 * 60 * 1000L)
+                }
+            )
+        }
     }
 }

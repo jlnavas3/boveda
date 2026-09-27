@@ -1,6 +1,7 @@
 package com.jlnavas3.bovedalocal.ui.pantallas.historial
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -8,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.Timer
 import androidx.compose.material.icons.filled.WarningAmber
 import androidx.compose.material3.Icon
@@ -31,7 +33,8 @@ import com.jlnavas3.bovedalocal.ui.theme.esOscuroActivo
 fun BannerAutodestruccionHistorial(
     autodestruccionActiva: Boolean,
     tiempoAutoDestruccion: Long,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    alPulsar: () -> Unit = {}
 ) {
     val colorEstado = if (autodestruccionActiva) Menta else Ambar
     val iconoEstado = if (autodestruccionActiva) Icons.Filled.Timer else Icons.Filled.WarningAmber
@@ -48,22 +51,36 @@ fun BannerAutodestruccionHistorial(
             .fillMaxWidth()
             .clip(FormaCampo)
             .background(colorEstado.copy(alpha = if (esOscuroActivo) 0.12f else 0.10f))
-            .padding(horizontal = 10.dp, vertical = 6.dp)
+            .clickable(onClick = alPulsar)
+            .padding(horizontal = 12.dp, vertical = 8.dp)
     ) {
         Row(
+            modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                modifier = Modifier.weight(1f)
+            ) {
+                Icon(
+                    imageVector = iconoEstado,
+                    contentDescription = null,
+                    tint = colorLegibleParaTema(colorEstado),
+                    modifier = Modifier.size(16.dp)
+                )
+                Text(
+                    text = textoEstado,
+                    style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.SemiBold, fontSize = 11.5.sp),
+                    color = colorLegibleParaTema(colorEstado)
+                )
+            }
             Icon(
-                imageVector = iconoEstado,
-                contentDescription = null,
-                tint = colorLegibleParaTema(colorEstado),
+                imageVector = Icons.Filled.ChevronRight,
+                contentDescription = "Configurar",
+                tint = colorLegibleParaTema(colorEstado).copy(alpha = 0.7f),
                 modifier = Modifier.size(16.dp)
-            )
-            Text(
-                text = textoEstado,
-                style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.SemiBold, fontSize = 11.5.sp),
-                color = colorLegibleParaTema(colorEstado)
             )
         }
     }

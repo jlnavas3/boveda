@@ -10,11 +10,14 @@ import androidx.compose.material.icons.filled.DeleteForever
 import androidx.compose.material.icons.filled.Description
 import androidx.compose.material.icons.filled.FileUpload
 import androidx.compose.material.icons.filled.Fingerprint
+import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Key
 import androidx.compose.material.icons.filled.Layers
 import androidx.compose.material.icons.filled.Memory
 import androidx.compose.material.icons.filled.Palette
 import androidx.compose.material.icons.filled.Shield
+import androidx.compose.material.icons.filled.SquareFoot
+import androidx.compose.material.icons.filled.TextFields
 import androidx.compose.material.icons.filled.Timer
 import androidx.compose.material.icons.filled.Tune
 import androidx.compose.material.icons.filled.Widgets
@@ -85,7 +88,7 @@ fun crearCatalogoAjustesHub(
             alPulsar = { vm.ir(Pantalla.Argon2id("01.4")) }
         ),
 
-        // Grupo: Copias y Datos
+        // Grupo: Cuentas y Datos
         ElementoMenuAjustes(
             titulo = "Copia de seguridad",
             subtitulo = "Exportar, restaurar y copias automáticas locales rotativas",
@@ -186,6 +189,26 @@ fun crearCatalogoAjustesHub(
             palabrasClave = "formatos campos plantillas autofill rellenar formulario",
             alPulsar = { vm.ir(Pantalla.FormatosCampos("03.6")) }
         ),
+        ElementoMenuAjustes(
+            titulo = "Formas y bordes",
+            subtitulo = "Curvatura de esquinas, grosor y estilo de bordes",
+            icono = Icons.Filled.SquareFoot,
+            colorIcono = Color(0xFFE91E63),
+            idEtiqueta = "03.7",
+            grupo = "Personalización",
+            palabrasClave = "formas bordes curvatura esquinas grosor estilo presets tarjetas",
+            alPulsar = { vm.ir(Pantalla.Formas("03.7")) }
+        ),
+        ElementoMenuAjustes(
+            titulo = "Tipografía y textos",
+            subtitulo = "Tamaño de fuente, peso, espaciado e interlineado",
+            icono = Icons.Filled.TextFields,
+            colorIcono = Color(0xFF26A69A),
+            idEtiqueta = "03.8",
+            grupo = "Personalización",
+            palabrasClave = "fuente tipografia letras texto tamano escala peso espaciado interlineado",
+            alPulsar = { vm.ir(Pantalla.Tipografia("03.8")) }
+        ),
 
         // Grupo: Funciones
         ElementoMenuAjustes(
@@ -227,6 +250,16 @@ fun crearCatalogoAjustesHub(
             grupo = "Funciones",
             palabrasClave = "passkey passkeys proveedor credenciales llaves acceso android servicio activar",
             alPulsar = alAbrirProveedorPasskeys
+        ),
+        ElementoMenuAjustes(
+            titulo = "Historial de contraseñas",
+            subtitulo = "Retención temporal, autodestrucción y registro de claves",
+            icono = Icons.Filled.History,
+            colorIcono = Color(0xFFFF9800),
+            idEtiqueta = "04.5",
+            grupo = "Funciones",
+            palabrasClave = "historial contrasenas generadas retencion autodestruccion claves temporal tiempo",
+            alPulsar = { vm.ir(Pantalla.HistorialClaves("04.5")) }
         ),
 
         // Grupo: Sistema
