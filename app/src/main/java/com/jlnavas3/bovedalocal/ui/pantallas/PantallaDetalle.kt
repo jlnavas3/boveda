@@ -27,6 +27,7 @@ import com.jlnavas3.bovedalocal.ui.VaultViewModel
 import com.jlnavas3.bovedalocal.ui.componentes.DialogoCompartirQr
 import com.jlnavas3.bovedalocal.ui.componentes.DialogoConfirmacionBoveda
 import com.jlnavas3.bovedalocal.ui.componentes.TipoBotonTexto
+import com.jlnavas3.bovedalocal.ui.componentes.reboteElastico
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjustesFondo
 import com.jlnavas3.bovedalocal.ui.pantallas.detalle.BarraSuperiorDetalle
 import com.jlnavas3.bovedalocal.ui.pantallas.detalle.CabeceraHeroDetalle
@@ -113,6 +114,7 @@ fun PantallaDetalle(vm: VaultViewModel, id: String) {
             modifier = Modifier
                 .fillMaxWidth()
                 .weight(1f)
+                .reboteElastico()
                 .verticalScroll(scrollState)
                 .padding(horizontal = 16.dp, vertical = 8.dp)
         ) {

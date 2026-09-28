@@ -23,6 +23,7 @@ import com.jlnavas3.bovedalocal.data.AjustesApp
 import com.jlnavas3.bovedalocal.data.Entrada
 import com.jlnavas3.bovedalocal.ui.CriterioOrdenacion
 import com.jlnavas3.bovedalocal.ui.componentes.IndiceAlfabetico
+import com.jlnavas3.bovedalocal.ui.componentes.reboteElastico
 import com.jlnavas3.bovedalocal.ui.componentes.encontrarIndiceParaLetra
 import com.jlnavas3.bovedalocal.ui.componentes.letraInicialIndice
 import com.jlnavas3.bovedalocal.util.ItemAgrupado
@@ -99,7 +100,9 @@ fun CuerpoListaEntradas(
     Box(modifier = Modifier.fillMaxSize()) {
         LazyColumn(
             state = estadoLista,
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier
+                .fillMaxSize()
+                .reboteElastico(),
             contentPadding = PaddingValues(
                 start = 20.dp,
                 end = if (mostrarIndice) 36.dp else 20.dp,

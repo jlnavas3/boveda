@@ -19,6 +19,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.LayoutCoordinates
 import androidx.compose.ui.layout.onGloballyPositioned
+import com.jlnavas3.bovedalocal.ui.componentes.reboteElastico
 import com.jlnavas3.bovedalocal.ui.theme.AlumbradoActivo
 import com.jlnavas3.bovedalocal.ui.theme.AlumbradoDuracionMs
 import com.jlnavas3.bovedalocal.ui.theme.AlumbradoIntensidad
@@ -175,16 +176,18 @@ class CoordinadorResaltadoAjustes(
 }
 
 /**
- * Modificador para asignar al contenedor con scroll vertical para medir su posición relativa.
+ * Modificador para asignar al contenedor con scroll vertical para medir su posición relativa y dotarlo de rebote elástico.
  */
 fun Modifier.contenedorScrollAjustes(coordinador: CoordinadorResaltadoAjustes?): Modifier =
-    if (coordinador != null) {
-        this.onGloballyPositioned { coords ->
-            coordinador.contenedorCoordinates = coords
-        }
-    } else {
-        this
-    }
+    this
+        .reboteElastico()
+        .then(
+            if (coordinador != null) {
+                Modifier.onGloballyPositioned { coords ->
+                    coordinador.contenedorCoordinates = coords
+                }
+            } else Modifier
+        )
 
 /**
  * Proveedor de contexto para resaltar y hacer scroll hacia una fila o grupo objetivo.
