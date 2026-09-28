@@ -21,6 +21,7 @@ import androidx.compose.ui.unit.dp
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteGrupo
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteNavegacion
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteSeparador
+import com.jlnavas3.bovedalocal.ui.theme.EspaciadoComponentes
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
 
 data class InfoGrupoAjustes(
@@ -88,7 +89,7 @@ fun VistaGruposAjustesHub(
         grupos.forEachIndexed { gIndex, grupo ->
             val elementosDelGrupo = todosLosElementos.filter { it.grupo == grupo.nombre }
             if (elementosDelGrupo.isNotEmpty()) {
-                if (gIndex > 0) Spacer(Modifier.height(14.dp))
+                if (gIndex > 0) Spacer(Modifier.height(EspaciadoComponentes))
                 ComponenteGrupo(
                     etiqueta = grupo.nombre,
                     icono = grupo.icono,

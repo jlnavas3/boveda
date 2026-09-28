@@ -27,6 +27,7 @@ import com.jlnavas3.bovedalocal.ui.componentes.BotonBorde
 import com.jlnavas3.bovedalocal.ui.componentes.CampoBoveda
 import com.jlnavas3.bovedalocal.ui.componentes.ContenedorTarjeta
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
+import com.jlnavas3.bovedalocal.ui.theme.EspaciadoComponentes
 import com.jlnavas3.bovedalocal.ui.theme.EstiloMono
 import com.jlnavas3.bovedalocal.util.Haptica
 import java.util.Locale
@@ -62,7 +63,7 @@ fun SimuladorTarjetaInteractiva(
                     .padding(horizontal = 8.dp, vertical = 4.dp)
             ) {
                 Text(
-                    text = "${ajustes.curvaturaEsquinasDp.roundToInt()} dp · ${String.format(Locale.US, "%.1f", ajustes.grosorBordeDp)} dp",
+                    text = "${ajustes.curvaturaEsquinasDp.roundToInt()} dp · ${String.format(Locale.US, "%.1f", ajustes.grosorBordeDp)} dp · ${ajustes.espaciadoComponentesDp.roundToInt()} dp",
                     color = ColorAcento,
                     style = EstiloMono.copy(
                         fontWeight = FontWeight.Bold,
@@ -71,7 +72,7 @@ fun SimuladorTarjetaInteractiva(
                 )
             }
         }
-        Spacer(Modifier.height(6.dp))
+        Spacer(Modifier.height((EspaciadoComponentes * 0.45f).coerceIn(4.dp, 16.dp)))
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(8.dp)

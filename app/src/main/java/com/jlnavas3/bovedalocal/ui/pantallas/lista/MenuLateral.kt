@@ -189,28 +189,6 @@ fun MenuLateral(
                     mostrarId = mostrarIds,
                     ajustes = ajustes
                 ) { alIr(Pantalla.Ajustes) }
-
-                SeparadorItemMenu()
-
-                ItemMenu(
-                    texto = "Registro de eventos",
-                    icono = Icons.Filled.History,
-                    colorIcono = ColorExportacion,
-                    idEtiqueta = "06-SIS-LOG",
-                    mostrarId = mostrarIds,
-                    ajustes = ajustes
-                ) { alIr(Pantalla.Registro) }
-
-                SeparadorItemMenu()
-
-                ItemMenu(
-                    texto = "Diagnóstico de seguridad",
-                    icono = Icons.Filled.Security,
-                    colorIcono = ColorSeguridad,
-                    idEtiqueta = "06-SIS-DGN",
-                    mostrarId = mostrarIds,
-                    ajustes = ajustes
-                ) { alIr(Pantalla.AcercaDe) }
             }
         }
 

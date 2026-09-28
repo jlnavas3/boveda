@@ -1,6 +1,7 @@
 package com.jlnavas3.bovedalocal.ui.pantallas.lista
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -38,7 +39,10 @@ import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorSeparadorAjustes
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorTarjetaAjustes
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorTextoAjustes
 import com.jlnavas3.bovedalocal.ui.theme.Ambar
+import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
 import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
+import com.jlnavas3.bovedalocal.ui.theme.CurvaturaEsquinas
+import com.jlnavas3.bovedalocal.ui.theme.GrosorBorde
 import com.jlnavas3.bovedalocal.util.Haptica
 
 /**
@@ -76,10 +80,20 @@ fun GrupoMenuLateral(
                 InsigniaIdAjuste(id = idEtiqueta, ajustes = ajustes)
             }
         }
+        val formaGrupo = RoundedCornerShape(CurvaturaEsquinas)
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .clip(RoundedCornerShape(18.dp))
+                .then(
+                    if (GrosorBorde > 0.dp) {
+                        Modifier.border(
+                            width = GrosorBorde,
+                            color = ColorBordeActual,
+                            shape = formaGrupo
+                        )
+                    } else Modifier
+                )
+                .clip(formaGrupo)
                 .background(ColorTarjetaAjustes)
         ) {
             contenido()

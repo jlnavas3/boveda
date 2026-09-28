@@ -299,13 +299,13 @@ fun crearCatalogoAjustesHub(
             alPulsar = { vm.ir(Pantalla.Registro("06-SIS-LOG")) }
         ),
         ElementoMenuAjustes(
-            titulo = "Acerca de y diagnóstico",
-            subtitulo = "Versión, licencia de código abierto y auditoría",
-            icono = Icons.Filled.Info,
+            titulo = "Diagnóstico de seguridad",
+            subtitulo = "Auditoría de integridad, versión y licencias",
+            icono = Icons.Filled.Security,
             colorIcono = Color(0xFF607D8B),
             idEtiqueta = "06-SIS-DGN",
             grupo = "Sistema",
-            palabrasClave = "acerca de version info licencia autor boveda diagnostico auditoria",
+            palabrasClave = "diagnostico seguridad acerca de version info auditoria integridad",
             alPulsar = { vm.ir(Pantalla.AcercaDe("06-SIS-DGN")) }
         )
     )
