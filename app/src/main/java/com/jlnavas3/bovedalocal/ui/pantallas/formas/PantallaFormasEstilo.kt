@@ -49,7 +49,7 @@ fun PantallaFormasEstilo(
             colorIcono = ColorSeguridad,
             alRestablecer = {
                 haptica.tic()
-                vm.ajustarEstiloBorde("marcado")
+                vm.ajustarEstiloBorde("ninguno")
             },
             idGrupo = "02-APA-GEO-EST-G01",
             mostrarId = ajustes.mostrarIdsAjustes
@@ -58,7 +58,7 @@ fun PantallaFormasEstilo(
                 val activo = ajustes.estiloBorde == clave
 
                 ComponenteRadio(
-                    titulo = etiqueta,
+                    titulo = if (clave == "ninguno") "$etiqueta (Predeterminado)" else etiqueta,
                     icono = null,
                     seleccionado = activo,
                     alSeleccionar = {

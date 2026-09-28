@@ -29,7 +29,7 @@ class AjustesTest {
         // Formas y geometría
         assertEquals(16f, ajustes.curvaturaEsquinasDp, 0.01f)
         assertEquals(1.0f, ajustes.grosorBordeDp, 0.01f)
-        assertEquals("acento", ajustes.estiloBorde)
+        assertEquals("ninguno", ajustes.estiloBorde)
         assertEquals(14f, ajustes.espaciadoComponentesDp, 0.01f)
 
         // Widget 2FA

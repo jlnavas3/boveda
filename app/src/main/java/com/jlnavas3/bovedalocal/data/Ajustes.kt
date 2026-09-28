@@ -62,7 +62,7 @@ data class AjustesApp(
     // Personalización de formas y bordes
     val curvaturaEsquinasDp: Float = 16f,
     val grosorBordeDp: Float = 1.0f,
-    val estiloBorde: String = "acento",
+    val estiloBorde: String = "ninguno",
     val espaciadoComponentesDp: Float = 14f,
     // Personalización del Widget de escritorio (2FA favoritos)
     val widgetGrosorBordeDp: Float = 0f,
@@ -388,7 +388,7 @@ class AlmacenAjustes(contexto: Context) {
             totpSepararDigitos = prefs.getBoolean("totp_separar_digitos", true),
             curvaturaEsquinasDp = prefs.getFloat("curvatura_esquinas_dp", 6f),
             grosorBordeDp = prefs.getFloat("grosor_borde_dp", 0.8f),
-            estiloBorde = prefs.getString("estilo_borde", "marcado") ?: "marcado",
+            estiloBorde = prefs.getString("estilo_borde", "ninguno") ?: "ninguno",
             espaciadoComponentesDp = prefs.getFloat("espaciado_componentes_dp", 14f),
             widgetGrosorBordeDp = prefs.getFloat("widget_grosor_borde_dp", 0f),
             widgetCurvaturaEsquinasDp = prefs.getFloat("widget_curvatura_esquinas_dp", 0f),
@@ -761,10 +761,10 @@ class AlmacenAjustes(contexto: Context) {
             "compacta" to "Compacta"
         )
         val OPCIONES_ESTILO_BORDE = listOf(
+            "ninguno" to "Sin borde",
             "sutil" to "Sutil",
             "acento" to "Acento",
-            "marcado" to "Marcado",
-            "ninguno" to "Sin borde"
+            "marcado" to "Marcado"
         )
         val OPCIONES_PESO_TEXTO = listOf(
             "fino" to "Fino",

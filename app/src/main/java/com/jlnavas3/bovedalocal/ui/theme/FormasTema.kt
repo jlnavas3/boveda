@@ -17,7 +17,7 @@ import com.jlnavas3.bovedalocal.data.AjustesApp
 
 private var curvaturaEsquinasDpBase by mutableStateOf(6f)
 private var grosorBordeDpBase by mutableStateOf(0.8f)
-private var estiloBordeBase by mutableStateOf("marcado")
+private var estiloBordeBase by mutableStateOf("ninguno")
 private var espaciadoComponentesDpBase by mutableStateOf(14f)
 
 var CurvaturaEsquinasDp: Float
