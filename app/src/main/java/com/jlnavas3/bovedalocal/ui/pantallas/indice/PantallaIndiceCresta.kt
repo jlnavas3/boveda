@@ -1,10 +1,15 @@
 package com.jlnavas3.bovedalocal.ui.pantallas.indice
 
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Lens
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -25,6 +30,7 @@ fun PantallaIndiceCresta(
     val ajustes by vm.ajustes.collectAsStateWithLifecycle()
     val contexto = LocalContext.current
     val haptica = remember { Haptica(contexto) }
+    var letraArrastrada by remember { mutableStateOf<Char?>(null) }
 
     ContenedorPrincipal(
         titulo = "Círculo y cresta",
@@ -32,7 +38,19 @@ fun PantallaIndiceCresta(
         mostrarId = ajustes.mostrarIdsAjustes,
         alVolver = { vm.volverAtras() },
         cabeceraFlotante = {
-            VistaPreviaIndiceInteractiva(ajustes = ajustes)
+            VistaPreviaIndiceInteractiva(
+                ajustes = ajustes,
+                letraArrastrada = letraArrastrada
+            )
+        },
+        overlayLateral = {
+            IndiceAlfabeticoCalibracion(
+                ajustes = ajustes,
+                alCambiarLetra = { letraArrastrada = it },
+                modifier = Modifier
+                    .align(Alignment.CenterEnd)
+                    .padding(top = 64.dp, bottom = 100.dp)
+            )
         }
     ) {
         ComponenteGrupo(

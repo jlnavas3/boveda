@@ -34,6 +34,7 @@ import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteNavegacion
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteSeparador
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ProveedorResaltadoAjustes
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjustesFondo
+import com.jlnavas3.bovedalocal.ui.pantallas.indice.IndiceAlfabeticoCalibracion
 import com.jlnavas3.bovedalocal.ui.pantallas.indice.VistaPreviaIndiceInteractiva
 import com.jlnavas3.bovedalocal.util.Haptica
 
@@ -171,23 +172,12 @@ fun PantallaAjustesIndice(
             }
 
             // A-Z Index bar anchored full height on the right side
-            IndiceAlfabetico(
-                alSeleccionarLetra = { letraArrastrada = it },
-                alCambiarLetraActiva = { letraArrastrada = it },
-                incluirEnie = ajustes.indiceIncluirEnie,
-                efectoOla = ajustes.indiceEfectoOla,
-                amplitudOlaDp = ajustes.indiceAmplitudOlaDp,
-                radioOlaDp = ajustes.indiceRadioOlaDp,
-                escalaMaximaLetras = ajustes.indiceEscalaLetras,
-                mostrarCirculo = ajustes.indiceMostrarCirculo,
-                tamanoCirculoDp = ajustes.indiceTamanoCirculoDp,
-                offsetCirculoDp = ajustes.indiceOffsetCirculoDp,
-                hapticaActiva = ajustes.indiceHaptica,
-                anchoZonaTactilDp = ajustes.indiceAnchoTactilDp,
-                tonoLetras = ajustes.indiceTonoLetras,
+            IndiceAlfabeticoCalibracion(
+                ajustes = ajustes,
+                alCambiarLetra = { letraArrastrada = it },
                 modifier = Modifier
                     .align(Alignment.CenterEnd)
-                    .fillMaxHeight()
+                    .padding(top = 120.dp, bottom = 100.dp)
             )
         }
     }

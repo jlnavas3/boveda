@@ -46,7 +46,7 @@
                 android:textStyle="bold" />
         </LinearLayout>
 
-        <!-- Vista: Bóveda Bloqueada (Tarjeta con candado que cubre 2 líneas y texto centrado) -->
+        <!-- Vista: Bóveda Bloqueada (Tarjeta con candado) -->
         <LinearLayout
             android:id="@+id/widget_vista_bloqueada"
             android:layout_width="match_parent"
@@ -55,52 +55,63 @@
             android:orientation="vertical"
             android:padding="4dp">
 
-            <LinearLayout
+            <FrameLayout
                 android:id="@+id/widget_tarjeta_bloqueada"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@drawable/bg_widget_item"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:paddingHorizontal="14dp"
-                android:paddingVertical="12dp">
+                android:layout_height="wrap_content">
 
                 <ImageView
-                    android:id="@+id/widget_candado_bloqueado"
-                    android:layout_width="38dp"
-                    android:layout_height="38dp"
-                    android:src="@drawable/ic_candado_boveda"
-                    android:contentDescription="Bóveda protegida" />
+                    android:id="@+id/widget_tarjeta_bloqueada_fondo"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="fitXY"
+                    android:contentDescription="@null" />
 
                 <LinearLayout
-                    android:layout_width="0dp"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="12dp"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:orientation="vertical">
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingHorizontal="14dp"
+                    android:paddingVertical="12dp">
 
-                    <TextView
-                        android:id="@+id/widget_texto_bloqueada_titulo"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:text="Bóveda protegida"
-                        android:textColor="#FFB300"
-                        android:textSize="15sp"
-                        android:textStyle="bold" />
+                    <ImageView
+                        android:id="@+id/widget_candado_bloqueado"
+                        android:layout_width="38dp"
+                        android:layout_height="38dp"
+                        android:src="@drawable/ic_candado_boveda"
+                        android:contentDescription="Bóveda protegida" />
 
-                    <TextView
-                        android:id="@+id/widget_texto_bloqueada_subtitulo"
-                        android:layout_width="wrap_content"
+                    <LinearLayout
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="3dp"
+                        android:layout_marginStart="12dp"
+                        android:layout_weight="1"
                         android:gravity="center"
-                        android:text="Toca para desbloquear y ver tus códigos"
-                        android:textColor="#A0988A"
-                        android:textSize="11sp" />
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/widget_texto_bloqueada_titulo"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:gravity="center"
+                            android:text="Bóveda protegida"
+                            android:textColor="#FFB300"
+                            android:textSize="15sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/widget_texto_bloqueada_subtitulo"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="3dp"
+                            android:gravity="center"
+                            android:text="Toca para desbloquear y ver tus códigos"
+                            android:textColor="#A0988A"
+                            android:textSize="11sp" />
+                    </LinearLayout>
                 </LinearLayout>
-            </LinearLayout>
+            </FrameLayout>
         </LinearLayout>
 
         <!-- Vista: Sin favoritos con 2FA -->
@@ -141,126 +152,159 @@
             android:visibility="gone">
 
             <!-- Item 1 -->
-            <LinearLayout
+            <FrameLayout
                 android:id="@+id/widget_item_1"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="4dp"
-                android:background="@drawable/bg_widget_item"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:paddingHorizontal="10dp"
-                android:paddingVertical="6dp"
                 android:visibility="gone">
 
-                <TextView
-                    android:id="@+id/widget_item_titulo_1"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:ellipsize="end"
-                    android:maxLines="1"
-                    android:textColor="#FFFFFF"
-                    android:textSize="13sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/widget_item_codigo_1"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="monospace"
-                    android:textColor="#FFB300"
-                    android:textSize="15sp"
-                    android:textStyle="bold" />
-
                 <ImageView
-                    android:id="@+id/widget_item_tiempo_1"
-                    android:layout_width="16dp"
-                    android:layout_height="16dp"
-                    android:layout_marginStart="8dp"
-                    android:contentDescription="Tiempo restante" />
-            </LinearLayout>
+                    android:id="@+id/widget_item_fondo_1"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="fitXY"
+                    android:contentDescription="@null" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingHorizontal="10dp"
+                    android:paddingVertical="6dp">
+
+                    <TextView
+                        android:id="@+id/widget_item_titulo_1"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:ellipsize="end"
+                        android:maxLines="1"
+                        android:textColor="#FFFFFF"
+                        android:textSize="13sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/widget_item_codigo_1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="monospace"
+                        android:textColor="#FFB300"
+                        android:textSize="15sp"
+                        android:textStyle="bold" />
+
+                    <ImageView
+                        android:id="@+id/widget_item_tiempo_1"
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:layout_marginStart="8dp"
+                        android:contentDescription="Tiempo restante" />
+                </LinearLayout>
+            </FrameLayout>
 
             <!-- Item 2 -->
-            <LinearLayout
+            <FrameLayout
                 android:id="@+id/widget_item_2"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="4dp"
-                android:background="@drawable/bg_widget_item"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:paddingHorizontal="10dp"
-                android:paddingVertical="6dp"
                 android:visibility="gone">
 
-                <TextView
-                    android:id="@+id/widget_item_titulo_2"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:ellipsize="end"
-                    android:maxLines="1"
-                    android:textColor="#FFFFFF"
-                    android:textSize="13sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/widget_item_codigo_2"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="monospace"
-                    android:textColor="#FFB300"
-                    android:textSize="15sp"
-                    android:textStyle="bold" />
-
                 <ImageView
-                    android:id="@+id/widget_item_tiempo_2"
-                    android:layout_width="16dp"
-                    android:layout_height="16dp"
-                    android:layout_marginStart="8dp"
-                    android:contentDescription="Tiempo restante" />
-            </LinearLayout>
+                    android:id="@+id/widget_item_fondo_2"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="fitXY"
+                    android:contentDescription="@null" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingHorizontal="10dp"
+                    android:paddingVertical="6dp">
+
+                    <TextView
+                        android:id="@+id/widget_item_titulo_2"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:ellipsize="end"
+                        android:maxLines="1"
+                        android:textColor="#FFFFFF"
+                        android:textSize="13sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/widget_item_codigo_2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="monospace"
+                        android:textColor="#FFB300"
+                        android:textSize="15sp"
+                        android:textStyle="bold" />
+
+                    <ImageView
+                        android:id="@+id/widget_item_tiempo_2"
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:layout_marginStart="8dp"
+                        android:contentDescription="Tiempo restante" />
+                </LinearLayout>
+            </FrameLayout>
 
             <!-- Item 3 -->
-            <LinearLayout
+            <FrameLayout
                 android:id="@+id/widget_item_3"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/bg_widget_item"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:paddingHorizontal="10dp"
-                android:paddingVertical="6dp"
                 android:visibility="gone">
 
-                <TextView
-                    android:id="@+id/widget_item_titulo_3"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:ellipsize="end"
-                    android:maxLines="1"
-                    android:textColor="#FFFFFF"
-                    android:textSize="13sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/widget_item_codigo_3"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="monospace"
-                    android:textColor="#FFB300"
-                    android:textSize="15sp"
-                    android:textStyle="bold" />
-
                 <ImageView
-                    android:id="@+id/widget_item_tiempo_3"
-                    android:layout_width="16dp"
-                    android:layout_height="16dp"
-                    android:layout_marginStart="8dp"
-                    android:contentDescription="Tiempo restante" />
-            </LinearLayout>
+                    android:id="@+id/widget_item_fondo_3"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="fitXY"
+                    android:contentDescription="@null" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingHorizontal="10dp"
+                    android:paddingVertical="6dp">
+
+                    <TextView
+                        android:id="@+id/widget_item_titulo_3"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:ellipsize="end"
+                        android:maxLines="1"
+                        android:textColor="#FFFFFF"
+                        android:textSize="13sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/widget_item_codigo_3"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="monospace"
+                        android:textColor="#FFB300"
+                        android:textSize="15sp"
+                        android:textStyle="bold" />
+
+                    <ImageView
+                        android:id="@+id/widget_item_tiempo_3"
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:layout_marginStart="8dp"
+                        android:contentDescription="Tiempo restante" />
+                </LinearLayout>
+            </FrameLayout>
         </LinearLayout>
     </LinearLayout>
 </FrameLayout>

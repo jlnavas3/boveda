@@ -14,6 +14,7 @@ import com.jlnavas3.bovedalocal.ui.theme.aplicarPersonalizacionTemaCompleto
 import com.jlnavas3.bovedalocal.ui.theme.aplicarPersonalizacionTipografia
 import com.jlnavas3.bovedalocal.util.CambiadorIcono
 import com.jlnavas3.bovedalocal.util.Diagnostico
+import com.jlnavas3.bovedalocal.widget.WidgetTotpFavoritos
 
 interface VaultAjustesDelegate {
     val repositorio: VaultRepository
@@ -273,9 +274,11 @@ interface VaultAjustesDelegate {
     }
     fun ajustarWidgetColorFilas(colorHex: String) {
         repositorio.ajustes.actualizar { it.copy(widgetColorFilas = colorHex) }
+        WidgetTotpFavoritos.actualizarTodos(obtenerApp())
     }
     fun ajustarWidgetTransparenciaFilas(transparencia: Float) {
         repositorio.ajustes.actualizar { it.copy(widgetTransparenciaFilas = transparencia) }
+        WidgetTotpFavoritos.actualizarTodos(obtenerApp())
     }
     fun ajustarTileSimbolos(simbolos: String) {
         repositorio.ajustes.actualizar { it.copy(tileSimbolos = simbolos) }
@@ -842,6 +845,8 @@ interface VaultAjustesDelegate {
                 widgetColorContador = "#FFFFFF",
                 widgetColorCodigo = "#FFB300",
                 widgetColorTituloIcono = "#FFFFFF",
+                widgetColorFilas = "#00000000",
+                widgetTransparenciaFilas = 0.0f,
                 widgetHaptica = true,
                 widgetHapticaIntensidad = 0.20f
             )

@@ -4,6 +4,8 @@ import android.app.PendingIntent
 import android.appwidget.AppWidgetManager
 import android.appwidget.AppWidgetProvider
 import android.content.BroadcastReceiver
+import android.content.ClipData
+import android.content.ClipboardManager
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
@@ -14,11 +16,7 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.RectF
-import android.os.Build
 import android.os.Bundle
-import android.os.VibrationEffect
-import android.os.Vibrator
-import android.os.VibratorManager
 import android.view.View
 import android.widget.RemoteViews
 import android.widget.Toast
@@ -28,6 +26,7 @@ import com.jlnavas3.bovedalocal.crypto.Totp
 import com.jlnavas3.bovedalocal.data.EstadoBoveda
 import com.jlnavas3.bovedalocal.data.VaultRepository
 import com.jlnavas3.bovedalocal.ui.MainActivity
+import com.jlnavas3.bovedalocal.util.Haptica
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -77,9 +76,9 @@ class WidgetTotpFavoritos : AppWidgetProvider() {
             ACTION_COPIAR_TOTP -> {
                 val codigo = intent.getStringExtra(EXTRA_CODIGO) ?: return
                 val titulo = intent.getStringExtra(EXTRA_TITULO) ?: "2FA"
-                val cm = context.getSystemService(Context.CLIPBOARD_SERVICE) as? android.content.ClipboardManager
+                val cm = context.getSystemService(Context.CLIPBOARD_SERVICE) as? ClipboardManager
                 if (cm != null) {
-                    val clip = android.content.ClipData.newPlainText("Código TOTP", codigo)
+                    val clip = ClipData.newPlainText("Código TOTP", codigo)
                     cm.setPrimaryClip(clip)
                 }
                 ejecutarVibracion(context)
@@ -260,6 +259,36 @@ class WidgetTotpFavoritos : AppWidgetProvider() {
             }
             views.setImageViewBitmap(R.id.widget_fondo, fondoBitmap)
 
+            // 2. Renderizar fondos de las filas / tarjeta bloqueada
+            val opacidadFilas = ajustes.widgetTransparenciaFilas
+            val filaAnchoPx = (widthPx - (24 * density).roundToInt()).coerceAtLeast(100)
+            val filaAltoPx = (38 * density).roundToInt().coerceAtLeast(40)
+
+            if (opacidadFilas <= 0.001f) {
+                views.setViewVisibility(R.id.widget_item_fondo_1, View.GONE)
+                views.setViewVisibility(R.id.widget_item_fondo_2, View.GONE)
+                views.setViewVisibility(R.id.widget_item_fondo_3, View.GONE)
+                views.setViewVisibility(R.id.widget_tarjeta_bloqueada_fondo, View.GONE)
+            } else {
+                val filaBitmap = generarFondoFilaBitmap(
+                    anchoPx = filaAnchoPx,
+                    altoPx = filaAltoPx,
+                    curvaturaDp = 6f,
+                    opacidadFila = opacidadFilas,
+                    colorFilaHex = ajustes.widgetColorFilas,
+                    density = density
+                )
+                views.setViewVisibility(R.id.widget_item_fondo_1, View.VISIBLE)
+                views.setViewVisibility(R.id.widget_item_fondo_2, View.VISIBLE)
+                views.setViewVisibility(R.id.widget_item_fondo_3, View.VISIBLE)
+                views.setViewVisibility(R.id.widget_tarjeta_bloqueada_fondo, View.VISIBLE)
+
+                views.setImageViewBitmap(R.id.widget_item_fondo_1, filaBitmap)
+                views.setImageViewBitmap(R.id.widget_item_fondo_2, filaBitmap)
+                views.setImageViewBitmap(R.id.widget_item_fondo_3, filaBitmap)
+                views.setImageViewBitmap(R.id.widget_tarjeta_bloqueada_fondo, filaBitmap)
+            }
+
             // Colores de cabecera: Título e Ícono
             val colorTituloIconoInt = try {
                 Color.parseColor(ajustes.widgetColorTituloIcono.ifBlank { "#FFFFFF" })
@@ -433,6 +462,48 @@ class WidgetTotpFavoritos : AppWidgetProvider() {
             return bitmap
         }
 
+        private fun generarFondoFilaBitmap(
+            anchoPx: Int,
+            altoPx: Int,
+            curvaturaDp: Float,
+            opacidadFila: Float,
+            colorFilaHex: String,
+            density: Float
+        ): Bitmap {
+            val w = anchoPx.coerceIn(20, 1600)
+            val h = altoPx.coerceIn(20, 800)
+            val bitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888)
+            val canvas = Canvas(bitmap)
+
+            val radioPx = curvaturaDp * density
+            val colorBase = try {
+                if (colorFilaHex.isBlank() || colorFilaHex == "#00000000") {
+                    Color.parseColor("#26231E")
+                } else {
+                    Color.parseColor(colorFilaHex)
+                }
+            } catch (_: Exception) {
+                Color.parseColor("#26231E")
+            }
+
+            val alphaInt = (opacidadFila.coerceIn(0f, 1f) * 255).roundToInt()
+            if (alphaInt > 0) {
+                val paintFondo = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+                    color = Color.argb(
+                        alphaInt,
+                        Color.red(colorBase),
+                        Color.green(colorBase),
+                        Color.blue(colorBase)
+                    )
+                    style = Paint.Style.FILL
+                }
+                val rectFondo = RectF(0f, 0f, w.toFloat(), h.toFloat())
+                canvas.drawRoundRect(rectFondo, radioPx, radioPx, paintFondo)
+            }
+
+            return bitmap
+        }
+
         private fun generarBitmapTartaTotp(
             segundosRestantes: Long,
             periodo: Long,
@@ -482,9 +553,9 @@ class WidgetTotpFavoritos : AppWidgetProvider() {
 
         private fun ejecutarVibracion(context: Context) {
             try {
-                val repo = com.jlnavas3.bovedalocal.data.VaultRepository.obtener(context.applicationContext)
+                val repo = VaultRepository.obtener(context.applicationContext)
                 val ajustes = repo.ajustes.actual
-                com.jlnavas3.bovedalocal.util.Haptica.vibrarExterno(
+                Haptica.vibrarExterno(
                     context = context,
                     activo = ajustes.widgetHaptica,
                     intensidad = ajustes.widgetHapticaIntensidad

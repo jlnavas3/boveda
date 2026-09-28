@@ -109,10 +109,10 @@ fun SimuladorWidgetTotpFlotante(
 
                     Spacer(Modifier.height(8.dp))
 
-                    val fondoFilaEfectivo = if (ajustes.widgetTransparenciaFilas > 0.01f) {
+                    val fondoFilaEfectivo = if (ajustes.widgetTransparenciaFilas > 0.001f) {
                         colorFilasEfectivo.copy(alpha = ajustes.widgetTransparenciaFilas)
                     } else {
-                        Color(0xFF26231E)
+                        Color.Transparent
                     }
 
                     if (vistaBloqueadaEnPreview) {

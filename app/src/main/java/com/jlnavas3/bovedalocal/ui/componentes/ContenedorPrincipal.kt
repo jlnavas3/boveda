@@ -3,6 +3,7 @@ package com.jlnavas3.bovedalocal.ui.componentes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.RowScope
@@ -44,6 +45,7 @@ fun ContenedorPrincipal(
     cabeceraFlotante: (@Composable () -> Unit)? = null,
     idEtiqueta: String? = null,
     mostrarId: Boolean = false,
+    overlayLateral: (@Composable BoxScope.() -> Unit)? = null,
     contenido: @Composable ColumnScope.() -> Unit
 ) {
     val scrollState = rememberScrollState()
@@ -102,20 +104,29 @@ fun ContenedorPrincipal(
                 ) {
                     cabeceraFlotante()
                 }
+
+                overlayLateral?.invoke(this)
             }
         } else {
-            Column(
+            Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f)
-                    .then(modScroll)
-                    .padding(horizontal = paddingHorizontal, vertical = paddingVertical),
-                verticalArrangement = Arrangement.spacedBy(espaciado)
             ) {
-                if (!subtitulo.isNullOrBlank()) {
-                    DescripcionPantalla(subtitulo = subtitulo)
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .then(modScroll)
+                        .padding(horizontal = paddingHorizontal, vertical = paddingVertical),
+                    verticalArrangement = Arrangement.spacedBy(espaciado)
+                ) {
+                    if (!subtitulo.isNullOrBlank()) {
+                        DescripcionPantalla(subtitulo = subtitulo)
+                    }
+                    contenido()
                 }
-                contenido()
+
+                overlayLateral?.invoke(this)
             }
         }
     }

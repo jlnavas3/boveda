@@ -59,7 +59,7 @@ fun PantallaCalibracionWidgetTotp(
     val colorContadorEfectivo = parsearColorO(ajustes.widgetColorContador, Color.White)
     val colorCodigoEfectivo = parsearColorO(ajustes.widgetColorCodigo, Ambar)
     val colorTituloIconoEfectivo = parsearColorO(ajustes.widgetColorTituloIcono, Color.White)
-    val colorFilasEfectivo = parsearColorO(ajustes.widgetColorFilas, Color.Transparent)
+    val colorFilasEfectivo = parsearColorO(if (ajustes.widgetColorFilas.isBlank() || ajustes.widgetColorFilas == "#00000000") "#26231E" else ajustes.widgetColorFilas, Color(0xFF26231E))
 
     ProveedorResaltadoAjustes(seccionDestino, scrollState) {
         Column(
