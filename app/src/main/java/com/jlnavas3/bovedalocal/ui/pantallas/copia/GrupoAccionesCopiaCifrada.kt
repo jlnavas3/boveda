@@ -33,7 +33,6 @@ fun GrupoAccionesCopiaCifrada(
     ) {
         ComponenteNavegacion(
             titulo = "Exportar bóveda completa",
-            subtitulo = "Guardar archivo en la ubicación que elijas",
             icono = null,
             valorTexto = ".bvda",
             idFila = "05.1.1",
@@ -43,7 +42,6 @@ fun GrupoAccionesCopiaCifrada(
         ComponenteSeparador(sangriaInicio = 16.dp)
         ComponenteNavegacion(
             titulo = "Exportación selectiva",
-            subtitulo = "Respaldar solo cuentas seleccionadas",
             icono = null,
             valorTexto = ".bvda",
             idFila = "05.1.2",
@@ -53,7 +51,6 @@ fun GrupoAccionesCopiaCifrada(
         ComponenteSeparador(sangriaInicio = 16.dp)
         ComponenteNavegacion(
             titulo = "Importar copia de seguridad",
-            subtitulo = "Restaurar cuentas desde un archivo .bvda",
             icono = null,
             idFila = "05.1.3",
             mostrarId = ajustes.mostrarIdsAjustes,

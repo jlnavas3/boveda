@@ -189,7 +189,8 @@ fun ComponenteFila(
                     color = ColorAjusteGris,
                     style = MaterialTheme.typography.bodyMedium.copy(fontSize = 14.sp),
                     maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.weight(1f, fill = false)
                 )
             }
 

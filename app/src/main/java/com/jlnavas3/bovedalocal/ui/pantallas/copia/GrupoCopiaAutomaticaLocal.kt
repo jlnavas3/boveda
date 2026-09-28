@@ -23,17 +23,11 @@ fun GrupoCopiaAutomaticaLocal(
     haptica: Haptica? = null
 ) {
     val dias = ajustes.backupAutoFrecuenciaDias
-    val maxCopias = ajustes.backupAutoMaxCopias
 
     val textoFrecuencia = AlmacenAjustes.OPCIONES_FRECUENCIA_BACKUP_AUTO
         .find { it.first == dias }?.second ?: if (dias > 0) "$dias días" else "Desactivada"
 
-    val valorTexto = if (dias <= 0) {
-        "Desactivada"
-    } else {
-        val textoCopias = if (maxCopias <= 0) "Sin límite" else "$maxCopias copias"
-        "$textoFrecuencia · $textoCopias"
-    }
+    val valorTexto = if (dias <= 0) "Desactivada" else textoFrecuencia
 
     Column(modifier = modifier) {
         ComponenteGrupo(
@@ -45,8 +39,7 @@ fun GrupoCopiaAutomaticaLocal(
             descripcion = "Copias periódicas cifradas en Descargas con rotación"
         ) {
             ComponenteNavegacion(
-                titulo = "Configuración de copia automática",
-                subtitulo = "Programación, contraseña y rotación de versiones",
+                titulo = "Configurar respaldo",
                 icono = null,
                 idFila = "05.1.4",
                 mostrarId = ajustes.mostrarIdsAjustes,
