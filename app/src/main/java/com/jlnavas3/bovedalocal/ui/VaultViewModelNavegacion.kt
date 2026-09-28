@@ -71,6 +71,7 @@ interface VaultNavegacionDelegate {
 
         // Nivel 2: Funciones -> Ajustes (Nivel 1)
         is Pantalla.AjustesAutenticador -> Pantalla.Ajustes("04-HER-AUT")
+        is Pantalla.AjustesHistorial -> Pantalla.Ajustes("04-HER-HST")
         is Pantalla.HistorialClaves -> if (!pantalla.seccionId.isNullOrBlank()) Pantalla.Ajustes(pantalla.seccionId) else Pantalla.Lista
         is Pantalla.AjustesCamara -> Pantalla.Ajustes("04-HER-CAM")
         is Pantalla.TileRapido -> Pantalla.Ajustes("04-HER-MSK")
@@ -172,6 +173,7 @@ interface VaultNavegacionDelegate {
             limpio.startsWith("03-LST-FMT") || limpio.startsWith("03.3") || limpio.startsWith("10") -> Pantalla.FormatosCampos(limpio)
 
             limpio.startsWith("04-HER-AUT") || limpio.startsWith("04.1") || limpio == "07" || limpio.startsWith("07.0") -> Pantalla.AjustesAutenticador(limpio)
+            limpio.startsWith("04-HER-HST-CFG") -> Pantalla.AjustesHistorial(limpio)
             limpio.startsWith("04-HER-HST") || limpio.startsWith("04.2") || limpio == "04" || limpio.startsWith("04.0") -> Pantalla.HistorialClaves(limpio)
             limpio.startsWith("04-HER-CAM") || limpio.startsWith("04.3") || limpio == "05" || limpio.startsWith("05.0") -> Pantalla.AjustesCamara(limpio)
             limpio.startsWith("04-HER-WGT-TOT") || limpio.startsWith("04.4.1") -> Pantalla.WidgetTotpAjustes(limpio)

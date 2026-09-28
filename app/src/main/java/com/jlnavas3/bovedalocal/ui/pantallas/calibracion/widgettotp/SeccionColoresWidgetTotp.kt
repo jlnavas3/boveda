@@ -13,6 +13,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Palette
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -31,6 +33,7 @@ import com.jlnavas3.bovedalocal.data.AjustesApp
 import com.jlnavas3.bovedalocal.ui.VaultViewModel
 import com.jlnavas3.bovedalocal.ui.componentes.SelectorColorEnTiempoReal
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteGrupo
+import com.jlnavas3.bovedalocal.ui.theme.Color2FA
 import com.jlnavas3.bovedalocal.ui.theme.SuperficieAlta
 import com.jlnavas3.bovedalocal.ui.theme.TextoPrincipal
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
@@ -45,6 +48,7 @@ fun SeccionColoresWidgetTotp(
     colorContadorEfectivo: Color,
     colorCodigoEfectivo: Color,
     colorTituloIconoEfectivo: Color,
+    colorFilasEfectivo: Color,
     haptica: Haptica,
     modifier: Modifier = Modifier
 ) {
@@ -53,15 +57,25 @@ fun SeccionColoresWidgetTotp(
     val opcionesColor = listOf(
         "Borde" to colorBordeEfectivo,
         "Contador" to colorContadorEfectivo,
-        "Código 2FA" to colorCodigoEfectivo,
-        "Título" to colorTituloIconoEfectivo
+        "Código" to colorCodigoEfectivo,
+        "Título" to colorTituloIconoEfectivo,
+        "Filas" to colorFilasEfectivo
     )
 
     ComponenteGrupo(
         etiqueta = "Colores del widget",
-        idGrupo = "03.3.G3",
+        icono = Icons.Filled.Palette,
+        colorIcono = Color2FA,
+        idGrupo = "04-HER-WGT-CAL-G03",
         mostrarId = ajustes.mostrarIdsAjustes,
-        descripcion = "Personalización de los tonos de cada elemento visual",
+        alRestablecer = {
+            haptica.tic()
+            vm.ajustarWidgetColorBorde("#FFB300")
+            vm.ajustarWidgetColorContador("#FFFFFF")
+            vm.ajustarWidgetColorCodigo("#FFB300")
+            vm.ajustarWidgetColorTituloIcono("#FFFFFF")
+            vm.ajustarWidgetColorFilas("#00000000")
+        },
         modifier = modifier
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
@@ -74,7 +88,7 @@ fun SeccionColoresWidgetTotp(
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                horizontalArrangement = Arrangement.spacedBy(6.dp)
             ) {
                 opcionesColor.forEachIndexed { idx, (nombre, color) ->
                     val seleccionado = colorTabSeleccionada == idx
@@ -91,7 +105,7 @@ fun SeccionColoresWidgetTotp(
                                 haptica.tic()
                                 colorTabSeleccionada = idx
                             }
-                            .padding(vertical = 10.dp),
+                            .padding(vertical = 8.dp),
                         contentAlignment = Alignment.Center
                     ) {
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -146,6 +160,14 @@ fun SeccionColoresWidgetTotp(
                         titulo = "Color del Título e Ícono"
                     ) { nuevoColor ->
                         vm.ajustarWidgetColorTituloIcono(nuevoColor.aHex())
+                    }
+                }
+                4 -> {
+                    SelectorColorEnTiempoReal(
+                        colorInicial = colorFilasEfectivo,
+                        titulo = "Color de Fondo de Filas"
+                    ) { nuevoColor ->
+                        vm.ajustarWidgetColorFilas(nuevoColor.aHex())
                     }
                 }
             }

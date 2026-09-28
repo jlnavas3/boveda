@@ -152,7 +152,8 @@ fun PantallaKitEmergencia(
                         haptica.toque()
                         Portapapeles.copiar(contexto, "Kit de Emergencia Bóveda Local", textoPreview)
                         vm.avisar("Kit de emergencia copiado al portapapeles")
-                    }
+                    },
+                    mostrarIdsAjustes = ajustes.mostrarIdsAjustes
                 )
 
                 Spacer(Modifier.height(14.dp))

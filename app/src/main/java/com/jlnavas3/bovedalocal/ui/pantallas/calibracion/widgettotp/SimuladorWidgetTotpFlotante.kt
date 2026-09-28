@@ -50,7 +50,8 @@ fun SimuladorWidgetTotpFlotante(
     vistaBloqueadaEnPreview: Boolean,
     haptica: Haptica,
     alAlternarBloqueo: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    colorFilasEfectivo: Color = Color.Transparent
 ) {
     Box(
         modifier = modifier
@@ -108,12 +109,18 @@ fun SimuladorWidgetTotpFlotante(
 
                     Spacer(Modifier.height(8.dp))
 
+                    val fondoFilaEfectivo = if (ajustes.widgetTransparenciaFilas > 0.01f) {
+                        colorFilasEfectivo.copy(alpha = ajustes.widgetTransparenciaFilas)
+                    } else {
+                        Color(0xFF26231E)
+                    }
+
                     if (vistaBloqueadaEnPreview) {
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .clip(RoundedCornerShape(8.dp))
-                                .background(Color(0xFF26231E))
+                                .background(fondoFilaEfectivo)
                                 .padding(horizontal = 12.dp, vertical = 10.dp),
                             contentAlignment = Alignment.Center
                         ) {
@@ -146,7 +153,7 @@ fun SimuladorWidgetTotpFlotante(
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .clip(RoundedCornerShape(6.dp))
-                                        .background(Color(0xFF26231E))
+                                        .background(fondoFilaEfectivo)
                                         .padding(horizontal = 9.dp, vertical = 6.dp),
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {

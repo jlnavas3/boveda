@@ -1,5 +1,6 @@
 package com.jlnavas3.bovedalocal.ui.pantallas.ajustes.widget
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.material.icons.Icons
@@ -74,8 +75,22 @@ fun PantallaWidget1x1Comportamiento(
                 alCambiar = {
                     haptica.tic()
                     vm.ajustarWidget1x1MostrarToast(it)
+                    if (it) {
+                        Toast.makeText(contexto, "Notificación emergente (Toast) activada", Toast.LENGTH_SHORT).show()
+                    }
                 }
             )
+
+            if (ajustes.widget1x1MostrarToast) {
+                ComponenteSeparador(sangriaInicio = 16.dp)
+
+                ComponenteBotonFila(
+                    titulo = "Probar notificación emergente (Toast)",
+                    alPulsar = {
+                        Toast.makeText(contexto, "Prueba: Contraseña generada y copiada al portapapeles", Toast.LENGTH_SHORT).show()
+                    }
+                )
+            }
         }
 
         Spacer(Modifier.height(14.dp))

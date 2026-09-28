@@ -7,9 +7,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -17,10 +15,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -28,7 +23,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.jlnavas3.bovedalocal.data.AjustesApp
 import com.jlnavas3.bovedalocal.ui.componentes.ContenedorTarjeta
-import com.jlnavas3.bovedalocal.ui.componentes.IndiceAlfabetico
 import com.jlnavas3.bovedalocal.ui.componentes.letraInicialIndice
 import com.jlnavas3.bovedalocal.ui.theme.Ambar
 import com.jlnavas3.bovedalocal.ui.theme.Borde
@@ -44,8 +38,6 @@ fun VistaPreviaIndiceInteractiva(
     letraArrastrada: Char? = null,
     mockItems: List<Pair<String, String>> = emptyList()
 ) {
-    var letraArrastradaInterna by remember { mutableStateOf<Char?>(letraArrastrada ?: 'G') }
-
     val itemsEfectivos = remember(mockItems) {
         if (mockItems.isNotEmpty()) mockItems else listOf(
             "Amazon" to "Compras y suscripción",
@@ -56,11 +48,11 @@ fun VistaPreviaIndiceInteractiva(
         )
     }
 
-    val primerIndiceCoincidente = remember(itemsEfectivos, letraArrastradaInterna, ajustes.indiceIncluirEnie, ajustes.indiceResaltarEntradas, ajustes.indiceResaltarSoloPrimera) {
-        if (!ajustes.indiceResaltarEntradas || letraArrastradaInterna == null) null
+    val primerIndiceCoincidente = remember(itemsEfectivos, letraArrastrada, ajustes.indiceIncluirEnie, ajustes.indiceResaltarEntradas, ajustes.indiceResaltarSoloPrimera) {
+        if (!ajustes.indiceResaltarEntradas || letraArrastrada == null) null
         else if (ajustes.indiceResaltarSoloPrimera) {
             itemsEfectivos.indexOfFirst { (nombre, _) ->
-                letraInicialIndice(nombre, ajustes.indiceIncluirEnie) == letraArrastradaInterna
+                letraInicialIndice(nombre, ajustes.indiceIncluirEnie) == letraArrastrada
             }.takeIf { it >= 0 }
         } else null
     }
@@ -69,22 +61,21 @@ fun VistaPreviaIndiceInteractiva(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(180.dp)
                 .padding(8.dp)
         ) {
             Column(
                 modifier = Modifier
-                    .fillMaxHeight()
+                    .fillMaxWidth()
                     .padding(end = 40.dp),
                 verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
                 itemsEfectivos.take(4).forEachIndexed { indice, (nombre, detalle) ->
-                    val coincide = if (!ajustes.indiceResaltarEntradas || letraArrastradaInterna == null) {
+                    val coincide = if (!ajustes.indiceResaltarEntradas || letraArrastrada == null) {
                         false
                     } else if (ajustes.indiceResaltarSoloPrimera) {
                         indice == primerIndiceCoincidente
                     } else {
-                        letraInicialIndice(nombre, ajustes.indiceIncluirEnie) == letraArrastradaInterna
+                        letraInicialIndice(nombre, ajustes.indiceIncluirEnie) == letraArrastrada
                     }
 
                     Row(
@@ -124,25 +115,6 @@ fun VistaPreviaIndiceInteractiva(
                     }
                 }
             }
-
-            IndiceAlfabetico(
-                alSeleccionarLetra = { letraArrastradaInterna = it },
-                alCambiarLetraActiva = { letraArrastradaInterna = it },
-                incluirEnie = ajustes.indiceIncluirEnie,
-                efectoOla = ajustes.indiceEfectoOla,
-                amplitudOlaDp = ajustes.indiceAmplitudOlaDp,
-                radioOlaDp = ajustes.indiceRadioOlaDp,
-                escalaMaximaLetras = ajustes.indiceEscalaLetras,
-                mostrarCirculo = ajustes.indiceMostrarCirculo,
-                tamanoCirculoDp = ajustes.indiceTamanoCirculoDp,
-                offsetCirculoDp = ajustes.indiceOffsetCirculoDp,
-                hapticaActiva = ajustes.indiceHaptica,
-                anchoZonaTactilDp = ajustes.indiceAnchoTactilDp,
-                tonoLetras = ajustes.indiceTonoLetras,
-                modifier = Modifier
-                    .align(Alignment.CenterEnd)
-                    .fillMaxHeight()
-            )
         }
     }
 }

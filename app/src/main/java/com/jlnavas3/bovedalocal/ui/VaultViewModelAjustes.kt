@@ -264,6 +264,29 @@ interface VaultAjustesDelegate {
         aplicarPersonalizacionTemaCompleto(repositorio.ajustes.actual)
     }
 
+    // --- Personalización de Widgets 1x1, TOTP y Tile ---
+    fun ajustarWidget1x1DicewarePalabras(palabras: Int) {
+        repositorio.ajustes.actualizar { it.copy(widget1x1DicewarePalabras = palabras) }
+    }
+    fun ajustarWidget1x1DicewareSeparador(separador: String) {
+        repositorio.ajustes.actualizar { it.copy(widget1x1DicewareSeparador = separador) }
+    }
+    fun ajustarWidgetColorFilas(colorHex: String) {
+        repositorio.ajustes.actualizar { it.copy(widgetColorFilas = colorHex) }
+    }
+    fun ajustarWidgetTransparenciaFilas(transparencia: Float) {
+        repositorio.ajustes.actualizar { it.copy(widgetTransparenciaFilas = transparencia) }
+    }
+    fun ajustarTileSimbolos(simbolos: String) {
+        repositorio.ajustes.actualizar { it.copy(tileSimbolos = simbolos) }
+    }
+    fun ajustarTileDicewarePalabras(palabras: Int) {
+        repositorio.ajustes.actualizar { it.copy(tileDicewarePalabras = palabras) }
+    }
+    fun ajustarTileDicewareSeparador(separador: String) {
+        repositorio.ajustes.actualizar { it.copy(tileDicewareSeparador = separador) }
+    }
+
     // --- Personalización de Bordes y Formas ---
     fun ajustarCurvaturaEsquinas(valor: Float) {
         repositorio.ajustes.actualizar { it.copy(curvaturaEsquinasDp = valor) }

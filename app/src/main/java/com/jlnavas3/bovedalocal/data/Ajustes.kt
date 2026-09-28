@@ -96,6 +96,10 @@ data class AjustesApp(
     val widget1x1ColorBorde: String = "#33332E",
     val widget1x1ColorIcono: String = "#E6FCFF",
     val widget1x1ColorFondo: String = "#2E3333",
+    val widget1x1DicewarePalabras: Int = 5,
+    val widget1x1DicewareSeparador: String = "-",
+    val widgetColorFilas: String = "#00000000",
+    val widgetTransparenciaFilas: Float = 0.0f,
     // Personalización de tipografía y textos
     val escalaTexto: Float = 1.0f,
     val pesoTexto: String = "normal",
@@ -109,6 +113,9 @@ data class AjustesApp(
     val tileModo: String = "longitud",
     val tileLongitud: Int = 20,
     val tilePatron: String = "XXXXX-XXXXX-XXXXX-XXXXX",
+    val tileSimbolos: String = "!@#$%&*()_-=+[]{}?/,.:;",
+    val tileDicewarePalabras: Int = 5,
+    val tileDicewareSeparador: String = "-",
     val tileCopiarPortapapeles: Boolean = true,
     val tileMostrarToast: Boolean = true,
     val tileHaptica: Boolean = true,
@@ -413,6 +420,13 @@ class AlmacenAjustes(contexto: Context) {
             widget1x1ColorBorde = prefs.getString("widget_1x1_color_borde", "#33332E") ?: "#33332E",
             widget1x1ColorIcono = prefs.getString("widget_1x1_color_icono", "#E6FCFF") ?: "#E6FCFF",
             widget1x1ColorFondo = prefs.getString("widget_1x1_color_fondo", "#2E3333") ?: "#2E3333",
+            widget1x1DicewarePalabras = prefs.getInt("widget_1x1_diceware_palabras", 5),
+            widget1x1DicewareSeparador = prefs.getString("widget_1x1_diceware_separador", "-") ?: "-",
+            widgetColorFilas = prefs.getString("widget_color_filas", "#00000000") ?: "#00000000",
+            widgetTransparenciaFilas = prefs.getFloat("widget_transparencia_filas", 0.0f),
+            tileSimbolos = prefs.getString("tile_simbolos", "!@#$%&*()_-=+[]{}?/,.:;") ?: "!@#$%&*()_-=+[]{}?/,.:;",
+            tileDicewarePalabras = prefs.getInt("tile_diceware_palabras", 5),
+            tileDicewareSeparador = prefs.getString("tile_diceware_separador", "-") ?: "-",
             escalaTexto = prefs.getFloat("escala_texto", 1.0f),
             pesoTexto = prefs.getString("peso_texto", "normal") ?: "normal",
             cursivaTexto = prefs.getBoolean("cursiva_texto", false),
@@ -581,6 +595,13 @@ class AlmacenAjustes(contexto: Context) {
             .putString("widget_1x1_color_borde", nuevo.widget1x1ColorBorde)
             .putString("widget_1x1_color_icono", nuevo.widget1x1ColorIcono)
             .putString("widget_1x1_color_fondo", nuevo.widget1x1ColorFondo)
+            .putInt("widget_1x1_diceware_palabras", nuevo.widget1x1DicewarePalabras)
+            .putString("widget_1x1_diceware_separador", nuevo.widget1x1DicewareSeparador)
+            .putString("widget_color_filas", nuevo.widgetColorFilas)
+            .putFloat("widget_transparencia_filas", nuevo.widgetTransparenciaFilas)
+            .putString("tile_simbolos", nuevo.tileSimbolos)
+            .putInt("tile_diceware_palabras", nuevo.tileDicewarePalabras)
+            .putString("tile_diceware_separador", nuevo.tileDicewareSeparador)
             .putFloat("escala_texto", nuevo.escalaTexto)
             .putString("peso_texto", nuevo.pesoTexto)
             .putBoolean("cursiva_texto", nuevo.cursivaTexto)

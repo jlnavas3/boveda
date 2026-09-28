@@ -15,7 +15,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.jlnavas3.bovedalocal.data.AjustesApp
 import com.jlnavas3.bovedalocal.data.AlmacenAjustes
+import com.jlnavas3.bovedalocal.ui.VaultViewModel
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteCampoTexto
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteGrupo
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteSelectorModal
@@ -47,8 +49,27 @@ fun GrupoConfiguracionTile(
     alCambiarTileHaptica: (Boolean) -> Unit,
     alCambiarTileHapticaIntensidad: (Float) -> Unit,
     alRestablecerGrupo: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    vm: VaultViewModel? = null,
+    ajustes: AjustesApp? = null
 ) {
+    val opcionesModo = remember {
+        listOf(
+            OpcionSelectorModal("longitud", "Por longitud", "Longitud de caracteres", "Genera una contraseña aleatoria de longitud fija", Icons.Filled.Key),
+            OpcionSelectorModal("diceware", "Frase Diceware", "Frase de palabras Diceware", "Genera una frase de palabras legibles", Icons.Filled.Key),
+            OpcionSelectorModal("patron", "Por patrón", "Por patrón personalizado", "Genera según máscara de caracteres (XXXX-XXXX)", Icons.Filled.Tune)
+        )
+    }
+
+    val opcionesSeparador = remember {
+        listOf(
+            OpcionSelectorModal("-", "Guion (-)", "Guion (-)", "Separador con guion estándar", Icons.Filled.Key),
+            OpcionSelectorModal(".", "Punto (.)", "Punto (.)", "Separador con punto", Icons.Filled.Key),
+            OpcionSelectorModal("_", "Guion bajo (_)", "Guion bajo (_)", "Separador con guion bajo", Icons.Filled.Key),
+            OpcionSelectorModal(" ", "Espacio ( )", "Espacio ( )", "Separador con espacio en blanco", Icons.Filled.Key)
+        )
+    }
+
     ComponenteGrupo(
         etiqueta = "Generación rápida",
         icono = Icons.Filled.DashboardCustomize,
@@ -59,12 +80,6 @@ fun GrupoConfiguracionTile(
         descripcion = "Añade el mosaico en la barra rápida de Android para generar con un toque",
         modifier = modifier
     ) {
-        val opcionesModo = remember {
-            listOf(
-                OpcionSelectorModal("longitud", "Por longitud", "Longitud de caracteres", "Genera una contraseña aleatoria de longitud fija", Icons.Filled.Key),
-                OpcionSelectorModal("patron", "Por patrón", "Por patrón personalizado", "Genera según máscara de caracteres (XXXX-XXXX)", Icons.Filled.Tune)
-            )
-        }
         ComponenteSelectorModal(
             titulo = "Modo de generación",
             descripcionModal = "Elige la estrategia de generación al pulsar el mosaico del sistema",
@@ -100,6 +115,53 @@ fun GrupoConfiguracionTile(
                 opciones = opcionesLongitud,
                 alSeleccionar = alCambiarTileLongitud
             )
+
+            if (ajustes != null && vm != null) {
+                ComponenteSeparador(sangriaInicio = 16.dp)
+                Box(modifier = Modifier.padding(16.dp)) {
+                    ComponenteCampoTexto(
+                        valor = ajustes.tileSimbolos,
+                        etiqueta = "Símbolos permitidos",
+                        alCambiar = { vm.ajustarTileSimbolos(it) },
+                        monoespaciada = true
+                    )
+                }
+            }
+        } else if (tileModo == "diceware") {
+            if (ajustes != null && vm != null) {
+                ComponenteSlider(
+                    titulo = "Cantidad de palabras",
+                    icono = null,
+                    valor = ajustes.tileDicewarePalabras.toFloat(),
+                    valorTexto = "${ajustes.tileDicewarePalabras} palabras",
+                    rango = 3f..12f,
+                    pasos = 8,
+                    idFila = "04-HER-MSK-WRD",
+                    mostrarId = mostrarIdsAjustes,
+                    alRestablecer = {
+                        haptica.tic()
+                        vm.ajustarTileDicewarePalabras(5)
+                    },
+                    alCambiar = {
+                        vm.ajustarTileDicewarePalabras(it.roundToInt())
+                    }
+                )
+
+                ComponenteSeparador(sangriaInicio = 16.dp)
+
+                ComponenteSelectorModal(
+                    titulo = "Separador de palabras",
+                    icono = null,
+                    valorSeleccionado = ajustes.tileDicewareSeparador,
+                    opciones = opcionesSeparador,
+                    idFila = "04-HER-MSK-SEP",
+                    mostrarId = mostrarIdsAjustes,
+                    alSeleccionar = {
+                        haptica.tic()
+                        vm.ajustarTileDicewareSeparador(it)
+                    }
+                )
+            }
         } else {
             Box(modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)) {
                 Column {

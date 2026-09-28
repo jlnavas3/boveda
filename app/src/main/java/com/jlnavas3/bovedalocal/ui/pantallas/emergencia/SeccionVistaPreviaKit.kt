@@ -5,8 +5,11 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Description
 import androidx.compose.material3.MaterialTheme
@@ -44,12 +47,14 @@ fun SeccionVistaPreviaKit(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .heightIn(max = 240.dp)
                     .clip(RoundedCornerShape(CurvaturaEsquinas))
                     .background(Superficie)
                     .then(
                         if (GrosorBorde > 0.dp) Modifier.border(GrosorBorde, ColorBordeActual, RoundedCornerShape(CurvaturaEsquinas))
                         else Modifier
                     )
+                    .verticalScroll(rememberScrollState())
                     .padding(14.dp)
             ) {
                 Text(

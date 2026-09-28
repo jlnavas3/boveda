@@ -89,10 +89,13 @@ fun SimuladorCeldaWidget1x1(
                     )
                     .clickable {
                         haptica.probar(ajustes.widget1x1HapticaIntensidad)
-                        val clave = if (ajustes.widget1x1Modo == "patron") {
-                            PasswordGenerator.generarPorPatron(ajustes.widget1x1Patron)
-                        } else {
-                            PasswordGenerator.generarAleatoria(
+                        val clave = when (ajustes.widget1x1Modo) {
+                            "patron" -> PasswordGenerator.generarPorPatron(ajustes.widget1x1Patron)
+                            "diceware" -> PasswordGenerator.generarFrase(
+                                numeroPalabras = ajustes.widget1x1DicewarePalabras,
+                                separador = ajustes.widget1x1DicewareSeparador
+                            )
+                            else -> PasswordGenerator.generarAleatoria(
                                 OpcionesGenerador(
                                     longitud = ajustes.widget1x1Longitud,
                                     mayusculas = true,

@@ -202,7 +202,7 @@ fun crearCatalogoAjustesHub(
             idEtiqueta = "04-HER-HST",
             grupo = "Herramientas",
             palabrasClave = "historial contrasenas generadas retencion autodestruccion claves temporal tiempo",
-            alPulsar = { vm.ir(Pantalla.HistorialClaves("04-HER-HST")) }
+            alPulsar = { vm.ir(Pantalla.AjustesHistorial("04-HER-HST")) }
         ),
         ElementoMenuAjustes(
             titulo = "Cámara y escáner",

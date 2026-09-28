@@ -26,7 +26,6 @@ import com.jlnavas3.bovedalocal.ui.VaultViewModel
 import com.jlnavas3.bovedalocal.ui.componentes.BarraSuperiorPantalla
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ProveedorResaltadoAjustes
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjustesFondo
-import com.jlnavas3.bovedalocal.ui.pantallas.calibracion.widgettotp.AccionesWidgetTotp
 import com.jlnavas3.bovedalocal.ui.pantallas.calibracion.widgettotp.SeccionColoresWidgetTotp
 import com.jlnavas3.bovedalocal.ui.pantallas.calibracion.widgettotp.SeccionFormaYTransparenciaWidgetTotp
 import com.jlnavas3.bovedalocal.ui.pantallas.calibracion.widgettotp.SimuladorWidgetTotpFlotante
@@ -60,6 +59,7 @@ fun PantallaCalibracionWidgetTotp(
     val colorContadorEfectivo = parsearColorO(ajustes.widgetColorContador, Color.White)
     val colorCodigoEfectivo = parsearColorO(ajustes.widgetColorCodigo, Ambar)
     val colorTituloIconoEfectivo = parsearColorO(ajustes.widgetColorTituloIcono, Color.White)
+    val colorFilasEfectivo = parsearColorO(ajustes.widgetColorFilas, Color.Transparent)
 
     ProveedorResaltadoAjustes(seccionDestino, scrollState) {
         Column(
@@ -83,6 +83,7 @@ fun PantallaCalibracionWidgetTotp(
                 colorContadorEfectivo = colorContadorEfectivo,
                 colorCodigoEfectivo = colorCodigoEfectivo,
                 colorTituloIconoEfectivo = colorTituloIconoEfectivo,
+                colorFilasEfectivo = colorFilasEfectivo,
                 vistaBloqueadaEnPreview = vistaBloqueadaEnPreview,
                 haptica = haptica,
                 alAlternarBloqueo = { vistaBloqueadaEnPreview = !vistaBloqueadaEnPreview }
@@ -112,13 +113,7 @@ fun PantallaCalibracionWidgetTotp(
                     colorContadorEfectivo = colorContadorEfectivo,
                     colorCodigoEfectivo = colorCodigoEfectivo,
                     colorTituloIconoEfectivo = colorTituloIconoEfectivo,
-                    haptica = haptica
-                )
-
-                Spacer(Modifier.height(16.dp))
-
-                AccionesWidgetTotp(
-                    vm = vm,
+                    colorFilasEfectivo = colorFilasEfectivo,
                     haptica = haptica
                 )
 

@@ -127,7 +127,9 @@ fun PantallaTileRapido(
                         vm.ajustarTileHaptica(true)
                         vm.ajustarTileHapticaIntensidad(0.8f)
                         vm.avisar("Mosaico rápido restablecido")
-                    }
+                    },
+                    vm = vm,
+                    ajustes = ajustes
                 )
 
                 Spacer(Modifier.height(14.dp))

@@ -31,17 +31,21 @@ object GeneradorRapidoHelper {
         val hapticaActiva = if (esWidget1x1) ajustes.widget1x1Haptica else ajustes.tileHaptica
         val hapticaIntensidad = if (esWidget1x1) ajustes.widget1x1HapticaIntensidad else ajustes.tileHapticaIntensidad
 
-        val clave = if (modo == "patron") {
-            PasswordGenerator.generarPorPatron(patron)
-        } else {
-            PasswordGenerator.generarAleatoria(
+        val clave = when (modo) {
+            "patron" -> PasswordGenerator.generarPorPatron(patron)
+            "diceware" -> {
+                val palabras = if (esWidget1x1) ajustes.widget1x1DicewarePalabras else ajustes.tileDicewarePalabras
+                val separador = if (esWidget1x1) ajustes.widget1x1DicewareSeparador else ajustes.tileDicewareSeparador
+                PasswordGenerator.generarFrase(numeroPalabras = palabras, separador = separador)
+            }
+            else -> PasswordGenerator.generarAleatoria(
                 OpcionesGenerador(
                     longitud = longitud,
                     mayusculas = true,
                     minusculas = true,
                     digitos = true,
                     simbolos = true,
-                    simbolosPersonalizados = if (esWidget1x1) ajustes.widget1x1Simbolos else PasswordGenerator.SIMBOLOS
+                    simbolosPersonalizados = if (esWidget1x1) ajustes.widget1x1Simbolos else ajustes.tileSimbolos
                 )
             )
         }

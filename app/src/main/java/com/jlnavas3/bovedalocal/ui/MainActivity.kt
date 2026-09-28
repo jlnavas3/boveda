@@ -85,6 +85,7 @@ import com.jlnavas3.bovedalocal.ui.pantallas.PantallaConfirmarMigracion
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.widget.PantallaWidget1x1Comportamiento
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.widget.PantallaWidget1x1Modo
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.widget.PantallaWidgetTotpAjustes
+import com.jlnavas3.bovedalocal.ui.pantallas.historial.PantallaAjustesHistorial
 import com.jlnavas3.bovedalocal.ui.pantallas.indice.PantallaIndiceCresta
 import com.jlnavas3.bovedalocal.ui.pantallas.indice.PantallaIndiceHaptica
 import com.jlnavas3.bovedalocal.ui.pantallas.indice.PantallaIndiceOla
@@ -367,6 +368,7 @@ fun RaizBoveda(vm: VaultViewModel, actividad: FragmentActivity) {
                     is Pantalla.AjustesAutodestruccion -> com.jlnavas3.bovedalocal.ui.pantallas.PantallaAjustesAutodestruccion(vm, destino.seccionId)
                     is Pantalla.FormatosCampos -> com.jlnavas3.bovedalocal.ui.pantallas.PantallaFormatosCampos(vm, destino.seccionId)
                     is Pantalla.HistorialClaves -> com.jlnavas3.bovedalocal.ui.pantallas.PantallaHistorialClaves(vm, destino.seccionId)
+                    is Pantalla.AjustesHistorial -> PantallaAjustesHistorial(vm, destino.seccionId)
                     is Pantalla.Seguridad -> com.jlnavas3.bovedalocal.ui.pantallas.PantallaSeguridad(vm, actividad, destino.seccionId)
                     is Pantalla.CopiaSeguridad -> com.jlnavas3.bovedalocal.ui.pantallas.PantallaCopiaSeguridad(vm, destino.seccionId)
                     is Pantalla.CsvGoogle -> com.jlnavas3.bovedalocal.ui.pantallas.PantallaCsvGoogle(vm, destino.seccionId)

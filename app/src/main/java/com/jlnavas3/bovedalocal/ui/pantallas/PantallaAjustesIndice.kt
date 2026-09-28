@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -14,7 +15,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Sort
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
@@ -22,6 +26,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.jlnavas3.bovedalocal.ui.Pantalla
 import com.jlnavas3.bovedalocal.ui.VaultViewModel
 import com.jlnavas3.bovedalocal.ui.componentes.BarraSuperiorPantalla
+import com.jlnavas3.bovedalocal.ui.componentes.IndiceAlfabetico
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.AccionSaltoGrupo
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.BotonMenuOpcionesPantalla
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteGrupo
@@ -46,6 +51,8 @@ fun PantallaAjustesIndice(
     val haptica = remember { Haptica(contexto) }
     val ajustes by vm.ajustes.collectAsStateWithLifecycle()
     val scrollState = rememberScrollState()
+
+    var letraArrastrada by remember { mutableStateOf<Char?>(null) }
 
     ProveedorResaltadoAjustes(seccionId) {
         Box(
@@ -85,7 +92,10 @@ fun PantallaAjustesIndice(
                         .padding(start = 16.dp, end = 16.dp, top = 12.dp, bottom = 48.dp)
                 ) {
                     // Vista previa interactiva
-                    VistaPreviaIndiceInteractiva(ajustes = ajustes)
+                    VistaPreviaIndiceInteractiva(
+                        ajustes = ajustes,
+                        letraArrastrada = letraArrastrada
+                    )
 
                     Spacer(Modifier.height(14.dp))
 
@@ -159,6 +169,26 @@ fun PantallaAjustesIndice(
                     Spacer(Modifier.height(32.dp))
                 }
             }
+
+            // A-Z Index bar anchored full height on the right side
+            IndiceAlfabetico(
+                alSeleccionarLetra = { letraArrastrada = it },
+                alCambiarLetraActiva = { letraArrastrada = it },
+                incluirEnie = ajustes.indiceIncluirEnie,
+                efectoOla = ajustes.indiceEfectoOla,
+                amplitudOlaDp = ajustes.indiceAmplitudOlaDp,
+                radioOlaDp = ajustes.indiceRadioOlaDp,
+                escalaMaximaLetras = ajustes.indiceEscalaLetras,
+                mostrarCirculo = ajustes.indiceMostrarCirculo,
+                tamanoCirculoDp = ajustes.indiceTamanoCirculoDp,
+                offsetCirculoDp = ajustes.indiceOffsetCirculoDp,
+                hapticaActiva = ajustes.indiceHaptica,
+                anchoZonaTactilDp = ajustes.indiceAnchoTactilDp,
+                tonoLetras = ajustes.indiceTonoLetras,
+                modifier = Modifier
+                    .align(Alignment.CenterEnd)
+                    .fillMaxHeight()
+            )
         }
     }
 }

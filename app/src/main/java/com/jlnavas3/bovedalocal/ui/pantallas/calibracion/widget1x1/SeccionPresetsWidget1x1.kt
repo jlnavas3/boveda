@@ -33,9 +33,8 @@ fun SeccionPresetsWidget1x1(
 ) {
     ComponenteGrupo(
         etiqueta = "Presets de tamaño",
-        idGrupo = "03.3.G11A",
-        mostrarId = ajustes.mostrarIdsAjustes,
-        descripcion = "Dimensiones rápidas optimizadas para diferentes cuadrículas de launcher"
+        idGrupo = "04-HER-WGT-1X1-G01",
+        mostrarId = ajustes.mostrarIdsAjustes
     ) {
         val presets = listOf(
             "Compacto" to 42f,
