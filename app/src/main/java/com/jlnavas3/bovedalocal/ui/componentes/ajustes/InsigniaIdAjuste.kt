@@ -6,6 +6,7 @@ import android.content.Context
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
@@ -34,7 +35,7 @@ import com.jlnavas3.bovedalocal.ui.theme.parsearColorO
 
 /**
  * Insignia centralizada para renderizar los identificadores jerárquicos de Ajustes
- * (ej. 01.1.1 o 05-ATM-PAS-KEY). Permite copiar el ID al pulsar.
+ * (ej. 01.1.1 o 05-ATM-PAS-KEY). Permite copiar el ID al pulsar exclusivamente sobre el micro-ícono.
  */
 @Composable
 fun InsigniaIdAjuste(
@@ -60,7 +61,7 @@ fun InsigniaIdAjuste(
         else -> when (prefijo) {
             "01" -> Color(0xFF3F51B5)
             "02" -> Color(0xFF8E24AA)
-            "03" -> Color(0xFF00897B)
+            "03" -> Color(0xFF8E24AA)
             "04" -> Color(0xFFFB8C00)
             "05" -> Color(0xFF1E88E5)
             "06" -> Color(0xFF607D8B)
@@ -73,21 +74,30 @@ fun InsigniaIdAjuste(
         modifier = modifier
             .clip(RoundedCornerShape(4.dp))
             .background(fondoBadgeParaTema(colorBase))
-            .clickable {
-                val clipboard = contexto.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-                clipboard.setPrimaryClip(ClipData.newPlainText("ID Ajuste", id))
-                Toast.makeText(contexto, "ID copiado: $id", Toast.LENGTH_SHORT).show()
-            }
-            .padding(horizontal = 5.dp, vertical = 2.dp),
+            .padding(start = 2.dp, end = 5.dp, top = 1.5.dp, bottom = 1.5.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Icon(
-            imageVector = Icons.Filled.ContentCopy,
-            contentDescription = "Copiar ID",
-            tint = colorTexto.copy(alpha = 0.75f),
-            modifier = Modifier.size(10.dp)
-        )
-        Spacer(modifier = Modifier.width(3.5.dp))
+        Box(
+            modifier = Modifier
+                .clip(RoundedCornerShape(3.dp))
+                .clickable {
+                    val clipboard = contexto.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                    clipboard.setPrimaryClip(ClipData.newPlainText("ID Ajuste", id))
+                    Toast.makeText(contexto, "ID copiado: $id", Toast.LENGTH_SHORT).show()
+                }
+                .padding(2.5.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                imageVector = Icons.Filled.ContentCopy,
+                contentDescription = "Copiar ID $id",
+                tint = colorTexto.copy(alpha = 0.8f),
+                modifier = Modifier.size(10.5.dp)
+            )
+        }
+
+        Spacer(modifier = Modifier.width(2.dp))
+
         Text(
             text = id,
             color = colorTexto,
