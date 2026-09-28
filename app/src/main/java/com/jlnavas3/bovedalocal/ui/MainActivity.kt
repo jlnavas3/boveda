@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -293,6 +294,7 @@ fun RaizBoveda(vm: VaultViewModel, actividad: FragmentActivity) {
             modifier = Modifier
                 .fillMaxSize()
                 .padding(relleno)
+                .imePadding()
                 .pointerInput(Unit) {
                     awaitPointerEventScope {
                         while (true) {

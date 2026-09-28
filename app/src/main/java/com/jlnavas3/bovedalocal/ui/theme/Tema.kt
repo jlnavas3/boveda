@@ -1,3 +1,5 @@
+@file:OptIn(androidx.compose.foundation.ExperimentalFoundationApi::class)
+
 package com.jlnavas3.bovedalocal.ui.theme
 
 import android.app.Activity
@@ -152,7 +154,16 @@ fun BovedaTheme(temaApp: String = "sistema", contenido: @Composable () -> Unit) 
         colorScheme = esquema,
         typography = TipografiaDinamica,
         shapes = FormasDinamicas,
-        content = contenido
+        content = {
+            androidx.compose.runtime.CompositionLocalProvider(
+                androidx.compose.foundation.LocalOverscrollConfiguration provides androidx.compose.foundation.OverscrollConfiguration(
+                    glowColor = ColorAcento,
+                    drawPadding = androidx.compose.foundation.layout.PaddingValues(0.dp)
+                )
+            ) {
+                contenido()
+            }
+        }
     )
 }
 

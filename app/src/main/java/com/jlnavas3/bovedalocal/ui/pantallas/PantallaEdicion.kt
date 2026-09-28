@@ -313,7 +313,7 @@ fun PantallaEdicion(vm: VaultViewModel, id: String?, contrasenaInicial: String) 
                 alAlternarFavorito = { favorito = it; haptica.tic() }
             )
 
-            Spacer(Modifier.height(24.dp))
+            Spacer(Modifier.height(80.dp))
         }
     }
 
