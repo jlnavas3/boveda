@@ -205,7 +205,14 @@ data class AjustesApp(
     val colorDatos2FA: String = "#F97316",
     val colorDatosPasskey: String = "#8B5CF6",
     val colorDatosWeb: String = "#06B6D4",
-    val colorDatosApp: String = "#10B981"
+    val colorDatosApp: String = "#10B981",
+    // Colores por bloque de identificadores de ajustes
+    val colorIdSeguridad: String = "#3F51B5",
+    val colorIdApariencia: String = "#8E24AA",
+    val colorIdLista: String = "#00897B",
+    val colorIdHerramientas: String = "#FB8C00",
+    val colorIdCopias: String = "#1E88E5",
+    val colorIdSistema: String = "#607D8B"
 )
 
 
@@ -505,7 +512,13 @@ class AlmacenAjustes(contexto: Context) {
             colorDatos2FA = prefs.getString("color_datos_2fa", "#F97316") ?: "#F97316",
             colorDatosPasskey = prefs.getString("color_datos_passkey", "#8B5CF6") ?: "#8B5CF6",
             colorDatosWeb = prefs.getString("color_datos_web", "#06B6D4") ?: "#06B6D4",
-            colorDatosApp = prefs.getString("color_datos_app", "#10B981") ?: "#10B981"
+            colorDatosApp = prefs.getString("color_datos_app", "#10B981") ?: "#10B981",
+            colorIdSeguridad = prefs.getString("color_id_seguridad", "#3F51B5") ?: "#3F51B5",
+            colorIdApariencia = prefs.getString("color_id_apariencia", "#8E24AA") ?: "#8E24AA",
+            colorIdLista = prefs.getString("color_id_lista", "#00897B") ?: "#00897B",
+            colorIdHerramientas = prefs.getString("color_id_herramientas", "#FB8C00") ?: "#FB8C00",
+            colorIdCopias = prefs.getString("color_id_copias", "#1E88E5") ?: "#1E88E5",
+            colorIdSistema = prefs.getString("color_id_sistema", "#607D8B") ?: "#607D8B"
         )
     }
 
@@ -661,6 +674,12 @@ class AlmacenAjustes(contexto: Context) {
             .putString("color_datos_passkey", nuevo.colorDatosPasskey)
             .putString("color_datos_web", nuevo.colorDatosWeb)
             .putString("color_datos_app", nuevo.colorDatosApp)
+            .putString("color_id_seguridad", nuevo.colorIdSeguridad)
+            .putString("color_id_apariencia", nuevo.colorIdApariencia)
+            .putString("color_id_lista", nuevo.colorIdLista)
+            .putString("color_id_herramientas", nuevo.colorIdHerramientas)
+            .putString("color_id_copias", nuevo.colorIdCopias)
+            .putString("color_id_sistema", nuevo.colorIdSistema)
             .apply()
         _ajustes.value = nuevo
         com.jlnavas3.bovedalocal.util.Haptica.sincronizar(nuevo)

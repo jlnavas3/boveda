@@ -74,6 +74,7 @@ interface VaultNavegacionDelegate {
         is Pantalla.TileRapido -> Pantalla.Ajustes("04.5")
 
         // Nivel 2: Sistema -> Ajustes (Nivel 1)
+        is Pantalla.ColoresIdentificadores -> Pantalla.Avanzada("06.1.G2")
         is Pantalla.Avanzada -> Pantalla.Ajustes("06.1")
         is Pantalla.Registro -> if (!pantalla.seccionId.isNullOrBlank()) Pantalla.Ajustes(pantalla.seccionId) else Pantalla.Lista
         is Pantalla.AcercaDe -> if (!pantalla.seccionId.isNullOrBlank()) Pantalla.Ajustes(pantalla.seccionId) else Pantalla.Lista
@@ -162,6 +163,7 @@ interface VaultNavegacionDelegate {
             limpio.startsWith("05.1") || limpio == "06" || limpio.startsWith("06.0") -> Pantalla.CopiaSeguridad(limpio)
             limpio.startsWith("05.2") || limpio == "08" || limpio.startsWith("08.0") -> Pantalla.CsvGoogle(limpio)
             limpio.startsWith("05.3") || limpio.startsWith("06.3") -> Pantalla.KitEmergencia(limpio)
+            limpio.startsWith("06.1.2b") || limpio.contains("COL-IDS") -> Pantalla.ColoresIdentificadores(limpio)
             limpio.startsWith("06.1") || limpio.startsWith("11.1") || limpio == "11" -> Pantalla.Avanzada(limpio)
             limpio.startsWith("06.2") -> Pantalla.Registro(limpio)
             limpio.startsWith("06.3") || limpio.startsWith("06.4") || limpio.startsWith("11.3.1") -> Pantalla.AcercaDe(limpio)

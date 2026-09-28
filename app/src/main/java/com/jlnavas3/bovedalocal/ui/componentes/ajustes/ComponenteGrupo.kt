@@ -37,10 +37,7 @@ import androidx.compose.ui.unit.sp
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjusteGris
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorTarjetaAjustes
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
-import com.jlnavas3.bovedalocal.ui.theme.EstiloMono
-import com.jlnavas3.bovedalocal.ui.theme.colorLegibleParaTema
 import com.jlnavas3.bovedalocal.ui.theme.colorParaGrupoId
-import com.jlnavas3.bovedalocal.ui.theme.fondoBadgeParaTema
 
 val LocalColorGrupo = compositionLocalOf<Color?> { null }
 
@@ -50,7 +47,7 @@ val LocalColorGrupo = compositionLocalOf<Color?> { null }
  * Características:
  * - Cabecera con ícono pequeño opcional y etiqueta en mayúsculas discretas.
  * - Botón minimalista de restablecer grupo a la derecha (RestartAlt) sin texto.
- * - Badge de ID de grupo opcional (solo visible si mostrarId es true).
+ * - InsigniaIdAjuste posicionado homogéneamente debajo del título del grupo si mostrarId es true.
  * - Tarjeta con bordes redondeados (18.dp) y fondo de superficie limpio.
  * - Descripción o subtítulo opcional a nivel de grupo.
  */
@@ -95,47 +92,38 @@ fun ComponenteGrupo(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(6.dp),
-                    modifier = Modifier.weight(1f, fill = false)
+                Column(
+                    modifier = Modifier.weight(1f, fill = false),
+                    verticalArrangement = Arrangement.Center
                 ) {
-                    if (icono != null) {
-                        Icon(
-                            imageVector = icono,
-                            contentDescription = null,
-                            tint = colorIcono ?: ColorAjusteGris,
-                            modifier = Modifier.size(15.dp)
-                        )
-                    }
-
-                    if (!etiqueta.isNullOrBlank()) {
-                        Text(
-                            text = etiqueta.uppercase(),
-                            color = ColorAjusteGris,
-                            style = MaterialTheme.typography.labelSmall.copy(
-                                fontWeight = FontWeight.SemiBold,
-                                letterSpacing = 1.sp
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(6.dp)
+                    ) {
+                        if (icono != null) {
+                            Icon(
+                                imageVector = icono,
+                                contentDescription = null,
+                                tint = colorIcono ?: ColorAjusteGris,
+                                modifier = Modifier.size(15.dp)
                             )
-                        )
-                    }
+                        }
 
-                    if (tieneBadgeGrupo) {
-                        Box(
-                            modifier = Modifier
-                                .clip(RoundedCornerShape(4.dp))
-                                .background(fondoBadgeParaTema(colorBadgeGrupo))
-                                .padding(horizontal = 6.dp, vertical = 2.dp)
-                        ) {
+                        if (!etiqueta.isNullOrBlank()) {
                             Text(
-                                text = idGrupo!!,
-                                color = colorLegibleParaTema(colorBadgeGrupo),
-                                style = EstiloMono.copy(
-                                    fontSize = 10.sp,
-                                    fontWeight = FontWeight.Bold
+                                text = etiqueta.uppercase(),
+                                color = ColorAjusteGris,
+                                style = MaterialTheme.typography.labelSmall.copy(
+                                    fontWeight = FontWeight.SemiBold,
+                                    letterSpacing = 1.sp
                                 )
                             )
                         }
+                    }
+
+                    if (tieneBadgeGrupo) {
+                        Spacer(Modifier.height(3.dp))
+                        InsigniaIdAjuste(id = idGrupo!!)
                     }
                 }
 

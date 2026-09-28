@@ -31,6 +31,7 @@ fun GrupoDesarrolloReferencia(
     alCambiarIntensidad: (Float) -> Unit,
     alCambiarRepeticiones: (Int) -> Unit,
     alCambiarDuracion: (Int) -> Unit,
+    alNavegarColoresIds: () -> Unit,
     haptica: Haptica,
     modifier: Modifier = Modifier
 ) {
@@ -64,6 +65,20 @@ fun GrupoDesarrolloReferencia(
                 alCambiarMostrarIds(it)
             }
         )
+        if (mostrarIdsAjustes) {
+            ComponenteSeparador(sangriaInicio = 16.dp)
+            ComponenteNavegacion(
+                titulo = "Colores de identificadores",
+                subtitulo = "Personalizar paleta de los 6 bloques",
+                icono = null,
+                idFila = "06.1.2b",
+                mostrarId = mostrarIdsAjustes,
+                alPulsar = {
+                    haptica.tic()
+                    alNavegarColoresIds()
+                }
+            )
+        }
         ComponenteSeparador(sangriaInicio = 16.dp)
         ComponenteSwitch(
             titulo = "Alumbrado de navegación",

@@ -373,6 +373,7 @@ fun RaizBoveda(vm: VaultViewModel, actividad: FragmentActivity) {
                     is Pantalla.ConfirmarMigracion -> PantallaConfirmarMigracion(vm, destino.urlMigracion)
                     is Pantalla.ExportarSelectivo -> com.jlnavas3.bovedalocal.ui.pantallas.PantallaExportarSelectivo(vm, destino.seccionInicial)
                     is Pantalla.ColoresDatos -> com.jlnavas3.bovedalocal.ui.pantallas.PantallaColoresDatos(vm, destino.seccionId)
+                    is Pantalla.ColoresIdentificadores -> com.jlnavas3.bovedalocal.ui.pantallas.avanzada.PantallaColoresIds(vm, destino.seccionId)
                     is Pantalla.Argon2id -> com.jlnavas3.bovedalocal.ui.pantallas.PantallaArgon2id(vm, destino.seccionId)
                     is Pantalla.AjustesAutenticador -> com.jlnavas3.bovedalocal.ui.pantallas.PantallaAjustesAutenticador(vm, destino.seccionId)
                     is Pantalla.AjustesCamara -> com.jlnavas3.bovedalocal.ui.pantallas.PantallaAjustesCamara(vm, destino.seccionId)

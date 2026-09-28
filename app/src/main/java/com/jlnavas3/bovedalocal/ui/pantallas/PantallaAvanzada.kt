@@ -87,6 +87,7 @@ fun PantallaAvanzada(
                     alCambiarIntensidad = { vm.ajustarAlumbradoIntensidad(it) },
                     alCambiarRepeticiones = { vm.ajustarAlumbradoRepeticiones(it) },
                     alCambiarDuracion = { vm.ajustarAlumbradoDuracionMs(it) },
+                    alNavegarColoresIds = { vm.ir(Pantalla.ColoresIdentificadores()) },
                     haptica = haptica
                 )
 

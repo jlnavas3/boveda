@@ -158,22 +158,7 @@ fun ComponenteFila(
 
             if (tieneBadgeId) {
                 Spacer(Modifier.height(3.dp))
-                val badgeColor = if (habilitado) (colorIcono ?: LocalColorGrupo.current ?: colorParaGrupoId(idFila)) else ColorAjusteGris
-                Box(
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(4.dp))
-                        .background(fondoBadgeParaTema(badgeColor))
-                        .padding(horizontal = 5.dp, vertical = 1.dp)
-                ) {
-                    Text(
-                        text = idFila!!,
-                        color = colorLegibleParaTema(badgeColor),
-                        style = EstiloMono.copy(
-                            fontSize = 10.5.sp,
-                            fontWeight = FontWeight.Bold
-                        )
-                    )
-                }
+                InsigniaIdAjuste(id = idFila!!)
             }
         }
 

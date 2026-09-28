@@ -350,6 +350,51 @@ interface VaultAjustesDelegate {
         aplicarPersonalizacionColores(repositorio.ajustes.actual)
     }
 
+    // --- Personalización de Colores por Bloque de Identificadores ---
+    fun ajustarColorIdSeguridad(colorHex: String) {
+        repositorio.ajustes.actualizar { it.copy(colorIdSeguridad = colorHex) }
+        aplicarPersonalizacionColores(repositorio.ajustes.actual)
+    }
+
+    fun ajustarColorIdApariencia(colorHex: String) {
+        repositorio.ajustes.actualizar { it.copy(colorIdApariencia = colorHex) }
+        aplicarPersonalizacionColores(repositorio.ajustes.actual)
+    }
+
+    fun ajustarColorIdLista(colorHex: String) {
+        repositorio.ajustes.actualizar { it.copy(colorIdLista = colorHex) }
+        aplicarPersonalizacionColores(repositorio.ajustes.actual)
+    }
+
+    fun ajustarColorIdHerramientas(colorHex: String) {
+        repositorio.ajustes.actualizar { it.copy(colorIdHerramientas = colorHex) }
+        aplicarPersonalizacionColores(repositorio.ajustes.actual)
+    }
+
+    fun ajustarColorIdCopias(colorHex: String) {
+        repositorio.ajustes.actualizar { it.copy(colorIdCopias = colorHex) }
+        aplicarPersonalizacionColores(repositorio.ajustes.actual)
+    }
+
+    fun ajustarColorIdSistema(colorHex: String) {
+        repositorio.ajustes.actualizar { it.copy(colorIdSistema = colorHex) }
+        aplicarPersonalizacionColores(repositorio.ajustes.actual)
+    }
+
+    fun restablecerColoresIds() {
+        repositorio.ajustes.actualizar {
+            it.copy(
+                colorIdSeguridad = "#3F51B5",
+                colorIdApariencia = "#8E24AA",
+                colorIdLista = "#00897B",
+                colorIdHerramientas = "#FB8C00",
+                colorIdCopias = "#1E88E5",
+                colorIdSistema = "#607D8B"
+            )
+        }
+        aplicarPersonalizacionColores(repositorio.ajustes.actual)
+    }
+
     // --- Personalización de Tipografía y Textos ---
     fun ajustarEscalaTexto(escala: Float) {
         repositorio.ajustes.actualizar { it.copy(escalaTexto = escala) }

@@ -30,6 +30,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.jlnavas3.bovedalocal.ui.componentes.ajustes.InsigniaIdAjuste
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorTarjetaAjustes
 import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
 import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
@@ -117,22 +118,7 @@ fun BarraSuperiorPantalla(
                 )
                 if (mostrarId && !idEtiqueta.isNullOrBlank()) {
                     Spacer(Modifier.height(2.dp))
-                    val colorId = colorParaGrupoId(idEtiqueta)
-                    Box(
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(4.dp))
-                            .background(fondoBadgeParaTema(colorId))
-                            .padding(horizontal = 6.dp, vertical = 1.5.dp)
-                    ) {
-                        Text(
-                            text = idEtiqueta,
-                            color = colorLegibleParaTema(colorId),
-                            style = EstiloMono.copy(
-                                fontSize = 10.sp,
-                                fontWeight = FontWeight.Bold
-                            )
-                        )
-                    }
+                    InsigniaIdAjuste(id = idEtiqueta)
                 }
             }
             if (acciones != null) {
