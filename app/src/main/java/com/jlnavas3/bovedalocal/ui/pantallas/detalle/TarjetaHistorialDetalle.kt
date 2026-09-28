@@ -75,7 +75,7 @@ fun TarjetaHistorialDetalle(
 
         historialUnico.forEachIndexed { index, cambio ->
             if (index > 0) {
-                Spacer(Modifier.height(8.dp))
+                Spacer(Modifier.height(EspaciadoDetalle))
             }
             val estaRevelada = reveladas[cambio.contrasena] == true
             val fueCopiada = claveCopiadaReciente == cambio.contrasena

@@ -39,7 +39,10 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
+import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
+import com.jlnavas3.bovedalocal.ui.theme.FormaCampo
 import com.jlnavas3.bovedalocal.ui.theme.FormaPequena
+import com.jlnavas3.bovedalocal.ui.theme.GrosorBorde
 import com.jlnavas3.bovedalocal.ui.theme.Peligro
 import com.jlnavas3.bovedalocal.ui.theme.TextoPrincipal
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
@@ -82,7 +85,7 @@ fun ComponenteCampoTexto(
     esError: Boolean = false,
     mensajeError: String? = null
 ) {
-    val forma = FormaPequena
+    val forma = FormaCampo
     val esOscuro = esOscuroActivo
 
     // Superficie suave One UI / MagicOS
@@ -165,10 +168,18 @@ fun ComponenteCampoTexto(
     val interactionSource = remember { MutableInteractionSource() }
     val isFocused by interactionSource.collectIsFocusedAsState()
 
-    val borderModifier = if (colorBordeIzquierdo != null && isFocused) {
-        Modifier.border(1.dp, colorBordeIzquierdo.copy(alpha = 0.35f), forma)
-    } else {
-        Modifier
+    val grosorConfigurado = if (GrosorBorde > 0.dp) GrosorBorde else 1.dp
+    val borderModifier = when {
+        isFocused && colorBordeIzquierdo != null -> {
+            Modifier.border(grosorConfigurado, colorBordeIzquierdo.copy(alpha = 0.65f), forma)
+        }
+        isFocused -> {
+            Modifier.border(grosorConfigurado, ColorAcento.copy(alpha = 0.65f), forma)
+        }
+        GrosorBorde > 0.dp && ColorBordeActual != Color.Transparent -> {
+            Modifier.border(GrosorBorde, ColorBordeActual, forma)
+        }
+        else -> Modifier
     }
 
     val estiloTexto = if (monoespaciada) {
@@ -269,7 +280,6 @@ fun ComponenteCampoTexto(
                             .width(4.5.dp)
                             .fillMaxHeight()
                             .align(Alignment.CenterStart)
-                            .clip(RoundedCornerShape(topStart = 10.dp, bottomStart = 10.dp))
                             .background(colorBordeIzquierdo)
                     )
                 }

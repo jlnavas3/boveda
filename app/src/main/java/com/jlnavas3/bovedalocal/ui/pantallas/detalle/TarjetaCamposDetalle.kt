@@ -59,7 +59,7 @@ fun TarjetaCamposDetalle(
 
         campos.forEachIndexed { index, campo ->
             if (index > 0) {
-                Spacer(Modifier.height(8.dp))
+                Spacer(Modifier.height(EspaciadoDetalle))
             }
             FilaCampoPersonalizadoDetalle(
                 campo = campo,

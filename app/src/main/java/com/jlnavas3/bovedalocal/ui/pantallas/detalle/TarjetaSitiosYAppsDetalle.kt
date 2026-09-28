@@ -72,7 +72,7 @@ fun TarjetaSitiosYAppsDetalle(
             val colorDato = if (esApp) ColorDatosApp else ColorDatosWeb
 
             if (index > 0) {
-                Spacer(Modifier.height(8.dp))
+                Spacer(Modifier.height(EspaciadoDetalle))
             }
 
             val copiado = urlCopiadas[url] == true

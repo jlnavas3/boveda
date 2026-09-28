@@ -79,7 +79,7 @@ fun TarjetaCredencialesDetalle(
         }
 
         if (entrada.usuario.isNotBlank() && entrada.contrasena.isNotBlank()) {
-            Spacer(Modifier.height(8.dp))
+            Spacer(Modifier.height(EspaciadoDetalle))
         }
 
         if (entrada.contrasena.isNotBlank()) {

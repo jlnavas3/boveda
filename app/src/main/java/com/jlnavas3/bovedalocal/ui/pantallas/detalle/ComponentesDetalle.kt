@@ -29,15 +29,24 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjusteGris
 import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
+import com.jlnavas3.bovedalocal.ui.theme.CurvaturaEsquinas
+import com.jlnavas3.bovedalocal.ui.theme.EspaciadoComponentes
+import com.jlnavas3.bovedalocal.ui.theme.GrosorBorde
 import com.jlnavas3.bovedalocal.ui.theme.Menta
 import com.jlnavas3.bovedalocal.ui.theme.fondoBadgeParaTema
 
-/** Forma unificada para las tarjetas individuales de la pantalla de detalle. */
-val FormaTarjetaDetalle = RoundedCornerShape(16.dp)
+/** Forma unificada para las tarjetas individuales de la pantalla de detalle, reactiva a "Formas y bordes". */
+val FormaTarjetaDetalle: RoundedCornerShape
+    get() = RoundedCornerShape(CurvaturaEsquinas)
+
+/** Espaciado vertical entre cuadros en la pantalla de detalle, reactivo a "Formas y bordes". */
+val EspaciadoDetalle: Dp
+    get() = (EspaciadoComponentes * 0.55f).coerceIn(6.dp, 16.dp)
 
 /**
  * Encabezado de sección normalizado al estilo One UI para grupos de datos en detalle.
@@ -61,7 +70,8 @@ fun EtiquetaSeccionDetalle(
 /**
  * Contenedor atómico para tarjetas de datos en pantalla de detalle:
  * - Superficie suave adaptativa según el color temático.
- * - Borde perimetral sutil de 1 dp (35% opacidad) del color de acento del dato.
+ * - Borde perimetral sutil que responde dinámicamente al grosor configurado en "Formas y bordes".
+ * - Curvatura de esquinas vinculada a CurvaturaEsquinas.
  * - Franja vertical izquierda distintiva de 4.5 dp.
  * - Esquinas suavemente redondeadas con soporte de clic y ripple delimitado.
  */
@@ -72,12 +82,16 @@ fun TarjetaDatoDetalle(
     alPulsar: (() -> Unit)? = null,
     contenido: @Composable BoxScope.() -> Unit
 ) {
+    val forma = FormaTarjetaDetalle
+    val grosorEfectivo = if (GrosorBorde > 0.dp) GrosorBorde else 1.dp
+    val colorBordeEfectivo = colorBorde.copy(alpha = 0.35f)
+
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .clip(FormaTarjetaDetalle)
+            .clip(forma)
             .background(fondoBadgeParaTema(colorBorde))
-            .border(1.dp, colorBorde.copy(alpha = 0.35f), FormaTarjetaDetalle)
+            .border(grosorEfectivo, colorBordeEfectivo, forma)
             .then(
                 if (alPulsar != null) Modifier.clickable { alPulsar() }
                 else Modifier

@@ -1,6 +1,7 @@
 package com.jlnavas3.bovedalocal.ui.pantallas.ajustes
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -34,11 +35,15 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.jlnavas3.bovedalocal.ui.componentes.SwitchBoveda
 import com.jlnavas3.bovedalocal.ui.theme.Ambar
+import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
+import com.jlnavas3.bovedalocal.ui.theme.CurvaturaEsquinas
 import com.jlnavas3.bovedalocal.ui.theme.EstiloMono
+import com.jlnavas3.bovedalocal.ui.theme.GrosorBorde
 import com.jlnavas3.bovedalocal.util.Haptica
 
 /**
  * Contenedor redondeado para agrupar filas de ajustes bajo una etiqueta común al estilo Samsung One UI.
+ * Responde dinámicamente a la configuración de "Formas y bordes".
  */
 @Composable
 fun GrupoAjustes(
@@ -46,6 +51,7 @@ fun GrupoAjustes(
     modifier: Modifier = Modifier,
     contenido: @Composable ColumnScope.() -> Unit
 ) {
+    val formaTarjeta = RoundedCornerShape(CurvaturaEsquinas)
     Column(modifier = modifier.fillMaxWidth()) {
         if (!etiqueta.isNullOrBlank()) {
             Text(
@@ -61,7 +67,16 @@ fun GrupoAjustes(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .clip(RoundedCornerShape(18.dp))
+                .then(
+                    if (GrosorBorde > 0.dp && ColorBordeActual != Color.Transparent) {
+                        Modifier.border(
+                            width = GrosorBorde,
+                            color = ColorBordeActual,
+                            shape = formaTarjeta
+                        )
+                    } else Modifier
+                )
+                .clip(formaTarjeta)
                 .background(ColorTarjetaAjustes)
         ) {
             contenido()
