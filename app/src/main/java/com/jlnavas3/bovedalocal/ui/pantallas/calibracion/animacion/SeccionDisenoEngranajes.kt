@@ -59,7 +59,7 @@ fun SeccionDisenoEngranajes(
         idGrupo = "02-APA-THM-ANI-G02",
         mostrarId = mostrarIds,
         alRestablecer = {
-            parteActual.mutador(parteActual.colorPorDefecto)
+            partesEngranajes.forEach { it.mutador(it.colorPorDefecto) }
         }
     ) {
         Column(modifier = Modifier.padding(16.dp)) {

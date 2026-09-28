@@ -40,6 +40,8 @@ fun PantallaTipografia(
 
     ContenedorPrincipal(
         titulo = "Tipografía",
+        idEtiqueta = "02-APA-TYP",
+        mostrarId = ajustes.mostrarIdsAjustes,
         alVolver = { vm.volverAtras() },
         conScroll = true,
         espaciado = EspaciadoComponentes,

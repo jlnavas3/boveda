@@ -42,6 +42,8 @@ import com.jlnavas3.bovedalocal.ui.theme.Ambar
 import com.jlnavas3.bovedalocal.ui.theme.Borde
 import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
 import com.jlnavas3.bovedalocal.ui.theme.ColorSobreAcento
+import com.jlnavas3.bovedalocal.ui.theme.CurvaturaEsquinas
+import com.jlnavas3.bovedalocal.ui.theme.GrosorBorde
 import com.jlnavas3.bovedalocal.ui.theme.TextoPrincipal
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
 
@@ -72,9 +74,9 @@ fun FilaEntrada(
 ) {
     val compacta = alturaFila.value <= 48f
     val forma = if (enGrupo) {
-        if (esUltimoEnGrupo) RoundedCornerShape(bottomStart = 18.dp, bottomEnd = 18.dp) else RoundedCornerShape(0.dp)
+        if (esUltimoEnGrupo) RoundedCornerShape(bottomStart = CurvaturaEsquinas, bottomEnd = CurvaturaEsquinas) else RoundedCornerShape(0.dp)
     } else {
-        RoundedCornerShape(18.dp)
+        RoundedCornerShape(CurvaturaEsquinas)
     }
     val tamanoIcono = if (compacta) 32 else if (alturaFila.value <= 64f) 36 else 40
 
@@ -101,6 +103,7 @@ fun FilaEntrada(
                 .then(
                     if (resaltado) Modifier.border(1.5.dp, Ambar, forma)
                     else if (seleccionado) Modifier.border(1.dp, Ambar.copy(alpha = 0.5f), forma)
+                    else if (GrosorBorde > 0.dp && !enGrupo) Modifier.border(GrosorBorde, ColorBordeActual, forma)
                     else Modifier
                 )
                 .combinedClickable(

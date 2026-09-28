@@ -4,6 +4,7 @@ package com.jlnavas3.bovedalocal.ui.componentes.ajustes
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -37,6 +38,9 @@ import androidx.compose.ui.unit.sp
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjusteGris
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorTarjetaAjustes
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
+import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
+import com.jlnavas3.bovedalocal.ui.theme.CurvaturaEsquinas
+import com.jlnavas3.bovedalocal.ui.theme.GrosorBorde
 import com.jlnavas3.bovedalocal.ui.theme.colorParaGrupoId
 
 val LocalColorGrupo = compositionLocalOf<Color?> { null }
@@ -157,11 +161,21 @@ fun ComponenteGrupo(
         }
 
         // Tarjeta agrupada con esquinas redondeadas
+        val formaTarjeta = RoundedCornerShape(CurvaturaEsquinas)
         CompositionLocalProvider(LocalColorGrupo provides colorBadgeGrupo) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clip(RoundedCornerShape(18.dp))
+                    .then(
+                        if (GrosorBorde > 0.dp) {
+                            Modifier.border(
+                                width = GrosorBorde,
+                                color = ColorBordeActual,
+                                shape = formaTarjeta
+                            )
+                        } else Modifier
+                    )
+                    .clip(formaTarjeta)
                     .background(ColorTarjetaAjustes)
                     .background(estadoAlumbrado.colorFondoAnimado.value)
             ) {

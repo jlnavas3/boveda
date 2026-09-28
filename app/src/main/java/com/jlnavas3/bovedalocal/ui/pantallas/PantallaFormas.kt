@@ -41,6 +41,8 @@ fun PantallaFormas(
 
     ContenedorPrincipal(
         titulo = "Formas y bordes",
+        idEtiqueta = "02-APA-GEO",
+        mostrarId = ajustes.mostrarIdsAjustes,
         alVolver = { vm.volverAtras() },
         conScroll = true,
         espaciado = EspaciadoComponentes,

@@ -87,13 +87,6 @@ fun PantallaCalibracionAnimacion(
                         alSeleccionarParte = { parteEngranajeElegida = it },
                         mostrarIds = ajustes.mostrarIdsAjustes
                     )
-
-                    Spacer(Modifier.height(18.dp))
-
-                    AccionesCalibracionEngranajes(
-                        ajustes = ajustes,
-                        vm = vm
-                    )
                 } else {
                     // --- CALIBRACIÓN DE PUERTA DE BÓVEDA ---
                     SeccionCalibracionPuerta(
