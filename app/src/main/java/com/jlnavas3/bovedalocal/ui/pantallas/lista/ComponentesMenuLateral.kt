@@ -31,15 +31,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.jlnavas3.bovedalocal.data.AjustesApp
+import com.jlnavas3.bovedalocal.ui.componentes.ajustes.InsigniaIdAjuste
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjusteGris
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorSeparadorAjustes
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorTarjetaAjustes
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorTextoAjustes
 import com.jlnavas3.bovedalocal.ui.theme.Ambar
 import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
-import com.jlnavas3.bovedalocal.ui.theme.EstiloMono
-import com.jlnavas3.bovedalocal.ui.theme.colorLegibleParaTema
-import com.jlnavas3.bovedalocal.ui.theme.fondoBadgeParaTema
 import com.jlnavas3.bovedalocal.util.Haptica
 
 /**
@@ -49,19 +48,32 @@ import com.jlnavas3.bovedalocal.util.Haptica
 fun GrupoMenuLateral(
     titulo: String,
     modifier: Modifier = Modifier,
+    idEtiqueta: String? = null,
+    mostrarId: Boolean = false,
+    ajustes: AjustesApp? = null,
     contenido: @Composable () -> Unit
 ) {
     Column(modifier = modifier.fillMaxWidth()) {
-        Text(
-            text = titulo.uppercase(),
-            color = ColorAjusteGris,
-            style = MaterialTheme.typography.labelSmall.copy(
-                fontWeight = FontWeight.SemiBold,
-                letterSpacing = 1.sp,
-                fontSize = 11.sp
-            ),
-            modifier = Modifier.padding(start = 12.dp, bottom = 6.dp)
-        )
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 12.dp, end = 12.dp, bottom = 6.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(
+                text = titulo.uppercase(),
+                color = ColorAjusteGris,
+                style = MaterialTheme.typography.labelSmall.copy(
+                    fontWeight = FontWeight.SemiBold,
+                    letterSpacing = 1.sp,
+                    fontSize = 11.sp
+                )
+            )
+            if (mostrarId && !idEtiqueta.isNullOrBlank()) {
+                InsigniaIdAjuste(id = idEtiqueta, ajustes = ajustes)
+            }
+        }
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -87,6 +99,7 @@ fun ItemMenu(
     idEtiqueta: String? = null,
     mostrarId: Boolean = false,
     mostrarChevron: Boolean = true,
+    ajustes: AjustesApp? = null,
     alPulsar: () -> Unit
 ) {
     val contexto = LocalContext.current
@@ -132,22 +145,8 @@ fun ItemMenu(
             )
 
             if (mostrarId && !idEtiqueta.isNullOrBlank()) {
-                Spacer(Modifier.height(2.dp))
-                Box(
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(4.dp))
-                        .background(fondoBadgeParaTema(colorIcono))
-                        .padding(horizontal = 5.dp, vertical = 1.dp)
-                ) {
-                    Text(
-                        text = idEtiqueta,
-                        style = EstiloMono.copy(
-                            fontSize = 9.sp,
-                            fontWeight = FontWeight.Bold
-                        ),
-                        color = colorLegibleParaTema(colorIcono)
-                    )
-                }
+                Spacer(Modifier.height(3.dp))
+                InsigniaIdAjuste(id = idEtiqueta, ajustes = ajustes)
             }
         }
 

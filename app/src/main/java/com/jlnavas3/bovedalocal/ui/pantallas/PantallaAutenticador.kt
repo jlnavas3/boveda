@@ -97,6 +97,8 @@ fun PantallaAutenticador(vm: VaultViewModel, estado: EstadoBoveda) {
             criterioOrdenacion = criterioOrdenacion,
             conSeparador = scrollState.value > 0,
             haptica = haptica,
+            idEtiqueta = "04-HER-2FA",
+            mostrarId = ajustes.mostrarIdsAjustes,
             alVolver = { vm.volverAtras() },
             alAlternarBusqueda = {
                 busquedaVisible = !busquedaVisible

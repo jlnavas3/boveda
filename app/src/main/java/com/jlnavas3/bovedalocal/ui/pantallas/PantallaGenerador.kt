@@ -19,6 +19,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.jlnavas3.bovedalocal.crypto.OpcionesGenerador
 import com.jlnavas3.bovedalocal.crypto.PasswordGenerator
 import com.jlnavas3.bovedalocal.quicksettings.GeneradorRapidoHelper
@@ -52,6 +53,7 @@ fun PantallaGenerador(vm: VaultViewModel) {
 
     LaunchedEffect(opciones) { regenerar() }
 
+    val ajustes by vm.ajustes.collectAsStateWithLifecycle()
     val bits = PasswordGenerator.entropiaBits(opciones)
     val scrollState = rememberScrollState()
 
@@ -75,7 +77,9 @@ fun PantallaGenerador(vm: VaultViewModel) {
             alCrearEntrada = {
                 GeneradorRapidoHelper.registrarEnHistorial(contexto, generada, "Generador")
                 vm.ir(Pantalla.Editar(null, generada))
-            }
+            },
+            idEtiqueta = "04-HER-GEN",
+            mostrarId = ajustes.mostrarIdsAjustes
         )
 
         Column(

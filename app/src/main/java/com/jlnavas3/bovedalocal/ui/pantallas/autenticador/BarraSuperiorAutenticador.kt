@@ -61,13 +61,17 @@ fun BarraSuperiorAutenticador(
     alExportarSelectivo: () -> Unit,
     alImportarGoogleAuthenticator: () -> Unit,
     alMostrarComoFunciona: () -> Unit,
-    alRestablecerFiltros: () -> Unit
+    alRestablecerFiltros: () -> Unit,
+    idEtiqueta: String = "04-HER-2FA",
+    mostrarId: Boolean = false
 ) {
     var menuOpcionesDesplegado by remember { mutableStateOf(false) }
     val tieneFiltrosActivos = soloFavoritos || criterioOrdenacion != CriterioOrdenacion.NOMBRE_AZ
 
     BarraSuperiorPantalla(
         titulo = "Autenticador 2FA",
+        idEtiqueta = idEtiqueta,
+        mostrarId = mostrarId,
         alVolver = alVolver,
         conSeparador = conSeparador,
         colorFondo = ColorAjustesFondo,

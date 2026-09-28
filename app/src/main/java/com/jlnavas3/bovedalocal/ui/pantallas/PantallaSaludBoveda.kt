@@ -25,6 +25,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.jlnavas3.bovedalocal.data.AnalizadorDuplicados
 import com.jlnavas3.bovedalocal.data.Entrada
 import com.jlnavas3.bovedalocal.data.EstadoBoveda
@@ -93,6 +94,8 @@ fun PantallaSaludBoveda(
         Diagnostico.apuntar("salud", resumen)
     }
 
+    val ajustes by vm.ajustes.collectAsStateWithLifecycle()
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -101,6 +104,8 @@ fun PantallaSaludBoveda(
     ) {
         BarraSuperiorPantalla(
             titulo = "Salud de la Bóveda",
+            idEtiqueta = "03-LST-SLD",
+            mostrarId = ajustes.mostrarIdsAjustes,
             alVolver = { vm.volverAtras() },
             colorFondo = ColorAjustesFondo
         )

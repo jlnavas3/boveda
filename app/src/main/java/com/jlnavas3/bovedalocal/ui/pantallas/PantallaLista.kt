@@ -46,7 +46,10 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -191,11 +194,11 @@ fun PantallaLista(vm: VaultViewModel, estado: EstadoBoveda) {
         AnalizadorDuplicados.analizar(entradas).sumOf { it.entradasSecundarias.size }
     }
 
-    val formaCajon = RoundedCornerShape(topEnd = 24.dp, bottomEnd = 24.dp)
-    val modifierBordeCajon = if (GrosorBorde > 0.dp && ColorBordeActual != Color.Transparent) {
-        Modifier.border(GrosorBorde, ColorBordeActual.copy(alpha = 0.5f), formaCajon)
+    val formaCajon = RectangleShape
+    val colorLineaBordeCajon = if (ColorBordeActual != Color.Transparent) {
+        ColorBordeActual.copy(alpha = 0.38f)
     } else {
-        Modifier
+        Color.White.copy(alpha = 0.12f)
     }
 
     ModalNavigationDrawer(
@@ -205,7 +208,16 @@ fun PantallaLista(vm: VaultViewModel, estado: EstadoBoveda) {
             ModalDrawerSheet(
                 modifier = Modifier
                     .fillMaxWidth(0.82f)
-                    .then(modifierBordeCajon),
+                    .drawWithContent {
+                        drawContent()
+                        val strokeWidth = 2.5.dp.toPx()
+                        drawLine(
+                            color = colorLineaBordeCajon,
+                            start = Offset(size.width - strokeWidth / 2, 0f),
+                            end = Offset(size.width - strokeWidth / 2, size.height),
+                            strokeWidth = strokeWidth
+                        )
+                    },
                 drawerShape = formaCajon,
                 drawerContainerColor = Superficie,
                 windowInsets = WindowInsets(0, 0, 0, 0)
@@ -217,6 +229,7 @@ fun PantallaLista(vm: VaultViewModel, estado: EstadoBoveda) {
                     totalDuplicadas = totalDuplicadas,
                     perfilArgon2 = vm.repositorio.perfilArgon2Actual(),
                     mostrarIds = ajustes.mostrarIdsAjustes,
+                    ajustes = ajustes,
                     alIr = { destino -> cerrarMenu(); vm.irDesdeMenuLateral(destino) },
                     alBloquear = { cerrarMenu(); haptica.toque(); vm.bloquear() }
                 )

@@ -21,6 +21,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.jlnavas3.bovedalocal.data.AnalizadorDuplicados
 import com.jlnavas3.bovedalocal.data.EstadoBoveda
 import com.jlnavas3.bovedalocal.data.TipoDuplicado
@@ -78,6 +79,8 @@ fun PantallaDuplicados(
         }
     }
 
+    val ajustes by vm.ajustes.collectAsStateWithLifecycle()
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -85,6 +88,8 @@ fun PantallaDuplicados(
     ) {
         BarraSuperiorPantalla(
             titulo = "Contraseñas duplicadas",
+            idEtiqueta = "03-LST-DUP",
+            mostrarId = ajustes.mostrarIdsAjustes,
             alVolver = { vm.volverAtras() },
             colorFondo = ColorAjustesFondo
         )

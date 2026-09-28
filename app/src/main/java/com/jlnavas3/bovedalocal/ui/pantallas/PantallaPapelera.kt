@@ -24,6 +24,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.jlnavas3.bovedalocal.data.Entrada
 import com.jlnavas3.bovedalocal.data.EstadoBoveda
 import com.jlnavas3.bovedalocal.ui.VaultViewModel
@@ -48,6 +49,7 @@ fun PantallaPapelera(
     estado: EstadoBoveda,
     seccionDestino: String? = null
 ) {
+    val ajustes by vm.ajustes.collectAsStateWithLifecycle()
     val papelera = (estado as? EstadoBoveda.Desbloqueada)?.papelera ?: emptyList()
     val entradasActivas = (estado as? EstadoBoveda.Desbloqueada)?.entradas ?: emptyList()
     val ahora = remember { System.currentTimeMillis() }
@@ -62,6 +64,8 @@ fun PantallaPapelera(
     ) {
         BarraSuperiorPantalla(
             titulo = "Papelera",
+            idEtiqueta = "03-LST-PAP",
+            mostrarId = ajustes.mostrarIdsAjustes,
             alVolver = { vm.volverAtras() },
             colorFondo = ColorAjustesFondo,
             acciones = {

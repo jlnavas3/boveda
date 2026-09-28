@@ -28,6 +28,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.jlnavas3.bovedalocal.crypto.PerfilArgon2
+import com.jlnavas3.bovedalocal.data.AjustesApp
 import com.jlnavas3.bovedalocal.ui.Pantalla
 import com.jlnavas3.bovedalocal.ui.theme.Color2FA
 import com.jlnavas3.bovedalocal.ui.theme.ColorExportacion
@@ -54,17 +55,18 @@ fun MenuLateral(
     totalDuplicadas: Int = 0,
     perfilArgon2: PerfilArgon2 = PerfilArgon2.ESTANDAR,
     mostrarIds: Boolean = false,
+    ajustes: AjustesApp? = null,
     alIr: (Pantalla) -> Unit,
     alBloquear: () -> Unit = {}
 ) {
     val topInset = WindowInsets.statusBars.asPaddingValues().calculateTopPadding()
-    val topAjustado = (topInset - 24.dp).coerceAtLeast(8.dp)
+    val topAjusted = (topInset - 24.dp).coerceAtLeast(8.dp)
 
     Column(
         modifier = Modifier
             .fillMaxSize()
             .navigationBarsPadding()
-            .padding(start = 14.dp, end = 14.dp, top = topAjustado, bottom = 10.dp)
+            .padding(start = 14.dp, end = 14.dp, top = topAjusted, bottom = 10.dp)
     ) {
         // Cabecera destacada estilo MagicOS / One UI
         CabeceraMenuLateral(nombreApp = nombreApp)
@@ -79,13 +81,19 @@ fun MenuLateral(
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
             // Grupo 1: Herramientas
-            GrupoMenuLateral(titulo = "Herramientas") {
+            GrupoMenuLateral(
+                titulo = "Herramientas",
+                idEtiqueta = "04-HER",
+                mostrarId = mostrarIds,
+                ajustes = ajustes
+            ) {
                 ItemMenu(
                     texto = "Generar contraseñas",
                     icono = Icons.Filled.AutoAwesome,
                     colorIcono = ColorGenerador,
-                    idEtiqueta = "04.4",
-                    mostrarId = mostrarIds
+                    idEtiqueta = "04-HER-GEN",
+                    mostrarId = mostrarIds,
+                    ajustes = ajustes
                 ) { alIr(Pantalla.Generador) }
 
                 SeparadorItemMenu()
@@ -94,8 +102,9 @@ fun MenuLateral(
                     texto = "Historial de contraseñas",
                     icono = Icons.Filled.History,
                     colorIcono = ColorGenerador,
-                    idEtiqueta = "04.5",
-                    mostrarId = mostrarIds
+                    idEtiqueta = "04-HER-HST",
+                    mostrarId = mostrarIds,
+                    ajustes = ajustes
                 ) { alIr(Pantalla.HistorialClaves) }
 
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
@@ -104,8 +113,9 @@ fun MenuLateral(
                         texto = "Passkeys",
                         icono = Icons.Filled.Fingerprint,
                         colorIcono = ColorPasskeys,
-                        idEtiqueta = "04.6",
-                        mostrarId = mostrarIds
+                        idEtiqueta = "04-HER-PSK",
+                        mostrarId = mostrarIds,
+                        ajustes = ajustes
                     ) { alIr(Pantalla.Passkeys) }
                 }
 
@@ -115,19 +125,26 @@ fun MenuLateral(
                     texto = "Autenticador 2FA",
                     icono = Icons.Filled.Timer,
                     colorIcono = Color2FA,
-                    idEtiqueta = "04.7",
-                    mostrarId = mostrarIds
+                    idEtiqueta = "04-HER-2FA",
+                    mostrarId = mostrarIds,
+                    ajustes = ajustes
                 ) { alIr(Pantalla.Autenticador) }
             }
 
-            // Grupo 2: Organización y Auditoría
-            GrupoMenuLateral(titulo = "Organización y auditoría") {
+            // Grupo 2: Organización y auditoría
+            GrupoMenuLateral(
+                titulo = "Organización y auditoría",
+                idEtiqueta = "03-LST",
+                mostrarId = mostrarIds,
+                ajustes = ajustes
+            ) {
                 ItemMenu(
                     texto = "Salud de la bóveda",
                     icono = Icons.Filled.HealthAndSafety,
                     colorIcono = ColorSalud,
-                    idEtiqueta = "02.4",
-                    mostrarId = mostrarIds
+                    idEtiqueta = "03-LST-SLD",
+                    mostrarId = mostrarIds,
+                    ajustes = ajustes
                 ) { alIr(Pantalla.SaludBoveda) }
 
                 SeparadorItemMenu()
@@ -138,8 +155,9 @@ fun MenuLateral(
                     colorIcono = if (totalDuplicadas > 0) Peligro else ColorIconosInternos,
                     badge = if (totalDuplicadas > 0) totalDuplicadas.toString() else null,
                     colorBadge = if (totalDuplicadas > 0) Peligro else ColorIconosInternos,
-                    idEtiqueta = "02.5",
-                    mostrarId = mostrarIds
+                    idEtiqueta = "03-LST-DUP",
+                    mostrarId = mostrarIds,
+                    ajustes = ajustes
                 ) { alIr(Pantalla.Duplicados) }
 
                 SeparadorItemMenu()
@@ -150,19 +168,26 @@ fun MenuLateral(
                     colorIcono = if (totalPapelera > 0) ColorPapelera else ColorIconosInternos,
                     badge = if (totalPapelera > 0) totalPapelera.toString() else null,
                     colorBadge = ColorPapelera,
-                    idEtiqueta = "02.6",
-                    mostrarId = mostrarIds
+                    idEtiqueta = "03-LST-PAP",
+                    mostrarId = mostrarIds,
+                    ajustes = ajustes
                 ) { alIr(Pantalla.Papelera) }
             }
 
             // Grupo 3: Sistema
-            GrupoMenuLateral(titulo = "Sistema") {
+            GrupoMenuLateral(
+                titulo = "Sistema",
+                idEtiqueta = "06-SIS",
+                mostrarId = mostrarIds,
+                ajustes = ajustes
+            ) {
                 ItemMenu(
                     texto = "Ajustes",
                     icono = Icons.Filled.Settings,
                     colorIcono = Color(0xFF546E7A),
-                    idEtiqueta = "00",
-                    mostrarId = mostrarIds
+                    idEtiqueta = "00-AJU",
+                    mostrarId = mostrarIds,
+                    ajustes = ajustes
                 ) { alIr(Pantalla.Ajustes) }
 
                 SeparadorItemMenu()
@@ -171,8 +196,9 @@ fun MenuLateral(
                     texto = "Registro de eventos",
                     icono = Icons.Filled.History,
                     colorIcono = ColorExportacion,
-                    idEtiqueta = "06.2",
-                    mostrarId = mostrarIds
+                    idEtiqueta = "06-SIS-LOG",
+                    mostrarId = mostrarIds,
+                    ajustes = ajustes
                 ) { alIr(Pantalla.Registro) }
 
                 SeparadorItemMenu()
@@ -181,8 +207,9 @@ fun MenuLateral(
                     texto = "Diagnóstico de seguridad",
                     icono = Icons.Filled.Security,
                     colorIcono = ColorSeguridad,
-                    idEtiqueta = "06.3",
-                    mostrarId = mostrarIds
+                    idEtiqueta = "06-SIS-DGN",
+                    mostrarId = mostrarIds,
+                    ajustes = ajustes
                 ) { alIr(Pantalla.AcercaDe) }
             }
         }

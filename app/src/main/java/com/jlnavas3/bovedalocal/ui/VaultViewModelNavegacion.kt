@@ -44,38 +44,38 @@ interface VaultNavegacionDelegate {
         is Pantalla.IndiceHaptica,
         is Pantalla.IndiceResaltado -> Pantalla.AjustesIndice("03.2")
 
-        is Pantalla.Tema -> Pantalla.Ajustes("02.1")
-        is Pantalla.Formas -> Pantalla.Ajustes("02.2")
-        is Pantalla.Tipografia -> Pantalla.Ajustes("02.3")
-        is Pantalla.OrganizacionLista -> Pantalla.Ajustes("03.1")
-        is Pantalla.AjustesIndice -> Pantalla.Ajustes("03.2")
-        is Pantalla.FormatosCampos -> Pantalla.Ajustes("03.3")
+        is Pantalla.Tema -> Pantalla.Ajustes("02-APA-THM")
+        is Pantalla.Formas -> Pantalla.Ajustes("02-APA-GEO")
+        is Pantalla.Tipografia -> Pantalla.Ajustes("02-APA-TYP")
+        is Pantalla.OrganizacionLista -> Pantalla.Ajustes("03-LST-DES")
+        is Pantalla.AjustesIndice -> Pantalla.Ajustes("03-LST-AZX")
+        is Pantalla.FormatosCampos -> Pantalla.Ajustes("03-LST-FMT")
         is Pantalla.WidgetTotpAjustes,
         is Pantalla.Widget1x1Modo,
-        is Pantalla.Widget1x1Comportamiento -> Pantalla.AjustesWidget("04.4")
-        is Pantalla.AjustesWidget -> Pantalla.Ajustes("04.4")
+        is Pantalla.Widget1x1Comportamiento -> Pantalla.AjustesWidget("04-HER-WGT")
+        is Pantalla.AjustesWidget -> Pantalla.Ajustes("04-HER-WGT")
 
         // Nivel 2: Seguridad -> Ajustes (Nivel 1)
-        is Pantalla.Seguridad -> Pantalla.Ajustes("01.1")
-        is Pantalla.AjustesSenuelo -> Pantalla.Ajustes("01.3")
-        is Pantalla.AjustesAutodestruccion -> Pantalla.Ajustes("01.4")
-        is Pantalla.Argon2id -> Pantalla.Ajustes("01.5")
+        is Pantalla.Seguridad -> Pantalla.Ajustes("01-SEG-BIO")
+        is Pantalla.AjustesSenuelo -> Pantalla.Ajustes("01-SEG-SEN")
+        is Pantalla.AjustesAutodestruccion -> Pantalla.Ajustes("01-SEG-DES")
+        is Pantalla.Argon2id -> Pantalla.Ajustes("01-SEG-CRY")
 
         // Nivel 2: Copias y datos -> Ajustes (Nivel 1)
-        is Pantalla.AjustesCopiaAutomatica -> Pantalla.CopiaSeguridad("05.1.G2")
-        is Pantalla.CopiaSeguridad -> Pantalla.Ajustes("05.1")
-        is Pantalla.CsvGoogle -> Pantalla.Ajustes("05.2")
-        is Pantalla.KitEmergencia -> Pantalla.Ajustes("05.3")
+        is Pantalla.AjustesCopiaAutomatica -> Pantalla.CopiaSeguridad("05-COP-ATM-G01")
+        is Pantalla.CopiaSeguridad -> Pantalla.Ajustes("05-COP-MAN")
+        is Pantalla.CsvGoogle -> Pantalla.Ajustes("05-COP-CSV")
+        is Pantalla.KitEmergencia -> Pantalla.Ajustes("05-COP-KIT")
 
         // Nivel 2: Funciones -> Ajustes (Nivel 1)
-        is Pantalla.AjustesAutenticador -> Pantalla.Ajustes("04.1")
+        is Pantalla.AjustesAutenticador -> Pantalla.Ajustes("04-HER-AUT")
         is Pantalla.HistorialClaves -> if (!pantalla.seccionId.isNullOrBlank()) Pantalla.Ajustes(pantalla.seccionId) else Pantalla.Lista
-        is Pantalla.AjustesCamara -> Pantalla.Ajustes("04.3")
-        is Pantalla.TileRapido -> Pantalla.Ajustes("04.5")
+        is Pantalla.AjustesCamara -> Pantalla.Ajustes("04-HER-CAM")
+        is Pantalla.TileRapido -> Pantalla.Ajustes("04-HER-MSK")
 
         // Nivel 2: Sistema -> Ajustes (Nivel 1)
-        is Pantalla.ColoresIdentificadores -> Pantalla.Avanzada("06.1.G2")
-        is Pantalla.Avanzada -> Pantalla.Ajustes("06.1")
+        is Pantalla.ColoresIdentificadores -> Pantalla.Avanzada("06-SIS-AVZ-G01")
+        is Pantalla.Avanzada -> Pantalla.Ajustes("06-SIS-AVZ")
         is Pantalla.Registro -> if (!pantalla.seccionId.isNullOrBlank()) Pantalla.Ajustes(pantalla.seccionId) else Pantalla.Lista
         is Pantalla.AcercaDe -> if (!pantalla.seccionId.isNullOrBlank()) Pantalla.Ajustes(pantalla.seccionId) else Pantalla.Lista
 
@@ -96,9 +96,9 @@ interface VaultNavegacionDelegate {
             val origen = when {
                 pantallaInterna.value is Pantalla.Ajustes -> {
                     val idHijo = when (pantalla) {
-                        is Pantalla.Generador -> "04.4"
-                        is Pantalla.Passkeys -> "04.6"
-                        is Pantalla.Autenticador -> "04.7"
+                        is Pantalla.Generador -> "04-HER-GEN"
+                        is Pantalla.Passkeys -> "04-HER-PSK"
+                        is Pantalla.Autenticador -> "04-HER-2FA"
                         else -> null
                     }
                     if (idHijo != null) {

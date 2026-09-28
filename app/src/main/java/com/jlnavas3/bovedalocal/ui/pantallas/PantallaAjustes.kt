@@ -75,7 +75,7 @@ fun PantallaAjustes(
         ) {
             BarraSuperiorPantalla(
                 titulo = "Ajustes",
-                idEtiqueta = "00",
+                idEtiqueta = "00-AJU",
                 mostrarId = ajustes.mostrarIdsAjustes,
                 alVolver = { vm.volverAtras() },
                 conSeparador = scrollState.value > 0,

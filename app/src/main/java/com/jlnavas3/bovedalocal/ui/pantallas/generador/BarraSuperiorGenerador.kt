@@ -27,10 +27,14 @@ fun BarraSuperiorGenerador(
     alRegenerar: () -> Unit,
     alCopiar: () -> Unit,
     alCrearEntrada: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    idEtiqueta: String = "04-HER-GEN",
+    mostrarId: Boolean = false
 ) {
     BarraSuperiorPantalla(
         titulo = "Generador",
+        idEtiqueta = idEtiqueta,
+        mostrarId = mostrarId,
         alVolver = alVolver,
         conSeparador = conSeparador,
         colorFondo = ColorAjustesFondo,
