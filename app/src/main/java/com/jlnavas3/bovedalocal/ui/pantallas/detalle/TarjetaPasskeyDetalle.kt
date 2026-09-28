@@ -1,28 +1,21 @@
 package com.jlnavas3.bovedalocal.ui.pantallas.detalle
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.jlnavas3.bovedalocal.data.DatosPasskey
-import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.GrupoAjustes
 import com.jlnavas3.bovedalocal.ui.theme.ColorDatosPasskey
 import com.jlnavas3.bovedalocal.ui.theme.ColorTitulos
 import com.jlnavas3.bovedalocal.ui.theme.Menta
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
-import com.jlnavas3.bovedalocal.ui.theme.fondoBadgeParaTema
 
 @Composable
 fun TarjetaPasskeyDetalle(
@@ -30,12 +23,9 @@ fun TarjetaPasskeyDetalle(
     usuarioEntrada: String = ""
 ) {
     val servicio = passkey.rpName.ifBlank { passkey.rpId }
-    GrupoAjustes(etiqueta = "Llave de acceso (Passkey)") {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(fondoBadgeParaTema(ColorDatosPasskey))
-        ) {
+    Column(modifier = Modifier.fillMaxWidth()) {
+        EtiquetaSeccionDetalle(texto = "Llave de acceso (Passkey)")
+        TarjetaDatoDetalle(colorBorde = ColorDatosPasskey) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -69,15 +59,6 @@ fun TarjetaPasskeyDetalle(
                     "La clave privada permanece cifrada en hardware local y nunca se exporta en texto claro.",
                     color = Menta,
                     style = MaterialTheme.typography.bodySmall
-                )
-            }
-            Box(modifier = Modifier.matchParentSize()) {
-                Box(
-                    modifier = Modifier
-                        .width(4.5.dp)
-                        .fillMaxHeight()
-                        .align(Alignment.CenterStart)
-                        .background(ColorDatosPasskey)
                 )
             }
         }
