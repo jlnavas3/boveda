@@ -39,6 +39,8 @@ fun PantallaWidget1x1Modo(
 
     ContenedorPrincipal(
         titulo = "Modo de generación 1x1",
+        idEtiqueta = "04-HER-WGT-MOD",
+        mostrarId = ajustes.mostrarIdsAjustes,
         alVolver = { vm.volverAtras() }
     ) {
         ComponenteGrupo(
@@ -51,14 +53,14 @@ fun PantallaWidget1x1Modo(
                 vm.ajustarWidget1x1Longitud(16)
                 vm.avisar("Modo de generación 1x1 restablecido")
             },
-            idGrupo = "04.4.3.G1",
+            idGrupo = "04-HER-WGT-MOD-G01",
             mostrarId = ajustes.mostrarIdsAjustes
         ) {
             ComponenteRadio(
                 titulo = "Generación aleatoria",
                 icono = null,
                 seleccionado = ajustes.widget1x1Modo == "aleatoria",
-                idFila = "04.4.3.1",
+                idFila = "04-HER-WGT-MOD-ALE",
                 mostrarId = ajustes.mostrarIdsAjustes,
                 alSeleccionar = {
                     haptica.tic()
@@ -76,7 +78,7 @@ fun PantallaWidget1x1Modo(
                     valorTexto = "${ajustes.widget1x1Longitud} caracteres",
                     rango = 6f..64f,
                     pasos = 57,
-                    idFila = "04.4.3.2",
+                    idFila = "04-HER-WGT-MOD-LEN",
                     mostrarId = ajustes.mostrarIdsAjustes,
                     alRestablecer = {
                         haptica.tic()
@@ -94,7 +96,7 @@ fun PantallaWidget1x1Modo(
                 titulo = "Por patrón personalizado",
                 icono = null,
                 seleccionado = ajustes.widget1x1Modo == "patron",
-                idFila = "04.4.3.3",
+                idFila = "04-HER-WGT-MOD-PAT",
                 mostrarId = ajustes.mostrarIdsAjustes,
                 alSeleccionar = {
                     haptica.tic()

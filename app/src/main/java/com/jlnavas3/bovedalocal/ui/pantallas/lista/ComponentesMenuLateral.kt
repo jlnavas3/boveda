@@ -68,9 +68,11 @@ fun GrupoMenuLateral(
                     fontWeight = FontWeight.SemiBold,
                     letterSpacing = 1.sp,
                     fontSize = 11.sp
-                )
+                ),
+                modifier = Modifier.weight(1f, fill = false)
             )
             if (mostrarId && !idEtiqueta.isNullOrBlank()) {
+                Spacer(modifier = Modifier.width(8.dp))
                 InsigniaIdAjuste(id = idEtiqueta, ajustes = ajustes)
             }
         }

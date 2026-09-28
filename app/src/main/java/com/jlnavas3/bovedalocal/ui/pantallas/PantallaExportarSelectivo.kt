@@ -121,7 +121,7 @@ fun PantallaExportarSelectivo(
     ) {
         BarraSuperiorPantalla(
             titulo = "Exportación selectiva",
-            idEtiqueta = "05.1.2",
+            idEtiqueta = "05-COP-EXP",
             mostrarId = ajustes.mostrarIdsAjustes,
             alVolver = { vm.volverAtras() },
             colorFondo = ColorAjustesFondo,

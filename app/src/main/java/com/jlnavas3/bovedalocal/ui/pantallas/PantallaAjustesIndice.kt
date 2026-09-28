@@ -104,12 +104,12 @@ fun PantallaAjustesIndice(
                         ComponenteNavegacion(
                             titulo = "Efecto de ola",
                             icono = null,
-                            idFila = "03.2.1",
+                            idFila = "03-LST-AZX-OLA",
                             mostrarId = ajustes.mostrarIdsAjustes,
                             valorTexto = if (ajustes.indiceEfectoOla) "${ajustes.indiceAmplitudOlaDp}dp" else "Desactivado",
                             alPulsar = {
                                 haptica.tic()
-                                vm.ir(Pantalla.IndiceOla("03.2.1"))
+                                vm.ir(Pantalla.IndiceOla("03-LST-AZX-OLA"))
                             }
                         )
 
@@ -118,12 +118,12 @@ fun PantallaAjustesIndice(
                         ComponenteNavegacion(
                             titulo = "Círculo y cresta",
                             icono = null,
-                            idFila = "03.2.2",
+                            idFila = "03-LST-AZX-CRE",
                             mostrarId = ajustes.mostrarIdsAjustes,
                             valorTexto = if (ajustes.indiceMostrarCirculo) "${ajustes.indiceTamanoCirculoDp}dp" else "Desactivado",
                             alPulsar = {
                                 haptica.tic()
-                                vm.ir(Pantalla.IndiceCresta("03.2.2"))
+                                vm.ir(Pantalla.IndiceCresta("03-LST-AZX-CRE"))
                             }
                         )
 
@@ -132,12 +132,12 @@ fun PantallaAjustesIndice(
                         ComponenteNavegacion(
                             titulo = "Tacto y háptica",
                             icono = null,
-                            idFila = "03.2.3",
+                            idFila = "03-LST-AZX-HAP",
                             mostrarId = ajustes.mostrarIdsAjustes,
                             valorTexto = if (ajustes.indiceHaptica) "Activa" else "Muda",
                             alPulsar = {
                                 haptica.tic()
-                                vm.ir(Pantalla.IndiceHaptica("03.2.3"))
+                                vm.ir(Pantalla.IndiceHaptica("03-LST-AZX-HAP"))
                             }
                         )
 
@@ -146,12 +146,12 @@ fun PantallaAjustesIndice(
                         ComponenteNavegacion(
                             titulo = "Resaltado y selección",
                             icono = null,
-                            idFila = "03.2.4",
+                            idFila = "03-LST-AZX-RES",
                             mostrarId = ajustes.mostrarIdsAjustes,
                             valorTexto = if (ajustes.indiceResaltarEntradas) "Activo" else "Desactivado",
                             alPulsar = {
                                 haptica.tic()
-                                vm.ir(Pantalla.IndiceResaltado("03.2.4"))
+                                vm.ir(Pantalla.IndiceResaltado("03-LST-AZX-RES"))
                             }
                         )
                     }

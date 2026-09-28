@@ -34,6 +34,8 @@ fun PantallaWidget1x1Comportamiento(
 
     ContenedorPrincipal(
         titulo = "Comportamiento 1x1",
+        idEtiqueta = "04-HER-WGT-CMP",
+        mostrarId = ajustes.mostrarIdsAjustes,
         alVolver = { vm.volverAtras() }
     ) {
         ComponenteGrupo(
@@ -46,14 +48,14 @@ fun PantallaWidget1x1Comportamiento(
                 vm.ajustarWidget1x1MostrarToast(true)
                 vm.avisar("Acciones automáticas restablecidas")
             },
-            idGrupo = "04.4.4.G1",
+            idGrupo = "04-HER-WGT-CMP-G01",
             mostrarId = ajustes.mostrarIdsAjustes
         ) {
             ComponenteSwitch(
                 titulo = "Copiar al portapapeles",
                 icono = null,
                 activo = ajustes.widget1x1CopiarPortapapeles,
-                idFila = "04.4.4.1",
+                idFila = "04-HER-WGT-CMP-CLP",
                 mostrarId = ajustes.mostrarIdsAjustes,
                 alCambiar = {
                     haptica.tic()
@@ -67,7 +69,7 @@ fun PantallaWidget1x1Comportamiento(
                 titulo = "Mostrar notificación emergente (Toast)",
                 icono = null,
                 activo = ajustes.widget1x1MostrarToast,
-                idFila = "04.4.4.2",
+                idFila = "04-HER-WGT-CMP-TST",
                 mostrarId = ajustes.mostrarIdsAjustes,
                 alCambiar = {
                     haptica.tic()
@@ -88,14 +90,14 @@ fun PantallaWidget1x1Comportamiento(
                 vm.ajustarWidget1x1HapticaIntensidad(0.35f)
                 vm.avisar("Respuesta táctil restablecida")
             },
-            idGrupo = "04.4.4.G2",
+            idGrupo = "04-HER-WGT-CMP-G02",
             mostrarId = ajustes.mostrarIdsAjustes
         ) {
             ComponenteSwitch(
                 titulo = "Vibración al generar",
                 icono = null,
                 activo = ajustes.widget1x1Haptica,
-                idFila = "04.4.4.3",
+                idFila = "04-HER-WGT-CMP-HAP",
                 mostrarId = ajustes.mostrarIdsAjustes,
                 alCambiar = {
                     haptica.tic()
@@ -113,7 +115,7 @@ fun PantallaWidget1x1Comportamiento(
                     valorTexto = "${(ajustes.widget1x1HapticaIntensidad * 100).roundToInt()}%",
                     rango = 0.01f..1.0f,
                     pasos = 99,
-                    idFila = "04.4.4.4",
+                    idFila = "04-HER-WGT-CMP-HIN",
                     mostrarId = ajustes.mostrarIdsAjustes,
                     alRestablecer = {
                         haptica.tic()

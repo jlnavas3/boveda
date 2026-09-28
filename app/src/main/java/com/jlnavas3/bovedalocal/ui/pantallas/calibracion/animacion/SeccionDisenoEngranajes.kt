@@ -28,16 +28,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.jlnavas3.bovedalocal.ui.componentes.MenuDesplegableBoveda
 import com.jlnavas3.bovedalocal.ui.componentes.SelectorColorEnTiempoReal
 import com.jlnavas3.bovedalocal.ui.componentes.SeparadorOpcionMenu
-import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteBotonFila
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteGrupo
-import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteSeparador
 import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
 import com.jlnavas3.bovedalocal.ui.theme.ColorTitulos
 import com.jlnavas3.bovedalocal.ui.theme.FormaCampo
@@ -59,8 +56,11 @@ fun SeccionDisenoEngranajes(
 
     ComponenteGrupo(
         etiqueta = "Colores de las piezas",
-        descripcion = "Personaliza la tonalidad cromática de cada elemento del engranaje",
-        mostrarId = mostrarIds
+        idGrupo = "02-APA-THM-ANI-G02",
+        mostrarId = mostrarIds,
+        alRestablecer = {
+            parteActual.mutador(parteActual.colorPorDefecto)
+        }
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Box(modifier = Modifier.fillMaxWidth()) {
@@ -160,13 +160,5 @@ fun SeccionDisenoEngranajes(
                 parteActual.mutador(nuevoColor)
             }
         }
-
-        ComponenteSeparador()
-        ComponenteBotonFila(
-            titulo = "Restablecer",
-            alPulsar = {
-                parteActual.mutador(parteActual.colorPorDefecto)
-            }
-        )
     }
 }

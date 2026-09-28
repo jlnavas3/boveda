@@ -42,6 +42,8 @@ fun ContenedorPrincipal(
     paddingVertical: Dp = 16.dp,
     espaciado: Dp = EspaciadoComponentes,
     cabeceraFlotante: (@Composable () -> Unit)? = null,
+    idEtiqueta: String? = null,
+    mostrarId: Boolean = false,
     contenido: @Composable ColumnScope.() -> Unit
 ) {
     val scrollState = rememberScrollState()
@@ -55,6 +57,8 @@ fun ContenedorPrincipal(
             BarraSuperiorPantalla(
                 titulo = titulo,
                 alVolver = alVolver,
+                idEtiqueta = idEtiqueta,
+                mostrarId = mostrarId,
                 conSeparador = conScroll && scrollState.value > 0,
                 colorFondo = Obsidiana,
                 acciones = acciones

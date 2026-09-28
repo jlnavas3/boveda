@@ -45,6 +45,8 @@ fun PantallaFormasCurvatura(
 
     ContenedorPrincipal(
         titulo = "Curvatura de esquinas",
+        idEtiqueta = "02-APA-GEO-CRV",
+        mostrarId = ajustes.mostrarIdsAjustes,
         alVolver = { vm.volverAtras() },
         conScroll = true,
         espaciado = EspaciadoComponentes,
@@ -62,7 +64,9 @@ fun PantallaFormasCurvatura(
             alRestablecer = {
                 haptica.tic()
                 vm.ajustarCurvaturaEsquinas(16f)
-            }
+            },
+            idGrupo = "02-APA-GEO-CRV-G01",
+            mostrarId = ajustes.mostrarIdsAjustes
         ) {
             ComponenteSlider(
                 titulo = "Radio de esquinas",
@@ -83,7 +87,9 @@ fun PantallaFormasCurvatura(
         Spacer(Modifier.height(14.dp))
 
         ComponenteGrupo(
-            etiqueta = "VALORES RÁPIDOS"
+            etiqueta = "VALORES RÁPIDOS",
+            idGrupo = "02-APA-GEO-CRV-G02",
+            mostrarId = ajustes.mostrarIdsAjustes
         ) {
             OPCIONES_CURVATURA.forEachIndexed { indice, opcion ->
                 val activo = ajustes.curvaturaEsquinasDp.roundToInt() == opcion.valorDp.roundToInt()

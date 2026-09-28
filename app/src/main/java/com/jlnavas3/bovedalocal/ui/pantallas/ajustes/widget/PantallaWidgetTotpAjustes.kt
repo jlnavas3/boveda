@@ -31,6 +31,8 @@ fun PantallaWidgetTotpAjustes(
 
     ContenedorPrincipal(
         titulo = "Widget 2FA",
+        idEtiqueta = "04-HER-WGT-TOT",
+        mostrarId = ajustes.mostrarIdsAjustes,
         alVolver = { vm.volverAtras() }
     ) {
         ComponenteGrupo(
@@ -43,14 +45,14 @@ fun PantallaWidgetTotpAjustes(
                 vm.ajustarWidgetHapticaIntensidad(0.35f)
                 vm.avisar("Ajustes de respuesta táctil restablecidos")
             },
-            idGrupo = "04.4.1.G1",
+            idGrupo = "04-HER-WGT-TOT-G01",
             mostrarId = ajustes.mostrarIdsAjustes
         ) {
             ComponenteSwitch(
                 titulo = "Vibración al pulsar",
                 icono = null,
                 activo = ajustes.widgetHaptica,
-                idFila = "04.4.1.1",
+                idFila = "04-HER-WGT-TOT-SWT",
                 mostrarId = ajustes.mostrarIdsAjustes,
                 alCambiar = {
                     haptica.tic()
@@ -68,7 +70,7 @@ fun PantallaWidgetTotpAjustes(
                     valorTexto = "${(ajustes.widgetHapticaIntensidad * 100).roundToInt()}%",
                     rango = 0.01f..1.0f,
                     pasos = 99,
-                    idFila = "04.4.1.2",
+                    idFila = "04-HER-WGT-TOT-HIN",
                     mostrarId = ajustes.mostrarIdsAjustes,
                     alRestablecer = {
                         haptica.tic()

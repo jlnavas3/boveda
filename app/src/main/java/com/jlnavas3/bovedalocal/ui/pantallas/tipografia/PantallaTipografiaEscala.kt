@@ -49,6 +49,8 @@ fun PantallaTipografiaEscala(
 
     ContenedorPrincipal(
         titulo = "Tamaño de fuente",
+        idEtiqueta = "02-APA-TYP-ESC",
+        mostrarId = ajustes.mostrarIdsAjustes,
         alVolver = { vm.volverAtras() },
         conScroll = true,
         espaciado = EspaciadoComponentes,
@@ -63,7 +65,9 @@ fun PantallaTipografiaEscala(
             alRestablecer = {
                 haptica.tic()
                 vm.ajustarEscalaTexto(1.0f)
-            }
+            },
+            idGrupo = "02-APA-TYP-ESC-G01",
+            mostrarId = ajustes.mostrarIdsAjustes
         ) {
             ComponenteSlider(
                 titulo = "Escalado de interfaz",
@@ -84,7 +88,9 @@ fun PantallaTipografiaEscala(
         Spacer(Modifier.height(14.dp))
 
         ComponenteGrupo(
-            etiqueta = "VALORES RÁPIDOS"
+            etiqueta = "VALORES RÁPIDOS",
+            idGrupo = "02-APA-TYP-ESC-G02",
+            mostrarId = ajustes.mostrarIdsAjustes
         ) {
             OPCIONES_ESCALA.forEachIndexed { indice, opcion ->
                 val activo = abs(ajustes.escalaTexto - opcion.valor) < 0.04f

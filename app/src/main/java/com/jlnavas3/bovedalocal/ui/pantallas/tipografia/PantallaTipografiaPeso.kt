@@ -32,6 +32,8 @@ fun PantallaTipografiaPeso(
 
     ContenedorPrincipal(
         titulo = "Grosor y estilo",
+        idEtiqueta = "02-APA-TYP-PES",
+        mostrarId = ajustes.mostrarIdsAjustes,
         alVolver = { vm.volverAtras() },
         conScroll = true,
         espaciado = EspaciadoComponentes,
@@ -47,7 +49,9 @@ fun PantallaTipografiaPeso(
                 haptica.tic()
                 vm.ajustarPesoTexto("normal")
                 vm.ajustarCursivaTexto(false)
-            }
+            },
+            idGrupo = "02-APA-TYP-PES-G01",
+            mostrarId = ajustes.mostrarIdsAjustes
         ) {
             AlmacenAjustes.OPCIONES_PESO_TEXTO.forEachIndexed { indice, (clave, etiqueta) ->
                 val activo = ajustes.pesoTexto == clave
@@ -71,7 +75,9 @@ fun PantallaTipografiaPeso(
         Spacer(Modifier.height(14.dp))
 
         ComponenteGrupo(
-            etiqueta = "ESTILO ITÁLICA"
+            etiqueta = "ESTILO ITÁLICA",
+            idGrupo = "02-APA-TYP-PES-G02",
+            mostrarId = ajustes.mostrarIdsAjustes
         ) {
             ComponenteSwitch(
                 titulo = "Texto en cursiva",

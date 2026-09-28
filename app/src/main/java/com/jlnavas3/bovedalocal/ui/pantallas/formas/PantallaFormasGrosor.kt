@@ -46,6 +46,8 @@ fun PantallaFormasGrosor(
 
     ContenedorPrincipal(
         titulo = "Grosor del borde",
+        idEtiqueta = "02-APA-GEO-GRO",
+        mostrarId = ajustes.mostrarIdsAjustes,
         alVolver = { vm.volverAtras() },
         conScroll = true,
         espaciado = EspaciadoComponentes,
@@ -63,7 +65,9 @@ fun PantallaFormasGrosor(
             alRestablecer = {
                 haptica.tic()
                 vm.ajustarGrosorBorde(1.0f)
-            }
+            },
+            idGrupo = "02-APA-GEO-GRO-G01",
+            mostrarId = ajustes.mostrarIdsAjustes
         ) {
             val valorTexto = if (ajustes.grosorBordeDp == 0f) "Sin borde" else "${String.format(Locale.US, "%.1f", ajustes.grosorBordeDp)} dp"
             ComponenteSlider(
@@ -85,7 +89,9 @@ fun PantallaFormasGrosor(
         Spacer(Modifier.height(14.dp))
 
         ComponenteGrupo(
-            etiqueta = "VALORES RÁPIDOS"
+            etiqueta = "VALORES RÁPIDOS",
+            idGrupo = "02-APA-GEO-GRO-G02",
+            mostrarId = ajustes.mostrarIdsAjustes
         ) {
             OPCIONES_GROSOR.forEachIndexed { indice, opcion ->
                 val activo = abs(ajustes.grosorBordeDp - opcion.valorDp) < 0.05f

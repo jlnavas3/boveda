@@ -29,6 +29,8 @@ fun PantallaIndiceHaptica(
 
     ContenedorPrincipal(
         titulo = "Tacto y háptica",
+        idEtiqueta = "03-LST-AZX-HAP",
+        mostrarId = ajustes.mostrarIdsAjustes,
         alVolver = { vm.volverAtras() },
         cabeceraFlotante = {
             VistaPreviaIndiceInteractiva(ajustes = ajustes)
@@ -45,13 +47,13 @@ fun PantallaIndiceHaptica(
                 vm.ajustarIndiceTonoLetras(0.7f)
                 vm.avisar("Valores de tacto restablecidos")
             },
-            idGrupo = "03.2.3",
+            idGrupo = "03-LST-AZX-HAP-G01",
             mostrarId = ajustes.mostrarIdsAjustes
         ) {
             ComponenteSwitch(
                 titulo = "Vibración háptica al deslizar",
                 activo = ajustes.indiceHaptica,
-                idFila = "03.2.3.1",
+                idFila = "03-LST-AZX-HAP-SWT",
                 mostrarId = ajustes.mostrarIdsAjustes,
                 alCambiar = {
                     haptica.tic()
@@ -64,7 +66,7 @@ fun PantallaIndiceHaptica(
             ComponenteSwitch(
                 titulo = "Incluir letra Ñ en el abecedario",
                 activo = ajustes.indiceIncluirEnie,
-                idFila = "03.2.3.2",
+                idFila = "03-LST-AZX-HAP-ENI",
                 mostrarId = ajustes.mostrarIdsAjustes,
                 alCambiar = {
                     haptica.tic()
@@ -79,7 +81,7 @@ fun PantallaIndiceHaptica(
                 valor = ajustes.indiceAnchoTactilDp,
                 valorTexto = "${ajustes.indiceAnchoTactilDp.roundToInt()} dp",
                 rango = 16f..60f,
-                idFila = "03.2.3.3",
+                idFila = "03-LST-AZX-HAP-ZON",
                 mostrarId = ajustes.mostrarIdsAjustes,
                 alRestablecer = {
                     haptica.tic()
@@ -99,7 +101,7 @@ fun PantallaIndiceHaptica(
                 valorTexto = String.format(Locale.US, "%.2f", ajustes.indiceTonoLetras),
                 rango = 0.2f..1.0f,
                 pasos = 16,
-                idFila = "03.2.3.4",
+                idFila = "03-LST-AZX-HAP-LUM",
                 mostrarId = ajustes.mostrarIdsAjustes,
                 alRestablecer = {
                     haptica.tic()

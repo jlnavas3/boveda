@@ -54,7 +54,7 @@ fun PantallaCalibracionWidget1x1(
             // 1. Barra superior
             BarraSuperiorPantalla(
                 titulo = "Calibración Generador 1x1",
-                idEtiqueta = "03.3.G1",
+                idEtiqueta = "04-HER-WGT-1X1",
                 mostrarId = ajustes.mostrarIdsAjustes,
                 alVolver = { vm.volverAtras() },
                 conSeparador = false,

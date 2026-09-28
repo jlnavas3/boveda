@@ -35,7 +35,7 @@ import kotlin.math.roundToInt
 @Composable
 fun SimuladorTarjetaInteractiva(
     ajustes: AjustesApp,
-    textoPrueba: String = "Vista previa en vivo",
+    textoPrueba: String = "Vista previa",
     alCambiarTextoPrueba: ((String) -> Unit)? = null,
     haptica: Haptica? = null
 ) {

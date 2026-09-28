@@ -26,6 +26,8 @@ fun PantallaIndiceResaltado(
 
     ContenedorPrincipal(
         titulo = "Resaltado y selección",
+        idEtiqueta = "03-LST-AZX-RES",
+        mostrarId = ajustes.mostrarIdsAjustes,
         alVolver = { vm.volverAtras() },
         cabeceraFlotante = {
             VistaPreviaIndiceInteractiva(ajustes = ajustes)
@@ -40,13 +42,13 @@ fun PantallaIndiceResaltado(
                 vm.ajustarIndiceResaltarSoloPrimera(true)
                 vm.avisar("Valores de resaltado restablecidos")
             },
-            idGrupo = "03.2.4",
+            idGrupo = "03-LST-AZX-RES-G01",
             mostrarId = ajustes.mostrarIdsAjustes
         ) {
             ComponenteSwitch(
                 titulo = "Resaltar cuentas al arrastrar",
                 activo = ajustes.indiceResaltarEntradas,
-                idFila = "03.2.4.1",
+                idFila = "03-LST-AZX-RES-SWT",
                 mostrarId = ajustes.mostrarIdsAjustes,
                 alCambiar = {
                     haptica.tic()
@@ -60,7 +62,7 @@ fun PantallaIndiceResaltado(
                 ComponenteSwitch(
                     titulo = "Resaltar solo la primera cuenta",
                     activo = ajustes.indiceResaltarSoloPrimera,
-                    idFila = "03.2.4.2",
+                    idFila = "03-LST-AZX-RES-1ST",
                     mostrarId = ajustes.mostrarIdsAjustes,
                     alCambiar = {
                         haptica.tic()

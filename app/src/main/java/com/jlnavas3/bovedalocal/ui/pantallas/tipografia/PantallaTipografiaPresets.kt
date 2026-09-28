@@ -48,6 +48,8 @@ fun PantallaTipografiaPresets(
 
     ContenedorPrincipal(
         titulo = "Estilos predefinidos",
+        idEtiqueta = "02-APA-TYP-PRE",
+        mostrarId = ajustes.mostrarIdsAjustes,
         alVolver = { vm.volverAtras() },
         conScroll = true,
         espaciado = EspaciadoComponentes,
@@ -62,7 +64,9 @@ fun PantallaTipografiaPresets(
             alRestablecer = {
                 haptica.tic()
                 vm.restablecerTipografia()
-            }
+            },
+            idGrupo = "02-APA-TYP-PRE-G01",
+            mostrarId = ajustes.mostrarIdsAjustes
         ) {
             PRESETS_TIPOGRAFIA.forEachIndexed { indice, item ->
                 val activo = ajustes.escalaTexto == item.escala &&

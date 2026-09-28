@@ -10,14 +10,15 @@ interface VaultNavegacionDelegate {
 
     fun padreDe(pantalla: Pantalla): Pantalla? = when (pantalla) {
         // Nivel 3 -> Nivel 2
-        is Pantalla.CalibracionAnimacion -> Pantalla.Tema("03.2.G2")
+        is Pantalla.CalibracionAnimacion -> Pantalla.Tema("02-APA-THM-ANI")
+        is Pantalla.ColoresDatos -> Pantalla.Tema("02-APA-THM-DAT")
         is Pantalla.CalibracionWidgetTotp -> {
             ultimoWidgetAjustesSeleccionado = 0
-            Pantalla.AjustesWidget("04.4.2")
+            Pantalla.AjustesWidget("04-HER-WGT-CAL")
         }
         is Pantalla.CalibracionWidget1x1 -> {
             ultimoWidgetAjustesSeleccionado = 1
-            Pantalla.AjustesWidget("04.4.5")
+            Pantalla.AjustesWidget("04-HER-WGT-1X1")
         }
 
         is Pantalla.SaludBoveda -> if (!pantalla.seccionId.isNullOrBlank()) Pantalla.Ajustes(pantalla.seccionId) else Pantalla.Lista
@@ -29,20 +30,21 @@ interface VaultNavegacionDelegate {
         is Pantalla.FormasCurvatura,
         is Pantalla.FormasGrosor,
         is Pantalla.FormasEstilo,
-        is Pantalla.FormasEspaciado -> Pantalla.Formas("02.2")
+        is Pantalla.FormasEspaciado -> Pantalla.Formas("02-APA-GEO")
 
         // Nivel 3: Subpáginas de Tipografía -> Tipografía (Nivel 2)
         is Pantalla.TipografiaPresets,
         is Pantalla.TipografiaEscala,
         is Pantalla.TipografiaFamilia,
         is Pantalla.TipografiaPeso,
-        is Pantalla.TipografiaEspaciado -> Pantalla.Tipografia("02.3")
+        is Pantalla.TipografiaEspaciado -> Pantalla.Tipografia("02-APA-TYP")
 
         // Nivel 2: Personalización -> Ajustes (Nivel 1)
         is Pantalla.IndiceOla,
         is Pantalla.IndiceCresta,
         is Pantalla.IndiceHaptica,
-        is Pantalla.IndiceResaltado -> Pantalla.AjustesIndice("03.2")
+        is Pantalla.IndiceResaltado -> Pantalla.AjustesIndice("03-LST-AZX")
+        is Pantalla.ExportarSelectivo -> Pantalla.CopiaSeguridad("05-COP-EXP")
 
         is Pantalla.Tema -> Pantalla.Ajustes("02-APA-THM")
         is Pantalla.Formas -> Pantalla.Ajustes("02-APA-GEO")
@@ -142,25 +144,51 @@ interface VaultNavegacionDelegate {
             limpio.startsWith("01-SEG-SEN") || limpio.startsWith("01.3") -> Pantalla.AjustesSenuelo(limpio)
             limpio.startsWith("01-SEG-DES") || limpio.startsWith("01.4") -> Pantalla.AjustesAutodestruccion(limpio)
             limpio.startsWith("01-SEG-CRY") || limpio.startsWith("01.5") -> Pantalla.Argon2id(limpio)
+
+            limpio.startsWith("02-APA-THM-ANI") || limpio.startsWith("02-APA-THM-CAL") || limpio.startsWith("03.2.G2") -> Pantalla.CalibracionAnimacion(limpio)
+            limpio.startsWith("02-APA-THM-DAT") || limpio.startsWith("03.2.1") -> Pantalla.ColoresDatos(limpio)
             limpio.startsWith("02-APA-THM") || limpio.startsWith("02.1") || limpio.startsWith("09.2") -> Pantalla.Tema(limpio)
+
+            limpio.startsWith("02-APA-GEO-PRE") -> Pantalla.FormasPresets(limpio)
+            limpio.startsWith("02-APA-GEO-CRV") -> Pantalla.FormasCurvatura(limpio)
+            limpio.startsWith("02-APA-GEO-GRO") -> Pantalla.FormasGrosor(limpio)
+            limpio.startsWith("02-APA-GEO-EST") -> Pantalla.FormasEstilo(limpio)
+            limpio.startsWith("02-APA-GEO-ESP") -> Pantalla.FormasEspaciado(limpio)
             limpio.startsWith("02-APA-GEO") || limpio.startsWith("02.2") -> Pantalla.Formas(limpio)
+
+            limpio.startsWith("02-APA-TYP-PRE") -> Pantalla.TipografiaPresets(limpio)
+            limpio.startsWith("02-APA-TYP-ESC") -> Pantalla.TipografiaEscala(limpio)
+            limpio.startsWith("02-APA-TYP-FAM") -> Pantalla.TipografiaFamilia(limpio)
+            limpio.startsWith("02-APA-TYP-PES") -> Pantalla.TipografiaPeso(limpio)
+            limpio.startsWith("02-APA-TYP-ESP") -> Pantalla.TipografiaEspaciado(limpio)
             limpio.startsWith("02-APA-TYP") || limpio.startsWith("02.3") -> Pantalla.Tipografia(limpio)
+
             limpio.startsWith("03-LST-DES") || limpio.startsWith("03.1") || limpio.startsWith("09.6") -> Pantalla.OrganizacionLista(limpio)
+            limpio.startsWith("03-LST-AZX-OLA") -> Pantalla.IndiceOla(limpio)
+            limpio.startsWith("03-LST-AZX-CRE") -> Pantalla.IndiceCresta(limpio)
+            limpio.startsWith("03-LST-AZX-HAP") -> Pantalla.IndiceHaptica(limpio)
+            limpio.startsWith("03-LST-AZX-RES") -> Pantalla.IndiceResaltado(limpio)
             limpio.startsWith("03-LST-AZX") || limpio.startsWith("03.2") || limpio.startsWith("09.5") -> Pantalla.AjustesIndice(limpio)
             limpio.startsWith("03-LST-FMT") || limpio.startsWith("03.3") || limpio.startsWith("10") -> Pantalla.FormatosCampos(limpio)
+
             limpio.startsWith("04-HER-AUT") || limpio.startsWith("04.1") || limpio == "07" || limpio.startsWith("07.0") -> Pantalla.AjustesAutenticador(limpio)
             limpio.startsWith("04-HER-HST") || limpio.startsWith("04.2") || limpio == "04" || limpio.startsWith("04.0") -> Pantalla.HistorialClaves(limpio)
             limpio.startsWith("04-HER-CAM") || limpio.startsWith("04.3") || limpio == "05" || limpio.startsWith("05.0") -> Pantalla.AjustesCamara(limpio)
-            limpio.startsWith("04-HER-WGT-TOTP") || limpio.startsWith("04.4.1") -> Pantalla.WidgetTotpAjustes(limpio)
-            limpio.startsWith("04-HER-WGT-1X1") || limpio.startsWith("04.4.3") -> Pantalla.Widget1x1Modo(limpio)
+            limpio.startsWith("04-HER-WGT-TOT") || limpio.startsWith("04.4.1") -> Pantalla.WidgetTotpAjustes(limpio)
+            limpio.startsWith("04-HER-WGT-CAL") || limpio.startsWith("04.4.2") -> Pantalla.CalibracionWidgetTotp(limpio)
+            limpio.startsWith("04-HER-WGT-MOD") || limpio.startsWith("04.4.3") -> Pantalla.Widget1x1Modo(limpio)
             limpio.startsWith("04-HER-WGT-CMP") || limpio.startsWith("04.4.4") -> Pantalla.Widget1x1Comportamiento(limpio)
+            limpio.startsWith("04-HER-WGT-1X1") || limpio.startsWith("04.4.5") -> Pantalla.CalibracionWidget1x1(limpio)
             limpio.startsWith("04-HER-WGT") || limpio.startsWith("04.4") || limpio.startsWith("09.4") -> Pantalla.AjustesWidget(limpio)
             limpio.startsWith("04-HER-MSK") || limpio.startsWith("04.5") -> Pantalla.TileRapido(limpio)
             limpio.startsWith("04-HER-PSK") || limpio.startsWith("04.6") -> Pantalla.Passkeys
+
             limpio.startsWith("05-COP-ATM") || limpio.startsWith("05.1.4") -> Pantalla.AjustesCopiaAutomatica(limpio)
+            limpio.startsWith("05-COP-EXP") || limpio.startsWith("05.1.2") -> Pantalla.ExportarSelectivo(limpio)
             limpio.startsWith("05-COP-MAN") || limpio.startsWith("05.1") || limpio == "06" || limpio.startsWith("06.0") -> Pantalla.CopiaSeguridad(limpio)
             limpio.startsWith("05-COP-CSV") || limpio.startsWith("05.2") || limpio == "08" || limpio.startsWith("08.0") -> Pantalla.CsvGoogle(limpio)
             limpio.startsWith("05-COP-KIT") || limpio.startsWith("05.3") -> Pantalla.KitEmergencia(limpio)
+
             limpio.startsWith("06-SIS-AVZ-COL") || limpio.startsWith("06.1.2b") || limpio.contains("COL-IDS") -> Pantalla.ColoresIdentificadores(limpio)
             limpio.startsWith("06-SIS-AVZ") || limpio.startsWith("06.1") || limpio.startsWith("11.1") || limpio == "11" -> Pantalla.Avanzada(limpio)
             limpio.startsWith("06-SIS-LOG") || limpio.startsWith("06.2") -> Pantalla.Registro(limpio)

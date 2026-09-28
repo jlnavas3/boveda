@@ -28,6 +28,8 @@ fun PantallaIndiceCresta(
 
     ContenedorPrincipal(
         titulo = "Círculo y cresta",
+        idEtiqueta = "03-LST-AZX-CRE",
+        mostrarId = ajustes.mostrarIdsAjustes,
         alVolver = { vm.volverAtras() },
         cabeceraFlotante = {
             VistaPreviaIndiceInteractiva(ajustes = ajustes)
@@ -43,13 +45,13 @@ fun PantallaIndiceCresta(
                 vm.ajustarIndiceOffsetCirculoDp(12f)
                 vm.avisar("Valores de cresta restablecidos")
             },
-            idGrupo = "03.2.2",
+            idGrupo = "03-LST-AZX-CRE-G01",
             mostrarId = ajustes.mostrarIdsAjustes
         ) {
             ComponenteSwitch(
                 titulo = "Mostrar círculo en la cresta",
                 activo = ajustes.indiceMostrarCirculo,
-                idFila = "03.2.2.1",
+                idFila = "03-LST-AZX-CRE-SWT",
                 mostrarId = ajustes.mostrarIdsAjustes,
                 alCambiar = {
                     haptica.tic()
@@ -65,7 +67,7 @@ fun PantallaIndiceCresta(
                     valor = ajustes.indiceTamanoCirculoDp,
                     valorTexto = "${ajustes.indiceTamanoCirculoDp.roundToInt()} dp",
                     rango = 20f..64f,
-                    idFila = "03.2.2.2",
+                    idFila = "03-LST-AZX-CRE-DIM",
                     mostrarId = ajustes.mostrarIdsAjustes,
                     alRestablecer = {
                         haptica.tic()
@@ -84,7 +86,7 @@ fun PantallaIndiceCresta(
                     valor = ajustes.indiceOffsetCirculoDp,
                     valorTexto = "${ajustes.indiceOffsetCirculoDp.roundToInt()} dp",
                     rango = -20f..60f,
-                    idFila = "03.2.2.3",
+                    idFila = "03-LST-AZX-CRE-OFF",
                     mostrarId = ajustes.mostrarIdsAjustes,
                     alRestablecer = {
                         haptica.tic()

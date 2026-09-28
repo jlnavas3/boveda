@@ -73,7 +73,7 @@ fun PantallaColoresDatos(
     ) {
         BarraSuperiorPantalla(
             titulo = "Colores de campos y datos",
-            idEtiqueta = "03.2.1",
+            idEtiqueta = "02-APA-THM-DAT",
             mostrarId = ajustes.mostrarIdsAjustes,
             alVolver = { vm.volverAtras() },
             colorFondo = ColorAjustesFondo
@@ -90,33 +90,21 @@ fun PantallaColoresDatos(
                 .verticalScroll(scrollState)
                 .padding(horizontal = 16.dp, vertical = 8.dp)
         ) {
-            DescripcionPantalla(
-                subtitulo = "Personaliza los colores aislados para cada tipo de dato. Estos colores identifican visualmente el contenido en las tarjetas del listado:"
-            )
-
-            Spacer(Modifier.height(12.dp))
-
             GrupoSelectoresColoresDatos(
                 mostrarIdsAjustes = ajustes.mostrarIdsAjustes,
                 onSeleccionarColor = { clave, color ->
                     haptica.tic()
                     colorInicialModal = color
                     colorSeleccionando = clave
+                },
+                alRestablecer = {
+                    haptica.tic()
+                    vm.restablecerColoresDatos()
+                    vm.avisar("Colores de datos restablecidos")
                 }
             )
 
-            Spacer(Modifier.height(18.dp))
-
-            BotonBorde(
-                texto = "Restablecer colores predeterminados",
-                icono = Icons.Filled.Refresh,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                haptica.tic()
-                vm.restablecerColoresDatos()
-            }
-
-            Spacer(Modifier.height(24.dp))
+            Spacer(Modifier.height(32.dp))
         }
     }
 

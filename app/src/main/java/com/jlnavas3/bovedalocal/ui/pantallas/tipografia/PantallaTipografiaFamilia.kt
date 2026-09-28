@@ -31,6 +31,8 @@ fun PantallaTipografiaFamilia(
 
     ContenedorPrincipal(
         titulo = "Familia tipográfica",
+        idEtiqueta = "02-APA-TYP-FAM",
+        mostrarId = ajustes.mostrarIdsAjustes,
         alVolver = { vm.volverAtras() },
         conScroll = true,
         espaciado = EspaciadoComponentes,
@@ -45,7 +47,9 @@ fun PantallaTipografiaFamilia(
             alRestablecer = {
                 haptica.tic()
                 vm.ajustarFamiliaFuente("sans")
-            }
+            },
+            idGrupo = "02-APA-TYP-FAM-G01",
+            mostrarId = ajustes.mostrarIdsAjustes
         ) {
             AlmacenAjustes.OPCIONES_FAMILIA_FUENTE.forEachIndexed { indice, (clave, etiqueta) ->
                 val activo = ajustes.familiaFuente == clave

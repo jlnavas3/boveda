@@ -31,6 +31,8 @@ fun PantallaFormasEstilo(
 
     ContenedorPrincipal(
         titulo = "Tono y estilo del borde",
+        idEtiqueta = "02-APA-GEO-EST",
+        mostrarId = ajustes.mostrarIdsAjustes,
         alVolver = { vm.volverAtras() },
         conScroll = true,
         espaciado = EspaciadoComponentes,
@@ -48,7 +50,9 @@ fun PantallaFormasEstilo(
             alRestablecer = {
                 haptica.tic()
                 vm.ajustarEstiloBorde("marcado")
-            }
+            },
+            idGrupo = "02-APA-GEO-EST-G01",
+            mostrarId = ajustes.mostrarIdsAjustes
         ) {
             AlmacenAjustes.OPCIONES_ESTILO_BORDE.forEachIndexed { indice, (clave, etiqueta) ->
                 val activo = ajustes.estiloBorde == clave

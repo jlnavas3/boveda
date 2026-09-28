@@ -24,11 +24,13 @@ import com.jlnavas3.bovedalocal.ui.theme.ColorDatosWeb
 fun GrupoSelectoresColoresDatos(
     mostrarIdsAjustes: Boolean,
     onSeleccionarColor: (clave: String, colorInicial: Color) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    alRestablecer: (() -> Unit)? = null
 ) {
     ComponenteGrupo(
         etiqueta = "Colores de datos e indicadores",
-        idGrupo = "03.2.1.G1",
+        alRestablecer = alRestablecer,
+        idGrupo = "02-APA-THM-DAT-G01",
         mostrarId = mostrarIdsAjustes,
         modifier = modifier
     ) {

@@ -29,6 +29,8 @@ fun PantallaIndiceOla(
 
     ContenedorPrincipal(
         titulo = "Efecto de ola",
+        idEtiqueta = "03-LST-AZX-OLA",
+        mostrarId = ajustes.mostrarIdsAjustes,
         alVolver = { vm.volverAtras() },
         cabeceraFlotante = {
             VistaPreviaIndiceInteractiva(ajustes = ajustes)
@@ -45,13 +47,13 @@ fun PantallaIndiceOla(
                 vm.ajustarIndiceEscalaLetras(1.8f)
                 vm.avisar("Valores de ola restablecidos")
             },
-            idGrupo = "03.2.1",
+            idGrupo = "03-LST-AZX-OLA-G01",
             mostrarId = ajustes.mostrarIdsAjustes
         ) {
             ComponenteSwitch(
                 titulo = "Efecto de ola al deslizar",
                 activo = ajustes.indiceEfectoOla,
-                idFila = "03.2.1.1",
+                idFila = "03-LST-AZX-OLA-SWT",
                 mostrarId = ajustes.mostrarIdsAjustes,
                 alCambiar = {
                     haptica.tic()
@@ -67,7 +69,7 @@ fun PantallaIndiceOla(
                     valor = ajustes.indiceAmplitudOlaDp,
                     valorTexto = "${ajustes.indiceAmplitudOlaDp.roundToInt()} dp",
                     rango = 0f..80f,
-                    idFila = "03.2.1.2",
+                    idFila = "03-LST-AZX-OLA-AMP",
                     mostrarId = ajustes.mostrarIdsAjustes,
                     alRestablecer = {
                         haptica.tic()
@@ -86,7 +88,7 @@ fun PantallaIndiceOla(
                     valor = ajustes.indiceRadioOlaDp,
                     valorTexto = "${ajustes.indiceRadioOlaDp.roundToInt()} letras",
                     rango = 1f..8f,
-                    idFila = "03.2.1.3",
+                    idFila = "03-LST-AZX-OLA-RAD",
                     mostrarId = ajustes.mostrarIdsAjustes,
                     alRestablecer = {
                         haptica.tic()
@@ -106,7 +108,7 @@ fun PantallaIndiceOla(
                     valorTexto = String.format(Locale.US, "%.1fx", ajustes.indiceEscalaLetras),
                     rango = 1.0f..3.0f,
                     pasos = 20,
-                    idFila = "03.2.1.4",
+                    idFila = "03-LST-AZX-OLA-ESC",
                     mostrarId = ajustes.mostrarIdsAjustes,
                     alRestablecer = {
                         haptica.tic()

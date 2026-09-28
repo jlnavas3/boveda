@@ -33,6 +33,8 @@ fun PantallaTipografiaEspaciado(
 
     ContenedorPrincipal(
         titulo = "Espaciado y separación",
+        idEtiqueta = "02-APA-TYP-ESP",
+        mostrarId = ajustes.mostrarIdsAjustes,
         alVolver = { vm.volverAtras() },
         conScroll = true,
         espaciado = EspaciadoComponentes,
@@ -47,7 +49,9 @@ fun PantallaTipografiaEspaciado(
             alRestablecer = {
                 haptica.tic()
                 vm.ajustarEspaciadoLetras(0.0f)
-            }
+            },
+            idGrupo = "02-APA-TYP-ESP-G01",
+            mostrarId = ajustes.mostrarIdsAjustes
         ) {
             ComponenteSlider(
                 titulo = "Espaciado de letras (Kerning)",
@@ -72,7 +76,9 @@ fun PantallaTipografiaEspaciado(
             alRestablecer = {
                 haptica.tic()
                 vm.ajustarInterlineadoFactor(1.0f)
-            }
+            },
+            idGrupo = "02-APA-TYP-ESP-G02",
+            mostrarId = ajustes.mostrarIdsAjustes
         ) {
             ComponenteSlider(
                 titulo = "Interlineado vertical",

@@ -89,11 +89,11 @@ fun PantallaAjustesWidget(
                         titulo = "Ajustes y respuesta táctil",
                         valorTexto = if (ajustes.widgetHaptica) "Vibración activa" else "Desactivada",
                         icono = null,
-                        idFila = "04.4.1",
+                        idFila = "04-HER-WGT-TOT",
                         mostrarId = ajustes.mostrarIdsAjustes,
                         alPulsar = {
                             haptica.tic()
-                            vm.ir(Pantalla.WidgetTotpAjustes("04.4.1"))
+                            vm.ir(Pantalla.WidgetTotpAjustes("04-HER-WGT-TOT"))
                         }
                     )
 
@@ -103,11 +103,11 @@ fun PantallaAjustesWidget(
                         titulo = "Calibración visual",
                         valorTexto = "Opacidad y color",
                         icono = null,
-                        idFila = "04.4.2",
+                        idFila = "04-HER-WGT-CAL",
                         mostrarId = ajustes.mostrarIdsAjustes,
                         alPulsar = {
                             haptica.tic()
-                            vm.ir(Pantalla.CalibracionWidgetTotp("04.4.2"))
+                            vm.ir(Pantalla.CalibracionWidgetTotp("04-HER-WGT-CAL"))
                         }
                     )
                 }
@@ -126,11 +126,11 @@ fun PantallaAjustesWidget(
                         titulo = "Modo de generación",
                         valorTexto = if (ajustes.widget1x1Modo == "aleatoria") "${ajustes.widget1x1Longitud} car." else "Patrón",
                         icono = null,
-                        idFila = "04.4.3",
+                        idFila = "04-HER-WGT-MOD",
                         mostrarId = ajustes.mostrarIdsAjustes,
                         alPulsar = {
                             haptica.tic()
-                            vm.ir(Pantalla.Widget1x1Modo("04.4.3"))
+                            vm.ir(Pantalla.Widget1x1Modo("04-HER-WGT-MOD"))
                         }
                     )
 
@@ -140,11 +140,11 @@ fun PantallaAjustesWidget(
                         titulo = "Comportamiento y vibración",
                         valorTexto = if (ajustes.widget1x1Haptica) "Vibración activa" else "Silencioso",
                         icono = null,
-                        idFila = "04.4.4",
+                        idFila = "04-HER-WGT-CMP",
                         mostrarId = ajustes.mostrarIdsAjustes,
                         alPulsar = {
                             haptica.tic()
-                            vm.ir(Pantalla.Widget1x1Comportamiento("04.4.4"))
+                            vm.ir(Pantalla.Widget1x1Comportamiento("04-HER-WGT-CMP"))
                         }
                     )
 
@@ -154,11 +154,11 @@ fun PantallaAjustesWidget(
                         titulo = "Calibración visual",
                         valorTexto = "Opacidad y formato",
                         icono = null,
-                        idFila = "04.4.5",
+                        idFila = "04-HER-WGT-1X1",
                         mostrarId = ajustes.mostrarIdsAjustes,
                         alPulsar = {
                             haptica.tic()
-                            vm.ir(Pantalla.CalibracionWidget1x1("04.4.5"))
+                            vm.ir(Pantalla.CalibracionWidget1x1("04-HER-WGT-1X1"))
                         }
                     )
                 }

@@ -49,7 +49,7 @@ fun PantallaCalibracionAnimacion(
             // 1. Barra superior
             BarraSuperiorPantalla(
                 titulo = if (esEngranajes) "Mecanismo de engranajes" else "Puerta de bóveda",
-                idEtiqueta = "03.2.G2",
+                idEtiqueta = "02-APA-THM-ANI",
                 mostrarId = ajustes.mostrarIdsAjustes,
                 alVolver = { vm.volverAtras() },
                 conSeparador = false,

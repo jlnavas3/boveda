@@ -69,7 +69,7 @@ fun PantallaCalibracionWidgetTotp(
         ) {
             BarraSuperiorPantalla(
                 titulo = "Calibración Códigos 2FA",
-                idEtiqueta = "03.3.G1",
+                idEtiqueta = "04-HER-WGT-CAL",
                 mostrarId = ajustes.mostrarIdsAjustes,
                 alVolver = { vm.volverAtras() },
                 conSeparador = false,

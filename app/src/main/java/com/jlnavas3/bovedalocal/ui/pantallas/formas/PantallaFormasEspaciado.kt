@@ -45,6 +45,8 @@ fun PantallaFormasEspaciado(
 
     ContenedorPrincipal(
         titulo = "Espaciado y separación",
+        idEtiqueta = "02-APA-GEO-ESP",
+        mostrarId = ajustes.mostrarIdsAjustes,
         alVolver = { vm.volverAtras() },
         conScroll = true,
         espaciado = EspaciadoComponentes,
@@ -62,7 +64,9 @@ fun PantallaFormasEspaciado(
             alRestablecer = {
                 haptica.tic()
                 vm.ajustarEspaciadoComponentes(14f)
-            }
+            },
+            idGrupo = "02-APA-GEO-ESP-G01",
+            mostrarId = ajustes.mostrarIdsAjustes
         ) {
             ComponenteSlider(
                 titulo = "Separación vertical",
@@ -83,7 +87,9 @@ fun PantallaFormasEspaciado(
         Spacer(Modifier.height(14.dp))
 
         ComponenteGrupo(
-            etiqueta = "VALORES RÁPIDOS"
+            etiqueta = "VALORES RÁPIDOS",
+            idGrupo = "02-APA-GEO-ESP-G02",
+            mostrarId = ajustes.mostrarIdsAjustes
         ) {
             OPCIONES_ESPACIADO.forEachIndexed { indice, opcion ->
                 val activo = ajustes.espaciadoComponentesDp.roundToInt() == opcion.valorDp.roundToInt()

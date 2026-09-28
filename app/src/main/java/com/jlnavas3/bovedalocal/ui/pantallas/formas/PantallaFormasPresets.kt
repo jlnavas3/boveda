@@ -47,6 +47,8 @@ fun PantallaFormasPresets(
 
     ContenedorPrincipal(
         titulo = "Estilos predefinidos",
+        idEtiqueta = "02-APA-GEO-PRE",
+        mostrarId = ajustes.mostrarIdsAjustes,
         alVolver = { vm.volverAtras() },
         conScroll = true,
         espaciado = EspaciadoComponentes,
@@ -64,7 +66,9 @@ fun PantallaFormasPresets(
             alRestablecer = {
                 haptica.tic()
                 vm.aplicarPresetFormas(6f, 0.8f, "marcado", 14f)
-            }
+            },
+            idGrupo = "02-APA-GEO-PRE-G01",
+            mostrarId = ajustes.mostrarIdsAjustes
         ) {
             PRESETS_FORMA.forEachIndexed { indice, item ->
                 val activo = ajustes.curvaturaEsquinasDp == item.curvatura &&
