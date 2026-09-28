@@ -29,7 +29,7 @@ private data class PresetFormaItem(
 )
 
 private val PRESETS_FORMA = listOf(
-    PresetFormaItem("Predeterminado", 6f, 0.8f, "marcado", 14f),
+    PresetFormaItem("Predeterminado", 16f, 1.0f, "ninguno", 14f),
     PresetFormaItem("Redondeado", 18f, 1f, "sutil", 14f),
     PresetFormaItem("Neobrutalista", 0f, 2.5f, "marcado", 16f),
     PresetFormaItem("Píldora M3", 28f, 1f, "sutil", 16f),
@@ -65,7 +65,7 @@ fun PantallaFormasPresets(
             colorIcono = ColorIconosInternos,
             alRestablecer = {
                 haptica.tic()
-                vm.aplicarPresetFormas(6f, 0.8f, "marcado", 14f)
+                vm.aplicarPresetFormas(16f, 1.0f, "ninguno", 14f)
             },
             idGrupo = "02-APA-GEO-PRE-G01",
             mostrarId = ajustes.mostrarIdsAjustes

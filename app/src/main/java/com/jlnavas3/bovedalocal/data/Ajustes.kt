@@ -273,21 +273,6 @@ class AlmacenAjustes(contexto: Context) {
         val rawAutoBloqueo = prefs.getInt("auto_bloqueo", 30)
         val autoBloqueo = if (rawAutoBloqueo < 5) 30 else rawAutoBloqueo
 
-        // Migración única si el usuario tenía los valores por defecto previos (18dp / 1dp / sutil)
-        if (!prefs.getBoolean("v1_formas_defecto_v2", false)) {
-            val curvaturaPrevia = prefs.getFloat("curvatura_esquinas_dp", 18f)
-            val grosorPrevio = prefs.getFloat("grosor_borde_dp", 1f)
-            val estiloPrevio = prefs.getString("estilo_borde", "sutil") ?: "sutil"
-            val nuevaCurvatura = if (curvaturaPrevia == 18f) 6f else curvaturaPrevia
-            val nuevoGrosor = if (grosorPrevio == 1f) 0.8f else grosorPrevio
-            val nuevoEstilo = if (estiloPrevio == "sutil") "marcado" else estiloPrevio
-            prefs.edit()
-                .putBoolean("v1_formas_defecto_v2", true)
-                .putFloat("curvatura_esquinas_dp", nuevaCurvatura)
-                .putFloat("grosor_borde_dp", nuevoGrosor)
-                .putString("estilo_borde", nuevoEstilo)
-                .apply()
-        }
 
         // Migración única a los valores predefinidos elegidos por el usuario (110dp / 250dp / 1.6x / 45dp)
         if (!prefs.getBoolean("v2_indice_defecto_usuario", false)) {

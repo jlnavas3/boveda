@@ -324,7 +324,7 @@ interface VaultAjustesDelegate {
     }
 
     fun restablecerFormas() {
-        aplicarPresetFormas(curvatura = 6f, grosor = 0.8f, estilo = "marcado", espaciado = 14f)
+        aplicarPresetFormas(curvatura = 16f, grosor = 1.0f, estilo = "ninguno", espaciado = 14f)
     }
 
     // --- Personalización de Colores de Datos e Indicadores ---
