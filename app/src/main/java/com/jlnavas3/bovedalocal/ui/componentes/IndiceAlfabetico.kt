@@ -18,8 +18,10 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -41,6 +43,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.text.PlatformTextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.IntOffset
@@ -309,27 +312,34 @@ fun IndiceAlfabetico(
                 exit = fadeOut(animationSpec = tween(140)) + scaleOut(targetScale = 0.5f, animationSpec = tween(140)),
                 modifier = Modifier
                     .align(Alignment.TopEnd)
+                    .wrapContentSize(align = Alignment.TopEnd, unbounded = true)
                     .offset {
-                        val diametroPx = with(densidad) { tamanoCirculoDp.dp.roundToPx() }
+                        val diametroPx = with(densidad) { tamanoCirculoDp.dp.toPx() }
+                        val xPx = with(densidad) { (-offsetCirculoDp).dp.toPx() + diametroPx / 2f }.roundToInt()
                         val yPx = (touchY - diametroPx / 2f).coerceIn(0f, (alturaTotalPx - diametroPx).coerceAtLeast(0f)).roundToInt()
-                        val xPx = with(densidad) { (-offsetCirculoDp).dp.roundToPx() }
                         IntOffset(xPx, yPx)
                     }
             ) {
                 Box(
                     modifier = Modifier
-                        .size(tamanoCirculoDp.dp)
+                        .requiredSize(tamanoCirculoDp.dp)
                         .shadow(elevation = 14.dp, shape = CircleShape)
                         .clip(CircleShape)
                         .background(DegradadoAmbar),
                     contentAlignment = Alignment.Center
                 ) {
+                    @Suppress("DEPRECATION")
                     Text(
                         text = (letraActual ?: ' ').toString(),
                         color = ColorSobreAcento,
+                        textAlign = TextAlign.Center,
                         style = MaterialTheme.typography.headlineLarge.copy(
                             fontWeight = FontWeight.Black,
-                            fontSize = (tamanoCirculoDp * 0.48f).sp
+                            fontSize = (tamanoCirculoDp * 0.48f).sp,
+                            lineHeight = (tamanoCirculoDp * 0.48f).sp,
+                            platformStyle = PlatformTextStyle(
+                                includeFontPadding = false
+                            )
                         )
                     )
                 }
