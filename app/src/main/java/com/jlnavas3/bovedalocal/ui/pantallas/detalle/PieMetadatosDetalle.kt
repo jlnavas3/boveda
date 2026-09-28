@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -62,14 +63,16 @@ fun PieMetadatosDetalle(
     ) {
         if (mostrarCreada) {
             EtiquetaFechaMetadato(
-                texto = "Creada: ${formatoFecha.format(Date(creadaEn))}",
+                titulo = "Creada:",
+                fecha = formatoFecha.format(Date(creadaEn)),
                 icono = Icons.Filled.CalendarToday,
                 colorBase = ColorDatosUsuario
             )
         }
         if (mostrarEditada) {
             EtiquetaFechaMetadato(
-                texto = "Editada: ${formatoFecha.format(Date(modificadaEn))}",
+                titulo = "Editada:",
+                fecha = formatoFecha.format(Date(modificadaEn)),
                 icono = Icons.Filled.Edit,
                 colorBase = Ambar
             )
@@ -79,7 +82,8 @@ fun PieMetadatosDetalle(
 
 @Composable
 private fun EtiquetaFechaMetadato(
-    texto: String,
+    titulo: String,
+    fecha: String,
     icono: ImageVector,
     colorBase: Color,
     modifier: Modifier = Modifier
@@ -90,26 +94,37 @@ private fun EtiquetaFechaMetadato(
             .clip(formaBadge)
             .background(fondoBadgeParaTema(colorBase))
             .border(1.dp, colorBase.copy(alpha = 0.35f), formaBadge)
-            .padding(horizontal = 10.dp, vertical = 5.dp)
+            .padding(horizontal = 12.dp, vertical = 6.dp)
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(6.dp)
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             Icon(
                 imageVector = icono,
                 contentDescription = null,
                 tint = colorLegibleParaTema(colorBase),
-                modifier = Modifier.size(13.dp)
+                modifier = Modifier.size(15.dp)
             )
-            Text(
-                text = texto,
-                style = MaterialTheme.typography.labelSmall.copy(
-                    fontWeight = FontWeight.SemiBold,
-                    fontSize = 11.5.sp
-                ),
-                color = colorLegibleParaTema(colorBase)
-            )
+            Column {
+                Text(
+                    text = titulo,
+                    style = MaterialTheme.typography.labelSmall.copy(
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 11.sp,
+                        letterSpacing = 0.5.sp
+                    ),
+                    color = colorLegibleParaTema(colorBase)
+                )
+                Text(
+                    text = fecha,
+                    style = MaterialTheme.typography.labelSmall.copy(
+                        fontSize = 11.5.sp,
+                        fontWeight = FontWeight.Medium
+                    ),
+                    color = colorLegibleParaTema(colorBase).copy(alpha = 0.9f)
+                )
+            }
         }
     }
 }
