@@ -69,6 +69,8 @@ fun ContenedorPrincipal(
 
         val modScroll = if (conScroll) Modifier.verticalScroll(scrollState) else Modifier
 
+        val paddingFin = if (overlayLateral != null) 36.dp else paddingHorizontal
+
         if (cabeceraFlotante != null) {
             val density = LocalDensity.current
             var alturaCabeceraDp by remember { mutableStateOf(140.dp) }
@@ -82,7 +84,7 @@ fun ContenedorPrincipal(
                     modifier = Modifier
                         .fillMaxSize()
                         .then(modScroll)
-                        .padding(horizontal = paddingHorizontal)
+                        .padding(start = paddingHorizontal, end = paddingFin)
                         .padding(top = alturaCabeceraDp + 8.dp, bottom = paddingVertical),
                     verticalArrangement = Arrangement.spacedBy(espaciado)
                 ) {
@@ -100,7 +102,7 @@ fun ContenedorPrincipal(
                         .onGloballyPositioned { coords ->
                             alturaCabeceraDp = with(density) { coords.size.height.toDp() }
                         }
-                        .padding(horizontal = paddingHorizontal, vertical = 6.dp)
+                        .padding(start = paddingHorizontal, end = paddingFin, top = 6.dp, bottom = 6.dp)
                 ) {
                     cabeceraFlotante()
                 }
@@ -117,7 +119,7 @@ fun ContenedorPrincipal(
                     modifier = Modifier
                         .fillMaxSize()
                         .then(modScroll)
-                        .padding(horizontal = paddingHorizontal, vertical = paddingVertical),
+                        .padding(start = paddingHorizontal, end = paddingFin, top = paddingVertical, bottom = paddingVertical),
                     verticalArrangement = Arrangement.spacedBy(espaciado)
                 ) {
                     if (!subtitulo.isNullOrBlank()) {

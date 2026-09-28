@@ -188,7 +188,7 @@ fun IndiceAlfabetico(
     )
 
     // Tono y luminosidad de las letras inactivas adaptado dinámicamente al tema (claro / oscuro)
-    val factorTono = (tonoLetras / 100f).coerceIn(0.05f, 1f)
+    val factorTono = (tonoLetras.coerceIn(10f, 100f) / 100f)
     val colorLetraInactiva = if (esOscuroActivo) {
         lerp(
             Color(0xFF4A5568),
@@ -276,7 +276,8 @@ fun IndiceAlfabetico(
                     modifier = Modifier.graphicsLayer {
                         val yCentroLetra = fraccionVertical * alturaTotalPx
                         val deltaY = abs(yCentroLetra - touchY)
-                        val radioPx = radioOlaDp.dp.toPx()
+                        val radioSeguroDp = radioOlaDp.coerceIn(40f, 400f)
+                        val radioPx = radioSeguroDp.dp.toPx()
                         val factor = if (deltaY < radioPx && amplitudOla > 0.001f && efectoOla && amplitudOlaDp > 0f) {
                             val cosVal = (1f + cos(Math.PI * (deltaY / radioPx))).toFloat() / 2f
                             cosVal.pow(1.15f) * amplitudOla

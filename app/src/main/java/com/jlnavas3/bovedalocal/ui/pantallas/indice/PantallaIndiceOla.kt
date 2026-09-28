@@ -60,9 +60,9 @@ fun PantallaIndiceOla(
             alRestablecer = {
                 haptica.tic()
                 vm.ajustarIndiceEfectoOla(true)
-                vm.ajustarIndiceAmplitudOlaDp(32f)
-                vm.ajustarIndiceRadioOlaDp(3f)
-                vm.ajustarIndiceEscalaLetras(1.8f)
+                vm.ajustarIndiceAmplitudOlaDp(109f)
+                vm.ajustarIndiceRadioOlaDp(169f)
+                vm.ajustarIndiceEscalaLetras(1.5f)
                 vm.avisar("Valores de ola restablecidos")
             },
             idGrupo = "03-LST-AZX-OLA-G01",
@@ -86,12 +86,12 @@ fun PantallaIndiceOla(
                     titulo = "Amplitud de la ola",
                     valor = ajustes.indiceAmplitudOlaDp,
                     valorTexto = "${ajustes.indiceAmplitudOlaDp.roundToInt()} dp",
-                    rango = 0f..80f,
+                    rango = 20f..160f,
                     idFila = "03-LST-AZX-OLA-AMP",
                     mostrarId = ajustes.mostrarIdsAjustes,
                     alRestablecer = {
                         haptica.tic()
-                        vm.ajustarIndiceAmplitudOlaDp(32f)
+                        vm.ajustarIndiceAmplitudOlaDp(109f)
                     },
                     alCambiar = {
                         haptica.tic()
@@ -102,15 +102,15 @@ fun PantallaIndiceOla(
                 ComponenteSeparador(sangriaInicio = 16.dp)
 
                 ComponenteSlider(
-                    titulo = "Alcance vertical",
+                    titulo = "Alcance vertical de la ola",
                     valor = ajustes.indiceRadioOlaDp,
-                    valorTexto = "${ajustes.indiceRadioOlaDp.roundToInt()} letras",
-                    rango = 1f..8f,
+                    valorTexto = "${ajustes.indiceRadioOlaDp.roundToInt()} dp",
+                    rango = 60f..300f,
                     idFila = "03-LST-AZX-OLA-RAD",
                     mostrarId = ajustes.mostrarIdsAjustes,
                     alRestablecer = {
                         haptica.tic()
-                        vm.ajustarIndiceRadioOlaDp(3f)
+                        vm.ajustarIndiceRadioOlaDp(169f)
                     },
                     alCambiar = {
                         haptica.tic()
@@ -130,7 +130,7 @@ fun PantallaIndiceOla(
                     mostrarId = ajustes.mostrarIdsAjustes,
                     alRestablecer = {
                         haptica.tic()
-                        vm.ajustarIndiceEscalaLetras(1.8f)
+                        vm.ajustarIndiceEscalaLetras(1.5f)
                     },
                     alCambiar = {
                         haptica.tic()

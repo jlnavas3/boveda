@@ -61,8 +61,8 @@ fun PantallaIndiceHaptica(
                 haptica.tic()
                 vm.ajustarIndiceHaptica(true)
                 vm.ajustarIndiceIncluirEnie(true)
-                vm.ajustarIndiceAnchoTactilDp(28f)
-                vm.ajustarIndiceTonoLetras(0.7f)
+                vm.ajustarIndiceAnchoTactilDp(45f)
+                vm.ajustarIndiceTonoLetras(80f)
                 vm.avisar("Valores de tacto restablecidos")
             },
             idGrupo = "03-LST-AZX-HAP-G01",
@@ -98,12 +98,12 @@ fun PantallaIndiceHaptica(
                 titulo = "Ancho de la zona táctil",
                 valor = ajustes.indiceAnchoTactilDp,
                 valorTexto = "${ajustes.indiceAnchoTactilDp.roundToInt()} dp",
-                rango = 16f..60f,
+                rango = 20f..60f,
                 idFila = "03-LST-AZX-HAP-ZON",
                 mostrarId = ajustes.mostrarIdsAjustes,
                 alRestablecer = {
                     haptica.tic()
-                    vm.ajustarIndiceAnchoTactilDp(28f)
+                    vm.ajustarIndiceAnchoTactilDp(45f)
                 },
                 alCambiar = {
                     haptica.tic()
@@ -116,14 +116,14 @@ fun PantallaIndiceHaptica(
             ComponenteSlider(
                 titulo = "Tono y luminosidad de letras",
                 valor = ajustes.indiceTonoLetras,
-                valorTexto = String.format(Locale.US, "%.2f", ajustes.indiceTonoLetras),
-                rango = 0.2f..1.0f,
-                pasos = 16,
+                valorTexto = "${ajustes.indiceTonoLetras.roundToInt()}%",
+                rango = 10f..100f,
+                pasos = 90,
                 idFila = "03-LST-AZX-HAP-LUM",
                 mostrarId = ajustes.mostrarIdsAjustes,
                 alRestablecer = {
                     haptica.tic()
-                    vm.ajustarIndiceTonoLetras(0.7f)
+                    vm.ajustarIndiceTonoLetras(80f)
                 },
                 alCambiar = {
                     haptica.tic()

@@ -90,7 +90,7 @@ fun PantallaAjustesIndice(
                         .fillMaxWidth()
                         .weight(1f)
                         .verticalScroll(scrollState)
-                        .padding(start = 16.dp, end = 16.dp, top = 12.dp, bottom = 48.dp)
+                        .padding(start = 16.dp, end = 36.dp, top = 12.dp, bottom = 48.dp)
                 ) {
                     // Vista previa interactiva
                     VistaPreviaIndiceInteractiva(

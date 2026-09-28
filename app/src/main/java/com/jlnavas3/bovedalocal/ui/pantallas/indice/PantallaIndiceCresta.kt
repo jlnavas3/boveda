@@ -59,8 +59,8 @@ fun PantallaIndiceCresta(
             alRestablecer = {
                 haptica.tic()
                 vm.ajustarIndiceMostrarCirculo(true)
-                vm.ajustarIndiceTamanoCirculoDp(42f)
-                vm.ajustarIndiceOffsetCirculoDp(12f)
+                vm.ajustarIndiceTamanoCirculoDp(50f)
+                vm.ajustarIndiceOffsetCirculoDp(136f)
                 vm.avisar("Valores de cresta restablecidos")
             },
             idGrupo = "03-LST-AZX-CRE-G01",
@@ -84,12 +84,12 @@ fun PantallaIndiceCresta(
                     titulo = "Diámetro de cresta",
                     valor = ajustes.indiceTamanoCirculoDp,
                     valorTexto = "${ajustes.indiceTamanoCirculoDp.roundToInt()} dp",
-                    rango = 20f..64f,
+                    rango = 30f..90f,
                     idFila = "03-LST-AZX-CRE-DIM",
                     mostrarId = ajustes.mostrarIdsAjustes,
                     alRestablecer = {
                         haptica.tic()
-                        vm.ajustarIndiceTamanoCirculoDp(42f)
+                        vm.ajustarIndiceTamanoCirculoDp(50f)
                     },
                     alCambiar = {
                         haptica.tic()
@@ -103,12 +103,12 @@ fun PantallaIndiceCresta(
                     titulo = "Desplazamiento horizontal",
                     valor = ajustes.indiceOffsetCirculoDp,
                     valorTexto = "${ajustes.indiceOffsetCirculoDp.roundToInt()} dp",
-                    rango = -20f..60f,
+                    rango = 40f..220f,
                     idFila = "03-LST-AZX-CRE-OFF",
                     mostrarId = ajustes.mostrarIdsAjustes,
                     alRestablecer = {
                         haptica.tic()
-                        vm.ajustarIndiceOffsetCirculoDp(12f)
+                        vm.ajustarIndiceOffsetCirculoDp(136f)
                     },
                     alCambiar = {
                         haptica.tic()
