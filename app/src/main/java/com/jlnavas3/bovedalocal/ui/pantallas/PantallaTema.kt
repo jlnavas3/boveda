@@ -84,7 +84,7 @@ fun PantallaTema(
         ) {
             BarraSuperiorPantalla(
                 titulo = "Tema y colores",
-                idEtiqueta = "02.1",
+                idEtiqueta = "02-APA-THM",
                 mostrarId = ajustes.mostrarIdsAjustes,
                 alVolver = { vm.volverAtras() },
                 conSeparador = scrollState.value > 0,
@@ -92,12 +92,12 @@ fun PantallaTema(
                 acciones = {
                     BotonMenuOpcionesPantalla(
                         grupos = listOf(
-                            AccionSaltoGrupo("02.1.G1", "Modo de tema"),
-                            AccionSaltoGrupo("02.1.G2", "Pantalla de desbloqueo"),
-                            AccionSaltoGrupo("02.1.G3", "Color dinámico"),
-                            AccionSaltoGrupo("02.1.G3.5", "Campos y datos"),
-                            AccionSaltoGrupo("02.1.G4", "Color de acento"),
-                            AccionSaltoGrupo("02.1.G5", "Ícono en el launcher")
+                            AccionSaltoGrupo("02-APA-THM-G01", "Modo de tema"),
+                            AccionSaltoGrupo("02-APA-THM-G02", "Pantalla de desbloqueo"),
+                            AccionSaltoGrupo("02-APA-THM-G03", "Color dinámico"),
+                            AccionSaltoGrupo("02-APA-THM-G04", "Campos y datos"),
+                            AccionSaltoGrupo("02-APA-THM-G05", "Color de acento"),
+                            AccionSaltoGrupo("02-APA-THM-G06", "Ícono en el launcher")
                         ),
                         alRestablecerPantalla = {
                             haptica.tic()
@@ -146,13 +146,13 @@ fun PantallaTema(
                     etiqueta = "CAMPOS Y DATOS",
                     icono = Icons.Filled.Palette,
                     colorIcono = Color(0xFF8E24AA),
-                    idGrupo = "02.1.G3.5",
+                    idGrupo = "02-APA-THM-G04",
                     mostrarId = ajustes.mostrarIdsAjustes
                 ) {
                     ComponenteNavegacion(
                         titulo = "Colores de campos y datos",
                         icono = null,
-                        idFila = "02.1.8",
+                        idFila = "02-APA-THM-DAT",
                         mostrarId = ajustes.mostrarIdsAjustes,
                         alPulsar = { vm.ir(Pantalla.ColoresDatos()) }
                     )

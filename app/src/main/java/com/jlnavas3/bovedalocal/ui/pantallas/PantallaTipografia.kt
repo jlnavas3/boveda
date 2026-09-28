@@ -49,7 +49,7 @@ fun PantallaTipografia(
         acciones = {
             BotonMenuOpcionesPantalla(
                 grupos = listOf(
-                    AccionSaltoGrupo("02.3.G1", "Texto y fuentes")
+                    AccionSaltoGrupo("02-APA-TYP-G01", "Texto y fuentes")
                 ),
                 alRestablecerPantalla = {
                     haptica.tic()
@@ -67,7 +67,9 @@ fun PantallaTipografia(
                 haptica.tic()
                 vm.restablecerTipografia()
                 vm.avisar("Tipografía restablecida")
-            }
+            },
+            idGrupo = "02-APA-TYP-G01",
+            mostrarId = ajustes.mostrarIdsAjustes
         ) {
             ComponenteNavegacion(
                 titulo = "Estilos predefinidos",

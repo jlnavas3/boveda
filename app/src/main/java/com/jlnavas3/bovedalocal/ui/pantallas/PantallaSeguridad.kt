@@ -96,7 +96,7 @@ fun PantallaSeguridad(
         ) {
             BarraSuperiorPantalla(
                 titulo = "Biometría",
-                idEtiqueta = "01.1",
+                idEtiqueta = "01-SEG-BIO",
                 mostrarId = ajustes.mostrarIdsAjustes,
                 alVolver = { vm.volverAtras() },
                 conSeparador = scrollState.value > 0,
@@ -104,9 +104,9 @@ fun PantallaSeguridad(
                 acciones = {
                     BotonMenuOpcionesPantalla(
                         grupos = listOf(
-                            AccionSaltoGrupo("01.1.G1", "Biometría"),
-                            AccionSaltoGrupo("01.1.G2", "Bloqueo de aplicación"),
-                            AccionSaltoGrupo("01.1.G3", "Portapapeles")
+                            AccionSaltoGrupo("01-SEG-BIO-G01", "Biometría"),
+                            AccionSaltoGrupo("01-SEG-BIO-G02", "Bloqueo de aplicación"),
+                            AccionSaltoGrupo("01-SEG-BIO-G03", "Portapapeles")
                         ),
                         alRestablecerPantalla = {
                             haptica.tic()

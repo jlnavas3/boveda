@@ -35,7 +35,7 @@ fun SeccionVistaPreviaKit(
         etiqueta = "Vista previa del documento",
         icono = Icons.Filled.Description,
         colorIcono = ColorIconosInternos,
-        idGrupo = "05.3.G3",
+        idGrupo = "05-COP-KIT-G03",
         mostrarId = mostrarIdsAjustes,
         descripcion = "Previsualización del formato de texto impreso",
         modifier = modifier

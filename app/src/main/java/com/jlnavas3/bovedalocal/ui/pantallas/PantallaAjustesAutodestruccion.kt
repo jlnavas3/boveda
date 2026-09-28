@@ -59,8 +59,9 @@ fun PantallaAjustesAutodestruccion(
     LaunchedEffect(seccionDestino) {
         if (seccionDestino != null) {
             when {
-                seccionDestino == "01.4.1" -> reqPin.bringIntoView()
-                seccionDestino.startsWith("01.4.") && seccionDestino != "01.4" -> reqPin.bringIntoView()
+                seccionDestino == "01-SEG-DES-G01" || seccionDestino.contains("DES-G01") -> reqExplicacion.bringIntoView()
+                seccionDestino == "01-SEG-DES-G02" || seccionDestino.contains("DES-G02") -> reqPin.bringIntoView()
+                seccionDestino.startsWith("01-SEG-DES") -> reqPin.bringIntoView()
             }
         }
     }
@@ -73,7 +74,7 @@ fun PantallaAjustesAutodestruccion(
         ) {
             BarraSuperiorPantalla(
                 titulo = "Autodestrucción",
-                idEtiqueta = "01.4",
+                idEtiqueta = "01-SEG-DES",
                 mostrarId = ajustes.mostrarIdsAjustes,
                 alVolver = { vm.volverAtras() },
                 conSeparador = scrollState.value > 0,
@@ -81,8 +82,8 @@ fun PantallaAjustesAutodestruccion(
                 acciones = {
                     BotonMenuOpcionesPantalla(
                         grupos = listOf(
-                            AccionSaltoGrupo("01.4.G1", "Información"),
-                            AccionSaltoGrupo("01.4.G2", "PIN de emergencia")
+                            AccionSaltoGrupo("01-SEG-DES-G01", "Información"),
+                            AccionSaltoGrupo("01-SEG-DES-G02", "PIN de emergencia")
                         )
                     )
                 }

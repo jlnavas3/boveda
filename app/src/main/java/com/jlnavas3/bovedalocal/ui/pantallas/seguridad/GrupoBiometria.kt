@@ -34,7 +34,7 @@ fun GrupoBiometria(
         etiqueta = "Biometría",
         icono = Icons.Filled.Fingerprint,
         colorIcono = Color(0xFF1E88E5),
-        idGrupo = "01.1.G1",
+        idGrupo = "01-SEG-BIO-G01",
         mostrarId = mostrarIdsAjustes,
         modifier = modifier
     ) {
@@ -43,7 +43,7 @@ fun GrupoBiometria(
             icono = null,
             activo = biometriaActiva,
             habilitado = nivel != Biometria.Nivel.NINGUNO || biometriaActiva,
-            idFila = "01.1.1",
+            idFila = "01-SEG-BIO-SWT",
             mostrarId = mostrarIdsAjustes,
             alCambiar = alCambiarBiometria
         )
@@ -55,7 +55,7 @@ fun GrupoBiometria(
             ComponenteNavegacion(
                 titulo = "Registrar huella en Android",
                 icono = null,
-                idFila = "01.1.2",
+                idFila = "01-SEG-BIO-REG",
                 mostrarId = mostrarIdsAjustes,
                 alPulsar = alRegistrarHuellaAndroid
             )
@@ -67,7 +67,7 @@ fun GrupoBiometria(
                 ComponenteNavegacion(
                     titulo = "Cambiar a modo compatible",
                     icono = null,
-                    idFila = "01.1.3",
+                    idFila = "01-SEG-BIO-MOD",
                     mostrarId = mostrarIdsAjustes,
                     alPulsar = alOfrecerCompatible
                 )
@@ -77,7 +77,7 @@ fun GrupoBiometria(
                 ComponenteNavegacion(
                     titulo = "Volver al modo fuerte",
                     icono = null,
-                    idFila = "01.1.3",
+                    idFila = "01-SEG-BIO-MOD",
                     mostrarId = mostrarIdsAjustes,
                     alPulsar = alActivarFuerte
                 )

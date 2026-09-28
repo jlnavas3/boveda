@@ -75,7 +75,7 @@ fun PantallaCopiaAutomatica(
         ) {
             BarraSuperiorPantalla(
                 titulo = "Copia automática",
-                idEtiqueta = "05.1.4",
+                idEtiqueta = "05-COP-ATM",
                 mostrarId = ajustes.mostrarIdsAjustes,
                 alVolver = { vm.volverAtras() },
                 conSeparador = scrollState.value > 0,
@@ -83,9 +83,9 @@ fun PantallaCopiaAutomatica(
                 acciones = {
                     BotonMenuOpcionesPantalla(
                         grupos = listOf(
-                            AccionSaltoGrupo("05.1.4.G1", "Programación"),
-                            AccionSaltoGrupo("05.1.4.G2", "Seguridad y formato"),
-                            AccionSaltoGrupo("05.1.4.G3", "Respaldo inmediato")
+                            AccionSaltoGrupo("05-COP-ATM-G01", "Programación"),
+                            AccionSaltoGrupo("05-COP-ATM-G02", "Seguridad y formato"),
+                            AccionSaltoGrupo("05-COP-ATM-G03", "Respaldo inmediato")
                         ),
                         alRestablecerPantalla = {
                             haptica.tic()
@@ -157,14 +157,14 @@ fun PantallaCopiaAutomatica(
                         vm.ajustarBackupAutoMaxCopias(5)
                         vm.avisar("Programación restablecida")
                     },
-                    idGrupo = "05.1.4.G1",
+                    idGrupo = "05-COP-ATM-G01",
                     mostrarId = ajustes.mostrarIdsAjustes
                 ) {
                     ComponenteSelectorModal(
                         titulo = "Frecuencia de copia",
                         descripcionModal = "Periodicidad con la que se genera un respaldo cifrado en Descargas",
                         icono = null,
-                        idFila = "05.1.4.1",
+                        idFila = "05-COP-ATM-FRQ",
                         mostrarId = ajustes.mostrarIdsAjustes,
                         valorSeleccionado = ajustes.backupAutoFrecuenciaDias,
                         opciones = opcionesFrecuencia,
@@ -181,7 +181,7 @@ fun PantallaCopiaAutomatica(
                             titulo = "Copias a conservar",
                             descripcionModal = "Número de copias automáticas que se conservan antes de rotar y borrar las más antiguas",
                             icono = null,
-                            idFila = "05.1.4.2",
+                            idFila = "05-COP-ATM-ROT",
                             mostrarId = ajustes.mostrarIdsAjustes,
                             valorSeleccionado = ajustes.backupAutoMaxCopias,
                             opciones = opcionesMaxCopias,
@@ -206,7 +206,7 @@ fun PantallaCopiaAutomatica(
                         vm.ajustarBackupAutoPatronNombre("{99}-backup-{FECHA}")
                         vm.avisar("Seguridad y formato restablecidos")
                     },
-                    idGrupo = "05.1.4.G2",
+                    idGrupo = "05-COP-ATM-G02",
                     mostrarId = ajustes.mostrarIdsAjustes
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
@@ -264,7 +264,7 @@ fun PantallaCopiaAutomatica(
                     etiqueta = "Respaldo inmediato",
                     icono = Icons.Filled.FolderSpecial,
                     colorIcono = ColorExportacion,
-                    idGrupo = "05.1.4.G3",
+                    idGrupo = "05-COP-ATM-G03",
                     mostrarId = ajustes.mostrarIdsAjustes
                 ) {
                     ComponenteNavegacion(
@@ -272,7 +272,7 @@ fun PantallaCopiaAutomatica(
                         subtitulo = "Genera una copia inmediata usando estos parámetros",
                         icono = Icons.Filled.PlayArrow,
                         colorIcono = ColorExportacion,
-                        idFila = "05.1.4.3",
+                        idFila = "05-COP-ATM-NOW",
                         mostrarId = ajustes.mostrarIdsAjustes,
                         alPulsar = {
                             haptica.toque()

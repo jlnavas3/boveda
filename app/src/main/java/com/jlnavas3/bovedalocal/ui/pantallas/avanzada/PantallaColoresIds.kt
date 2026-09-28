@@ -60,8 +60,8 @@ fun PantallaColoresIds(
                 .background(ColorAjustesFondo)
         ) {
             BarraSuperiorPantalla(
-                titulo = "Colores de identificadores",
-                idEtiqueta = "06.1.2b",
+                titulo = "Colores de IDs",
+                idEtiqueta = "06-SIS-AVZ-COL",
                 mostrarId = ajustes.mostrarIdsAjustes,
                 alVolver = { vm.volverAtras() },
                 conSeparador = scrollState.value > 0,
@@ -69,17 +69,17 @@ fun PantallaColoresIds(
                 acciones = {
                     BotonMenuOpcionesPantalla(
                         grupos = listOf(
-                            AccionSaltoGrupo("06.1.2b.G1", "01 Seguridad"),
-                            AccionSaltoGrupo("06.1.2b.G2", "02 Apariencia"),
-                            AccionSaltoGrupo("06.1.2b.G3", "03 Lista de cuentas"),
-                            AccionSaltoGrupo("06.1.2b.G4", "04 Herramientas"),
-                            AccionSaltoGrupo("06.1.2b.G5", "05 Copias y datos"),
-                            AccionSaltoGrupo("06.1.2b.G6", "06 Sistema")
+                            AccionSaltoGrupo("06-SIS-AVZ-G01", "01 Seguridad"),
+                            AccionSaltoGrupo("06-SIS-AVZ-G02", "02 Apariencia"),
+                            AccionSaltoGrupo("06-SIS-AVZ-G03", "03 Lista de cuentas"),
+                            AccionSaltoGrupo("06-SIS-AVZ-G04", "04 Herramientas"),
+                            AccionSaltoGrupo("06-SIS-AVZ-G05", "05 Copias y datos"),
+                            AccionSaltoGrupo("06-SIS-AVZ-G06", "06 Sistema")
                         ),
                         alRestablecerPantalla = {
                             haptica.tic()
                             vm.restablecerColoresIds()
-                            vm.avisar("Colores de identificadores restablecidos")
+                            vm.avisar("Colores de IDs restablecidos")
                         }
                     )
                 }
@@ -103,7 +103,7 @@ fun PantallaColoresIds(
                         haptica.tic()
                         vm.ajustarColorIdSeguridad("#3F51B5")
                     },
-                    idGrupo = "06.1.2b.G1",
+                    idGrupo = "06-SIS-AVZ-G01",
                     mostrarId = ajustes.mostrarIdsAjustes
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
@@ -133,7 +133,7 @@ fun PantallaColoresIds(
                         haptica.tic()
                         vm.ajustarColorIdApariencia("#8E24AA")
                     },
-                    idGrupo = "06.1.2b.G2",
+                    idGrupo = "06-SIS-AVZ-G02",
                     mostrarId = ajustes.mostrarIdsAjustes
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
@@ -163,7 +163,7 @@ fun PantallaColoresIds(
                         haptica.tic()
                         vm.ajustarColorIdLista("#00897B")
                     },
-                    idGrupo = "06.1.2b.G3",
+                    idGrupo = "06-SIS-AVZ-G03",
                     mostrarId = ajustes.mostrarIdsAjustes
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
@@ -193,7 +193,7 @@ fun PantallaColoresIds(
                         haptica.tic()
                         vm.ajustarColorIdHerramientas("#FB8C00")
                     },
-                    idGrupo = "06.1.2b.G4",
+                    idGrupo = "06-SIS-AVZ-G04",
                     mostrarId = ajustes.mostrarIdsAjustes
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
@@ -223,7 +223,7 @@ fun PantallaColoresIds(
                         haptica.tic()
                         vm.ajustarColorIdCopias("#1E88E5")
                     },
-                    idGrupo = "06.1.2b.G5",
+                    idGrupo = "06-SIS-AVZ-G05",
                     mostrarId = ajustes.mostrarIdsAjustes
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
@@ -253,7 +253,7 @@ fun PantallaColoresIds(
                         haptica.tic()
                         vm.ajustarColorIdSistema("#607D8B")
                     },
-                    idGrupo = "06.1.2b.G6",
+                    idGrupo = "06-SIS-AVZ-G06",
                     mostrarId = ajustes.mostrarIdsAjustes
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {

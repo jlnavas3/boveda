@@ -54,7 +54,7 @@ fun PantallaAjustesWidget(
         ) {
             BarraSuperiorPantalla(
                 titulo = "Widgets",
-                idEtiqueta = "04.4",
+                idEtiqueta = "04-HER-WGT",
                 mostrarId = ajustes.mostrarIdsAjustes,
                 alVolver = { vm.volverAtras() },
                 conSeparador = scrollState.value > 0,
@@ -62,8 +62,8 @@ fun PantallaAjustesWidget(
                 acciones = {
                     BotonMenuOpcionesPantalla(
                         grupos = listOf(
-                            AccionSaltoGrupo("04.4.G1", "Widget de códigos 2FA"),
-                            AccionSaltoGrupo("04.4.G2", "Widget generador 1x1")
+                            AccionSaltoGrupo("04-HER-WGT-G01", "Widget de códigos 2FA"),
+                            AccionSaltoGrupo("04-HER-WGT-G02", "Widget generador 1x1")
                         )
                     )
                 }
@@ -82,7 +82,7 @@ fun PantallaAjustesWidget(
                     etiqueta = "Widget de códigos 2FA",
                     icono = Icons.Filled.Timer,
                     colorIcono = Color2FA,
-                    idGrupo = "04.4.G1",
+                    idGrupo = "04-HER-WGT-G01",
                     mostrarId = ajustes.mostrarIdsAjustes
                 ) {
                     ComponenteNavegacion(
@@ -119,7 +119,7 @@ fun PantallaAjustesWidget(
                     etiqueta = "Widget generador 1x1",
                     icono = Icons.Filled.Key,
                     colorIcono = ColorGenerador,
-                    idGrupo = "04.4.G2",
+                    idGrupo = "04-HER-WGT-G02",
                     mostrarId = ajustes.mostrarIdsAjustes
                 ) {
                     ComponenteNavegacion(

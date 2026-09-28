@@ -24,7 +24,7 @@ fun GrupoOrdenacionPredeterminada(
         icono = Icons.AutoMirrored.Filled.Sort,
         colorIcono = Color(0xFF00ACC1),
         alRestablecer = alRestablecerGrupo,
-        idGrupo = "03.1.G3",
+        idGrupo = "03-LST-DES-G03",
         mostrarId = mostrarId,
         modifier = modifier
     ) {

@@ -18,7 +18,7 @@ fun GrupoZonaPeligro(
         etiqueta = "Zona de peligro",
         icono = Icons.Filled.Delete,
         colorIcono = ColorPapelera,
-        idGrupo = "06.1.G4",
+        idGrupo = "06-SIS-AVZ-G03",
         mostrarId = mostrarIdsAjustes,
         descripcion = "Eliminación irreversible e inmediata de todas las contraseñas, notas y configuraciones",
         modifier = modifier
@@ -26,7 +26,7 @@ fun GrupoZonaPeligro(
         ComponenteNavegacion(
             titulo = "Borrar bóveda definitivamente",
             icono = null,
-            idFila = "06.1.11",
+            idFila = "06-SIS-AVZ-DEL",
             mostrarId = mostrarIdsAjustes,
             alPulsar = alSolicitarBorrado
         )

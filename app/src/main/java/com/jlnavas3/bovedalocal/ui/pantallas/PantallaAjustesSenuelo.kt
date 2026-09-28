@@ -59,10 +59,10 @@ fun PantallaAjustesSenuelo(
     LaunchedEffect(seccionDestino) {
         if (seccionDestino != null) {
             when {
-                seccionDestino == "01.3.1" -> reqExplicacion.bringIntoView()
-                seccionDestino == "01.3.2" -> reqPin.bringIntoView()
-                seccionDestino == "01.3.3" -> reqCuentas.bringIntoView()
-                seccionDestino.startsWith("01.3.") && seccionDestino != "01.3" -> reqPin.bringIntoView()
+                seccionDestino == "01-SEG-SEN-G01" || seccionDestino.contains("SEN-G01") -> reqExplicacion.bringIntoView()
+                seccionDestino == "01-SEG-SEN-G02" || seccionDestino.contains("SEN-G02") -> reqPin.bringIntoView()
+                seccionDestino == "01-SEG-SEN-G03" || seccionDestino.contains("SEN-G03") -> reqCuentas.bringIntoView()
+                seccionDestino.startsWith("01-SEG-SEN") -> reqPin.bringIntoView()
             }
         }
     }
@@ -75,7 +75,7 @@ fun PantallaAjustesSenuelo(
         ) {
             BarraSuperiorPantalla(
                 titulo = "Modo señuelo",
-                idEtiqueta = "01.3",
+                idEtiqueta = "01-SEG-SEN",
                 mostrarId = ajustes.mostrarIdsAjustes,
                 alVolver = { vm.volverAtras() },
                 conSeparador = scrollState.value > 0,
@@ -83,9 +83,9 @@ fun PantallaAjustesSenuelo(
                 acciones = {
                     BotonMenuOpcionesPantalla(
                         grupos = listOf(
-                            AccionSaltoGrupo("01.3.G1", "Información"),
-                            AccionSaltoGrupo("01.3.G2", "PIN de coacción"),
-                            AccionSaltoGrupo("01.3.G3", "Cuentas simuladas")
+                            AccionSaltoGrupo("01-SEG-SEN-G01", "Información"),
+                            AccionSaltoGrupo("01-SEG-SEN-G02", "PIN de coacción"),
+                            AccionSaltoGrupo("01-SEG-SEN-G03", "Cuentas simuladas")
                         )
                     )
                 }

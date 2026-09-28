@@ -194,7 +194,7 @@ fun PantallaRegistro(
             filtroTexto = filtroTexto,
             categoriaSeleccionada = categoriaSeleccionada,
             tieneFiltrosActivos = tieneFiltrosActivos,
-            idEtiqueta = "06.2",
+            idEtiqueta = "06-SIS-LOG",
             mostrarId = ajustes.mostrarIdsAjustes,
             alVolver = { vm.volverAtras() },
             alAlternarBusqueda = {

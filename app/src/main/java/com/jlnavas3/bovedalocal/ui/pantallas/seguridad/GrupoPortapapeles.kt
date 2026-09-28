@@ -24,7 +24,7 @@ fun GrupoPortapapeles(
         icono = Icons.Filled.Timer,
         colorIcono = ColorSeguridad,
         alRestablecer = alRestablecer,
-        idGrupo = "01.1.G3",
+        idGrupo = "01-SEG-BIO-G03",
         mostrarId = mostrarIdsAjustes,
         modifier = modifier
     ) {
@@ -42,7 +42,7 @@ fun GrupoPortapapeles(
             titulo = "Borrado automático",
             descripcionModal = "Tiempo tras el cual se limpiará la contraseña copiada en memoria",
             icono = null,
-            idFila = "01.1.6",
+            idFila = "01-SEG-BIO-CLP",
             mostrarId = mostrarIdsAjustes,
             valorSeleccionado = portapapelesSegundos,
             opciones = opcionesPortapapeles,

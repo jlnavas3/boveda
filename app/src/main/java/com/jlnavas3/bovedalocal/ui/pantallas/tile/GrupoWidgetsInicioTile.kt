@@ -18,7 +18,7 @@ fun GrupoWidgetsInicioTile(
         etiqueta = "Accesos rápidos",
         icono = Icons.Filled.Widgets,
         colorIcono = ColorGenerador,
-        idGrupo = "04.5.G2",
+        idGrupo = "04-HER-MSK-G02",
         mostrarId = mostrarIdsAjustes,
         descripcion = "Acceso directo en la pantalla de inicio",
         modifier = modifier
@@ -26,7 +26,7 @@ fun GrupoWidgetsInicioTile(
         ComponenteNavegacion(
             titulo = "Personalizar widgets de escritorio",
             icono = null,
-            idFila = "04.5.7",
+            idFila = "04-HER-MSK-WGT",
             mostrarId = mostrarIdsAjustes,
             alPulsar = alNavegarWidgets
         )

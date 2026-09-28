@@ -54,7 +54,7 @@ fun GrupoConfiguracionTile(
         icono = Icons.Filled.DashboardCustomize,
         colorIcono = ColorGenerador,
         alRestablecer = alRestablecerGrupo,
-        idGrupo = "04.5.G1",
+        idGrupo = "04-HER-MSK-G01",
         mostrarId = mostrarIdsAjustes,
         descripcion = "Añade el mosaico en la barra rápida de Android para generar con un toque",
         modifier = modifier
@@ -69,7 +69,7 @@ fun GrupoConfiguracionTile(
             titulo = "Modo de generación",
             descripcionModal = "Elige la estrategia de generación al pulsar el mosaico del sistema",
             icono = null,
-            idFila = "04.5.1",
+            idFila = "04-HER-MSK-MOD",
             mostrarId = mostrarIdsAjustes,
             valorSeleccionado = tileModo,
             opciones = opcionesModo,
@@ -94,7 +94,7 @@ fun GrupoConfiguracionTile(
                 titulo = "Longitud de la clave",
                 descripcionModal = "Cantidad de caracteres generados para la nueva clave",
                 icono = null,
-                idFila = "04.5.2",
+                idFila = "04-HER-MSK-LEN",
                 mostrarId = mostrarIdsAjustes,
                 valorSeleccionado = tileLongitud,
                 opciones = opcionesLongitud,
@@ -124,7 +124,7 @@ fun GrupoConfiguracionTile(
         ComponenteSwitch(
             titulo = "Copiar al portapapeles",
             icono = null,
-            idFila = "04.5.3",
+            idFila = "04-HER-MSK-CLP",
             mostrarId = mostrarIdsAjustes,
             activo = tileCopiarPortapapeles,
             alCambiar = alCambiarTileCopiarPortapapeles
@@ -135,7 +135,7 @@ fun GrupoConfiguracionTile(
         ComponenteSwitch(
             titulo = "Aviso emergente (Toast)",
             icono = null,
-            idFila = "04.5.4",
+            idFila = "04-HER-MSK-TST",
             mostrarId = mostrarIdsAjustes,
             activo = tileMostrarToast,
             alCambiar = alCambiarTileMostrarToast
@@ -146,7 +146,7 @@ fun GrupoConfiguracionTile(
         ComponenteSwitch(
             titulo = "Vibración táctil",
             icono = null,
-            idFila = "04.5.5",
+            idFila = "04-HER-MSK-HAP",
             mostrarId = mostrarIdsAjustes,
             activo = tileHaptica,
             alCambiar = alCambiarTileHaptica
@@ -163,7 +163,7 @@ fun GrupoConfiguracionTile(
                 pasos = 99,
                 etiquetaMin = "1% (Mínima)",
                 etiquetaMax = "100%",
-                idFila = "04.5.6",
+                idFila = "04-HER-MSK-HIN",
                 mostrarId = mostrarIdsAjustes,
                 icono = null,
                 alRestablecer = {

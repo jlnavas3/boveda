@@ -56,8 +56,8 @@ fun PantallaKitEmergencia(
     LaunchedEffect(seccionDestino) {
         if (seccionDestino != null) {
             when {
-                seccionDestino == "05.3.1" -> reqOpciones.bringIntoView()
-                seccionDestino.startsWith("05.3.") && seccionDestino != "05.3" -> reqOpciones.bringIntoView()
+                seccionDestino == "05-COP-KIT-G02" || seccionDestino.contains("KIT-G02") -> reqOpciones.bringIntoView()
+                seccionDestino.startsWith("05-COP-KIT") -> reqOpciones.bringIntoView()
             }
         }
     }
@@ -90,7 +90,7 @@ fun PantallaKitEmergencia(
         ) {
             BarraSuperiorPantalla(
                 titulo = "Kit de emergencia",
-                idEtiqueta = "05.3",
+                idEtiqueta = "05-COP-KIT",
                 mostrarId = ajustes.mostrarIdsAjustes,
                 alVolver = { vm.volverAtras() },
                 conSeparador = scrollState.value > 0,
@@ -98,9 +98,9 @@ fun PantallaKitEmergencia(
                 acciones = {
                     BotonMenuOpcionesPantalla(
                         grupos = listOf(
-                            AccionSaltoGrupo("05.3.G1", "Copia física de seguridad"),
-                            AccionSaltoGrupo("05.3.G2", "Opciones del documento"),
-                            AccionSaltoGrupo("05.3.G3", "Vista previa del documento")
+                            AccionSaltoGrupo("05-COP-KIT-G01", "Copia física de seguridad"),
+                            AccionSaltoGrupo("05-COP-KIT-G02", "Opciones del documento"),
+                            AccionSaltoGrupo("05-COP-KIT-G03", "Vista previa del documento")
                         )
                     )
                 }

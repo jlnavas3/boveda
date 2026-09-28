@@ -27,7 +27,7 @@ fun GrupoAccionesCopiaCifrada(
         etiqueta = "Copia manual (.bvda)",
         icono = Icons.Filled.Backup,
         colorIcono = ColorExportacion,
-        idGrupo = "05.1.G1",
+        idGrupo = "05-COP-MAN-G01",
         mostrarId = ajustes.mostrarIdsAjustes,
         descripcion = "Archivo seguro cifrado con Argon2id + ChaCha20-Poly1305"
     ) {
@@ -35,7 +35,7 @@ fun GrupoAccionesCopiaCifrada(
             titulo = "Exportar bóveda completa",
             icono = null,
             valorTexto = ".bvda",
-            idFila = "05.1.1",
+            idFila = "05-COP-MAN-EXP",
             mostrarId = ajustes.mostrarIdsAjustes,
             alPulsar = alSolicitarExportar
         )
@@ -44,7 +44,7 @@ fun GrupoAccionesCopiaCifrada(
             titulo = "Exportación selectiva",
             icono = null,
             valorTexto = ".bvda",
-            idFila = "05.1.2",
+            idFila = "05-COP-MAN-SEL",
             mostrarId = ajustes.mostrarIdsAjustes,
             alPulsar = { vm.ir(Pantalla.ExportarSelectivo("todos")) }
         )
@@ -52,7 +52,7 @@ fun GrupoAccionesCopiaCifrada(
         ComponenteNavegacion(
             titulo = "Importar copia de seguridad",
             icono = null,
-            idFila = "05.1.3",
+            idFila = "05-COP-MAN-IMP",
             mostrarId = ajustes.mostrarIdsAjustes,
             alPulsar = {
                 BovedaApp.salidaPendiente(contexto)

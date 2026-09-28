@@ -19,14 +19,14 @@ fun SeccionModoTema(
         icono = Icons.Filled.BrightnessAuto,
         colorIcono = Color(0xFFFB8C00),
         alRestablecer = { alCambiarTema("sistema") },
-        idGrupo = "02.1.G1",
+        idGrupo = "02-APA-THM-G01",
         mostrarId = ajustes.mostrarIdsAjustes
     ) {
         ComponenteRadio(
             titulo = "Automático (sistema)",
             icono = null,
             seleccionado = ajustes.temaApp == "sistema",
-            idFila = "02.1.1",
+            idFila = "02-APA-THM-AUT",
             mostrarId = ajustes.mostrarIdsAjustes,
             alSeleccionar = {
                 alCambiarTema("sistema")
@@ -37,7 +37,7 @@ fun SeccionModoTema(
             titulo = "Modo claro",
             icono = null,
             seleccionado = ajustes.temaApp == "claro",
-            idFila = "02.1.2",
+            idFila = "02-APA-THM-CLR",
             mostrarId = ajustes.mostrarIdsAjustes,
             alSeleccionar = {
                 alCambiarTema("claro")
@@ -48,7 +48,7 @@ fun SeccionModoTema(
             titulo = "Modo oscuro",
             icono = null,
             seleccionado = ajustes.temaApp == "oscuro",
-            idFila = "02.1.3",
+            idFila = "02-APA-THM-DRK",
             mostrarId = ajustes.mostrarIdsAjustes,
             alSeleccionar = {
                 alCambiarTema("oscuro")

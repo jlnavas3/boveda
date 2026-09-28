@@ -53,7 +53,7 @@ fun PantallaFormas(
         acciones = {
             BotonMenuOpcionesPantalla(
                 grupos = listOf(
-                    AccionSaltoGrupo("02.2.G1", "Geometría y bordes")
+                    AccionSaltoGrupo("02-APA-GEO-G01", "Geometría y bordes")
                 ),
                 alRestablecerPantalla = {
                     haptica.tic()
@@ -71,7 +71,9 @@ fun PantallaFormas(
                 haptica.tic()
                 vm.restablecerFormas()
                 vm.avisar("Geometría y bordes restablecidos")
-            }
+            },
+            idGrupo = "02-APA-GEO-G01",
+            mostrarId = ajustes.mostrarIdsAjustes
         ) {
             ComponenteNavegacion(
                 titulo = "Estilos predefinidos",

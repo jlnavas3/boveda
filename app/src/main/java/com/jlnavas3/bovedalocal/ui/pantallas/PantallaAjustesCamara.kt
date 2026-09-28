@@ -49,7 +49,7 @@ fun PantallaAjustesCamara(
         ) {
             BarraSuperiorPantalla(
                 titulo = "Cámara y escáner",
-                idEtiqueta = "04.3",
+                idEtiqueta = "04-HER-CAM",
                 mostrarId = ajustes.mostrarIdsAjustes,
                 alVolver = { vm.volverAtras() },
                 conSeparador = scrollState.value > 0,
@@ -57,7 +57,7 @@ fun PantallaAjustesCamara(
                 acciones = {
                     BotonMenuOpcionesPantalla(
                         grupos = listOf(
-                            AccionSaltoGrupo("04.3.G1", "Motor de captura")
+                            AccionSaltoGrupo("04-HER-CAM-G01", "Motor de captura")
                         ),
                         alRestablecerPantalla = {
                             haptica.tic()
@@ -84,7 +84,7 @@ fun PantallaAjustesCamara(
                         vm.ajustarMotorCamara(MotorCamara.AUTOMATICO.clave)
                         vm.avisar("Motor de cámara restablecido")
                     },
-                    idGrupo = "04.3.G1",
+                    idGrupo = "04-HER-CAM-G01",
                     mostrarId = ajustes.mostrarIdsAjustes,
                     descripcion = "CameraX conmutación automática o API Camera clásica compatible"
                 ) {

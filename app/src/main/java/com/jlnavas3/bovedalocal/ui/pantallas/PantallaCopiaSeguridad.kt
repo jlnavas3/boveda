@@ -94,7 +94,7 @@ fun PantallaCopiaSeguridad(
         ) {
             BarraSuperiorPantalla(
                 titulo = "Copia de seguridad",
-                idEtiqueta = "05.1",
+                idEtiqueta = "05-COP-MAN",
                 mostrarId = ajustes.mostrarIdsAjustes,
                 alVolver = { vm.volverAtras() },
                 conSeparador = scrollState.value > 0,
@@ -102,9 +102,9 @@ fun PantallaCopiaSeguridad(
                 acciones = {
                     BotonMenuOpcionesPantalla(
                         grupos = listOf(
-                            AccionSaltoGrupo("05.1.G1", "Copia cifrada (.bvda)"),
-                            AccionSaltoGrupo("05.1.G2", "Copia automática local"),
-                            AccionSaltoGrupo("05.1.G3", "Recordatorio de respaldo")
+                            AccionSaltoGrupo("05-COP-MAN-G01", "Copia manual (.bvda)"),
+                            AccionSaltoGrupo("05-COP-ATM-G01", "Copia automática local"),
+                            AccionSaltoGrupo("05-COP-REC-G01", "Recordatorio de respaldo")
                         ),
                         alRestablecerPantalla = {
                             haptica.tic()

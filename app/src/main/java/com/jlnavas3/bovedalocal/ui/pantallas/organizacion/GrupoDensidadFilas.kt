@@ -21,7 +21,7 @@ fun GrupoDensidadFilas(
         etiqueta = "Densidad de lista",
         icono = Icons.Filled.Tune,
         colorIcono = Color(0xFF00ACC1),
-        idGrupo = "03.1.G2",
+        idGrupo = "03-LST-DES-G02",
         mostrarId = mostrarId,
         modifier = modifier
     ) {

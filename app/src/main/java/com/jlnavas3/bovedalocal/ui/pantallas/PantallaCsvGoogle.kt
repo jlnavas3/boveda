@@ -86,7 +86,7 @@ fun PantallaCsvGoogle(
         ) {
             BarraSuperiorPantalla(
                 titulo = "Contraseñas de Google",
-                idEtiqueta = "05.2",
+                idEtiqueta = "05-COP-CSV",
                 mostrarId = ajustes.mostrarIdsAjustes,
                 alVolver = { vm.volverAtras() },
                 conSeparador = scrollState.value > 0,

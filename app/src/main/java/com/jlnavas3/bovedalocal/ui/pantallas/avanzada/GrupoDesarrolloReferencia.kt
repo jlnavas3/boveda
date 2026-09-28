@@ -49,7 +49,7 @@ fun GrupoDesarrolloReferencia(
             alCambiarRepeticiones(2)
             alCambiarDuracion(600)
         },
-        idGrupo = "06.1.G2",
+        idGrupo = "06-SIS-AVZ-G01",
         mostrarId = mostrarIdsAjustes,
         descripcion = "Muestra una etiqueta con el código ID jerárquico de cada opción para facilitar soporte y automatización",
         modifier = modifier
@@ -58,7 +58,7 @@ fun GrupoDesarrolloReferencia(
             titulo = "Identificadores de ajustes (IDs)",
             icono = null,
             activo = mostrarIdsAjustes,
-            idFila = "06.1.2",
+            idFila = "06-SIS-AVZ-IDS",
             mostrarId = mostrarIdsAjustes,
             alCambiar = {
                 haptica.tic()
@@ -71,7 +71,7 @@ fun GrupoDesarrolloReferencia(
                 titulo = "Colores de identificadores",
                 subtitulo = "Personalizar paleta de los 6 bloques",
                 icono = null,
-                idFila = "06.1.2b",
+                idFila = "06-SIS-AVZ-COL",
                 mostrarId = mostrarIdsAjustes,
                 alPulsar = {
                     haptica.tic()
@@ -84,7 +84,7 @@ fun GrupoDesarrolloReferencia(
             titulo = "Alumbrado de navegación",
             icono = null,
             activo = alumbradoActivo,
-            idFila = "06.1.3",
+            idFila = "06-SIS-AVZ-ALU",
             mostrarId = mostrarIdsAjustes,
             alCambiar = {
                 haptica.tic()
@@ -101,7 +101,7 @@ fun GrupoDesarrolloReferencia(
                 pasos = 8,
                 etiquetaMin = "10%",
                 etiquetaMax = "100%",
-                idFila = "06.1.4",
+                idFila = "06-SIS-AVZ-INT",
                 mostrarId = mostrarIdsAjustes,
                 icono = null,
                 alCambiar = alCambiarIntensidad
@@ -115,7 +115,7 @@ fun GrupoDesarrolloReferencia(
                 pasos = 3,
                 etiquetaMin = "1",
                 etiquetaMax = "5",
-                idFila = "06.1.5",
+                idFila = "06-SIS-AVZ-REP",
                 mostrarId = mostrarIdsAjustes,
                 icono = null,
                 alCambiar = {
@@ -136,7 +136,7 @@ fun GrupoDesarrolloReferencia(
                 pasos = 11,
                 etiquetaMin = "300 ms",
                 etiquetaMax = "1.5 s",
-                idFila = "06.1.6",
+                idFila = "06-SIS-AVZ-DUR",
                 mostrarId = mostrarIdsAjustes,
                 icono = null,
                 alCambiar = {
@@ -144,12 +144,12 @@ fun GrupoDesarrolloReferencia(
                 }
             )
             ComponenteSeparador(sangriaInicio = 16.dp)
-            val estadoPrueba = recordarEstadoAlumbrado("06.1.7")
+            val estadoPrueba = recordarEstadoAlumbrado("06-SIS-AVZ-TST")
             val colorAcentoPrueba = ColorAcento
             ComponenteNavegacion(
                 titulo = "Probar efecto de alumbrado",
                 icono = null,
-                idFila = "06.1.7",
+                idFila = "06-SIS-AVZ-TST",
                 mostrarId = mostrarIdsAjustes,
                 estadoAlumbrado = estadoPrueba,
                 alPulsar = {

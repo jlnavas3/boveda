@@ -26,7 +26,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.jlnavas3.bovedalocal.crypto.PerfilArgon2
 import com.jlnavas3.bovedalocal.ui.VaultViewModel
 import com.jlnavas3.bovedalocal.ui.componentes.BarraSuperiorPantalla
-import com.jlnavas3.bovedalocal.ui.componentes.DescripcionPantalla
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.AccionSaltoGrupo
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.BotonMenuOpcionesPantalla
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteGrupo
@@ -58,7 +57,7 @@ fun PantallaArgon2id(
         ) {
             BarraSuperiorPantalla(
                 titulo = "Cifrado",
-                idEtiqueta = "01.5",
+                idEtiqueta = "01-SEG-CRY",
                 mostrarId = ajustes.mostrarIdsAjustes,
                 alVolver = { vm.volverAtras() },
                 conSeparador = scrollState.value > 0,
@@ -66,8 +65,8 @@ fun PantallaArgon2id(
                 acciones = {
                     BotonMenuOpcionesPantalla(
                         grupos = listOf(
-                            AccionSaltoGrupo("01.5.G1", "Perfil de derivación"),
-                            AccionSaltoGrupo("01.5.G2", "Detalles técnicos")
+                            AccionSaltoGrupo("01-SEG-CRY-G01", "Perfil de derivación"),
+                            AccionSaltoGrupo("01-SEG-CRY-G02", "Detalles técnicos")
                         )
                     )
                 }
@@ -80,9 +79,6 @@ fun PantallaArgon2id(
                     .verticalScroll(scrollState)
                     .padding(horizontal = 16.dp, vertical = 12.dp)
             ) {
-                DescripcionPantalla(subtitulo = "Parámetros Argon2id de resistencia KDF ante fuerza bruta")
-                Spacer(Modifier.height(10.dp))
-
                 val perfilActual = vm.repositorio.perfilArgon2Actual()
 
                 ComponenteGrupo(
@@ -96,7 +92,7 @@ fun PantallaArgon2id(
                             vm.avisar("Ya estás usando el perfil Estándar recomendado")
                         }
                     },
-                    idGrupo = "01.5.G1",
+                    idGrupo = "01-SEG-CRY-G01",
                     mostrarId = ajustes.mostrarIdsAjustes,
                     descripcion = "Resistencia computacional ante ataques de fuerza bruta y granjas GPU/ASIC"
                 ) {
@@ -134,7 +130,7 @@ fun PantallaArgon2id(
                 // Tarjeta técnica informativa
                 ComponenteGrupo(
                     etiqueta = "Detalles técnicos",
-                    idGrupo = "01.5.G2",
+                    idGrupo = "01-SEG-CRY-G02",
                     mostrarId = ajustes.mostrarIdsAjustes
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {

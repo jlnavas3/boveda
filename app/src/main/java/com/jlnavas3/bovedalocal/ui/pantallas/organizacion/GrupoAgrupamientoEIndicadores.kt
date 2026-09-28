@@ -23,7 +23,7 @@ fun GrupoAgrupamientoEIndicadores(
         etiqueta = "Agrupamiento",
         icono = Icons.Filled.Layers,
         colorIcono = Color(0xFF00ACC1),
-        idGrupo = "03.1.G1",
+        idGrupo = "03-LST-DES-G01",
         mostrarId = mostrarId,
         modifier = modifier
     ) {
@@ -31,7 +31,7 @@ fun GrupoAgrupamientoEIndicadores(
             titulo = "Agrupar cuentas",
             icono = null,
             activo = agruparPorSitio,
-            idFila = "03.1.1",
+            idFila = "03-LST-DES-GRP",
             mostrarId = mostrarId,
             alCambiar = alCambiarAgruparPorSitio
         )
@@ -40,7 +40,7 @@ fun GrupoAgrupamientoEIndicadores(
             titulo = "Indicadores de contenido en tarjetas",
             icono = null,
             activo = mostrarIndicadoresContenido,
-            idFila = "03.1.2",
+            idFila = "03-LST-DES-IND",
             mostrarId = mostrarId,
             alCambiar = alCambiarMostrarIndicadores
         )

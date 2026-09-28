@@ -54,7 +54,7 @@ fun BarraSuperiorRegistro(
     alBorrarRegistro: () -> Unit,
     alRestablecerFiltros: () -> Unit,
     modifier: Modifier = Modifier,
-    idEtiqueta: String = "06.2",
+    idEtiqueta: String = "06-SIS-LOG",
     mostrarId: Boolean = false
 ) {
     val contexto = LocalContext.current

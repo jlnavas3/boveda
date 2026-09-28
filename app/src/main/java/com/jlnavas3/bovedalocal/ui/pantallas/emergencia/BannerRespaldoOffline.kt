@@ -23,7 +23,7 @@ fun BannerRespaldoOffline(
         etiqueta = "Copia física de seguridad",
         icono = Icons.Filled.Shield,
         colorIcono = ColorSeguridad,
-        idGrupo = "05.3.G1",
+        idGrupo = "05-COP-KIT-G01",
         mostrarId = mostrarIdsAjustes,
         descripcion = "Respaldo 100% offline sin servidores ni telemetría",
         modifier = modifier

@@ -52,7 +52,7 @@ fun PantallaOrganizacionLista(
         ) {
             BarraSuperiorPantalla(
                 titulo = "Diseño de lista",
-                idEtiqueta = "03.1",
+                idEtiqueta = "03-LST-DES",
                 mostrarId = ajustes.mostrarIdsAjustes,
                 alVolver = { vm.volverAtras() },
                 conSeparador = scrollState.value > 0,
@@ -60,9 +60,9 @@ fun PantallaOrganizacionLista(
                 acciones = {
                     BotonMenuOpcionesPantalla(
                         grupos = listOf(
-                            AccionSaltoGrupo("03.1.G1", "Agrupamiento"),
-                            AccionSaltoGrupo("03.1.G2", "Densidad de lista"),
-                            AccionSaltoGrupo("03.1.G3", "Orden predeterminado")
+                            AccionSaltoGrupo("03-LST-DES-G01", "Agrupamiento"),
+                            AccionSaltoGrupo("03-LST-DES-G02", "Densidad de lista"),
+                            AccionSaltoGrupo("03-LST-DES-G03", "Orden predeterminado")
                         ),
                         alRestablecerPantalla = {
                             haptica.tic()

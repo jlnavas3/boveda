@@ -46,7 +46,7 @@ fun SeccionIconoLauncher(
         etiqueta = "ÍCONO EN EL LAUNCHER",
         icono = Icons.Filled.AppShortcut,
         colorIcono = Color(0xFFE91E63),
-        idGrupo = "02.1.G5",
+        idGrupo = "02-APA-THM-G06",
         mostrarId = ajustes.mostrarIdsAjustes,
         alRestablecer = {
             if (ajustes.iconoLauncher != "ambar") {

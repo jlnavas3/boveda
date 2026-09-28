@@ -27,7 +27,7 @@ fun GrupoSeguridadArchivoCsvGoogle(
         etiqueta = "Seguridad del archivo CSV",
         icono = Icons.Filled.Security,
         colorIcono = Peligro,
-        idGrupo = "05.2.G2",
+        idGrupo = "05-COP-CSV-G02",
         mostrarId = mostrarId,
         descripcion = "Estado de protección contra fugas de texto claro",
         modifier = modifier

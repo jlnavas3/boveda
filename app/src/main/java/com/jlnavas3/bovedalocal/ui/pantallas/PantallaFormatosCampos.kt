@@ -50,7 +50,7 @@ fun PantallaFormatosCampos(
         ) {
             BarraSuperiorPantalla(
                 titulo = "Plantillas de campos",
-                idEtiqueta = "03.3",
+                idEtiqueta = "03-LST-FMT",
                 mostrarId = ajustes.mostrarIdsAjustes,
                 alVolver = { vm.volverAtras() },
                 conSeparador = scrollState.value > 0,
@@ -58,8 +58,8 @@ fun PantallaFormatosCampos(
                 acciones = {
                     BotonMenuOpcionesPantalla(
                         grupos = listOf(
-                            AccionSaltoGrupo("03.3.G1", "Vista previa"),
-                            AccionSaltoGrupo("03.3.G2", "Configuración de formatos")
+                            AccionSaltoGrupo("03-LST-FMT-G01", "Vista previa"),
+                            AccionSaltoGrupo("03-LST-FMT-G02", "Configuración de formatos")
                         ),
                         alRestablecerPantalla = {
                             haptica.tic()

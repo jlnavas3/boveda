@@ -58,7 +58,7 @@ fun PantallaAjustesIndice(
             ) {
                 BarraSuperiorPantalla(
                     titulo = "Índice A-Z",
-                    idEtiqueta = "03.2",
+                    idEtiqueta = "03-LST-AZX",
                     mostrarId = ajustes.mostrarIdsAjustes,
                     alVolver = { vm.volverAtras() },
                     conSeparador = scrollState.value > 0,
@@ -66,7 +66,7 @@ fun PantallaAjustesIndice(
                     acciones = {
                         BotonMenuOpcionesPantalla(
                             grupos = listOf(
-                                AccionSaltoGrupo("03.2.G2", "Calibración lateral")
+                                AccionSaltoGrupo("03-LST-AZX-G02", "Calibración lateral")
                             ),
                             alRestablecerPantalla = {
                                 haptica.tic()
@@ -98,7 +98,7 @@ fun PantallaAjustesIndice(
                             vm.restablecerAjustesIndiceAlfabetico()
                             vm.avisar("Índice A-Z restablecido")
                         },
-                        idGrupo = "03.2.G2",
+                        idGrupo = "03-LST-AZX-G02",
                         mostrarId = ajustes.mostrarIdsAjustes
                     ) {
                         ComponenteNavegacion(

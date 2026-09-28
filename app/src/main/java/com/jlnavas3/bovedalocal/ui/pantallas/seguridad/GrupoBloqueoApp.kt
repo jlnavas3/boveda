@@ -29,7 +29,7 @@ fun GrupoBloqueoApp(
         icono = Icons.Filled.Lock,
         colorIcono = ColorSeguridad,
         alRestablecer = alRestablecer,
-        idGrupo = "01.1.G2",
+        idGrupo = "01-SEG-BIO-G02",
         mostrarId = mostrarIdsAjustes,
         modifier = modifier
     ) {
@@ -49,7 +49,7 @@ fun GrupoBloqueoApp(
             titulo = "Bloqueo por inactividad",
             descripcionModal = "Tiempo transcurrido en segundo plano antes de requerir autenticación",
             icono = null,
-            idFila = "01.1.4",
+            idFila = "01-SEG-BIO-TIM",
             mostrarId = mostrarIdsAjustes,
             valorSeleccionado = autoBloqueoSegundos,
             opciones = opcionesAutoBloqueo,
@@ -62,7 +62,7 @@ fun GrupoBloqueoApp(
             titulo = "Protección de pantalla (FLAG_SECURE)",
             icono = null,
             activo = proteccionPantalla,
-            idFila = "01.1.5",
+            idFila = "01-SEG-BIO-SEC",
             mostrarId = mostrarIdsAjustes,
             alCambiar = alCambiarProteccionPantalla
         )

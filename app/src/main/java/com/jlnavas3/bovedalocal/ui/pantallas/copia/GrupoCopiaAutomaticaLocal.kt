@@ -34,14 +34,14 @@ fun GrupoCopiaAutomaticaLocal(
             etiqueta = "Copia automática local",
             icono = Icons.Filled.Autorenew,
             colorIcono = ColorExportacion,
-            idGrupo = "05.1.G2",
+            idGrupo = "05-COP-ATM-G01",
             mostrarId = ajustes.mostrarIdsAjustes,
             descripcion = "Copias periódicas cifradas en Descargas con rotación"
         ) {
             ComponenteNavegacion(
                 titulo = "Configurar respaldo",
                 icono = null,
-                idFila = "05.1.4",
+                idFila = "05-COP-ATM-CFG",
                 mostrarId = ajustes.mostrarIdsAjustes,
                 valorTexto = valorTexto,
                 alPulsar = {

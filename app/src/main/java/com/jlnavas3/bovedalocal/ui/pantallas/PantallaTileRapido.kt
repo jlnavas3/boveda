@@ -46,7 +46,7 @@ fun PantallaTileRapido(
         ) {
             BarraSuperiorPantalla(
                 titulo = "Mosaico rápido",
-                idEtiqueta = "04.5",
+                idEtiqueta = "04-HER-MSK",
                 mostrarId = ajustes.mostrarIdsAjustes,
                 alVolver = { vm.volverAtras() },
                 conSeparador = scrollState.value > 0,
@@ -54,8 +54,8 @@ fun PantallaTileRapido(
                 acciones = {
                     BotonMenuOpcionesPantalla(
                         grupos = listOf(
-                            AccionSaltoGrupo("04.5.G1", "Generación rápida"),
-                            AccionSaltoGrupo("04.5.G2", "Accesos rápidos")
+                            AccionSaltoGrupo("04-HER-MSK-G01", "Generación rápida"),
+                            AccionSaltoGrupo("04-HER-MSK-G02", "Accesos rápidos")
                         ),
                         alRestablecerPantalla = {
                             haptica.tic()

@@ -45,7 +45,7 @@ fun PantallaAjustesAutenticador(
         ) {
             BarraSuperiorPantalla(
                 titulo = "Autenticador (2FA)",
-                idEtiqueta = "04.1",
+                idEtiqueta = "04-HER-AUT",
                 mostrarId = ajustes.mostrarIdsAjustes,
                 alVolver = { vm.volverAtras() },
                 conSeparador = scrollState.value > 0,
@@ -53,8 +53,8 @@ fun PantallaAjustesAutenticador(
                 acciones = {
                     BotonMenuOpcionesPantalla(
                         grupos = listOf(
-                            AccionSaltoGrupo("04.1.G1", "Valores manuales"),
-                            AccionSaltoGrupo("04.1.G2", "Accesos rápidos")
+                            AccionSaltoGrupo("04-HER-AUT-G01", "Valores manuales"),
+                            AccionSaltoGrupo("04-HER-AUT-G02", "Accesos rápidos")
                         ),
                         alRestablecerPantalla = {
                             haptica.tic()

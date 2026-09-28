@@ -23,14 +23,14 @@ fun SeccionAnimacionDesbloqueo(
         icono = Icons.Filled.Lock,
         colorIcono = Color(0xFF5C6BC0),
         alRestablecer = { alCambiarAnimacion("engranajes") },
-        idGrupo = "02.1.G2",
+        idGrupo = "02-APA-THM-G02",
         mostrarId = ajustes.mostrarIdsAjustes
     ) {
         ComponenteRadio(
             titulo = "Mecanismo de engranajes",
             icono = null,
             seleccionado = ajustes.animacionDesbloqueo == "engranajes",
-            idFila = "02.1.4",
+            idFila = "02-APA-THM-ENG",
             mostrarId = ajustes.mostrarIdsAjustes,
             alSeleccionar = {
                 haptica.tic()
@@ -42,7 +42,7 @@ fun SeccionAnimacionDesbloqueo(
             titulo = "Puerta de bóveda",
             icono = null,
             seleccionado = ajustes.animacionDesbloqueo != "engranajes",
-            idFila = "02.1.5",
+            idFila = "02-APA-THM-PRT",
             mostrarId = ajustes.mostrarIdsAjustes,
             alSeleccionar = {
                 haptica.tic()
@@ -53,7 +53,7 @@ fun SeccionAnimacionDesbloqueo(
         ComponenteNavegacion(
             titulo = "Calibrar animación",
             icono = null,
-            idFila = "02.1.6",
+            idFila = "02-APA-THM-CAL",
             mostrarId = ajustes.mostrarIdsAjustes,
             alPulsar = {
                 haptica.tic()

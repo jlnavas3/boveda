@@ -49,7 +49,7 @@ fun GrupoConfiguracionPinAutodestruccion(
         etiqueta = "PIN de emergencia",
         icono = Icons.Filled.DeleteForever,
         colorIcono = Peligro,
-        idGrupo = "01.4.G2",
+        idGrupo = "01-SEG-DES-G02",
         mostrarId = mostrarIdsAjustes,
         modifier = modifier
     ) {
@@ -57,7 +57,7 @@ fun GrupoConfiguracionPinAutodestruccion(
             titulo = "Activar autodestrucción",
             icono = null,
             activo = activo,
-            idFila = "01.4.1",
+            idFila = "01-SEG-DES-SWT",
             mostrarId = mostrarIdsAjustes,
             colorActivo = ColorAcento,
             alCambiar = alCambiarActivo

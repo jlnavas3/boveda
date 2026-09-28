@@ -23,7 +23,7 @@ fun TarjetaExplicativaSenuelo(
         etiqueta = "Información",
         icono = Icons.Filled.Security,
         colorIcono = ColorSeguridad,
-        idGrupo = "01.3.G1",
+        idGrupo = "01-SEG-SEN-G01",
         mostrarId = mostrarIdsAjustes,
         modifier = modifier
     ) {

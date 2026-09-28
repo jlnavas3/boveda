@@ -34,7 +34,7 @@ fun GrupoRespuestaHaptica(
             alCambiarIntensidad(0.7f)
             haptica.probar(0.7f)
         },
-        idGrupo = "06.1.G3",
+        idGrupo = "06-SIS-AVZ-G02",
         mostrarId = mostrarIdsAjustes,
         descripcion = "Vibración háptica general al interactuar con botones, switches y controles",
         modifier = modifier
@@ -42,7 +42,7 @@ fun GrupoRespuestaHaptica(
         ComponenteSwitch(
             titulo = "Vibración háptica en la app",
             icono = null,
-            idFila = "06.1.8",
+            idFila = "06-SIS-AVZ-HAP",
             mostrarId = mostrarIdsAjustes,
             activo = hapticaApp,
             alCambiar = {
@@ -62,7 +62,7 @@ fun GrupoRespuestaHaptica(
                 pasos = 99,
                 etiquetaMin = "1% (Mínima)",
                 etiquetaMax = "100%",
-                idFila = "06.1.9",
+                idFila = "06-SIS-AVZ-HIN",
                 mostrarId = mostrarIdsAjustes,
                 icono = null,
                 colorAcento = Color(0xFF00897B),
@@ -77,7 +77,7 @@ fun GrupoRespuestaHaptica(
             ComponenteNavegacion(
                 titulo = "Probar vibración",
                 icono = null,
-                idFila = "06.1.10",
+                idFila = "06-SIS-AVZ-VIB",
                 mostrarId = mostrarIdsAjustes,
                 alPulsar = {
                     haptica.probar(hapticaAppIntensidad)

@@ -42,7 +42,7 @@ fun GrupoPreviaFormatos(
         etiqueta = "Vista previa",
         icono = Icons.Filled.Visibility,
         colorIcono = Color(0xFFFFA000),
-        idGrupo = "03.3.G1",
+        idGrupo = "03-LST-FMT-G01",
         mostrarId = mostrarIdsAjustes,
         modifier = modifier
     ) {

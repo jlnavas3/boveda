@@ -26,7 +26,7 @@ fun GrupoOpcionesDocumento(
         etiqueta = "Opciones del documento",
         icono = Icons.Filled.Tune,
         colorIcono = ColorSeguridad,
-        idGrupo = "05.3.G2",
+        idGrupo = "05-COP-KIT-G02",
         mostrarId = mostrarIdsAjustes,
         descripcion = "Configuración del contenido que se incluirá en el PDF/impresión",
         alRestablecer = {
@@ -40,7 +40,7 @@ fun GrupoOpcionesDocumento(
             titulo = "Incluir contraseñas en claro",
             icono = null,
             activo = incluirContrasenas,
-            idFila = "05.3.1",
+            idFila = "05-COP-KIT-PWD",
             mostrarId = mostrarIdsAjustes,
             colorActivo = Peligro,
             alCambiar = alCambiarIncluirContrasenas
@@ -50,7 +50,7 @@ fun GrupoOpcionesDocumento(
             titulo = "Solo cuentas favoritas / esenciales",
             icono = null,
             activo = soloFavoritos,
-            idFila = "05.3.2",
+            idFila = "05-COP-KIT-FAV",
             mostrarId = mostrarIdsAjustes,
             alCambiar = alCambiarSoloFavoritos
         )
@@ -59,7 +59,7 @@ fun GrupoOpcionesDocumento(
             titulo = "Incluir notas seguras",
             icono = null,
             activo = incluirNotas,
-            idFila = "05.3.3",
+            idFila = "05-COP-KIT-NTS",
             mostrarId = mostrarIdsAjustes,
             alCambiar = alCambiarIncluirNotas
         )

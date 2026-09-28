@@ -29,7 +29,7 @@ fun GrupoRecordatorioRespaldo(
         etiqueta = "Recordatorio de respaldo",
         icono = Icons.Filled.NotificationsActive,
         colorIcono = ColorExportacion,
-        idGrupo = "05.1.G3",
+        idGrupo = "05-COP-REC-G01",
         mostrarId = ajustes.mostrarIdsAjustes,
         descripcion = "Aviso periódico en la bóveda si pasa mucho tiempo sin exportar",
         alRestablecer = {
@@ -65,7 +65,7 @@ fun GrupoRecordatorioRespaldo(
             titulo = "Frecuencia del recordatorio",
             descripcionModal = "Periodicidad con la que se avisa en la bóveda si no se ha exportado",
             icono = null,
-            idFila = "05.1.7",
+            idFila = "05-COP-REC-FRQ",
             mostrarId = ajustes.mostrarIdsAjustes,
             valorSeleccionado = ajustes.recordatorioExportacionDias,
             opciones = opcionesRecordatorio,

@@ -26,7 +26,7 @@ fun GrupoImportacionCsvGoogle(
         etiqueta = "Importación",
         icono = Icons.Filled.FileUpload,
         colorIcono = Color(0xFF0288D1),
-        idGrupo = "05.2.G1",
+        idGrupo = "05-COP-CSV-G01",
         mostrarId = mostrarId,
         descripcion = "Carga de archivo 'Google Passwords.csv' desde el almacenamiento",
         modifier = modifier
@@ -43,7 +43,7 @@ fun GrupoImportacionCsvGoogle(
             titulo = "Importar contraseñas de Google",
             colorIcono = ColorExportacion,
             icono = Icons.Filled.FileUpload,
-            idFila = "05.2.1",
+            idFila = "05-COP-CSV-IMP",
             mostrarId = mostrarId,
             alPulsar = alIniciarImportacion
         )

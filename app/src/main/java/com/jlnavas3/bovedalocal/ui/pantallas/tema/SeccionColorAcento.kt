@@ -38,7 +38,7 @@ fun SeccionColorDinamicoYSistema(
             icono = Icons.Filled.AutoAwesome,
             colorIcono = Color(0xFF00897B),
             alRestablecer = { alAlternarColorDinamico(true) },
-            idGrupo = "02.1.G3",
+            idGrupo = "02-APA-THM-G03",
             mostrarId = ajustes.mostrarIdsAjustes,
             modifier = Modifier.bringIntoViewRequester(reqDinamico)
         ) {
@@ -46,7 +46,7 @@ fun SeccionColorDinamicoYSistema(
                 titulo = "Material You",
                 icono = null,
                 activo = ajustes.colorDinamicoSistema,
-                idFila = "02.1.7",
+                idFila = "02-APA-THM-DYN",
                 mostrarId = ajustes.mostrarIdsAjustes,
                 alCambiar = {
                     haptica.tic()
@@ -68,7 +68,7 @@ fun SeccionColorAcento(
         etiqueta = "COLOR DE ACENTO",
         icono = Icons.Filled.Palette,
         colorIcono = Color(0xFF8E24AA),
-        idGrupo = "02.1.G4",
+        idGrupo = "02-APA-THM-G05",
         mostrarId = ajustes.mostrarIdsAjustes,
         alRestablecer = {
             alAjustarColorAcento("ambar")

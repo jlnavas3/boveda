@@ -52,7 +52,7 @@ fun PantallaAvanzada(
         ) {
             BarraSuperiorPantalla(
                 titulo = "Opciones avanzadas",
-                idEtiqueta = "06.1",
+                idEtiqueta = "06-SIS-AVZ",
                 mostrarId = ajustes.mostrarIdsAjustes,
                 alVolver = { vm.volverAtras() },
                 conSeparador = scrollState.value > 0,
@@ -60,9 +60,9 @@ fun PantallaAvanzada(
                 acciones = {
                     BotonMenuOpcionesPantalla(
                         grupos = listOf(
-                            AccionSaltoGrupo("06.1.G2", "Desarrollo y referencia"),
-                            AccionSaltoGrupo("06.1.G3", "Respuesta táctil y vibración"),
-                            AccionSaltoGrupo("06.1.G4", "Zona de peligro")
+                            AccionSaltoGrupo("06-SIS-AVZ-G01", "Desarrollo y referencia"),
+                            AccionSaltoGrupo("06-SIS-AVZ-G02", "Respuesta táctil y vibración"),
+                            AccionSaltoGrupo("06-SIS-AVZ-G03", "Zona de peligro")
                         )
                     )
                 }

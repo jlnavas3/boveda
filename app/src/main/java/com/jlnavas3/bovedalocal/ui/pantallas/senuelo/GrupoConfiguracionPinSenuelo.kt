@@ -39,7 +39,7 @@ fun GrupoConfiguracionPinSenuelo(
         etiqueta = "PIN de coacción",
         icono = Icons.Filled.Password,
         colorIcono = ColorSeguridad,
-        idGrupo = "01.3.G2",
+        idGrupo = "01-SEG-SEN-G02",
         mostrarId = mostrarIdsAjustes,
         modifier = modifier
     ) {
@@ -47,7 +47,7 @@ fun GrupoConfiguracionPinSenuelo(
             titulo = "Activar modo señuelo",
             icono = null,
             activo = activo,
-            idFila = "01.3.1",
+            idFila = "01-SEG-SEN-SWT",
             mostrarId = mostrarIdsAjustes,
             colorActivo = ColorAcento,
             alCambiar = alCambiarActivo

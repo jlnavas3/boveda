@@ -77,11 +77,11 @@ fun PantallaAcercaDe(
     LaunchedEffect(seccionDestino, datosAuditoria) {
         if (seccionDestino != null && datosAuditoria != null) {
             when {
-                seccionDestino == "06.3.1" || seccionDestino == "06.3.G1" -> reqAislamiento.bringIntoView()
-                seccionDestino == "06.3.2" || seccionDestino == "06.3.G2" -> reqCripto.bringIntoView()
-                seccionDestino == "06.3.3" || seccionDestino == "06.3.G3" -> reqHardware.bringIntoView()
-                seccionDestino == "06.3.4" || seccionDestino == "06.3.G4" -> reqMemoria.bringIntoView()
-                seccionDestino.startsWith("06.3.") && seccionDestino != "06.3" -> reqAislamiento.bringIntoView()
+                seccionDestino == "06-SIS-DGN-G01" || seccionDestino.contains("DGN-G01") -> reqAislamiento.bringIntoView()
+                seccionDestino == "06-SIS-DGN-G02" || seccionDestino.contains("DGN-G02") -> reqCripto.bringIntoView()
+                seccionDestino == "06-SIS-DGN-G03" || seccionDestino.contains("DGN-G03") -> reqHardware.bringIntoView()
+                seccionDestino == "06-SIS-DGN-G04" || seccionDestino.contains("DGN-G04") -> reqMemoria.bringIntoView()
+                seccionDestino.startsWith("06-SIS-DGN") -> reqAislamiento.bringIntoView()
             }
         }
     }
@@ -93,7 +93,7 @@ fun PantallaAcercaDe(
     ) {
         BarraSuperiorPantalla(
             titulo = "Acerca de y diagnóstico",
-            idEtiqueta = "06.3",
+            idEtiqueta = "06-SIS-DGN",
             mostrarId = ajustes.mostrarIdsAjustes,
             alVolver = { vm.volverAtras() },
             conSeparador = scrollState.value > 0,
@@ -101,12 +101,12 @@ fun PantallaAcercaDe(
             acciones = {
                 BotonMenuOpcionesPantalla(
                     grupos = listOf(
-                        AccionSaltoGrupo("06.3.G1", "Aislamiento y privacidad"),
-                        AccionSaltoGrupo("06.3.G2", "Criptografía y blindaje"),
-                        AccionSaltoGrupo("06.3.G3", "Hardware y sistema"),
-                        AccionSaltoGrupo("06.3.G4", "Memoria y almacenamiento"),
-                        AccionSaltoGrupo("06.3.G5", "Biometría y sensores"),
-                        AccionSaltoGrupo("06.3.G6", "Acerca de Bóveda Local")
+                        AccionSaltoGrupo("06-SIS-DGN-G01", "Aislamiento y privacidad"),
+                        AccionSaltoGrupo("06-SIS-DGN-G02", "Criptografía y blindaje"),
+                        AccionSaltoGrupo("06-SIS-DGN-G03", "Hardware y sistema"),
+                        AccionSaltoGrupo("06-SIS-DGN-G04", "Memoria y almacenamiento"),
+                        AccionSaltoGrupo("06-SIS-DGN-G05", "Biometría y sensores"),
+                        AccionSaltoGrupo("06-SIS-DGN-G06", "Acerca de Bóveda Local")
                     )
                 )
             }

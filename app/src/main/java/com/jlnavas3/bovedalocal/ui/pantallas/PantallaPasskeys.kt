@@ -92,7 +92,7 @@ fun PantallaPasskeys(vm: VaultViewModel) {
             criterioOrdenacion = criterioOrdenacion,
             menuOpcionesDesplegado = menuOpcionesDesplegado,
             haptica = haptica,
-            idEtiqueta = "04.6",
+            idEtiqueta = "04-HER-PSK",
             mostrarId = ajustes.mostrarIdsAjustes,
             alVolver = { vm.volverAtras() },
             alAlternarBusqueda = {

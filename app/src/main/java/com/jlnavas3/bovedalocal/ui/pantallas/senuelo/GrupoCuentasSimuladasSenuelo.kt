@@ -28,7 +28,7 @@ fun GrupoCuentasSimuladasSenuelo(
         icono = Icons.Filled.Group,
         colorIcono = ColorSeguridad,
         alRestablecer = alRestablecerEjemplos,
-        idGrupo = "01.3.G3",
+        idGrupo = "01-SEG-SEN-G03",
         mostrarId = mostrarIdsAjustes,
         modifier = modifier
     ) {

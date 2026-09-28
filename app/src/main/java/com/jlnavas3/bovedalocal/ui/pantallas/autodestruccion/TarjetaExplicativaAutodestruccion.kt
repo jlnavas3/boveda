@@ -23,7 +23,7 @@ fun TarjetaExplicativaAutodestruccion(
         etiqueta = "Información",
         icono = Icons.Filled.Info,
         colorIcono = Peligro,
-        idGrupo = "01.4.G1",
+        idGrupo = "01-SEG-DES-G01",
         mostrarId = mostrarIdsAjustes,
         modifier = modifier
     ) {

@@ -67,7 +67,7 @@ fun BarraSuperiorPasskeys(
     alIrExportacionSelectiva: () -> Unit,
     alRestablecerFiltros: () -> Unit,
     modifier: Modifier = Modifier,
-    idEtiqueta: String = "04.6",
+    idEtiqueta: String = "04-HER-PSK",
     mostrarId: Boolean = false
 ) {
     Column(modifier = modifier) {
