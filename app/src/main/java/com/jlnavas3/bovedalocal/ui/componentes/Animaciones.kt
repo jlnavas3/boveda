@@ -177,38 +177,41 @@ fun PuertaBoveda(
 }
 
 @Composable
-fun IlustracionVacio(modifier: Modifier = Modifier) {
+fun IlustracionVacio(
+    modifier: Modifier = Modifier,
+    tamanoLupa: androidx.compose.ui.unit.Dp = 120.dp
+) {
     Column(
         modifier = modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Canvas(modifier = Modifier.size(160.dp)) {
+        Canvas(modifier = Modifier.size(tamanoLupa)) {
             val centro = Offset(size.width / 2, size.height / 2)
-            drawCircle(color = Borde, radius = size.minDimension / 2.2f, center = centro, style = Stroke(width = 6.dp.toPx()))
+            drawCircle(color = Borde, radius = size.minDimension / 2.2f, center = centro, style = Stroke(width = 5.dp.toPx()))
             drawCircle(
                 brush = Brush.linearGradient(listOf(Ambar, AmbarFuerte)),
                 radius = size.minDimension / 7f,
                 center = centro.copy(y = centro.y - size.minDimension / 14f),
-                style = Stroke(width = 8.dp.toPx())
+                style = Stroke(width = 6.dp.toPx())
             )
             drawRoundRect(
                 brush = Brush.verticalGradient(listOf(Ambar, AmbarFuerte)),
                 topLeft = Offset(centro.x - size.minDimension / 26f, centro.y + size.minDimension / 30f),
                 size = Size(size.minDimension / 13f, size.minDimension / 4.5f),
-                cornerRadius = CornerRadius(12f, 12f)
+                cornerRadius = CornerRadius(10f, 10f)
             )
         }
         Text(
             "Tu bóveda está vacía",
             style = MaterialTheme.typography.headlineSmall,
             color = TextoPrincipal,
-            modifier = Modifier.padding(top = 12.dp)
+            modifier = Modifier.padding(top = 8.dp)
         )
         Text(
             "Guarda tu primera contraseña con el botón de abajo. Nada saldrá de este teléfono.",
             style = MaterialTheme.typography.bodyMedium,
             color = TextoSecundario,
-            modifier = Modifier.padding(top = 6.dp, start = 24.dp, end = 24.dp),
+            modifier = Modifier.padding(top = 4.dp, start = 24.dp, end = 24.dp),
             textAlign = TextAlign.Center
         )
     }

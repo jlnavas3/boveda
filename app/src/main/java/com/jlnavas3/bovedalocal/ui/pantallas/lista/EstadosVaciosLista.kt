@@ -6,72 +6,89 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Backup
 import androidx.compose.material.icons.filled.FileUpload
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Icon
+import androidx.compose.material.icons.filled.Key
+import androidx.compose.material.icons.filled.QrCodeScanner
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.jlnavas3.bovedalocal.ui.componentes.IlustracionVacio
-import com.jlnavas3.bovedalocal.ui.theme.Ambar
-import com.jlnavas3.bovedalocal.ui.theme.ColorSobreAcento
+import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteGrupo
+import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteNavegacion
+import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteSeparador
+import com.jlnavas3.bovedalocal.ui.theme.ColorExportacion
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
 
 @Composable
 fun EstadoVacioLista(
     entradasVacias: Boolean,
     alImportarCopia: () -> Unit,
-    alImportarCsvGoogle: () -> Unit
+    alImportarCsvGoogle: () -> Unit,
+    alImportarGoogleAuthenticator: () -> Unit
 ) {
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Center
-    ) {
-        if (entradasVacias) {
-            IlustracionVacio()
-            Spacer(Modifier.height(20.dp))
-            Button(
-                onClick = alImportarCopia,
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Ambar,
-                    contentColor = ColorSobreAcento
-                ),
-                modifier = Modifier
-                    .align(Alignment.CenterHorizontally)
-                    .padding(horizontal = 24.dp)
+    if (entradasVacias) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+                .padding(horizontal = 16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Top
+        ) {
+            Spacer(Modifier.height(16.dp))
+            IlustracionVacio(tamanoLupa = 115.dp)
+            Spacer(Modifier.height(24.dp))
+
+            ComponenteGrupo(
+                etiqueta = "Importar",
+                icono = Icons.Filled.FileUpload,
+                colorIcono = ColorExportacion
             ) {
-                Icon(Icons.Filled.FileUpload, contentDescription = null, modifier = Modifier.size(18.dp))
-                Spacer(Modifier.width(8.dp))
-                Text("Importar copia de seguridad")
+                ComponenteNavegacion(
+                    titulo = "Copia de seguridad",
+                    icono = Icons.Filled.Backup,
+                    colorIcono = Color(0xFF26A69A),
+                    alPulsar = alImportarCopia
+                )
+                ComponenteSeparador(sangriaInicio = 68.dp)
+                ComponenteNavegacion(
+                    titulo = "Contraseñas de Google",
+                    icono = Icons.Filled.Key,
+                    colorIcono = Color(0xFF4285F4),
+                    alPulsar = alImportarCsvGoogle
+                )
+                ComponenteSeparador(sangriaInicio = 68.dp)
+                ComponenteNavegacion(
+                    titulo = "Autenticador de Google",
+                    icono = Icons.Filled.QrCodeScanner,
+                    colorIcono = Color(0xFFEA4335),
+                    alPulsar = alImportarGoogleAuthenticator
+                )
             }
-            Spacer(Modifier.height(12.dp))
-            Button(
-                onClick = alImportarCsvGoogle,
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Ambar,
-                    contentColor = ColorSobreAcento
-                ),
-                modifier = Modifier
-                    .align(Alignment.CenterHorizontally)
-                    .padding(horizontal = 24.dp)
-            ) {
-                Icon(Icons.Filled.FileUpload, contentDescription = null, modifier = Modifier.size(18.dp))
-                Spacer(Modifier.width(8.dp))
-                Text("Importar contraseñas de Google")
-            }
-        } else {
+
+            Spacer(Modifier.height(88.dp))
+        }
+    } else {
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
             Text(
                 "Nada coincide con esa búsqueda",
                 style = MaterialTheme.typography.bodyLarge,
                 color = TextoSecundario,
-                modifier = Modifier.padding(horizontal = 24.dp)
+                modifier = Modifier.padding(horizontal = 24.dp),
+                textAlign = TextAlign.Center
             )
         }
     }

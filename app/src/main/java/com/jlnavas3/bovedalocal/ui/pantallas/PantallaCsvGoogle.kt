@@ -26,7 +26,9 @@ import com.jlnavas3.bovedalocal.ui.VaultViewModel
 import com.jlnavas3.bovedalocal.ui.componentes.BarraSuperiorPantalla
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.AccionSaltoGrupo
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.BotonMenuOpcionesPantalla
+import com.jlnavas3.bovedalocal.ui.componentes.ajustes.LocalCoordinadorResaltado
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ProveedorResaltadoAjustes
+import com.jlnavas3.bovedalocal.ui.componentes.ajustes.contenedorScrollAjustes
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjustesFondo
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.DialogoBorradoManualCsv
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.DialogoImportarCsv
@@ -78,7 +80,8 @@ fun PantallaCsvGoogle(
 
     val scrollState = rememberScrollState()
 
-    ProveedorResaltadoAjustes(seccionDestino) {
+    ProveedorResaltadoAjustes(seccionDestino, scrollState) {
+        val coordinador = LocalCoordinadorResaltado.current
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -94,8 +97,8 @@ fun PantallaCsvGoogle(
                 acciones = {
                     BotonMenuOpcionesPantalla(
                         grupos = listOf(
-                            AccionSaltoGrupo("05.2.G1", "Importación"),
-                            AccionSaltoGrupo("05.2.G2", "Seguridad del archivo CSV")
+                            AccionSaltoGrupo("05-COP-CSV-G01", "Importación"),
+                            AccionSaltoGrupo("05-COP-CSV-G02", "Seguridad del archivo CSV")
                         )
                     )
                 }
@@ -105,6 +108,7 @@ fun PantallaCsvGoogle(
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f)
+                    .contenedorScrollAjustes(coordinador)
                     .verticalScroll(scrollState)
                     .padding(horizontal = 16.dp, vertical = 12.dp)
             ) {
