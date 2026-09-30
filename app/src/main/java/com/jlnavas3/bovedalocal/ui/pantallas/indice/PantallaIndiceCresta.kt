@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.jlnavas3.bovedalocal.data.AjustesDefaults
 import com.jlnavas3.bovedalocal.ui.VaultViewModel
 import com.jlnavas3.bovedalocal.ui.componentes.ContenedorPrincipal
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteGrupo
@@ -58,9 +59,9 @@ fun PantallaIndiceCresta(
             icono = Icons.Filled.Lens,
             alRestablecer = {
                 haptica.tic()
-                vm.ajustarIndiceMostrarCirculo(true)
-                vm.ajustarIndiceTamanoCirculoDp(50f)
-                vm.ajustarIndiceOffsetCirculoDp(136f)
+                vm.ajustarIndiceMostrarCirculo(AjustesDefaults.Indice.MOSTRAR_CIRCULO)
+                vm.restablecerTamanoCirculoIndice()
+                vm.restablecerOffsetCirculoIndice()
                 vm.avisar("Valores de cresta restablecidos")
             },
             idGrupo = "03-LST-AZX-CRE-G01",
@@ -89,7 +90,7 @@ fun PantallaIndiceCresta(
                     mostrarId = ajustes.mostrarIdsAjustes,
                     alRestablecer = {
                         haptica.tic()
-                        vm.ajustarIndiceTamanoCirculoDp(50f)
+                        vm.restablecerTamanoCirculoIndice()
                     },
                     alCambiar = {
                         haptica.tic()
@@ -108,7 +109,7 @@ fun PantallaIndiceCresta(
                     mostrarId = ajustes.mostrarIdsAjustes,
                     alRestablecer = {
                         haptica.tic()
-                        vm.ajustarIndiceOffsetCirculoDp(136f)
+                        vm.restablecerOffsetCirculoIndice()
                     },
                     alCambiar = {
                         haptica.tic()

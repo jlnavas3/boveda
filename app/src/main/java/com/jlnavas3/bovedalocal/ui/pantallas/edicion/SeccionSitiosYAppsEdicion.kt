@@ -1,5 +1,6 @@
 package com.jlnavas3.bovedalocal.ui.pantallas.edicion
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -43,6 +44,7 @@ import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
 import com.jlnavas3.bovedalocal.ui.theme.colorLegibleParaTema
 import com.jlnavas3.bovedalocal.ui.theme.fondoBadgeParaTema
 import com.jlnavas3.bovedalocal.util.EnlaceEditable
+import com.jlnavas3.bovedalocal.util.GestorAppsInstaladas
 import com.jlnavas3.bovedalocal.util.LanzadorEnlaces
 
 @Composable
@@ -62,6 +64,9 @@ fun SeccionSitiosYAppsEdicion(
                     val nombreApp = remember(paquete, contexto, esApp) {
                         if (paquete != null && esApp) LanzadorEnlaces.obtenerNombreApp(contexto, paquete) else null
                     }
+                    val iconoApp = remember(paquete, contexto, esApp) {
+                        if (paquete != null && esApp) GestorAppsInstaladas.obtenerIconoApp(contexto, paquete) else null
+                    }
 
                     Column(
                         modifier = Modifier
@@ -77,6 +82,17 @@ fun SeccionSitiosYAppsEdicion(
                             tipo = TipoCampoTexto.ENLACE,
                             mostrarIcono = true,
                             icono = if (esAppEnlace) Icons.Filled.Android else Icons.Filled.Language,
+                            leadingIcon = if (esApp && iconoApp != null) {
+                                {
+                                    Image(
+                                        bitmap = iconoApp,
+                                        contentDescription = nombreApp ?: "App",
+                                        modifier = Modifier
+                                            .size(24.dp)
+                                            .clip(FormaPequena)
+                                    )
+                                }
+                            } else null,
                             colorBordeIzquierdo = if (esAppEnlace) ColorDatosApp else ColorDatosWeb,
                             trailingIcon = {
                                 IconButton(

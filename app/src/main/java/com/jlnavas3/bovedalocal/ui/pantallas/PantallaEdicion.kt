@@ -1,27 +1,52 @@
 package com.jlnavas3.bovedalocal.ui.pantallas
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AutoFixHigh
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
+import com.jlnavas3.bovedalocal.ui.theme.ColorSobreAcento
+import com.jlnavas3.bovedalocal.ui.theme.CurvaturaEsquinas
+import com.jlnavas3.bovedalocal.ui.theme.EstiloBorde
+import com.jlnavas3.bovedalocal.ui.theme.GrosorBorde
+import com.jlnavas3.bovedalocal.ui.theme.esOscuroActivo
 import com.jlnavas3.bovedalocal.crypto.Base32
 import com.jlnavas3.bovedalocal.crypto.OpcionesGenerador
 import com.jlnavas3.bovedalocal.data.Entrada
@@ -128,36 +153,31 @@ fun PantallaEdicion(vm: VaultViewModel, id: String?, contrasenaInicial: String) 
         vm.volverAtras()
     }
 
-    Column(
+    Box(
         modifier = Modifier
             .fillMaxSize()
             .background(ColorAjustesFondo)
     ) {
-        // Cabecera plana nativa
-        BarraSuperiorPantalla(
-            titulo = if (original == null) "Nueva entrada" else "Editar entrada",
-            alVolver = { vm.volverAtras() },
-            conSeparador = scrollState.value > 0,
-            colorFondo = ColorAjustesFondo,
-            acciones = {
-                BotonIconoCabecera(
-                    onClick = { guardarEntrada() },
-                    icono = Icons.Filled.Check,
-                    descripcion = "Guardar",
-                    tint = if (puedeGuardar) ColorAcento else ColorIconosInternos.copy(alpha = 0.3f),
-                    habilitado = puedeGuardar
-                )
-            }
-        )
-
         Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f)
-                .reboteElastico()
-                .verticalScroll(scrollState)
-                .padding(horizontal = 16.dp, vertical = 12.dp)
+            modifier = Modifier.fillMaxSize()
         ) {
+            // Cabecera plana nativa
+            BarraSuperiorPantalla(
+                titulo = if (original == null) "Nueva entrada" else "Editar entrada",
+                alVolver = { vm.volverAtras() },
+                conSeparador = scrollState.value > 0,
+                colorFondo = ColorAjustesFondo,
+                acciones = {}
+            )
+
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
+                    .reboteElastico()
+                    .verticalScroll(scrollState)
+                    .padding(horizontal = 16.dp, vertical = 12.dp)
+            ) {
             DescripcionPantalla(
                 subtitulo = if (original == null) "Crea y cifra un registro seguro en la bóveda" else "Modifica los datos del registro"
             )
@@ -186,6 +206,58 @@ fun PantallaEdicion(vm: VaultViewModel, id: String?, contrasenaInicial: String) 
                         colorBordeIzquierdo = ColorAcento,
                         botonLimpiar = true
                     )
+
+                    val urlsParaResolver = remember(listaEnlaces.toList(), original) {
+                        val reconstruidas = listaEnlaces.map { LanzadorEnlaces.reconstruirDesdeEdicion(it) }.filter { it.isNotBlank() }
+                        if (reconstruidas.isEmpty() && original != null) original.urls else reconstruidas
+                    }
+                    val entradaParaResolver = remember(urlsParaResolver, original, titulo) {
+                        Entrada(
+                            id = original?.id ?: "",
+                            titulo = titulo,
+                            usuario = usuario,
+                            contrasena = contrasena,
+                            urls = urlsParaResolver,
+                            passkey = original?.passkey
+                        )
+                    }
+                    val paqueteDetectado = remember(entradaParaResolver, contexto) {
+                        GestorAppsInstaladas.resolverPaqueteApp(contexto, entradaParaResolver)
+                    }
+                    val nombreAppDetectada = remember(paqueteDetectado, contexto) {
+                        if (paqueteDetectado != null && LanzadorEnlaces.estaInstalada(contexto, paqueteDetectado)) {
+                            LanzadorEnlaces.obtenerNombreApp(contexto, paqueteDetectado)
+                        } else null
+                    }
+                    if (nombreAppDetectada != null && !titulo.trim().equals(nombreAppDetectada, ignoreCase = true)) {
+                        Spacer(Modifier.height(6.dp))
+                        Row(
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(8.dp))
+                                .background(ColorAcento.copy(alpha = 0.12f))
+                                .clickable {
+                                    titulo = nombreAppDetectada
+                                    haptica.tic()
+                                }
+                                .padding(horizontal = 10.dp, vertical = 5.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Icon(
+                                imageVector = Icons.Filled.AutoFixHigh,
+                                contentDescription = null,
+                                tint = ColorAcento,
+                                modifier = Modifier.size(15.dp)
+                            )
+                            Spacer(Modifier.width(6.dp))
+                            Text(
+                                text = "Usar \"$nombreAppDetectada\"",
+                                style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.SemiBold),
+                                color = ColorAcento,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                        }
+                    }
 
                     when (tipo) {
                         TipoEntrada.LOGIN, TipoEntrada.PASSKEY -> {
@@ -319,18 +391,59 @@ fun PantallaEdicion(vm: VaultViewModel, id: String?, contrasenaInicial: String) 
         }
     }
 
+    val formaFab = RoundedCornerShape(CurvaturaEsquinas)
+    val colorFondoFab = if (puedeGuardar) ColorAcento else if (esOscuroActivo) Color(0xFF2C2B30) else Color(0xFFDCDFE6)
+    val colorContenidoFab = if (puedeGuardar) ColorSobreAcento else ColorIconosInternos.copy(alpha = 0.35f)
+
+    FloatingActionButton(
+        onClick = {
+            if (puedeGuardar) {
+                guardarEntrada()
+            } else {
+                haptica.error()
+            }
+        },
+        containerColor = colorFondoFab,
+        contentColor = colorContenidoFab,
+        shape = formaFab,
+        modifier = Modifier
+            .align(Alignment.BottomEnd)
+            .navigationBarsPadding()
+            .imePadding()
+            .padding(20.dp)
+            .then(
+                if (GrosorBorde > 0.dp && EstiloBorde != "ninguno") {
+                    Modifier.border(GrosorBorde, ColorBordeActual, formaFab)
+                } else Modifier
+            )
+    ) {
+        Icon(
+            imageVector = Icons.Filled.Check,
+            contentDescription = "Guardar",
+            modifier = Modifier.size(24.dp)
+        )
+    }
+}
+
     if (mostrarSelectorApp) {
         SelectorAppModal(
             alDescartar = { mostrarSelectorApp = false },
             alSeleccionarApp = { paquete ->
+                val nombreApp = LanzadorEnlaces.obtenerNombreApp(contexto, paquete)
+                if (titulo.isBlank() || titulo.trim() == "Nueva entrada") {
+                    if (!nombreApp.isNullOrBlank()) {
+                        titulo = nombreApp
+                    }
+                }
+                val urlApp = if (paquete.startsWith("android://")) paquete else "android://$paquete"
                 val idx = indiceEnlaceSeleccionado
                 if (idx != null && idx in listaEnlaces.indices) {
-                    listaEnlaces[idx] = listaEnlaces[idx].copy(valor = paquete)
+                    listaEnlaces[idx] = listaEnlaces[idx].copy(valor = urlApp)
                 } else {
                     if (listaEnlaces.size == 1 && listaEnlaces[0].valor.isBlank()) {
-                        listaEnlaces[0] = EnlaceEditable(valor = paquete)
+                        listaEnlaces[0] = EnlaceEditable(valor = urlApp)
                     } else {
-                        listaEnlaces.add(EnlaceEditable(valor = paquete))
+                        listaEnlaces.add(EnlaceEditable(valor = urlApp))
                     }
                 }
                 mostrarSelectorApp = false

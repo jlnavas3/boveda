@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -28,6 +27,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.jlnavas3.bovedalocal.data.GestorBackupAutomatico
 import com.jlnavas3.bovedalocal.ui.componentes.BotonTextoBoveda
+import com.jlnavas3.bovedalocal.ui.componentes.DialogoBoveda
 import com.jlnavas3.bovedalocal.ui.componentes.TipoBotonTexto
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteCampoTexto
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.SwitchBoveda
@@ -51,8 +51,6 @@ fun DialogoClaveExportarSelectivo(
 ) {
     val contexto = LocalContext.current
     val haptica = remember { Haptica(contexto) }
-    val esOscuro = isSystemInDarkTheme()
-    val fondoModal = if (esOscuro) Color(0xFF222225) else Color.White
 
     var patronNombre by remember { mutableStateOf("{99}-selectivo-{FECHA}") }
     var clavePassword by remember { mutableStateOf("") }
@@ -68,24 +66,37 @@ fun DialogoClaveExportarSelectivo(
 
     val claveValida = clavePassword.isNotBlank()
 
-    AlertDialog(
-        onDismissRequest = alDescartar,
-        shape = RoundedCornerShape(22.dp),
-        containerColor = fondoModal,
-        title = {
-            Text(
-                text = "Exportación selectiva (.bvda)",
-                color = TextoPrincipal,
-                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
+    DialogoBoveda(
+        abierto = true,
+        alCerrar = alDescartar,
+        titulo = "Exportación selectiva (.bvda)",
+        botonConfirmar = {
+            BotonTextoBoveda(
+                texto = "Exportar .bvda",
+                alPulsar = {
+                    if (claveValida) {
+                        haptica.exito()
+                        alConfirmar(nombreFinalResuelto, clavePassword, guardarEnDirectorioAuto)
+                    }
+                },
+                tipo = TipoBotonTexto.PRIMARIO,
+                habilitado = claveValida
             )
         },
-        text = {
-            Column(modifier = Modifier.fillMaxWidth()) {
-                Text(
-                    text = "Se exportarán $cantidad ${if (cantidad == 1) "entrada cifrada" else "entradas cifradas"}. Configura el nombre del archivo y la clave de cifrado:",
-                    color = TextoSecundario,
-                    style = MaterialTheme.typography.bodySmall
-                )
+        botonDescartar = {
+            BotonTextoBoveda(
+                texto = "Cancelar",
+                alPulsar = alDescartar,
+                tipo = TipoBotonTexto.SECUNDARIO
+            )
+        }
+    ) {
+        Column(modifier = Modifier.fillMaxWidth()) {
+            Text(
+                text = "Se exportarán $cantidad ${if (cantidad == 1) "entrada cifrada" else "entradas cifradas"}. Configura el nombre del archivo y la clave de cifrado:",
+                color = TextoSecundario,
+                style = MaterialTheme.typography.bodySmall
+            )
 
                 Spacer(Modifier.height(14.dp))
 
@@ -203,27 +214,6 @@ fun DialogoClaveExportarSelectivo(
                         }
                     )
                 }
-            }
-        },
-        confirmButton = {
-            BotonTextoBoveda(
-                texto = "Exportar .bvda",
-                alPulsar = {
-                    if (claveValida) {
-                        haptica.exito()
-                        alConfirmar(nombreFinalResuelto, clavePassword, guardarEnDirectorioAuto)
-                    }
-                },
-                tipo = TipoBotonTexto.PRIMARIO,
-                habilitado = claveValida
-            )
-        },
-        dismissButton = {
-            BotonTextoBoveda(
-                texto = "Cancelar",
-                alPulsar = alDescartar,
-                tipo = TipoBotonTexto.SECUNDARIO
-            )
         }
-    )
+    }
 }

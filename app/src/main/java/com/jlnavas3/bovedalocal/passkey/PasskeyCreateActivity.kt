@@ -18,8 +18,10 @@ import com.jlnavas3.bovedalocal.data.DatosPasskey
 import com.jlnavas3.bovedalocal.data.TipoEntrada
 import com.jlnavas3.bovedalocal.data.VaultRepository
 import com.jlnavas3.bovedalocal.ui.theme.BovedaTheme
+import com.jlnavas3.bovedalocal.autofill.AutofillUtiles
 import com.jlnavas3.bovedalocal.util.Diagnostico
 import com.jlnavas3.bovedalocal.util.Dominios
+import com.jlnavas3.bovedalocal.util.LanzadorEnlaces
 
 /** Confirma y crea una passkey nueva pedida por una web o app. */
 @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
@@ -50,24 +52,36 @@ class PasskeyCreateActivity : FragmentActivity() {
             return
         }
 
+        val info = peticion?.callingAppInfo
+        val paquete = info?.packageName
+            ?: LanzadorEnlaces.extraerPaquete(datos.rpId)
+            ?: if (LanzadorEnlaces.estaInstalada(this, datos.rpId)) datos.rpId else null
+
+        val esApp = paquete != null && LanzadorEnlaces.estaInstalada(this, paquete)
+        val nombreApp = if (esApp && paquete != null) LanzadorEnlaces.obtenerNombreApp(this, paquete) else null
+        val iconoBitmap = if (esApp && paquete != null) AutofillUtiles.obtenerBitmapIconoCircular(this, paquete, 120) else null
+
+        val sitioMostrar = nombreApp ?: datos.rpName.takeIf { it.isNotBlank() && it != datos.rpId } ?: datos.rpId
+
         setContent {
             BovedaTheme {
                 HojaPasskey(
                     actividad = this,
                     repositorio = repositorio,
                     titulo = "Crear passkey",
-                    sitio = datos.rpId,
-                    detalle = "${datos.rpId} quiere crear una passkey para " +
+                    sitio = sitioMostrar,
+                    detalle = "$sitioMostrar quiere crear una passkey para " +
                         datos.usuario.ifBlank { "tu cuenta" } + ".",
                     textoAccion = "Crear la passkey",
-                    alConfirmar = { crear(datos) },
+                    iconoBitmap = iconoBitmap,
+                    alConfirmar = { crear(datos, paquete, nombreApp) },
                     alCancelar = { cancelar() }
                 )
             }
         }
     }
 
-    private fun crear(datos: WebAuthn.PeticionCreacion) {
+    private fun crear(datos: WebAuthn.PeticionCreacion, paquete: String?, nombreApp: String?) {
         try {
             val par = WebAuthn.generarPar()
             val credId = WebAuthn.nuevoCredId()
@@ -105,15 +119,40 @@ class PasskeyCreateActivity : FragmentActivity() {
                 e.urls.any { u -> Dominios.coincide(u, datos.rpId) || u.contains(datos.rpId, ignoreCase = true) }
             }
 
-            val entrada = existente?.copy(
-                passkey = passkey,
-                modificadaEn = System.currentTimeMillis()
-            ) ?: Entrada(
+            val tituloFinal = when {
+                !nombreApp.isNullOrBlank() -> nombreApp
+                datos.rpName.isNotBlank() && datos.rpName != datos.rpId -> datos.rpName
+                paquete != null && !paquete.contains('/') -> Dominios.dominioDePaquete(paquete)
+                else -> datos.rpId
+            }
+            val urlGuardada = if (paquete != null && !datos.rpId.startsWith("android://") && datos.rpId == paquete) {
+                "android://$paquete"
+            } else datos.rpId
+
+            val entrada = existente?.let { exist ->
+                val domPaquete = if (paquete != null) Dominios.dominioDePaquete(paquete) else ""
+                val debeActualizarTitulo = exist.titulo.isBlank() ||
+                    exist.titulo == "Nueva entrada" ||
+                    (domPaquete.isNotBlank() && exist.titulo.equals(domPaquete, ignoreCase = true)) ||
+                    (paquete != null && exist.titulo.equals(paquete, ignoreCase = true)) ||
+                    exist.titulo.equals(datos.rpId, ignoreCase = true)
+
+                val urlsActualizadas = if (urlGuardada.startsWith("android://") && !exist.urls.any { LanzadorEnlaces.extraerPaquete(it) == paquete }) {
+                    exist.urls + urlGuardada
+                } else exist.urls
+
+                exist.copy(
+                    passkey = passkey,
+                    titulo = if (debeActualizarTitulo && !nombreApp.isNullOrBlank()) nombreApp else exist.titulo,
+                    urls = urlsActualizadas,
+                    modificadaEn = System.currentTimeMillis()
+                )
+            } ?: Entrada(
                 id = repositorio.nuevoId(),
                 tipo = TipoEntrada.PASSKEY,
-                titulo = datos.rpName.ifBlank { datos.rpId },
+                titulo = tituloFinal,
                 usuario = datos.usuario,
-                urls = listOf(datos.rpId),
+                urls = listOf(urlGuardada),
                 passkey = passkey
             )
             repositorio.guardarEntrada(entrada)

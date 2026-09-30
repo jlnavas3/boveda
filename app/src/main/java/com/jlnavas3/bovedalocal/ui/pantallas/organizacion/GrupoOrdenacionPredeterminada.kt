@@ -34,7 +34,7 @@ fun GrupoOrdenacionPredeterminada(
                 titulo = criterio.etiqueta,
                 icono = null,
                 seleccionado = criterioSeleccionado == criterio.name,
-                idFila = "03.1.${6 + index}",
+                idFila = "03-LST-DES-ORD-${index + 1}",
                 mostrarId = mostrarId,
                 alSeleccionar = { alSeleccionarCriterio(criterio) }
             )

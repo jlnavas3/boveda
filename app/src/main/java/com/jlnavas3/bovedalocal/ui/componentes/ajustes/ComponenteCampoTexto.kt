@@ -79,6 +79,7 @@ fun ComponenteCampoTexto(
     readOnly: Boolean = false,
     habilitado: Boolean = true,
     botonLimpiar: Boolean = false,
+    leadingIcon: (@Composable () -> Unit)? = null,
     trailingIcon: (@Composable () -> Unit)? = null,
     alPulsar: (() -> Unit)? = null,
     formateadorMascara: ((String) -> String)? = null,
@@ -95,17 +96,21 @@ fun ComponenteCampoTexto(
     var verContrasenaInterno by remember { mutableStateOf(false) }
     val esVisible = mostrarContrasena ?: verContrasenaInterno
 
-    val leadingIconComposable: (@Composable () -> Unit)? = if (mostrarIcono || icono != null) {
-        val iconoEfectivo = icono ?: IconosCampoTexto.resolverIconoPorDefecto(tipo)
-        val res: @Composable () -> Unit = {
-            IconosCampoTexto.IconoInicio(
-                icono = iconoEfectivo,
-                colorIcono = colorIcono,
-                esOscuro = esOscuro
-            )
+    val leadingIconComposable: (@Composable () -> Unit)? = when {
+        leadingIcon != null -> leadingIcon
+        mostrarIcono || icono != null -> {
+            val iconoEfectivo = icono ?: IconosCampoTexto.resolverIconoPorDefecto(tipo)
+            val res: @Composable () -> Unit = {
+                IconosCampoTexto.IconoInicio(
+                    icono = iconoEfectivo,
+                    colorIcono = colorIcono,
+                    esOscuro = esOscuro
+                )
+            }
+            res
         }
-        res
-    } else null
+        else -> null
+    }
 
     val trailingIconComposable: (@Composable () -> Unit)? = when {
         trailingIcon != null -> trailingIcon

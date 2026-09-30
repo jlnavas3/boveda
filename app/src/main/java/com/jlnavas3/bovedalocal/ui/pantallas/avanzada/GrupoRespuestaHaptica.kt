@@ -6,6 +6,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.jlnavas3.bovedalocal.data.AjustesDefaults
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteGrupo
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteNavegacion
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteSeparador
@@ -30,9 +31,9 @@ fun GrupoRespuestaHaptica(
         colorIcono = Color(0xFF00897B),
         alRestablecer = {
             haptica.tic()
-            alCambiarHapticaApp(true)
-            alCambiarIntensidad(0.7f)
-            haptica.probar(0.7f)
+            alCambiarHapticaApp(AjustesDefaults.Interaccion.HAPTICA_APP)
+            alCambiarIntensidad(AjustesDefaults.Interaccion.HAPTICA_APP_INTENSIDAD)
+            haptica.probar(AjustesDefaults.Interaccion.HAPTICA_APP_INTENSIDAD)
         },
         idGrupo = "06-SIS-AVZ-G02",
         mostrarId = mostrarIdsAjustes,

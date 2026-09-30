@@ -29,12 +29,14 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
+import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
@@ -56,12 +58,14 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.jlnavas3.bovedalocal.data.AnalizadorDuplicados
 import com.jlnavas3.bovedalocal.data.EstadoBoveda
 import com.jlnavas3.bovedalocal.data.normalizarEtiqueta
+import com.jlnavas3.bovedalocal.ui.theme.calcularEspaciadoFilas
 import com.jlnavas3.bovedalocal.ui.CriterioOrdenacion
 import com.jlnavas3.bovedalocal.ui.Pantalla
 import com.jlnavas3.bovedalocal.ui.VaultViewModel
 import com.jlnavas3.bovedalocal.ui.pantallas.lista.BannerRecordatorioExportacion
 import com.jlnavas3.bovedalocal.ui.pantallas.lista.BarraBusquedaAnimada
-import com.jlnavas3.bovedalocal.ui.pantallas.lista.BarraSeleccion
+import com.jlnavas3.bovedalocal.ui.componentes.seleccion.BarraInferiorSeleccion
+import com.jlnavas3.bovedalocal.ui.componentes.seleccion.BarraSuperiorSeleccion
 import com.jlnavas3.bovedalocal.ui.pantallas.lista.BarraSuperiorLista
 import com.jlnavas3.bovedalocal.ui.pantallas.lista.ChipFiltro
 import com.jlnavas3.bovedalocal.ui.pantallas.lista.ChipFiltroActivo
@@ -78,6 +82,7 @@ import com.jlnavas3.bovedalocal.ui.pantallas.lista.ComponenteGrupoLista
 import com.jlnavas3.bovedalocal.ui.pantallas.lista.DialogoBorrarSeleccion
 import com.jlnavas3.bovedalocal.ui.pantallas.lista.DialogoFiltrosLista
 import com.jlnavas3.bovedalocal.ui.pantallas.lista.DialogoOrdenacionLista
+import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorTarjetaAjustes
 import com.jlnavas3.bovedalocal.ui.pantallas.lista.DialogoRenombrarSeleccion
 import com.jlnavas3.bovedalocal.ui.pantallas.lista.EstadoVacioLista
 import com.jlnavas3.bovedalocal.ui.pantallas.lista.FilaEntrada
@@ -85,8 +90,11 @@ import com.jlnavas3.bovedalocal.ui.pantallas.lista.MenuLateral
 import com.jlnavas3.bovedalocal.ui.theme.Ambar
 import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
 import com.jlnavas3.bovedalocal.ui.theme.ColorSobreAcento
+import com.jlnavas3.bovedalocal.ui.theme.CurvaturaEsquinas
 import com.jlnavas3.bovedalocal.ui.theme.EspaciadoComponentes
+import com.jlnavas3.bovedalocal.ui.theme.EstiloBorde
 import com.jlnavas3.bovedalocal.ui.theme.GrosorBorde
+import com.jlnavas3.bovedalocal.ui.theme.Peligro
 import com.jlnavas3.bovedalocal.ui.theme.Superficie
 import com.jlnavas3.bovedalocal.util.Haptica
 import com.jlnavas3.bovedalocal.util.ItemAgrupado
@@ -116,19 +124,35 @@ fun PantallaLista(vm: VaultViewModel, estado: EstadoBoveda) {
         "comoda" -> 40
         else -> 46
     }
-    val espaciadoFilas = when (densidad) {
-        "compacta" -> (EspaciadoComponentes * 0.45f).coerceAtLeast(3.dp)
-        "comoda" -> (EspaciadoComponentes * 0.7f).coerceAtLeast(6.dp)
-        else -> EspaciadoComponentes
-    }
+    val espaciadoFilas = calcularEspaciadoFilas(densidad)
     val entradas = (estado as? EstadoBoveda.Desbloqueada)?.entradas ?: emptyList()
     val visibles = remember(entradas, busqueda, filtro, soloFavoritos, filtroEtiqueta, criterioOrdenacion) { vm.entradasVisibles(entradas) }
     val etiquetasDisponibles = remember(entradas) { vm.etiquetasUsadas() }
 
-    val estadoCajon = rememberDrawerState(DrawerValue.Closed)
+    val abrirDrawerAlVolver by vm.abrirMenuLateralAlVolverALista.collectAsStateWithLifecycle()
+    val estadoCajon = rememberDrawerState(
+        initialValue = if (vm.abrirMenuLateralAlVolverALista.value) DrawerValue.Open else DrawerValue.Closed
+    )
     val ambitoCorutina = rememberCoroutineScope()
     fun abrirMenu() = ambitoCorutina.launch { estadoCajon.open() }
     fun cerrarMenu() = ambitoCorutina.launch { estadoCajon.close() }
+
+    LaunchedEffect(abrirDrawerAlVolver) {
+        if (abrirDrawerAlVolver) {
+            if (!estadoCajon.isOpen) {
+                try {
+                    estadoCajon.snapTo(DrawerValue.Open)
+                } catch (_: Exception) {}
+                if (!estadoCajon.isOpen) {
+                    try {
+                        estadoCajon.open()
+                    } catch (_: Exception) {}
+                }
+            }
+            delay(150)
+            vm.abrirMenuLateralAlVolverALista.value = false
+        }
+    }
 
     // ------------------------------------------------------- selección múltiple
     var modoSeleccion by remember { mutableStateOf(false) }
@@ -230,7 +254,7 @@ fun PantallaLista(vm: VaultViewModel, estado: EstadoBoveda) {
                     perfilArgon2 = vm.repositorio.perfilArgon2Actual(),
                     mostrarIds = ajustes.mostrarIdsAjustes,
                     ajustes = ajustes,
-                    alIr = { destino -> cerrarMenu(); vm.irDesdeMenuLateral(destino) },
+                    alIr = { destino -> vm.irDesdeMenuLateral(destino) },
                     alBloquear = { cerrarMenu(); haptica.toque(); vm.bloquear() }
                 )
             }
@@ -239,17 +263,17 @@ fun PantallaLista(vm: VaultViewModel, estado: EstadoBoveda) {
         Box(modifier = Modifier.fillMaxSize()) {
             Column(modifier = Modifier.fillMaxSize()) {
                 if (modoSeleccion) {
-                    BarraSeleccion(
+                    BarraSuperiorSeleccion(
                         cantidad = seleccionados.size,
                         todoSeleccionado = todoSeleccionado,
                         alCancelar = { salirDeSeleccion() },
-                        alRenombrar = {
-                            val primera = entradas.firstOrNull { seleccionados.contains(it.id) }
-                            textoNuevoTitulo = primera?.titulo ?: ""
-                            dialogoRenombrarSeleccion = true
+                        alSeleccionarTodo = {
+                            alternarSeleccionarTodo()
                         },
-                        alSeleccionarTodo = { alternarSeleccionarTodo() },
-                        alBorrar = { dialogoBorrarSeleccion = true }
+                        alDeseleccionarTodo = {
+                            seleccionados = emptySet()
+                            modoSeleccion = false
+                        }
                     )
                 } else {
                     BarraSuperiorLista(
@@ -263,7 +287,6 @@ fun PantallaLista(vm: VaultViewModel, estado: EstadoBoveda) {
                         mostrarIndicadoresContenido = ajustes.mostrarIndicadoresContenido,
                         hayFiltrosParaRestablecer = filtro != null || soloFavoritos || filtroEtiqueta != null,
                         alAbrirMenu = { abrirMenu() },
-                        alBloquear = { vm.bloquear() },
                         alAlternarBusqueda = {
                             busquedaVisible = !busquedaVisible
                             if (!busquedaVisible && busqueda.isNotBlank()) {
@@ -273,9 +296,10 @@ fun PantallaLista(vm: VaultViewModel, estado: EstadoBoveda) {
                         alMostrarOrdenacion = { mostrarDialogoOrdenacion = true },
                         alMostrarFiltros = { mostrarDialogoFiltros = true },
                         alAlternarSoloFavoritos = { vm.alternarSoloFavoritos() },
-                        alIrOrganizacionGrupo = { vm.ir(Pantalla.OrganizacionLista("03.5.1")) },
-                        alIrOrganizacionIndicadores = { vm.ir(Pantalla.OrganizacionLista("03.5.2")) },
+                        alIrOrganizacionGrupo = { vm.ir(Pantalla.OrganizacionLista("03-LST-DES-GRP")) },
+                        alIrOrganizacionIndicadores = { vm.ir(Pantalla.OrganizacionLista("03-LST-DES-IND")) },
                         alIrExportarSelectivo = { vm.ir(Pantalla.ExportarSelectivo("todos")) },
+                        alIrCopiaSeguridadManual = { vm.ir(Pantalla.CopiaSeguridad("05-COP-MAN")) },
                         alIrCopiaSeguridad = { vm.ir(Pantalla.CopiaSeguridad("05-COP-MAN-IMP")) },
                         alIrCsvGoogle = { vm.ir(Pantalla.CsvGoogle("05-COP-CSV-IMP")) },
                         alRestablecerFiltros = {
@@ -314,7 +338,7 @@ fun PantallaLista(vm: VaultViewModel, estado: EstadoBoveda) {
                     Box(modifier = Modifier.padding(horizontal = 20.dp)) {
                         BannerRecordatorioExportacion(
                             info = recordatorio,
-                            alIr = { vm.ir(Pantalla.CopiaSeguridad("05.1.6")) }
+                            alIr = { vm.ir(Pantalla.CopiaSeguridad("05-COP-MAN")) }
                         )
                     }
                 }
@@ -409,7 +433,10 @@ fun PantallaLista(vm: VaultViewModel, estado: EstadoBoveda) {
                         densidadAltura = densidadAltura,
                         densidadMonograma = densidadMonograma,
                         espaciadoFilas = espaciadoFilas,
-                        alAbrirEntrada = { vm.ir(Pantalla.Detalle(it)) },
+                        alAbrirEntrada = { id ->
+                            val listaIdsVisibles = visibles.map { it.id }
+                            vm.ir(Pantalla.Detalle(id, idsContexto = listaIdsVisibles))
+                        },
                         alCopiarUsuario = { usuario ->
                             haptica.toque()
                             vm.copiar("Usuario", usuario, sensible = false)
@@ -441,17 +468,95 @@ fun PantallaLista(vm: VaultViewModel, estado: EstadoBoveda) {
             }
 
             if (!modoSeleccion) {
-                FloatingActionButton(
-                    onClick = { haptica.toque(); vm.ir(Pantalla.Editar(null)) },
-                    containerColor = Ambar,
-                    contentColor = ColorSobreAcento,
-                    shape = CircleShape,
+                val formaFab = RoundedCornerShape(CurvaturaEsquinas)
+                Column(
                     modifier = Modifier
                         .align(Alignment.BottomEnd)
-                        .padding(20.dp)
+                        .padding(20.dp),
+                    horizontalAlignment = Alignment.End,
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    Icon(Icons.Filled.Add, contentDescription = "Nueva entrada", modifier = Modifier.size(24.dp))
+                    // FAB superior: Bloquear app (Candado)
+                    SmallFloatingActionButton(
+                        onClick = {
+                            haptica.toque()
+                            vm.bloquear()
+                        },
+                        containerColor = ColorTarjetaAjustes,
+                        contentColor = Peligro,
+                        shape = formaFab,
+                        modifier = Modifier.then(
+                            if (GrosorBorde > 0.dp && EstiloBorde != "ninguno") {
+                                Modifier.border(GrosorBorde, ColorBordeActual, formaFab)
+                            } else Modifier
+                        )
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.Lock,
+                            contentDescription = "Bloquear bóveda",
+                            modifier = Modifier.size(22.dp)
+                        )
+                    }
+
+                    // FAB inferior: Nueva entrada (+)
+                    FloatingActionButton(
+                        onClick = { haptica.toque(); vm.ir(Pantalla.Editar(null)) },
+                        containerColor = Ambar,
+                        contentColor = ColorSobreAcento,
+                        shape = formaFab,
+                        modifier = Modifier.then(
+                            if (GrosorBorde > 0.dp && EstiloBorde != "ninguno") {
+                                Modifier.border(GrosorBorde, ColorBordeActual, formaFab)
+                            } else Modifier
+                        )
+                    ) {
+                        Icon(Icons.Filled.Add, contentDescription = "Nueva entrada", modifier = Modifier.size(24.dp))
+                    }
                 }
+            } else {
+                val itemsSeleccionados = remember(entradas, seleccionados) {
+                    entradas.filter { seleccionados.contains(it.id) }
+                }
+                val todosSonFavoritos = remember(itemsSeleccionados) {
+                    itemsSeleccionados.isNotEmpty() && itemsSeleccionados.all { it.favorito }
+                }
+
+                BarraInferiorSeleccion(
+                    cantidad = seleccionados.size,
+                    todosSonFavoritos = todosSonFavoritos,
+                    alAlternarFavoritos = {
+                        val ids = seleccionados.toSet()
+                        salirDeSeleccion()
+                        vm.alternarFavoritosVarias(ids)
+                    },
+                    alComparar = {
+                        val listaComparar = seleccionados.toList()
+                        if (listaComparar.size >= 2) {
+                            salirDeSeleccion()
+                            vm.ir(
+                                Pantalla.Detalle(
+                                    id = listaComparar.first(),
+                                    idsContexto = listaComparar,
+                                    modoComparacion = true
+                                )
+                            )
+                        }
+                    },
+                    alRespaldar = {
+                        val ids = seleccionados.joinToString(",")
+                        salirDeSeleccion()
+                        vm.ir(Pantalla.ExportarSelectivo("ids:$ids"))
+                    },
+                    alRenombrar = {
+                        val primera = entradas.firstOrNull { seleccionados.contains(it.id) }
+                        textoNuevoTitulo = primera?.titulo ?: ""
+                        dialogoRenombrarSeleccion = true
+                    },
+                    alBorrar = {
+                        dialogoBorrarSeleccion = true
+                    },
+                    modifier = Modifier.align(Alignment.BottomCenter)
+                )
             }
         }
     }

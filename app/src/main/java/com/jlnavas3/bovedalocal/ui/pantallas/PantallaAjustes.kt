@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -39,7 +40,15 @@ fun PantallaAjustes(
     seccionDestino: String? = null
 ) {
     val ajustes by vm.ajustes.collectAsStateWithLifecycle()
-    val scrollState = rememberScrollState()
+    val scrollState = rememberScrollState(initial = vm.ultimoScrollAjustes)
+    LaunchedEffect(Unit) {
+        if (vm.ultimoScrollAjustes == 0 && scrollState.value != 0) {
+            scrollState.scrollTo(0)
+        }
+    }
+    LaunchedEffect(scrollState.value) {
+        vm.ultimoScrollAjustes = scrollState.value
+    }
     var textoBusqueda by remember { mutableStateOf("") }
     var dialogoNombreBoveda by remember { mutableStateOf(false) }
     var dialogoProveedorPasskeys by remember { mutableStateOf(false) }

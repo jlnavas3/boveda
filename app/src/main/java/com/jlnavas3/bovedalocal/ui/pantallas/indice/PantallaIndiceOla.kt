@@ -15,6 +15,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.jlnavas3.bovedalocal.ui.VaultViewModel
 import com.jlnavas3.bovedalocal.ui.componentes.ContenedorPrincipal
+import com.jlnavas3.bovedalocal.data.AjustesDefaults
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteGrupo
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteSeparador
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteSlider
@@ -59,10 +60,10 @@ fun PantallaIndiceOla(
             icono = Icons.AutoMirrored.Filled.Sort,
             alRestablecer = {
                 haptica.tic()
-                vm.ajustarIndiceEfectoOla(true)
-                vm.ajustarIndiceAmplitudOlaDp(109f)
-                vm.ajustarIndiceRadioOlaDp(169f)
-                vm.ajustarIndiceEscalaLetras(1.5f)
+                vm.ajustarIndiceEfectoOla(AjustesDefaults.Indice.EFECTO_OLA)
+                vm.restablecerAmplitudOla()
+                vm.restablecerRadioOla()
+                vm.restablecerEscalaLetrasIndice()
                 vm.avisar("Valores de ola restablecidos")
             },
             idGrupo = "03-LST-AZX-OLA-G01",
@@ -91,7 +92,7 @@ fun PantallaIndiceOla(
                     mostrarId = ajustes.mostrarIdsAjustes,
                     alRestablecer = {
                         haptica.tic()
-                        vm.ajustarIndiceAmplitudOlaDp(109f)
+                        vm.restablecerAmplitudOla()
                     },
                     alCambiar = {
                         haptica.tic()
@@ -110,7 +111,7 @@ fun PantallaIndiceOla(
                     mostrarId = ajustes.mostrarIdsAjustes,
                     alRestablecer = {
                         haptica.tic()
-                        vm.ajustarIndiceRadioOlaDp(169f)
+                        vm.restablecerRadioOla()
                     },
                     alCambiar = {
                         haptica.tic()
@@ -130,7 +131,7 @@ fun PantallaIndiceOla(
                     mostrarId = ajustes.mostrarIdsAjustes,
                     alRestablecer = {
                         haptica.tic()
-                        vm.ajustarIndiceEscalaLetras(1.5f)
+                        vm.restablecerEscalaLetrasIndice()
                     },
                     alCambiar = {
                         haptica.tic()

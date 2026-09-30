@@ -129,3 +129,98 @@ private fun ordenarEntradasInternas(entradas: List<Entrada>, criterio: CriterioO
     }
     return entradas.sortedWith(comp)
 }
+
+/**
+ * Agrupa entradas por título (case-insensitive) preservando entradas con títulos equivalentes en un solo grupo.
+ */
+fun claveAgrupacionPorTitulo(entrada: Entrada): String {
+    val t = entrada.titulo.trim()
+    if (t.isNotBlank()) return t.lowercase()
+    val sitio = claveAgrupacionSitio(entrada)
+    if (!sitio.isNullOrBlank()) return sitio.lowercase()
+    return "sin título"
+}
+
+fun construirItemsAgrupadosPorTitulo(
+    entradas: List<Entrada>,
+    criterio: CriterioOrdenacion = CriterioOrdenacion.NOMBRE_AZ,
+    agrupar: Boolean = true,
+    expandido: (String) -> Boolean = { false }
+): List<ItemAgrupado> {
+    if (!agrupar) {
+        return entradas.map { ItemAgrupado.Suelto(it) }
+    }
+
+    val porTitulo = entradas.groupBy { claveAgrupacionPorTitulo(it) }
+    val vistos = mutableSetOf<String>()
+    val itemsPrincipales = mutableListOf<ItemAgrupado>()
+
+    entradas.forEach { entrada ->
+        val clave = claveAgrupacionPorTitulo(entrada)
+        val delMismoTitulo = porTitulo[clave]
+        if (delMismoTitulo != null && delMismoTitulo.size > 1) {
+            if (vistos.add(clave)) {
+                val tituloVisible = delMismoTitulo.first().titulo.trim().ifBlank { clave }
+                val hijosOrdenados = ordenarEntradasInternas(delMismoTitulo, criterio)
+                itemsPrincipales.add(ItemAgrupado.Grupo(tituloVisible, hijosOrdenados))
+            }
+        } else {
+            itemsPrincipales.add(ItemAgrupado.Suelto(entrada))
+        }
+    }
+
+    val comparadorTopLevel: Comparator<ItemAgrupado> = when (criterio) {
+        CriterioOrdenacion.NOMBRE_AZ -> compareByDescending<ItemAgrupado> { item ->
+            when (item) {
+                is ItemAgrupado.Grupo -> item.entradas.any { it.favorito }
+                is ItemAgrupado.Suelto -> item.entrada.favorito
+                is ItemAgrupado.Hijo -> false
+            }
+        }.thenBy { item ->
+            when (item) {
+                is ItemAgrupado.Grupo -> item.clave.lowercase()
+                is ItemAgrupado.Suelto -> item.entrada.titulo.lowercase()
+                is ItemAgrupado.Hijo -> ""
+            }
+        }
+        CriterioOrdenacion.NOMBRE_ZA -> compareByDescending<ItemAgrupado> { item ->
+            when (item) {
+                is ItemAgrupado.Grupo -> item.clave.lowercase()
+                is ItemAgrupado.Suelto -> item.entrada.titulo.lowercase()
+                is ItemAgrupado.Hijo -> ""
+            }
+        }
+        CriterioOrdenacion.MODIFICACION_RECIENTE -> compareByDescending<ItemAgrupado> { item ->
+            when (item) {
+                is ItemAgrupado.Grupo -> item.entradas.maxOfOrNull { it.modificadaEn } ?: 0L
+                is ItemAgrupado.Suelto -> item.entrada.modificadaEn
+                is ItemAgrupado.Hijo -> 0L
+            }
+        }
+        CriterioOrdenacion.CREACION_RECIENTE -> compareByDescending<ItemAgrupado> { item ->
+            when (item) {
+                is ItemAgrupado.Grupo -> item.entradas.maxOfOrNull { it.creadaEn } ?: 0L
+                is ItemAgrupado.Suelto -> item.entrada.creadaEn
+                is ItemAgrupado.Hijo -> 0L
+            }
+        }
+        CriterioOrdenacion.ANTIGUEDAD -> compareBy<ItemAgrupado> { item ->
+            when (item) {
+                is ItemAgrupado.Grupo -> item.entradas.minOfOrNull { it.creadaEn } ?: 0L
+                is ItemAgrupado.Suelto -> item.entrada.creadaEn
+                is ItemAgrupado.Hijo -> 0L
+            }
+        }
+    }
+
+    val principalesOrdenados = itemsPrincipales.sortedWith(comparadorTopLevel)
+
+    return buildList {
+        principalesOrdenados.forEach { item ->
+            add(item)
+            if (item is ItemAgrupado.Grupo && expandido(item.clave)) {
+                item.entradas.forEach { add(ItemAgrupado.Hijo(it)) }
+            }
+        }
+    }
+}

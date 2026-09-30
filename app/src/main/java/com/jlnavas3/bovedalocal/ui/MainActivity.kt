@@ -26,8 +26,10 @@ import androidx.compose.material.icons.filled.Fingerprint
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import android.net.Uri
 import com.jlnavas3.bovedalocal.ui.componentes.DialogoConfirmacionBoveda
 import com.jlnavas3.bovedalocal.ui.componentes.TipoBotonTexto
+import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.DialogoContrasena
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
@@ -57,6 +59,7 @@ import com.jlnavas3.bovedalocal.ui.pantallas.PantallaAjustesIndice
 import com.jlnavas3.bovedalocal.ui.pantallas.PantallaAutenticador
 import com.jlnavas3.bovedalocal.ui.pantallas.PantallaDesbloqueo
 import com.jlnavas3.bovedalocal.ui.pantallas.PantallaEscaner
+import com.jlnavas3.bovedalocal.ui.pantallas.escaner.PantallaCamaraQr
 import com.jlnavas3.bovedalocal.ui.pantallas.PantallaDetalle
 import com.jlnavas3.bovedalocal.ui.pantallas.PantallaEdicion
 import com.jlnavas3.bovedalocal.ui.pantallas.PantallaGenerador
@@ -138,6 +141,30 @@ class MainActivity : FragmentActivity() {
         super.onNewIntent(intent)
         setIntent(intent)
         manejarAccionShortcut(intent)
+        manejarIntentArchivoBvda(intent)
+    }
+
+    private fun manejarIntentArchivoBvda(intent: Intent?) {
+        if (intent == null) return
+        val uri = when (intent.action) {
+            Intent.ACTION_VIEW -> intent.data
+            Intent.ACTION_SEND -> {
+                @Suppress("DEPRECATION")
+                intent.getParcelableExtra<Uri>(Intent.EXTRA_STREAM) ?: intent.data
+            }
+            else -> null
+        } ?: return
+
+        val path = uri.path?.lowercase() ?: ""
+        val lastSegment = uri.lastPathSegment?.lowercase() ?: ""
+        val mime = intent.type?.lowercase() ?: ""
+        val esBvda = path.endsWith(".bvda") || lastSegment.endsWith(".bvda") ||
+                mime.contains("boveda") || mime.contains("bvda") ||
+                intent.action == Intent.ACTION_VIEW
+
+        if (esBvda) {
+            vm.establecerUriBvdaPendiente(uri)
+        }
     }
 
     private fun actualizarShortcutsDinamicos() {
@@ -200,6 +227,7 @@ class MainActivity : FragmentActivity() {
         super.onCreate(savedInstanceState)
         actualizarShortcutsDinamicos()
         manejarAccionShortcut(intent)
+        manejarIntentArchivoBvda(intent)
         // FLAG_SECURE activa por defecto; se gestiona dinámicamente según la preferencia del usuario
         window.setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE)
         com.jlnavas3.bovedalocal.ui.theme.aplicarPersonalizacionTemaCompleto(vm.repositorio.ajustes.actual)
@@ -266,6 +294,28 @@ fun RaizBoveda(vm: VaultViewModel, actividad: FragmentActivity) {
         DialogoOfrecerGestor(vm, actividad)
     }
 
+    val uriBvda by vm.uriBvdaPendiente.collectAsStateWithLifecycle()
+    if (uriBvda != null && estado is EstadoBoveda.Desbloqueada) {
+        DialogoContrasena(
+            titulo = "Importar copia de seguridad",
+            descripcion = "Se ha abierto una copia cifrada (.bvda). Escribe la contraseña con la que fue protegida para incorporar sus entradas en tu bóveda.",
+            textoBoton = "Importar",
+            alConfirmar = { clave ->
+                val uri = uriBvda
+                vm.descartarUriBvdaPendiente()
+                if (uri != null) {
+                    vm.importar(clave) {
+                        actividad.contentResolver.openInputStream(uri)?.use { it.readBytes() }
+                            ?: throw IllegalStateException("No se pudo leer el archivo")
+                    }
+                }
+            },
+            alCancelar = {
+                vm.descartarUriBvdaPendiente()
+            }
+        )
+    }
+
     LaunchedEffect(estado) {
         if (estado is EstadoBoveda.Bloqueada && pantalla !is Pantalla.Desbloqueo) {
             vm.ir(Pantalla.Desbloqueo)
@@ -326,12 +376,13 @@ fun RaizBoveda(vm: VaultViewModel, actividad: FragmentActivity) {
                     Pantalla.Onboarding -> PantallaOnboarding(vm, actividad)
                     Pantalla.Desbloqueo -> PantallaDesbloqueo(vm, actividad)
                     Pantalla.Lista -> PantallaLista(vm, estado)
-                    is Pantalla.Detalle -> PantallaDetalle(vm, destino.id)
+                    is Pantalla.Detalle -> PantallaDetalle(vm, destino.id, destino.idsContexto, destino.modoComparacion)
                     is Pantalla.Editar -> PantallaEdicion(vm, destino.id, destino.contrasenaInicial)
                     Pantalla.Generador -> PantallaGenerador(vm)
                     Pantalla.Passkeys -> PantallaPasskeys(vm)
                     Pantalla.Autenticador -> PantallaAutenticador(vm, estado)
                     is Pantalla.Escaner -> PantallaEscaner(vm, actividad, destino.entradaDestino, destino.soloManual)
+                    is Pantalla.CamaraQr -> PantallaCamaraQr(vm, actividad, destino.entradaDestino)
                     is Pantalla.Ajustes -> PantallaAjustes(vm, actividad, destino.seccionId)
                     is Pantalla.AjustesIndice -> PantallaAjustesIndice(vm, destino.seccionId)
                     is Pantalla.IndiceOla -> PantallaIndiceOla(vm)

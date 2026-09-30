@@ -22,7 +22,7 @@ fun GrupoCriptografiaBlindaje(
         etiqueta = "Criptografía y blindaje",
         icono = Icons.Filled.Memory,
         colorIcono = ColorArgon2,
-        idGrupo = "06.3.G2",
+        idGrupo = "06-SIS-DGN-G02",
         mostrarId = mostrarIdsAjustes,
         modifier = modifier
     ) {

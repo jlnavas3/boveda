@@ -36,6 +36,7 @@ import com.jlnavas3.bovedalocal.ui.theme.Ambar
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.ColorSeguridad
 import com.jlnavas3.bovedalocal.ui.theme.FormaTarjeta
+import com.jlnavas3.bovedalocal.ui.theme.GrosorBorde
 import com.jlnavas3.bovedalocal.ui.theme.Menta
 import com.jlnavas3.bovedalocal.ui.theme.Peligro
 import com.jlnavas3.bovedalocal.ui.theme.TextoPrincipal
@@ -100,13 +101,13 @@ fun ComponenteAlerta(
     val colorLegible = colorLegibleParaTema(colorBase, esOscuro)
     val colorFondo = colorBase.copy(alpha = if (esOscuro) 0.12f else 0.08f)
     val colorBorde = colorBase.copy(alpha = if (esOscuro) 0.28f else 0.22f)
-    val formaAlerta = RoundedCornerShape(18.dp)
+    val formaAlerta = FormaTarjeta
 
     Surface(
         modifier = modifier.fillMaxWidth(),
         color = colorFondo,
         shape = formaAlerta,
-        border = BorderStroke(1.dp, colorBorde)
+        border = BorderStroke(GrosorBorde.coerceAtLeast(1.dp), colorBorde)
     ) {
         Column(
             modifier = Modifier

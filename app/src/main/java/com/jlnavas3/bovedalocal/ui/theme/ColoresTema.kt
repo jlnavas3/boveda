@@ -7,6 +7,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import com.jlnavas3.bovedalocal.data.AjustesApp
+import com.jlnavas3.bovedalocal.data.AjustesDefaults
 
 /**
  * El fondo/superficie/texto son de estado global (Snapshot de Compose), igual que
@@ -184,6 +185,14 @@ fun aplicarPersonalizacionColores(ajustes: AjustesApp) {
     colorDatosPasskeyBase = parsearColorO(ajustes.colorDatosPasskey, Color(0xFF8B5CF6))
     colorDatosWebBase = parsearColorO(ajustes.colorDatosWeb, Color(0xFF06B6D4))
     colorDatosAppBase = parsearColorO(ajustes.colorDatosApp, Color(0xFF10B981))
+
+    // Colores de identificadores jerárquicos de Ajustes (06-SIS-AVZ-COL)
+    colorIdSeguridadBase = parsearColorO(ajustes.colorIdSeguridad, parsearColorO(AjustesDefaults.ColoresIds.SEGURIDAD, Color(0xFF3F51B5)))
+    colorIdAparienciaBase = parsearColorO(ajustes.colorIdApariencia, parsearColorO(AjustesDefaults.ColoresIds.APARIENCIA, Color(0xFF8E24AA)))
+    colorIdListaBase = parsearColorO(ajustes.colorIdLista, parsearColorO(AjustesDefaults.ColoresIds.LISTA, Color(0xFF00897B)))
+    colorIdHerramientasBase = parsearColorO(ajustes.colorIdHerramientas, parsearColorO(AjustesDefaults.ColoresIds.HERRAMIENTAS, Color(0xFFFB8C00)))
+    colorIdCopiasBase = parsearColorO(ajustes.colorIdCopias, parsearColorO(AjustesDefaults.ColoresIds.COPIAS, Color(0xFF1E88E5)))
+    colorIdSistemaBase = parsearColorO(ajustes.colorIdSistema, parsearColorO(AjustesDefaults.ColoresIds.SISTEMA, Color(0xFF607D8B)))
 }
 
 // Colores Semánticos de Secciones Funcionales
@@ -264,3 +273,36 @@ var ColorPapelera: Color
 var ColorExportacion: Color
     get() = colorExportacionBase
     set(valor) { colorExportacionBase = valor }
+
+// Colores de Identificadores Jerárquicos de Ajustes (01..06)
+private var colorIdSeguridadBase by mutableStateOf(Color(0xFF3F51B5))
+private var colorIdAparienciaBase by mutableStateOf(Color(0xFF8E24AA))
+private var colorIdListaBase by mutableStateOf(Color(0xFF00897B))
+private var colorIdHerramientasBase by mutableStateOf(Color(0xFFFB8C00))
+private var colorIdCopiasBase by mutableStateOf(Color(0xFF1E88E5))
+private var colorIdSistemaBase by mutableStateOf(Color(0xFF607D8B))
+
+var ColorIdSeguridad: Color
+    get() = colorIdSeguridadBase
+    set(valor) { colorIdSeguridadBase = valor }
+
+var ColorIdApariencia: Color
+    get() = colorIdAparienciaBase
+    set(valor) { colorIdAparienciaBase = valor }
+
+var ColorIdLista: Color
+    get() = colorIdListaBase
+    set(valor) { colorIdListaBase = valor }
+
+var ColorIdHerramientas: Color
+    get() = colorIdHerramientasBase
+    set(valor) { colorIdHerramientasBase = valor }
+
+var ColorIdCopias: Color
+    get() = colorIdCopiasBase
+    set(valor) { colorIdCopiasBase = valor }
+
+var ColorIdSistema: Color
+    get() = colorIdSistemaBase
+    set(valor) { colorIdSistemaBase = valor }
+

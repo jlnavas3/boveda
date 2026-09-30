@@ -1,12 +1,13 @@
 package com.jlnavas3.bovedalocal.ui.pantallas.duplicados
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -14,258 +15,352 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.MergeType
-import androidx.compose.material.icons.filled.Android
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.ContentCopy
+import androidx.compose.material.icons.automirrored.filled.ArrowForwardIos
+import androidx.compose.material.icons.filled.AccountBalance
+import androidx.compose.material.icons.filled.AccountBalanceWallet
+import androidx.compose.material.icons.filled.Badge
+import androidx.compose.material.icons.filled.CreditCard
+import androidx.compose.material.icons.filled.Description
+import androidx.compose.material.icons.filled.Dns
 import androidx.compose.material.icons.filled.DoneAll
-import androidx.compose.material.icons.filled.Visibility
-import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.material.icons.filled.Fingerprint
+import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.Wifi
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.jlnavas3.bovedalocal.data.Entrada
 import com.jlnavas3.bovedalocal.data.GrupoDuplicado
-import com.jlnavas3.bovedalocal.data.TipoDuplicado
-import com.jlnavas3.bovedalocal.ui.componentes.BotonColorido
+import com.jlnavas3.bovedalocal.data.TipoEntrada
+import com.jlnavas3.bovedalocal.ui.componentes.AccionDeslizamiento
+import com.jlnavas3.bovedalocal.ui.componentes.ContenedorDeslizamientoBoveda
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjusteGris
+import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorTarjetaAjustes
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorTextoAjustes
-import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.GrupoAjustes
+import com.jlnavas3.bovedalocal.ui.pantallas.lista.ComponenteGrupoLista
+import com.jlnavas3.bovedalocal.ui.pantallas.lista.IndicadorContenidoTarjeta
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
-import com.jlnavas3.bovedalocal.ui.theme.ColorDatosContrasena
-import com.jlnavas3.bovedalocal.ui.theme.EstiloMono
+import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
+import com.jlnavas3.bovedalocal.ui.theme.ColorExportacion
+import com.jlnavas3.bovedalocal.ui.theme.ColorGenerador
+import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
+import com.jlnavas3.bovedalocal.ui.theme.ColorPasskeys
+import com.jlnavas3.bovedalocal.ui.theme.ColorSalud
+import com.jlnavas3.bovedalocal.ui.theme.ColorSeguridad
+import com.jlnavas3.bovedalocal.ui.theme.CurvaturaEsquinas
+import com.jlnavas3.bovedalocal.ui.theme.EstiloBorde
+import com.jlnavas3.bovedalocal.ui.theme.FormaPequena
+import com.jlnavas3.bovedalocal.ui.theme.GrosorBorde
+import com.jlnavas3.bovedalocal.util.IconoAppCircular
+import com.jlnavas3.bovedalocal.util.rememberIconoAppInstalada
 import com.jlnavas3.bovedalocal.ui.theme.Menta
-import com.jlnavas3.bovedalocal.ui.theme.Peligro
-import com.jlnavas3.bovedalocal.ui.theme.Superficie
 import com.jlnavas3.bovedalocal.ui.theme.colorLegibleParaTema
 import com.jlnavas3.bovedalocal.ui.theme.fondoBadgeParaTema
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
+
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.material3.IconButton
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.unit.sp
+import com.jlnavas3.bovedalocal.ui.theme.Ambar
+import com.jlnavas3.bovedalocal.ui.theme.Borde
+import com.jlnavas3.bovedalocal.ui.theme.ColorSobreAcento
 
 @Composable
 fun TarjetaGrupoDuplicado(
     grupo: GrupoDuplicado,
+    expandido: Boolean,
+    alAlternar: () -> Unit,
     alConservar: (Entrada) -> Unit,
-    alUnificar: () -> Unit,
-    alVerDetalle: (String) -> Unit
+    alVerDetalle: (String) -> Unit,
+    mostrarIndicadores: Boolean = false,
+    seleccionActiva: Boolean = false,
+    seleccionados: Set<String> = emptySet(),
+    alAlternarSeleccion: (String) -> Unit = {},
+    alPulsarLargo: (String) -> Unit = {},
+    modifier: Modifier = Modifier
 ) {
-    val colorBadge = when (grupo.tipo) {
-        TipoDuplicado.IDENTICO -> Menta
-        TipoDuplicado.MISMA_CUENTA_DISTINTA_CLAVE -> Peligro
-        TipoDuplicado.VARIANTE_USUARIO -> ColorAcento
-    }
-
-    val iconoGrupo = when {
-        grupo.tipo == TipoDuplicado.IDENTICO -> Icons.Filled.ContentCopy
-        grupo.esAppAndroid -> Icons.Filled.Android
-        else -> Icons.AutoMirrored.Filled.MergeType
-    }
-    val origen = if (grupo.esAppAndroid) "App Android" else "Web"
-    val etiquetaGrupo = "${grupo.claveVisual.uppercase()} · $origen · ${grupo.tipo.titulo.uppercase()}"
-
-    GrupoAjustes(etiqueta = etiquetaGrupo) {
-        Box(modifier = Modifier.fillMaxWidth()) {
-            Box(
-                modifier = Modifier
-                    .width(4.dp)
-                    .fillMaxHeight()
-                    .align(Alignment.CenterStart)
-                    .background(ColorDatosContrasena)
+    ComponenteGrupoLista(
+        clave = grupo.claveVisual,
+        entradas = grupo.entradas,
+        expandido = expandido,
+        alAlternar = alAlternar,
+        modifier = modifier,
+        contenidoEntrada = { entrada, _, _ ->
+            FilaEntradaDuplicada(
+                entrada = entrada,
+                esSugerida = entrada.id == grupo.sugeridaPrincipal.id,
+                alConservar = { alConservar(entrada) },
+                alVerDetalle = { alVerDetalle(entrada.id) },
+                mostrarIndicadores = mostrarIndicadores,
+                enGrupo = true,
+                seleccionActiva = seleccionActiva,
+                seleccionado = seleccionados.contains(entrada.id),
+                alAlternarSeleccion = { alAlternarSeleccion(entrada.id) },
+                alPulsarLargo = { alPulsarLargo(entrada.id) }
             )
-            Column(modifier = Modifier.padding(16.dp)) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
+        }
+    )
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+fun FilaEntradaDuplicada(
+    entrada: Entrada,
+    esSugerida: Boolean,
+    alConservar: () -> Unit,
+    alVerDetalle: () -> Unit,
+    modifier: Modifier = Modifier,
+    mostrarIndicadores: Boolean = false,
+    enGrupo: Boolean = false,
+    seleccionActiva: Boolean = false,
+    seleccionado: Boolean = false,
+    alAlternarSeleccion: (() -> Unit)? = null,
+    alPulsarLargo: (() -> Unit)? = null
+) {
+    val forma = if (enGrupo) RectangleShape else RoundedCornerShape(CurvaturaEsquinas)
+    val fondo = if (seleccionado) Ambar.copy(alpha = 0.22f) else ColorTarjetaAjustes
+
+    val (iconoTipo, colorTipo) = when (entrada.tipo) {
+        TipoEntrada.LOGIN -> Icons.Filled.Lock to ColorSeguridad
+        TipoEntrada.PASSKEY -> Icons.Filled.Fingerprint to ColorPasskeys
+        TipoEntrada.NOTA -> Icons.Filled.Description to ColorAcento
+        TipoEntrada.TARJETA -> Icons.Filled.CreditCard to ColorGenerador
+        TipoEntrada.WIFI -> Icons.Filled.Wifi to ColorSalud
+        TipoEntrada.CUENTA_BANCARIA -> Icons.Filled.AccountBalance to ColorSeguridad
+        TipoEntrada.IDENTIDAD -> Icons.Filled.Badge to ColorExportacion
+        TipoEntrada.SERVIDOR -> Icons.Filled.Dns to ColorIconosInternos
+        TipoEntrada.WALLET -> Icons.Filled.AccountBalanceWallet to ColorAcento
+    }
+    val colorLegible = colorLegibleParaTema(colorTipo)
+    var mostrarContrasena by rememberSaveable { mutableStateOf(false) }
+
+    ContenedorDeslizamientoBoveda(
+        idItem = entrada.id,
+        modifier = modifier,
+        forma = forma,
+        enGrupo = enGrupo,
+        accionIzquierda = AccionDeslizamiento(
+            texto = "Conservar\nCopia",
+            icono = Icons.Filled.DoneAll,
+            color = Menta,
+            alEjecutar = alConservar
+        ),
+        accionDerecha = AccionDeslizamiento(
+            texto = "Ver\nDetalle",
+            icono = Icons.AutoMirrored.Filled.ArrowForwardIos,
+            color = ColorAcento,
+            alEjecutar = alVerDetalle
+        )
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clip(forma)
+                .background(fondo)
+                .then(
+                    if (seleccionado) Modifier.border(1.dp, Ambar.copy(alpha = 0.5f), forma)
+                    else if (!enGrupo && GrosorBorde > 0.dp && EstiloBorde != "ninguno") {
+                        Modifier.border(GrosorBorde, ColorBordeActual, forma)
+                    } else Modifier
+                )
+        ) {
+            if (mostrarIndicadores) {
+                IndicadorContenidoTarjeta(
+                    entrada = entrada,
+                    modifier = Modifier.align(Alignment.TopCenter)
+                )
+            }
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .combinedClickable(
+                        onClick = {
+                            if (seleccionActiva) {
+                                alAlternarSeleccion?.invoke()
+                            } else {
+                                alVerDetalle()
+                            }
+                        },
+                        onLongClick = {
+                            if (!seleccionActiva && alPulsarLargo != null) {
+                                alPulsarLargo()
+                            }
+                        }
+                    )
+                    .padding(horizontal = 14.dp, vertical = 10.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                if (seleccionActiva) {
                     Box(
                         modifier = Modifier
-                            .size(38.dp)
-                            .clip(RoundedCornerShape(10.dp))
-                            .background(fondoBadgeParaTema(colorBadge)),
+                            .size(22.dp)
+                            .clip(CircleShape)
+                            .background(if (seleccionado) Ambar else Borde),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        if (seleccionado) {
+                            Icon(
+                                imageVector = Icons.Filled.Check,
+                                contentDescription = null,
+                                tint = ColorSobreAcento,
+                                modifier = Modifier.size(14.dp)
+                            )
+                        }
+                    }
+                    Spacer(Modifier.width(10.dp))
+                }
+
+                val iconoApp = rememberIconoAppInstalada(entrada)
+                if (iconoApp != null) {
+                    IconoAppCircular(
+                        bitmap = iconoApp,
+                        descripcion = entrada.titulo,
+                        tamanoDp = 34.dp
+                    )
+                } else {
+                    Box(
+                        modifier = Modifier
+                            .size(34.dp)
+                            .clip(FormaPequena)
+                            .background(fondoBadgeParaTema(colorTipo)),
                         contentAlignment = Alignment.Center
                     ) {
                         Icon(
-                            imageVector = iconoGrupo,
+                            imageVector = iconoTipo,
                             contentDescription = null,
-                            tint = colorLegibleParaTema(colorBadge),
-                            modifier = Modifier.size(20.dp)
-                        )
-                    }
-                    Spacer(Modifier.width(12.dp))
-                    Column(modifier = Modifier.weight(1f)) {
-                        Text(
-                            text = grupo.claveVisual,
-                            style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
-                            color = ColorTextoAjustes
-                        )
-                        Text(
-                            text = grupo.tipo.descripcion,
-                            style = MaterialTheme.typography.bodySmall,
-                            color = ColorAjusteGris
+                            tint = colorLegible,
+                            modifier = Modifier.size(18.dp)
                         )
                     }
                 }
 
-                Spacer(Modifier.height(12.dp))
+                Spacer(Modifier.width(10.dp))
 
-                // Botones de acción rápida para el grupo
-                if (grupo.tipo == TipoDuplicado.IDENTICO) {
-                    BotonColorido(
-                        texto = "Conservar la mejor versión",
-                        color = Menta,
-                        icono = Icons.Filled.Check,
-                        modifier = Modifier.fillMaxWidth()
+                Column(
+                    modifier = Modifier.weight(1f)
+                ) {
+                    // Título y badge Sugerida
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(6.dp)
                     ) {
-                        alConservar(grupo.sugeridaPrincipal)
-                    }
-                } else {
-                    Column(modifier = Modifier.fillMaxWidth()) {
-                        BotonColorido(
-                            texto = "Unificar (conservar todas las claves)",
-                            color = ColorAcento,
-                            icono = Icons.AutoMirrored.Filled.MergeType,
-                            modifier = Modifier.fillMaxWidth()
-                        ) {
-                            alUnificar()
-                        }
-                        Spacer(Modifier.height(4.dp))
                         Text(
-                            text = "Guarda las claves alternativas en campos personalizados e historial para no perder ninguna.",
-                            style = MaterialTheme.typography.labelSmall,
-                            color = ColorAjusteGris
+                            text = entrada.titulo.ifBlank { "Sin título" },
+                            color = ColorTextoAjustes,
+                            style = MaterialTheme.typography.bodySmall.copy(
+                                fontWeight = FontWeight.SemiBold,
+                                fontSize = 13.sp
+                            ),
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                            modifier = Modifier.weight(1f, fill = false)
                         )
+                        if (esSugerida) {
+                            Box(
+                                modifier = Modifier
+                                    .clip(FormaPequena)
+                                    .background(fondoBadgeParaTema(Menta))
+                                    .padding(horizontal = 5.dp, vertical = 1.dp)
+                            ) {
+                                Text(
+                                    "Sugerida",
+                                    style = MaterialTheme.typography.labelSmall.copy(
+                                        fontWeight = FontWeight.SemiBold,
+                                        fontSize = 10.sp
+                                    ),
+                                    color = colorLegibleParaTema(Menta)
+                                )
+                            }
+                        }
                     }
-                }
 
-                Spacer(Modifier.height(12.dp))
+                    Spacer(Modifier.height(2.dp))
 
-                // Comparativa de entradas dentro del grupo
-                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    val formatoFecha = remember { SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()) }
-                    for (entrada in grupo.entradas) {
-                        val esPrincipal = entrada.id == grupo.sugeridaPrincipal.id
-                        var claveVisible by remember { mutableStateOf(false) }
+                    // Usuario (sin prefijo "Usuario: ")
+                    val usuarioTexto = entrada.usuario.ifBlank { "Sin usuario" }
+                    Text(
+                        text = usuarioTexto,
+                        color = if (entrada.usuario.isNotBlank()) ColorTextoAjustes.copy(alpha = 0.85f) else ColorAjusteGris,
+                        style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.5.sp),
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
 
-                        Column(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clip(RoundedCornerShape(12.dp))
-                                .background(if (esPrincipal) fondoBadgeParaTema(colorBadge).copy(alpha = 0.2f) else Superficie)
-                                .padding(12.dp)
-                        ) {
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Column(modifier = Modifier.weight(1f)) {
-                                    Row(verticalAlignment = Alignment.CenterVertically) {
-                                        Text(
-                                            text = entrada.titulo.ifBlank { "Sin título" },
-                                            style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
-                                            color = ColorTextoAjustes
-                                        )
-                                        if (esPrincipal) {
-                                            Spacer(Modifier.width(6.dp))
-                                            Box(
-                                                modifier = Modifier
-                                                    .clip(RoundedCornerShape(6.dp))
-                                                    .background(fondoBadgeParaTema(Menta))
-                                                    .padding(horizontal = 6.dp, vertical = 2.dp)
-                                            ) {
-                                                Text(
-                                                    "Sugerida",
-                                                    style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.SemiBold),
-                                                    color = colorLegibleParaTema(Menta)
-                                                )
-                                            }
-                                        }
-                                    }
-                                    Text(
-                                        text = "Usuario: ${entrada.usuario.ifBlank { "(Vacío)" }}",
-                                        style = MaterialTheme.typography.bodySmall,
-                                        color = ColorAjusteGris
-                                    )
-                                }
+                    Spacer(Modifier.height(2.dp))
 
-                                TextButton(onClick = { alVerDetalle(entrada.id) }) {
-                                    Text("Ver", color = ColorAcento)
-                                }
-                            }
-
-                            Spacer(Modifier.height(4.dp))
-
-                            // Contraseña
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Text(
-                                    text = if (claveVisible) entrada.contrasena.ifBlank { "(Sin clave)" } else "•".repeat(entrada.contrasena.length.coerceIn(8, 14)),
-                                    style = EstiloMono,
-                                    color = ColorTextoAjustes,
-                                    modifier = Modifier.weight(1f)
+                    // Contraseña (oculta con ícono de ojo a la derecha)
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        val textoClave = if (entrada.contrasena.isBlank()) {
+                            "Sin contraseña"
+                        } else if (mostrarContrasena) {
+                            entrada.contrasena
+                        } else {
+                            "•".repeat(entrada.contrasena.length.coerceIn(8, 16))
+                        }
+                        Text(
+                            text = textoClave,
+                            color = if (entrada.contrasena.isBlank()) ColorAjusteGris else ColorTextoAjustes.copy(alpha = 0.9f),
+                            style = if (mostrarContrasena && entrada.contrasena.isNotBlank()) {
+                                MaterialTheme.typography.bodySmall.copy(
+                                    fontFamily = FontFamily.Monospace,
+                                    fontSize = 11.sp
                                 )
-                                IconButton(
-                                    onClick = { claveVisible = !claveVisible },
-                                    modifier = Modifier.size(28.dp)
-                                ) {
-                                    Icon(
-                                        imageVector = if (claveVisible) Icons.Filled.VisibilityOff else Icons.Filled.Visibility,
-                                        contentDescription = "Mostrar",
-                                        tint = ColorAjusteGris,
-                                        modifier = Modifier.size(16.dp)
-                                    )
-                                }
-                            }
-
-                            // Metadatos y URLs
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.SpaceBetween
+                            } else {
+                                MaterialTheme.typography.bodySmall.copy(fontSize = 11.5.sp)
+                            },
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                            modifier = Modifier.weight(1f, fill = false)
+                        )
+                        if (entrada.contrasena.isNotBlank()) {
+                            IconButton(
+                                onClick = { mostrarContrasena = !mostrarContrasena },
+                                modifier = Modifier.size(22.dp)
                             ) {
-                                Text(
-                                    text = "Modif: ${formatoFecha.format(Date(entrada.modificadaEn))}",
-                                    style = MaterialTheme.typography.labelSmall,
-                                    color = ColorAjusteGris
+                                Icon(
+                                    imageVector = if (mostrarContrasena) Icons.Filled.VisibilityOff else Icons.Filled.Visibility,
+                                    contentDescription = if (mostrarContrasena) "Ocultar contraseña" else "Mostrar contraseña",
+                                    tint = ColorAjusteGris,
+                                    modifier = Modifier.size(15.dp)
                                 )
-                                if (entrada.urls.isNotEmpty()) {
-                                    Text(
-                                        text = entrada.urls.first(),
-                                        style = MaterialTheme.typography.labelSmall,
-                                        color = ColorAjusteGris,
-                                        maxLines = 1,
-                                        overflow = TextOverflow.Ellipsis,
-                                        modifier = Modifier.padding(start = 8.dp)
-                                    )
-                                }
                             }
+                        }
+                    }
 
-                            // Si no es la principal, botón para elegirla como la que se desea conservar
-                            if (!esPrincipal) {
-                                Spacer(Modifier.height(8.dp))
-                                TextButton(
-                                    onClick = { alConservar(entrada) },
-                                    modifier = Modifier.align(Alignment.End)
-                                ) {
-                                    Icon(Icons.Filled.DoneAll, contentDescription = null, tint = Menta, modifier = Modifier.size(16.dp))
-                                    Spacer(Modifier.width(4.dp))
-                                    Text("Conservar esta copia", color = Menta, style = MaterialTheme.typography.labelMedium)
-                                }
-                            }
+                    // URLs (uno por línea debajo de la contraseña)
+                    val urlsLimpias = remember(entrada.urls) { entrada.urls.filter { it.isNotBlank() } }
+                    if (urlsLimpias.isNotEmpty()) {
+                        Spacer(Modifier.height(2.dp))
+                        urlsLimpias.forEach { url ->
+                            Text(
+                                text = url,
+                                color = ColorAjusteGris,
+                                style = MaterialTheme.typography.bodySmall.copy(fontSize = 10.5.sp),
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
                         }
                     }
                 }

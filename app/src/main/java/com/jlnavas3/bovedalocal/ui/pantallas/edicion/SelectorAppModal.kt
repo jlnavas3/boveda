@@ -43,8 +43,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Dialog
-import androidx.compose.ui.window.DialogProperties
+import com.jlnavas3.bovedalocal.ui.componentes.ModalInferiorBoveda
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteCampoTexto
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.SwitchBoveda
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
@@ -66,8 +65,6 @@ fun SelectorAppModal(
 ) {
     val contexto = LocalContext.current
     val haptica = remember { Haptica(contexto) }
-    val esOscuro = isSystemInDarkTheme()
-    val fondoModal = if (esOscuro) Color(0xFF222225) else Color.White
 
     var apps by remember { mutableStateOf<List<AppInstalada>>(emptyList()) }
     var cargando by remember { mutableStateOf(true) }
@@ -84,87 +81,16 @@ fun SelectorAppModal(
         GestorAppsInstaladas.filtrarApps(apps, consultaBusqueda)
     }
 
-    Dialog(
-        onDismissRequest = alDescartar,
-        properties = DialogProperties(
-            decorFitsSystemWindows = false,
-            usePlatformDefaultWidth = false,
-            dismissOnBackPress = true,
-            dismissOnClickOutside = true
-        )
+    ModalInferiorBoveda(
+        abierto = true,
+        alCerrar = alDescartar,
+        titulo = "Aplicaciones instaladas",
+        descripcion = if (cargando) "Cargando lista..." else "${appsFiltradas.size} aplicaciones",
+        icono = Icons.Filled.Android,
+        colorIcono = ColorAcento,
+        fondoIcono = ColorAcento.copy(alpha = 0.15f),
+        mostrarBotonCerrar = true
     ) {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .imePadding()
-                .clickable(
-                    interactionSource = remember { MutableInteractionSource() },
-                    indication = null
-                ) { alDescartar() },
-            contentAlignment = Alignment.BottomCenter
-        ) {
-            Box(
-                modifier = Modifier
-                    .navigationBarsPadding()
-                    .padding(horizontal = 12.dp, vertical = 12.dp)
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(26.dp))
-                    .background(fondoModal)
-                    .clickable(
-                        interactionSource = remember { MutableInteractionSource() },
-                        indication = null
-                    ) { /* Detener propagación de click */ }
-                    .padding(top = 20.dp, bottom = 12.dp, start = 16.dp, end = 16.dp)
-            ) {
-                Column(modifier = Modifier.fillMaxWidth()) {
-                    // Cabecera
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(10.dp)
-                        ) {
-                            Box(
-                                modifier = Modifier
-                                    .size(38.dp)
-                                    .clip(FormaPequena)
-                                    .background(ColorAcento.copy(alpha = 0.15f)),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Filled.Android,
-                                    contentDescription = null,
-                                    tint = ColorAcento,
-                                    modifier = Modifier.size(22.dp)
-                                )
-                            }
-                            Column {
-                                Text(
-                                    text = "Aplicaciones instaladas",
-                                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                                    color = TextoPrincipal
-                                )
-                                Text(
-                                    text = if (cargando) "Cargando lista..." else "${appsFiltradas.size} aplicaciones",
-                                    style = MaterialTheme.typography.bodySmall,
-                                    color = TextoSecundario
-                                )
-                            }
-                        }
-
-                        IconButton(onClick = alDescartar) {
-                            Icon(
-                                imageVector = Icons.Filled.Close,
-                                contentDescription = "Cerrar",
-                                tint = TextoSecundario
-                            )
-                        }
-                    }
-
-                    Spacer(Modifier.height(14.dp))
 
                     // Campo de Búsqueda
                     ComponenteCampoTexto(
@@ -222,7 +148,7 @@ fun SelectorAppModal(
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .height(260.dp),
+                                .height(180.dp),
                             contentAlignment = Alignment.Center
                         ) {
                             CircularProgressIndicator(
@@ -238,7 +164,7 @@ fun SelectorAppModal(
                         LazyColumn(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .heightIn(min = 180.dp, max = 360.dp)
+                                .heightIn(min = 100.dp, max = 280.dp)
                         ) {
                             items(appsFiltradas, key = { it.paquete }) { app ->
                                 FilaAppInstalada(
@@ -272,8 +198,5 @@ fun SelectorAppModal(
                             }
                         }
                     }
-                }
-            }
-        }
     }
 }

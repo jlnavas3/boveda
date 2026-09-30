@@ -1,27 +1,24 @@
 package com.jlnavas3.bovedalocal.ui.pantallas.autenticador
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Timer
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.jlnavas3.bovedalocal.ui.componentes.BotonTextoBoveda
+import com.jlnavas3.bovedalocal.ui.componentes.DialogoBoveda
 import com.jlnavas3.bovedalocal.ui.theme.Color2FA
 import com.jlnavas3.bovedalocal.ui.theme.TextoPrincipal
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
@@ -30,14 +27,8 @@ import com.jlnavas3.bovedalocal.ui.theme.fondoBadgeParaTema
 
 @Composable
 fun DialogoComoFuncionaTotp(alDescartar: () -> Unit) {
-    val esOscuro = isSystemInDarkTheme()
-    val colorDialogo = if (esOscuro) Color(0xFF212023) else Color(0xFFFFFFFF)
-
-    AlertDialog(
+    DialogoBoveda(
         onDismissRequest = alDescartar,
-        containerColor = colorDialogo,
-        tonalElevation = 0.dp,
-        shape = RoundedCornerShape(22.dp),
         icon = {
             Box(
                 modifier = Modifier
@@ -81,9 +72,11 @@ fun DialogoComoFuncionaTotp(alDescartar: () -> Unit) {
             }
         },
         confirmButton = {
-            TextButton(onClick = alDescartar) {
-                Text("Entendido", color = Color2FA, fontWeight = FontWeight.Bold)
-            }
+            BotonTextoBoveda(
+                texto = "Entendido",
+                colorPersonalizado = Color2FA,
+                alPulsar = alDescartar
+            )
         }
     )
 }

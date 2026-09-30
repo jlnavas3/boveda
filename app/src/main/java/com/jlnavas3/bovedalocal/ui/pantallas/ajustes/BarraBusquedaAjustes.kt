@@ -1,6 +1,7 @@
 package com.jlnavas3.bovedalocal.ui.pantallas.ajustes
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -24,6 +25,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.unit.dp
+import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
+import com.jlnavas3.bovedalocal.ui.theme.CurvaturaEsquinas
+import com.jlnavas3.bovedalocal.ui.theme.EstiloBorde
+import com.jlnavas3.bovedalocal.ui.theme.GrosorBorde
 
 @Composable
 fun BarraBusquedaAjustes(
@@ -32,12 +37,17 @@ fun BarraBusquedaAjustes(
     placeholder: String = "Buscar en ajustes...",
     modifier: Modifier = Modifier
 ) {
+    val forma = RoundedCornerShape(CurvaturaEsquinas)
     Row(
         modifier = modifier
             .fillMaxWidth()
             .height(48.dp)
-            .clip(RoundedCornerShape(24.dp))
+            .clip(forma)
             .background(ColorTarjetaAjustes)
+            .then(
+                if (GrosorBorde > 0.dp && EstiloBorde != "ninguno") Modifier.border(GrosorBorde, ColorBordeActual, forma)
+                else Modifier
+            )
             .padding(horizontal = 16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {

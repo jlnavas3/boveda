@@ -43,6 +43,8 @@ import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.QrCodeScanner
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.filled.Tune
+import androidx.compose.material.icons.filled.Widgets
 
 @Composable
 fun BarraSuperiorAutenticador(
@@ -54,13 +56,13 @@ fun BarraSuperiorAutenticador(
     haptica: Haptica,
     alVolver: () -> Unit,
     alAlternarBusqueda: () -> Unit,
-    alEscanearQr: () -> Unit,
-    alAgregarManual: () -> Unit,
     alSolicitarOrdenacion: () -> Unit,
     alAlternarFavoritos: () -> Unit,
     alExportarSelectivo: () -> Unit,
     alImportarGoogleAuthenticator: () -> Unit,
     alMostrarComoFunciona: () -> Unit,
+    alIrAjustesAutenticador: () -> Unit,
+    alIrAjustesWidgetTotp: () -> Unit,
     alRestablecerFiltros: () -> Unit,
     idEtiqueta: String = "04-HER-2FA",
     mostrarId: Boolean = false
@@ -97,48 +99,6 @@ fun BarraSuperiorAutenticador(
 
             Spacer(Modifier.width(5.dp))
 
-            // Botón Escanear QR
-            IconButton(
-                onClick = {
-                    haptica.toque()
-                    alEscanearQr()
-                },
-                modifier = Modifier
-                    .size(38.dp)
-                    .clip(CircleShape)
-                    .background(ColorTarjetaAjustes)
-            ) {
-                Icon(
-                    imageVector = Icons.Filled.QrCodeScanner,
-                    contentDescription = "Escanear código QR",
-                    tint = ColorIconosInternos,
-                    modifier = Modifier.size(20.dp)
-                )
-            }
-
-            Spacer(Modifier.width(5.dp))
-
-            // Botón Añadir clave manual (+)
-            IconButton(
-                onClick = {
-                    haptica.toque()
-                    alAgregarManual()
-                },
-                modifier = Modifier
-                    .size(38.dp)
-                    .clip(CircleShape)
-                    .background(ColorTarjetaAjustes)
-            ) {
-                Icon(
-                    imageVector = Icons.Filled.Add,
-                    contentDescription = "Escribir clave manualmente",
-                    tint = Color2FA,
-                    modifier = Modifier.size(21.dp)
-                )
-            }
-
-            Spacer(Modifier.width(5.dp))
-
             // Botón Tres Puntos (Menú desplegable)
             Box {
                 IconButton(
@@ -162,34 +122,23 @@ fun BarraSuperiorAutenticador(
                 MenuDesplegableBoveda(
                     expanded = menuOpcionesDesplegado,
                     onDismissRequest = { menuOpcionesDesplegado = false },
-                    modifier = Modifier.widthIn(min = 220.dp)
+                    modifier = Modifier.widthIn(min = 220.dp, max = 280.dp)
                 ) {
-                    DropdownMenuItem(
-                        leadingIcon = {
-                            Icon(Icons.AutoMirrored.Filled.Sort, contentDescription = null, tint = Color2FA, modifier = Modifier.size(20.dp))
-                        },
-                        text = { Text("Ordenar por...", color = TextoPrincipal) },
+                    com.jlnavas3.bovedalocal.ui.componentes.ElementoMenuCompacto(
+                        texto = "Ordenar por...",
+                        icono = Icons.AutoMirrored.Filled.Sort,
+                        colorIcono = Color2FA,
                         onClick = {
                             menuOpcionesDesplegado = false
                             alSolicitarOrdenacion()
                         }
                     )
                     SeparadorOpcionMenu()
-                    DropdownMenuItem(
-                        leadingIcon = {
-                            Icon(
-                                Icons.Filled.Star,
-                                contentDescription = null,
-                                tint = if (soloFavoritos) Ambar else ColorIconosInternos,
-                                modifier = Modifier.size(20.dp)
-                            )
-                        },
-                        text = {
-                            Text(
-                                if (soloFavoritos) "Ver todas las cuentas" else "Solo favoritos",
-                                color = if (soloFavoritos) Ambar else TextoPrincipal
-                            )
-                        },
+                    com.jlnavas3.bovedalocal.ui.componentes.ElementoMenuCompacto(
+                        texto = if (soloFavoritos) "Ver todas las cuentas" else "Solo favoritos",
+                        icono = Icons.Filled.Star,
+                        colorIcono = if (soloFavoritos) Ambar else ColorIconosInternos,
+                        colorTexto = if (soloFavoritos) Ambar else TextoPrincipal,
                         onClick = {
                             menuOpcionesDesplegado = false
                             haptica.tic()
@@ -197,11 +146,10 @@ fun BarraSuperiorAutenticador(
                         }
                     )
                     SeparadorOpcionMenu()
-                    DropdownMenuItem(
-                        leadingIcon = {
-                            Icon(Icons.Filled.FileDownload, contentDescription = null, tint = Color2FA, modifier = Modifier.size(20.dp))
-                        },
-                        text = { Text("Exportación selectiva", color = TextoPrincipal) },
+                    com.jlnavas3.bovedalocal.ui.componentes.ElementoMenuCompacto(
+                        texto = "Exportación selectiva",
+                        icono = Icons.Filled.FileDownload,
+                        colorIcono = Color2FA,
                         onClick = {
                             menuOpcionesDesplegado = false
                             haptica.tic()
@@ -209,11 +157,10 @@ fun BarraSuperiorAutenticador(
                         }
                     )
                     SeparadorOpcionMenu()
-                    DropdownMenuItem(
-                        leadingIcon = {
-                            Icon(Icons.Filled.FileUpload, contentDescription = null, tint = ColorExportacion, modifier = Modifier.size(20.dp))
-                        },
-                        text = { Text("Importar de Google Authenticator", color = TextoPrincipal) },
+                    com.jlnavas3.bovedalocal.ui.componentes.ElementoMenuCompacto(
+                        texto = "Importar de Google Auth",
+                        icono = Icons.Filled.FileUpload,
+                        colorIcono = ColorExportacion,
                         onClick = {
                             menuOpcionesDesplegado = false
                             haptica.tic()
@@ -221,11 +168,30 @@ fun BarraSuperiorAutenticador(
                         }
                     )
                     SeparadorOpcionMenu()
-                    DropdownMenuItem(
-                        leadingIcon = {
-                            Icon(Icons.AutoMirrored.Filled.HelpOutline, contentDescription = null, tint = Color2FA, modifier = Modifier.size(20.dp))
-                        },
-                        text = { Text("¿Cómo funciona el 2FA?", color = TextoPrincipal) },
+                    com.jlnavas3.bovedalocal.ui.componentes.ElementoMenuCompacto(
+                        texto = "Ajustes del autenticador...",
+                        icono = androidx.compose.material.icons.Icons.Filled.Tune,
+                        colorIcono = Color2FA,
+                        onClick = {
+                            menuOpcionesDesplegado = false
+                            alIrAjustesAutenticador()
+                        }
+                    )
+                    SeparadorOpcionMenu()
+                    com.jlnavas3.bovedalocal.ui.componentes.ElementoMenuCompacto(
+                        texto = "Ajustes de widget TOTP...",
+                        icono = androidx.compose.material.icons.Icons.Filled.Widgets,
+                        colorIcono = Color2FA,
+                        onClick = {
+                            menuOpcionesDesplegado = false
+                            alIrAjustesWidgetTotp()
+                        }
+                    )
+                    SeparadorOpcionMenu()
+                    com.jlnavas3.bovedalocal.ui.componentes.ElementoMenuCompacto(
+                        texto = "¿Cómo funciona el 2FA?",
+                        icono = Icons.AutoMirrored.Filled.HelpOutline,
+                        colorIcono = Color2FA,
                         onClick = {
                             menuOpcionesDesplegado = false
                             haptica.tic()
@@ -234,11 +200,11 @@ fun BarraSuperiorAutenticador(
                     )
                     if (soloFavoritos || criterioOrdenacion != CriterioOrdenacion.NOMBRE_AZ || textoBusqueda.isNotBlank()) {
                         SeparadorOpcionMenu()
-                        DropdownMenuItem(
-                            leadingIcon = {
-                                Icon(Icons.Filled.Close, contentDescription = null, tint = Peligro, modifier = Modifier.size(20.dp))
-                            },
-                            text = { Text("Restablecer filtros", color = Peligro) },
+                        com.jlnavas3.bovedalocal.ui.componentes.ElementoMenuCompacto(
+                            texto = "Restablecer filtros",
+                            icono = Icons.Filled.Close,
+                            colorIcono = Peligro,
+                            colorTexto = Peligro,
                             onClick = {
                                 menuOpcionesDesplegado = false
                                 haptica.tic()

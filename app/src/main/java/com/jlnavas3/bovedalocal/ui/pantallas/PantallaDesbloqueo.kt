@@ -116,7 +116,7 @@ fun PantallaDesbloqueo(vm: VaultViewModel, actividad: FragmentActivity) {
         ) {
             CabeceraDesbloqueo(
                 abriendo = abriendo,
-                esAnimacionEngranajes = esEngranajes
+                tipoAnimacion = ajustes.animacionDesbloqueo
             )
 
             Column(

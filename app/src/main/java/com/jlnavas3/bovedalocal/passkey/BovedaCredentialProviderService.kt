@@ -24,10 +24,13 @@ import androidx.credentials.provider.CredentialProviderService
 import androidx.credentials.provider.PasswordCredentialEntry
 import androidx.credentials.provider.ProviderClearCredentialStateRequest
 import androidx.credentials.provider.PublicKeyCredentialEntry
+import android.graphics.drawable.Icon
+import com.jlnavas3.bovedalocal.autofill.AutofillUtiles
 import com.jlnavas3.bovedalocal.data.VaultRepository
 import com.jlnavas3.bovedalocal.data.TipoEntrada
 import com.jlnavas3.bovedalocal.util.Diagnostico
 import com.jlnavas3.bovedalocal.util.Dominios
+import com.jlnavas3.bovedalocal.util.LanzadorEnlaces
 import java.time.Instant
 
 /**
@@ -128,17 +131,45 @@ class BovedaCredentialProviderService : CredentialProviderService() {
                         entrada.urls.any { Dominios.coincide(it, objetivo) } &&
                         (opcion.allowedUserIds.isEmpty() || opcion.allowedUserIds.contains(entrada.usuario))
                 }.forEach { entrada ->
-                    constructor.addCredentialEntry(
-                        PasswordCredentialEntry.Builder(
-                            this,
-                            entrada.usuario.ifBlank { entrada.titulo.ifBlank { objetivo } },
-                            pendienteObtenerPassword(entrada.id, objetivo),
-                            opcion
-                        )
-                            .setDisplayName(entrada.titulo.ifBlank { objetivo })
-                            .setLastUsedTime(Instant.ofEpochMilli(entrada.modificadaEn.takeIf { it > 0 } ?: entrada.creadaEn))
-                            .build()
+                    val paquete = entrada.urls.firstNotNullOfOrNull { LanzadorEnlaces.extraerPaquete(it) }
+                        ?: LanzadorEnlaces.extraerPaquete(objetivo)
+                        ?: if (LanzadorEnlaces.estaInstalada(this, objetivo)) objetivo else null
+
+                    val nombreApp = if (paquete != null && LanzadorEnlaces.estaInstalada(this, paquete)) {
+                        LanzadorEnlaces.obtenerNombreApp(this, paquete)
+                    } else null
+
+                    val iconoBitmap = if (paquete != null && LanzadorEnlaces.estaInstalada(this, paquete)) {
+                        AutofillUtiles.obtenerBitmapIconoCircular(this, paquete, 96)
+                    } else null
+
+                    val domPaquete = if (paquete != null) Dominios.dominioDePaquete(paquete) else null
+                    val tituloAlmacenado = entrada.titulo.trim()
+
+                    val tituloMostrar = when {
+                        !nombreApp.isNullOrBlank() && (tituloAlmacenado.isBlank() ||
+                            tituloAlmacenado == "Nueva entrada" ||
+                            tituloAlmacenado.equals(domPaquete, ignoreCase = true) ||
+                            tituloAlmacenado.equals(paquete, ignoreCase = true)) -> nombreApp
+                        tituloAlmacenado.isNotBlank() -> tituloAlmacenado
+                        !nombreApp.isNullOrBlank() -> nombreApp
+                        else -> objetivo.ifBlank { "Bóveda local" }
+                    }
+
+                    val builder = PasswordCredentialEntry.Builder(
+                        this,
+                        entrada.usuario.ifBlank { tituloMostrar },
+                        pendienteObtenerPassword(entrada.id, objetivo),
+                        opcion
                     )
+                        .setDisplayName(tituloMostrar)
+                        .setLastUsedTime(Instant.ofEpochMilli(entrada.modificadaEn.takeIf { it > 0 } ?: entrada.creadaEn))
+
+                    if (iconoBitmap != null) {
+                        builder.setIcon(Icon.createWithBitmap(iconoBitmap))
+                    }
+
+                    constructor.addCredentialEntry(builder.build())
                     alguna = true
                 }
                 return@forEach
@@ -171,14 +202,46 @@ class BovedaCredentialProviderService : CredentialProviderService() {
             }
             candidatas.forEach { entrada ->
                 val datos = entrada.passkey ?: return@forEach
-                constructor.addCredentialEntry(
-                    PublicKeyCredentialEntry(
-                        context = this,
-                        username = datos.usuario.ifBlank { entrada.titulo.ifBlank { datos.rpId } },
-                        pendingIntent = pendienteObtener(entrada.id, opcion.id),
-                        beginGetPublicKeyCredentialOption = opcion
-                    )
+
+                val paquete = entrada.urls.firstNotNullOfOrNull { LanzadorEnlaces.extraerPaquete(it) }
+                    ?: LanzadorEnlaces.extraerPaquete(peticion.rpId)
+                    ?: if (LanzadorEnlaces.estaInstalada(this, peticion.rpId)) peticion.rpId else null
+
+                val nombreApp = if (paquete != null && LanzadorEnlaces.estaInstalada(this, paquete)) {
+                    LanzadorEnlaces.obtenerNombreApp(this, paquete)
+                } else null
+
+                val iconoBitmap = if (paquete != null && LanzadorEnlaces.estaInstalada(this, paquete)) {
+                    AutofillUtiles.obtenerBitmapIconoCircular(this, paquete, 96)
+                } else null
+
+                val domPaquete = if (paquete != null) Dominios.dominioDePaquete(paquete) else null
+                val tituloAlmacenado = entrada.titulo.trim()
+
+                val tituloMostrar = when {
+                    !nombreApp.isNullOrBlank() && (tituloAlmacenado.isBlank() ||
+                        tituloAlmacenado == "Nueva entrada" ||
+                        tituloAlmacenado.equals(domPaquete, ignoreCase = true) ||
+                        tituloAlmacenado.equals(paquete, ignoreCase = true) ||
+                        tituloAlmacenado.equals(datos.rpId, ignoreCase = true)) -> nombreApp
+                    datos.rpName.isNotBlank() && datos.rpName != datos.rpId -> datos.rpName
+                    tituloAlmacenado.isNotBlank() -> tituloAlmacenado
+                    else -> datos.rpId
+                }
+
+                val pubKeyBuilder = PublicKeyCredentialEntry.Builder(
+                    this,
+                    datos.usuario.ifBlank { tituloMostrar },
+                    pendienteObtener(entrada.id, opcion.id),
+                    opcion
                 )
+                    .setDisplayName(tituloMostrar)
+
+                if (iconoBitmap != null) {
+                    pubKeyBuilder.setIcon(Icon.createWithBitmap(iconoBitmap))
+                }
+
+                constructor.addCredentialEntry(pubKeyBuilder.build())
                 alguna = true
             }
         }

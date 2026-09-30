@@ -2,7 +2,6 @@ package com.jlnavas3.bovedalocal.ui.componentes
 
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -13,6 +12,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
+import com.jlnavas3.bovedalocal.ui.theme.CurvaturaEsquinas
 import com.jlnavas3.bovedalocal.ui.theme.Peligro
 import com.jlnavas3.bovedalocal.ui.theme.TextoPrincipal
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
@@ -20,7 +20,7 @@ import com.jlnavas3.bovedalocal.ui.theme.esOscuroActivo
 
 /**
  * Diálogo de confirmación estándar y elegante para la aplicación.
- * Sigue la estética unificada con fondo adaptativo claro/oscuro, esquinas redondeadas de 20dp,
+ * Sigue la estética unificada con fondo adaptativo claro/oscuro, esquinas dinámicas según el tema,
  * tonalElevation 0.dp y botones usando `BotonTextoBoveda`.
  */
 @Composable
@@ -34,13 +34,8 @@ fun DialogoConfirmacionBoveda(
     tipoConfirmacion: TipoBotonTexto = TipoBotonTexto.PRIMARIO,
     iconoHeader: ImageVector? = null
 ) {
-    val fondoDialogo = if (esOscuroActivo) Color(0xFF212023) else Color(0xFFFFFFFF)
-
-    AlertDialog(
+    DialogoBoveda(
         onDismissRequest = alDescartar,
-        containerColor = fondoDialogo,
-        tonalElevation = 0.dp,
-        shape = RoundedCornerShape(20.dp),
         icon = if (iconoHeader != null) {
             {
                 val tintColor = when (tipoConfirmacion) {

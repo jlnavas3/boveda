@@ -16,6 +16,7 @@ import com.jlnavas3.bovedalocal.data.TipoEntrada
 import com.jlnavas3.bovedalocal.data.VaultRepository
 import com.jlnavas3.bovedalocal.util.Diagnostico
 import com.jlnavas3.bovedalocal.util.Dominios
+import com.jlnavas3.bovedalocal.util.LanzadorEnlaces
 
 class BovedaAutofillService : AutofillService() {
 
@@ -122,21 +123,48 @@ class BovedaAutofillService : AutofillService() {
         }
         val paquete = estructura.activityComponent?.packageName ?: ""
         val objetivo = AutofillUtiles.contextoSolicitante(paquete, campos.dominioWeb)
+        val nombreApp = if (campos.dominioWeb.isNullOrBlank() && paquete.isNotBlank()) {
+            LanzadorEnlaces.obtenerNombreApp(this, paquete)
+        } else null
+
         val titulo = if (campos.dominioWeb.isNullOrBlank()) {
-            Dominios.dominioDePaquete(paquete)
+            nombreApp?.ifBlank { null } ?: if (paquete.isNotBlank()) Dominios.dominioDePaquete(paquete) else "Nueva entrada"
         } else {
             Dominios.raiz(campos.dominioWeb!!)
         }
+
+        val urlGuardada = if (campos.dominioWeb.isNullOrBlank() && paquete.isNotBlank()) {
+            "android://$paquete"
+        } else {
+            objetivo
+        }
+
         val existente = repositorio.entradas().firstOrNull { entrada ->
             entrada.usuario == (usuario ?: "") && entrada.urls.any { Dominios.coincide(it, objetivo) }
         }
-        val entrada = existente?.copy(contrasena = contrasena) ?: Entrada(
+        val entrada = existente?.let { exist ->
+            val domPaquete = if (paquete.isNotBlank()) Dominios.dominioDePaquete(paquete) else ""
+            val debeActualizarTitulo = exist.titulo.isBlank() ||
+                exist.titulo == "Nueva entrada" ||
+                (domPaquete.isNotBlank() && exist.titulo.equals(domPaquete, ignoreCase = true)) ||
+                (paquete.isNotBlank() && exist.titulo.equals(paquete, ignoreCase = true))
+
+            val urlsActualizadas = if (campos.dominioWeb.isNullOrBlank() && paquete.isNotBlank() && !exist.urls.any { LanzadorEnlaces.extraerPaquete(it) == paquete }) {
+                exist.urls + urlGuardada
+            } else exist.urls
+
+            exist.copy(
+                contrasena = contrasena,
+                titulo = if (debeActualizarTitulo) titulo.ifBlank { exist.titulo } else exist.titulo,
+                urls = urlsActualizadas
+            )
+        } ?: Entrada(
             id = repositorio.nuevoId(),
             tipo = TipoEntrada.LOGIN,
             titulo = titulo.ifBlank { "Nueva entrada" },
             usuario = usuario ?: "",
             contrasena = contrasena,
-            urls = listOf(objetivo)
+            urls = listOf(urlGuardada)
         )
         try {
             repositorio.guardarEntrada(entrada)

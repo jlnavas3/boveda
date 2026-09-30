@@ -1,6 +1,7 @@
 package com.jlnavas3.bovedalocal.ui.pantallas.lista
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -51,8 +52,12 @@ import com.jlnavas3.bovedalocal.ui.componentes.SeparadorOpcionMenu
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorTarjetaAjustes
 import com.jlnavas3.bovedalocal.ui.theme.Ambar
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
+import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
 import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
 import com.jlnavas3.bovedalocal.ui.theme.ColorTitulos
+import com.jlnavas3.bovedalocal.ui.theme.EstiloBorde
+import com.jlnavas3.bovedalocal.ui.theme.FormaCampo
+import com.jlnavas3.bovedalocal.ui.theme.GrosorBorde
 import com.jlnavas3.bovedalocal.ui.theme.TextoPrincipal
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
 
@@ -91,7 +96,7 @@ fun SelectorFiltros(
         soloFavoritos -> "Favoritos"
         else -> "Filtros"
     }
-    val forma = RoundedCornerShape(12.dp)
+    val forma = FormaCampo
 
     Box(modifier = Modifier.fillMaxWidth()) {
         Row(
@@ -100,6 +105,10 @@ fun SelectorFiltros(
                 .height(42.dp)
                 .clip(forma)
                 .background(ColorTarjetaAjustes)
+                .then(
+                    if (GrosorBorde > 0.dp && EstiloBorde != "ninguno") Modifier.border(GrosorBorde, ColorBordeActual, forma)
+                    else Modifier
+                )
                 .clickable { desplegado = true }
                 .padding(horizontal = 10.dp),
             verticalAlignment = Alignment.CenterVertically
@@ -220,7 +229,7 @@ fun SelectorOrdenacion(
     alCambiar: (CriterioOrdenacion) -> Unit
 ) {
     var desplegado by remember { mutableStateOf(false) }
-    val forma = RoundedCornerShape(12.dp)
+    val forma = FormaCampo
 
     Box {
         Row(
@@ -228,6 +237,10 @@ fun SelectorOrdenacion(
                 .height(42.dp)
                 .clip(forma)
                 .background(ColorTarjetaAjustes)
+                .then(
+                    if (GrosorBorde > 0.dp && EstiloBorde != "ninguno") Modifier.border(GrosorBorde, ColorBordeActual, forma)
+                    else Modifier
+                )
                 .clickable { desplegado = true }
                 .padding(horizontal = 11.dp),
             verticalAlignment = Alignment.CenterVertically

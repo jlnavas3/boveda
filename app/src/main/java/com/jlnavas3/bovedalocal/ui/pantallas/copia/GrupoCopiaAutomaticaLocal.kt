@@ -46,7 +46,7 @@ fun GrupoCopiaAutomaticaLocal(
                 valorTexto = valorTexto,
                 alPulsar = {
                     haptica?.tic()
-                    vm.ir(Pantalla.AjustesCopiaAutomatica("05.1.4"))
+                    vm.ir(Pantalla.AjustesCopiaAutomatica("05-COP-ATM"))
                 }
             )
         }

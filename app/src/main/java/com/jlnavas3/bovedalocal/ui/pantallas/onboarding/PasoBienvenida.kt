@@ -18,9 +18,11 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Memory
 import androidx.compose.material.icons.filled.Shield
 import androidx.compose.material.icons.filled.VpnKey
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -86,22 +88,41 @@ fun PasoBienvenida(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(18.dp)
     ) {
-        // Animación mecánica de la bóveda (engranajes o puerta según ajustes)
-        if (ajustes.animacionDesbloqueo == "engranajes") {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(180.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                EngranajesBoveda(
-                    abierta = false,
-                    modifier = Modifier.fillMaxSize(),
-                    config = ajustes.aEngranajesConfig()
-                )
+        // Animación mecánica de la bóveda (engranajes, puerta o estática según ajustes)
+        when (ajustes.animacionDesbloqueo) {
+            "engranajes" -> {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(180.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    EngranajesBoveda(
+                        abierta = false,
+                        modifier = Modifier.fillMaxSize(),
+                        config = ajustes.aEngranajesConfig()
+                    )
+                }
             }
-        } else {
-            PuertaBoveda(abierta = false, tamano = 175)
+            "puerta" -> {
+                PuertaBoveda(abierta = false, tamano = 175)
+            }
+            else -> {
+                Box(
+                    modifier = Modifier
+                        .size(96.dp)
+                        .clip(RoundedCornerShape(com.jlnavas3.bovedalocal.ui.theme.CurvaturaEsquinas.coerceAtLeast(18.dp)))
+                        .background(com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorTarjetaAjustes),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.Lock,
+                        contentDescription = null,
+                        tint = com.jlnavas3.bovedalocal.ui.theme.ColorAcento,
+                        modifier = Modifier.size(48.dp)
+                    )
+                }
+            }
         }
 
         // Encabezado con insignia de seguridad

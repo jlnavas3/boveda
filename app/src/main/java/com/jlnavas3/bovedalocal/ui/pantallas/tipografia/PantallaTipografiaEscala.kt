@@ -64,7 +64,7 @@ fun PantallaTipografiaEscala(
             colorIcono = ColorGenerador,
             alRestablecer = {
                 haptica.tic()
-                vm.ajustarEscalaTexto(1.0f)
+                vm.restablecerEscalaTexto()
             },
             idGrupo = "02-APA-TYP-ESC-G01",
             mostrarId = ajustes.mostrarIdsAjustes
@@ -80,7 +80,7 @@ fun PantallaTipografiaEscala(
                 alCambiar = { vm.ajustarEscalaTexto(it) },
                 alRestablecer = {
                     haptica.tic()
-                    vm.ajustarEscalaTexto(1.0f)
+                    vm.restablecerEscalaTexto()
                 }
             )
         }

@@ -35,6 +35,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.runtime.remember
 import com.jlnavas3.bovedalocal.data.Entrada
 import com.jlnavas3.bovedalocal.data.TipoEntrada
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorTarjetaAjustes
@@ -43,6 +45,9 @@ import com.jlnavas3.bovedalocal.ui.theme.Borde
 import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
 import com.jlnavas3.bovedalocal.ui.theme.ColorSobreAcento
 import com.jlnavas3.bovedalocal.ui.theme.CurvaturaEsquinas
+import com.jlnavas3.bovedalocal.util.Dominios
+import com.jlnavas3.bovedalocal.util.GestorAppsInstaladas
+import com.jlnavas3.bovedalocal.util.LanzadorEnlaces
 import com.jlnavas3.bovedalocal.ui.theme.GrosorBorde
 import com.jlnavas3.bovedalocal.ui.theme.TextoPrincipal
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
@@ -83,6 +88,33 @@ fun FilaEntrada(
     val contenidoFila: @Composable () -> Unit = {
         val secreto = entrada.secretoTotp
         val tieneTotp = !seleccionActiva && !secreto.isNullOrBlank()
+
+        val contexto = LocalContext.current
+        val paquete = remember(entrada.id, entrada.modificadaEn) {
+            GestorAppsInstaladas.resolverPaqueteApp(contexto, entrada)
+        }
+        val nombreApp = remember(paquete) {
+            if (paquete != null) {
+                GestorAppsInstaladas.obtenerNombreApp(contexto, paquete)
+            } else null
+        }
+        val domPaquete = remember(paquete) { if (paquete != null) Dominios.dominioDePaquete(paquete) else null }
+        val marcaPaquete = remember(domPaquete) { if (domPaquete != null) Dominios.marca(domPaquete) else null }
+        val tituloMostrar = remember(entrada.titulo, nombreApp, domPaquete, marcaPaquete, paquete) {
+            val tit = entrada.titulo.trim()
+            val titDominio = tit.removePrefix("https://").removePrefix("http://").removePrefix("www.").trimEnd('/')
+            when {
+                !nombreApp.isNullOrBlank() && (tit.isBlank() ||
+                    tit == "Nueva entrada" ||
+                    tit.equals(domPaquete, ignoreCase = true) ||
+                    titDominio.equals(domPaquete, ignoreCase = true) ||
+                    (marcaPaquete != null && (tit.equals(marcaPaquete, ignoreCase = true) || titDominio.equals(marcaPaquete, ignoreCase = true))) ||
+                    tit.equals(paquete, ignoreCase = true)) -> nombreApp
+                tit.isNotBlank() -> tit
+                !nombreApp.isNullOrBlank() -> nombreApp
+                else -> "Sin título"
+            }
+        }
 
         val fondoFila = if (seleccionado) {
             Ambar.copy(alpha = 0.22f)
@@ -157,7 +189,7 @@ fun FilaEntrada(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            text = entrada.titulo.ifBlank { "Sin título" },
+                            text = tituloMostrar,
                             style = if (compacta) {
                                 MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold)
                             } else {
@@ -232,6 +264,7 @@ fun FilaEntrada(
             entradaId = entrada.id,
             alturaFila = alturaFila,
             forma = forma,
+            enGrupo = enGrupo,
             alCopiarUsuario = alCopiarUsuario,
             alCopiarContrasena = alCopiarContrasena,
             contenido = contenidoFila

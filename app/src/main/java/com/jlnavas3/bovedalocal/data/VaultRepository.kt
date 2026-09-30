@@ -409,6 +409,21 @@ class VaultRepository private constructor(contexto: Context) {
         }
     }
 
+    fun alternarFavoritos(ids: Set<String>, forzarMarcar: Boolean? = null) {
+        if (ids.isEmpty()) return
+        synchronized(candado) {
+            val entradasObjetivo = contenido.entradas.filter { it.id in ids }
+            if (entradasObjetivo.isEmpty()) return
+            val marcar = forzarMarcar ?: entradasObjetivo.any { !it.favorito }
+            val ahora = System.currentTimeMillis()
+            val mapaModificadas = entradasObjetivo.associate { it.id to it.copy(favorito = marcar, modificadaEn = ahora) }
+            val nuevaLista = contenido.entradas.map { mapaModificadas[it.id] ?: it }
+            contenido = contenido.copy(entradas = nuevaLista)
+            persistir()
+            publicar()
+        }
+    }
+
     fun passkeys(): List<Entrada> = contenido.entradas.filter { it.eliminadaEn == 0L && it.passkey != null }
 
     fun passkeysDe(rpId: String): List<Entrada> =

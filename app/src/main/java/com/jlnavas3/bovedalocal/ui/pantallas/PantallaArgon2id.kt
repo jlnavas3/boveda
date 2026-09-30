@@ -113,7 +113,7 @@ fun PantallaArgon2id(
                         titulo = "Perfil Argon2id",
                         descripcionModal = "Elige el nivel de resistencia del algoritmo KDF",
                         icono = null,
-                        idFila = "01.5.1",
+                        idFila = "01-SEG-CRY-PRF",
                         mostrarId = ajustes.mostrarIdsAjustes,
                         valorSeleccionado = perfilActual,
                         opciones = opcionesArgon2,

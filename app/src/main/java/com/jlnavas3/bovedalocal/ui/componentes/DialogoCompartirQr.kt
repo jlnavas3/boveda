@@ -73,72 +73,63 @@ fun DialogoCompartirQr(
         alCerrar()
     }
 
-    Dialog(
-        onDismissRequest = alCerrar,
-        properties = DialogProperties(usePlatformDefaultWidth = false)
+    ModalInferiorBoveda(
+        abierto = true,
+        alCerrar = alCerrar,
+        fijarAbajo = false
     ) {
-        val fondoSelector = if (esOscuroActivo) Color(0xFF161518) else Color(0xFFEFEFF2)
-
-        Box(
-            modifier = Modifier
-                .padding(horizontal = 20.dp)
-                .fillMaxWidth()
-                .clip(RoundedCornerShape(28.dp))
-                .background(ColorTarjetaAjustes)
-                .padding(20.dp)
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.fillMaxWidth()
         ) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                CabeceraCompartirQr(
-                    esWifi = estadoQr.esWifi,
-                    modoSeleccionado = modoSeleccionado,
-                    ssidWifi = estadoQr.ssidWifi,
-                    tituloEntrada = entrada.titulo,
-                    onCopiar = {
-                        haptica.toque()
-                        if (modoSeleccionado == ModoCompartirQr.CONTRASENA) {
-                            Portapapeles.copiarSensible(contexto, "Contraseña", textoQr)
-                        } else {
-                            Portapapeles.copiar(contexto, "Contenido QR", textoQr)
-                        }
-                    },
-                    onCerrar = alCerrar
-                )
-
-                Spacer(Modifier.height(16.dp))
-
-                SelectorModosCompartirQr(
-                    modosDisponibles = estadoQr.modosDisponibles,
-                    modoSeleccionado = modoSeleccionado,
-                    fondoSelector = fondoSelector,
-                    onSeleccionar = { modo ->
-                        haptica.tic()
-                        modoSeleccionado = modo
+            CabeceraCompartirQr(
+                esWifi = estadoQr.esWifi,
+                modoSeleccionado = modoSeleccionado,
+                ssidWifi = estadoQr.ssidWifi,
+                tituloEntrada = entrada.titulo,
+                onCopiar = {
+                    haptica.toque()
+                    if (modoSeleccionado == ModoCompartirQr.CONTRASENA) {
+                        Portapapeles.copiarSensible(contexto, "Contraseña", textoQr)
+                    } else {
+                        Portapapeles.copiar(contexto, "Contenido QR", textoQr)
                     }
-                )
+                },
+                onCerrar = alCerrar
+            )
 
-                if (estadoQr.modosDisponibles.size > 1) {
-                    Spacer(Modifier.height(16.dp))
+            Spacer(Modifier.height(16.dp))
+
+            val fondoSelector = if (esOscuroActivo) Color(0xFF161518) else Color(0xFFEFEFF2)
+            SelectorModosCompartirQr(
+                modosDisponibles = estadoQr.modosDisponibles,
+                modoSeleccionado = modoSeleccionado,
+                fondoSelector = fondoSelector,
+                onSeleccionar = { modo ->
+                    haptica.tic()
+                    modoSeleccionado = modo
                 }
+            )
 
-                VisorCodigoQr(qrBitmap = qrBitmap)
-
-                Spacer(Modifier.height(14.dp))
-
-                Text(
-                    text = modoSeleccionado.descripcionInformativa,
-                    color = ColorAjusteGris,
-                    style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp),
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.padding(horizontal = 8.dp)
-                )
-
-                Spacer(Modifier.height(14.dp))
-
-                CapsulaTemporizadorSeguridad(tiempoRestante = tiempoRestante)
+            if (estadoQr.modosDisponibles.size > 1) {
+                Spacer(Modifier.height(16.dp))
             }
+
+            VisorCodigoQr(qrBitmap = qrBitmap)
+
+            Spacer(Modifier.height(14.dp))
+
+            Text(
+                text = modoSeleccionado.descripcionInformativa,
+                color = ColorAjusteGris,
+                style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp),
+                textAlign = TextAlign.Center,
+                modifier = Modifier.padding(horizontal = 8.dp)
+            )
+
+            Spacer(Modifier.height(14.dp))
+
+            CapsulaTemporizadorSeguridad(tiempoRestante = tiempoRestante)
         }
     }
 }

@@ -18,6 +18,15 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.filled.AutoFixHigh
+import androidx.compose.material3.Icon
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.runtime.remember
 import com.jlnavas3.bovedalocal.data.Entrada
 import com.jlnavas3.bovedalocal.data.TipoEntrada
 import com.jlnavas3.bovedalocal.ui.componentes.BotonColorido
@@ -25,23 +34,62 @@ import com.jlnavas3.bovedalocal.ui.componentes.Monograma
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.ColorTitulos
 import com.jlnavas3.bovedalocal.ui.theme.FormaPequena
+import com.jlnavas3.bovedalocal.util.Dominios
+import com.jlnavas3.bovedalocal.util.GestorAppsInstaladas
+import com.jlnavas3.bovedalocal.util.IconoAppCircular
+import com.jlnavas3.bovedalocal.util.LanzadorEnlaces
+import com.jlnavas3.bovedalocal.util.rememberIconoAppInstalada
 
 @Composable
 fun CabeceraHeroDetalle(
     entrada: Entrada,
-    alMostrarQr: () -> Unit
+    alMostrarQr: () -> Unit,
+    alActualizarTitulo: ((String) -> Unit)? = null
 ) {
+    val contexto = LocalContext.current
+    val iconoApp = rememberIconoAppInstalada(entrada)
+
+    val paquete = remember(entrada, contexto) {
+        GestorAppsInstaladas.resolverPaqueteApp(contexto, entrada)
+    }
+    val nombreApp = remember(paquete, contexto) {
+        if (paquete != null && LanzadorEnlaces.estaInstalada(contexto, paquete)) {
+            LanzadorEnlaces.obtenerNombreApp(contexto, paquete)
+        } else null
+    }
+    val domPaquete = remember(paquete) { if (paquete != null) Dominios.dominioDePaquete(paquete) else null }
+    val marcaPaquete = remember(domPaquete) { if (domPaquete != null) Dominios.marca(domPaquete) else null }
+    val esTituloTecnico = remember(entrada.titulo, domPaquete, marcaPaquete, paquete, nombreApp) {
+        val tit = entrada.titulo.trim()
+        val titDominio = tit.removePrefix("https://").removePrefix("http://").removePrefix("www.").trimEnd('/')
+        !nombreApp.isNullOrBlank() && !tit.equals(nombreApp, ignoreCase = true) && (
+            tit.isBlank() ||
+                tit == "Nueva entrada" ||
+                (domPaquete != null && (tit.equals(domPaquete, ignoreCase = true) || titDominio.equals(domPaquete, ignoreCase = true))) ||
+                (marcaPaquete != null && (tit.equals(marcaPaquete, ignoreCase = true) || titDominio.equals(marcaPaquete, ignoreCase = true))) ||
+                (paquete != null && tit.equals(paquete, ignoreCase = true))
+        )
+    }
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 8.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Monograma(
-            titulo = entrada.titulo.ifBlank { "?" },
-            semilla = entrada.urls.firstOrNull() ?: entrada.passkey?.rpId ?: entrada.titulo,
-            tamano = 60
-        )
+        if (iconoApp != null) {
+            IconoAppCircular(
+                bitmap = iconoApp,
+                descripcion = entrada.titulo,
+                tamanoDp = 60.dp
+            )
+        } else {
+            Monograma(
+                titulo = entrada.titulo.ifBlank { "?" },
+                semilla = entrada.urls.firstOrNull() ?: entrada.passkey?.rpId ?: entrada.titulo,
+                tamano = 60
+            )
+        }
         Spacer(Modifier.height(10.dp))
         Text(
             text = entrada.titulo.ifBlank { "Sin título" },
@@ -62,6 +110,32 @@ fun CabeceraHeroDetalle(
                 style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Medium),
                 color = ColorAcento
             )
+        }
+        if (esTituloTecnico && nombreApp != null && alActualizarTitulo != null) {
+            Spacer(Modifier.height(8.dp))
+            Row(
+                modifier = Modifier
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(ColorAcento.copy(alpha = 0.15f))
+                    .clickable { alActualizarTitulo(nombreApp) }
+                    .padding(horizontal = 12.dp, vertical = 6.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.AutoFixHigh,
+                    contentDescription = null,
+                    tint = ColorAcento,
+                    modifier = Modifier.size(16.dp)
+                )
+                Spacer(Modifier.width(6.dp))
+                Text(
+                    text = "Actualizar a \"$nombreApp\"",
+                    style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.SemiBold),
+                    color = ColorAcento,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
         }
     }
 

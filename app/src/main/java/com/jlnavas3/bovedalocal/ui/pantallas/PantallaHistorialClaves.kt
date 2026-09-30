@@ -10,13 +10,20 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DeleteSweep
+import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.Timer
 import androidx.compose.material.icons.filled.Tune
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import com.jlnavas3.bovedalocal.ui.Pantalla
+import com.jlnavas3.bovedalocal.ui.theme.Ambar
+import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
+import com.jlnavas3.bovedalocal.ui.theme.Peligro
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -111,6 +118,43 @@ fun PantallaHistorialClaves(
                                 )
                             }
                         }
+                        var menuAbiertoHist by remember { mutableStateOf(false) }
+                        Box {
+                            IconButton(onClick = { menuAbiertoHist = true }) {
+                                Icon(
+                                    imageVector = Icons.Filled.MoreVert,
+                                    contentDescription = "Más opciones",
+                                    tint = ColorIconosInternos,
+                                    modifier = Modifier.size(22.dp)
+                                )
+                            }
+
+                            com.jlnavas3.bovedalocal.ui.componentes.MenuDesplegableBoveda(
+                                expanded = menuAbiertoHist,
+                                onDismissRequest = { menuAbiertoHist = false },
+                                modifier = Modifier.widthIn(min = 220.dp, max = 280.dp)
+                            ) {
+                                com.jlnavas3.bovedalocal.ui.componentes.ElementoMenuCompacto(
+                                    texto = "Ajustes del historial...",
+                                    icono = Icons.Filled.Tune,
+                                    colorIcono = Ambar,
+                                    onClick = {
+                                        menuAbiertoHist = false
+                                        vm.ir(Pantalla.AjustesHistorial("04-HER-HST-CFG"))
+                                    }
+                                )
+                                com.jlnavas3.bovedalocal.ui.componentes.SeparadorOpcionMenu()
+                                com.jlnavas3.bovedalocal.ui.componentes.ElementoMenuCompacto(
+                                    texto = "Ajustes de portapapeles...",
+                                    icono = androidx.compose.material.icons.Icons.Filled.Timer,
+                                    colorIcono = Ambar,
+                                    onClick = {
+                                        menuAbiertoHist = false
+                                        vm.ir(Pantalla.AjustesCopiaAutomatica("03.2.1"))
+                                    }
+                                )
+                            }
+                        }
                     }
                 }
             )
@@ -136,9 +180,10 @@ fun PantallaHistorialClaves(
                     modifier = Modifier.weight(1f)
                 )
             } else {
+                val espaciadoFilas = com.jlnavas3.bovedalocal.ui.theme.calcularEspaciadoFilas(ajustes.densidadLista)
                 LazyColumn(
                     modifier = Modifier.weight(1f),
-                    verticalArrangement = Arrangement.spacedBy(10.dp),
+                    verticalArrangement = Arrangement.spacedBy(espaciadoFilas),
                     contentPadding = PaddingValues(bottom = 80.dp)
                 ) {
                     items(clavesVigentes, key = { it.id }) { item ->
@@ -185,9 +230,7 @@ fun PantallaHistorialClaves(
                 },
                 alRestablecer = {
                     haptica.toque()
-                    vm.ajustarHistorialClavesMax(15)
-                    vm.ajustarHistorialClavesVaciadoAuto(true)
-                    vm.ajustarHistorialClavesTiempoAutoDestruccion(30 * 60 * 1000L)
+                    vm.restablecerHistorialClavesConfig()
                 }
             )
         }

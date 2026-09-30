@@ -153,7 +153,7 @@ fun BotonBorde(
     icono: ImageVector? = null,
     alPulsar: () -> Unit
 ) {
-    val forma = RoundedCornerShape(12.dp)
+    val forma = FormaBoton
     val fondoBoton = if (esOscuroActivo) Color(0xFF2A292E) else Color(0xFFEFEFF3)
     Box(
         modifier = modifier

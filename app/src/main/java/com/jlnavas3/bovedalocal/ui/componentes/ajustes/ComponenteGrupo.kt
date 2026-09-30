@@ -2,6 +2,7 @@
 
 package com.jlnavas3.bovedalocal.ui.componentes.ajustes
 
+import android.widget.Toast
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -32,12 +33,14 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjusteGris
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorTarjetaAjustes
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
+import com.jlnavas3.bovedalocal.util.Haptica
 import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
 import com.jlnavas3.bovedalocal.ui.theme.CurvaturaEsquinas
 import com.jlnavas3.bovedalocal.ui.theme.GrosorBorde
@@ -62,12 +65,14 @@ fun ComponenteGrupo(
     icono: ImageVector? = null,
     colorIcono: Color? = null,
     alRestablecer: (() -> Unit)? = null,
+    mensajeToastRestablecer: String? = null,
     idGrupo: String? = null,
     mostrarId: Boolean = false,
     descripcion: String? = null,
     descripcionComoPie: Boolean = true,
     contenido: @Composable ColumnScope.() -> Unit
 ) {
+    val contexto = LocalContext.current
     val tieneBadgeGrupo = mostrarId && !idGrupo.isNullOrBlank()
     val colorBadgeGrupo = colorParaGrupoId(idGrupo)
     val estadoAlumbrado = recordarEstadoAlumbrado(idGrupo)
@@ -136,7 +141,12 @@ fun ComponenteGrupo(
                         modifier = Modifier
                             .size(26.dp)
                             .clip(RoundedCornerShape(6.dp))
-                            .clickable(onClick = alRestablecer),
+                            .clickable {
+                                Haptica(contexto).tic()
+                                alRestablecer()
+                                val mensaje = mensajeToastRestablecer ?: "Restablecido: ${etiqueta ?: "grupo"}"
+                                Toast.makeText(contexto, mensaje, Toast.LENGTH_SHORT).show()
+                            },
                         contentAlignment = Alignment.Center
                     ) {
                         Icon(

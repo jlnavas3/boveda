@@ -47,8 +47,7 @@ fun PantallaTipografiaPeso(
             colorIcono = ColorIconosInternos,
             alRestablecer = {
                 haptica.tic()
-                vm.ajustarPesoTexto("normal")
-                vm.ajustarCursivaTexto(false)
+                vm.restablecerPesoTexto()
             },
             idGrupo = "02-APA-TYP-PES-G01",
             mostrarId = ajustes.mostrarIdsAjustes

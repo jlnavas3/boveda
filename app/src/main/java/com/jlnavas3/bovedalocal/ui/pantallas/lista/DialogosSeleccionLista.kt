@@ -8,7 +8,6 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -19,6 +18,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
+import com.jlnavas3.bovedalocal.ui.componentes.DialogoBoveda
 import com.jlnavas3.bovedalocal.ui.componentes.DialogoConfirmacionBoveda
 import com.jlnavas3.bovedalocal.ui.componentes.TipoBotonTexto
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteCampoTexto
@@ -51,51 +51,13 @@ fun DialogoRenombrarSeleccion(
     alConfirmar: () -> Unit,
     alDescartar: () -> Unit
 ) {
-    val esOscuro = isSystemInDarkTheme()
-    val colorDialogo = if (esOscuro) Color(0xFF212023) else Color(0xFFFFFFFF)
-
-    AlertDialog(
-        onDismissRequest = alDescartar,
-        containerColor = colorDialogo,
-        tonalElevation = 0.dp,
-        shape = RoundedCornerShape(20.dp),
-        icon = {
-            Icon(Icons.Filled.Edit, contentDescription = null, tint = Ambar)
-        },
-        title = {
-            Text(
-                if (cantidad == 1) "Renombrar título"
-                else "Renombrar título ($cantidad seleccionadas)",
-                color = TextoPrincipal,
-                style = MaterialTheme.typography.titleLarge
-            )
-        },
-        text = {
-            Column {
-                Text(
-                    "Introduce el nuevo título para ${if (cantidad == 1) "la entrada seleccionada" else "las $cantidad entradas seleccionadas"}:",
-                    color = TextoSecundario,
-                    style = MaterialTheme.typography.bodyMedium
-                )
-                ComponenteCampoTexto(
-                    valor = textoNuevoTitulo,
-                    etiqueta = "Nuevo título",
-                    alCambiar = alCambiarTexto,
-                    capitalization = KeyboardCapitalization.Sentences,
-                    imeAction = ImeAction.Done,
-                    keyboardActions = KeyboardActions(
-                        onDone = {
-                            if (textoNuevoTitulo.isNotBlank()) {
-                                alConfirmar()
-                            }
-                        }
-                    ),
-                    botonLimpiar = true,
-                    modifier = Modifier.fillMaxWidth()
-                )
-            }
-        },
-        confirmButton = {
+    DialogoBoveda(
+        abierto = true,
+        alCerrar = alDescartar,
+        icono = Icons.Filled.Edit,
+        colorIcono = Ambar,
+        titulo = if (cantidad == 1) "Renombrar título" else "Renombrar título ($cantidad seleccionadas)",
+        botonConfirmar = {
             TextButton(
                 onClick = {
                     if (textoNuevoTitulo.isNotBlank()) {
@@ -107,10 +69,34 @@ fun DialogoRenombrarSeleccion(
                 Text("Renombrar", color = if (textoNuevoTitulo.isNotBlank()) Ambar else TextoSecundario)
             }
         },
-        dismissButton = {
+        botonDescartar = {
             TextButton(onClick = alDescartar) {
                 Text("Cancelar", color = TextoSecundario)
             }
         }
-    )
+    ) {
+        Column {
+            Text(
+                "Introduce el nuevo título para ${if (cantidad == 1) "la entrada seleccionada" else "las $cantidad entradas seleccionadas"}:",
+                color = TextoSecundario,
+                style = MaterialTheme.typography.bodyMedium
+            )
+            ComponenteCampoTexto(
+                valor = textoNuevoTitulo,
+                etiqueta = "Nuevo título",
+                alCambiar = alCambiarTexto,
+                capitalization = KeyboardCapitalization.Sentences,
+                imeAction = ImeAction.Done,
+                keyboardActions = KeyboardActions(
+                    onDone = {
+                        if (textoNuevoTitulo.isNotBlank()) {
+                            alConfirmar()
+                        }
+                    }
+                ),
+                botonLimpiar = true,
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
+    }
 }

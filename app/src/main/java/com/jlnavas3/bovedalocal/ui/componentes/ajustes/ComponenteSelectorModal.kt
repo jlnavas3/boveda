@@ -43,9 +43,16 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
+import com.jlnavas3.bovedalocal.ui.theme.CurvaturaEsquinas
+import com.jlnavas3.bovedalocal.ui.theme.EstiloBorde
+import com.jlnavas3.bovedalocal.ui.theme.GrosorBorde
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import com.jlnavas3.bovedalocal.ui.componentes.DialogoBoveda
+import com.jlnavas3.bovedalocal.ui.componentes.FilaOpcionModal
+import com.jlnavas3.bovedalocal.ui.componentes.ModalInferiorBoveda
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjusteGris
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.TextoPrincipal
@@ -125,189 +132,104 @@ fun <T> ComponenteSelectorModal(
     )
 
     if (abierto) {
-        val esOscuro = isSystemInDarkTheme()
-        // Superficie con contraste suave sin bordes ni sombras pesadas
-        val fondoModal = if (esOscuro) Color(0xFF222225) else Color.White
         val colorAcentoFinal = colorIcono ?: ColorAcento
 
-        Dialog(
-            onDismissRequest = { abierto = false },
-            properties = DialogProperties(
-                usePlatformDefaultWidth = false,
-                dismissOnBackPress = true,
-                dismissOnClickOutside = true
-            )
-        ) {
-            Box(
+        val listaOpciones = @Composable {
+            Column(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .clickable(
-                        interactionSource = remember { MutableInteractionSource() },
-                        indication = null
-                    ) { abierto = false },
-                contentAlignment = if (fijarAbajo) Alignment.BottomCenter else Alignment.Center
+                    .fillMaxWidth()
+                    .heightIn(max = 380.dp)
+                    .verticalScroll(rememberScrollState()),
+                verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
-                Box(
-                    modifier = Modifier
-                        .navigationBarsPadding()
-                        .padding(
-                            start = 16.dp,
-                            end = 16.dp,
-                            top = if (fijarAbajo) 0.dp else 32.dp,
-                            bottom = if (fijarAbajo) 16.dp else 32.dp
-                        )
-                        .fillMaxWidth()
-                        .clip(RoundedCornerShape(26.dp))
-                        .background(fondoModal)
-                        .clickable(
-                            interactionSource = remember { MutableInteractionSource() },
-                            indication = null
-                        ) { /* Evita cerrar al pulsar dentro de la tarjeta */ }
-                        .padding(horizontal = 20.dp, vertical = 22.dp)
+                opciones.forEach { opcion ->
+                    val esSeleccionado = opcion.valor == valorSeleccionado
+
+                    FilaOpcionModal(
+                        titulo = opcion.etiquetaModal,
+                        descripcion = opcion.descripcionModal,
+                        icono = opcion.icono,
+                        seleccionado = esSeleccionado,
+                        colorAcento = colorAcentoFinal,
+                        alPulsar = {
+                            haptica.tic()
+                            alSeleccionar(opcion.valor)
+                            scope.launch {
+                                delay(120)
+                                abierto = false
+                            }
+                        },
+                        controlFinal = {
+                            Box(
+                                modifier = Modifier
+                                    .size(20.dp)
+                                    .clip(CircleShape)
+                                    .border(
+                                        width = if (esSeleccionado) 6.dp else 1.5.dp,
+                                        color = if (esSeleccionado) colorAcentoFinal else ColorAjusteGris.copy(alpha = 0.45f),
+                                        shape = CircleShape
+                                    )
+                            )
+                        }
+                    )
+                }
+            }
+        }
+
+        if (fijarAbajo) {
+            ModalInferiorBoveda(
+                abierto = abierto,
+                alCerrar = { abierto = false },
+                titulo = titulo,
+                descripcion = descripcionModal,
+                icono = icono,
+                colorIcono = colorTinteIcono,
+                fondoIcono = colorAcentoFinal,
+                fijarAbajo = true,
+                mostrarBotonCerrar = false
+            ) {
+                listaOpciones()
+                Spacer(Modifier.height(14.dp))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End
                 ) {
-                    Column(modifier = Modifier.fillMaxWidth()) {
-                        // Cabecera del modal
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            if (icono != null) {
-                                Box(
-                                    modifier = Modifier
-                                        .size(38.dp)
-                                        .clip(RoundedCornerShape(10.dp))
-                                        .background(colorAcentoFinal),
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    Icon(
-                                        imageVector = icono,
-                                        contentDescription = null,
-                                        tint = colorTinteIcono,
-                                        modifier = Modifier.size(22.dp)
-                                    )
-                                }
-                                Spacer(Modifier.width(14.dp))
-                            }
-
-                            Column(modifier = Modifier.weight(1f)) {
-                                Text(
-                                    text = titulo,
-                                    color = TextoPrincipal,
-                                    style = MaterialTheme.typography.titleMedium.copy(
-                                        fontWeight = FontWeight.Bold,
-                                        fontSize = 17.5.sp
-                                    ),
-                                    maxLines = 2,
-                                    overflow = TextOverflow.Ellipsis
-                                )
-                                if (!descripcionModal.isNullOrBlank()) {
-                                    Spacer(Modifier.height(2.dp))
-                                    Text(
-                                        text = descripcionModal,
-                                        color = TextoSecundario,
-                                        style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.5.sp)
-                                    )
-                                }
-                            }
-                        }
-
-                        Spacer(Modifier.height(16.dp))
-
-                        // Lista de opciones con radio buttons
-                        Column(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .heightIn(max = 380.dp)
-                                .verticalScroll(rememberScrollState()),
-                            verticalArrangement = Arrangement.spacedBy(4.dp)
-                        ) {
-                            opciones.forEach { opcion ->
-                                val esSeleccionado = opcion.valor == valorSeleccionado
-
-                                Row(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .clip(RoundedCornerShape(14.dp))
-                                        .background(
-                                            if (esSeleccionado) colorAcentoFinal.copy(alpha = 0.12f)
-                                            else Color.Transparent
-                                        )
-                                        .clickable {
-                                            haptica.tic()
-                                            alSeleccionar(opcion.valor)
-                                            scope.launch {
-                                                delay(120)
-                                                abierto = false
-                                            }
-                                        }
-                                        .padding(horizontal = 14.dp, vertical = 11.dp),
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    if (opcion.icono != null) {
-                                        Icon(
-                                            imageVector = opcion.icono,
-                                            contentDescription = null,
-                                            tint = if (esSeleccionado) colorAcentoFinal else TextoSecundario,
-                                            modifier = Modifier.size(20.dp)
-                                        )
-                                        Spacer(Modifier.width(12.dp))
-                                    }
-
-                                    Column(modifier = Modifier.weight(1f)) {
-                                        Text(
-                                            text = opcion.etiquetaModal,
-                                            color = if (esSeleccionado) colorAcentoFinal else TextoPrincipal,
-                                            style = MaterialTheme.typography.bodyMedium.copy(
-                                                fontWeight = if (esSeleccionado) FontWeight.SemiBold else FontWeight.Normal,
-                                                fontSize = 15.sp
-                                            )
-                                        )
-                                        if (!opcion.descripcionModal.isNullOrBlank()) {
-                                            Spacer(Modifier.height(2.dp))
-                                            Text(
-                                                text = opcion.descripcionModal,
-                                                color = TextoSecundario,
-                                                style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp)
-                                            )
-                                        }
-                                    }
-
-                                    Spacer(Modifier.width(12.dp))
-
-                                    // Indicador Radio One UI
-                                    Box(
-                                        modifier = Modifier
-                                            .size(20.dp)
-                                            .clip(CircleShape)
-                                            .border(
-                                                width = if (esSeleccionado) 6.dp else 1.5.dp,
-                                                color = if (esSeleccionado) colorAcentoFinal else ColorAjusteGris.copy(alpha = 0.45f),
-                                                shape = CircleShape
-                                            )
-                                    )
-                                }
-                            }
-                        }
-
-                        Spacer(Modifier.height(14.dp))
-
-                        // Botón de cierre
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.End
-                        ) {
-                            TextButton(
-                                onClick = { abierto = false }
-                            ) {
-                                Text(
-                                    text = "Cancelar",
-                                    color = TextoSecundario,
-                                    style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.SemiBold)
-                                )
-                            }
-                        }
+                    TextButton(onClick = { abierto = false }) {
+                        Text(
+                            text = "Cancelar",
+                            color = TextoSecundario,
+                            style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.SemiBold)
+                        )
                     }
                 }
+            }
+        } else {
+            DialogoBoveda(
+                abierto = abierto,
+                alCerrar = { abierto = false },
+                titulo = titulo,
+                icono = icono,
+                colorIcono = colorTinteIcono,
+                fondoIcono = colorAcentoFinal,
+                botonDescartar = {
+                    TextButton(onClick = { abierto = false }) {
+                        Text(
+                            text = "Cancelar",
+                            color = TextoSecundario,
+                            style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.SemiBold)
+                        )
+                    }
+                }
+            ) {
+                if (!descripcionModal.isNullOrBlank()) {
+                    Text(
+                        text = descripcionModal,
+                        color = TextoSecundario,
+                        style = MaterialTheme.typography.bodySmall
+                    )
+                    Spacer(Modifier.height(8.dp))
+                }
+                listaOpciones()
             }
         }
     }

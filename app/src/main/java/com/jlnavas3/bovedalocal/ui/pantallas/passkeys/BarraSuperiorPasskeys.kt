@@ -18,8 +18,10 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Sort
+import androidx.compose.material.icons.filled.Backup
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.FileDownload
+import androidx.compose.material.icons.filled.Fingerprint
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Star
@@ -65,6 +67,8 @@ fun BarraSuperiorPasskeys(
     alAbrirOrdenacion: () -> Unit,
     alAlternarFavoritos: () -> Unit,
     alIrExportacionSelectiva: () -> Unit,
+    alIrSeguridadBiometria: () -> Unit,
+    alIrCopiaSeguridad: () -> Unit,
     alRestablecerFiltros: () -> Unit,
     modifier: Modifier = Modifier,
     idEtiqueta: String = "04-HER-PSK",
@@ -124,48 +128,56 @@ fun BarraSuperiorPasskeys(
                     MenuDesplegableBoveda(
                         expanded = menuOpcionesDesplegado,
                         onDismissRequest = alCerrarMenu,
-                        modifier = Modifier.widthIn(min = 210.dp)
+                        modifier = Modifier.widthIn(min = 220.dp, max = 280.dp)
                     ) {
-                        DropdownMenuItem(
-                            leadingIcon = {
-                                Icon(Icons.AutoMirrored.Filled.Sort, contentDescription = null, tint = ColorPasskeys, modifier = Modifier.size(20.dp))
-                            },
-                            text = { Text("Ordenar por...", color = TextoPrincipal) },
+                        com.jlnavas3.bovedalocal.ui.componentes.ElementoMenuCompacto(
+                            texto = "Ordenar por...",
+                            icono = Icons.AutoMirrored.Filled.Sort,
+                            colorIcono = ColorPasskeys,
                             onClick = alAbrirOrdenacion
                         )
                         SeparadorOpcionMenu()
-                        DropdownMenuItem(
-                            leadingIcon = {
-                                Icon(
-                                    Icons.Filled.Star,
-                                    contentDescription = null,
-                                    tint = if (soloFavoritos) Ambar else ColorIconosInternos,
-                                    modifier = Modifier.size(20.dp)
-                                )
-                            },
-                            text = {
-                                Text(
-                                    if (soloFavoritos) "Ver todas las llaves" else "Solo favoritos",
-                                    color = if (soloFavoritos) Ambar else TextoPrincipal
-                                )
-                            },
+                        com.jlnavas3.bovedalocal.ui.componentes.ElementoMenuCompacto(
+                            texto = if (soloFavoritos) "Ver todas las llaves" else "Solo favoritos",
+                            icono = Icons.Filled.Star,
+                            colorIcono = if (soloFavoritos) Ambar else ColorIconosInternos,
+                            colorTexto = if (soloFavoritos) Ambar else TextoPrincipal,
                             onClick = alAlternarFavoritos
                         )
                         SeparadorOpcionMenu()
-                        DropdownMenuItem(
-                            leadingIcon = {
-                                Icon(Icons.Filled.FileDownload, contentDescription = null, tint = ColorPasskeys, modifier = Modifier.size(20.dp))
-                            },
-                            text = { Text("Exportación selectiva", color = TextoPrincipal) },
+                        com.jlnavas3.bovedalocal.ui.componentes.ElementoMenuCompacto(
+                            texto = "Exportación selectiva",
+                            icono = Icons.Filled.FileDownload,
+                            colorIcono = ColorPasskeys,
                             onClick = alIrExportacionSelectiva
+                        )
+                        SeparadorOpcionMenu()
+                        com.jlnavas3.bovedalocal.ui.componentes.ElementoMenuCompacto(
+                            texto = "Seguridad biométrica...",
+                            icono = androidx.compose.material.icons.Icons.Filled.Fingerprint,
+                            colorIcono = ColorPasskeys,
+                            onClick = {
+                                alCerrarMenu()
+                                alIrSeguridadBiometria()
+                            }
+                        )
+                        SeparadorOpcionMenu()
+                        com.jlnavas3.bovedalocal.ui.componentes.ElementoMenuCompacto(
+                            texto = "Copia de seguridad...",
+                            icono = androidx.compose.material.icons.Icons.Filled.Backup,
+                            colorIcono = ColorPasskeys,
+                            onClick = {
+                                alCerrarMenu()
+                                alIrCopiaSeguridad()
+                            }
                         )
                         if (soloFavoritos || criterioOrdenacion != CriterioOrdenacion.NOMBRE_AZ || textoBusqueda.isNotBlank()) {
                             SeparadorOpcionMenu()
-                            DropdownMenuItem(
-                                leadingIcon = {
-                                    Icon(Icons.Filled.Close, contentDescription = null, tint = Peligro, modifier = Modifier.size(20.dp))
-                                },
-                                text = { Text("Restablecer filtros", color = Peligro) },
+                            com.jlnavas3.bovedalocal.ui.componentes.ElementoMenuCompacto(
+                                texto = "Restablecer filtros",
+                                icono = Icons.Filled.Close,
+                                colorIcono = Peligro,
+                                colorTexto = Peligro,
                                 onClick = alRestablecerFiltros
                             )
                         }

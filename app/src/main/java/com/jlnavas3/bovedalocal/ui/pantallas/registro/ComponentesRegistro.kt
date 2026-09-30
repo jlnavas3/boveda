@@ -1,6 +1,7 @@
 package com.jlnavas3.bovedalocal.ui.pantallas.registro
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -30,10 +31,16 @@ import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorTextoAjustes
 import com.jlnavas3.bovedalocal.ui.theme.Ambar
 import com.jlnavas3.bovedalocal.ui.theme.Color2FA
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
+import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
 import com.jlnavas3.bovedalocal.ui.theme.ColorPapelera
 import com.jlnavas3.bovedalocal.ui.theme.ColorPasskeys
 import com.jlnavas3.bovedalocal.ui.theme.ColorSalud
 import com.jlnavas3.bovedalocal.ui.theme.ColorSeguridad
+import com.jlnavas3.bovedalocal.ui.theme.CurvaturaEsquinas
+import com.jlnavas3.bovedalocal.ui.theme.EstiloBorde
+import com.jlnavas3.bovedalocal.ui.theme.FormaPequena
+import com.jlnavas3.bovedalocal.ui.theme.FormaTarjeta
+import com.jlnavas3.bovedalocal.ui.theme.GrosorBorde
 import com.jlnavas3.bovedalocal.ui.theme.Menta
 import com.jlnavas3.bovedalocal.ui.theme.Peligro
 import com.jlnavas3.bovedalocal.ui.theme.colorLegibleParaTema
@@ -53,11 +60,17 @@ fun TarjetaEventoRegistro(ev: EventoRegistro) {
         else -> Menta
     }
 
+    val formaTarjeta = FormaTarjeta
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(14.dp))
+            .clip(formaTarjeta)
             .background(ColorTarjetaAjustes)
+            .then(
+                if (GrosorBorde > 0.dp && EstiloBorde != "ninguno") {
+                    Modifier.border(GrosorBorde, ColorBordeActual, formaTarjeta)
+                } else Modifier
+            )
             .padding(12.dp)
     ) {
         Row(
@@ -67,7 +80,7 @@ fun TarjetaEventoRegistro(ev: EventoRegistro) {
         ) {
             Box(
                 modifier = Modifier
-                    .clip(RoundedCornerShape(6.dp))
+                    .clip(FormaPequena)
                     .background(fondoBadgeParaTema(badgeColor))
                     .padding(horizontal = 6.dp, vertical = 2.dp)
             ) {
@@ -110,7 +123,7 @@ fun EstadoVacioRegistro(estaVacio: Boolean) {
         Box(
             modifier = Modifier
                 .size(56.dp)
-                .clip(RoundedCornerShape(16.dp))
+                .clip(FormaTarjeta)
                 .background(fondoBadgeParaTema(ColorAcento)),
             contentAlignment = Alignment.Center
         ) {

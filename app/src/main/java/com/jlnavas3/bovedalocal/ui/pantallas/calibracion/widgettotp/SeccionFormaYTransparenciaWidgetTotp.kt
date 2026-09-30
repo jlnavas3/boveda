@@ -10,6 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.jlnavas3.bovedalocal.data.AjustesApp
+import com.jlnavas3.bovedalocal.data.AjustesDefaults
 import com.jlnavas3.bovedalocal.ui.VaultViewModel
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteGrupo
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteSeparador
@@ -35,8 +36,8 @@ fun SeccionFormaYTransparenciaWidgetTotp(
             mostrarId = ajustes.mostrarIdsAjustes,
             alRestablecer = {
                 haptica.tic()
-                vm.ajustarWidgetGrosorBorde(0f)
-                vm.ajustarWidgetCurvaturaEsquinas(0f)
+                vm.ajustarWidgetGrosorBorde(AjustesDefaults.WidgetTotp.GROSOR_BORDE_DP)
+                vm.ajustarWidgetCurvaturaEsquinas(AjustesDefaults.WidgetTotp.CURVATURA_ESQUINAS_DP)
             }
         ) {
             ComponenteSlider(
@@ -85,8 +86,8 @@ fun SeccionFormaYTransparenciaWidgetTotp(
             mostrarId = ajustes.mostrarIdsAjustes,
             alRestablecer = {
                 haptica.tic()
-                vm.ajustarWidgetTransparenciaFondo(0.50f)
-                vm.ajustarWidgetTransparenciaFilas(0.0f)
+                vm.ajustarWidgetTransparenciaFondo(AjustesDefaults.WidgetTotp.TRANSPARENCIA_FONDO)
+                vm.ajustarWidgetTransparenciaFilas(AjustesDefaults.WidgetTotp.TRANSPARENCIA_FILAS)
             }
         ) {
             ComponenteSlider(

@@ -28,6 +28,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.jlnavas3.bovedalocal.data.AjustesApp
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
+import com.jlnavas3.bovedalocal.ui.theme.ColorIdApariencia
+import com.jlnavas3.bovedalocal.ui.theme.ColorIdCopias
+import com.jlnavas3.bovedalocal.ui.theme.ColorIdHerramientas
+import com.jlnavas3.bovedalocal.ui.theme.ColorIdLista
+import com.jlnavas3.bovedalocal.ui.theme.ColorIdSeguridad
+import com.jlnavas3.bovedalocal.ui.theme.ColorIdSistema
 import com.jlnavas3.bovedalocal.ui.theme.EstiloMono
 import com.jlnavas3.bovedalocal.ui.theme.colorLegibleParaTema
 import com.jlnavas3.bovedalocal.ui.theme.fondoBadgeParaTema
@@ -50,21 +56,21 @@ fun InsigniaIdAjuste(
     val prefijo = id.trimStart().take(2)
     val colorBase = colorForzado ?: when {
         ajustes != null -> when (prefijo) {
-            "01" -> parsearColorO(ajustes.colorIdSeguridad, Color(0xFF3F51B5))
-            "02" -> parsearColorO(ajustes.colorIdApariencia, Color(0xFF8E24AA))
-            "03" -> parsearColorO(ajustes.colorIdLista, Color(0xFF00897B))
-            "04" -> parsearColorO(ajustes.colorIdHerramientas, Color(0xFFFB8C00))
-            "05" -> parsearColorO(ajustes.colorIdCopias, Color(0xFF1E88E5))
-            "06" -> parsearColorO(ajustes.colorIdSistema, Color(0xFF607D8B))
+            "01" -> parsearColorO(ajustes.colorIdSeguridad, ColorIdSeguridad)
+            "02" -> parsearColorO(ajustes.colorIdApariencia, ColorIdApariencia)
+            "03" -> parsearColorO(ajustes.colorIdLista, ColorIdLista)
+            "04" -> parsearColorO(ajustes.colorIdHerramientas, ColorIdHerramientas)
+            "05" -> parsearColorO(ajustes.colorIdCopias, ColorIdCopias)
+            "06" -> parsearColorO(ajustes.colorIdSistema, ColorIdSistema)
             else -> ColorAcento
         }
         else -> when (prefijo) {
-            "01" -> Color(0xFF3F51B5)
-            "02" -> Color(0xFF8E24AA)
-            "03" -> Color(0xFF8E24AA)
-            "04" -> Color(0xFFFB8C00)
-            "05" -> Color(0xFF1E88E5)
-            "06" -> Color(0xFF607D8B)
+            "01" -> ColorIdSeguridad
+            "02" -> ColorIdApariencia
+            "03" -> ColorIdLista
+            "04" -> ColorIdHerramientas
+            "05" -> ColorIdCopias
+            "06" -> ColorIdSistema
             else -> ColorAcento
         }
     }

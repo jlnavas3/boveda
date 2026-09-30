@@ -60,10 +60,9 @@ fun PantallaAjustesCamara(
                             AccionSaltoGrupo("04-HER-CAM-G01", "Motor de captura")
                         ),
                         alRestablecerPantalla = {
-                            haptica.tic()
-                            vm.ajustarMotorCamara("auto")
-                            vm.avisar("Motor de cámara restablecido")
-                        }
+                            vm.restablecerCamara()
+                        },
+                        mensajeToastRestablecer = "Motor de cámara restablecido"
                     )
                 }
             )
@@ -80,10 +79,9 @@ fun PantallaAjustesCamara(
                     icono = Icons.Filled.CameraAlt,
                     colorIcono = ColorCamara,
                     alRestablecer = {
-                        haptica.tic()
-                        vm.ajustarMotorCamara(MotorCamara.AUTOMATICO.clave)
-                        vm.avisar("Motor de cámara restablecido")
+                        vm.restablecerCamara()
                     },
+                    mensajeToastRestablecer = "Motor de cámara restablecido",
                     idGrupo = "04-HER-CAM-G01",
                     mostrarId = ajustes.mostrarIdsAjustes,
                     descripcion = "CameraX conmutación automática o API Camera clásica compatible"
@@ -99,7 +97,7 @@ fun PantallaAjustesCamara(
                         titulo = "Motor de cámara",
                         descripcionModal = "Elige la tecnología de captura óptica para lectura de códigos QR y TOTP",
                         icono = null,
-                        idFila = "04.3.1",
+                        idFila = "04-HER-CAM-MOD",
                         mostrarId = ajustes.mostrarIdsAjustes,
                         valorSeleccionado = ajustes.motorCamara,
                         opciones = opcionesCamara,

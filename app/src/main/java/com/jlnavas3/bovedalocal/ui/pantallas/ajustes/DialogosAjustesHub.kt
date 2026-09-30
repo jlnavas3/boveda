@@ -13,7 +13,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Key
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -32,6 +31,7 @@ import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentActivity
 import com.jlnavas3.bovedalocal.ui.VaultViewModel
 import com.jlnavas3.bovedalocal.ui.componentes.CampoBoveda
+import com.jlnavas3.bovedalocal.ui.componentes.DialogoBoveda
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.ColorPasskeys
 import com.jlnavas3.bovedalocal.ui.theme.TextoPrincipal
@@ -47,33 +47,12 @@ fun DialogoNombreBoveda(
     alGuardar: (String) -> Unit
 ) {
     var nombreTemporal by remember(nombreActual) { mutableStateOf(nombreActual) }
-    val esOscuro = isSystemInDarkTheme()
-    val colorDialogo = if (esOscuro) Color(0xFF212023) else Color(0xFFFFFFFF)
 
-    AlertDialog(
-        onDismissRequest = alCerrar,
-        containerColor = colorDialogo,
-        tonalElevation = 0.dp,
-        shape = RoundedCornerShape(24.dp),
-        title = {
-            Text("Nombre de la app", color = TextoPrincipal)
-        },
-        text = {
-            Column {
-                Text(
-                    "Personaliza el nombre que se muestra en la cabecera del listado y en la barra lateral. Si se deja vacío se usará \"Bóveda local\".",
-                    color = TextoSecundario,
-                    style = MaterialTheme.typography.bodyMedium
-                )
-                Spacer(Modifier.height(14.dp))
-                CampoBoveda(
-                    valor = nombreTemporal,
-                    etiqueta = "Nombre de la bóveda",
-                    alCambiar = { nombreTemporal = it }
-                )
-            }
-        },
-        confirmButton = {
+    DialogoBoveda(
+        abierto = true,
+        alCerrar = alCerrar,
+        titulo = "Nombre de la app",
+        botonConfirmar = {
             TextButton(onClick = {
                 alCerrar()
                 alGuardar(nombreTemporal.trim())
@@ -81,7 +60,7 @@ fun DialogoNombreBoveda(
                 Text("Guardar", color = ColorAcento)
             }
         },
-        dismissButton = {
+        botonDescartar = {
             Row {
                 TextButton(onClick = {
                     nombreTemporal = ""
@@ -95,7 +74,21 @@ fun DialogoNombreBoveda(
                 }
             }
         }
-    )
+    ) {
+        Column {
+            Text(
+                "Personaliza el nombre que se muestra en la cabecera del listado y en la barra lateral. Si se deja vacío se usará \"Bóveda local\".",
+                color = TextoSecundario,
+                style = MaterialTheme.typography.bodyMedium
+            )
+            Spacer(Modifier.height(14.dp))
+            CampoBoveda(
+                valor = nombreTemporal,
+                etiqueta = "Nombre de la bóveda",
+                alCambiar = { nombreTemporal = it }
+            )
+        }
+    }
 }
 
 @Composable
@@ -104,53 +97,14 @@ fun DialogoProveedorPasskeys(
     vm: VaultViewModel,
     alCerrar: () -> Unit
 ) {
-    val esOscuro = isSystemInDarkTheme()
-    val colorDialogo = if (esOscuro) Color(0xFF212023) else Color(0xFFFFFFFF)
-
-    AlertDialog(
-        onDismissRequest = alCerrar,
-        containerColor = colorDialogo,
-        tonalElevation = 0.dp,
-        shape = RoundedCornerShape(20.dp),
-        icon = {
-            Box(
-                modifier = Modifier
-                    .size(48.dp)
-                    .clip(CircleShape)
-                    .background(fondoBadgeParaTema(ColorPasskeys)),
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(
-                    imageVector = Icons.Filled.Key,
-                    contentDescription = null,
-                    tint = colorLegibleParaTema(ColorPasskeys),
-                    modifier = Modifier.size(24.dp)
-                )
-            }
-        },
-        title = {
-            Text("Proveedor de credenciales", color = TextoPrincipal, style = MaterialTheme.typography.titleLarge)
-        },
-        text = {
-            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                Text(
-                    "Android requiere registrar a 'Bóveda local' como tu proveedor oficial de credenciales.",
-                    color = TextoPrincipal,
-                    style = MaterialTheme.typography.bodyMedium
-                )
-                Text(
-                    "En \"Contraseñas y llaves de acceso\" activa Bóveda local para permitir el inicio de sesión automático con Passkeys.",
-                    color = TextoSecundario,
-                    style = MaterialTheme.typography.bodyMedium
-                )
-                Text(
-                    "Si tu fabricante personalizó el menú, busca \"Contraseñas\" en los ajustes de tu teléfono.",
-                    color = TextoSecundario.copy(alpha = 0.8f),
-                    style = MaterialTheme.typography.labelSmall
-                )
-            }
-        },
-        confirmButton = {
+    DialogoBoveda(
+        abierto = true,
+        alCerrar = alCerrar,
+        titulo = "Proveedor de credenciales",
+        icono = Icons.Filled.Key,
+        colorIcono = colorLegibleParaTema(ColorPasskeys),
+        fondoIcono = fondoBadgeParaTema(ColorPasskeys),
+        botonConfirmar = {
             TextButton(onClick = {
                 alCerrar()
                 if (!AjustesSistema.abrirProveedorCredenciales(actividad)) {
@@ -160,10 +114,28 @@ fun DialogoProveedorPasskeys(
                 Text("Configurar proveedor", color = ColorPasskeys, fontWeight = FontWeight.Bold)
             }
         },
-        dismissButton = {
+        botonDescartar = {
             TextButton(onClick = alCerrar) {
                 Text("Cerrar", color = TextoSecundario)
             }
         }
-    )
+    ) {
+        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            Text(
+                "Android requiere registrar a 'Bóveda local' como tu proveedor oficial de credenciales.",
+                color = TextoPrincipal,
+                style = MaterialTheme.typography.bodyMedium
+            )
+            Text(
+                "En \"Contraseñas y llaves de acceso\" activa Bóveda local para permitir el inicio de sesión automático con Passkeys.",
+                color = TextoSecundario,
+                style = MaterialTheme.typography.bodyMedium
+            )
+            Text(
+                "Si tu fabricante personalizó el menú, busca \"Contraseñas\" en los ajustes de tu teléfono.",
+                color = TextoSecundario.copy(alpha = 0.8f),
+                style = MaterialTheme.typography.labelSmall
+            )
+        }
+    }
 }

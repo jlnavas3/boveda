@@ -20,19 +20,23 @@ import com.jlnavas3.bovedalocal.ui.theme.Superficie
 fun VistaCameraX(
     alFrame: (ByteArray, Int, Int) -> Unit,
     alEstado: (EstadoCamara) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    alMotorListo: ((MotorCameraX) -> Unit)? = null
 ) {
     val contexto = LocalContext.current
     val dueno = LocalLifecycleOwner.current
     val frame = rememberUpdatedState(alFrame)
     val estado = rememberUpdatedState(alEstado)
+    val motorListo = rememberUpdatedState(alMotorListo)
     val motor = remember {
         MotorCameraX(
             contexto = contexto,
             dueno = dueno,
             alFrame = { d, w, h -> frame.value(d, w, h) },
             alEstado = { e -> estado.value(e) }
-        )
+        ).also { m ->
+            motorListo.value?.invoke(m)
+        }
     }
     DisposableEffect(motor) {
         onDispose { motor.detener() }

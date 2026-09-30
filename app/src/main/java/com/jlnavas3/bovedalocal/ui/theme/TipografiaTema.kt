@@ -79,6 +79,7 @@ val TipografiaDinamica: Typography
             fontWeight = if (PesoTextoClave == "normal") FontWeight.Bold else PesoTextoActual,
             fontStyle = EstiloFuenteActual,
             fontSize = (34 * EscalaTexto).sp,
+            lineHeight = (42 * EscalaTexto * InterlineadoFactor).sp,
             letterSpacing = ((-0.5f) + EspaciadoLetrasSp).sp
         ),
         headlineMedium = TextStyle(
@@ -86,6 +87,7 @@ val TipografiaDinamica: Typography
             fontWeight = if (PesoTextoClave == "normal") FontWeight.Bold else PesoTextoActual,
             fontStyle = EstiloFuenteActual,
             fontSize = (28 * EscalaTexto).sp,
+            lineHeight = (34 * EscalaTexto * InterlineadoFactor).sp,
             letterSpacing = ((-0.4f) + EspaciadoLetrasSp).sp
         ),
         headlineSmall = TextStyle(
@@ -93,6 +95,7 @@ val TipografiaDinamica: Typography
             fontWeight = if (PesoTextoClave == "normal") FontWeight.Bold else PesoTextoActual,
             fontStyle = EstiloFuenteActual,
             fontSize = (22 * EscalaTexto).sp,
+            lineHeight = (28 * EscalaTexto * InterlineadoFactor).sp,
             letterSpacing = EspaciadoLetrasSp.sp
         ),
         titleLarge = TextStyle(
@@ -100,6 +103,7 @@ val TipografiaDinamica: Typography
             fontWeight = if (PesoTextoClave == "normal") FontWeight.Bold else PesoTextoActual,
             fontStyle = EstiloFuenteActual,
             fontSize = (20 * EscalaTexto).sp,
+            lineHeight = (26 * EscalaTexto * InterlineadoFactor).sp,
             letterSpacing = EspaciadoLetrasSp.sp
         ),
         titleMedium = TextStyle(
@@ -107,6 +111,7 @@ val TipografiaDinamica: Typography
             fontWeight = if (PesoTextoClave == "normal") FontWeight.SemiBold else PesoTextoActual,
             fontStyle = EstiloFuenteActual,
             fontSize = (18 * EscalaTexto).sp,
+            lineHeight = (24 * EscalaTexto * InterlineadoFactor).sp,
             letterSpacing = EspaciadoLetrasSp.sp
         ),
         titleSmall = TextStyle(
@@ -114,6 +119,7 @@ val TipografiaDinamica: Typography
             fontWeight = if (PesoTextoClave == "normal") FontWeight.SemiBold else PesoTextoActual,
             fontStyle = EstiloFuenteActual,
             fontSize = (15 * EscalaTexto).sp,
+            lineHeight = (20 * EscalaTexto * InterlineadoFactor).sp,
             letterSpacing = EspaciadoLetrasSp.sp
         ),
         bodyLarge = TextStyle(
@@ -145,6 +151,7 @@ val TipografiaDinamica: Typography
             fontWeight = if (PesoTextoClave == "normal") FontWeight.SemiBold else PesoTextoActual,
             fontStyle = EstiloFuenteActual,
             fontSize = (15 * EscalaTexto).sp,
+            lineHeight = (20 * EscalaTexto * InterlineadoFactor).sp,
             letterSpacing = (0.2f + EspaciadoLetrasSp).sp
         ),
         labelMedium = TextStyle(
@@ -152,6 +159,7 @@ val TipografiaDinamica: Typography
             fontWeight = PesoTextoActual,
             fontStyle = EstiloFuenteActual,
             fontSize = (12 * EscalaTexto).sp,
+            lineHeight = (16 * EscalaTexto * InterlineadoFactor).sp,
             letterSpacing = (0.2f + EspaciadoLetrasSp).sp
         ),
         labelSmall = TextStyle(
@@ -159,6 +167,7 @@ val TipografiaDinamica: Typography
             fontWeight = PesoTextoActual,
             fontStyle = EstiloFuenteActual,
             fontSize = (10 * EscalaTexto).sp,
+            lineHeight = (14 * EscalaTexto * InterlineadoFactor).sp,
             letterSpacing = (0.2f + EspaciadoLetrasSp).sp
         )
     )
@@ -168,6 +177,7 @@ val EstiloMonoGrande: TextStyle
         fontFamily = FontFamily.Monospace,
         fontWeight = FontWeight.Medium,
         fontSize = (26 * EscalaTexto).sp,
+        lineHeight = (32 * EscalaTexto * InterlineadoFactor).sp,
         letterSpacing = (1f + EspaciadoLetrasSp).sp
     )
 
@@ -176,5 +186,7 @@ val EstiloMono: TextStyle
         fontFamily = FontFamily.Monospace,
         fontWeight = PesoTextoActual,
         fontSize = (16 * EscalaTexto).sp,
+        lineHeight = (22 * EscalaTexto * InterlineadoFactor).sp,
         letterSpacing = (0.5f + EspaciadoLetrasSp).sp
     )
+

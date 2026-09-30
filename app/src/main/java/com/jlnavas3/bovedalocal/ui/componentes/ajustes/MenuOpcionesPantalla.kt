@@ -1,5 +1,6 @@
 package com.jlnavas3.bovedalocal.ui.componentes.ajustes
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
@@ -16,6 +17,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.jlnavas3.bovedalocal.ui.componentes.BotonIconoCabecera
 import com.jlnavas3.bovedalocal.ui.componentes.MenuDesplegableBoveda
@@ -23,6 +25,7 @@ import com.jlnavas3.bovedalocal.ui.componentes.SeparadorOpcionMenu
 import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
 import com.jlnavas3.bovedalocal.ui.theme.Peligro
 import com.jlnavas3.bovedalocal.ui.theme.TextoPrincipal
+import com.jlnavas3.bovedalocal.util.Haptica
 
 data class AccionSaltoGrupo(
     val idGrupo: String,
@@ -34,8 +37,10 @@ fun BotonMenuOpcionesPantalla(
     modifier: Modifier = Modifier,
     grupos: List<AccionSaltoGrupo> = emptyList(),
     alRestablecerPantalla: (() -> Unit)? = null,
-    textoRestablecer: String = "Restablecer pantalla"
+    textoRestablecer: String = "Restablecer pantalla",
+    mensajeToastRestablecer: String? = null
 ) {
+    val contexto = LocalContext.current
     var menuAbierto by remember { mutableStateOf(false) }
     val coordinador = LocalCoordinadorResaltado.current
 
@@ -51,24 +56,14 @@ fun BotonMenuOpcionesPantalla(
         MenuDesplegableBoveda(
             expanded = menuAbierto,
             onDismissRequest = { menuAbierto = false },
-            modifier = Modifier.widthIn(min = 210.dp)
+            modifier = Modifier.widthIn(min = 220.dp, max = 280.dp)
         ) {
             grupos.forEach { grupo ->
-                DropdownMenuItem(
-                    leadingIcon = {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowForward,
-                            contentDescription = null,
-                            tint = ColorIconosInternos,
-                            modifier = Modifier.size(18.dp)
-                        )
-                    },
-                    text = {
-                        Text(
-                            text = grupo.titulo,
-                            color = TextoPrincipal
-                        )
-                    },
+                com.jlnavas3.bovedalocal.ui.componentes.ElementoMenuCompacto(
+                    texto = grupo.titulo,
+                    icono = Icons.AutoMirrored.Filled.ArrowForward,
+                    colorIcono = ColorIconosInternos,
+                    colorTexto = TextoPrincipal,
                     onClick = {
                         menuAbierto = false
                         coordinador?.resaltarAjuste(grupo.idGrupo)
@@ -81,24 +76,17 @@ fun BotonMenuOpcionesPantalla(
             }
 
             if (alRestablecerPantalla != null) {
-                DropdownMenuItem(
-                    leadingIcon = {
-                        Icon(
-                            imageVector = Icons.Filled.RestartAlt,
-                            contentDescription = null,
-                            tint = Peligro,
-                            modifier = Modifier.size(18.dp)
-                        )
-                    },
-                    text = {
-                        Text(
-                            text = textoRestablecer,
-                            color = Peligro
-                        )
-                    },
+                com.jlnavas3.bovedalocal.ui.componentes.ElementoMenuCompacto(
+                    texto = textoRestablecer,
+                    icono = Icons.Filled.RestartAlt,
+                    colorIcono = Peligro,
+                    colorTexto = Peligro,
                     onClick = {
                         menuAbierto = false
+                        Haptica(contexto).tic()
                         alRestablecerPantalla()
+                        val mensaje = mensajeToastRestablecer ?: "Ajustes de pantalla restablecidos"
+                        Toast.makeText(contexto, mensaje, Toast.LENGTH_SHORT).show()
                     }
                 )
             }

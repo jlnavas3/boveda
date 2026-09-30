@@ -64,7 +64,7 @@ fun PantallaFormasGrosor(
             colorIcono = ColorPasskeys,
             alRestablecer = {
                 haptica.tic()
-                vm.ajustarGrosorBorde(1.0f)
+                vm.restablecerGrosorBorde()
             },
             idGrupo = "02-APA-GEO-GRO-G01",
             mostrarId = ajustes.mostrarIdsAjustes
@@ -81,7 +81,7 @@ fun PantallaFormasGrosor(
                 alCambiar = { vm.ajustarGrosorBorde(it) },
                 alRestablecer = {
                     haptica.tic()
-                    vm.ajustarGrosorBorde(1.0f)
+                    vm.restablecerGrosorBorde()
                 }
             )
         }

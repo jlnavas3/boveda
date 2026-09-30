@@ -5,6 +5,7 @@ import androidx.compose.material.icons.filled.Lock
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import com.jlnavas3.bovedalocal.data.AjustesApp
+import com.jlnavas3.bovedalocal.data.AjustesDefaults
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteGrupo
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteNavegacion
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteRadio
@@ -22,7 +23,7 @@ fun SeccionAnimacionDesbloqueo(
         etiqueta = "PANTALLA DE DESBLOQUEO",
         icono = Icons.Filled.Lock,
         colorIcono = Color(0xFF5C6BC0),
-        alRestablecer = { alCambiarAnimacion("engranajes") },
+        alRestablecer = { alCambiarAnimacion(AjustesDefaults.Animacion.TIPO_DESBLOQUEO) },
         idGrupo = "02-APA-THM-G02",
         mostrarId = ajustes.mostrarIdsAjustes
     ) {
@@ -41,7 +42,7 @@ fun SeccionAnimacionDesbloqueo(
         ComponenteRadio(
             titulo = "Puerta de bóveda",
             icono = null,
-            seleccionado = ajustes.animacionDesbloqueo != "engranajes",
+            seleccionado = ajustes.animacionDesbloqueo == "puerta",
             idFila = "02-APA-THM-PRT",
             mostrarId = ajustes.mostrarIdsAjustes,
             alSeleccionar = {
@@ -50,15 +51,29 @@ fun SeccionAnimacionDesbloqueo(
             }
         )
         ComponenteSeparador()
-        ComponenteNavegacion(
-            titulo = "Calibrar animación",
+        ComponenteRadio(
+            titulo = "Ninguna (Estática / Ahorro de energía)",
             icono = null,
-            idFila = "02-APA-THM-CAL",
+            seleccionado = ajustes.animacionDesbloqueo == "ninguna",
+            idFila = "02-APA-THM-NON",
             mostrarId = ajustes.mostrarIdsAjustes,
-            alPulsar = {
+            alSeleccionar = {
                 haptica.tic()
-                alIrACalibracion()
+                alCambiarAnimacion("ninguna")
             }
         )
+        if (ajustes.animacionDesbloqueo != "ninguna") {
+            ComponenteSeparador()
+            ComponenteNavegacion(
+                titulo = "Calibrar animación",
+                icono = null,
+                idFila = "02-APA-THM-CAL",
+                mostrarId = ajustes.mostrarIdsAjustes,
+                alPulsar = {
+                    haptica.tic()
+                    alIrACalibracion()
+                }
+            )
+        }
     }
 }

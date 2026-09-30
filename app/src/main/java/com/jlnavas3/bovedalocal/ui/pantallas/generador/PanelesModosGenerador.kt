@@ -1,5 +1,6 @@
 package com.jlnavas3.bovedalocal.ui.pantallas.generador
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -29,6 +30,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalContext
 import com.jlnavas3.bovedalocal.crypto.PasswordGenerator
 import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
 import androidx.compose.ui.Alignment
@@ -143,6 +145,7 @@ fun PanelModoAleatorio(
             }
 
             if (mostrarCampoSimbolos) {
+                val contexto = LocalContext.current
                 Spacer(Modifier.height(4.dp))
                 CampoBoveda(
                     valor = opciones.simbolosPersonalizados,
@@ -160,6 +163,7 @@ fun PanelModoAleatorio(
                                 .clickable {
                                     haptica.exito()
                                     alCambiarOpciones(opciones.copy(simbolosPersonalizados = PasswordGenerator.SIMBOLOS))
+                                    Toast.makeText(contexto, "Símbolos por defecto restaurados", Toast.LENGTH_SHORT).show()
                                 }
                         )
                     }

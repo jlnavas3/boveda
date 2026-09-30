@@ -1,17 +1,25 @@
 package com.jlnavas3.bovedalocal.ui
 
+import android.net.Uri
 import com.jlnavas3.bovedalocal.crypto.Zeroizar
+import com.jlnavas3.bovedalocal.data.AnalizadorDuplicados
 import com.jlnavas3.bovedalocal.data.VaultRepository
 import com.jlnavas3.bovedalocal.util.Diagnostico
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.withContext
 
+val uriBvdaGlobal = MutableStateFlow<Uri?>(null)
+
 interface VaultBackupDelegate {
     val repositorio: VaultRepository
     val avisoInterno: MutableStateFlow<String?>
     val errorInterno: MutableStateFlow<String?>
     fun ejecutar(bloque: suspend () -> Unit)
+
+    val uriBvdaPendiente: MutableStateFlow<Uri?> get() = uriBvdaGlobal
+    fun establecerUriBvdaPendiente(uri: Uri?) { uriBvdaGlobal.value = uri }
+    fun descartarUriBvdaPendiente() { uriBvdaGlobal.value = null }
 
     fun exportar(password: String, escritor: (ByteArray) -> Unit) {
         ejecutar {
@@ -48,14 +56,26 @@ interface VaultBackupDelegate {
         }
     }
 
-    fun importar(password: String, lector: () -> ByteArray) {
+    fun importar(
+        password: String,
+        onResultado: ((Int, Int) -> Unit)? = null,
+        lector: () -> ByteArray
+    ) {
         ejecutar {
             val chars = password.toCharArray()
             try {
                 val datos = withContext(Dispatchers.IO) { lector() }
                 val nuevas = withContext(Dispatchers.Default) { repositorio.importar(datos, chars) }
-                Diagnostico.apuntar("bóveda", "Bóveda importada desde copia cifrada ($nuevas entradas incorporadas)")
-                avisoInterno.value = "Importadas $nuevas entradas"
+                val duplicados = withContext(Dispatchers.Default) {
+                    AnalizadorDuplicados.analizar(repositorio.entradas()).size
+                }
+                Diagnostico.apuntar("bóveda", "Bóveda importada desde copia cifrada ($nuevas entradas incorporadas, $duplicados duplicados)")
+                if (duplicados > 0) {
+                    avisoInterno.value = "Importadas $nuevas entradas. Se detectaron duplicados."
+                } else {
+                    avisoInterno.value = "Importadas $nuevas entradas"
+                }
+                onResultado?.invoke(nuevas, duplicados)
             } catch (e: Exception) {
                 Diagnostico.apuntar("bóveda", "Fallo al importar archivo cifrado: contraseña incorrecta o archivo inválido", e)
                 errorInterno.value = "No se pudo importar: contraseña incorrecta o archivo inválido"

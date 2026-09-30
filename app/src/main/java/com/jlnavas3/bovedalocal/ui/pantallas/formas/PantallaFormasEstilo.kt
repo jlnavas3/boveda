@@ -49,7 +49,7 @@ fun PantallaFormasEstilo(
             colorIcono = ColorSeguridad,
             alRestablecer = {
                 haptica.tic()
-                vm.ajustarEstiloBorde("ninguno")
+                vm.restablecerEstiloBorde()
             },
             idGrupo = "02-APA-GEO-EST-G01",
             mostrarId = ajustes.mostrarIdsAjustes

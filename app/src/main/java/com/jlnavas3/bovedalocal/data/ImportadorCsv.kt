@@ -1,5 +1,7 @@
 package com.jlnavas3.bovedalocal.data
 
+import com.jlnavas3.bovedalocal.util.Dominios
+import com.jlnavas3.bovedalocal.util.LanzadorEnlaces
 import java.util.UUID
 
 /**
@@ -36,14 +38,34 @@ object ImportadorCsv {
             val usuario = campo(idxUsuario)
             val contrasena = campo(idxContrasena)
             val url = campo(idxUrl)
-            val titulo = campo(idxTitulo).ifBlank { url.ifBlank { usuario } }
+            val rawTitulo = campo(idxTitulo)
+
             if (usuario.isBlank() && contrasena.isBlank() && url.isBlank()) return@mapNotNull null
+
+            val urlsProcesadas = if (url.isNotBlank()) {
+                url.split(",", "\n", ";").map { it.trim() }.filter { it.isNotEmpty() }.map { u ->
+                    val paq = LanzadorEnlaces.extraerPaquete(u)
+                    if (paq != null && (u.startsWith("androidapp://", ignoreCase = true) || u.startsWith("android://", ignoreCase = true) || u.startsWith("app://", ignoreCase = true))) {
+                        "android://$paq"
+                    } else u
+                }
+            } else emptyList()
+
+            val titulo = when {
+                rawTitulo.isNotBlank() && !rawTitulo.startsWith("androidapp://", ignoreCase = true) && !rawTitulo.startsWith("android://", ignoreCase = true) -> rawTitulo
+                urlsProcesadas.any { LanzadorEnlaces.extraerPaquete(it) != null } -> {
+                    val paq = urlsProcesadas.firstNotNullOf { LanzadorEnlaces.extraerPaquete(it) }
+                    Dominios.dominioDePaquete(paq)
+                }
+                else -> url.ifBlank { usuario }
+            }
+
             Entrada(
                 id = UUID.randomUUID().toString(),
                 titulo = titulo,
                 usuario = usuario,
                 contrasena = contrasena,
-                urls = if (url.isNotBlank()) url.split(",", "\n", ";").map { it.trim() }.filter { it.isNotEmpty() } else emptyList(),
+                urls = urlsProcesadas,
                 notas = campo(idxNotas),
                 creadaEn = ahora,
                 modificadaEn = ahora

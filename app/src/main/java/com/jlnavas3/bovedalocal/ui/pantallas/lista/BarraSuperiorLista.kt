@@ -12,17 +12,18 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.automirrored.filled.Sort
+import androidx.compose.material.icons.filled.Backup
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.FileDownload
 import androidx.compose.material.icons.filled.FileUpload
-import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.Layers
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.Tune
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -39,6 +40,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.jlnavas3.bovedalocal.ui.componentes.ElementoMenuCompacto
+import com.jlnavas3.bovedalocal.ui.componentes.ElementoRetornoSubmenu
 import com.jlnavas3.bovedalocal.ui.componentes.MenuDesplegableBoveda
 import com.jlnavas3.bovedalocal.ui.componentes.SeparadorOpcionMenu
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorTarjetaAjustes
@@ -49,6 +52,11 @@ import com.jlnavas3.bovedalocal.ui.theme.Peligro
 import com.jlnavas3.bovedalocal.ui.theme.TextoPrincipal
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
 import com.jlnavas3.bovedalocal.util.Haptica
+
+private enum class SubmenuLista {
+    PRINCIPAL,
+    IMPORTAR_EXPORTAR
+}
 
 @Composable
 fun BarraSuperiorLista(
@@ -62,7 +70,6 @@ fun BarraSuperiorLista(
     mostrarIndicadoresContenido: Boolean,
     hayFiltrosParaRestablecer: Boolean,
     alAbrirMenu: () -> Unit,
-    alBloquear: () -> Unit,
     alAlternarBusqueda: () -> Unit,
     alMostrarOrdenacion: () -> Unit,
     alMostrarFiltros: () -> Unit,
@@ -70,6 +77,7 @@ fun BarraSuperiorLista(
     alIrOrganizacionGrupo: () -> Unit,
     alIrOrganizacionIndicadores: () -> Unit,
     alIrExportarSelectivo: () -> Unit,
+    alIrCopiaSeguridadManual: () -> Unit,
     alIrCopiaSeguridad: () -> Unit,
     alIrCsvGoogle: () -> Unit,
     alRestablecerFiltros: () -> Unit
@@ -77,6 +85,7 @@ fun BarraSuperiorLista(
     val contexto = LocalContext.current
     val haptica = remember { Haptica(contexto) }
     var menuOpcionesDesplegado by remember { mutableStateOf(false) }
+    var submenuActivo by remember { mutableStateOf(SubmenuLista.PRINCIPAL) }
 
     Row(
         modifier = Modifier
@@ -115,24 +124,6 @@ fun BarraSuperiorLista(
             )
         }
 
-        // Botón Bloquear (Candado)
-        IconButton(
-            onClick = { haptica.toque(); alBloquear() },
-            modifier = Modifier
-                .size(40.dp)
-                .clip(CircleShape)
-                .background(Peligro.copy(alpha = 0.12f))
-        ) {
-            Icon(
-                imageVector = Icons.Filled.Lock,
-                contentDescription = "Bloquear bóveda",
-                tint = Peligro,
-                modifier = Modifier.size(20.dp)
-            )
-        }
-
-        Spacer(Modifier.width(6.dp))
-
         // Botón Búsqueda (Lupa)
         IconButton(
             onClick = {
@@ -154,11 +145,12 @@ fun BarraSuperiorLista(
 
         Spacer(Modifier.width(6.dp))
 
-        // Botón Tres Puntos (Filtros y Ordenación)
+        // Botón Tres Puntos (Filtros, Ordenación y Ajustes Contextuales)
         Box {
             IconButton(
                 onClick = {
                     haptica.tic()
+                    submenuActivo = SubmenuLista.PRINCIPAL
                     menuOpcionesDesplegado = true
                 },
                 modifier = Modifier
@@ -176,135 +168,128 @@ fun BarraSuperiorLista(
 
             MenuDesplegableBoveda(
                 expanded = menuOpcionesDesplegado,
-                onDismissRequest = { menuOpcionesDesplegado = false },
-                modifier = Modifier.widthIn(min = 210.dp)
+                onDismissRequest = {
+                    menuOpcionesDesplegado = false
+                    submenuActivo = SubmenuLista.PRINCIPAL
+                },
+                modifier = Modifier.widthIn(min = 220.dp, max = 280.dp)
             ) {
-                DropdownMenuItem(
-                    leadingIcon = {
-                        Icon(Icons.AutoMirrored.Filled.Sort, contentDescription = null, tint = Ambar, modifier = Modifier.size(20.dp))
-                    },
-                    text = { Text("Ordenar por...", color = TextoPrincipal) },
-                    onClick = {
-                        menuOpcionesDesplegado = false
-                        alMostrarOrdenacion()
-                    }
-                )
-                SeparadorOpcionMenu()
-                DropdownMenuItem(
-                    leadingIcon = {
-                        Icon(Icons.Filled.Tune, contentDescription = null, tint = Ambar, modifier = Modifier.size(20.dp))
-                    },
-                    text = { Text("Filtrar por tipo...", color = TextoPrincipal) },
-                    onClick = {
-                        menuOpcionesDesplegado = false
-                        alMostrarFiltros()
-                    }
-                )
-                SeparadorOpcionMenu()
-                DropdownMenuItem(
-                    leadingIcon = {
-                        Icon(
-                            Icons.Filled.Star,
-                            contentDescription = null,
-                            tint = if (soloFavoritos) Ambar else ColorIconosInternos,
-                            modifier = Modifier.size(20.dp)
+                when (submenuActivo) {
+                    SubmenuLista.PRINCIPAL -> {
+                        ElementoMenuCompacto(
+                            texto = "Ordenar por...",
+                            icono = Icons.AutoMirrored.Filled.Sort,
+                            onClick = {
+                                menuOpcionesDesplegado = false
+                                alMostrarOrdenacion()
+                            }
                         )
-                    },
-                    text = {
-                        Text(
-                            if (soloFavoritos) "Ver todas las cuentas" else "Solo favoritos",
-                            color = if (soloFavoritos) Ambar else TextoPrincipal
+                        SeparadorOpcionMenu()
+                        ElementoMenuCompacto(
+                            texto = "Filtrar por tipo...",
+                            icono = Icons.Filled.Tune,
+                            onClick = {
+                                menuOpcionesDesplegado = false
+                                alMostrarFiltros()
+                            }
                         )
-                    },
-                    onClick = {
-                        menuOpcionesDesplegado = false
-                        haptica.tic()
-                        alAlternarSoloFavoritos()
-                    }
-                )
-                SeparadorOpcionMenu()
-                DropdownMenuItem(
-                    leadingIcon = {
-                        Icon(Icons.Filled.Tune, contentDescription = null, tint = Ambar, modifier = Modifier.size(20.dp))
-                    },
-                    text = {
-                        Text(
-                            if (agruparPorSitio) "Desagrupar cuentas" else "Agrupar cuentas",
-                            color = TextoPrincipal
+                        SeparadorOpcionMenu()
+                        ElementoMenuCompacto(
+                            texto = if (soloFavoritos) "Ver todas las cuentas" else "Solo favoritos",
+                            icono = Icons.Filled.Star,
+                            colorIcono = if (soloFavoritos) Ambar else ColorIconosInternos,
+                            colorTexto = if (soloFavoritos) Ambar else TextoPrincipal,
+                            onClick = {
+                                menuOpcionesDesplegado = false
+                                alAlternarSoloFavoritos()
+                            }
                         )
-                    },
-                    onClick = {
-                        menuOpcionesDesplegado = false
-                        haptica.tic()
-                        alIrOrganizacionGrupo()
-                    }
-                )
-                SeparadorOpcionMenu()
-                DropdownMenuItem(
-                    leadingIcon = {
-                        Icon(Icons.Filled.Tune, contentDescription = null, tint = Ambar, modifier = Modifier.size(20.dp))
-                    },
-                    text = {
-                        Text(
-                            if (mostrarIndicadoresContenido) "Esconder indicadores" else "Mostrar indicadores",
-                            color = TextoPrincipal
+                        SeparadorOpcionMenu()
+                        ElementoMenuCompacto(
+                            texto = if (agruparPorSitio) "Ajustes de agrupación..." else "Agrupar cuentas...",
+                            icono = androidx.compose.material.icons.Icons.Filled.Layers,
+                            colorIcono = Ambar,
+                            onClick = {
+                                menuOpcionesDesplegado = false
+                                alIrOrganizacionGrupo()
+                            }
                         )
-                    },
-                    onClick = {
-                        menuOpcionesDesplegado = false
-                        haptica.tic()
-                        alIrOrganizacionIndicadores()
-                    }
-                )
-                SeparadorOpcionMenu()
-                DropdownMenuItem(
-                    leadingIcon = {
-                        Icon(Icons.Filled.FileDownload, contentDescription = null, tint = Ambar, modifier = Modifier.size(20.dp))
-                    },
-                    text = { Text("Exportación selectiva", color = TextoPrincipal) },
-                    onClick = {
-                        menuOpcionesDesplegado = false
-                        haptica.tic()
-                        alIrExportarSelectivo()
-                    }
-                )
-                SeparadorOpcionMenu()
-                DropdownMenuItem(
-                    leadingIcon = {
-                        Icon(Icons.Filled.FileUpload, contentDescription = null, tint = Ambar, modifier = Modifier.size(20.dp))
-                    },
-                    text = { Text("Importar copia de seguridad", color = TextoPrincipal) },
-                    onClick = {
-                        menuOpcionesDesplegado = false
-                        haptica.tic()
-                        alIrCopiaSeguridad()
-                    }
-                )
-                SeparadorOpcionMenu()
-                DropdownMenuItem(
-                    leadingIcon = {
-                        Icon(Icons.Filled.FileUpload, contentDescription = null, tint = Ambar, modifier = Modifier.size(20.dp))
-                    },
-                    text = { Text("Importar contraseñas de Google", color = TextoPrincipal) },
-                    onClick = {
-                        menuOpcionesDesplegado = false
-                        haptica.tic()
-                        alIrCsvGoogle()
-                    }
-                )
-                if (hayFiltrosParaRestablecer) {
-                    SeparadorOpcionMenu()
-                    DropdownMenuItem(
-                        leadingIcon = {
-                            Icon(Icons.Filled.Close, contentDescription = null, tint = Peligro, modifier = Modifier.size(20.dp))
-                        },
-                        text = { Text("Restablecer filtros", color = Peligro) },
-                        onClick = {
-                            menuOpcionesDesplegado = false
-                            haptica.tic()
-                            alRestablecerFiltros()
+                        SeparadorOpcionMenu()
+                        ElementoMenuCompacto(
+                            texto = if (mostrarIndicadoresContenido) "Ajustes de indicadores..." else "Mostrar indicadores...",
+                            icono = androidx.compose.material.icons.Icons.Filled.Tune,
+                            colorIcono = Ambar,
+                            onClick = {
+                                menuOpcionesDesplegado = false
+                                alIrOrganizacionIndicadores()
+                            }
+                        )
+                        SeparadorOpcionMenu()
+                        ElementoMenuCompacto(
+                            texto = "Importar / exportar",
+                            icono = androidx.compose.material.icons.Icons.Filled.FileUpload,
+                            colorIcono = Ambar,
+                            iconoFinal = androidx.compose.material.icons.Icons.AutoMirrored.Filled.ArrowForward,
+                            onClick = {
+                                submenuActivo = SubmenuLista.IMPORTAR_EXPORTAR
+                            }
+                        )
+                        if (hayFiltrosParaRestablecer) {
+                            SeparadorOpcionMenu()
+                            ElementoMenuCompacto(
+                                texto = "Restablecer filtros",
+                                icono = Icons.Filled.Close,
+                                colorIcono = Peligro,
+                                colorTexto = Peligro,
+                                onClick = {
+                                    menuOpcionesDesplegado = false
+                                    alRestablecerFiltros()
+                                }
+                            )
                         }
-                    )
+                    }
+                    SubmenuLista.IMPORTAR_EXPORTAR -> {
+                        ElementoRetornoSubmenu(
+                            titulo = "Importar / exportar",
+                            alVolver = { submenuActivo = SubmenuLista.PRINCIPAL }
+                        )
+                        SeparadorOpcionMenu()
+                        ElementoMenuCompacto(
+                            texto = "Exportación selectiva",
+                            icono = Icons.Filled.FileDownload,
+                            onClick = {
+                                menuOpcionesDesplegado = false
+                                alIrExportarSelectivo()
+                            }
+                        )
+                        SeparadorOpcionMenu()
+                        ElementoMenuCompacto(
+                            texto = "Exportación manual (.bvda)",
+                            icono = androidx.compose.material.icons.Icons.Filled.Backup,
+                            onClick = {
+                                menuOpcionesDesplegado = false
+                                alIrCopiaSeguridadManual()
+                            }
+                        )
+                        SeparadorOpcionMenu()
+                        ElementoMenuCompacto(
+                            texto = "Importar copia de seguridad",
+                            icono = Icons.Filled.FileUpload,
+                            onClick = {
+                                menuOpcionesDesplegado = false
+                                alIrCopiaSeguridad()
+                            }
+                        )
+                        SeparadorOpcionMenu()
+                        ElementoMenuCompacto(
+                            texto = "Importar contraseñas de Google",
+                            icono = Icons.Filled.FileUpload,
+                            onClick = {
+                                menuOpcionesDesplegado = false
+                                alIrCsvGoogle()
+                            }
+                        )
+                    }
                 }
             }
         }

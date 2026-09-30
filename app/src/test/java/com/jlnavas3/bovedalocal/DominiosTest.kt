@@ -53,6 +53,14 @@ class DominiosTest {
     }
 
     @Test
+    fun `coincide entre paquetes android y esquemas android`() {
+        assertTrue(Dominios.coincide("android://com.dvdb.bergnotes", "com.dvdb.bergnotes"))
+        assertTrue(Dominios.coincide("com.dvdb.bergnotes", "android://com.dvdb.bergnotes"))
+        assertTrue(Dominios.coincide("android://hash@com.dvdb.bergnotes/", "com.dvdb.bergnotes"))
+        assertFalse(Dominios.coincide("android://com.otro.app", "com.dvdb.bergnotes"))
+    }
+
+    @Test
     fun `deriva un dominio desde el paquete de la app`() {
         assertEquals("ejemplo.com", Dominios.dominioDePaquete("com.ejemplo.android"))
         assertEquals("banco.es", Dominios.dominioDePaquete("es.banco"))

@@ -63,10 +63,7 @@ fun PantallaFormatosCampos(
                         ),
                         alRestablecerPantalla = {
                             haptica.tic()
-                            vm.ajustarFormatoFecha("DD/MM/AAAA")
-                            vm.ajustarFormatoHora("24h")
-                            vm.ajustarFormatoTelefono("### ### ####")
-                            vm.ajustarSeparadorDecimal(".")
+                            vm.restablecerFormatos()
                             vm.avisar("Plantillas de campos restablecidas")
                         }
                     )
@@ -116,10 +113,7 @@ fun PantallaFormatosCampos(
                     },
                     alRestablecerGrupo = {
                         haptica.tic()
-                        vm.ajustarFormatoFecha("DD/MM/AAAA")
-                        vm.ajustarFormatoHora("24h")
-                        vm.ajustarFormatoTelefono("### ### ####")
-                        vm.ajustarSeparadorDecimal(".")
+                        vm.restablecerFormatos()
                         vm.avisar("Plantillas de campos restablecidas")
                     }
                 )

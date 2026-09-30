@@ -1,5 +1,6 @@
 package com.jlnavas3.bovedalocal.ui.componentes.ajustes
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ChevronRight
@@ -9,6 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjusteGris
 import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
@@ -34,8 +36,10 @@ fun ComponenteBotonFila(
     valorTexto: String? = null,
     idFila: String? = null,
     mostrarId: Boolean = false,
-    habilitado: Boolean = true
+    habilitado: Boolean = true,
+    mensajeToastRestablecer: String? = null
 ) {
+    val contexto = LocalContext.current
     ComponenteFila(
         titulo = titulo,
         modifier = modifier,
@@ -46,7 +50,13 @@ fun ComponenteBotonFila(
         mostrarId = mostrarId,
         valorTexto = valorTexto,
         habilitado = habilitado,
-        alPulsar = alPulsar,
+        alPulsar = {
+            alPulsar()
+            if (icono == Icons.Filled.RestartAlt) {
+                val mensaje = mensajeToastRestablecer ?: "Restablecido: $titulo"
+                Toast.makeText(contexto, mensaje, Toast.LENGTH_SHORT).show()
+            }
+        },
         contenidoFinal = {
             Icon(
                 imageVector = Icons.Filled.ChevronRight,

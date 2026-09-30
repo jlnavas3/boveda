@@ -1,6 +1,7 @@
 package com.jlnavas3.bovedalocal.ui
 
 import android.app.Application
+import com.jlnavas3.bovedalocal.data.AjustesDefaults
 import com.jlnavas3.bovedalocal.data.VaultRepository
 import com.jlnavas3.bovedalocal.ui.theme.AlumbradoActivo
 import com.jlnavas3.bovedalocal.ui.theme.AlumbradoDuracionMs
@@ -136,24 +137,24 @@ interface VaultAjustesDelegate {
     fun restablecerAjustesEngranajes() {
         repositorio.ajustes.actualizar {
             it.copy(
-                engranajesVelocidad = 24f,
-                engranajesGrosorBorde = 0.7f,
-                engranajesAlturaDientes = 0.76f,
-                engranajesAnchoDientes = 1.00f,
-                engranajesGrosorRadios = 1.40f,
-                engranajesCurvaturaRadios = 1.00f,
-                engranajesCantidadRadios = 6,
-                engranajesRadioInterior = 0.80f,
-                engranajesTamanoEje = 1.23f,
-                engranajesSombraIntensidad = 0.95f,
-                engranajesColorBrillo = "#ABA799",
-                engranajesColorPrincipal = "#918D7E",
-                engranajesColorSombraMedio = "#635C57",
-                engranajesColorSombraOscuro = "#404038",
-                engranajesColorBisel = "#A5A19D",
-                engranajesColorInterior = "#00000000",
-                engranajesColorCubo = "#D3D1C8",
-                engranajesColorEje = "#141316"
+                engranajesVelocidad = AjustesDefaults.Animacion.Engranajes.VELOCIDAD,
+                engranajesGrosorBorde = AjustesDefaults.Animacion.Engranajes.GROSOR_BORDE,
+                engranajesAlturaDientes = AjustesDefaults.Animacion.Engranajes.ALTURA_DIENTES,
+                engranajesAnchoDientes = AjustesDefaults.Animacion.Engranajes.ANCHO_DIENTES,
+                engranajesGrosorRadios = AjustesDefaults.Animacion.Engranajes.GROSOR_RADIOS,
+                engranajesCurvaturaRadios = AjustesDefaults.Animacion.Engranajes.CURVATURA_RADIOS,
+                engranajesCantidadRadios = AjustesDefaults.Animacion.Engranajes.CANTIDAD_RADIOS,
+                engranajesRadioInterior = AjustesDefaults.Animacion.Engranajes.RADIO_INTERIOR,
+                engranajesTamanoEje = AjustesDefaults.Animacion.Engranajes.TAMANO_EJE,
+                engranajesSombraIntensidad = AjustesDefaults.Animacion.Engranajes.SOMBRA_INTENSIDAD,
+                engranajesColorBrillo = AjustesDefaults.Animacion.Engranajes.COLOR_BRILLO,
+                engranajesColorPrincipal = AjustesDefaults.Animacion.Engranajes.COLOR_PRINCIPAL,
+                engranajesColorSombraMedio = AjustesDefaults.Animacion.Engranajes.COLOR_SOMBRA_MEDIO,
+                engranajesColorSombraOscuro = AjustesDefaults.Animacion.Engranajes.COLOR_SOMBRA_OSCURO,
+                engranajesColorBisel = AjustesDefaults.Animacion.Engranajes.COLOR_BISEL,
+                engranajesColorInterior = AjustesDefaults.Animacion.Engranajes.COLOR_INTERIOR,
+                engranajesColorCubo = AjustesDefaults.Animacion.Engranajes.COLOR_CUBO,
+                engranajesColorEje = AjustesDefaults.Animacion.Engranajes.COLOR_EJE
             )
         }
     }
@@ -171,9 +172,9 @@ interface VaultAjustesDelegate {
     fun restablecerAjustesPuerta() {
         repositorio.ajustes.actualizar {
             it.copy(
-                puertaVelocidad = 1.0f,
-                puertaGrosorAnillos = 1.0f,
-                puertaColor = ""
+                puertaVelocidad = AjustesDefaults.Animacion.Puerta.VELOCIDAD,
+                puertaGrosorAnillos = AjustesDefaults.Animacion.Puerta.GROSOR_ANILLOS,
+                puertaColor = AjustesDefaults.Animacion.Puerta.COLOR
             )
         }
     }
@@ -241,20 +242,20 @@ interface VaultAjustesDelegate {
     fun restablecerColoresTema() {
         repositorio.ajustes.actualizar {
             it.copy(
-                colorAcento = "ambar",
-                colorIconosInternos = "",
-                colorTitulos = "",
-                colorTarjetas = "",
-                colorDinamicoSistema = true,
-                colorSeguridad = "",
-                colorArgon2 = "",
-                colorCamara = "",
-                color2FA = "",
-                colorPasskeys = "",
-                colorGenerador = "",
-                colorSalud = "",
-                colorPapelera = "",
-                colorExportacion = ""
+                colorAcento = AjustesDefaults.Tema.COLOR_ACENTO,
+                colorIconosInternos = AjustesDefaults.Tema.COLOR_ICONOS_INTERNOS,
+                colorTitulos = AjustesDefaults.Tema.COLOR_TITULOS,
+                colorTarjetas = AjustesDefaults.Tema.COLOR_TARJETAS,
+                colorDinamicoSistema = AjustesDefaults.Tema.COLOR_DINAMICO_SISTEMA,
+                colorSeguridad = AjustesDefaults.ColoresSecciones.SEGURIDAD,
+                colorArgon2 = AjustesDefaults.ColoresSecciones.ARGON2,
+                colorCamara = AjustesDefaults.ColoresSecciones.CAMARA,
+                color2FA = AjustesDefaults.ColoresSecciones.DOS_FA,
+                colorPasskeys = AjustesDefaults.ColoresSecciones.PASSKEYS,
+                colorGenerador = AjustesDefaults.ColoresSecciones.GENERADOR,
+                colorSalud = AjustesDefaults.ColoresSecciones.SALUD,
+                colorPapelera = AjustesDefaults.ColoresSecciones.PAPELERA,
+                colorExportacion = AjustesDefaults.ColoresSecciones.EXPORTACION
             )
         }
         aplicarPersonalizacionColores(repositorio.ajustes.actual)
@@ -324,8 +325,18 @@ interface VaultAjustesDelegate {
     }
 
     fun restablecerFormas() {
-        aplicarPresetFormas(curvatura = 16f, grosor = 1.0f, estilo = "ninguno", espaciado = 14f)
+        aplicarPresetFormas(
+            curvatura = AjustesDefaults.Formas.CURVATURA_ESQUINAS_DP,
+            grosor = AjustesDefaults.Formas.GROSOR_BORDE_DP,
+            estilo = AjustesDefaults.Formas.ESTILO_BORDE,
+            espaciado = AjustesDefaults.Formas.ESPACIADO_COMPONENTES_DP
+        )
     }
+
+    fun restablecerCurvaturaEsquinas() = ajustarCurvaturaEsquinas(AjustesDefaults.Formas.CURVATURA_ESQUINAS_DP)
+    fun restablecerGrosorBorde() = ajustarGrosorBorde(AjustesDefaults.Formas.GROSOR_BORDE_DP)
+    fun restablecerEstiloBorde() = ajustarEstiloBorde(AjustesDefaults.Formas.ESTILO_BORDE)
+    fun restablecerEspaciadoComponentes() = ajustarEspaciadoComponentes(AjustesDefaults.Formas.ESPACIADO_COMPONENTES_DP)
 
     // --- Personalización de Colores de Datos e Indicadores ---
     fun ajustarMostrarIndicadoresContenido(mostrar: Boolean) {
@@ -365,12 +376,13 @@ interface VaultAjustesDelegate {
     fun restablecerColoresDatos() {
         repositorio.ajustes.actualizar {
             it.copy(
-                colorDatosUsuario = "#0284C7",
-                colorDatosContrasena = "#0D9488",
-                colorDatos2FA = "#F97316",
-                colorDatosPasskey = "#8B5CF6",
-                colorDatosWeb = "#06B6D4",
-                colorDatosApp = "#10B981"
+                mostrarIndicadoresContenido = AjustesDefaults.ColoresDatos.MOSTRAR_INDICADORES,
+                colorDatosUsuario = AjustesDefaults.ColoresDatos.USUARIO,
+                colorDatosContrasena = AjustesDefaults.ColoresDatos.CONTRASENA,
+                colorDatos2FA = AjustesDefaults.ColoresDatos.DOS_FA,
+                colorDatosPasskey = AjustesDefaults.ColoresDatos.PASSKEY,
+                colorDatosWeb = AjustesDefaults.ColoresDatos.WEB,
+                colorDatosApp = AjustesDefaults.ColoresDatos.APP
             )
         }
         aplicarPersonalizacionColores(repositorio.ajustes.actual)
@@ -410,12 +422,12 @@ interface VaultAjustesDelegate {
     fun restablecerColoresIds() {
         repositorio.ajustes.actualizar {
             it.copy(
-                colorIdSeguridad = "#3F51B5",
-                colorIdApariencia = "#8E24AA",
-                colorIdLista = "#00897B",
-                colorIdHerramientas = "#FB8C00",
-                colorIdCopias = "#1E88E5",
-                colorIdSistema = "#607D8B"
+                colorIdSeguridad = AjustesDefaults.ColoresIds.SEGURIDAD,
+                colorIdApariencia = AjustesDefaults.ColoresIds.APARIENCIA,
+                colorIdLista = AjustesDefaults.ColoresIds.LISTA,
+                colorIdHerramientas = AjustesDefaults.ColoresIds.HERRAMIENTAS,
+                colorIdCopias = AjustesDefaults.ColoresIds.COPIAS,
+                colorIdSistema = AjustesDefaults.ColoresIds.SISTEMA
             )
         }
         aplicarPersonalizacionColores(repositorio.ajustes.actual)
@@ -475,14 +487,23 @@ interface VaultAjustesDelegate {
 
     fun restablecerTipografia() {
         aplicarPresetTipografia(
-            escala = 1.0f,
-            peso = "normal",
-            cursiva = false,
-            kerning = 0.0f,
-            interlineado = 1.0f,
-            familia = "sans"
+            escala = AjustesDefaults.Tipografia.ESCALA_TEXTO,
+            peso = AjustesDefaults.Tipografia.PESO_TEXTO,
+            cursiva = AjustesDefaults.Tipografia.CURSIVA_TEXTO,
+            kerning = AjustesDefaults.Tipografia.ESPACIADO_LETRAS_SP,
+            interlineado = AjustesDefaults.Tipografia.INTERLINEADO_FACTOR,
+            familia = AjustesDefaults.Tipografia.FAMILIA_FUENTE
         )
     }
+
+    fun restablecerEscalaTexto() = ajustarEscalaTexto(AjustesDefaults.Tipografia.ESCALA_TEXTO)
+    fun restablecerKerning() = ajustarEspaciadoLetras(AjustesDefaults.Tipografia.ESPACIADO_LETRAS_SP)
+    fun restablecerInterlineado() = ajustarInterlineadoFactor(AjustesDefaults.Tipografia.INTERLINEADO_FACTOR)
+    fun restablecerPesoTexto() {
+        ajustarPesoTexto(AjustesDefaults.Tipografia.PESO_TEXTO)
+        ajustarCursivaTexto(AjustesDefaults.Tipografia.CURSIVA_TEXTO)
+    }
+    fun restablecerFamiliaFuente() = ajustarFamiliaFuente(AjustesDefaults.Tipografia.FAMILIA_FUENTE)
 
     fun ajustarTema(clave: String) {
         repositorio.ajustes.actualizar {
@@ -576,20 +597,39 @@ interface VaultAjustesDelegate {
     fun restablecerAjustesIndiceAlfabetico() {
         repositorio.ajustes.actualizar {
             it.copy(
-                mostrarIndiceAlfabetico = true,
-                indiceEfectoOla = true,
-                indiceAmplitudOlaDp = 109f,
-                indiceRadioOlaDp = 169f,
-                indiceEscalaLetras = 1.5f,
-                indiceMostrarCirculo = true,
-                indiceTamanoCirculoDp = 50f,
-                indiceOffsetCirculoDp = 136f,
-                indiceHaptica = true,
-                indiceAnchoTactilDp = 45f,
-                indiceTonoLetras = 80f,
-                indiceIncluirEnie = true,
-                indiceResaltarEntradas = true,
-                indiceResaltarSoloPrimera = true
+                mostrarIndiceAlfabetico = AjustesDefaults.Indice.MOSTRAR,
+                indiceEfectoOla = AjustesDefaults.Indice.EFECTO_OLA,
+                indiceAmplitudOlaDp = AjustesDefaults.Indice.AMPLITUD_OLA_DP,
+                indiceRadioOlaDp = AjustesDefaults.Indice.RADIO_OLA_DP,
+                indiceEscalaLetras = AjustesDefaults.Indice.ESCALA_LETRAS,
+                indiceMostrarCirculo = AjustesDefaults.Indice.MOSTRAR_CIRCULO,
+                indiceTamanoCirculoDp = AjustesDefaults.Indice.TAMANO_CIRCULO_DP,
+                indiceOffsetCirculoDp = AjustesDefaults.Indice.OFFSET_CIRCULO_DP,
+                indiceHaptica = AjustesDefaults.Indice.HAPTICA,
+                indiceAnchoTactilDp = AjustesDefaults.Indice.ANCHO_TACTIL_DP,
+                indiceTonoLetras = AjustesDefaults.Indice.TONO_LETRAS,
+                indiceIncluirEnie = AjustesDefaults.Indice.INCLUIR_ENIE,
+                indiceResaltarEntradas = AjustesDefaults.Indice.RESALTAR_ENTRADAS,
+                indiceResaltarSoloPrimera = AjustesDefaults.Indice.RESALTAR_SOLO_PRIMERA
+            )
+        }
+    }
+
+    fun restablecerAmplitudOla() = ajustarIndiceAmplitudOlaDp(AjustesDefaults.Indice.AMPLITUD_OLA_DP)
+    fun restablecerRadioOla() = ajustarIndiceRadioOlaDp(AjustesDefaults.Indice.RADIO_OLA_DP)
+    fun restablecerEscalaLetrasIndice() = ajustarIndiceEscalaLetras(AjustesDefaults.Indice.ESCALA_LETRAS)
+    fun restablecerAnchoTactilIndice() = ajustarIndiceAnchoTactilDp(AjustesDefaults.Indice.ANCHO_TACTIL_DP)
+    fun restablecerTonoLetrasIndice() = ajustarIndiceTonoLetras(AjustesDefaults.Indice.TONO_LETRAS)
+    fun restablecerTamanoCirculoIndice() = ajustarIndiceTamanoCirculoDp(AjustesDefaults.Indice.TAMANO_CIRCULO_DP)
+    fun restablecerOffsetCirculoIndice() = ajustarIndiceOffsetCirculoDp(AjustesDefaults.Indice.OFFSET_CIRCULO_DP)
+
+    fun restablecerFormatos() {
+        repositorio.ajustes.actualizar {
+            it.copy(
+                formatoFecha = AjustesDefaults.ListaFormatos.FORMATO_FECHA,
+                formatoHora = AjustesDefaults.ListaFormatos.FORMATO_HORA,
+                formatoTelefono = AjustesDefaults.ListaFormatos.FORMATO_TELEFONO,
+                separadorDecimal = AjustesDefaults.ListaFormatos.SEPARADOR_DECIMAL
             )
         }
     }
@@ -789,18 +829,18 @@ interface VaultAjustesDelegate {
     fun aplicarPresetHonorWidget1x1() {
         repositorio.ajustes.actualizar {
             it.copy(
-                widget1x1GrosorBordeDp = 0f,
-                widget1x1CurvaturaEsquinasDp = 15f,
-                widget1x1AnchoDp = 55f,
-                widget1x1AltoDp = 51f,
-                widget1x1TamanoDp = 55f,
-                widget1x1BloquearProporcion = false,
-                widget1x1OffsetX = 0f,
-                widget1x1OffsetY = 4f,
-                widget1x1ColorBorde = "#33332E",
-                widget1x1ColorIcono = "#E6FCFF",
-                widget1x1ColorFondo = "#2E3333",
-                widget1x1Modo = "aleatoria"
+                widget1x1GrosorBordeDp = AjustesDefaults.Widget1x1.GROSOR_BORDE_DP,
+                widget1x1CurvaturaEsquinasDp = AjustesDefaults.Widget1x1.CURVATURA_ESQUINAS_DP,
+                widget1x1AnchoDp = AjustesDefaults.Widget1x1.ANCHO_DP,
+                widget1x1AltoDp = AjustesDefaults.Widget1x1.ALTO_DP,
+                widget1x1TamanoDp = AjustesDefaults.Widget1x1.TAMANO_DP,
+                widget1x1BloquearProporcion = AjustesDefaults.Widget1x1.BLOQUEAR_PROPORCION,
+                widget1x1OffsetX = AjustesDefaults.Widget1x1.OFFSET_X,
+                widget1x1OffsetY = AjustesDefaults.Widget1x1.OFFSET_Y,
+                widget1x1ColorBorde = AjustesDefaults.Widget1x1.COLOR_BORDE,
+                widget1x1ColorIcono = AjustesDefaults.Widget1x1.COLOR_ICONO,
+                widget1x1ColorFondo = AjustesDefaults.Widget1x1.COLOR_FONDO,
+                widget1x1Modo = AjustesDefaults.Widget1x1.MODO
             )
         }
         com.jlnavas3.bovedalocal.widget.WidgetGeneradorRapido.actualizarTodos(obtenerApp())
@@ -809,27 +849,29 @@ interface VaultAjustesDelegate {
     fun restablecerAjustesWidget1x1() {
         repositorio.ajustes.actualizar {
             it.copy(
-                widget1x1Haptica = true,
-                widget1x1HapticaIntensidad = 0.20f,
-                widget1x1Modo = "aleatoria",
-                widget1x1Longitud = 20,
-                widget1x1Patron = "XXXXX-XXXXX-XXXXX-XXXXX",
-                widget1x1Simbolos = "!@#$%&*()_-=+[]{}?/,.:;",
-                widget1x1CopiarPortapapeles = true,
-                widget1x1MostrarToast = true,
-                widget1x1GrosorBordeDp = 0f,
-                widget1x1CurvaturaEsquinasDp = 15f,
-                widget1x1TransparenciaFondo = 1.0f,
-                widget1x1TamanoDp = 55f,
-                widget1x1AnchoDp = 55f,
-                widget1x1AltoDp = 51f,
-                widget1x1BloquearProporcion = false,
-                widget1x1OffsetX = 0f,
-                widget1x1OffsetY = 4f,
-                widget1x1Alineamiento = "arriba",
-                widget1x1ColorBorde = "#33332E",
-                widget1x1ColorIcono = "#E6FCFF",
-                widget1x1ColorFondo = "#2E3333"
+                widget1x1Haptica = AjustesDefaults.Widget1x1.HAPTICA,
+                widget1x1HapticaIntensidad = AjustesDefaults.Widget1x1.HAPTICA_INTENSIDAD,
+                widget1x1Modo = AjustesDefaults.Widget1x1.MODO,
+                widget1x1Longitud = AjustesDefaults.Widget1x1.LONGITUD,
+                widget1x1Patron = AjustesDefaults.Widget1x1.PATRON,
+                widget1x1Simbolos = AjustesDefaults.Widget1x1.SIMBOLOS,
+                widget1x1CopiarPortapapeles = AjustesDefaults.Widget1x1.COPIAR_PORTAPAPELES,
+                widget1x1MostrarToast = AjustesDefaults.Widget1x1.MOSTRAR_TOAST,
+                widget1x1GrosorBordeDp = AjustesDefaults.Widget1x1.GROSOR_BORDE_DP,
+                widget1x1CurvaturaEsquinasDp = AjustesDefaults.Widget1x1.CURVATURA_ESQUINAS_DP,
+                widget1x1TransparenciaFondo = AjustesDefaults.Widget1x1.TRANSPARENCIA_FONDO,
+                widget1x1TamanoDp = AjustesDefaults.Widget1x1.TAMANO_DP,
+                widget1x1AnchoDp = AjustesDefaults.Widget1x1.ANCHO_DP,
+                widget1x1AltoDp = AjustesDefaults.Widget1x1.ALTO_DP,
+                widget1x1BloquearProporcion = AjustesDefaults.Widget1x1.BLOQUEAR_PROPORCION,
+                widget1x1OffsetX = AjustesDefaults.Widget1x1.OFFSET_X,
+                widget1x1OffsetY = AjustesDefaults.Widget1x1.OFFSET_Y,
+                widget1x1Alineamiento = AjustesDefaults.Widget1x1.ALINEAMIENTO,
+                widget1x1ColorBorde = AjustesDefaults.Widget1x1.COLOR_BORDE,
+                widget1x1ColorIcono = AjustesDefaults.Widget1x1.COLOR_ICONO,
+                widget1x1ColorFondo = AjustesDefaults.Widget1x1.COLOR_FONDO,
+                widget1x1DicewarePalabras = AjustesDefaults.Widget1x1.DICEWARE_PALABRAS,
+                widget1x1DicewareSeparador = AjustesDefaults.Widget1x1.DICEWARE_SEPARADOR
             )
         }
         com.jlnavas3.bovedalocal.widget.WidgetGeneradorRapido.actualizarTodos(obtenerApp())
@@ -838,20 +880,207 @@ interface VaultAjustesDelegate {
     fun restablecerAjustesWidget() {
         repositorio.ajustes.actualizar {
             it.copy(
-                widgetGrosorBordeDp = 0f,
-                widgetCurvaturaEsquinasDp = 0f,
-                widgetTransparenciaFondo = 0.50f,
-                widgetColorBorde = "#FFB300",
-                widgetColorContador = "#FFFFFF",
-                widgetColorCodigo = "#FFB300",
-                widgetColorTituloIcono = "#FFFFFF",
-                widgetColorFilas = "#00000000",
-                widgetTransparenciaFilas = 0.0f,
-                widgetHaptica = true,
-                widgetHapticaIntensidad = 0.20f
+                widgetGrosorBordeDp = AjustesDefaults.WidgetTotp.GROSOR_BORDE_DP,
+                widgetCurvaturaEsquinasDp = AjustesDefaults.WidgetTotp.CURVATURA_ESQUINAS_DP,
+                widgetTransparenciaFondo = AjustesDefaults.WidgetTotp.TRANSPARENCIA_FONDO,
+                widgetColorBorde = AjustesDefaults.WidgetTotp.COLOR_BORDE,
+                widgetColorContador = AjustesDefaults.WidgetTotp.COLOR_CONTADOR,
+                widgetColorCodigo = AjustesDefaults.WidgetTotp.COLOR_CODIGO,
+                widgetColorTituloIcono = AjustesDefaults.WidgetTotp.COLOR_TITULO_ICONO,
+                widgetColorFilas = AjustesDefaults.WidgetTotp.COLOR_FILAS,
+                widgetTransparenciaFilas = AjustesDefaults.WidgetTotp.TRANSPARENCIA_FILAS,
+                widgetHaptica = AjustesDefaults.WidgetTotp.HAPTICA,
+                widgetHapticaIntensidad = AjustesDefaults.WidgetTotp.HAPTICA_INTENSIDAD
             )
         }
         com.jlnavas3.bovedalocal.widget.WidgetTotpFavoritos.actualizarTodos(obtenerApp())
+    }
+
+    fun restablecerColoresWidgetTotp() {
+        repositorio.ajustes.actualizar {
+            it.copy(
+                widgetColorBorde = AjustesDefaults.WidgetTotp.COLOR_BORDE,
+                widgetColorContador = AjustesDefaults.WidgetTotp.COLOR_CONTADOR,
+                widgetColorCodigo = AjustesDefaults.WidgetTotp.COLOR_CODIGO,
+                widgetColorTituloIcono = AjustesDefaults.WidgetTotp.COLOR_TITULO_ICONO,
+                widgetColorFilas = AjustesDefaults.WidgetTotp.COLOR_FILAS
+            )
+        }
+        com.jlnavas3.bovedalocal.widget.WidgetTotpFavoritos.actualizarTodos(obtenerApp())
+    }
+
+    fun restablecerFormaWidgetTotp() {
+        repositorio.ajustes.actualizar {
+            it.copy(
+                widgetGrosorBordeDp = AjustesDefaults.WidgetTotp.GROSOR_BORDE_DP,
+                widgetCurvaturaEsquinasDp = AjustesDefaults.WidgetTotp.CURVATURA_ESQUINAS_DP,
+                widgetTransparenciaFondo = AjustesDefaults.WidgetTotp.TRANSPARENCIA_FONDO,
+                widgetTransparenciaFilas = AjustesDefaults.WidgetTotp.TRANSPARENCIA_FILAS
+            )
+        }
+        com.jlnavas3.bovedalocal.widget.WidgetTotpFavoritos.actualizarTodos(obtenerApp())
+    }
+
+    fun restablecerAspectoWidget1x1() {
+        repositorio.ajustes.actualizar {
+            it.copy(
+                widget1x1GrosorBordeDp = AjustesDefaults.Widget1x1.GROSOR_BORDE_DP,
+                widget1x1CurvaturaEsquinasDp = AjustesDefaults.Widget1x1.CURVATURA_ESQUINAS_DP,
+                widget1x1TransparenciaFondo = AjustesDefaults.Widget1x1.TRANSPARENCIA_FONDO
+            )
+        }
+        com.jlnavas3.bovedalocal.widget.WidgetGeneradorRapido.actualizarTodos(obtenerApp())
+    }
+
+    fun restablecerDimensionesWidget1x1() {
+        repositorio.ajustes.actualizar {
+            it.copy(
+                widget1x1AnchoDp = AjustesDefaults.Widget1x1.ANCHO_DP,
+                widget1x1AltoDp = AjustesDefaults.Widget1x1.ALTO_DP,
+                widget1x1BloquearProporcion = AjustesDefaults.Widget1x1.BLOQUEAR_PROPORCION,
+                widget1x1Alineamiento = AjustesDefaults.Widget1x1.ALINEAMIENTO,
+                widget1x1OffsetY = AjustesDefaults.Widget1x1.OFFSET_Y,
+                widget1x1OffsetX = AjustesDefaults.Widget1x1.OFFSET_X
+            )
+        }
+        com.jlnavas3.bovedalocal.widget.WidgetGeneradorRapido.actualizarTodos(obtenerApp())
+    }
+
+    fun restablecerModoGeneracionWidget1x1() {
+        repositorio.ajustes.actualizar {
+            it.copy(
+                widget1x1Modo = AjustesDefaults.Widget1x1.MODO,
+                widget1x1Longitud = AjustesDefaults.Widget1x1.LONGITUD,
+                widget1x1Simbolos = AjustesDefaults.Widget1x1.SIMBOLOS,
+                widget1x1DicewarePalabras = AjustesDefaults.Widget1x1.DICEWARE_PALABRAS,
+                widget1x1DicewareSeparador = AjustesDefaults.Widget1x1.DICEWARE_SEPARADOR,
+                widget1x1Patron = AjustesDefaults.Widget1x1.PATRON
+            )
+        }
+        com.jlnavas3.bovedalocal.widget.WidgetGeneradorRapido.actualizarTodos(obtenerApp())
+    }
+
+    fun restablecerComportamientoWidget1x1() {
+        repositorio.ajustes.actualizar {
+            it.copy(
+                widget1x1CopiarPortapapeles = AjustesDefaults.Widget1x1.COPIAR_PORTAPAPELES,
+                widget1x1MostrarToast = AjustesDefaults.Widget1x1.MOSTRAR_TOAST,
+                widget1x1Haptica = AjustesDefaults.Widget1x1.HAPTICA,
+                widget1x1HapticaIntensidad = AjustesDefaults.Widget1x1.HAPTICA_INTENSIDAD
+            )
+        }
+        com.jlnavas3.bovedalocal.widget.WidgetGeneradorRapido.actualizarTodos(obtenerApp())
+    }
+
+    fun restablecerColoresWidget1x1() {
+        repositorio.ajustes.actualizar {
+            it.copy(
+                widget1x1ColorBorde = AjustesDefaults.Widget1x1.COLOR_BORDE,
+                widget1x1ColorIcono = AjustesDefaults.Widget1x1.COLOR_ICONO,
+                widget1x1ColorFondo = AjustesDefaults.Widget1x1.COLOR_FONDO
+            )
+        }
+        com.jlnavas3.bovedalocal.widget.WidgetGeneradorRapido.actualizarTodos(obtenerApp())
+    }
+
+    fun restablecerGeometriaPuerta() {
+        repositorio.ajustes.actualizar {
+            it.copy(
+                puertaVelocidad = AjustesDefaults.Animacion.Puerta.VELOCIDAD,
+                puertaGrosorAnillos = AjustesDefaults.Animacion.Puerta.GROSOR_ANILLOS
+            )
+        }
+    }
+
+    fun restablecerColorPuerta() = ajustarPuertaColor(AjustesDefaults.Animacion.Puerta.COLOR)
+
+    fun restablecerOrganizacionLista() {
+        repositorio.ajustes.actualizar {
+            it.copy(
+                agruparPorSitio = AjustesDefaults.ListaFormatos.AGRUPAR_POR_SITIO,
+                mostrarIndicadoresContenido = AjustesDefaults.ColoresDatos.MOSTRAR_INDICADORES,
+                densidadLista = AjustesDefaults.ListaFormatos.DENSIDAD_LISTA,
+                criterioOrdenacion = AjustesDefaults.ListaFormatos.CRITERIO_ORDENACION
+            )
+        }
+    }
+
+    fun restablecerAjustesBackup() {
+        repositorio.ajustes.actualizar {
+            it.copy(
+                backupAutoFrecuenciaDias = AjustesDefaults.HistorialCopias.BACKUP_AUTO_FRECUENCIA_DIAS,
+                backupAutoMaxCopias = AjustesDefaults.HistorialCopias.BACKUP_AUTO_MAX_COPIAS,
+                backupAutoPatronNombre = AjustesDefaults.HistorialCopias.BACKUP_AUTO_PATRON_NOMBRE
+            )
+        }
+    }
+
+    fun restablecerTotpManual() {
+        repositorio.ajustes.actualizar {
+            it.copy(
+                totpManualDigitos = AjustesDefaults.TotpManual.DIGITOS,
+                totpManualPeriodo = AjustesDefaults.TotpManual.PERIODO,
+                totpManualAlgoritmo = AjustesDefaults.TotpManual.ALGORITMO,
+                totpSepararDigitos = AjustesDefaults.TotpManual.SEPARAR_DIGITOS
+            )
+        }
+    }
+
+    fun restablecerTile() {
+        repositorio.ajustes.actualizar {
+            it.copy(
+                tileModo = AjustesDefaults.Tile.MODO,
+                tileLongitud = AjustesDefaults.Tile.LONGITUD,
+                tilePatron = AjustesDefaults.Tile.PATRON,
+                tileSimbolos = AjustesDefaults.Tile.SIMBOLOS,
+                tileDicewarePalabras = AjustesDefaults.Tile.DICEWARE_PALABRAS,
+                tileDicewareSeparador = AjustesDefaults.Tile.DICEWARE_SEPARADOR,
+                tileCopiarPortapapeles = AjustesDefaults.Tile.COPIAR_PORTAPAPELES,
+                tileMostrarToast = AjustesDefaults.Tile.MOSTRAR_TOAST,
+                tileHaptica = AjustesDefaults.Tile.HAPTICA,
+                tileHapticaIntensidad = AjustesDefaults.Tile.HAPTICA_INTENSIDAD
+            )
+        }
+    }
+
+    fun restablecerHapticaApp() {
+        repositorio.ajustes.actualizar {
+            it.copy(
+                hapticaApp = AjustesDefaults.Interaccion.HAPTICA_APP,
+                hapticaAppIntensidad = AjustesDefaults.Interaccion.HAPTICA_APP_INTENSIDAD
+            )
+        }
+    }
+
+    fun restablecerAlumbrado() {
+        repositorio.ajustes.actualizar {
+            it.copy(
+                alumbradoActivo = AjustesDefaults.Interaccion.ALUMBRADO_ACTIVO,
+                alumbradoIntensidad = AjustesDefaults.Interaccion.ALUMBRADO_INTENSIDAD,
+                alumbradoRepeticiones = AjustesDefaults.Interaccion.ALUMBRADO_REPETICIONES,
+                alumbradoDuracionMs = AjustesDefaults.Interaccion.ALUMBRADO_DURACION_MS
+            )
+        }
+    }
+
+    fun restablecerBloqueoApp() {
+        ajustarAutoBloqueo(AjustesDefaults.Seguridad.AUTO_BLOQUEO_SEGUNDOS)
+        ajustarProteccionPantalla(AjustesDefaults.Seguridad.PROTECCION_PANTALLA)
+    }
+    fun restablecerPortapapeles() = ajustarPortapapeles(AjustesDefaults.Seguridad.PORTAPAPELES_SEGUNDOS)
+    fun restablecerCamara() = ajustarMotorCamara(AjustesDefaults.Seguridad.MOTOR_CAMARA)
+    fun restablecerArgon2() = repositorio.ajustes.actualizar { it.copy(perfilArgon2 = AjustesDefaults.Seguridad.PERFIL_ARGON2) }
+    fun restablecerIconoLauncher() = ajustarIconoLauncher(AjustesDefaults.Tema.ICONO_LAUNCHER)
+    fun restablecerAnimacionDesbloqueo() = ajustarAnimacionDesbloqueo(AjustesDefaults.Animacion.TIPO_DESBLOQUEO)
+
+    fun restablecerHistorialClavesConfig() {
+        repositorio.ajustes.actualizar {
+            it.copy(
+                historialClavesMax = AjustesDefaults.HistorialCopias.HISTORIAL_MAX,
+                historialClavesVaciadoAuto = AjustesDefaults.HistorialCopias.HISTORIAL_VACIADO_AUTO,
+                historialClavesTiempoAutoDestruccion = AjustesDefaults.HistorialCopias.HISTORIAL_TIEMPO_AUTO_DESTRUCCION_MS
+            )
+        }
     }
 
     fun ajustarHistorialClavesMax(max: Int) {

@@ -63,7 +63,7 @@ fun PantallaFormasCurvatura(
             colorIcono = ColorGenerador,
             alRestablecer = {
                 haptica.tic()
-                vm.ajustarCurvaturaEsquinas(16f)
+                vm.restablecerCurvaturaEsquinas()
             },
             idGrupo = "02-APA-GEO-CRV-G01",
             mostrarId = ajustes.mostrarIdsAjustes
@@ -79,7 +79,7 @@ fun PantallaFormasCurvatura(
                 alCambiar = { vm.ajustarCurvaturaEsquinas(it) },
                 alRestablecer = {
                     haptica.tic()
-                    vm.ajustarCurvaturaEsquinas(16f)
+                    vm.restablecerCurvaturaEsquinas()
                 }
             )
         }

@@ -51,8 +51,21 @@ import com.jlnavas3.bovedalocal.ui.theme.ColorSalud
 import com.jlnavas3.bovedalocal.ui.theme.ColorSeguridad
 import com.jlnavas3.bovedalocal.ui.theme.Menta
 import com.jlnavas3.bovedalocal.ui.theme.Peligro
+import com.jlnavas3.bovedalocal.ui.componentes.AccionDeslizamiento
+import com.jlnavas3.bovedalocal.ui.componentes.ContenedorDeslizamientoBoveda
+import com.jlnavas3.bovedalocal.ui.pantallas.lista.IndicadorContenidoTarjeta
+import com.jlnavas3.bovedalocal.ui.theme.FormaPequena
 import com.jlnavas3.bovedalocal.ui.theme.colorLegibleParaTema
 import com.jlnavas3.bovedalocal.ui.theme.fondoBadgeParaTema
+import com.jlnavas3.bovedalocal.util.IconoAppCircular
+import com.jlnavas3.bovedalocal.util.rememberIconoAppInstalada
+import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.foundation.border
+import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorTarjetaAjustes
+import com.jlnavas3.bovedalocal.ui.theme.CurvaturaEsquinas
+import com.jlnavas3.bovedalocal.ui.theme.GrosorBorde
+import com.jlnavas3.bovedalocal.ui.theme.EstiloBorde
+import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
 import java.util.concurrent.TimeUnit
 
 fun diasDesde(momento: Long, ahora: Long): Long =
@@ -64,7 +77,9 @@ fun FilaPapeleraNativa(
     diasRestantes: Long,
     alRestaurar: () -> Unit,
     alBorrarDefinitivo: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    mostrarIndicadores: Boolean = false,
+    enGrupo: Boolean = true
 ) {
     val icono = when (entrada.tipo) {
         TipoEntrada.LOGIN -> Icons.Filled.Lock
@@ -94,97 +109,110 @@ fun FilaPapeleraNativa(
         entrada.urls.firstOrNull() ?: entrada.tipo.etiqueta
     }
 
-    Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 12.dp),
-        verticalAlignment = Alignment.CenterVertically
+    val forma = if (enGrupo) RectangleShape else RoundedCornerShape(CurvaturaEsquinas)
+    val fondo = if (enGrupo) androidx.compose.ui.graphics.Color.Transparent else ColorTarjetaAjustes
+
+    ContenedorDeslizamientoBoveda(
+        idItem = entrada.id,
+        modifier = modifier,
+        forma = forma,
+        enGrupo = enGrupo,
+        accionIzquierda = AccionDeslizamiento(
+            texto = "Restaurar",
+            icono = Icons.Filled.Restore,
+            color = Menta,
+            alEjecutar = alRestaurar
+        ),
+        accionDerecha = AccionDeslizamiento(
+            texto = "Eliminar\nDefinitivo",
+            icono = Icons.Filled.DeleteForever,
+            color = Peligro,
+            alEjecutar = alBorrarDefinitivo
+        )
     ) {
         Box(
             modifier = Modifier
-                .size(38.dp)
-                .clip(RoundedCornerShape(10.dp))
-                .background(fondoBadgeParaTema(colorIcono)),
-            contentAlignment = Alignment.Center
-        ) {
-            Icon(
-                imageVector = icono,
-                contentDescription = null,
-                tint = colorLegibleParaTema(colorIcono),
-                modifier = Modifier.size(20.dp)
-            )
-        }
-
-        Spacer(Modifier.width(12.dp))
-
-        Column(modifier = Modifier.weight(1f)) {
-            Text(
-                text = entrada.titulo.ifBlank { "Sin título" },
-                color = ColorTextoAjustes,
-                style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold),
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
-            Text(
-                text = subtitulo,
-                color = ColorAjusteGris,
-                style = MaterialTheme.typography.bodySmall,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
-            Spacer(Modifier.height(2.dp))
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(4.dp)
-            ) {
-                Icon(
-                    imageVector = Icons.Filled.Schedule,
-                    contentDescription = null,
-                    tint = if (diasRestantes <= 3) Peligro else ColorAjusteGris,
-                    modifier = Modifier.size(12.dp)
+                .fillMaxWidth()
+                .clip(forma)
+                .background(fondo)
+                .then(
+                    if (!enGrupo && GrosorBorde > 0.dp && EstiloBorde != "ninguno") {
+                        Modifier.border(GrosorBorde, ColorBordeActual, forma)
+                    } else Modifier
                 )
-                Text(
-                    text = if (diasRestantes > 0) "Expira en $diasRestantes días" else "Expira en cualquier momento",
-                    color = if (diasRestantes <= 3) Peligro else ColorAjusteGris,
-                    style = MaterialTheme.typography.labelSmall.copy(fontSize = 11.sp)
+        ) {
+            if (mostrarIndicadores) {
+                IndicadorContenidoTarjeta(
+                    entrada = entrada,
+                    modifier = Modifier.align(Alignment.TopCenter)
                 )
             }
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 12.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+            val iconoApp = rememberIconoAppInstalada(entrada)
+            if (iconoApp != null) {
+                IconoAppCircular(
+                    bitmap = iconoApp,
+                    descripcion = entrada.titulo,
+                    tamanoDp = 38.dp
+                )
+            } else {
+                Box(
+                    modifier = Modifier
+                        .size(38.dp)
+                        .clip(FormaPequena)
+                        .background(fondoBadgeParaTema(colorIcono)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = icono,
+                        contentDescription = null,
+                        tint = colorLegibleParaTema(colorIcono),
+                        modifier = Modifier.size(20.dp)
+                    )
+                }
+            }
+
+            Spacer(Modifier.width(12.dp))
+
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = entrada.titulo.ifBlank { "Sin título" },
+                    color = ColorTextoAjustes,
+                    style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+                Text(
+                    text = subtitulo,
+                    color = ColorAjusteGris,
+                    style = MaterialTheme.typography.bodySmall,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+                Spacer(Modifier.height(2.dp))
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.Schedule,
+                        contentDescription = null,
+                        tint = if (diasRestantes <= 3) Peligro else ColorAjusteGris,
+                        modifier = Modifier.size(12.dp)
+                    )
+                    Text(
+                        text = if (diasRestantes > 0) "Expira en $diasRestantes días" else "Expira en cualquier momento",
+                        color = if (diasRestantes <= 3) Peligro else ColorAjusteGris,
+                        style = MaterialTheme.typography.labelSmall.copy(fontSize = 11.sp)
+                    )
+                }
+            }
         }
-
-        Spacer(Modifier.width(8.dp))
-
-        // Botón Restaurar
-        IconButton(
-            onClick = alRestaurar,
-            modifier = Modifier
-                .size(36.dp)
-                .clip(CircleShape)
-                .background(fondoBadgeParaTema(Menta))
-        ) {
-            Icon(
-                imageVector = Icons.Filled.Restore,
-                contentDescription = "Restaurar",
-                tint = colorLegibleParaTema(Menta),
-                modifier = Modifier.size(18.dp)
-            )
-        }
-
-        Spacer(Modifier.width(6.dp))
-
-        // Botón Borrar Definitivo
-        IconButton(
-            onClick = alBorrarDefinitivo,
-            modifier = Modifier
-                .size(36.dp)
-                .clip(CircleShape)
-                .background(fondoBadgeParaTema(Peligro))
-        ) {
-            Icon(
-                imageVector = Icons.Filled.DeleteForever,
-                contentDescription = "Borrar",
-                tint = colorLegibleParaTema(Peligro),
-                modifier = Modifier.size(18.dp)
-            )
         }
     }
 }

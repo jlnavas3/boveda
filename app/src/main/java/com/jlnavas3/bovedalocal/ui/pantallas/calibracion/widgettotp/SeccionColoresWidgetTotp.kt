@@ -34,6 +34,10 @@ import com.jlnavas3.bovedalocal.ui.VaultViewModel
 import com.jlnavas3.bovedalocal.ui.componentes.SelectorColorEnTiempoReal
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteGrupo
 import com.jlnavas3.bovedalocal.ui.theme.Color2FA
+import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
+import com.jlnavas3.bovedalocal.ui.theme.EstiloBorde
+import com.jlnavas3.bovedalocal.ui.theme.FormaPequena
+import com.jlnavas3.bovedalocal.ui.theme.GrosorBorde
 import com.jlnavas3.bovedalocal.ui.theme.SuperficieAlta
 import com.jlnavas3.bovedalocal.ui.theme.TextoPrincipal
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
@@ -70,11 +74,7 @@ fun SeccionColoresWidgetTotp(
         mostrarId = ajustes.mostrarIdsAjustes,
         alRestablecer = {
             haptica.tic()
-            vm.ajustarWidgetColorBorde("#FFB300")
-            vm.ajustarWidgetColorContador("#FFFFFF")
-            vm.ajustarWidgetColorCodigo("#FFB300")
-            vm.ajustarWidgetColorTituloIcono("#FFFFFF")
-            vm.ajustarWidgetColorFilas("#00000000")
+            vm.restablecerColoresWidgetTotp()
         },
         modifier = modifier
     ) {
@@ -95,10 +95,11 @@ fun SeccionColoresWidgetTotp(
                     Box(
                         modifier = Modifier
                             .weight(1f)
-                            .clip(RoundedCornerShape(10.dp))
+                            .clip(FormaPequena)
                             .background(if (seleccionado) color.copy(alpha = 0.22f) else SuperficieAlta)
                             .then(
-                                if (seleccionado) Modifier.border(1.5.dp, color, RoundedCornerShape(10.dp))
+                                if (seleccionado) Modifier.border(GrosorBorde.coerceAtLeast(1.dp), color, FormaPequena)
+                                else if (GrosorBorde > 0.dp && EstiloBorde != "ninguno") Modifier.border(GrosorBorde, ColorBordeActual, FormaPequena)
                                 else Modifier
                             )
                             .clickable {
@@ -112,7 +113,7 @@ fun SeccionColoresWidgetTotp(
                             Box(
                                 modifier = Modifier
                                     .size(16.dp)
-                                    .clip(RoundedCornerShape(4.dp))
+                                    .clip(FormaPequena)
                                     .background(color)
                             )
                             Spacer(Modifier.height(4.dp))

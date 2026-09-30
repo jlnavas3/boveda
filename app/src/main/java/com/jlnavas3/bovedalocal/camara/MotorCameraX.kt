@@ -117,6 +117,30 @@ class MotorCameraX(
         armarVigilante()
     }
 
+    fun tieneFlash(): Boolean {
+        return try {
+            camara?.cameraInfo?.hasFlashUnit() == true
+        } catch (_: Exception) {
+            false
+        }
+    }
+
+    fun alternarFlash(encendido: Boolean) {
+        try {
+            camara?.cameraControl?.enableTorch(encendido)
+        } catch (e: Exception) {
+            Diagnostico.apuntar("camara", "CameraX: error al cambiar flash ($encendido)", e)
+        }
+    }
+
+    fun ajustarZoom(zoomRatio: Float) {
+        try {
+            camara?.cameraControl?.setLinearZoom(zoomRatio.coerceIn(0f, 1f))
+        } catch (e: Exception) {
+            Diagnostico.apuntar("camara", "CameraX: error al cambiar zoom ($zoomRatio)", e)
+        }
+    }
+
     private fun crearAnalisis(): ImageAnalysis {
         val resolucion = ResolutionSelector.Builder()
             .setResolutionStrategy(

@@ -21,7 +21,7 @@ fun GrupoMemoriaAlmacenamiento(
         etiqueta = "Memoria y almacenamiento local",
         icono = Icons.Filled.SdCard,
         colorIcono = Color(0xFF607D8B),
-        idGrupo = "06.3.G4",
+        idGrupo = "06-SIS-DGN-G04",
         mostrarId = mostrarIdsAjustes,
         modifier = modifier
     ) {

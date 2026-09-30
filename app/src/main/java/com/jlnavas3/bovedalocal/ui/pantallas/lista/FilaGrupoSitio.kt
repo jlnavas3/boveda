@@ -32,7 +32,11 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorTarjetaAjustes
 import com.jlnavas3.bovedalocal.ui.theme.Ambar
+import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
 import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
+import com.jlnavas3.bovedalocal.ui.theme.CurvaturaEsquinas
+import com.jlnavas3.bovedalocal.ui.theme.EstiloBorde
+import com.jlnavas3.bovedalocal.ui.theme.GrosorBorde
 import com.jlnavas3.bovedalocal.ui.theme.TextoPrincipal
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
 
@@ -47,7 +51,7 @@ fun FilaGrupoSitio(
     alAlternar: () -> Unit
 ) {
     val compacta = alturaFila.value <= 48f
-    val forma = RoundedCornerShape(16.dp)
+    val forma = RoundedCornerShape(CurvaturaEsquinas)
     val tamanoIcono = if (compacta) 32 else if (alturaFila.value <= 64f) 36 else 40
 
     Row(
@@ -57,7 +61,9 @@ fun FilaGrupoSitio(
             .clip(forma)
             .background(if (resaltado) Ambar.copy(alpha = 0.16f) else ColorTarjetaAjustes)
             .then(
-                if (resaltado) Modifier.border(1.5.dp, Ambar, forma) else Modifier
+                if (resaltado) Modifier.border(1.5.dp, Ambar, forma)
+                else if (GrosorBorde > 0.dp && EstiloBorde != "ninguno") Modifier.border(GrosorBorde, ColorBordeActual, forma)
+                else Modifier
             )
             .clickable { alAlternar() }
             .padding(horizontal = 14.dp, vertical = 6.dp),

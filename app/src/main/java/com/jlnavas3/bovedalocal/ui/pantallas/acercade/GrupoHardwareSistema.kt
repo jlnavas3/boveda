@@ -21,7 +21,7 @@ fun GrupoHardwareSistema(
         etiqueta = "Hardware y sistema operativo",
         icono = Icons.Filled.Smartphone,
         colorIcono = Color(0xFF607D8B),
-        idGrupo = "06.3.G3",
+        idGrupo = "06-SIS-DGN-G03",
         mostrarId = mostrarIdsAjustes,
         modifier = modifier
     ) {

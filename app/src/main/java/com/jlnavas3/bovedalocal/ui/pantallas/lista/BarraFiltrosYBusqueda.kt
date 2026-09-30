@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.border
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
@@ -29,7 +30,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorTarjetaAjustes
 import com.jlnavas3.bovedalocal.ui.theme.Ambar
+import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
 import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
+import com.jlnavas3.bovedalocal.ui.theme.CurvaturaEsquinas
+import com.jlnavas3.bovedalocal.ui.theme.EstiloBorde
+import com.jlnavas3.bovedalocal.ui.theme.GrosorBorde
 import com.jlnavas3.bovedalocal.ui.theme.TextoPrincipal
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
 import kotlinx.coroutines.delay
@@ -49,13 +54,17 @@ fun BarraBusquedaAnimada(
         delay(100)
         focusRequester.requestFocus()
     }
-    val forma = RoundedCornerShape(20.dp)
+    val forma = RoundedCornerShape(CurvaturaEsquinas)
     Row(
         modifier = modifier
             .fillMaxWidth()
             .height(44.dp)
             .clip(forma)
             .background(ColorTarjetaAjustes)
+            .then(
+                if (GrosorBorde > 0.dp && EstiloBorde != "ninguno") Modifier.border(GrosorBorde, ColorBordeActual, forma)
+                else Modifier
+            )
             .padding(horizontal = 14.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -108,13 +117,17 @@ fun BarraBusquedaAnimada(
  */
 @Composable
 fun CampoBusquedaLista(valor: String, alCambiar: (String) -> Unit) {
-    val forma = RoundedCornerShape(12.dp)
+    val forma = RoundedCornerShape(CurvaturaEsquinas)
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .height(42.dp)
             .clip(forma)
             .background(ColorTarjetaAjustes)
+            .then(
+                if (GrosorBorde > 0.dp && EstiloBorde != "ninguno") Modifier.border(GrosorBorde, ColorBordeActual, forma)
+                else Modifier
+            )
             .padding(horizontal = 12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {

@@ -24,7 +24,7 @@ fun GrupoAislamientoPrivacidad(
         etiqueta = "Aislamiento y privacidad",
         icono = Icons.Filled.Shield,
         colorIcono = ColorSeguridad,
-        idGrupo = "06.3.G1",
+        idGrupo = "06-SIS-DGN-G01",
         mostrarId = mostrarIdsAjustes,
         modifier = modifier
     ) {

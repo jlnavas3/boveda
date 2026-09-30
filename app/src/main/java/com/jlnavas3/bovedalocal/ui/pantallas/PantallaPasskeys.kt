@@ -1,6 +1,7 @@
 package com.jlnavas3.bovedalocal.ui.pantallas
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -18,17 +19,23 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.activity.compose.BackHandler
 import com.jlnavas3.bovedalocal.ui.CriterioOrdenacion
 import com.jlnavas3.bovedalocal.ui.Pantalla
 import com.jlnavas3.bovedalocal.ui.VaultViewModel
 import com.jlnavas3.bovedalocal.ui.componentes.DescripcionPantalla
+import com.jlnavas3.bovedalocal.ui.componentes.seleccion.BarraInferiorSeleccion
+import com.jlnavas3.bovedalocal.ui.componentes.seleccion.BarraSuperiorSeleccion
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjustesFondo
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.GrupoAjustes
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.SeparadorFilaSimple
+import com.jlnavas3.bovedalocal.ui.pantallas.lista.DialogoBorrarSeleccion
 import com.jlnavas3.bovedalocal.ui.pantallas.lista.DialogoOrdenacionLista
+import com.jlnavas3.bovedalocal.ui.pantallas.lista.DialogoRenombrarSeleccion
 import com.jlnavas3.bovedalocal.ui.pantallas.passkeys.BarraSuperiorPasskeys
 import com.jlnavas3.bovedalocal.ui.pantallas.passkeys.EstadoVacioPasskeys
 import com.jlnavas3.bovedalocal.ui.pantallas.passkeys.FilaPasskey
+import com.jlnavas3.bovedalocal.ui.theme.calcularEspaciadoFilas
 import com.jlnavas3.bovedalocal.util.Haptica
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -41,6 +48,7 @@ fun PantallaPasskeys(vm: VaultViewModel) {
     val todasLasPasskeys = remember(vm.repositorio.entradas()) { vm.repositorio.passkeys() }
     val formato = remember { SimpleDateFormat("d MMM yyyy", Locale.forLanguageTag("es-ES")) }
     val scrollState = rememberScrollState()
+    val espaciadoFilas = calcularEspaciadoFilas(ajustes.densidadLista)
 
     var busquedaVisible by remember { mutableStateOf(false) }
     var textoBusqueda by remember { mutableStateOf("") }
@@ -48,6 +56,16 @@ fun PantallaPasskeys(vm: VaultViewModel) {
     var criterioOrdenacion by remember { mutableStateOf(CriterioOrdenacion.NOMBRE_AZ) }
     var menuOpcionesDesplegado by remember { mutableStateOf(false) }
     var mostrarDialogoOrdenacion by remember { mutableStateOf(false) }
+
+    var seleccionados by remember { mutableStateOf(setOf<String>()) }
+    val modoSeleccion = seleccionados.isNotEmpty()
+    var dialogoRenombrarSeleccion by remember { mutableStateOf(false) }
+    var nuevoTituloRenombrar by remember { mutableStateOf("") }
+    var dialogoBorrarSeleccion by remember { mutableStateOf(false) }
+
+    BackHandler(enabled = modoSeleccion) {
+        seleccionados = emptySet()
+    }
 
     val passkeysFiltradas = remember(todasLasPasskeys, textoBusqueda, soloFavoritos, criterioOrdenacion) {
         val q = textoBusqueda.trim().lowercase()
@@ -84,50 +102,75 @@ fun PantallaPasskeys(vm: VaultViewModel) {
             .fillMaxSize()
             .background(ColorAjustesFondo)
     ) {
-        BarraSuperiorPasskeys(
-            conSeparador = scrollState.value > 0,
-            busquedaVisible = busquedaVisible,
-            textoBusqueda = textoBusqueda,
-            soloFavoritos = soloFavoritos,
-            criterioOrdenacion = criterioOrdenacion,
-            menuOpcionesDesplegado = menuOpcionesDesplegado,
-            haptica = haptica,
-            idEtiqueta = "04-HER-PSK",
-            mostrarId = ajustes.mostrarIdsAjustes,
-            alVolver = { vm.volverAtras() },
-            alAlternarBusqueda = {
-                busquedaVisible = !busquedaVisible
-                if (!busquedaVisible) textoBusqueda = ""
-            },
-            alCambiarTextoBusqueda = { textoBusqueda = it },
-            alCerrarBusqueda = {
-                busquedaVisible = false
-                textoBusqueda = ""
-            },
-            alAbrirMenu = { menuOpcionesDesplegado = true },
-            alCerrarMenu = { menuOpcionesDesplegado = false },
-            alAbrirOrdenacion = {
-                menuOpcionesDesplegado = false
-                mostrarDialogoOrdenacion = true
-            },
-            alAlternarFavoritos = {
-                menuOpcionesDesplegado = false
-                haptica.tic()
-                soloFavoritos = !soloFavoritos
-            },
-            alIrExportacionSelectiva = {
-                menuOpcionesDesplegado = false
-                haptica.tic()
-                vm.ir(Pantalla.ExportarSelectivo("passkeys"))
-            },
-            alRestablecerFiltros = {
-                menuOpcionesDesplegado = false
-                haptica.tic()
-                textoBusqueda = ""
-                soloFavoritos = false
-                criterioOrdenacion = CriterioOrdenacion.NOMBRE_AZ
-            }
-        )
+        if (modoSeleccion) {
+            BarraSuperiorSeleccion(
+                cantidad = seleccionados.size,
+                todoSeleccionado = passkeysFiltradas.isNotEmpty() && seleccionados.size == passkeysFiltradas.size,
+                alCancelar = {
+                    haptica.tic()
+                    seleccionados = emptySet()
+                },
+                alSeleccionarTodo = {
+                    haptica.tic()
+                    seleccionados = passkeysFiltradas.map { it.id }.toSet()
+                },
+                alDeseleccionarTodo = {
+                    haptica.tic()
+                    seleccionados = emptySet()
+                }
+            )
+        } else {
+            BarraSuperiorPasskeys(
+                conSeparador = scrollState.value > 0,
+                busquedaVisible = busquedaVisible,
+                textoBusqueda = textoBusqueda,
+                soloFavoritos = soloFavoritos,
+                criterioOrdenacion = criterioOrdenacion,
+                menuOpcionesDesplegado = menuOpcionesDesplegado,
+                haptica = haptica,
+                idEtiqueta = "04-HER-PSK",
+                mostrarId = ajustes.mostrarIdsAjustes,
+                alVolver = { vm.volverAtras() },
+                alAlternarBusqueda = {
+                    busquedaVisible = !busquedaVisible
+                    if (!busquedaVisible) textoBusqueda = ""
+                },
+                alCambiarTextoBusqueda = { textoBusqueda = it },
+                alCerrarBusqueda = {
+                    busquedaVisible = false
+                    textoBusqueda = ""
+                },
+                alAbrirMenu = { menuOpcionesDesplegado = true },
+                alCerrarMenu = { menuOpcionesDesplegado = false },
+                alAbrirOrdenacion = {
+                    menuOpcionesDesplegado = false
+                    mostrarDialogoOrdenacion = true
+                },
+                alAlternarFavoritos = {
+                    menuOpcionesDesplegado = false
+                    haptica.tic()
+                    soloFavoritos = !soloFavoritos
+                },
+                alIrExportacionSelectiva = {
+                    menuOpcionesDesplegado = false
+                    haptica.tic()
+                    vm.ir(Pantalla.ExportarSelectivo("passkeys"))
+                },
+                alIrSeguridadBiometria = {
+                    vm.ir(Pantalla.Seguridad("01-SEG-BIO"))
+                },
+                alIrCopiaSeguridad = {
+                    vm.ir(Pantalla.CopiaSeguridad("05-COP-SEG"))
+                },
+                alRestablecerFiltros = {
+                    menuOpcionesDesplegado = false
+                    haptica.tic()
+                    textoBusqueda = ""
+                    soloFavoritos = false
+                    criterioOrdenacion = CriterioOrdenacion.NOMBRE_AZ
+                }
+            )
+        }
 
         Column(
             modifier = Modifier
@@ -147,24 +190,86 @@ fun PantallaPasskeys(vm: VaultViewModel) {
                     sinPasskeysEnTotal = todasLasPasskeys.isEmpty()
                 )
             } else {
-                GrupoAjustes {
-                    passkeysFiltradas.forEachIndexed { index, entrada ->
-                        if (index > 0) SeparadorFilaSimple()
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalArrangement = Arrangement.spacedBy(espaciadoFilas)
+                ) {
+                    passkeysFiltradas.forEach { entrada ->
                         FilaPasskey(
                             entrada = entrada,
                             formato = formato,
                             haptica = haptica,
-                            alPulsar = { vm.ir(Pantalla.Detalle(entrada.id)) },
+                            seleccionActiva = modoSeleccion,
+                            seleccionado = seleccionados.contains(entrada.id),
+                            alPulsarLargo = {
+                                haptica.toque()
+                                seleccionados = seleccionados + entrada.id
+                            },
+                            alAlternarSeleccion = {
+                                seleccionados = if (seleccionados.contains(entrada.id)) {
+                                    seleccionados - entrada.id
+                                } else {
+                                    seleccionados + entrada.id
+                                }
+                            },
+                            alPulsar = { vm.ir(Pantalla.Detalle(entrada.id, idsContexto = passkeysFiltradas.map { it.id })) },
                             alAlternarFavorito = {
                                 haptica.tic()
                                 vm.alternarFavorito(entrada.id)
-                            }
+                            },
+                            mostrarIndicadores = ajustes.mostrarIndicadoresContenido
                         )
                     }
                 }
             }
 
             Spacer(Modifier.height(24.dp))
+        }
+
+        if (modoSeleccion) {
+            val itemsSeleccionados = remember(todasLasPasskeys, seleccionados) {
+                todasLasPasskeys.filter { seleccionados.contains(it.id) }
+            }
+            val todosSonFavoritos = remember(itemsSeleccionados) {
+                itemsSeleccionados.isNotEmpty() && itemsSeleccionados.all { it.favorito }
+            }
+
+            BarraInferiorSeleccion(
+                cantidad = seleccionados.size,
+                todosSonFavoritos = todosSonFavoritos,
+                alAlternarFavoritos = {
+                    haptica.exito()
+                    vm.alternarFavoritosVarias(seleccionados)
+                    seleccionados = emptySet()
+                },
+                alComparar = {
+                    haptica.toque()
+                    val primera = seleccionados.first()
+                    vm.ir(
+                        Pantalla.Detalle(
+                            id = primera,
+                            idsContexto = seleccionados.toList(),
+                            modoComparacion = true
+                        )
+                    )
+                },
+                alRespaldar = {
+                    haptica.tic()
+                    val idsParam = seleccionados.joinToString(",")
+                    seleccionados = emptySet()
+                    vm.ir(Pantalla.ExportarSelectivo("ids:$idsParam"))
+                },
+                alRenombrar = {
+                    haptica.tic()
+                    val primerSeleccionado = todasLasPasskeys.find { it.id == seleccionados.firstOrNull() }
+                    nuevoTituloRenombrar = primerSeleccionado?.titulo ?: ""
+                    dialogoRenombrarSeleccion = true
+                },
+                alBorrar = {
+                    haptica.error()
+                    dialogoBorrarSeleccion = true
+                }
+            )
         }
     }
 
@@ -177,6 +282,34 @@ fun PantallaPasskeys(vm: VaultViewModel) {
                 mostrarDialogoOrdenacion = false
             },
             alCerrar = { mostrarDialogoOrdenacion = false }
+        )
+    }
+
+    if (dialogoBorrarSeleccion) {
+        DialogoBorrarSeleccion(
+            cantidad = seleccionados.size,
+            alConfirmar = {
+                haptica.exito()
+                vm.eliminarVarias(seleccionados)
+                seleccionados = emptySet()
+                dialogoBorrarSeleccion = false
+            },
+            alDescartar = { dialogoBorrarSeleccion = false }
+        )
+    }
+
+    if (dialogoRenombrarSeleccion) {
+        DialogoRenombrarSeleccion(
+            cantidad = seleccionados.size,
+            textoNuevoTitulo = nuevoTituloRenombrar,
+            alCambiarTexto = { nuevoTituloRenombrar = it },
+            alConfirmar = {
+                haptica.exito()
+                vm.renombrarVarias(seleccionados, nuevoTituloRenombrar)
+                seleccionados = emptySet()
+                dialogoRenombrarSeleccion = false
+            },
+            alDescartar = { dialogoRenombrarSeleccion = false }
         )
     }
 }

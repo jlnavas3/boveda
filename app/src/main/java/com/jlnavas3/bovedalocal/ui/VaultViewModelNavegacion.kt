@@ -7,6 +7,9 @@ interface VaultNavegacionDelegate {
     val navegandoAtrasInterno: MutableStateFlow<Boolean>
     val pilaNavegacion: ArrayDeque<Pantalla>
     var ultimoWidgetAjustesSeleccionado: Int
+    var ultimoScrollAjustes: Int
+    var navegoDesdeMenuLateral: Boolean
+    val abrirMenuLateralAlVolverALista: MutableStateFlow<Boolean>
 
     fun padreDe(pantalla: Pantalla): Pantalla? = when (pantalla) {
         // Nivel 3 -> Nivel 2
@@ -89,12 +92,20 @@ interface VaultNavegacionDelegate {
         is Pantalla.Generador -> Pantalla.Lista
         is Pantalla.Passkeys -> Pantalla.Lista
         is Pantalla.Autenticador -> Pantalla.Lista
+        is Pantalla.CamaraQr -> Pantalla.Autenticador
         is Pantalla.Detalle -> Pantalla.Lista
         else -> null
     }
 
     fun ir(pantalla: Pantalla) {
         navegandoAtrasInterno.value = false
+        if (pantallaInterna.value is Pantalla.Lista) {
+            navegoDesdeMenuLateral = false
+            abrirMenuLateralAlVolverALista.value = false
+            if (pantalla is Pantalla.Ajustes) {
+                ultimoScrollAjustes = 0
+            }
+        }
         if (pantalla != pantallaInterna.value) {
             val origen = when {
                 pantallaInterna.value is Pantalla.Ajustes -> {
@@ -112,18 +123,8 @@ interface VaultNavegacionDelegate {
                         else pantallaInterna.value
                     }
                 }
-                pantallaInterna.value is Pantalla.Lista -> {
-                    val padre = padreDe(pantalla)
-                    if (padre is Pantalla.Ajustes && !padre.seccionId.isNullOrBlank()) padre
-                    else Pantalla.Lista
-                }
-                else -> {
-                    val padre = padreDe(pantalla)
-                    padre ?: pantallaInterna.value
-                }
-            }
-            if (pantallaInterna.value is Pantalla.Lista && origen !is Pantalla.Lista) {
-                pilaNavegacion.addLast(Pantalla.Lista)
+                pantallaInterna.value is Pantalla.Lista -> Pantalla.Lista
+                else -> pantallaInterna.value
             }
             pilaNavegacion.addLast(origen)
             if (pilaNavegacion.size > 20) pilaNavegacion.removeFirst()
@@ -135,6 +136,11 @@ interface VaultNavegacionDelegate {
         navegandoAtrasInterno.value = false
         pilaNavegacion.clear()
         pilaNavegacion.addLast(Pantalla.Lista)
+        navegoDesdeMenuLateral = true
+        abrirMenuLateralAlVolverALista.value = false
+        if (pantalla is Pantalla.Ajustes) {
+            ultimoScrollAjustes = 0
+        }
         pantallaInterna.value = pantalla
     }
 
@@ -216,12 +222,24 @@ interface VaultNavegacionDelegate {
     }
 
     fun irRaiz(pantalla: Pantalla) {
+        if (pantalla is Pantalla.Lista) {
+            ultimoScrollAjustes = 0
+            if (navegoDesdeMenuLateral) {
+                navegoDesdeMenuLateral = false
+                abrirMenuLateralAlVolverALista.value = true
+            }
+        }
         navegandoAtrasInterno.value = true
         pilaNavegacion.clear()
         pantallaInterna.value = pantalla
     }
 
     fun volverALista() {
+        ultimoScrollAjustes = 0
+        if (navegoDesdeMenuLateral) {
+            navegoDesdeMenuLateral = false
+            abrirMenuLateralAlVolverALista.value = true
+        }
         irRaiz(Pantalla.Lista)
     }
 
@@ -230,14 +248,22 @@ interface VaultNavegacionDelegate {
         val padre = padreDe(pantallaInterna.value)
 
         val destino = when {
-            pantallaInterna.value is Pantalla.Editar || pantallaInterna.value is Pantalla.Escaner -> {
+            pantallaInterna.value is Pantalla.Editar || pantallaInterna.value is Pantalla.Escaner || pantallaInterna.value is Pantalla.CamaraQr -> {
                 anterior ?: padre
+            }
+            anterior is Pantalla.Lista ||
+            anterior is Pantalla.Detalle ||
+            anterior is Pantalla.Passkeys ||
+            anterior is Pantalla.Autenticador ||
+            anterior is Pantalla.SaludBoveda ||
+            anterior is Pantalla.Papelera ||
+            anterior is Pantalla.Duplicados ||
+            anterior is Pantalla.Generador ||
+            anterior is Pantalla.HistorialClaves -> {
+                anterior
             }
             anterior is Pantalla.Ajustes && !anterior.seccionId.isNullOrBlank() -> {
                 anterior
-            }
-            anterior is Pantalla.Lista -> {
-                Pantalla.Lista
             }
             padre != null -> {
                 padre
@@ -249,6 +275,13 @@ interface VaultNavegacionDelegate {
         }
 
         if (destino != null) {
+            if (destino is Pantalla.Lista) {
+                ultimoScrollAjustes = 0
+                if (navegoDesdeMenuLateral) {
+                    navegoDesdeMenuLateral = false
+                    abrirMenuLateralAlVolverALista.value = true
+                }
+            }
             navegandoAtrasInterno.value = true
             pantallaInterna.value = destino
             return true
@@ -257,6 +290,13 @@ interface VaultNavegacionDelegate {
     }
 
     fun volverAtras() {
-        if (!retroceder()) irRaiz(Pantalla.Lista)
+        if (!retroceder()) {
+            if (navegoDesdeMenuLateral) {
+                navegoDesdeMenuLateral = false
+                abrirMenuLateralAlVolverALista.value = true
+            }
+            ultimoScrollAjustes = 0
+            irRaiz(Pantalla.Lista)
+        }
     }
 }

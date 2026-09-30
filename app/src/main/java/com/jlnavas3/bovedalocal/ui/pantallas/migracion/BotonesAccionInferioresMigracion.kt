@@ -1,28 +1,23 @@
 package com.jlnavas3.bovedalocal.ui.pantallas.migracion
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import com.jlnavas3.bovedalocal.ui.componentes.BotonAmbar
-import com.jlnavas3.bovedalocal.ui.componentes.BotonBorde
 
 @Composable
 fun BotonesAccionInferioresMigracion(
     mostrarBotonImportar: Boolean,
     cuantasSeleccionadas: Int,
     alImportar: () -> Unit,
-    alCancelar: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    alCancelar: (() -> Unit)? = null
 ) {
     Column(
-        modifier = modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+        modifier = modifier.fillMaxWidth()
     ) {
         if (mostrarBotonImportar) {
             BotonAmbar(
@@ -35,11 +30,5 @@ fun BotonesAccionInferioresMigracion(
                 alPulsar = alImportar
             )
         }
-
-        BotonBorde(
-            texto = "Cancelar",
-            icono = Icons.Filled.Close,
-            alPulsar = alCancelar
-        )
     }
 }

@@ -5,6 +5,7 @@ import androidx.compose.material.icons.filled.BrightnessAuto
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import com.jlnavas3.bovedalocal.data.AjustesApp
+import com.jlnavas3.bovedalocal.data.AjustesDefaults
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteGrupo
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteRadio
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteSeparador
@@ -18,7 +19,7 @@ fun SeccionModoTema(
         etiqueta = "MODO DE TEMA",
         icono = Icons.Filled.BrightnessAuto,
         colorIcono = Color(0xFFFB8C00),
-        alRestablecer = { alCambiarTema("sistema") },
+        alRestablecer = { alCambiarTema(AjustesDefaults.Tema.TEMA_APP) },
         idGrupo = "02-APA-THM-G01",
         mostrarId = ajustes.mostrarIdsAjustes
     ) {

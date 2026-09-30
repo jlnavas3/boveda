@@ -43,6 +43,9 @@ import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorTarjetaAjustes
 import com.jlnavas3.bovedalocal.ui.theme.Ambar
 import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
 import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
+import com.jlnavas3.bovedalocal.ui.theme.CurvaturaEsquinas
+import com.jlnavas3.bovedalocal.ui.theme.EstiloBorde
+import com.jlnavas3.bovedalocal.ui.theme.GrosorBorde
 import com.jlnavas3.bovedalocal.ui.theme.TextoPrincipal
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
 
@@ -68,7 +71,7 @@ fun ComponenteGrupoLista(
     contenidoEntrada: @Composable (entrada: Entrada, indice: Int, total: Int) -> Unit
 ) {
     val compacta = alturaFila.value <= 48f
-    val formaGrupo = RoundedCornerShape(18.dp)
+    val formaGrupo = RoundedCornerShape(CurvaturaEsquinas)
     val tamanoIcono = if (compacta) 32 else if (alturaFila.value <= 64f) 36 else 40
     val sangriaSeparador = (14 + tamanoIcono + 12).dp
 
@@ -78,7 +81,9 @@ fun ComponenteGrupoLista(
             .clip(formaGrupo)
             .background(if (resaltado) Ambar.copy(alpha = 0.16f) else ColorTarjetaAjustes)
             .then(
-                if (resaltado) Modifier.border(1.5.dp, Ambar, formaGrupo) else Modifier
+                if (resaltado) Modifier.border(1.5.dp, Ambar, formaGrupo)
+                else if (GrosorBorde > 0.dp && EstiloBorde != "ninguno") Modifier.border(GrosorBorde, ColorBordeActual, formaGrupo)
+                else Modifier
             )
     ) {
         Column(modifier = Modifier.fillMaxWidth()) {

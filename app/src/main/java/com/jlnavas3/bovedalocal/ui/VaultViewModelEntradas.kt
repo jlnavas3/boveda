@@ -131,6 +131,26 @@ interface VaultEntradasDelegate {
         }
     }
 
+    fun alternarFavoritosVarias(ids: Set<String>, forzarMarcar: Boolean? = null) {
+        if (ids.isEmpty()) return
+        ejecutar {
+            val entradasObjetivo = withContext(Dispatchers.IO) {
+                repositorio.entradas().filter { it.id in ids }
+            }
+            val marcar = forzarMarcar ?: entradasObjetivo.any { !it.favorito }
+            withContext(Dispatchers.IO) {
+                repositorio.alternarFavoritos(ids, marcar)
+            }
+            val texto = if (marcar) {
+                if (ids.size == 1) "Añadida a favoritos" else "${ids.size} añadidas a favoritos"
+            } else {
+                if (ids.size == 1) "Quitada de favoritos" else "${ids.size} quitadas de favoritos"
+            }
+            Diagnostico.apuntar("bóveda", "$texto (${ids.size} entradas)")
+            avisoInterno.value = texto
+        }
+    }
+
     // ------------------------------------------------------------- duplicados y salud
     fun eliminarDuplicadasExactasMasivo(grupos: List<GrupoDuplicado>) {
         val idsABorrar = grupos

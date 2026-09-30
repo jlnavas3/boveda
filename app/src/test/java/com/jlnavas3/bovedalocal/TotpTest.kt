@@ -47,6 +47,7 @@ class TotpTest {
     fun `acepta secretos en base32`() {
         val base32 = Base32.codificar(secreto)
         assertEquals(Totp.codigo(secreto, 59L), Totp.codigoDesdeBase32(base32, 59L))
+        assertEquals("346137", Totp.codigoDesdeBase32("JBSWY3DPEHPK3PXP", 1000000L))
     }
 
     @Test

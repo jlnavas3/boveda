@@ -11,6 +11,7 @@ import com.jlnavas3.bovedalocal.data.FrenoIntentos
 import com.jlnavas3.bovedalocal.data.TipoEntrada
 import com.jlnavas3.bovedalocal.data.VaultRepository
 import com.jlnavas3.bovedalocal.util.Diagnostico
+import com.jlnavas3.bovedalocal.util.GestorAppsInstaladas
 import com.jlnavas3.bovedalocal.util.Portapapeles
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -26,6 +27,12 @@ class VaultViewModel(app: Application) : AndroidViewModel(app),
     VaultNavegacionDelegate,
     VaultEntradasDelegate,
     VaultCicloBovedaDelegate {
+
+    init {
+        viewModelScope.launch(Dispatchers.IO) {
+            GestorAppsInstaladas.precargar(app)
+        }
+    }
 
     override val repositorio = VaultRepository.obtener(app)
     override fun obtenerApp(): Application = getApplication()
@@ -83,6 +90,9 @@ class VaultViewModel(app: Application) : AndroidViewModel(app),
     override val navegandoAtrasInterno: MutableStateFlow<Boolean> get() = _navegandoAtras
     override val pilaNavegacion: ArrayDeque<Pantalla> = ArrayDeque()
     override var ultimoWidgetAjustesSeleccionado: Int = 0
+    override var ultimoScrollAjustes: Int = 0
+    override var navegoDesdeMenuLateral: Boolean = false
+    override val abrirMenuLateralAlVolverALista = MutableStateFlow(false)
 
     /** true cuando la última transición fue un retroceso: la animación desliza al revés. */
     private val _navegandoAtras = MutableStateFlow(false)

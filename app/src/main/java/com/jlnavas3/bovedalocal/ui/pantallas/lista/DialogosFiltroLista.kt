@@ -26,7 +26,6 @@ import androidx.compose.material.icons.filled.Fingerprint
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.SelectAll
 import androidx.compose.material.icons.filled.Wifi
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -40,7 +39,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.jlnavas3.bovedalocal.data.TipoEntrada
 import com.jlnavas3.bovedalocal.ui.CriterioOrdenacion
-import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorTarjetaAjustes
+import com.jlnavas3.bovedalocal.ui.componentes.DialogoBoveda
+import com.jlnavas3.bovedalocal.ui.componentes.FilaOpcionModal
 import com.jlnavas3.bovedalocal.ui.theme.Ambar
 import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
 import com.jlnavas3.bovedalocal.ui.theme.ColorTitulos
@@ -65,56 +65,38 @@ fun DialogoFiltrosLista(
         TipoEntrada.WALLET to ("Cripto Wallets" to Icons.Filled.AccountBalanceWallet)
     )
 
-    AlertDialog(
-        onDismissRequest = alCerrar,
-        containerColor = ColorTarjetaAjustes,
-        shape = RoundedCornerShape(24.dp),
-        tonalElevation = 0.dp,
-        title = {
-            Text(
-                "Filtrar por tipo",
-                style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
-                color = ColorTitulos
-            )
-        },
-        text = {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .verticalScroll(rememberScrollState()),
-                verticalArrangement = Arrangement.spacedBy(4.dp)
-            ) {
-                tipos.forEach { (tipo, par) ->
-                    val (nombre, icono) = par
-                    val seleccionado = filtroActual == tipo
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clip(RoundedCornerShape(12.dp))
-                            .background(if (seleccionado) Ambar.copy(alpha = 0.12f) else Color.Transparent)
-                            .clickable {
-                                alSeleccionarTipo(tipo)
-                                alCerrar()
-                            }
-                            .padding(horizontal = 12.dp, vertical = 10.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(
-                            imageVector = icono,
-                            contentDescription = null,
-                            tint = if (seleccionado) Ambar else ColorIconosInternos,
-                            modifier = Modifier.size(20.dp)
-                        )
-                        Spacer(Modifier.width(12.dp))
-                        Text(
-                            text = nombre,
-                            style = MaterialTheme.typography.bodyLarge.copy(
-                                fontWeight = if (seleccionado) FontWeight.SemiBold else FontWeight.Normal
-                            ),
-                            color = if (seleccionado) Ambar else TextoPrincipal,
-                            modifier = Modifier.weight(1f)
-                        )
-                        if (seleccionado) {
+    DialogoBoveda(
+        abierto = true,
+        alCerrar = alCerrar,
+        titulo = "Filtrar por tipo",
+        icono = Icons.Filled.SelectAll,
+        colorIcono = Ambar,
+        botonConfirmar = {
+            TextButton(onClick = alCerrar) {
+                Text("Cerrar", color = Ambar)
+            }
+        }
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .verticalScroll(rememberScrollState()),
+            verticalArrangement = Arrangement.spacedBy(4.dp)
+        ) {
+            tipos.forEach { (tipo, par) ->
+                val (nombre, icono) = par
+                val seleccionado = filtroActual == tipo
+                FilaOpcionModal(
+                    titulo = nombre,
+                    icono = icono,
+                    seleccionado = seleccionado,
+                    colorAcento = Ambar,
+                    alPulsar = {
+                        alSeleccionarTipo(tipo)
+                        alCerrar()
+                    },
+                    controlFinal = if (seleccionado) {
+                        {
                             Icon(
                                 imageVector = Icons.Filled.Check,
                                 contentDescription = null,
@@ -122,16 +104,11 @@ fun DialogoFiltrosLista(
                                 modifier = Modifier.size(18.dp)
                             )
                         }
-                    }
-                }
-            }
-        },
-        confirmButton = {
-            TextButton(onClick = alCerrar) {
-                Text("Cerrar", color = Ambar)
+                    } else null
+                )
             }
         }
-    )
+    }
 }
 
 @Composable
@@ -140,55 +117,37 @@ fun DialogoOrdenacionLista(
     alSeleccionarCriterio: (CriterioOrdenacion) -> Unit,
     alCerrar: () -> Unit
 ) {
-    AlertDialog(
-        onDismissRequest = alCerrar,
-        containerColor = ColorTarjetaAjustes,
-        shape = RoundedCornerShape(24.dp),
-        tonalElevation = 0.dp,
-        title = {
-            Text(
-                "Ordenar por",
-                style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
-                color = ColorTitulos
-            )
-        },
-        text = {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .verticalScroll(rememberScrollState()),
-                verticalArrangement = Arrangement.spacedBy(4.dp)
-            ) {
-                CriterioOrdenacion.entries.forEach { criterio ->
-                    val seleccionado = criterio == criterioActual
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clip(RoundedCornerShape(12.dp))
-                            .background(if (seleccionado) Ambar.copy(alpha = 0.12f) else Color.Transparent)
-                            .clickable {
-                                alSeleccionarCriterio(criterio)
-                                alCerrar()
-                            }
-                            .padding(horizontal = 12.dp, vertical = 10.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.Sort,
-                            contentDescription = null,
-                            tint = if (seleccionado) Ambar else ColorIconosInternos,
-                            modifier = Modifier.size(20.dp)
-                        )
-                        Spacer(Modifier.width(12.dp))
-                        Text(
-                            text = criterio.etiqueta,
-                            style = MaterialTheme.typography.bodyLarge.copy(
-                                fontWeight = if (seleccionado) FontWeight.SemiBold else FontWeight.Normal
-                            ),
-                            color = if (seleccionado) Ambar else TextoPrincipal,
-                            modifier = Modifier.weight(1f)
-                        )
-                        if (seleccionado) {
+    DialogoBoveda(
+        abierto = true,
+        alCerrar = alCerrar,
+        titulo = "Ordenar por",
+        icono = Icons.AutoMirrored.Filled.Sort,
+        colorIcono = Ambar,
+        botonConfirmar = {
+            TextButton(onClick = alCerrar) {
+                Text("Cerrar", color = Ambar)
+            }
+        }
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .verticalScroll(rememberScrollState()),
+            verticalArrangement = Arrangement.spacedBy(4.dp)
+        ) {
+            CriterioOrdenacion.entries.forEach { criterio ->
+                val seleccionado = criterio == criterioActual
+                FilaOpcionModal(
+                    titulo = criterio.etiqueta,
+                    icono = Icons.AutoMirrored.Filled.Sort,
+                    seleccionado = seleccionado,
+                    colorAcento = Ambar,
+                    alPulsar = {
+                        alSeleccionarCriterio(criterio)
+                        alCerrar()
+                    },
+                    controlFinal = if (seleccionado) {
+                        {
                             Icon(
                                 imageVector = Icons.Filled.Check,
                                 contentDescription = null,
@@ -196,14 +155,9 @@ fun DialogoOrdenacionLista(
                                 modifier = Modifier.size(18.dp)
                             )
                         }
-                    }
-                }
-            }
-        },
-        confirmButton = {
-            TextButton(onClick = alCerrar) {
-                Text("Cerrar", color = Ambar)
+                    } else null
+                )
             }
         }
-    )
+    }
 }

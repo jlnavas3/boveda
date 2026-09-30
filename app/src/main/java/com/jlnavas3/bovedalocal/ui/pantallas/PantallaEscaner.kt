@@ -13,6 +13,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Image
+import androidx.compose.material.icons.filled.QrCodeScanner
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -36,6 +37,7 @@ import com.jlnavas3.bovedalocal.camara.MotorCamara
 import com.jlnavas3.bovedalocal.camara.PermisoCamara
 import com.jlnavas3.bovedalocal.ui.Pantalla
 import com.jlnavas3.bovedalocal.ui.VaultViewModel
+import com.jlnavas3.bovedalocal.ui.componentes.BotonAmbar
 import com.jlnavas3.bovedalocal.ui.componentes.BotonBorde
 import com.jlnavas3.bovedalocal.ui.componentes.ContenedorPrincipal
 import com.jlnavas3.bovedalocal.ui.pantallas.escaner.EstadoPermiso
@@ -62,19 +64,12 @@ fun PantallaEscaner(
     val haptica = remember { Haptica(contexto) }
     val ambito = rememberCoroutineScope()
     val ajustes by vm.ajustes.collectAsStateWithLifecycle()
-    val motorPreferido = MotorCamara.desde(ajustes.motorCamara)
 
-    var permiso by remember { mutableStateOf(PermisoCamara.concedido(contexto)) }
-    var estadoPermiso by remember { mutableStateOf(EstadoPermiso.NO_PEDIDO) }
     var manual by remember { mutableStateOf("") }
     var fallo by remember { mutableStateOf(false) }
     var qrPasskey by remember { mutableStateOf(false) }
     var avisoImagen by remember { mutableStateOf<String?>(null) }
     var leyendoImagen by remember { mutableStateOf(false) }
-
-    LaunchedEffect(Unit) {
-        if (!soloManual) Diagnostico.apuntar("camara", "Escáner abierto (motor ajustado: ${motorPreferido.clave})")
-    }
 
     /** Devuelve true si el texto valía y el 2FA se guardó. Deja [qrPasskey] al día en todos los casos. */
     fun procesarTexto(texto: String, origen: String): Boolean {
@@ -96,35 +91,6 @@ fun PantallaEscaner(
         Diagnostico.apuntar("2fa", "Doble factor (TOTP) añadido exitosamente ($detalle)")
         vm.avisar("Doble factor añadido")
         return true
-    }
-
-    val pedirPermiso = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { concedido ->
-        permiso = concedido
-        if (concedido) {
-            estadoPermiso = EstadoPermiso.NO_PEDIDO
-            Diagnostico.apuntar("camara", "Permiso de cámara concedido")
-        } else {
-            val paraSiempre = !ActivityCompat.shouldShowRequestPermissionRationale(actividad, Manifest.permission.CAMERA)
-            estadoPermiso = if (paraSiempre) EstadoPermiso.DENEGADO_PARA_SIEMPRE else EstadoPermiso.DENEGADO
-            Diagnostico.apuntar("camara", "Permiso de cámara denegado" + if (paraSiempre) " (Android ya no lo preguntará)" else "")
-        }
-    }
-
-    var permisoPedido by remember { mutableStateOf(false) }
-    LaunchedEffect(soloManual) {
-        if (!soloManual && !permiso && !permisoPedido) {
-            permisoPedido = true
-            pedirPermiso.launch(Manifest.permission.CAMERA)
-        }
-    }
-
-    LifecycleResumeEffect(Unit) {
-        val ahora = PermisoCamara.concedido(contexto)
-        if (ahora != permiso) {
-            permiso = ahora
-            if (ahora) estadoPermiso = EstadoPermiso.NO_PEDIDO
-        }
-        onPauseOrDispose { }
     }
 
     val elegirImagen = rememberLauncherForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
@@ -169,26 +135,17 @@ fun PantallaEscaner(
         titulo = "Añadir Doble Factor",
         subtitulo = "Escaneo seguro offline de QR o introducción manual",
         alVolver = { vm.volverAtras() },
+        idEtiqueta = "04-HER-2FA-ADD",
+        mostrarId = ajustes.mostrarIdsAjustes,
         conScroll = true,
         espaciado = 16.dp
     ) {
         if (!soloManual) {
-            if (permiso) {
-                ZonaCamara(
-                    motorPreferido = motorPreferido,
-                    alLeer = { texto, origen ->
-                        val valido = procesarTexto(texto, origen)
-                        if (valido) haptica.exito() else haptica.error()
-                        valido
-                    },
-                    alElegirImagen = { abrirSelectorDeImagen() }
-                )
-            } else {
-                TarjetaPermisoCamara(
-                    estadoPermiso = estadoPermiso,
-                    alPedirPermiso = { pedirPermiso.launch(Manifest.permission.CAMERA) },
-                    alAvisar = { vm.avisar(it) }
-                )
+            BotonAmbar(
+                texto = "Escanear código QR",
+                icono = Icons.Filled.QrCodeScanner
+            ) {
+                vm.ir(Pantalla.CamaraQr(entradaDestino))
             }
             Spacer(Modifier.height(10.dp))
             BotonBorde(
@@ -224,11 +181,6 @@ fun PantallaEscaner(
             }
         )
 
-        Spacer(Modifier.height(16.dp))
-        BotonBorde(
-            texto = "Cancelar",
-            icono = Icons.Filled.Close
-        ) { vm.volverAtras() }
         Spacer(Modifier.height(32.dp))
     }
 }

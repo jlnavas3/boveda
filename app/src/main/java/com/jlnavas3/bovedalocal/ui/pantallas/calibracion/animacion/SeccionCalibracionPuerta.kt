@@ -37,8 +37,7 @@ fun SeccionCalibracionPuerta(
         etiqueta = "Movimiento y geometría",
         icono = Icons.Filled.Speed,
         alRestablecer = {
-            vm.ajustarPuertaVelocidad(1.0f)
-            vm.ajustarPuertaGrosorAnillos(1.0f)
+            vm.restablecerGeometriaPuerta()
             Toast.makeText(contexto, "Geometría de puerta restablecida", Toast.LENGTH_SHORT).show()
         },
         idGrupo = "02-APA-THM-ANI-G03",
@@ -77,7 +76,7 @@ fun SeccionCalibracionPuerta(
     ComponenteGrupo(
         etiqueta = "Color de la puerta de bóveda",
         alRestablecer = {
-            vm.ajustarPuertaColor("")
+            vm.restablecerColorPuerta()
         },
         idGrupo = "02-APA-THM-ANI-G04",
         mostrarId = ajustes.mostrarIdsAjustes

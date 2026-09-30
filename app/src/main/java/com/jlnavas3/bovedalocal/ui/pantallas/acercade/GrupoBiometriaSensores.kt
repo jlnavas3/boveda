@@ -27,7 +27,7 @@ fun GrupoBiometriaSensores(
         etiqueta = "Biometría y sensores",
         icono = Icons.Filled.Fingerprint,
         colorIcono = ColorSeguridad,
-        idGrupo = "06.3.G5",
+        idGrupo = "06-SIS-DGN-G05",
         mostrarId = mostrarIdsAjustes,
         modifier = modifier
     ) {

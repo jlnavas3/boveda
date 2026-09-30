@@ -12,11 +12,13 @@ import androidx.credentials.PasswordCredential
 import androidx.credentials.exceptions.GetCredentialUnknownException
 import androidx.credentials.provider.PendingIntentHandler
 import androidx.fragment.app.FragmentActivity
+import com.jlnavas3.bovedalocal.autofill.AutofillUtiles
 import com.jlnavas3.bovedalocal.data.Entrada
 import com.jlnavas3.bovedalocal.data.TipoEntrada
 import com.jlnavas3.bovedalocal.data.VaultRepository
 import com.jlnavas3.bovedalocal.ui.theme.BovedaTheme
 import com.jlnavas3.bovedalocal.util.Dominios
+import com.jlnavas3.bovedalocal.util.LanzadorEnlaces
 
 /** Confirma y devuelve una contraseña a Android Credential Manager. */
 @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
@@ -35,16 +37,28 @@ class PasswordGetActivity : FragmentActivity() {
         entradaId = intent.getStringExtra(BovedaCredentialProviderService.EXTRA_ENTRADA_ID)
         objetivo = intent.getStringExtra(BovedaCredentialProviderService.EXTRA_OBJETIVO).orEmpty()
 
+        val entradaDirecta = entradaId?.let { repositorio.entrada(it) }
+        val paquete = LanzadorEnlaces.extraerPaquete(objetivo)
+            ?: entradaDirecta?.urls?.firstNotNullOfOrNull { LanzadorEnlaces.extraerPaquete(it) }
+            ?: if (LanzadorEnlaces.estaInstalada(this, objetivo)) objetivo else null
+
+        val esApp = paquete != null && LanzadorEnlaces.estaInstalada(this, paquete)
+        val nombreApp = if (esApp && paquete != null) LanzadorEnlaces.obtenerNombreApp(this, paquete) else null
+        val iconoBitmap = if (esApp && paquete != null) AutofillUtiles.obtenerBitmapIconoCircular(this, paquete, 120) else null
+
+        val sitioMostrar = nombreApp ?: entradaDirecta?.titulo?.takeIf { it.isNotBlank() && it != "Nueva entrada" } ?: objetivo.ifBlank { "esta app" }
+
         setContent {
             BovedaTheme {
                 HojaPasskey(
                     actividad = this,
                     repositorio = repositorio,
                     titulo = "Usar contraseña",
-                    sitio = objetivo.ifBlank { "esta app" },
-                    detalle = "Bóveda local entregará la contraseña seleccionada a ${objetivo.ifBlank { "esta app" }}.",
+                    sitio = sitioMostrar,
+                    detalle = "Bóveda local entregará la contraseña seleccionada a $sitioMostrar.",
                     textoAccion = "Usar contraseña",
                     textoPie = "La contraseña se entrega a Android solo para esta solicitud.",
+                    iconoBitmap = iconoBitmap,
                     alConfirmar = { responder() },
                     alCancelar = { cancelar() }
                 )

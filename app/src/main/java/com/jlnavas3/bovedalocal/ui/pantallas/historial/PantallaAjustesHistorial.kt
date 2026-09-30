@@ -15,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.jlnavas3.bovedalocal.data.AjustesDefaults
 import com.jlnavas3.bovedalocal.ui.VaultViewModel
 import com.jlnavas3.bovedalocal.ui.componentes.ContenedorPrincipal
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.AccionSaltoGrupo
@@ -75,9 +76,7 @@ fun PantallaAjustesHistorial(
                 ),
                 alRestablecerPantalla = {
                     haptica.tic()
-                    vm.ajustarHistorialClavesVaciadoAuto(true)
-                    vm.ajustarHistorialClavesTiempoAutoDestruccion(30 * 60 * 1000L)
-                    vm.ajustarHistorialClavesMax(15)
+                    vm.restablecerHistorialClavesConfig()
                     vm.avisar("Ajustes del historial restablecidos")
                 }
             )
@@ -90,8 +89,8 @@ fun PantallaAjustesHistorial(
             colorIcono = ColorGenerador,
             alRestablecer = {
                 haptica.tic()
-                vm.ajustarHistorialClavesVaciadoAuto(true)
-                vm.ajustarHistorialClavesTiempoAutoDestruccion(30 * 60 * 1000L)
+                vm.ajustarHistorialClavesVaciadoAuto(AjustesDefaults.HistorialCopias.HISTORIAL_VACIADO_AUTO)
+                vm.ajustarHistorialClavesTiempoAutoDestruccion(AjustesDefaults.HistorialCopias.HISTORIAL_TIEMPO_AUTO_DESTRUCCION_MS)
                 vm.avisar("Retención restablecida")
             },
             idGrupo = "04-HER-HST-G01",
@@ -137,7 +136,7 @@ fun PantallaAjustesHistorial(
             colorIcono = ColorGenerador,
             alRestablecer = {
                 haptica.tic()
-                vm.ajustarHistorialClavesMax(15)
+                vm.ajustarHistorialClavesMax(AjustesDefaults.HistorialCopias.HISTORIAL_MAX)
                 vm.avisar("Capacidad restablecida")
             },
             idGrupo = "04-HER-HST-G02",

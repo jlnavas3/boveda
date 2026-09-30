@@ -7,10 +7,14 @@ import android.text.InputType
 import android.view.View
 import android.view.autofill.AutofillId
 import android.view.autofill.AutofillValue
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.Path
 import android.widget.RemoteViews
 import com.jlnavas3.bovedalocal.R
 import com.jlnavas3.bovedalocal.data.Entrada
 import com.jlnavas3.bovedalocal.util.Dominios
+import com.jlnavas3.bovedalocal.util.LanzadorEnlaces
 
 data class CamposDetectados(
     val usuario: AutofillId? = null,
@@ -137,9 +141,42 @@ object AutofillUtiles {
         return usuario to contrasena
     }
 
-    fun presentacion(contexto: Context, titulo: String, subtitulo: String): RemoteViews =
+    /**
+     * Obtiene el bitmap del icono de la app con máscara circular recortada
+     * y escala ampliada (1.22f), adecuado para mostrarse en RemoteViews.
+     */
+    fun obtenerBitmapIconoCircular(contexto: Context, paquete: String, tamanoPx: Int = 96): Bitmap? {
+        return try {
+            val pm = contexto.packageManager
+            val appInfo = pm.getApplicationInfo(paquete, 0)
+            val drawable = appInfo.loadIcon(pm) ?: return null
+            val bitmap = Bitmap.createBitmap(tamanoPx, tamanoPx, Bitmap.Config.ARGB_8888)
+            val canvas = Canvas(bitmap)
+            val path = Path().apply {
+                addCircle(tamanoPx / 2f, tamanoPx / 2f, tamanoPx / 2f, Path.Direction.CCW)
+            }
+            canvas.clipPath(path)
+            drawable.setBounds(0, 0, tamanoPx, tamanoPx)
+            canvas.scale(1.22f, 1.22f, tamanoPx / 2f, tamanoPx / 2f)
+            drawable.draw(canvas)
+            bitmap
+        } catch (_: Exception) {
+            null
+        }
+    }
+
+    fun presentacion(
+        contexto: Context,
+        titulo: String,
+        subtitulo: String,
+        iconoBitmap: Bitmap? = null
+    ): RemoteViews =
         RemoteViews(contexto.packageName, R.layout.autofill_item).apply {
-            setImageViewResource(R.id.icono_autofill, R.drawable.ic_candado_boveda)
+            if (iconoBitmap != null) {
+                setImageViewBitmap(R.id.icono_autofill, iconoBitmap)
+            } else {
+                setImageViewResource(R.id.icono_autofill, R.drawable.ic_candado_boveda)
+            }
             setTextViewText(R.id.titulo, titulo)
             setTextViewText(R.id.subtitulo, subtitulo)
         }
@@ -147,10 +184,42 @@ object AutofillUtiles {
     @Suppress("DEPRECATION")
     fun dataset(contexto: Context, entrada: Entrada, campos: CamposDetectados): Dataset? {
         if (!campos.hayAlgo) return null
+
+        val paquete = entrada.urls.firstNotNullOfOrNull { LanzadorEnlaces.extraerPaquete(it) }
+            ?: entrada.passkey?.rpId?.let { LanzadorEnlaces.extraerPaquete(it) }
+
+        val nombreApp = if (paquete != null && LanzadorEnlaces.estaInstalada(contexto, paquete)) {
+            LanzadorEnlaces.obtenerNombreApp(contexto, paquete)
+        } else null
+
+        val iconoBitmap = if (paquete != null && LanzadorEnlaces.estaInstalada(contexto, paquete)) {
+            obtenerBitmapIconoCircular(contexto, paquete)
+        } else null
+
+        val domPaquete = if (paquete != null) Dominios.dominioDePaquete(paquete) else null
+        val tituloAlmacenado = entrada.titulo.trim()
+
+        val tituloMostrar = when {
+            !nombreApp.isNullOrBlank() && (tituloAlmacenado.isBlank() ||
+                tituloAlmacenado == "Nueva entrada" ||
+                tituloAlmacenado.equals(domPaquete, ignoreCase = true) ||
+                tituloAlmacenado.equals(paquete, ignoreCase = true)) -> nombreApp
+            tituloAlmacenado.isNotBlank() -> tituloAlmacenado
+            entrada.usuario.isNotBlank() -> entrada.usuario
+            else -> "Entrada"
+        }
+
+        val subtituloMostrar = when {
+            entrada.usuario.isNotBlank() -> entrada.usuario
+            !nombreApp.isNullOrBlank() -> "Contraseña guardada"
+            else -> entrada.urls.firstOrNull() ?: "Bóveda local"
+        }
+
         val vista = presentacion(
-            contexto,
-            entrada.titulo.ifBlank { entrada.usuario.ifBlank { "Entrada" } },
-            entrada.usuario.ifBlank { entrada.urls.firstOrNull() ?: "Bóveda local" }
+            contexto = contexto,
+            titulo = tituloMostrar,
+            subtitulo = subtituloMostrar,
+            iconoBitmap = iconoBitmap
         )
         val constructor = Dataset.Builder(vista)
         campos.usuario?.let { constructor.setValue(it, AutofillValue.forText(entrada.usuario)) }

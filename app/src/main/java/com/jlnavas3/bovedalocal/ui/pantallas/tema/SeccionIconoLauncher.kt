@@ -27,6 +27,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.jlnavas3.bovedalocal.data.AjustesApp
+import com.jlnavas3.bovedalocal.data.AjustesDefaults
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteGrupo
 import com.jlnavas3.bovedalocal.ui.theme.Borde
 import com.jlnavas3.bovedalocal.ui.theme.PaletaAcento
@@ -49,7 +50,7 @@ fun SeccionIconoLauncher(
         idGrupo = "02-APA-THM-G06",
         mostrarId = ajustes.mostrarIdsAjustes,
         alRestablecer = {
-            if (ajustes.iconoLauncher != "ambar") {
+            if (ajustes.iconoLauncher != AjustesDefaults.Tema.ICONO_LAUNCHER) {
                 alSolicitarCambioIcono(PaletaAcento.AMBAR)
             }
         },

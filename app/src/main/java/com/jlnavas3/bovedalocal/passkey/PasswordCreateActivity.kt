@@ -17,8 +17,10 @@ import com.jlnavas3.bovedalocal.data.Entrada
 import com.jlnavas3.bovedalocal.data.TipoEntrada
 import com.jlnavas3.bovedalocal.data.VaultRepository
 import com.jlnavas3.bovedalocal.ui.theme.BovedaTheme
+import com.jlnavas3.bovedalocal.autofill.AutofillUtiles
 import com.jlnavas3.bovedalocal.util.Diagnostico
 import com.jlnavas3.bovedalocal.util.Dominios
+import com.jlnavas3.bovedalocal.util.LanzadorEnlaces
 
 /** Confirma y guarda una contraseña pedida por Android Credential Manager. */
 @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
@@ -46,37 +48,72 @@ class PasswordCreateActivity : FragmentActivity() {
             return
         }
 
-        val objetivo = objetivoSolicitante(peticion?.callingAppInfo)
+        val info = peticion?.callingAppInfo
+        val paquete = info?.packageName
+        val objetivo = objetivoSolicitante(info)
+        val esApp = paquete != null && LanzadorEnlaces.estaInstalada(this, paquete)
+        val nombreApp = if (esApp && paquete != null) LanzadorEnlaces.obtenerNombreApp(this, paquete) else null
+        val iconoBitmap = if (esApp && paquete != null) AutofillUtiles.obtenerBitmapIconoCircular(this, paquete, 120) else null
+        val sitioMostrar = nombreApp ?: objetivo
+
         setContent {
             BovedaTheme {
                 HojaPasskey(
                     actividad = this,
                     repositorio = repositorio,
                     titulo = "Guardar contraseña",
-                    sitio = objetivo,
-                    detalle = "$objetivo quiere guardar una contraseña para ${solicitud.id}.",
+                    sitio = sitioMostrar,
+                    detalle = "$sitioMostrar quiere guardar una contraseña para ${solicitud.id}.",
                     textoAccion = "Guardar contraseña",
                     textoPie = "La contraseña queda cifrada en esta bóveda local.",
-                    alConfirmar = { guardar(solicitud, objetivo) },
+                    iconoBitmap = iconoBitmap,
+                    alConfirmar = { guardar(solicitud, objetivo, paquete, nombreApp) },
                     alCancelar = { cancelar() }
                 )
             }
         }
     }
 
-    private fun guardar(solicitud: CreatePasswordRequest, objetivo: String) {
+    private fun guardar(solicitud: CreatePasswordRequest, objetivo: String, paquete: String?, nombreApp: String?) {
         try {
             val existente = repositorio.entradas().firstOrNull { entrada ->
                 entrada.usuario == solicitud.id && entrada.urls.any { Dominios.coincide(it, objetivo) }
             }
-            val titulo = if (objetivo.contains('.')) Dominios.raiz(objetivo) else Dominios.dominioDePaquete(objetivo)
-            val entrada = existente?.copy(contrasena = solicitud.password) ?: Entrada(
+            val urlGuardada = if (paquete != null && (objetivo == paquete || !objetivo.contains('/'))) {
+                "android://$paquete"
+            } else objetivo
+
+            val titulo = when {
+                !nombreApp.isNullOrBlank() -> nombreApp
+                paquete != null && !paquete.contains('/') -> Dominios.dominioDePaquete(paquete)
+                objetivo.contains('.') -> Dominios.raiz(objetivo)
+                else -> objetivo
+            }
+
+            val entrada = existente?.let { exist ->
+                val domPaquete = if (paquete != null) Dominios.dominioDePaquete(paquete) else ""
+                val debeActualizarTitulo = exist.titulo.isBlank() ||
+                    exist.titulo == "Nueva contraseña" ||
+                    exist.titulo == "Nueva entrada" ||
+                    (domPaquete.isNotBlank() && exist.titulo.equals(domPaquete, ignoreCase = true)) ||
+                    (paquete != null && exist.titulo.equals(paquete, ignoreCase = true))
+
+                val urlsActualizadas = if (urlGuardada.startsWith("android://") && !exist.urls.any { LanzadorEnlaces.extraerPaquete(it) == paquete }) {
+                    exist.urls + urlGuardada
+                } else exist.urls
+
+                exist.copy(
+                    contrasena = solicitud.password,
+                    titulo = if (debeActualizarTitulo && !nombreApp.isNullOrBlank()) nombreApp else exist.titulo,
+                    urls = urlsActualizadas
+                )
+            } ?: Entrada(
                 id = repositorio.nuevoId(),
                 tipo = TipoEntrada.LOGIN,
                 titulo = titulo.ifBlank { "Nueva contraseña" },
                 usuario = solicitud.id,
                 contrasena = solicitud.password,
-                urls = listOf(objetivo)
+                urls = listOf(urlGuardada)
             )
             repositorio.guardarEntrada(entrada)
 

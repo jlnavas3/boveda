@@ -59,13 +59,7 @@ fun PantallaTileRapido(
                         ),
                         alRestablecerPantalla = {
                             haptica.tic()
-                            vm.ajustarTileModo("longitud")
-                            vm.ajustarTileLongitud(20)
-                            vm.ajustarTilePatron("XXXXX-XXXXX-XXXXX-XXXXX")
-                            vm.ajustarTileCopiarPortapapeles(true)
-                            vm.ajustarTileMostrarToast(true)
-                            vm.ajustarTileHaptica(true)
-                            vm.ajustarTileHapticaIntensidad(0.8f)
+                            vm.restablecerTile()
                             vm.avisar("Mosaico rápido restablecido")
                         }
                     )
@@ -119,13 +113,7 @@ fun PantallaTileRapido(
                     alCambiarTileHapticaIntensidad = { vm.ajustarTileHapticaIntensidad(it) },
                     alRestablecerGrupo = {
                         haptica.tic()
-                        vm.ajustarTileModo("longitud")
-                        vm.ajustarTileLongitud(20)
-                        vm.ajustarTilePatron("XXXXX-XXXXX-XXXXX-XXXXX")
-                        vm.ajustarTileCopiarPortapapeles(true)
-                        vm.ajustarTileMostrarToast(true)
-                        vm.ajustarTileHaptica(true)
-                        vm.ajustarTileHapticaIntensidad(0.8f)
+                        vm.restablecerTile()
                         vm.avisar("Mosaico rápido restablecido")
                     },
                     vm = vm,
@@ -139,7 +127,7 @@ fun PantallaTileRapido(
                     mostrarIdsAjustes = ajustes.mostrarIdsAjustes,
                     alNavegarWidgets = {
                         haptica.tic()
-                        vm.ir(Pantalla.AjustesWidget("04.4"))
+                        vm.ir(Pantalla.AjustesWidget("04-HER-WGT"))
                     }
                 )
 

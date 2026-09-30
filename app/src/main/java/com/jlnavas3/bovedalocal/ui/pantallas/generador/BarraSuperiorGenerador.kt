@@ -1,36 +1,37 @@
 package com.jlnavas3.bovedalocal.ui.pantallas.generador
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.ContentCopy
-import androidx.compose.material.icons.filled.Refresh
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
+import androidx.compose.material.icons.filled.History
+import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.Timer
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import com.jlnavas3.bovedalocal.ui.componentes.BarraSuperiorPantalla
+import com.jlnavas3.bovedalocal.ui.componentes.BotonIconoCabecera
+import com.jlnavas3.bovedalocal.ui.componentes.ElementoMenuCompacto
+import com.jlnavas3.bovedalocal.ui.componentes.MenuDesplegableBoveda
+import com.jlnavas3.bovedalocal.ui.componentes.SeparadorOpcionMenu
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjustesFondo
-import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorTarjetaAjustes
-import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
 
 @Composable
 fun BarraSuperiorGenerador(
     alVolver: () -> Unit,
     conSeparador: Boolean,
-    alRegenerar: () -> Unit,
-    alCopiar: () -> Unit,
-    alCrearEntrada: () -> Unit,
+    alIrHistorial: () -> Unit,
+    alIrAjustesPortapapeles: () -> Unit,
     modifier: Modifier = Modifier,
     idEtiqueta: String = "04-HER-GEN",
     mostrarId: Boolean = false
 ) {
+    var menuAbierto by remember { mutableStateOf(false) }
+
     BarraSuperiorPantalla(
         titulo = "Generador",
         idEtiqueta = idEtiqueta,
@@ -39,56 +40,37 @@ fun BarraSuperiorGenerador(
         conSeparador = conSeparador,
         colorFondo = ColorAjustesFondo,
         acciones = {
-            // Botón Regenerar
-            IconButton(
-                onClick = alRegenerar,
-                modifier = Modifier
-                    .size(38.dp)
-                    .clip(CircleShape)
-                    .background(ColorTarjetaAjustes)
-            ) {
-                Icon(
-                    imageVector = Icons.Filled.Refresh,
-                    contentDescription = "Regenerar contraseña",
-                    tint = ColorIconosInternos,
-                    modifier = Modifier.size(20.dp)
+            // Botón 3 puntos (Más opciones)
+            Box {
+                com.jlnavas3.bovedalocal.ui.componentes.BotonIconoCabecera(
+                    onClick = { menuAbierto = true },
+                    icono = Icons.Filled.MoreVert,
+                    descripcion = "Más opciones"
                 )
-            }
 
-            Spacer(Modifier.width(5.dp))
-
-            // Botón Copiar al portapapeles
-            IconButton(
-                onClick = alCopiar,
-                modifier = Modifier
-                    .size(38.dp)
-                    .clip(CircleShape)
-                    .background(ColorTarjetaAjustes)
-            ) {
-                Icon(
-                    imageVector = Icons.Filled.ContentCopy,
-                    contentDescription = "Copiar contraseña",
-                    tint = ColorIconosInternos,
-                    modifier = Modifier.size(20.dp)
-                )
-            }
-
-            Spacer(Modifier.width(5.dp))
-
-            // Botón Crear nueva entrada con la clave
-            IconButton(
-                onClick = alCrearEntrada,
-                modifier = Modifier
-                    .size(38.dp)
-                    .clip(CircleShape)
-                    .background(ColorTarjetaAjustes)
-            ) {
-                Icon(
-                    imageVector = Icons.Filled.Add,
-                    contentDescription = "Crear nueva entrada con esta contraseña",
-                    tint = ColorIconosInternos,
-                    modifier = Modifier.size(22.dp)
-                )
+                com.jlnavas3.bovedalocal.ui.componentes.MenuDesplegableBoveda(
+                    expanded = menuAbierto,
+                    onDismissRequest = { menuAbierto = false },
+                    modifier = Modifier.widthIn(min = 220.dp, max = 280.dp)
+                ) {
+                    com.jlnavas3.bovedalocal.ui.componentes.ElementoMenuCompacto(
+                        texto = "Historial de contraseñas...",
+                        icono = Icons.Filled.History,
+                        onClick = {
+                            menuAbierto = false
+                            alIrHistorial()
+                        }
+                    )
+                    com.jlnavas3.bovedalocal.ui.componentes.SeparadorOpcionMenu()
+                    com.jlnavas3.bovedalocal.ui.componentes.ElementoMenuCompacto(
+                        texto = "Ajustes de portapapeles...",
+                        icono = Icons.Filled.Timer,
+                        onClick = {
+                            menuAbierto = false
+                            alIrAjustesPortapapeles()
+                        }
+                    )
+                }
             }
         }
     )

@@ -37,10 +37,26 @@ import com.jlnavas3.bovedalocal.ui.theme.Ambar
 import com.jlnavas3.bovedalocal.ui.theme.ColorDatos2FA
 import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
 import com.jlnavas3.bovedalocal.ui.theme.ColorTitulos
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.border
+import androidx.compose.foundation.combinedClickable
+import androidx.compose.material.icons.filled.Check
+import com.jlnavas3.bovedalocal.ui.pantallas.lista.IndicadorContenidoTarjeta
+import com.jlnavas3.bovedalocal.ui.theme.Borde
+import com.jlnavas3.bovedalocal.ui.theme.ColorSobreAcento
 import com.jlnavas3.bovedalocal.ui.theme.EstiloMonoGrande
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
 import com.jlnavas3.bovedalocal.util.Haptica
 
+import androidx.compose.foundation.shape.RoundedCornerShape
+import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorTarjetaAjustes
+import com.jlnavas3.bovedalocal.ui.theme.CurvaturaEsquinas
+import com.jlnavas3.bovedalocal.ui.theme.GrosorBorde
+import com.jlnavas3.bovedalocal.ui.theme.EstiloBorde
+import com.jlnavas3.bovedalocal.ui.theme.FormaPequena
+import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
+
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun TarjetaCuentaTotp(
     entrada: Entrada,
@@ -48,7 +64,13 @@ fun TarjetaCuentaTotp(
     separarDigitos: Boolean,
     haptica: Haptica,
     alCopiarCodigo: (String) -> Unit,
-    alAlternarFavorito: () -> Unit
+    alAlternarFavorito: () -> Unit,
+    seleccionActiva: Boolean = false,
+    seleccionado: Boolean = false,
+    alPulsarLargo: (() -> Unit)? = null,
+    alAlternarSeleccion: (() -> Unit)? = null,
+    mostrarIndicadores: Boolean = false,
+    alVerDetalle: () -> Unit = {}
 ) {
     val secreto = entrada.secretoTotp ?: return
     val periodo = entrada.totpPeriodo.toLong().coerceAtLeast(10L)
@@ -71,7 +93,30 @@ fun TarjetaCuentaTotp(
         codigo
     }
 
-    Box(modifier = Modifier.fillMaxWidth()) {
+    val forma = RoundedCornerShape(CurvaturaEsquinas)
+    val fondoFila = if (seleccionado) {
+        Ambar.copy(alpha = 0.22f)
+    } else {
+        ColorTarjetaAjustes
+    }
+
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(forma)
+            .background(fondoFila)
+            .then(
+                if (seleccionado) Modifier.border(1.dp, Ambar.copy(alpha = 0.5f), forma)
+                else if (GrosorBorde > 0.dp && EstiloBorde != "ninguno") Modifier.border(GrosorBorde, ColorBordeActual, forma)
+                else Modifier
+            )
+    ) {
+        if (mostrarIndicadores) {
+            IndicadorContenidoTarjeta(
+                entrada = entrada,
+                modifier = Modifier.align(Alignment.TopCenter)
+            )
+        }
         Box(
             modifier = Modifier
                 .width(4.dp)
@@ -82,14 +127,46 @@ fun TarjetaCuentaTotp(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .clickable {
-                    haptica.exito()
-                    alCopiarCodigo(codigo)
-                }
+                .combinedClickable(
+                    onClick = {
+                        if (seleccionActiva) {
+                            haptica.tic()
+                            alAlternarSeleccion?.invoke()
+                        } else {
+                            alVerDetalle()
+                        }
+                    },
+                    onLongClick = {
+                        if (!seleccionActiva && alPulsarLargo != null) {
+                            haptica.toque()
+                            alPulsarLargo()
+                        }
+                    }
+                )
                 .padding(horizontal = 16.dp, vertical = 14.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
+            if (seleccionActiva) {
+                Box(
+                    modifier = Modifier
+                        .size(24.dp)
+                        .clip(CircleShape)
+                        .background(if (seleccionado) Ambar else Borde),
+                    contentAlignment = Alignment.Center
+                ) {
+                    if (seleccionado) {
+                        Icon(
+                            imageVector = Icons.Filled.Check,
+                            contentDescription = null,
+                            tint = ColorSobreAcento,
+                            modifier = Modifier.size(15.dp)
+                        )
+                    }
+                }
+                Spacer(Modifier.width(12.dp))
+            }
+
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = entrada.totpEmisor.ifBlank { entrada.titulo },
@@ -111,7 +188,19 @@ fun TarjetaCuentaTotp(
                 Spacer(Modifier.height(6.dp))
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(10.dp)
+                    horizontalArrangement = Arrangement.spacedBy(10.dp),
+                    modifier = Modifier
+                        .clip(FormaPequena)
+                        .clickable {
+                            if (seleccionActiva) {
+                                haptica.tic()
+                                alAlternarSeleccion?.invoke()
+                            } else {
+                                haptica.exito()
+                                alCopiarCodigo(codigo)
+                            }
+                        }
+                        .padding(vertical = 2.dp)
                 ) {
                     Text(
                         text = codigoVisible,
@@ -126,15 +215,16 @@ fun TarjetaCuentaTotp(
                 }
                 Spacer(Modifier.height(3.dp))
                 Text(
-                    text = "Toca para copiar · $segundosRestantes s restantes",
+                    text = if (seleccionActiva) "$segundosRestantes s restantes" else "Toca el código para copiar · $segundosRestantes s",
                     color = TextoSecundario,
                     style = MaterialTheme.typography.bodySmall
                 )
             }
-            Row(verticalAlignment = Alignment.CenterVertically) {
+
+            if (!seleccionActiva) {
                 Box(
                     modifier = Modifier
-                        .size(32.dp)
+                        .size(36.dp)
                         .clip(CircleShape)
                         .clickable {
                             haptica.tic()
@@ -146,16 +236,9 @@ fun TarjetaCuentaTotp(
                         imageVector = Icons.Filled.Star,
                         contentDescription = if (entrada.favorito) "Quitar de favoritos" else "Marcar como favorito",
                         tint = if (entrada.favorito) Ambar else ColorIconosInternos.copy(alpha = 0.25f),
-                        modifier = Modifier.size(18.dp)
+                        modifier = Modifier.size(20.dp)
                     )
                 }
-                Spacer(Modifier.width(6.dp))
-                Icon(
-                    imageVector = Icons.Filled.ContentCopy,
-                    contentDescription = "Copiar código",
-                    tint = ColorIconosInternos,
-                    modifier = Modifier.size(22.dp)
-                )
             }
         }
     }

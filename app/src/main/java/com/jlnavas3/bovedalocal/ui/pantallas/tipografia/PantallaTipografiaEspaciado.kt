@@ -48,7 +48,7 @@ fun PantallaTipografiaEspaciado(
             colorIcono = ColorGenerador,
             alRestablecer = {
                 haptica.tic()
-                vm.ajustarEspaciadoLetras(0.0f)
+                vm.restablecerKerning()
             },
             idGrupo = "02-APA-TYP-ESP-G01",
             mostrarId = ajustes.mostrarIdsAjustes
@@ -64,7 +64,7 @@ fun PantallaTipografiaEspaciado(
                 alCambiar = { vm.ajustarEspaciadoLetras(it) },
                 alRestablecer = {
                     haptica.tic()
-                    vm.ajustarEspaciadoLetras(0.0f)
+                    vm.restablecerKerning()
                 }
             )
         }
@@ -75,7 +75,7 @@ fun PantallaTipografiaEspaciado(
             etiqueta = "ALTURA DE LÍNEA",
             alRestablecer = {
                 haptica.tic()
-                vm.ajustarInterlineadoFactor(1.0f)
+                vm.restablecerInterlineado()
             },
             idGrupo = "02-APA-TYP-ESP-G02",
             mostrarId = ajustes.mostrarIdsAjustes
@@ -91,7 +91,7 @@ fun PantallaTipografiaEspaciado(
                 alCambiar = { vm.ajustarInterlineadoFactor(it) },
                 alRestablecer = {
                     haptica.tic()
-                    vm.ajustarInterlineadoFactor(1.0f)
+                    vm.restablecerInterlineado()
                 }
             )
         }

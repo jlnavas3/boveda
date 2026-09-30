@@ -16,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.jlnavas3.bovedalocal.data.AjustesDefaults
 import com.jlnavas3.bovedalocal.ui.VaultViewModel
 import com.jlnavas3.bovedalocal.ui.componentes.CampoBoveda
 import com.jlnavas3.bovedalocal.ui.componentes.ContenedorPrincipal
@@ -62,11 +63,7 @@ fun PantallaWidget1x1Modo(
             colorIcono = ColorGenerador,
             alRestablecer = {
                 haptica.tic()
-                vm.ajustarWidget1x1Modo("aleatoria")
-                vm.ajustarWidget1x1Longitud(16)
-                vm.ajustarWidget1x1Simbolos("!@#$%&*()_-=+[]{}?/,.:;")
-                vm.ajustarWidget1x1DicewarePalabras(5)
-                vm.ajustarWidget1x1DicewareSeparador("-")
+                vm.restablecerModoGeneracionWidget1x1()
                 vm.avisar("Modo de generación 1x1 restablecido")
             },
             idGrupo = "04-HER-WGT-MOD-G01",
@@ -98,7 +95,7 @@ fun PantallaWidget1x1Modo(
                     mostrarId = ajustes.mostrarIdsAjustes,
                     alRestablecer = {
                         haptica.tic()
-                        vm.ajustarWidget1x1Longitud(16)
+                        vm.ajustarWidget1x1Longitud(AjustesDefaults.Widget1x1.LONGITUD)
                     },
                     alCambiar = {
                         vm.ajustarWidget1x1Longitud(it.roundToInt())
@@ -145,7 +142,7 @@ fun PantallaWidget1x1Modo(
                     mostrarId = ajustes.mostrarIdsAjustes,
                     alRestablecer = {
                         haptica.tic()
-                        vm.ajustarWidget1x1DicewarePalabras(5)
+                        vm.ajustarWidget1x1DicewarePalabras(AjustesDefaults.Widget1x1.DICEWARE_PALABRAS)
                     },
                     alCambiar = {
                         vm.ajustarWidget1x1DicewarePalabras(it.roundToInt())

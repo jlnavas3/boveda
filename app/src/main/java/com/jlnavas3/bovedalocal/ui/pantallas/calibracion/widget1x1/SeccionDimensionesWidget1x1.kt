@@ -72,12 +72,7 @@ fun SeccionDimensionesWidget1x1(
         mostrarId = ajustes.mostrarIdsAjustes,
         alRestablecer = {
             haptica.tic()
-            vm.ajustarWidget1x1Ancho(55f)
-            vm.ajustarWidget1x1Alto(51f)
-            vm.ajustarWidget1x1BloquearProporcion(false)
-            vm.ajustarWidget1x1Alineamiento("arriba")
-            vm.ajustarWidget1x1OffsetY(4f)
-            vm.ajustarWidget1x1OffsetX(0f)
+            vm.restablecerDimensionesWidget1x1()
         }
     ) {
         ComponenteSwitch(

@@ -173,4 +173,17 @@ class ImportadorCsvTest {
         assertEquals("https://sin-titulo.com", entradas[0].titulo)
         assertEquals("usuario2", entradas[1].titulo)
     }
+
+    @Test
+    fun `importacion de entradas de apps android normaliza url y titulo`() {
+        val csv = """
+            name,url,username,password
+            ,androidapp://com.dvdb.bergnotes,usuario1,pass1
+        """.trimIndent()
+
+        val entradas = ImportadorCsv.parsear(csv.toByteArray(Charsets.UTF_8))
+        assertEquals(1, entradas.size)
+        assertEquals("dvdb.com", entradas[0].titulo)
+        assertEquals(listOf("android://com.dvdb.bergnotes"), entradas[0].urls)
+    }
 }

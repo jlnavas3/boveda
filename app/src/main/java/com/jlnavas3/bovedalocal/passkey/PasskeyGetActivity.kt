@@ -17,7 +17,9 @@ import androidx.fragment.app.FragmentActivity
 import com.jlnavas3.bovedalocal.data.Entrada
 import com.jlnavas3.bovedalocal.data.VaultRepository
 import com.jlnavas3.bovedalocal.ui.theme.BovedaTheme
+import com.jlnavas3.bovedalocal.autofill.AutofillUtiles
 import com.jlnavas3.bovedalocal.util.Diagnostico
+import com.jlnavas3.bovedalocal.util.LanzadorEnlaces
 
 /** Confirma y firma una aserción con una passkey ya guardada. */
 @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
@@ -54,16 +56,30 @@ class PasskeyGetActivity : FragmentActivity() {
         }
         val entradaId = intent.getStringExtra(BovedaCredentialProviderService.EXTRA_ENTRADA_ID)
 
+        val info = peticion?.callingAppInfo
+        val entradaDirecta = entradaId?.let { repositorio.entrada(it) }
+        val paquete = info?.packageName
+            ?: LanzadorEnlaces.extraerPaquete(datos.rpId)
+            ?: entradaDirecta?.urls?.firstNotNullOfOrNull { LanzadorEnlaces.extraerPaquete(it) }
+            ?: if (LanzadorEnlaces.estaInstalada(this, datos.rpId)) datos.rpId else null
+
+        val esApp = paquete != null && LanzadorEnlaces.estaInstalada(this, paquete)
+        val nombreApp = if (esApp && paquete != null) LanzadorEnlaces.obtenerNombreApp(this, paquete) else null
+        val iconoBitmap = if (esApp && paquete != null) AutofillUtiles.obtenerBitmapIconoCircular(this, paquete, 120) else null
+
+        val sitioMostrar = nombreApp ?: entradaDirecta?.titulo?.takeIf { it.isNotBlank() && it != datos.rpId } ?: datos.rpId
+
         setContent {
             BovedaTheme {
                 HojaPasskey(
                     actividad = this,
                     repositorio = repositorio,
                     titulo = "Entrar con passkey",
-                    sitio = datos.rpId,
-                    detalle = "${datos.rpId} quiere que firmes con tu passkey. " +
+                    sitio = sitioMostrar,
+                    detalle = "$sitioMostrar quiere que firmes con tu passkey. " +
                         "Bóveda local firma el reto sin enviar tu clave privada.",
                     textoAccion = "Firmar y entrar",
+                    iconoBitmap = iconoBitmap,
                     alConfirmar = { firmar(datos, entradaId) },
                     alCancelar = { cancelar() }
                 )

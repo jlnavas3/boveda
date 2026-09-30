@@ -57,13 +57,9 @@ fun PantallaAjustesAutenticador(
                             AccionSaltoGrupo("04-HER-AUT-G02", "Accesos rápidos")
                         ),
                         alRestablecerPantalla = {
-                            haptica.tic()
-                            vm.ajustarTotpManualDigitos(6)
-                            vm.ajustarTotpManualPeriodo(30)
-                            vm.ajustarTotpManualAlgoritmo("HmacSHA1")
-                            vm.ajustarTotpSepararDigitos(true)
-                            vm.avisar("Autenticador (2FA) restablecido")
-                        }
+                            vm.restablecerTotpManual()
+                        },
+                        mensajeToastRestablecer = "Autenticador (2FA) restablecido"
                     )
                 }
             )
@@ -100,10 +96,7 @@ fun PantallaAjustesAutenticador(
                         vm.ajustarTotpSepararDigitos(it)
                     },
                     alRestablecerGrupo = {
-                        vm.ajustarTotpManualDigitos(6)
-                        vm.ajustarTotpManualPeriodo(30)
-                        vm.ajustarTotpManualAlgoritmo("HmacSHA1")
-                        vm.ajustarTotpSepararDigitos(true)
+                        vm.restablecerTotpManual()
                     }
                 )
 
@@ -114,7 +107,7 @@ fun PantallaAjustesAutenticador(
                     mostrarId = ajustes.mostrarIdsAjustes,
                     alNavegarAjustesWidget = {
                         haptica.tic()
-                        vm.ir(Pantalla.AjustesWidget("03.3"))
+                        vm.ir(Pantalla.AjustesWidget("04-HER-WGT"))
                     }
                 )
 

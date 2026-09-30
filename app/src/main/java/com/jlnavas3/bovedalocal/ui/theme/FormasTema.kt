@@ -42,6 +42,19 @@ var EspaciadoComponentesDp: Float
 
 val EspaciadoComponentes: Dp get() = espaciadoComponentesDpBase.dp
 
+/**
+ * Calcula el espaciado vertical entre filas según la densidad de la lista y la configuración global de Formas y Bordes.
+ * Permite 0.dp cuando el usuario configura espaciado a cero.
+ */
+fun calcularEspaciadoFilas(densidad: String = "estandar", base: Dp = EspaciadoComponentes): Dp {
+    if (base <= 0.dp) return 0.dp
+    return when (densidad) {
+        "compacta" -> (base * 0.45f).coerceAtLeast(0.dp)
+        "comoda" -> (base * 0.7f).coerceAtLeast(0.dp)
+        else -> base
+    }
+}
+
 val ColorBordeActual: Color get() = when (estiloBordeBase) {
     "acento" -> ColorAcento.copy(alpha = 0.55f)
     "marcado" -> if (esOscuroActivo) Color(0xFF63718E) else Color(0xFF9AA3B8)

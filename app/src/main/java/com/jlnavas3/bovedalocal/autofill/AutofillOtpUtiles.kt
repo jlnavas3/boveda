@@ -7,6 +7,7 @@ import android.view.autofill.AutofillValue
 import com.jlnavas3.bovedalocal.crypto.Base32
 import com.jlnavas3.bovedalocal.crypto.Totp
 import com.jlnavas3.bovedalocal.data.Entrada
+import com.jlnavas3.bovedalocal.util.LanzadorEnlaces
 
 object AutofillOtpUtiles {
 
@@ -73,10 +74,26 @@ object AutofillOtpUtiles {
         idCampoOtp: AutofillId
     ): Dataset? {
         val codigo = obtenerCodigoTotp(entrada) ?: return null
+        val paquete = entrada.urls.firstNotNullOfOrNull { LanzadorEnlaces.extraerPaquete(it) }
+            ?: entrada.passkey?.rpId?.let { LanzadorEnlaces.extraerPaquete(it) }
+        val iconoBitmap = if (paquete != null && LanzadorEnlaces.estaInstalada(contexto, paquete)) {
+            AutofillUtiles.obtenerBitmapIconoCircular(contexto, paquete)
+        } else null
+        val nombreApp = if (paquete != null && LanzadorEnlaces.estaInstalada(contexto, paquete)) {
+            LanzadorEnlaces.obtenerNombreApp(contexto, paquete)
+        } else null
+        val tituloBase = when {
+            !nombreApp.isNullOrBlank() && (entrada.titulo.isBlank() ||
+                entrada.titulo == "Nueva entrada" ||
+                entrada.titulo.equals(paquete, ignoreCase = true)) -> nombreApp
+            entrada.titulo.isNotBlank() -> entrada.titulo
+            else -> "Cuenta"
+        }
         val vista = AutofillUtiles.presentacion(
             contexto = contexto,
-            titulo = "${entrada.titulo.ifBlank { "Cuenta" }} (Código 2FA)",
-            subtitulo = "Código actual: $codigo"
+            titulo = "$tituloBase (Código 2FA)",
+            subtitulo = "Código actual: $codigo",
+            iconoBitmap = iconoBitmap
         )
         val constructor = Dataset.Builder(vista)
         constructor.setValue(idCampoOtp, AutofillValue.forText(codigo))

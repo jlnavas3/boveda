@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.jlnavas3.bovedalocal.data.AjustesDefaults
 import com.jlnavas3.bovedalocal.ui.VaultViewModel
 import com.jlnavas3.bovedalocal.ui.componentes.ContenedorPrincipal
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteGrupo
@@ -56,8 +57,8 @@ fun PantallaIndiceResaltado(
             icono = Icons.Filled.Highlight,
             alRestablecer = {
                 haptica.tic()
-                vm.ajustarIndiceResaltarEntradas(true)
-                vm.ajustarIndiceResaltarSoloPrimera(true)
+                vm.ajustarIndiceResaltarEntradas(AjustesDefaults.Indice.RESALTAR_ENTRADAS)
+                vm.ajustarIndiceResaltarSoloPrimera(AjustesDefaults.Indice.RESALTAR_SOLO_PRIMERA)
                 vm.avisar("Valores de resaltado restablecidos")
             },
             idGrupo = "03-LST-AZX-RES-G01",

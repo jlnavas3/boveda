@@ -126,7 +126,7 @@ fun GrupoConfiguracionPinAutodestruccion(
                 titulo = "Guardar PIN de autodestrucción",
                 icono = Icons.Filled.DeleteForever,
                 colorIcono = Peligro,
-                idFila = "01.4.2",
+                idFila = "01-SEG-DES-PIN",
                 mostrarId = mostrarIdsAjustes,
                 alPulsar = alGuardarPin
             )

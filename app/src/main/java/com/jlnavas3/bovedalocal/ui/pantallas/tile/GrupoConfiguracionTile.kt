@@ -16,6 +16,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.jlnavas3.bovedalocal.data.AjustesApp
+import com.jlnavas3.bovedalocal.data.AjustesDefaults
 import com.jlnavas3.bovedalocal.data.AlmacenAjustes
 import com.jlnavas3.bovedalocal.ui.VaultViewModel
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteCampoTexto
@@ -140,7 +141,7 @@ fun GrupoConfiguracionTile(
                     mostrarId = mostrarIdsAjustes,
                     alRestablecer = {
                         haptica.tic()
-                        vm.ajustarTileDicewarePalabras(5)
+                        vm.ajustarTileDicewarePalabras(AjustesDefaults.Tile.DICEWARE_PALABRAS)
                     },
                     alCambiar = {
                         vm.ajustarTileDicewarePalabras(it.roundToInt())
@@ -229,8 +230,8 @@ fun GrupoConfiguracionTile(
                 mostrarId = mostrarIdsAjustes,
                 icono = null,
                 alRestablecer = {
-                    alCambiarTileHapticaIntensidad(0.35f)
-                    haptica.probar(0.35f)
+                    alCambiarTileHapticaIntensidad(AjustesDefaults.Tile.HAPTICA_INTENSIDAD)
+                    haptica.probar(AjustesDefaults.Tile.HAPTICA_INTENSIDAD)
                 },
                 alCambiar = {
                     alCambiarTileHapticaIntensidad(it)

@@ -32,6 +32,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.foundation.border
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -39,7 +40,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjusteGris
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
+import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
 import com.jlnavas3.bovedalocal.ui.theme.ColorSobreAcento
+import com.jlnavas3.bovedalocal.ui.theme.EstiloBorde
+import com.jlnavas3.bovedalocal.ui.theme.FormaCampo
+import com.jlnavas3.bovedalocal.ui.theme.FormaPequena
+import com.jlnavas3.bovedalocal.ui.theme.GrosorBorde
 import com.jlnavas3.bovedalocal.ui.theme.TextoPrincipal
 import com.jlnavas3.bovedalocal.ui.theme.esOscuroActivo
 
@@ -64,7 +70,7 @@ internal fun CabeceraCompartirQr(
             Box(
                 modifier = Modifier
                     .size(40.dp)
-                    .clip(RoundedCornerShape(11.dp))
+                    .clip(FormaPequena)
                     .background(ColorAcento),
                 contentAlignment = Alignment.Center
             ) {
@@ -133,8 +139,13 @@ internal fun SelectorModosCompartirQr(
         modifier = Modifier
             .fillMaxWidth()
             .height(38.dp)
-            .clip(RoundedCornerShape(12.dp))
+            .clip(FormaCampo)
             .background(fondoSelector)
+            .then(
+                if (GrosorBorde > 0.dp && EstiloBorde != "ninguno") {
+                    Modifier.border(GrosorBorde, ColorBordeActual, FormaCampo)
+                } else Modifier
+            )
             .padding(3.dp),
         horizontalArrangement = Arrangement.spacedBy(4.dp)
     ) {
@@ -143,7 +154,7 @@ internal fun SelectorModosCompartirQr(
             Box(
                 modifier = Modifier
                     .weight(1f)
-                    .clip(RoundedCornerShape(9.dp))
+                    .clip(FormaPequena)
                     .background(if (seleccionado) ColorAcento else Color.Transparent)
                     .clickable { onSeleccionar(modo) }
                     .padding(vertical = 4.dp),
@@ -171,8 +182,13 @@ internal fun VisorCodigoQr(
     Box(
         modifier = modifier
             .size(240.dp)
-            .clip(RoundedCornerShape(18.dp))
+            .clip(FormaCampo)
             .background(Color.White)
+            .then(
+                if (GrosorBorde > 0.dp && EstiloBorde != "ninguno") {
+                    Modifier.border(GrosorBorde, ColorBordeActual, FormaCampo)
+                } else Modifier
+            )
             .padding(14.dp),
         contentAlignment = Alignment.Center
     ) {

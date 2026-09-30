@@ -110,9 +110,8 @@ fun PantallaSeguridad(
                         ),
                         alRestablecerPantalla = {
                             haptica.tic()
-                            vm.ajustarAutoBloqueo(60)
-                            vm.ajustarProteccionPantalla(true)
-                            vm.ajustarPortapapeles(30)
+                            vm.restablecerBloqueoApp()
+                            vm.restablecerPortapapeles()
                             vm.avisar("Ajustes de biometría restablecidos")
                         }
                     )
@@ -180,8 +179,7 @@ fun PantallaSeguridad(
                     },
                     alRestablecer = {
                         haptica.tic()
-                        vm.ajustarAutoBloqueo(60)
-                        vm.ajustarProteccionPantalla(true)
+                        vm.restablecerBloqueoApp()
                         vm.avisar("Valores de bloqueo restablecidos")
                     }
                 )
@@ -198,8 +196,8 @@ fun PantallaSeguridad(
                     },
                     alRestablecer = {
                         haptica.tic()
-                        vm.ajustarPortapapeles(30)
-                        vm.avisar("Tiempo de portapapeles restablecido a 30s")
+                        vm.restablecerPortapapeles()
+                        vm.avisar("Tiempo de portapapeles restablecido")
                     }
                 )
 

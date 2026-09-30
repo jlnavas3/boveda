@@ -28,6 +28,7 @@ private data class OpcionEspaciadoRapido(
 )
 
 private val OPCIONES_ESPACIADO = listOf(
+    OpcionEspaciadoRapido("Sin espacio (0 dp)", 0f),
     OpcionEspaciadoRapido("Compacto (6 dp)", 6f),
     OpcionEspaciadoRapido("Ajustado (10 dp)", 10f),
     OpcionEspaciadoRapido("Equilibrado (14 dp)", 14f),
@@ -63,7 +64,7 @@ fun PantallaFormasEspaciado(
             colorIcono = ColorIconosInternos,
             alRestablecer = {
                 haptica.tic()
-                vm.ajustarEspaciadoComponentes(14f)
+                vm.restablecerEspaciadoComponentes()
             },
             idGrupo = "02-APA-GEO-ESP-G01",
             mostrarId = ajustes.mostrarIdsAjustes
@@ -72,14 +73,14 @@ fun PantallaFormasEspaciado(
                 titulo = "Separación vertical",
                 valor = ajustes.espaciadoComponentesDp,
                 valorTexto = "${ajustes.espaciadoComponentesDp.roundToInt()} dp",
-                rango = 6f..24f,
-                pasos = 17,
-                etiquetaMin = "6 dp (Compacto)",
+                rango = 0f..24f,
+                pasos = 23,
+                etiquetaMin = "0 dp (Sin espacio)",
                 etiquetaMax = "24 dp (Amplio)",
                 alCambiar = { vm.ajustarEspaciadoComponentes(it) },
                 alRestablecer = {
                     haptica.tic()
-                    vm.ajustarEspaciadoComponentes(14f)
+                    vm.restablecerEspaciadoComponentes()
                 }
             )
         }

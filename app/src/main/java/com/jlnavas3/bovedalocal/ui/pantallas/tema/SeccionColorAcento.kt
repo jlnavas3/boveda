@@ -16,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.jlnavas3.bovedalocal.data.AjustesApp
+import com.jlnavas3.bovedalocal.data.AjustesDefaults
 import com.jlnavas3.bovedalocal.ui.componentes.SelectorColorEnTiempoReal
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteGrupo
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteSwitch
@@ -37,7 +38,7 @@ fun SeccionColorDinamicoYSistema(
             etiqueta = "COLOR DINÁMICO",
             icono = Icons.Filled.AutoAwesome,
             colorIcono = Color(0xFF00897B),
-            alRestablecer = { alAlternarColorDinamico(true) },
+            alRestablecer = { alAlternarColorDinamico(AjustesDefaults.Tema.COLOR_DINAMICO_SISTEMA) },
             idGrupo = "02-APA-THM-G03",
             mostrarId = ajustes.mostrarIdsAjustes,
             modifier = Modifier.bringIntoViewRequester(reqDinamico)
@@ -71,7 +72,7 @@ fun SeccionColorAcento(
         idGrupo = "02-APA-THM-G05",
         mostrarId = ajustes.mostrarIdsAjustes,
         alRestablecer = {
-            alAjustarColorAcento("ambar")
+            alAjustarColorAcento(AjustesDefaults.Tema.COLOR_ACENTO)
         },
         modifier = Modifier.bringIntoViewRequester(reqAcento)
     ) {

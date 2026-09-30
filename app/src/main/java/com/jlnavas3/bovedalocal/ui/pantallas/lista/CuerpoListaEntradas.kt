@@ -54,7 +54,7 @@ fun CuerpoListaEntradas(
 ) {
     val ambitoCorutina = rememberCoroutineScope()
     val expandidoEnLista: (String) -> Boolean = { clave ->
-        modoSeleccion || busqueda.isNotBlank() || gruposExpandidos.contains(clave)
+        busqueda.isNotBlank() || gruposExpandidos.contains(clave)
     }
     val itemsAMostrar = remember(visibles, modoSeleccion, criterioOrdenacion, ajustes.agruparPorSitio) {
         construirItemsAgrupadosPorSitio(

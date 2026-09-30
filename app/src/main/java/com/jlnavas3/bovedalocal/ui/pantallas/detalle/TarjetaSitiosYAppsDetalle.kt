@@ -1,5 +1,6 @@
 package com.jlnavas3.bovedalocal.ui.pantallas.detalle
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -37,6 +38,7 @@ import com.jlnavas3.bovedalocal.ui.theme.TextoPrincipal
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
 import com.jlnavas3.bovedalocal.ui.theme.colorLegibleParaTema
 import com.jlnavas3.bovedalocal.ui.theme.fondoBadgeParaTema
+import com.jlnavas3.bovedalocal.util.GestorAppsInstaladas
 import com.jlnavas3.bovedalocal.util.Haptica
 import com.jlnavas3.bovedalocal.util.LanzadorEnlaces
 import kotlinx.coroutines.delay
@@ -69,6 +71,9 @@ fun TarjetaSitiosYAppsDetalle(
             val nombreApp = remember(url, contexto) {
                 if (paquete != null && estaInstalada) LanzadorEnlaces.obtenerNombreApp(contexto, paquete) else null
             }
+            val iconoAppBitmap = remember(paquete, contexto, estaInstalada) {
+                if (paquete != null && estaInstalada) GestorAppsInstaladas.obtenerIconoApp(contexto, paquete) else null
+            }
             val colorDato = if (esApp) ColorDatosApp else ColorDatosWeb
 
             if (index > 0) {
@@ -96,19 +101,29 @@ fun TarjetaSitiosYAppsDetalle(
                         .padding(start = 16.dp, end = 10.dp, top = 12.dp, bottom = 12.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Box(
-                        modifier = Modifier
-                            .size(38.dp)
-                            .clip(FormaPequena)
-                            .background(fondoBadgeParaTema(colorDato)),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Icon(
-                            imageVector = if (esApp) Icons.Filled.Android else Icons.Filled.Language,
-                            contentDescription = null,
-                            tint = colorLegibleParaTema(colorDato),
-                            modifier = Modifier.size(20.dp)
+                    if (esApp && iconoAppBitmap != null) {
+                        Image(
+                            bitmap = iconoAppBitmap,
+                            contentDescription = nombreApp ?: paquete ?: "App",
+                            modifier = Modifier
+                                .size(38.dp)
+                                .clip(FormaPequena)
                         )
+                    } else {
+                        Box(
+                            modifier = Modifier
+                                .size(38.dp)
+                                .clip(FormaPequena)
+                                .background(fondoBadgeParaTema(colorDato)),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                imageVector = if (esApp) Icons.Filled.Android else Icons.Filled.Language,
+                                contentDescription = null,
+                                tint = colorLegibleParaTema(colorDato),
+                                modifier = Modifier.size(20.dp)
+                            )
+                        }
                     }
                     Spacer(Modifier.width(12.dp))
                     Column(modifier = Modifier.weight(1f)) {

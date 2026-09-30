@@ -35,6 +35,10 @@ import com.jlnavas3.bovedalocal.data.AjustesApp
 import com.jlnavas3.bovedalocal.ui.VaultViewModel
 import com.jlnavas3.bovedalocal.ui.componentes.SelectorColorEnTiempoReal
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteGrupo
+import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
+import com.jlnavas3.bovedalocal.ui.theme.EstiloBorde
+import com.jlnavas3.bovedalocal.ui.theme.FormaPequena
+import com.jlnavas3.bovedalocal.ui.theme.GrosorBorde
 import com.jlnavas3.bovedalocal.ui.theme.SuperficieAlta
 import com.jlnavas3.bovedalocal.ui.theme.TextoPrincipal
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
@@ -54,7 +58,7 @@ fun SeccionColoresWidget1x1(
 
     ComponenteGrupo(
         etiqueta = "Colores del widget",
-        idGrupo = "03.3.G13",
+        idGrupo = "04-HER-WGT-G13",
         mostrarId = ajustes.mostrarIdsAjustes,
         descripcion = "Personaliza los colores de borde, ícono y fondo"
     ) {
@@ -75,10 +79,11 @@ fun SeccionColoresWidget1x1(
                 Box(
                     modifier = Modifier
                         .weight(1f)
-                        .clip(RoundedCornerShape(10.dp))
+                        .clip(FormaPequena)
                         .background(if (seleccionado) color.copy(alpha = 0.22f) else SuperficieAlta)
                         .then(
-                            if (seleccionado) Modifier.border(1.5.dp, color, RoundedCornerShape(10.dp))
+                            if (seleccionado) Modifier.border(GrosorBorde.coerceAtLeast(1.dp), color, FormaPequena)
+                            else if (GrosorBorde > 0.dp && EstiloBorde != "ninguno") Modifier.border(GrosorBorde, ColorBordeActual, FormaPequena)
                             else Modifier
                         )
                         .clickable {
@@ -92,7 +97,7 @@ fun SeccionColoresWidget1x1(
                         Box(
                             modifier = Modifier
                                 .size(16.dp)
-                                .clip(RoundedCornerShape(4.dp))
+                                .clip(FormaPequena)
                                 .background(color)
                         )
                         Spacer(Modifier.height(4.dp))

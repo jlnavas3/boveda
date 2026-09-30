@@ -9,6 +9,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.jlnavas3.bovedalocal.data.AjustesDefaults
 import com.jlnavas3.bovedalocal.ui.VaultViewModel
 import com.jlnavas3.bovedalocal.ui.componentes.ContenedorPrincipal
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteBotonFila
@@ -41,8 +42,8 @@ fun PantallaWidgetTotpAjustes(
             colorIcono = Color2FA,
             alRestablecer = {
                 haptica.tic()
-                vm.ajustarWidgetHaptica(true)
-                vm.ajustarWidgetHapticaIntensidad(0.35f)
+                vm.ajustarWidgetHaptica(AjustesDefaults.WidgetTotp.HAPTICA)
+                vm.ajustarWidgetHapticaIntensidad(AjustesDefaults.WidgetTotp.HAPTICA_INTENSIDAD)
                 vm.avisar("Ajustes de respuesta táctil restablecidos")
             },
             idGrupo = "04-HER-WGT-TOT-G01",
@@ -74,8 +75,8 @@ fun PantallaWidgetTotpAjustes(
                     mostrarId = ajustes.mostrarIdsAjustes,
                     alRestablecer = {
                         haptica.tic()
-                        vm.ajustarWidgetHapticaIntensidad(0.35f)
-                        haptica.probar(0.35f)
+                        vm.ajustarWidgetHapticaIntensidad(AjustesDefaults.WidgetTotp.HAPTICA_INTENSIDAD)
+                        haptica.probar(AjustesDefaults.WidgetTotp.HAPTICA_INTENSIDAD)
                     },
                     alCambiar = {
                         vm.ajustarWidgetHapticaIntensidad(it)

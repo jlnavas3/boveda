@@ -29,7 +29,7 @@ fun GrupoDensidadFilas(
             titulo = "Predeterminada",
             icono = null,
             seleccionado = densidadLista == "predeterminada" || (densidadLista != "comoda" && densidadLista != "compacta"),
-            idFila = "03.1.3",
+            idFila = "03-LST-DES-DN1",
             mostrarId = mostrarId,
             alSeleccionar = { alSeleccionarDensidad("predeterminada") }
         )
@@ -38,7 +38,7 @@ fun GrupoDensidadFilas(
             titulo = "Cómoda",
             icono = null,
             seleccionado = densidadLista == "comoda",
-            idFila = "03.1.4",
+            idFila = "03-LST-DES-DN2",
             mostrarId = mostrarId,
             alSeleccionar = { alSeleccionarDensidad("comoda") }
         )
@@ -47,7 +47,7 @@ fun GrupoDensidadFilas(
             titulo = "Compacta",
             icono = null,
             seleccionado = densidadLista == "compacta",
-            idFila = "03.1.5",
+            idFila = "03-LST-DES-DN3",
             mostrarId = mostrarId,
             alSeleccionar = { alSeleccionarDensidad("compacta") }
         )

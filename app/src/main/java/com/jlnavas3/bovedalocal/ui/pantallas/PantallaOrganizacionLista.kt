@@ -66,9 +66,7 @@ fun PantallaOrganizacionLista(
                         ),
                         alRestablecerPantalla = {
                             haptica.tic()
-                            vm.ajustarAgruparPorSitio(false)
-                            vm.ajustarDensidadLista("predeterminada")
-                            vm.cambiarCriterioOrdenacion(CriterioOrdenacion.NOMBRE_AZ)
+                            vm.restablecerOrganizacionLista()
                             vm.avisar("Diseño de lista restablecido")
                         }
                     )
@@ -121,9 +119,7 @@ fun PantallaOrganizacionLista(
                     },
                     alRestablecerGrupo = {
                         haptica.tic()
-                        vm.ajustarAgruparPorSitio(false)
-                        vm.ajustarDensidadLista("predeterminada")
-                        vm.cambiarCriterioOrdenacion(CriterioOrdenacion.NOMBRE_AZ)
+                        vm.restablecerOrganizacionLista()
                         vm.avisar("Valores de lista restablecidos")
                     }
                 )

@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.jlnavas3.bovedalocal.data.AjustesDefaults
 import com.jlnavas3.bovedalocal.ui.VaultViewModel
 import com.jlnavas3.bovedalocal.ui.componentes.ContenedorPrincipal
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteBotonFila
@@ -45,8 +46,8 @@ fun PantallaWidget1x1Comportamiento(
             colorIcono = ColorGenerador,
             alRestablecer = {
                 haptica.tic()
-                vm.ajustarWidget1x1CopiarPortapapeles(true)
-                vm.ajustarWidget1x1MostrarToast(true)
+                vm.ajustarWidget1x1CopiarPortapapeles(AjustesDefaults.Widget1x1.COPIAR_PORTAPAPELES)
+                vm.ajustarWidget1x1MostrarToast(AjustesDefaults.Widget1x1.MOSTRAR_TOAST)
                 vm.avisar("Acciones automáticas restablecidas")
             },
             idGrupo = "04-HER-WGT-CMP-G01",
@@ -101,8 +102,8 @@ fun PantallaWidget1x1Comportamiento(
             colorIcono = ColorGenerador,
             alRestablecer = {
                 haptica.tic()
-                vm.ajustarWidget1x1Haptica(true)
-                vm.ajustarWidget1x1HapticaIntensidad(0.35f)
+                vm.ajustarWidget1x1Haptica(AjustesDefaults.Widget1x1.HAPTICA)
+                vm.ajustarWidget1x1HapticaIntensidad(AjustesDefaults.Widget1x1.HAPTICA_INTENSIDAD)
                 vm.avisar("Respuesta táctil restablecida")
             },
             idGrupo = "04-HER-WGT-CMP-G02",
@@ -134,8 +135,8 @@ fun PantallaWidget1x1Comportamiento(
                     mostrarId = ajustes.mostrarIdsAjustes,
                     alRestablecer = {
                         haptica.tic()
-                        vm.ajustarWidget1x1HapticaIntensidad(0.35f)
-                        haptica.probar(0.35f)
+                        vm.ajustarWidget1x1HapticaIntensidad(AjustesDefaults.Widget1x1.HAPTICA_INTENSIDAD)
+                        haptica.probar(AjustesDefaults.Widget1x1.HAPTICA_INTENSIDAD)
                     },
                     alCambiar = {
                         vm.ajustarWidget1x1HapticaIntensidad(it)

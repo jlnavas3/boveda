@@ -37,7 +37,7 @@ fun GrupoAcercaDeApp(
         etiqueta = "Acerca de Bóveda Local",
         icono = Icons.Filled.Info,
         colorIcono = ColorIconosInternos,
-        idGrupo = "06.3.G6",
+        idGrupo = "06-SIS-DGN-G06",
         mostrarId = mostrarIdsAjustes,
         modifier = modifier
     ) {

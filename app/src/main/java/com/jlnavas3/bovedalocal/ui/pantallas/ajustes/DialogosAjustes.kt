@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DeleteForever
 import androidx.compose.material.icons.filled.Warning
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -30,11 +29,10 @@ import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
 
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.graphics.Color
+import com.jlnavas3.bovedalocal.ui.componentes.DialogoBoveda
 import com.jlnavas3.bovedalocal.ui.componentes.DialogoConfirmacionBoveda
 import com.jlnavas3.bovedalocal.ui.componentes.TipoBotonTexto
 import com.jlnavas3.bovedalocal.ui.theme.esOscuroActivo
-
-private val colorDialogo: Color @Composable get() = if (esOscuroActivo) Color(0xFF212023) else Color(0xFFFFFFFF)
 
 @Composable
 fun DialogoModoCompatible(
@@ -64,11 +62,8 @@ fun DialogoCambioMaestra(
     var actualMaestra by remember { mutableStateOf("") }
     var nuevaMaestra by remember { mutableStateOf("") }
 
-    AlertDialog(
+    DialogoBoveda(
         onDismissRequest = alDescartar,
-        shape = RoundedCornerShape(20.dp),
-        containerColor = colorDialogo,
-        tonalElevation = 0.dp,
         title = { Text("Cambiar contraseña maestra", color = TextoPrincipal) },
         text = {
             Column {
@@ -160,13 +155,8 @@ fun DialogoContrasena(
 ) {
     var valor by remember { mutableStateOf("") }
     var mostrarContrasena by remember { mutableStateOf(false) }
-    val esOscuro = isSystemInDarkTheme()
-    val colorDialogo = if (esOscuro) Color(0xFF212023) else Color(0xFFFFFFFF)
-    AlertDialog(
+    DialogoBoveda(
         onDismissRequest = alCancelar,
-        containerColor = colorDialogo,
-        tonalElevation = 0.dp,
-        shape = RoundedCornerShape(20.dp),
         title = { Text(titulo, color = TextoPrincipal) },
         text = {
             Column {

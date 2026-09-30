@@ -125,9 +125,22 @@ object LanzadorEnlaces {
 
     /** Comprueba si el paquete de la aplicación está instalado en el dispositivo. */
     fun estaInstalada(contexto: Context, paquete: String): Boolean {
+        return GestorAppsInstaladas.estaInstalada(contexto, paquete)
+    }
+
+    /** Comprueba directamente con PackageManager sin usar la caché global. */
+    fun estaInstaladaDirecta(contexto: Context, paquete: String): Boolean {
         return try {
-            val intent = contexto.packageManager.getLaunchIntentForPackage(paquete)
-            intent != null
+            val pm = contexto.packageManager
+            val intent = pm.getLaunchIntentForPackage(paquete)
+            if (intent != null) return true
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+                pm.getApplicationInfo(paquete, PackageManager.ApplicationInfoFlags.of(0))
+            } else {
+                @Suppress("DEPRECATION")
+                pm.getApplicationInfo(paquete, 0)
+            }
+            true
         } catch (e: Exception) {
             false
         }
@@ -135,18 +148,7 @@ object LanzadorEnlaces {
 
     /** Obtiene el nombre amigable de la aplicación si está instalada. */
     fun obtenerNombreApp(contexto: Context, paquete: String): String? {
-        return try {
-            val pm = contexto.packageManager
-            val appInfo = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
-                pm.getApplicationInfo(paquete, PackageManager.ApplicationInfoFlags.of(0))
-            } else {
-                @Suppress("DEPRECATION")
-                pm.getApplicationInfo(paquete, 0)
-            }
-            pm.getApplicationLabel(appInfo).toString()
-        } catch (e: Exception) {
-            null
-        }
+        return GestorAppsInstaladas.obtenerNombreApp(contexto, paquete)
     }
 
     /** Añade https:// si el usuario ingresó un dominio sin esquema. */

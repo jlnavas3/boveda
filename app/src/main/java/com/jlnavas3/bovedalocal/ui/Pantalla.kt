@@ -4,7 +4,11 @@ sealed interface Pantalla {
     object Onboarding : Pantalla
     object Desbloqueo : Pantalla
     object Lista : Pantalla
-    data class Detalle(val id: String) : Pantalla
+    data class Detalle(
+        val id: String,
+        val idsContexto: List<String> = emptyList(),
+        val modoComparacion: Boolean = false
+    ) : Pantalla
     data class Editar(val id: String?, val contrasenaInicial: String = "") : Pantalla
     object Generador : Pantalla
     object Passkeys : Pantalla
@@ -14,6 +18,10 @@ sealed interface Pantalla {
         val entradaDestino: String? = null,
         /** true = entrar directo a escribir la clave a mano, sin cámara. */
         val soloManual: Boolean = false
+    ) : Pantalla
+    /** Pantalla inmersiva completa para escanear códigos QR con visor, linterna y zoom. */
+    data class CamaraQr(
+        val entradaDestino: String? = null
     ) : Pantalla
     open class Ajustes(val seccionId: String? = null) : Pantalla {
         companion object : Ajustes(null)

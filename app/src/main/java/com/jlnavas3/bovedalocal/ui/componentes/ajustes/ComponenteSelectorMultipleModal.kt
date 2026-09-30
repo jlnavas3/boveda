@@ -1,6 +1,7 @@
 package com.jlnavas3.bovedalocal.ui.componentes.ajustes
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -43,6 +44,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
+import com.jlnavas3.bovedalocal.ui.theme.CurvaturaEsquinas
+import com.jlnavas3.bovedalocal.ui.theme.EstiloBorde
+import com.jlnavas3.bovedalocal.ui.theme.GrosorBorde
+import com.jlnavas3.bovedalocal.ui.componentes.DialogoBoveda
+import com.jlnavas3.bovedalocal.ui.componentes.FilaOpcionModal
+import com.jlnavas3.bovedalocal.ui.componentes.ModalInferiorBoveda
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjusteGris
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.SwitchBoveda
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
@@ -117,178 +125,95 @@ fun <T> ComponenteSelectorMultipleModal(
     )
 
     if (abierto) {
-        val esOscuro = isSystemInDarkTheme()
-        val fondoModal = if (esOscuro) Color(0xFF222225) else Color.White
         val colorAcentoFinal = colorIcono ?: ColorAcento
 
-        Dialog(
-            onDismissRequest = { abierto = false },
-            properties = DialogProperties(
-                usePlatformDefaultWidth = false,
-                dismissOnBackPress = true,
-                dismissOnClickOutside = true
-            )
-        ) {
-            Box(
+        val listaOpciones = @Composable {
+            Column(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .clickable(
-                        interactionSource = remember { MutableInteractionSource() },
-                        indication = null
-                    ) { abierto = false },
-                contentAlignment = if (fijarAbajo) Alignment.BottomCenter else Alignment.Center
+                    .fillMaxWidth()
+                    .heightIn(max = 380.dp)
+                    .verticalScroll(rememberScrollState()),
+                verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
-                Box(
-                    modifier = Modifier
-                        .navigationBarsPadding()
-                        .padding(
-                            start = 16.dp,
-                            end = 16.dp,
-                            top = if (fijarAbajo) 0.dp else 32.dp,
-                            bottom = if (fijarAbajo) 16.dp else 32.dp
-                        )
-                        .fillMaxWidth()
-                        .clip(RoundedCornerShape(26.dp))
-                        .background(fondoModal)
-                        .clickable(
-                            interactionSource = remember { MutableInteractionSource() },
-                            indication = null
-                        ) { /* Evita cerrar al pulsar dentro */ }
-                        .padding(horizontal = 20.dp, vertical = 22.dp)
+                opciones.forEach { opcion ->
+                    FilaOpcionModal(
+                        titulo = opcion.etiquetaModal,
+                        descripcion = opcion.descripcionModal,
+                        icono = opcion.icono,
+                        seleccionado = opcion.activo,
+                        colorAcento = colorAcentoFinal,
+                        alPulsar = {
+                            haptica.tic()
+                            alAlternar(opcion.valor)
+                        },
+                        controlFinal = {
+                            SwitchBoveda(
+                                checked = opcion.activo,
+                                onCheckedChange = {
+                                    haptica.tic()
+                                    alAlternar(opcion.valor)
+                                }
+                            )
+                        }
+                    )
+                }
+            }
+        }
+
+        if (fijarAbajo) {
+            ModalInferiorBoveda(
+                abierto = abierto,
+                alCerrar = { abierto = false },
+                titulo = titulo,
+                descripcion = descripcionModal,
+                icono = icono,
+                colorIcono = colorTinteIcono,
+                fondoIcono = colorAcentoFinal,
+                fijarAbajo = true,
+                mostrarBotonCerrar = false
+            ) {
+                listaOpciones()
+                Spacer(Modifier.height(14.dp))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End
                 ) {
-                    Column(modifier = Modifier.fillMaxWidth()) {
-                        // Cabecera del modal
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            if (icono != null) {
-                                Box(
-                                    modifier = Modifier
-                                        .size(38.dp)
-                                        .clip(RoundedCornerShape(10.dp))
-                                        .background(colorAcentoFinal),
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    Icon(
-                                        imageVector = icono,
-                                        contentDescription = null,
-                                        tint = colorTinteIcono,
-                                        modifier = Modifier.size(22.dp)
-                                    )
-                                }
-                                Spacer(Modifier.width(14.dp))
-                            }
-
-                            Column(modifier = Modifier.weight(1f)) {
-                                Text(
-                                    text = titulo,
-                                    color = TextoPrincipal,
-                                    style = MaterialTheme.typography.titleMedium.copy(
-                                        fontWeight = FontWeight.Bold,
-                                        fontSize = 17.5.sp
-                                    ),
-                                    maxLines = 2,
-                                    overflow = TextOverflow.Ellipsis
-                                )
-                                if (!descripcionModal.isNullOrBlank()) {
-                                    Spacer(Modifier.height(2.dp))
-                                    Text(
-                                        text = descripcionModal,
-                                        color = TextoSecundario,
-                                        style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.5.sp)
-                                    )
-                                }
-                            }
-                        }
-
-                        Spacer(Modifier.height(16.dp))
-
-                        // Lista de opciones con SwitchBoveda
-                        Column(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .heightIn(max = 380.dp)
-                                .verticalScroll(rememberScrollState()),
-                            verticalArrangement = Arrangement.spacedBy(4.dp)
-                        ) {
-                            opciones.forEach { opcion ->
-                                Row(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .clip(RoundedCornerShape(14.dp))
-                                        .background(
-                                            if (opcion.activo) colorAcentoFinal.copy(alpha = 0.12f)
-                                            else Color.Transparent
-                                        )
-                                        .clickable {
-                                            haptica.tic()
-                                            alAlternar(opcion.valor)
-                                        }
-                                        .padding(horizontal = 14.dp, vertical = 11.dp),
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    if (opcion.icono != null) {
-                                        Icon(
-                                            imageVector = opcion.icono,
-                                            contentDescription = null,
-                                            tint = if (opcion.activo) colorAcentoFinal else TextoSecundario,
-                                            modifier = Modifier.size(20.dp)
-                                        )
-                                        Spacer(Modifier.width(12.dp))
-                                    }
-
-                                    Column(modifier = Modifier.weight(1f)) {
-                                        Text(
-                                            text = opcion.etiquetaModal,
-                                            color = if (opcion.activo) colorAcentoFinal else TextoPrincipal,
-                                            style = MaterialTheme.typography.bodyMedium.copy(
-                                                fontWeight = if (opcion.activo) FontWeight.SemiBold else FontWeight.Normal,
-                                                fontSize = 15.sp
-                                            )
-                                        )
-                                        if (!opcion.descripcionModal.isNullOrBlank()) {
-                                            Spacer(Modifier.height(2.dp))
-                                            Text(
-                                                text = opcion.descripcionModal,
-                                                color = TextoSecundario,
-                                                style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp)
-                                            )
-                                        }
-                                    }
-
-                                    Spacer(Modifier.width(12.dp))
-
-                                    SwitchBoveda(
-                                        checked = opcion.activo,
-                                        onCheckedChange = {
-                                            haptica.tic()
-                                            alAlternar(opcion.valor)
-                                        }
-                                    )
-                                }
-                            }
-                        }
-
-                        Spacer(Modifier.height(14.dp))
-
-                        // Botón de cierre
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.End
-                        ) {
-                            TextButton(
-                                onClick = { abierto = false }
-                            ) {
-                                Text(
-                                    text = textoBotonCerrar,
-                                    color = colorAcentoFinal,
-                                    style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold)
-                                )
-                            }
-                        }
+                    TextButton(onClick = { abierto = false }) {
+                        Text(
+                            text = textoBotonCerrar,
+                            color = colorAcentoFinal,
+                            style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold)
+                        )
                     }
                 }
+            }
+        } else {
+            DialogoBoveda(
+                abierto = abierto,
+                alCerrar = { abierto = false },
+                titulo = titulo,
+                icono = icono,
+                colorIcono = colorTinteIcono,
+                fondoIcono = colorAcentoFinal,
+                botonConfirmar = {
+                    TextButton(onClick = { abierto = false }) {
+                        Text(
+                            text = textoBotonCerrar,
+                            color = colorAcentoFinal,
+                            style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold)
+                        )
+                    }
+                }
+            ) {
+                if (!descripcionModal.isNullOrBlank()) {
+                    Text(
+                        text = descripcionModal,
+                        color = TextoSecundario,
+                        style = MaterialTheme.typography.bodySmall
+                    )
+                    Spacer(Modifier.height(8.dp))
+                }
+                listaOpciones()
             }
         }
     }

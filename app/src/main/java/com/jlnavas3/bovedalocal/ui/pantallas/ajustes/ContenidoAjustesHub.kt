@@ -77,12 +77,12 @@ fun VistaGruposAjustesHub(
     modifier: Modifier = Modifier
 ) {
     val grupos = listOf(
-        InfoGrupoAjustes("Seguridad", "01", Icons.Filled.Security),
-        InfoGrupoAjustes("Apariencia", "02", Icons.Filled.Palette),
-        InfoGrupoAjustes("Lista de cuentas", "03", Icons.Filled.Layers),
-        InfoGrupoAjustes("Herramientas", "04", Icons.Filled.Build),
-        InfoGrupoAjustes("Copias y datos", "05", Icons.Filled.Backup),
-        InfoGrupoAjustes("Sistema", "06", Icons.Filled.Settings)
+        InfoGrupoAjustes("Seguridad", "01-SEG", Icons.Filled.Security),
+        InfoGrupoAjustes("Apariencia", "02-APA", Icons.Filled.Palette),
+        InfoGrupoAjustes("Lista de cuentas", "03-LST", Icons.Filled.Layers),
+        InfoGrupoAjustes("Herramientas", "04-HER", Icons.Filled.Build),
+        InfoGrupoAjustes("Copias y datos", "05-COP", Icons.Filled.Backup),
+        InfoGrupoAjustes("Sistema", "06-SIS", Icons.Filled.Settings)
     )
 
     Column(modifier = modifier) {

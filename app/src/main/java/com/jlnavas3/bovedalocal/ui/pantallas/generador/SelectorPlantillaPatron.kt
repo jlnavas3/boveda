@@ -60,10 +60,9 @@ fun SelectorPlantillaPatron(
     alSeleccionarPlantilla: (String) -> Unit
 ) {
     var abierto by remember { mutableStateOf(false) }
-    val forma = RoundedCornerShape(12.dp)
+    val forma = FormaCampo
     val esOscuro = androidx.compose.foundation.isSystemInDarkTheme()
     val fondo = if (esOscuro) Color(0xFF161518) else Color(0xFFF4F4F6)
-    val borde = if (esOscuro) Color(0xFF333238) else Color(0xFFDFDFE3)
 
     val nombreSeleccionado = PLANTILLAS_PATRON_RAPIDO.firstOrNull { it.second == patronActual }?.first ?: "Plantilla personalizada"
 
@@ -74,6 +73,11 @@ fun SelectorPlantillaPatron(
                 .height(42.dp)
                 .clip(forma)
                 .background(fondo)
+                .then(
+                    if (GrosorBorde > 0.dp && com.jlnavas3.bovedalocal.ui.theme.EstiloBorde != "ninguno") {
+                        Modifier.border(GrosorBorde, ColorBordeActual, forma)
+                    } else Modifier
+                )
                 .clickable { abierto = true }
                 .padding(horizontal = 12.dp),
             verticalAlignment = Alignment.CenterVertically

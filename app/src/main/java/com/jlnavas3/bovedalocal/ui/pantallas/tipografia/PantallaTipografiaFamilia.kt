@@ -46,7 +46,7 @@ fun PantallaTipografiaFamilia(
             colorIcono = ColorIconosInternos,
             alRestablecer = {
                 haptica.tic()
-                vm.ajustarFamiliaFuente("sans")
+                vm.restablecerFamiliaFuente()
             },
             idGrupo = "02-APA-TYP-FAM-G01",
             mostrarId = ajustes.mostrarIdsAjustes

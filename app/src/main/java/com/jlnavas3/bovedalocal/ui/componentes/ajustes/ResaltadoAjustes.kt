@@ -63,10 +63,23 @@ class CoordinadorResaltadoAjustes(
         // Equivalencias y jerarquías conocidas
         if (dest == "03.2.G2" && item == "03.2.6") return true
         if (dest == "03.2.6" && item == "03.2.G2") return true
+        if (dest == "02-APA-THM-G02" && item == "02-APA-THM-DAT") return true
+        if (dest == "02-APA-THM-DAT" && item == "02-APA-THM-G02") return true
         if (dest == "05.1.G2" && item == "05.1.6") return true
         if (dest == "05.1.6" && item == "05.1.G2") return true
+        if (dest == "05-COP-MAN-G02" && item == "05-COP-MAN") return true
         if (dest == "03.3.G1" && item == "03.3.3") return true
         if (dest == "03.3.3" && item == "03.3.G1") return true
+        if (dest == "04-HER-WGT-G01" && item == "04-HER-WGT-TOT") return true
+        if (dest == "03-LST-DES" && (item == "03-LST-DES-GRP" || item == "03-LST-DES-G01")) return true
+        if ((dest == "03-COP-AUT" || dest == "05-COP-ATM") && (item == "05-COP-ATM-G01" || item.startsWith("05-COP-ATM") || item == "03.2.1")) return true
+        if (dest == "03-LST-CAM" && (item == "03-LST-FMT" || item == "03-LST-FMT-G01" || item.startsWith("03-LST-FMT"))) return true
+        if (dest == "01-SEG-DAT" && (item == "01-SEG-DAT-G01" || item.startsWith("01-SEG-DAT"))) return true
+        if (dest == "01-SEG-BIO" && (item == "01-SEG-BIO-G01" || item.startsWith("01-SEG-BIO"))) return true
+        if (dest == "04-HER-CAM" && (item == "04-HER-CAM-G01" || item.startsWith("04-HER-CAM"))) return true
+        if ((dest == "04-HER-HIS" || dest == "04-HER-HST") && (item == "04-HER-HST-G01" || item.startsWith("04-HER-HST"))) return true
+        if ((dest == "05-COP-SEG" || dest == "05-COP-MAN") && (item == "05-COP-MAN-G01" || item.startsWith("05-COP-MAN"))) return true
+        if (dest == "06-AVN-IDS" && (item == "06-SIS-AVZ-G01" || item.startsWith("06-SIS-AVZ-COL"))) return true
 
         return false
     }
@@ -89,16 +102,25 @@ class CoordinadorResaltadoAjustes(
                 if (scroll != null && contenedor != null && itemCoords.isAttached && contenedor.isAttached) {
                     try {
                         val posItemEnContenedor = contenedor.localPositionOf(itemCoords, Offset.Zero)
-                        val posicionAbsoluta = scroll.value + posItemEnContenedor.y
-                        val margenSuperiorPx = 24f
-                        val destinoScroll = (posicionAbsoluta - margenSuperiorPx)
-                            .coerceIn(0f, scroll.maxValue.toFloat())
-                            .roundToInt()
+                        val itemTop = posItemEnContenedor.y
+                        val itemHeight = itemCoords.size.height.toFloat()
+                        val itemBottom = itemTop + itemHeight
+                        val viewportHeight = contenedor.size.height.toFloat()
 
-                        scroll.animateScrollTo(
-                            value = destinoScroll,
-                            animationSpec = tween(durationMillis = 650, easing = FastOutSlowInEasing)
-                        )
+                        val paddingSeguridad = 16f
+                        val estaCompletamenteVisible = (itemTop >= paddingSeguridad) && (itemBottom <= viewportHeight - paddingSeguridad)
+
+                        if (!estaCompletamenteVisible) {
+                            val posicionAbsoluta = scroll.value + itemTop
+                            val destinoScroll = (posicionAbsoluta - paddingSeguridad)
+                                .coerceIn(0f, scroll.maxValue.toFloat())
+                                .roundToInt()
+
+                            scroll.animateScrollTo(
+                                value = destinoScroll,
+                                animationSpec = tween(durationMillis = 450, easing = FastOutSlowInEasing)
+                            )
+                        }
                     } catch (_: Exception) {
                         try {
                             estado.bringIntoViewRequester.bringIntoView()
@@ -142,16 +164,25 @@ class CoordinadorResaltadoAjustes(
             if (scroll != null && contenedor != null && itemCoordinates.isAttached && contenedor.isAttached) {
                 try {
                     val posItemEnContenedor = contenedor.localPositionOf(itemCoordinates, Offset.Zero)
-                    val posicionAbsoluta = scroll.value + posItemEnContenedor.y
-                    val margenSuperiorPx = 24f // Margen estético para que no quede pegado al borde superior
-                    val destinoScroll = (posicionAbsoluta - margenSuperiorPx)
-                        .coerceIn(0f, scroll.maxValue.toFloat())
-                        .roundToInt()
+                    val itemTop = posItemEnContenedor.y
+                    val itemHeight = itemCoordinates.size.height.toFloat()
+                    val itemBottom = itemTop + itemHeight
+                    val viewportHeight = contenedor.size.height.toFloat()
 
-                    scroll.animateScrollTo(
-                        value = destinoScroll,
-                        animationSpec = tween(durationMillis = 650, easing = FastOutSlowInEasing)
-                    )
+                    val paddingSeguridad = 16f
+                    val estaCompletamenteVisible = (itemTop >= paddingSeguridad) && (itemBottom <= viewportHeight - paddingSeguridad)
+
+                    if (!estaCompletamenteVisible) {
+                        val posicionAbsoluta = scroll.value + itemTop
+                        val destinoScroll = (posicionAbsoluta - paddingSeguridad)
+                            .coerceIn(0f, scroll.maxValue.toFloat())
+                            .roundToInt()
+
+                        scroll.animateScrollTo(
+                            value = destinoScroll,
+                            animationSpec = tween(durationMillis = 450, easing = FastOutSlowInEasing)
+                        )
+                    }
                 } catch (_: Exception) {
                     try {
                         estadoAlumbrado.bringIntoViewRequester.bringIntoView()
@@ -288,7 +319,9 @@ fun recordarEstadoAlumbrado(idFila: String?): EstadoAlumbradoFila {
         if (!idFila.isNullOrBlank() && !destinoActual.isNullOrBlank() && coordinador == null) {
             val coincide = (idFila == destinoActual) ||
                 (destinoActual == "03.2.G2" && idFila == "03.2.6") ||
-                (destinoActual == "05.1.G2" && idFila == "05.1.6")
+                (destinoActual == "02-APA-THM-G02" && idFila == "02-APA-THM-DAT") ||
+                (destinoActual == "05.1.G2" && idFila == "05.1.6") ||
+                (destinoActual == "05-COP-MAN-G02" && idFila == "05-COP-MAN")
             if (coincide) {
                 delay(120)
                 try {

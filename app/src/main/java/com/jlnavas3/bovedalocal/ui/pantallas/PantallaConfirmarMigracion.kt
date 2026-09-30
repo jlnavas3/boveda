@@ -163,9 +163,6 @@ fun PantallaConfirmarMigracion(
                 alImportar = {
                     haptica.exito()
                     vm.importarCuentasGoogleAuth(listaCuentas)
-                },
-                alCancelar = {
-                    vm.volverAtras()
                 }
             )
 

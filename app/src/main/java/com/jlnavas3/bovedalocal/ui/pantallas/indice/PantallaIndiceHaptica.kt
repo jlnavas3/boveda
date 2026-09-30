@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.jlnavas3.bovedalocal.data.AjustesDefaults
 import com.jlnavas3.bovedalocal.ui.VaultViewModel
 import com.jlnavas3.bovedalocal.ui.componentes.ContenedorPrincipal
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteGrupo
@@ -59,10 +60,10 @@ fun PantallaIndiceHaptica(
             icono = Icons.Filled.Vibration,
             alRestablecer = {
                 haptica.tic()
-                vm.ajustarIndiceHaptica(true)
-                vm.ajustarIndiceIncluirEnie(true)
-                vm.ajustarIndiceAnchoTactilDp(45f)
-                vm.ajustarIndiceTonoLetras(80f)
+                vm.ajustarIndiceHaptica(AjustesDefaults.Indice.HAPTICA)
+                vm.ajustarIndiceIncluirEnie(AjustesDefaults.Indice.INCLUIR_ENIE)
+                vm.restablecerAnchoTactilIndice()
+                vm.restablecerTonoLetrasIndice()
                 vm.avisar("Valores de tacto restablecidos")
             },
             idGrupo = "03-LST-AZX-HAP-G01",
@@ -103,7 +104,7 @@ fun PantallaIndiceHaptica(
                 mostrarId = ajustes.mostrarIdsAjustes,
                 alRestablecer = {
                     haptica.tic()
-                    vm.ajustarIndiceAnchoTactilDp(45f)
+                    vm.restablecerAnchoTactilIndice()
                 },
                 alCambiar = {
                     haptica.tic()
@@ -123,7 +124,7 @@ fun PantallaIndiceHaptica(
                 mostrarId = ajustes.mostrarIdsAjustes,
                 alRestablecer = {
                     haptica.tic()
-                    vm.ajustarIndiceTonoLetras(80f)
+                    vm.restablecerTonoLetrasIndice()
                 },
                 alCambiar = {
                     haptica.tic()

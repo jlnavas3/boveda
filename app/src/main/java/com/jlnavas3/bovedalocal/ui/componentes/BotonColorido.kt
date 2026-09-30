@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.jlnavas3.bovedalocal.ui.theme.Borde
 import com.jlnavas3.bovedalocal.ui.theme.EscalaTexto
+import com.jlnavas3.bovedalocal.ui.theme.FormaBoton
 import com.jlnavas3.bovedalocal.ui.theme.GrosorBorde
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
 import com.jlnavas3.bovedalocal.ui.theme.colorContraste
@@ -54,7 +55,7 @@ fun BotonColorido(
         animationSpec = spring(dampingRatio = 0.6f, stiffness = Spring.StiffnessMedium),
         label = "escalaBotonColorido"
     )
-    val forma = RoundedCornerShape(12.dp)
+    val forma = FormaBoton
     val colorTexto = colorContraste(color)
     Box(
         modifier = modifier

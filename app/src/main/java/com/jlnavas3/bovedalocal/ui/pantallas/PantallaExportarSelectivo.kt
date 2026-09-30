@@ -84,6 +84,14 @@ fun PantallaExportarSelectivo(
     // Persistencia de IDs seleccionados en memoria
     val idsSeleccionados = remember { mutableStateListOf<String>() }
 
+    androidx.compose.runtime.LaunchedEffect(seccionInicial) {
+        if (seccionInicial.startsWith("ids:")) {
+            val ids = seccionInicial.removePrefix("ids:").split(",").map { it.trim() }.filter { it.isNotEmpty() }
+            idsSeleccionados.clear()
+            idsSeleccionados.addAll(ids)
+        }
+    }
+
     var dialogoExportar by remember { mutableStateOf(false) }
     var passwordAUsar by remember { mutableStateOf("") }
 

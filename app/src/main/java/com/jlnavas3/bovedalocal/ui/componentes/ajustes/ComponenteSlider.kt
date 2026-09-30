@@ -2,6 +2,7 @@
 
 package com.jlnavas3.bovedalocal.ui.componentes.ajustes
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -29,6 +30,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -41,6 +43,7 @@ import com.jlnavas3.bovedalocal.ui.theme.EstiloMono
 import com.jlnavas3.bovedalocal.ui.theme.colorLegibleParaTema
 import com.jlnavas3.bovedalocal.ui.theme.colorParaGrupoId
 import com.jlnavas3.bovedalocal.ui.theme.fondoBadgeParaTema
+import com.jlnavas3.bovedalocal.util.Haptica
 
 /**
  * Fila con control deslizante (Slider) estilo Samsung One UI / Honor MagicOS.
@@ -70,8 +73,10 @@ fun ComponenteSlider(
     mostrarId: Boolean = false,
     habilitado: Boolean = true,
     colorAcento: Color = ColorAcento,
-    alRestablecer: (() -> Unit)? = null
+    alRestablecer: (() -> Unit)? = null,
+    mensajeToastRestablecer: String? = null
 ) {
+    val contexto = LocalContext.current
     val estadoAlumbrado = recordarEstadoAlumbrado(idFila)
     val coordinador = LocalCoordinadorResaltado.current
     val tieneBadgeId = mostrarId && !idFila.isNullOrBlank()
@@ -154,7 +159,12 @@ fun ComponenteSlider(
             if (alRestablecer != null) {
                 Spacer(Modifier.width(4.dp))
                 IconButton(
-                    onClick = alRestablecer,
+                    onClick = {
+                        Haptica(contexto).tic()
+                        alRestablecer()
+                        val mensaje = mensajeToastRestablecer ?: "Restablecido: $titulo"
+                        Toast.makeText(contexto, mensaje, Toast.LENGTH_SHORT).show()
+                    },
                     modifier = Modifier.size(28.dp),
                     enabled = habilitado
                 ) {

@@ -27,6 +27,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.jlnavas3.bovedalocal.data.AjustesDefaults
 import com.jlnavas3.bovedalocal.ui.VaultViewModel
 import com.jlnavas3.bovedalocal.ui.componentes.BarraSuperiorPantalla
 import com.jlnavas3.bovedalocal.ui.componentes.SelectorColorEnTiempoReal
@@ -47,8 +48,6 @@ fun PantallaColoresIds(
     vm: VaultViewModel,
     seccionId: String? = null
 ) {
-    val contexto = LocalContext.current
-    val haptica = remember { Haptica(contexto) }
     val ajustes by vm.ajustes.collectAsStateWithLifecycle()
     val scrollState = rememberScrollState()
 
@@ -77,10 +76,9 @@ fun PantallaColoresIds(
                             AccionSaltoGrupo("06-SIS-AVZ-G06", "06 Sistema")
                         ),
                         alRestablecerPantalla = {
-                            haptica.tic()
                             vm.restablecerColoresIds()
-                            vm.avisar("Colores de IDs restablecidos")
-                        }
+                        },
+                        mensajeToastRestablecer = "Colores de IDs restablecidos"
                     )
                 }
             )
@@ -94,21 +92,20 @@ fun PantallaColoresIds(
                     .padding(horizontal = 16.dp, vertical = 12.dp)
             ) {
                 // Bloque 01: Seguridad
-                val colorSeguridad = parsearColorO(ajustes.colorIdSeguridad, Color(0xFF3F51B5))
+                val colorSeguridad = parsearColorO(ajustes.colorIdSeguridad, parsearColorO(AjustesDefaults.ColoresIds.SEGURIDAD, Color.Blue))
                 ComponenteGrupo(
                     etiqueta = "01 Seguridad",
                     icono = Icons.Filled.Security,
                     colorIcono = colorSeguridad,
                     alRestablecer = {
-                        haptica.tic()
-                        vm.ajustarColorIdSeguridad("#3F51B5")
+                        vm.ajustarColorIdSeguridad(AjustesDefaults.ColoresIds.SEGURIDAD)
                     },
                     idGrupo = "06-SIS-AVZ-G01",
                     mostrarId = ajustes.mostrarIdsAjustes
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            InsigniaIdAjuste(id = "01-BIO-TIM-SEC", ajustes = ajustes)
+                            InsigniaIdAjuste(id = "01-SEG-BIO", ajustes = ajustes)
                             Spacer(Modifier.width(8.dp))
                         }
                         Spacer(Modifier.height(10.dp))
@@ -124,21 +121,20 @@ fun PantallaColoresIds(
                 Spacer(Modifier.height(14.dp))
 
                 // Bloque 02: Apariencia
-                val colorApariencia = parsearColorO(ajustes.colorIdApariencia, Color(0xFF8E24AA))
+                val colorApariencia = parsearColorO(ajustes.colorIdApariencia, parsearColorO(AjustesDefaults.ColoresIds.APARIENCIA, Color.Magenta))
                 ComponenteGrupo(
                     etiqueta = "02 Apariencia",
                     icono = Icons.Filled.Palette,
                     colorIcono = colorApariencia,
                     alRestablecer = {
-                        haptica.tic()
-                        vm.ajustarColorIdApariencia("#8E24AA")
+                        vm.ajustarColorIdApariencia(AjustesDefaults.ColoresIds.APARIENCIA)
                     },
                     idGrupo = "06-SIS-AVZ-G02",
                     mostrarId = ajustes.mostrarIdsAjustes
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            InsigniaIdAjuste(id = "02-THM-MOD-DRK", ajustes = ajustes)
+                            InsigniaIdAjuste(id = "02-APA-THM", ajustes = ajustes)
                             Spacer(Modifier.width(8.dp))
                         }
                         Spacer(Modifier.height(10.dp))
@@ -154,21 +150,20 @@ fun PantallaColoresIds(
                 Spacer(Modifier.height(14.dp))
 
                 // Bloque 03: Lista de cuentas
-                val colorLista = parsearColorO(ajustes.colorIdLista, Color(0xFF00897B))
+                val colorLista = parsearColorO(ajustes.colorIdLista, parsearColorO(AjustesDefaults.ColoresIds.LISTA, Color.Cyan))
                 ComponenteGrupo(
                     etiqueta = "03 Lista de cuentas",
                     icono = Icons.Filled.Layers,
                     colorIcono = colorLista,
                     alRestablecer = {
-                        haptica.tic()
-                        vm.ajustarColorIdLista("#00897B")
+                        vm.ajustarColorIdLista(AjustesDefaults.ColoresIds.LISTA)
                     },
                     idGrupo = "06-SIS-AVZ-G03",
                     mostrarId = ajustes.mostrarIdsAjustes
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            InsigniaIdAjuste(id = "03-LST-DEN-PAD", ajustes = ajustes)
+                            InsigniaIdAjuste(id = "03-LST-DES", ajustes = ajustes)
                             Spacer(Modifier.width(8.dp))
                         }
                         Spacer(Modifier.height(10.dp))
@@ -184,21 +179,20 @@ fun PantallaColoresIds(
                 Spacer(Modifier.height(14.dp))
 
                 // Bloque 04: Herramientas
-                val colorHerramientas = parsearColorO(ajustes.colorIdHerramientas, Color(0xFFFB8C00))
+                val colorHerramientas = parsearColorO(ajustes.colorIdHerramientas, parsearColorO(AjustesDefaults.ColoresIds.HERRAMIENTAS, Color.Yellow))
                 ComponenteGrupo(
                     etiqueta = "04 Herramientas",
                     icono = Icons.Filled.Build,
                     colorIcono = colorHerramientas,
                     alRestablecer = {
-                        haptica.tic()
-                        vm.ajustarColorIdHerramientas("#FB8C00")
+                        vm.ajustarColorIdHerramientas(AjustesDefaults.ColoresIds.HERRAMIENTAS)
                     },
                     idGrupo = "06-SIS-AVZ-G04",
                     mostrarId = ajustes.mostrarIdsAjustes
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            InsigniaIdAjuste(id = "04-WGT-1X1-MOD", ajustes = ajustes)
+                            InsigniaIdAjuste(id = "04-HER-WGT", ajustes = ajustes)
                             Spacer(Modifier.width(8.dp))
                         }
                         Spacer(Modifier.height(10.dp))
@@ -214,21 +208,20 @@ fun PantallaColoresIds(
                 Spacer(Modifier.height(14.dp))
 
                 // Bloque 05: Copias y datos
-                val colorCopias = parsearColorO(ajustes.colorIdCopias, Color(0xFF1E88E5))
+                val colorCopias = parsearColorO(ajustes.colorIdCopias, parsearColorO(AjustesDefaults.ColoresIds.COPIAS, Color.Blue))
                 ComponenteGrupo(
                     etiqueta = "05 Copias y datos",
                     icono = Icons.Filled.Backup,
                     colorIcono = colorCopias,
                     alRestablecer = {
-                        haptica.tic()
-                        vm.ajustarColorIdCopias("#1E88E5")
+                        vm.ajustarColorIdCopias(AjustesDefaults.ColoresIds.COPIAS)
                     },
                     idGrupo = "06-SIS-AVZ-G05",
                     mostrarId = ajustes.mostrarIdsAjustes
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            InsigniaIdAjuste(id = "05-BAK-ATM-PAS", ajustes = ajustes)
+                            InsigniaIdAjuste(id = "05-COP-ATM", ajustes = ajustes)
                             Spacer(Modifier.width(8.dp))
                         }
                         Spacer(Modifier.height(10.dp))
@@ -244,21 +237,20 @@ fun PantallaColoresIds(
                 Spacer(Modifier.height(14.dp))
 
                 // Bloque 06: Sistema
-                val colorSistema = parsearColorO(ajustes.colorIdSistema, Color(0xFF607D8B))
+                val colorSistema = parsearColorO(ajustes.colorIdSistema, parsearColorO(AjustesDefaults.ColoresIds.SISTEMA, Color.Gray))
                 ComponenteGrupo(
                     etiqueta = "06 Sistema",
                     icono = Icons.Filled.Settings,
                     colorIcono = colorSistema,
                     alRestablecer = {
-                        haptica.tic()
-                        vm.ajustarColorIdSistema("#607D8B")
+                        vm.ajustarColorIdSistema(AjustesDefaults.ColoresIds.SISTEMA)
                     },
                     idGrupo = "06-SIS-AVZ-G06",
                     mostrarId = ajustes.mostrarIdsAjustes
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            InsigniaIdAjuste(id = "06-SYS-HAP-INT", ajustes = ajustes)
+                            InsigniaIdAjuste(id = "06-SIS-AVZ", ajustes = ajustes)
                             Spacer(Modifier.width(8.dp))
                         }
                         Spacer(Modifier.height(10.dp))
