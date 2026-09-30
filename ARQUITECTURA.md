@@ -316,8 +316,9 @@ flowchart LR
 ```
 
 ### Contratos Implementados
-* **`AutofillService`:** Analiza la jerarquía de vistas de accesibilidad (`AssistStructure`) buscando pistas semánticas W3C (`AUTOFILL_HINT_USERNAME`, `AUTOFILL_HINT_PASSWORD`). Si la bóveda está bloqueada, genera una respuesta con `IntentSender` de autenticación que solicita la biometría antes de inyectar las credenciales en la aplicación cliente.
-* **`CredentialProviderService` (Android 14+ / API 34+):** Soporte nativo para llaves de acceso criptográficas (**Passkeys**). Procesa peticiones WebAuthn codificadas en CBOR, genera aserciones firmadas con claves asimétricas ES256 (ECDSA P-256) y valida los dominios `origin` contra los registros de la bóveda.
+* **`AutofillService`:** Analiza la jerarquía de vistas de accesibilidad (`AssistStructure`) buscando pistas semánticas W3C (`AUTOFILL_HINT_USERNAME`, `AUTOFILL_HINT_PASSWORD`). Resuelve automáticamente el nombre amigable de la aplicación cliente (ej. "D Notes", "Mercado Libre") y genera datasets en `RemoteViews` con el ícono circular real de la app asociada (`GestorAppsInstaladas.kt`, `AutofillUtiles.kt`). Si la bóveda está bloqueada, genera una respuesta con `IntentSender` de autenticación que solicita la biometría antes de inyectar las credenciales.
+* **`CredentialProviderService` (Android 14+ / API 34+):** Soporte nativo para llaves de acceso criptográficas (**Passkeys**). Procesa peticiones WebAuthn codificadas en CBOR, genera aserciones firmadas con claves asimétricas ES256 (ECDSA P-256), valida los dominios `origin` contra los registros de la bóveda y renderiza el nombre e ícono de la app en la hoja de selección del sistema.
+* **Asociación de Archivos `.bvda` (Intent Filter):** La actividad principal (`MainActivity`) implementa filtros de intención para `application/octet-stream` y archivos con extensión `.bvda`, interceptando la apertura desde exploradores de archivos externos con verificación obligatoria de desbloqueo de la bóveda y solicitud de contraseña de descifrado antes de consolidar la importación.
 * **`FLAG_SECURE` Activo por Defecto:** La ventana de `MainActivity` invoca `window.setFlags(FLAG_SECURE, FLAG_SECURE)`, ordenando al compositor del sistema (`SurfaceFlinger`) oscurecer el buffer gráfico en la vista de aplicaciones recientes y bloquear capturas de pantalla tanto locales como por depuración ADB.
 
 ---
@@ -364,6 +365,23 @@ flowchart TD
 ```
 
 Toda modificación realizada en la pantalla **Formas y Bordes** (`02-APA-GEO`) o **Tema y Colores** (`02-APA-THM`) recompone la jerarquía de Compose sin necesidad de reiniciar la actividad, garantizando una respuesta visual fluida a 120 Hz.
+
+### Patrones de Ergonomía y Navegación Contextual
+
+1. **Ergonomía de Acciones y Botones Flotantes (FABs Verticales):**
+   Para favorecer la operación monomanual con el pulgar en pantallas de gran formato y descongestionar las barras superiores:
+   - **Listado Principal (`PantallaLista`):** Botón superior `SmallFloatingActionButton` para bloqueo instantáneo de la bóveda (`Icons.Filled.Lock`, color `Peligro`) sobre el botón primario `FloatingActionButton` de nueva entrada (`Icons.Filled.Add`).
+   - **Generador de Contraseñas (`PantallaGenerador`):** Botón superior `SmallFloatingActionButton` para copiar contraseña (`Icons.Filled.ContentCopy`, historial y háptica) sobre el botón primario `FloatingActionButton` para regenerar clave (`Icons.Filled.Refresh`).
+   - **Autenticador 2FA (`PantallaAutenticador`):** Botón superior para adición manual de clave secreta sobre el botón primario para escáner óptico QR.
+
+2. **Menús Desplegables Compactos y Submenú Multinivel:**
+   - La suite de micro-componentes [`MenuDesplegableBoveda.kt`](file:///home/jln/BovedaLocal/app/src/main/java/com/jlnavas3/bovedalocal/ui/componentes/MenuDesplegableBoveda.kt), `ElementoMenuCompacto` (altura ergonómica 38 dp, glifos de 18 dp) y `ElementoRetornoSubmenu` implementa navegación jerárquica de submenús (ej. nivel "Importar/exportar" en listado principal), previniendo desbordamientos verticales de pantalla.
+
+3. **Deep Linking a Ajustes con Destello Puro (*Pure Glow*):**
+   - El subsistema de resaltado ([`ResaltadoAjustes.kt`](file:///home/jln/BovedaLocal/app/src/main/java/com/jlnavas3/bovedalocal/ui/pantallas/ajustes/ResaltadoAjustes.kt)) vincula los enlaces contextuales de los menús de 3 puntos hacia los identificadores Tri-Grama de configuración. Desplaza suavemente la vista hasta la fila correspondiente y activa una animación luminosa reactiva (*destello/glow*) sin alterar de forma automática ningún interruptor o valor de configuración, dejando el control absoluto en manos del usuario.
+
+4. **Escalado Tipográfico e Interlineado Proporcional (`02-APA-TYP`):**
+   - En [`TipografiaTema.kt`](file:///home/jln/BovedaLocal/app/src/main/java/com/jlnavas3/bovedalocal/ui/theme/TipografiaTema.kt), el cálculo del `lineHeight` se vincula dinámicamente al producto de la escala seleccionada y el factor de interlineado (`EscalaTexto * InterlineadoFactor`), evitando colisiones verticales o texto comprimido en configuraciones de accesibilidad con tamaños de fuente grandes.
 
 ---
 
@@ -413,28 +431,32 @@ com.jlnavas3.bovedalocal/
 │   │   ├── BotonBoveda.kt                # Botones primarios, secundarios y de advertencia
 │   │   ├── CampoBoveda.kt                # Inputs de texto con formato y soporte para monospace
 │   │   ├── SwitchBoveda.kt               # Interruptores temáticos adaptados al tema
+│   │   ├── MenuDesplegableBoveda.kt      # Menús desplegables compactos y submenús multinivel
+│   │   ├── seleccion/                    # Barras de acción superior e inferior para selección múltiple
 │   │   └── ajustes/
 │   │       ├── InsigniaIdAjuste.kt       # Insignia jerárquica canónica con aislamiento de clics
 │   │       ├── ComponenteGrupo.kt        # Contenedores redondeados reactivos estilo One UI 6
 │   │       └── FilasAjustes.kt           # Filas interactivas de submenús, radios y switches
 │   ├── pantallas/                        # Módulos y pantallas organizadas por subpaquetes
-│   │   ├── PantallaLista.kt              # Bóveda principal, cajón de navegación cuadrado
-│   │   ├── lista/                        # Componentes satélite de lista (BarraSuperior, Gestos)
+│   │   ├── PantallaLista.kt              # Bóveda principal, cajón de navegación cuadrado y doble FAB
+│   │   ├── lista/                        # Componentes satélite de lista (BarraSuperior, Gestos, Filtros)
 │   │   ├── ajustes/                      # Hub de ajustes, catálogo de 18 secciones
 │   │   ├── formas/                       # Subpáginas 02-APA-GEO (Curvatura, Grosor, Espaciado)
-│   │   ├── tipografia/                   # Subpáginas 02-APA-TYP (Familia, Escala, Kerning)
+│   │   ├── tipografia/                   # Subpáginas 02-APA-TYP (Familia, Escala, Interlineado)
 │   │   ├── calibracion/                  # Simuladores interactivos (Engranajes, Widgets)
 │   │   ├── autenticador/                 # Pantalla 2FA TOTP con tarjetas dinámicas y temporizador
-│   │   ├── generador/                    # Generador visual de contraseñas con zxcvbn
-│   │   ├── detalle/                      # Ficha de detalle de credencial con slot-machine
-│   │   └── edicion/                      # Formulario reactivo de edición con badges DAL
+│   │   ├── generador/                    # Generador visual de contraseñas con zxcvbn y doble FAB
+│   │   ├── detalle/                      # Ficha de detalle de credencial con swipe y modo comparación
+│   │   ├── edicion/                      # Formulario reactivo de edición con badges DAL y selector de app
+│   │   └── escaner/                      # Escáner óptico QR (PantallaCamaraQr y VisorMascaraQr)
 │   └── theme/                            # Subsistema de tematización dinámica
 │       ├── ColoresTema.kt                # 20 paletas de acento, paletas base y semánticas
 │       ├── FormasTema.kt                 # Tokens de curvatura de esquinas y bordes
-│       ├── TipografiaTema.kt             # Definiciones de familias tipográficas y escalas
+│       ├── TipografiaTema.kt             # Definiciones de familias tipográficas, escalas e interlineado
 │       └── Tema.kt                       # Orquestador del composition local BovedaTheme
 ├── util/                                 # Utilidades transversales de plataforma
 │   ├── FeedbackHaptico.kt                # Controlador de micro-vibraciones hápticas
+│   ├── GestorAppsInstaladas.kt           # Resolución en memoria de nombres amigables e íconos de apps
 │   ├── GestorPortapapeles.kt             # Limpieza programada de secretos copiados
 │   └── AuditoriaHardware.kt              # Extracción de telemetría de hardware, TEE y SoC
 └── widget/                               # Widgets de escritorio de Android
@@ -446,5 +468,5 @@ com.jlnavas3.bovedalocal/
 
 ## 10. Directrices de Calidad y Verificación
 
-1. **Batería de Pruebas Unitarias Automatizadas:** El repositorio incluye **250 pruebas unitarias** ejecutadas bajo `./gradlew testDebugUnitTest`. Estas validan la invariante matemática de los vectores de prueba NIST para AES-GCM, la correctitud de los códigos TOTP RFC 6238, el algoritmo de enrutamiento tri-grama `padreDe()` y la no alteración del estado en mutaciones concurrentes.
+1. **Batería de Pruebas Unitarias Automatizadas:** El repositorio incluye **252 pruebas unitarias** ejecutadas bajo `./gradlew testDebugUnitTest`. Estas validan la invariante matemática de los vectores de prueba NIST para AES-GCM, la correctitud de los códigos TOTP RFC 6238, el algoritmo de enrutamiento tri-grama `padreDe()`, importaciones CSV universales con aplicaciones Android y la no alteración del estado en mutaciones concurrentes.
 2. **Auditoría de Dependencias y Red:** En cada compilación Release, el analizador de manifiesto de Gradle valida que no se introduzca ninguna dependencia transitiva que solicite permisos de red o telemetría de terceros.

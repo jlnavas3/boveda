@@ -3,7 +3,7 @@
 [![Kotlin](https://img.shields.io/badge/Kotlin-2.x-7F52FF?logo=kotlin&logoColor=white)](https://kotlinlang.org/)
 [![Jetpack Compose](https://img.shields.io/badge/Jetpack%20Compose-Material%203-4285F4?logo=jetpackcompose&logoColor=white)](https://developer.android.com/jetpack/compose)
 [![Platform](https://img.shields.io/badge/Android-Min%2029%20%7C%20Target%2035%20%7C%20Compile%2036-3DDC84?logo=android&logoColor=white)](https://developer.android.com/)
-[![Tests](https://img.shields.io/badge/Tests-250%2F250%20Passing-brightgreen?logo=gradle)](https://gradle.org/)
+[![Tests](https://img.shields.io/badge/Tests-252%2F252%20Passing-brightgreen?logo=gradle)](https://gradle.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 **Bóveda Local** (`com.jlnavas3.bovedalocal`) es una plataforma de alta seguridad criptográfica para la custodia local de credenciales, generación de tokens de autenticación de dos factores (**TOTP RFC 6238**) y proveedor oficial de llaves de acceso (**Passkeys / WebAuthn FIDO2**) en el sistema operativo Android.
@@ -96,12 +96,12 @@ Todos los módulos, submódulos y grupos de ajustes responden al estándar semá
 
 | Bloque Canónico | Mnemónico | Identificadores Destacados | Capacidades Principales |
 | :--- | :--- | :--- | :--- |
-| **00** | `AJU` | `00-AJU` | **Hub Central de Ajustes:** Vista unificada de las 18 secciones agrupadas con tarjetas redondeadas One UI 6 y buscador en vivo. |
+| **00** | `AJU` | `00-AJU` | **Hub Central de Ajustes:** Vista unificada de las 18 secciones agrupadas con tarjetas redondeadas One UI 6, buscador en vivo y deep-linking con destello visual puro (sin mutaciones no deseadas). |
 | **01** | `SEG` | `01-SEG-BIO`, `01-SEG-PAS`, `01-SEG-SNU`, `01-SEG-DST` | **Seguridad y Criptografía:** Biometría StrongBox, cambio de contraseña maestra, bóveda señuelo contra coacción y PIN de autodestrucción irreversible. |
-| **02** | `APA` | `02-APA-THM`, `02-APA-GEO`, `02-APA-TYP`, `02-APA-ANI` | **Personalización Visual:** 20 paletas de acento, curvatura de esquinas (0–32 dp), grosor de borde (0–4 dp), espaciado dinámico (6–24 dp), tipografías del sistema y calibración del mecanismo de engranajes. |
-| **03** | `LST` | `03-LST-AZX`, `03-LST-SLD`, `03-LST-DUP`, `03-LST-PAP` | **Gestión de Bóveda:** Índice alfabético lateral estilo Niagara Launcher con física de ola interactiva, auditoría de salud de contraseñas, detección de credenciales redundantes y papelera de 30 días. |
-| **04** | `HER` | `04-HER-GEN`, `04-HER-2FA`, `04-HER-HST`, `04-HER-WGT` | **Herramientas de Productividad:** Generador CSPRNG con cálculo de entropía zxcvbn, autenticador TOTP RFC 6238 con lector QR, registro de contraseñas históricas y calibrador de widgets. |
-| **05** | `COP` | `05-COP-EXP`, `05-COP-ATM` | **Copias de Seguridad:** Exportación selectiva cifrada en `.bvda`, copias automáticas periódicas delegadas al Storage Access Framework (SAF) e importador CSV universal (Bitwarden, Google, LastPass). |
+| **02** | `APA` | `02-APA-THM`, `02-APA-GEO`, `02-APA-TYP`, `02-APA-ANI` | **Personalización Visual:** 20 paletas de acento, curvatura de esquinas (0–32 dp), grosor de borde (0–4 dp), espaciado dinámico (6–24 dp), tipografías del sistema con interlineado proporcional dinámico (`02-APA-TYP`) y animación estática de ahorro de energía (`02-APA-THM-NON`). |
+| **03** | `LST` | `03-LST-AZX`, `03-LST-SLD`, `03-LST-DUP`, `03-LST-PAP` | **Gestión de Bóveda:** Doble FAB vertical inferior (Bloquear / Añadir), índice alfabético lateral estilo Niagara con física de ola interactiva, menú multinivel "Importar/exportar", swipe horizontal y modo comparación entre cuentas en Detalle, auditoría de salud de contraseñas, detección de duplicadas con selección múltiple y papelera. |
+| **04** | `HER` | `04-HER-GEN`, `04-HER-2FA`, `04-HER-HST`, `04-HER-WGT` | **Herramientas de Productividad:** Generador CSPRNG con doble FAB vertical (Generar principal / Copiar secundario) y cabecera minimalista; Autenticador TOTP RFC 6238 con doble FAB (Escanear QR / Ingreso manual) y copia táctil de código; historial de contraseñas y calibrador de widgets. |
+| **05** | `COP` | `05-COP-EXP`, `05-COP-ATM`, `05-COP-MAN` | **Copias de Seguridad:** Exportación selectiva y manual (.bvda), asociación de archivos `.bvda` en el sistema para importación y apertura directa protegida por autenticación, copias automáticas SAF e importador CSV universal (Bitwarden, Google, LastPass). |
 | **06** | `SIS` | `06-SIS-DGN`, `06-SIS-LOG`, `06-SIS-ACR` | **Sistema y Auditoría:** Diagnóstico de hardware, SoC, RAM y TEE, registro de eventos exclusivamente local y kit de emergencia imprimible. |
 
 ---
@@ -110,15 +110,17 @@ Todos los módulos, submódulos y grupos de ajustes responden al estándar semá
 
 1. **Android Autofill Framework (`AutofillService`):**
    - Intercepta solicitudes del sistema operativo en formularios de inicio de sesión de navegadores y apps de terceros.
-   - Analiza la estructura de accesibilidad (`AssistStructure`) y presenta datasets con vistas remotas seguras (`RemoteViews`).
+   - Analiza la estructura de accesibilidad (`AssistStructure`), detecta el nombre amigable de las aplicaciones instaladas (sustituyendo identificadores técnicos) y presenta datasets en `RemoteViews` con el ícono circular real de la app asociada.
 2. **Credential Provider Platform (Android 14+ / API 34+):**
-   - Actúa como proveedor nativo de **Passkeys** y credenciales FIDO2/WebAuthn. Procesa peticiones codificadas en CBOR y genera aserciones firmadas con curvas elípticas NIST P-256 (ES256).
-3. **Panel de Ajustes Rápidos (`TileService`):**
+   - Actúa como proveedor nativo de **Passkeys** y credenciales FIDO2/WebAuthn. Procesa peticiones codificadas en CBOR, genera aserciones firmadas con curvas elípticas NIST P-256 (ES256) y despliega el nombre e ícono real de la app en la hoja de selección del sistema.
+3. **Asociación de Archivos de Copia Cifrada (`.bvda`):**
+   - Integra un `intent-filter` en el manifiesto para asociar y abrir directamente archivos `.bvda` desde el gestor de archivos de Android, requiriendo el desbloqueo previo de la bóveda y la contraseña de descifrado correspondiente.
+4. **Panel de Ajustes Rápidos (`TileService`):**
    - Incluye un Quick Settings Tile en la cortina de notificaciones de Android para generar contraseñas criptográficas instantáneas sin necesidad de desbloquear la aplicación.
-4. **Widgets de Escritorio:**
+5. **Widgets de Escritorio:**
    - Widget interactivo para visualización de códigos TOTP 2FA con cuenta atrás reactiva.
    - Widget 1x1 para generación rápida de credenciales al toque.
-5. **Mitigación Visual de Capturas (`FLAG_SECURE`):**
+6. **Mitigación Visual de Capturas (`FLAG_SECURE`):**
    - Activo de forma predeterminada para impedir capturas de pantalla, grabaciones de video y ocultar la previsualización de la bóveda en la ventana de apps recientes.
 
 ---
@@ -177,7 +179,7 @@ com.jlnavas3.bovedalocal/
 ### Comandos de Gradle
 
 ```bash
-# Ejecutar la batería de pruebas unitarias automatizadas (250 tests)
+# Ejecutar la batería de pruebas unitarias automatizadas (252 tests)
 ./gradlew testDebugUnitTest
 
 # Construir binario de depuración (Debug APK)
