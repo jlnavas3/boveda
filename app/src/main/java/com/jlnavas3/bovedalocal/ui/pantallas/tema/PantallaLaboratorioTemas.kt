@@ -28,6 +28,7 @@ import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Palette
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Security
+import androidx.compose.material.icons.filled.Tune
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -56,6 +57,7 @@ import com.jlnavas3.bovedalocal.ui.componentes.BotonBoveda
 import com.jlnavas3.bovedalocal.ui.componentes.BotonPeligro
 import com.jlnavas3.bovedalocal.ui.componentes.CampoBoveda
 import com.jlnavas3.bovedalocal.ui.componentes.SwitchBoveda
+import com.jlnavas3.bovedalocal.ui.componentes.colorAhsv
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteGrupo
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.SliderBoveda
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjustesFondo
@@ -70,6 +72,8 @@ import com.jlnavas3.bovedalocal.ui.theme.EstiloMono
 import com.jlnavas3.bovedalocal.ui.theme.PaletaSobria
 import com.jlnavas3.bovedalocal.ui.theme.PaletaSobriaDefaults
 import com.jlnavas3.bovedalocal.ui.theme.aHex
+import com.jlnavas3.bovedalocal.ui.theme.aHexConAlfa
+import com.jlnavas3.bovedalocal.ui.theme.colorContraste
 import com.jlnavas3.bovedalocal.ui.theme.crearGris
 import com.jlnavas3.bovedalocal.ui.theme.esOscuroActivo
 import com.jlnavas3.bovedalocal.ui.theme.paletaSobriaEnVivo
@@ -164,6 +168,35 @@ fun PantallaLaboratorioTemas(
         )
     }
 
+    val acentosGrisesApple = remember(modoOscuro) {
+        if (modoOscuro) {
+            listOf(
+                Color(0xFFE1E1E6) to "Titanio Platino",
+                Color(0xFFB0B0B8) to "Gris Espacial",
+                Color(0xFF9FA4B2) to "Pizarra Fría",
+                Color(0xFFB8B2AA) to "Piedra Cálida",
+                Color(0xFFC8C8CE) to "Plata Niebla"
+            )
+        } else {
+            listOf(
+                Color(0xFF2C2C2E) to "Titanio Carbón",
+                Color(0xFF3A3A3C) to "Gris Espacial",
+                Color(0xFF323842) to "Pizarra Fría",
+                Color(0xFF3E3A36) to "Piedra Cálida",
+                Color(0xFF48484A) to "Plata Grafito"
+            )
+        }
+    }
+
+    // Estado para Personalizado (HSV + Transparencia / Alfa)
+    val hsvInicial = remember(colorAcentoActual) { colorAhsv(colorAcentoActual) }
+    var huePersonalizado by remember(modoOscuro) { mutableFloatStateOf(hsvInicial.first) }
+    var satPersonalizado by remember(modoOscuro) { mutableFloatStateOf(hsvInicial.second) }
+    var valPersonalizado by remember(modoOscuro) { mutableFloatStateOf(hsvInicial.third) }
+    var alfaPersonalizado by remember(modoOscuro) { mutableFloatStateOf(colorAcentoActual.alpha) }
+    var esPersonalizadoActivo by remember(modoOscuro) { mutableStateOf(false) }
+    var mostrarAjustePersonalizado by remember(modoOscuro) { mutableStateOf(false) }
+
     fun copiarPaletaAlPortapapeles() {
         haptica.exito()
         val json = paletaActual.aJson()
@@ -181,6 +214,13 @@ fun PantallaLaboratorioTemas(
         lumTextoPrincipal = if (modoOscuro) 0.95f else 0.08f
         lumTextoSecundario = if (modoOscuro) 0.62f else 0.40f
         colorAcentoActual = d.acento
+        esPersonalizadoActivo = false
+        mostrarAjustePersonalizado = false
+        val (h, s, v) = colorAhsv(d.acento)
+        huePersonalizado = h
+        satPersonalizado = s
+        valPersonalizado = v
+        alfaPersonalizado = d.acento.alpha
         Toast.makeText(contexto, "Valores sobrios restablecidos", Toast.LENGTH_SHORT).show()
     }
 
@@ -368,17 +408,26 @@ fun PantallaLaboratorioTemas(
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {
                     Text(
-                        text = "Elige el color protagonista para acciones primarias, botones y estados activos.",
+                        text = "Elige el acento protagonista para acciones primarias, botones y estados activos.",
                         style = MaterialTheme.typography.bodySmall,
                         color = colorTextoSecundario
                     )
-                    Spacer(Modifier.height(12.dp))
+
+                    Spacer(Modifier.height(14.dp))
+
+                    // Fila 1: Acentos Cromáticos
+                    Text(
+                        text = "Acentos Cromáticos",
+                        style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.SemiBold),
+                        color = colorTextoSecundario
+                    )
+                    Spacer(Modifier.height(8.dp))
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         acentosPredefinidos.forEach { (color, nombre) ->
-                            val seleccionado = colorAcentoActual == color
+                            val seleccionado = !esPersonalizadoActivo && colorAcentoActual == color
                             Box(
                                 modifier = Modifier
                                     .size(42.dp)
@@ -392,6 +441,12 @@ fun PantallaLaboratorioTemas(
                                     .clickable {
                                         haptica.tic()
                                         colorAcentoActual = color
+                                        esPersonalizadoActivo = false
+                                        val (h, s, v) = colorAhsv(color)
+                                        huePersonalizado = h
+                                        satPersonalizado = s
+                                        valPersonalizado = v
+                                        alfaPersonalizado = color.alpha
                                     },
                                 contentAlignment = Alignment.Center
                             ) {
@@ -399,11 +454,202 @@ fun PantallaLaboratorioTemas(
                                     Icon(
                                         imageVector = Icons.Filled.Check,
                                         contentDescription = nombre,
-                                        tint = if (color == Color(0xFFE5A93C) || color == Color(0xFFD4AF37)) Color.Black else Color.White,
+                                        tint = colorContraste(color),
                                         modifier = Modifier.size(20.dp)
                                     )
                                 }
                             }
+                        }
+                    }
+
+                    Spacer(Modifier.height(16.dp))
+
+                    // Fila 2: Matices Neutros (Estilo Apple) y Personalizado
+                    Text(
+                        text = "Matices Neutros (Estilo Apple) y Personalizado",
+                        style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.SemiBold),
+                        color = colorTextoSecundario
+                    )
+                    Spacer(Modifier.height(8.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        acentosGrisesApple.forEach { (color, nombre) ->
+                            val seleccionado = !esPersonalizadoActivo && colorAcentoActual == color
+                            Box(
+                                modifier = Modifier
+                                    .size(42.dp)
+                                    .clip(CircleShape)
+                                    .background(color)
+                                    .border(
+                                        width = if (seleccionado) 3.dp else 1.dp,
+                                        color = if (seleccionado) colorTextoPrincipal else colorBorde,
+                                        shape = CircleShape
+                                    )
+                                    .clickable {
+                                        haptica.tic()
+                                        colorAcentoActual = color
+                                        esPersonalizadoActivo = false
+                                        val (h, s, v) = colorAhsv(color)
+                                        huePersonalizado = h
+                                        satPersonalizado = s
+                                        valPersonalizado = v
+                                        alfaPersonalizado = color.alpha
+                                    },
+                                contentAlignment = Alignment.Center
+                            ) {
+                                if (seleccionado) {
+                                    Icon(
+                                        imageVector = Icons.Filled.Check,
+                                        contentDescription = nombre,
+                                        tint = colorContraste(color),
+                                        modifier = Modifier.size(20.dp)
+                                    )
+                                }
+                            }
+                        }
+
+                        // Botón Personalizado
+                        val seleccionadoPersonalizado = esPersonalizadoActivo
+                        Box(
+                            modifier = Modifier
+                                .size(42.dp)
+                                .clip(CircleShape)
+                                .background(
+                                    if (seleccionadoPersonalizado) colorAcentoActual else colorCampo
+                                )
+                                .border(
+                                    width = if (seleccionadoPersonalizado) 3.dp else 1.dp,
+                                    color = if (seleccionadoPersonalizado) colorTextoPrincipal else colorBorde,
+                                    shape = CircleShape
+                                )
+                                .clickable {
+                                    haptica.tic()
+                                    esPersonalizadoActivo = true
+                                    mostrarAjustePersonalizado = true
+                                    colorAcentoActual = Color.hsv(huePersonalizado, satPersonalizado, valPersonalizado, alfaPersonalizado)
+                                },
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                imageVector = Icons.Filled.Tune,
+                                contentDescription = "Personalizado",
+                                tint = if (seleccionadoPersonalizado) colorContraste(colorAcentoActual) else colorTextoPrincipal,
+                                modifier = Modifier.size(20.dp)
+                            )
+                        }
+                    }
+
+                    // Panel expandible para controles personalizados con sliders y transparencias
+                    if (mostrarAjustePersonalizado || esPersonalizadoActivo) {
+                        Spacer(Modifier.height(16.dp))
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clip(RoundedCornerShape(CurvaturaEsquinas - 4.dp))
+                                .background(colorCampo)
+                                .border(1.dp, colorBorde, RoundedCornerShape(CurvaturaEsquinas - 4.dp))
+                                .padding(14.dp)
+                        ) {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Box(
+                                    modifier = Modifier
+                                        .size(22.dp)
+                                        .clip(CircleShape)
+                                        .background(colorAcentoActual)
+                                        .border(1.dp, colorBorde, CircleShape)
+                                )
+                                Spacer(Modifier.width(8.dp))
+                                Text(
+                                    text = "Acento Personalizado",
+                                    style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
+                                    color = colorTextoPrincipal,
+                                    modifier = Modifier.weight(1f)
+                                )
+                                Text(
+                                    text = colorAcentoActual.aHexConAlfa(),
+                                    style = EstiloMono.copy(fontWeight = FontWeight.Bold, fontSize = 12.sp),
+                                    color = colorTextoPrincipal
+                                )
+                            }
+
+                            Spacer(Modifier.height(12.dp))
+
+                            // Control 1: Tono / Color
+                            Text(
+                                text = "Tono: ${huePersonalizado.toInt()}°",
+                                style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Medium),
+                                color = colorTextoSecundario
+                            )
+                            SliderBoveda(
+                                value = huePersonalizado,
+                                onValueChange = {
+                                    huePersonalizado = it
+                                    esPersonalizadoActivo = true
+                                    colorAcentoActual = Color.hsv(huePersonalizado, satPersonalizado, valPersonalizado, alfaPersonalizado)
+                                },
+                                valueRange = 0f..360f
+                            )
+
+                            Spacer(Modifier.height(8.dp))
+
+                            // Control 2: Saturación (0% es Gris puro)
+                            Text(
+                                text = "Saturación: ${(satPersonalizado * 100).toInt()}% ${if (satPersonalizado < 0.05f) "(Gris Puro)" else ""}",
+                                style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Medium),
+                                color = colorTextoSecundario
+                            )
+                            SliderBoveda(
+                                value = satPersonalizado,
+                                onValueChange = {
+                                    satPersonalizado = it
+                                    esPersonalizadoActivo = true
+                                    colorAcentoActual = Color.hsv(huePersonalizado, satPersonalizado, valPersonalizado, alfaPersonalizado)
+                                },
+                                valueRange = 0f..1f
+                            )
+
+                            Spacer(Modifier.height(8.dp))
+
+                            // Control 3: Brillo / Luminosidad
+                            Text(
+                                text = "Brillo: ${(valPersonalizado * 100).toInt()}%",
+                                style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Medium),
+                                color = colorTextoSecundario
+                            )
+                            SliderBoveda(
+                                value = valPersonalizado,
+                                onValueChange = {
+                                    valPersonalizado = it
+                                    esPersonalizadoActivo = true
+                                    colorAcentoActual = Color.hsv(huePersonalizado, satPersonalizado, valPersonalizado, alfaPersonalizado)
+                                },
+                                valueRange = 0.10f..1f
+                            )
+
+                            Spacer(Modifier.height(8.dp))
+
+                            // Control 4: Transparencia / Opacidad (Alfa)
+                            Text(
+                                text = "Transparencia / Opacidad: ${(alfaPersonalizado * 100).toInt()}%",
+                                style = MaterialTheme.typography.bodySmall.copy(
+                                    fontWeight = FontWeight.Bold,
+                                    color = if (alfaPersonalizado < 1.0f) colorAcentoActual else colorTextoSecundario
+                                )
+                            )
+                            SliderBoveda(
+                                value = alfaPersonalizado,
+                                onValueChange = {
+                                    alfaPersonalizado = it
+                                    esPersonalizadoActivo = true
+                                    colorAcentoActual = Color.hsv(huePersonalizado, satPersonalizado, valPersonalizado, alfaPersonalizado)
+                                },
+                                valueRange = 0.10f..1f
+                            )
                         }
                     }
                 }
@@ -475,10 +721,15 @@ private fun TarjetaFlotantePreviaLaboratorio(
                         .background(colorAcento),
                     contentAlignment = Alignment.Center
                 ) {
+                    val colorContenidoAcento = if (colorAcento.alpha < 0.45f) {
+                        colorTextoPrincipal
+                    } else {
+                        colorContraste(colorAcento)
+                    }
                     Icon(
                         imageVector = Icons.Filled.Lock,
                         contentDescription = null,
-                        tint = if (colorAcento == Color(0xFFE5A93C) || colorAcento == Color(0xFFD4AF37)) Color.Black else Color.White,
+                        tint = colorContenidoAcento,
                         modifier = Modifier.size(20.dp)
                     )
                 }
@@ -562,6 +813,11 @@ private fun TarjetaFlotantePreviaLaboratorio(
                 }
 
                 // Botón Primario compacto
+                val colorContenidoBoton = if (colorAcento.alpha < 0.45f) {
+                    colorTextoPrincipal
+                } else {
+                    colorContraste(colorAcento)
+                }
                 Box(
                     modifier = Modifier
                         .clip(RoundedCornerShape(8.dp))
@@ -574,7 +830,7 @@ private fun TarjetaFlotantePreviaLaboratorio(
                         style = MaterialTheme.typography.bodySmall.copy(
                             fontWeight = FontWeight.Bold,
                             fontSize = 12.sp,
-                            color = if (colorAcento == Color(0xFFE5A93C) || colorAcento == Color(0xFFD4AF37)) Color.Black else Color.White
+                            color = colorContenidoBoton
                         )
                     )
                 }

@@ -31,13 +31,13 @@ data class PaletaSobria(
         return """
         {
           "modo": "${if (esOscuro) "oscuro" else "claro"}",
-          "fondo": "${fondo.aHex()}",
-          "tarjeta": "${tarjeta.aHex()}",
-          "campo": "${campo.aHex()}",
-          "borde": "${borde.aHex()}",
-          "textoPrincipal": "${textoPrincipal.aHex()}",
-          "textoSecundario": "${textoSecundario.aHex()}",
-          "acento": "${acento.aHex()}"
+          "fondo": "${fondo.aHexConAlfa()}",
+          "tarjeta": "${tarjeta.aHexConAlfa()}",
+          "campo": "${campo.aHexConAlfa()}",
+          "borde": "${borde.aHexConAlfa()}",
+          "textoPrincipal": "${textoPrincipal.aHexConAlfa()}",
+          "textoSecundario": "${textoSecundario.aHexConAlfa()}",
+          "acento": "${acento.aHexConAlfa()}"
         }
         """.trimIndent()
     }
@@ -50,13 +50,13 @@ data class PaletaSobria(
         return """
         val paletaPersonalizada$sufijo = PaletaSobria(
             esOscuro = $esOscuro,
-            fondo = Color(0x${fondo.aHex().removePrefix("#")}),
-            tarjeta = Color(0x${tarjeta.aHex().removePrefix("#")}),
-            campo = Color(0x${campo.aHex().removePrefix("#")}),
-            borde = Color(0x${borde.aHex().removePrefix("#")}),
-            textoPrincipal = Color(0x${textoPrincipal.aHex().removePrefix("#")}),
-            textoSecundario = Color(0x${textoSecundario.aHex().removePrefix("#")}),
-            acento = Color(0x${acento.aHex().removePrefix("#")})
+            fondo = Color(0x${fondo.aHexConAlfa().removePrefix("#")}),
+            tarjeta = Color(0x${tarjeta.aHexConAlfa().removePrefix("#")}),
+            campo = Color(0x${campo.aHexConAlfa().removePrefix("#")}),
+            borde = Color(0x${borde.aHexConAlfa().removePrefix("#")}),
+            textoPrincipal = Color(0x${textoPrincipal.aHexConAlfa().removePrefix("#")}),
+            textoSecundario = Color(0x${textoSecundario.aHexConAlfa().removePrefix("#")}),
+            acento = Color(0x${acento.aHexConAlfa().removePrefix("#")})
         )
         """.trimIndent()
     }
