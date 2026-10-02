@@ -43,6 +43,8 @@ import androidx.compose.ui.unit.dp
 import com.jlnavas3.bovedalocal.data.Entrada
 import com.jlnavas3.bovedalocal.data.TipoEntrada
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjusteGris
+import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorCampoAjustes
+import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorSeparadorAjustes
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorTextoAjustes
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.GrupoAjustes
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.SeparadorFilaSimple
@@ -277,13 +279,14 @@ fun FilaProblemaAgil(
                         modifier = Modifier
                             .size(36.dp)
                             .clip(FormaPequena)
-                            .background(fondoBadgeParaTema(colorTipo)),
+                            .background(ColorCampoAjustes)
+                            .border(0.8.dp, ColorSeparadorAjustes, FormaPequena),
                         contentAlignment = Alignment.Center
                     ) {
                         Icon(
                             imageVector = iconoTipo,
                             contentDescription = null,
-                            tint = colorLegible,
+                            tint = ColorAcento,
                             modifier = Modifier.size(20.dp)
                         )
                     }
@@ -312,13 +315,14 @@ fun FilaProblemaAgil(
                         Box(
                             modifier = Modifier
                                 .clip(FormaPequena)
-                                .background(fondoBadgeParaTema(colorDetalle))
+                                .background(ColorCampoAjustes)
+                                .border(0.8.dp, ColorSeparadorAjustes, FormaPequena)
                                 .padding(horizontal = 7.dp, vertical = 2.dp)
                         ) {
                             Text(
                                 text = etiquetaDetalle,
-                                color = colorLegibleParaTema(colorDetalle),
-                                style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold)
+                                color = ColorAcento,
+                                style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.SemiBold)
                             )
                         }
                     }

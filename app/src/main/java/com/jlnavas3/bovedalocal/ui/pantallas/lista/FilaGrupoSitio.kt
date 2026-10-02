@@ -30,7 +30,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorCampoAjustes
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorTarjetaAjustes
+import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.Ambar
 import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
 import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
@@ -73,13 +75,13 @@ fun FilaGrupoSitio(
             modifier = Modifier
                 .size(tamanoIcono.dp)
                 .clip(CircleShape)
-                .background(Color(0xFF5C6BC0)),
+                .background(ColorCampoAjustes),
             contentAlignment = Alignment.Center
         ) {
             Icon(
                 imageVector = Icons.Filled.Dns,
                 contentDescription = null,
-                tint = Color.White,
+                tint = ColorAcento,
                 modifier = Modifier.size((tamanoIcono * 0.52f).dp)
             )
         }

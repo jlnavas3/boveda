@@ -50,14 +50,17 @@ internal val paletaClara = PaletaBase(
 internal var paletaActiva by mutableStateOf(paletaOscura)
 var esOscuroActivo by mutableStateOf(true)
 
-val Obsidiana: Color get() = paletaSobriaEnVivo?.fondo ?: paletaActiva.fondo
-val Superficie: Color get() = paletaSobriaEnVivo?.tarjeta ?: paletaActiva.superficie
-val SuperficieAlta: Color get() = paletaSobriaEnVivo?.campo ?: paletaActiva.superficieAlta
-val Borde: Color get() = paletaSobriaEnVivo?.borde ?: paletaActiva.borde
+val paletaSobriaEfectiva: PaletaSobria?
+    get() = paletaSobriaEnVivo ?: if (esOscuroActivo) (paletaSobriaGuardadaOscura ?: PaletaSobriaDefaults.OSCURA) else (paletaSobriaGuardadaClara ?: PaletaSobriaDefaults.CLARA)
+
+val Obsidiana: Color get() = paletaSobriaEfectiva?.fondo ?: paletaActiva.fondo
+val Superficie: Color get() = paletaSobriaEfectiva?.tarjeta ?: paletaActiva.superficie
+val SuperficieAlta: Color get() = paletaSobriaEfectiva?.campo ?: paletaActiva.superficieAlta
+val Borde: Color get() = paletaSobriaEfectiva?.borde ?: paletaActiva.borde
 val Menta: Color get() = paletaActiva.menta
 val Peligro: Color get() = paletaActiva.peligro
-val TextoPrincipal: Color get() = paletaSobriaEnVivo?.textoPrincipal ?: paletaActiva.textoPrincipal
-val TextoSecundario: Color get() = paletaSobriaEnVivo?.textoSecundario ?: paletaActiva.textoSecundario
+val TextoPrincipal: Color get() = paletaSobriaEfectiva?.textoPrincipal ?: paletaActiva.textoPrincipal
+val TextoSecundario: Color get() = paletaSobriaEfectiva?.textoSecundario ?: paletaActiva.textoSecundario
 
 /** "sistema", "claro" u "oscuro"; "sistema" sigue el tema actual del teléfono. */
 fun aplicarTema(claveTema: String, sistemaEnOscuro: Boolean) {
@@ -84,6 +87,8 @@ var ColorAcento: Color
         if (colorDinamicoSistemaBase && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && colorDinamicoMonet != null) {
             return colorDinamicoMonet!!
         }
+        val guardada = if (esOscuroActivo) paletaSobriaGuardadaOscura else paletaSobriaGuardadaClara
+        if (guardada != null) return guardada.acento
         return colorAcentoManual ?: paletaAcentoActiva?.base ?: (if (esOscuroActivo) PaletaSobriaDefaults.OSCURA.acento else PaletaSobriaDefaults.CLARA.acento)
     }
     set(valor) {
@@ -97,6 +102,8 @@ var ColorAcentoFuerte: Color
         if (colorDinamicoSistemaBase && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && colorDinamicoFuerteMonet != null) {
             return colorDinamicoFuerteMonet!!
         }
+        val guardada = if (esOscuroActivo) paletaSobriaGuardadaOscura else paletaSobriaGuardadaClara
+        if (guardada != null) return guardada.acento
         return colorAcentoFuerteManual ?: paletaAcentoActiva?.fuerte ?: (if (esOscuroActivo) PaletaSobriaDefaults.OSCURA.acento else PaletaSobriaDefaults.CLARA.acento)
     }
     set(valor) { colorAcentoFuerteManual = valor }
@@ -130,7 +137,7 @@ val DegradadoAmbar: Brush get() = Brush.horizontalGradient(listOf(ColorAcento, C
 
 fun degradadoAmbarVertical() = Brush.verticalGradient(listOf(ColorAcento, ColorAcentoFuerte))
 
-internal var colorDinamicoSistemaBase by mutableStateOf(true)
+internal var colorDinamicoSistemaBase by mutableStateOf(false)
 
 var ColorDinamicoSistema: Boolean
     get() = colorDinamicoSistemaBase
@@ -138,16 +145,26 @@ var ColorDinamicoSistema: Boolean
 
 fun aplicarPersonalizacionColores(ajustes: AjustesApp) {
     colorDinamicoSistemaBase = ajustes.colorDinamicoSistema
-    val paleta = PaletaAcento.entries.firstOrNull { it.clave == ajustes.colorAcento }
+    val esAcentoPersonalizado = ajustes.colorAcento.isNotBlank() &&
+            ajustes.colorAcento != "sobrio" &&
+            ajustes.colorAcento != "ambar"
+    val paleta = if (esAcentoPersonalizado) {
+        PaletaAcento.entries.firstOrNull { it.clave == ajustes.colorAcento }
+    } else null
     if (paleta != null) {
         paletaAcentoActiva = paleta
         colorAcentoManual = null
         colorAcentoFuerteManual = null
-    } else {
+    } else if (esAcentoPersonalizado && (ajustes.colorAcento.startsWith("#") || ajustes.colorAcento.startsWith("0x"))) {
         paletaAcentoActiva = null
-        val custom = parsearColorO(ajustes.colorAcento, PaletaAcento.AMBAR.base)
+        val fallback = if (esOscuroActivo) PaletaSobriaDefaults.OSCURA.acento else PaletaSobriaDefaults.CLARA.acento
+        val custom = parsearColorO(ajustes.colorAcento, fallback)
         colorAcentoManual = custom
         colorAcentoFuerteManual = custom
+    } else {
+        paletaAcentoActiva = null
+        colorAcentoManual = null
+        colorAcentoFuerteManual = null
     }
 
     colorIconosBase = if (ajustes.colorIconosInternos.isNotBlank()) {

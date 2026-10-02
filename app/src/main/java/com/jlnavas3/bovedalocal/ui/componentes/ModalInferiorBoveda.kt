@@ -214,10 +214,7 @@ fun FilaOpcionModal(
         modifier = modifier
             .fillMaxWidth()
             .clip(forma)
-            .background(
-                if (seleccionado) colorAcento.copy(alpha = 0.12f)
-                else Color.Transparent
-            )
+            .background(Color.Transparent)
             .then(modificadorBorde)
             .clickable { alPulsar() }
             .padding(horizontal = 14.dp, vertical = 11.dp),
@@ -236,7 +233,7 @@ fun FilaOpcionModal(
         Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = titulo,
-                color = if (seleccionado) colorAcento else TextoPrincipal,
+                color = TextoPrincipal,
                 style = MaterialTheme.typography.bodyMedium.copy(
                     fontWeight = if (seleccionado) FontWeight.SemiBold else FontWeight.Normal
                 )

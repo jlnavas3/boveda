@@ -10,6 +10,7 @@ import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteGrupo
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteNavegacion
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteSeparador
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteSwitch
+import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 
 @Composable
 fun GrupoAgrupamientoEIndicadores(
@@ -24,7 +25,7 @@ fun GrupoAgrupamientoEIndicadores(
     ComponenteGrupo(
         etiqueta = "Agrupamiento",
         icono = Icons.Filled.Layers,
-        colorIcono = Color(0xFF00ACC1),
+        colorIcono = ColorAcento,
         idGrupo = "03-LST-DES-G01",
         mostrarId = mostrarId,
         modifier = modifier

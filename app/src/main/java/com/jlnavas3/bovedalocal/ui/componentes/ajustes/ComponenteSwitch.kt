@@ -5,7 +5,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.SwitchBoveda
-import com.jlnavas3.bovedalocal.ui.theme.Ambar
+import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 
 /**
  * Fila de ajuste con interruptor basculante (Switch) estilo Samsung One UI / Honor MagicOS.
@@ -23,7 +23,7 @@ fun ComponenteSwitch(
     idFila: String? = null,
     mostrarId: Boolean = false,
     habilitado: Boolean = true,
-    colorActivo: Color = Ambar
+    colorActivo: Color = ColorAcento
 ) {
     ComponenteFila(
         titulo = titulo,

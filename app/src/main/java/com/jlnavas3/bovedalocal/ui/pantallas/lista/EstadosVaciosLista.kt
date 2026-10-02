@@ -10,7 +10,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Backup
-import androidx.compose.material.icons.filled.FileUpload
+import androidx.compose.material.icons.filled.FileDownload
 import androidx.compose.material.icons.filled.QrCodeScanner
 import androidx.compose.material.icons.filled.VpnKey
 import androidx.compose.material3.MaterialTheme
@@ -51,7 +51,7 @@ fun EstadoVacioLista(
 
             ComponenteGrupo(
                 etiqueta = "Importar",
-                icono = Icons.Filled.FileUpload,
+                icono = Icons.Filled.FileDownload,
                 colorIcono = ColorExportacion
             ) {
                 ComponenteNavegacion(

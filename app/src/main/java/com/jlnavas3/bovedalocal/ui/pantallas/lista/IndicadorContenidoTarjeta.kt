@@ -88,13 +88,14 @@ fun IndicadorContenidoTarjeta(
 
         var xOffset = 0f
         for (seg in segmentos) {
-            val colorEfectivo = if (seg.activo) seg.color else seg.color.copy(alpha = 0.12f)
-            drawRoundRect(
-                color = colorEfectivo,
-                topLeft = Offset(xOffset, 0f),
-                size = Size(anchoSegmento, size.height),
-                cornerRadius = cornerRadius
-            )
+            if (seg.activo) {
+                drawRoundRect(
+                    color = seg.color,
+                    topLeft = Offset(xOffset, 0f),
+                    size = Size(anchoSegmento, size.height),
+                    cornerRadius = cornerRadius
+                )
+            }
             xOffset += anchoSegmento + espaciadoPx
         }
     }

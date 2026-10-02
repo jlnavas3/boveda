@@ -43,6 +43,7 @@ import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
 import com.jlnavas3.bovedalocal.ui.theme.FormaCampo
 import com.jlnavas3.bovedalocal.ui.theme.FormaPequena
 import com.jlnavas3.bovedalocal.ui.theme.GrosorBorde
+import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorCampoAjustes
 import com.jlnavas3.bovedalocal.ui.theme.Peligro
 import com.jlnavas3.bovedalocal.ui.theme.TextoPrincipal
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
@@ -89,8 +90,8 @@ fun ComponenteCampoTexto(
     val forma = FormaCampo
     val esOscuro = esOscuroActivo
 
-    // Superficie suave One UI / MagicOS
-    val colorFondoCampo = if (esOscuro) Color(0xFF242327) else Color(0xFFF1F2F5)
+    // Superficie suave One UI / MagicOS vinculada a la paleta sobria (Capa 2)
+    val colorFondoCampo = ColorCampoAjustes
 
     // Estado interno para visibilidad de contraseña si no se controla externamente
     var verContrasenaInterno by remember { mutableStateOf(false) }

@@ -229,7 +229,10 @@ class MainActivity : FragmentActivity() {
         manejarAccionShortcut(intent)
         manejarIntentArchivoBvda(intent)
         // FLAG_SECURE activa por defecto; se gestiona dinámicamente según la preferencia del usuario
-        window.setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE)
+        // Cargar paleta sobria personalizada si existe
+        val (guardadaOsc, guardadaCla) = com.jlnavas3.bovedalocal.ui.theme.GestorPaletaSobria.cargar(this)
+        if (guardadaOsc != null) com.jlnavas3.bovedalocal.ui.theme.paletaSobriaGuardadaOscura = guardadaOsc
+        if (guardadaCla != null) com.jlnavas3.bovedalocal.ui.theme.paletaSobriaGuardadaClara = guardadaCla
         com.jlnavas3.bovedalocal.ui.theme.aplicarPersonalizacionTemaCompleto(vm.repositorio.ajustes.actual)
         setContent {
             val ajustes by vm.ajustes.collectAsStateWithLifecycle()

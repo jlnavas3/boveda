@@ -31,8 +31,9 @@ import androidx.compose.ui.unit.dp
 import com.jlnavas3.bovedalocal.data.Entrada
 import com.jlnavas3.bovedalocal.data.TipoEntrada
 import com.jlnavas3.bovedalocal.ui.componentes.Monograma
-import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
-import com.jlnavas3.bovedalocal.ui.theme.ColorPasskeys
+import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorCampoAjustes
+import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorSeparadorAjustes
+import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.util.IconoAppCircular
 import com.jlnavas3.bovedalocal.util.rememberIconoAppInstalada
 import com.jlnavas3.bovedalocal.util.LanzadorEnlaces
@@ -60,142 +61,44 @@ fun IconoTipoEntrada(
             )
         } else {
             when (entrada.tipo) {
-                TipoEntrada.PASSKEY -> {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .clip(CircleShape)
-                        .background(ColorPasskeys),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        imageVector = Icons.Filled.Fingerprint,
-                        contentDescription = null,
-                        tint = Color.White,
-                        modifier = Modifier.size((tamanoIcono * 0.52f).dp)
+                TipoEntrada.PASSKEY -> IconoTipoCircular(Icons.Filled.Fingerprint, tamanoIcono)
+                TipoEntrada.NOTA -> IconoTipoCircular(Icons.Filled.Description, tamanoIcono)
+                TipoEntrada.TARJETA -> IconoTipoCircular(Icons.Filled.CreditCard, tamanoIcono)
+                TipoEntrada.WIFI -> IconoTipoCircular(Icons.Filled.Wifi, tamanoIcono)
+                TipoEntrada.CUENTA_BANCARIA -> IconoTipoCircular(Icons.Filled.AccountBalance, tamanoIcono)
+                TipoEntrada.SERVIDOR -> IconoTipoCircular(Icons.Filled.Dns, tamanoIcono)
+                TipoEntrada.WALLET -> IconoTipoCircular(Icons.Filled.AccountBalanceWallet, tamanoIcono)
+                TipoEntrada.IDENTIDAD -> IconoTipoCircular(Icons.Filled.Badge, tamanoIcono)
+                else -> {
+                    Monograma(
+                        titulo = entrada.titulo.ifBlank { "?" },
+                        semilla = entrada.urls.firstOrNull() ?: entrada.usuario.ifBlank { entrada.titulo },
+                        tamano = tamanoIcono
                     )
                 }
-            }
-            TipoEntrada.NOTA -> {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .clip(CircleShape)
-                        .background(Color(0xFF0288D1)),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        imageVector = Icons.Filled.Description,
-                        contentDescription = null,
-                        tint = Color.White,
-                        modifier = Modifier.size((tamanoIcono * 0.52f).dp)
-                    )
-                }
-            }
-            TipoEntrada.TARJETA -> {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .clip(CircleShape)
-                        .background(Color(0xFFE91E63)),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        imageVector = Icons.Filled.CreditCard,
-                        contentDescription = null,
-                        tint = Color.White,
-                        modifier = Modifier.size((tamanoIcono * 0.52f).dp)
-                    )
-                }
-            }
-            TipoEntrada.WIFI -> {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .clip(CircleShape)
-                        .background(Color(0xFF00897B)),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        imageVector = Icons.Filled.Wifi,
-                        contentDescription = null,
-                        tint = Color.White,
-                        modifier = Modifier.size((tamanoIcono * 0.52f).dp)
-                    )
-                }
-            }
-            TipoEntrada.CUENTA_BANCARIA -> {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .clip(CircleShape)
-                        .background(Color(0xFF3949AB)),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        imageVector = Icons.Filled.AccountBalance,
-                        contentDescription = null,
-                        tint = Color.White,
-                        modifier = Modifier.size((tamanoIcono * 0.52f).dp)
-                    )
-                }
-            }
-            TipoEntrada.SERVIDOR -> {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .clip(CircleShape)
-                        .background(Color(0xFF546E7A)),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        imageVector = Icons.Filled.Dns,
-                        contentDescription = null,
-                        tint = Color.White,
-                        modifier = Modifier.size((tamanoIcono * 0.52f).dp)
-                    )
-                }
-            }
-            TipoEntrada.WALLET -> {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .clip(CircleShape)
-                        .background(Color(0xFFFFB300)),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        imageVector = Icons.Filled.AccountBalanceWallet,
-                        contentDescription = null,
-                        tint = Color.White,
-                        modifier = Modifier.size((tamanoIcono * 0.52f).dp)
-                    )
-                }
-            }
-            TipoEntrada.IDENTIDAD -> {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .clip(CircleShape)
-                        .background(Color(0xFF00ACC1)),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        imageVector = Icons.Filled.Badge,
-                        contentDescription = null,
-                        tint = Color.White,
-                        modifier = Modifier.size((tamanoIcono * 0.52f).dp)
-                    )
-                }
-            }
-            else -> {
-                Monograma(
-                    titulo = entrada.titulo.ifBlank { "?" },
-                    semilla = entrada.urls.firstOrNull() ?: entrada.usuario.ifBlank { entrada.titulo },
-                    tamano = tamanoIcono
-                )
             }
         }
     }
 }
+
+@Composable
+private fun IconoTipoCircular(
+    imageVector: androidx.compose.ui.graphics.vector.ImageVector,
+    tamanoIcono: Int
+) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .clip(CircleShape)
+            .background(ColorCampoAjustes)
+            .border(0.8.dp, ColorSeparadorAjustes, CircleShape),
+        contentAlignment = Alignment.Center
+    ) {
+        Icon(
+            imageVector = imageVector,
+            contentDescription = null,
+            tint = ColorAcento,
+            modifier = Modifier.size((tamanoIcono * 0.52f).dp)
+        )
+    }
 }

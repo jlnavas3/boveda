@@ -42,6 +42,7 @@ import com.jlnavas3.bovedalocal.ui.componentes.BotonTextoBoveda
 import com.jlnavas3.bovedalocal.ui.componentes.DialogoBoveda
 import com.jlnavas3.bovedalocal.ui.componentes.VarianteBoton
 import com.jlnavas3.bovedalocal.ui.theme.Ambar
+import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.Color2FA
 import com.jlnavas3.bovedalocal.ui.theme.ColorDatosContrasena
 import com.jlnavas3.bovedalocal.ui.theme.ColorPasskeys
@@ -81,13 +82,13 @@ fun DialogoExportacionDirectaCxf(
                 modifier = Modifier
                     .size(52.dp)
                     .clip(CircleShape)
-                    .background(fondoBadgeParaTema(ColorPasskeys)),
+                    .background(ColorAcento.copy(alpha = 0.15f)),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
                     imageVector = Icons.Filled.VpnKey,
                     contentDescription = null,
-                    tint = colorLegibleParaTema(ColorPasskeys),
+                    tint = ColorAcento,
                     modifier = Modifier.size(28.dp)
                 )
             }
@@ -177,7 +178,7 @@ fun DialogoExportacionDirectaCxf(
             if (estadoHabilitado != true) {
                 BotonTextoBoveda(
                     texto = "Habilitar transferencia",
-                    colorPersonalizado = ColorPasskeys,
+                    colorPersonalizado = ColorAcento,
                     alPulsar = {
                         scope.launch {
                             enProgreso = true

@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjusteGris
+import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorTarjetaAjustes
 import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
 import com.jlnavas3.bovedalocal.ui.theme.CurvaturaEsquinas
 import com.jlnavas3.bovedalocal.ui.theme.EspaciadoComponentes
@@ -90,7 +91,7 @@ fun TarjetaDatoDetalle(
         modifier = modifier
             .fillMaxWidth()
             .clip(forma)
-            .background(fondoBadgeParaTema(colorBorde))
+            .background(ColorTarjetaAjustes)
             .border(grosorEfectivo, colorBordeEfectivo, forma)
             .then(
                 if (alPulsar != null) Modifier.clickable { alPulsar() }

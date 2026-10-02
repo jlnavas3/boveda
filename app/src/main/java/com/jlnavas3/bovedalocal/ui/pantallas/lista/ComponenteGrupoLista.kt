@@ -39,7 +39,9 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.jlnavas3.bovedalocal.data.Entrada
+import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorCampoAjustes
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorTarjetaAjustes
+import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.preview.BovedaPreview
 import com.jlnavas3.bovedalocal.ui.preview.PreviewMocks
 import com.jlnavas3.bovedalocal.ui.preview.PreviewTemaBoveda
@@ -106,13 +108,13 @@ fun ComponenteGrupoLista(
                     modifier = Modifier
                         .size(tamanoIcono.dp)
                         .clip(CircleShape)
-                        .background(Color(0xFF5C6BC0)),
+                        .background(ColorCampoAjustes),
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
                         imageVector = Icons.Filled.Dns,
                         contentDescription = null,
-                        tint = Color.White,
+                        tint = ColorAcento,
                         modifier = Modifier.size((tamanoIcono * 0.52f).dp)
                     )
                 }

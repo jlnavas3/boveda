@@ -2,6 +2,7 @@ package com.jlnavas3.bovedalocal.ui.pantallas.edicion
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -34,12 +35,16 @@ import com.jlnavas3.bovedalocal.ui.componentes.BotonBorde
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteCampoTexto
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.TipoCampoTexto
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.GrupoAjustes
+import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorCampoAjustes
+import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorSeparadorAjustes
+import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.ColorDatosApp
 import com.jlnavas3.bovedalocal.ui.theme.ColorDatosWeb
 import com.jlnavas3.bovedalocal.ui.theme.ColorPasskeys
 import com.jlnavas3.bovedalocal.ui.theme.EstiloMono
 import com.jlnavas3.bovedalocal.ui.theme.FormaPequena
 import com.jlnavas3.bovedalocal.ui.theme.Menta
+import com.jlnavas3.bovedalocal.ui.theme.TextoPrincipal
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
 import com.jlnavas3.bovedalocal.ui.theme.colorLegibleParaTema
 import com.jlnavas3.bovedalocal.ui.theme.fondoBadgeParaTema
@@ -116,7 +121,8 @@ fun SeccionSitiosYAppsEdicion(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .clip(FormaPequena)
-                                    .background(fondoBadgeParaTema(ColorPasskeys))
+                                    .background(ColorCampoAjustes)
+                                    .border(1.dp, ColorSeparadorAjustes, FormaPequena)
                                     .padding(horizontal = 10.dp, vertical = 5.dp),
                                 verticalAlignment = Alignment.CenterVertically,
                                 horizontalArrangement = Arrangement.spacedBy(6.dp)
@@ -124,13 +130,13 @@ fun SeccionSitiosYAppsEdicion(
                                 Icon(
                                     imageVector = Icons.Filled.Security,
                                     contentDescription = "Certificado DAL",
-                                    tint = ColorPasskeys,
+                                    tint = ColorAcento,
                                     modifier = Modifier.size(14.dp)
                                 )
                                 Text(
                                     text = "Certificado DAL: ${enlace.hashOriginal}",
                                     style = EstiloMono.copy(fontSize = 11.sp),
-                                    color = colorLegibleParaTema(ColorPasskeys),
+                                    color = TextoPrincipal,
                                     maxLines = 1,
                                     overflow = TextOverflow.Ellipsis
                                 )
@@ -143,7 +149,8 @@ fun SeccionSitiosYAppsEdicion(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .clip(FormaPequena)
-                                    .background(fondoBadgeParaTema(Menta))
+                                    .background(ColorCampoAjustes)
+                                    .border(1.dp, ColorSeparadorAjustes, FormaPequena)
                                     .padding(horizontal = 10.dp, vertical = 5.dp),
                                 verticalAlignment = Alignment.CenterVertically,
                                 horizontalArrangement = Arrangement.spacedBy(6.dp)
@@ -151,13 +158,13 @@ fun SeccionSitiosYAppsEdicion(
                                 Icon(
                                     imageVector = Icons.Filled.Android,
                                     contentDescription = "App detectada",
-                                    tint = Menta,
+                                    tint = ColorAcento,
                                     modifier = Modifier.size(14.dp)
                                 )
                                 Text(
                                     text = "App detectada: $nombreApp",
                                     style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Medium),
-                                    color = colorLegibleParaTema(Menta),
+                                    color = TextoPrincipal,
                                     maxLines = 1,
                                     overflow = TextOverflow.Ellipsis
                                 )

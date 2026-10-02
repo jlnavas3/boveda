@@ -20,9 +20,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.foundation.border
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjusteGris
+import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorCampoAjustes
+import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorSeparadorAjustes
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorTextoAjustes
-import com.jlnavas3.bovedalocal.ui.theme.ColorPapelera
+import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 
 @Composable
 fun IlustracionPapeleraVacia(modifier: Modifier = Modifier) {
@@ -36,14 +39,15 @@ fun IlustracionPapeleraVacia(modifier: Modifier = Modifier) {
             modifier = Modifier
                 .size(100.dp)
                 .clip(CircleShape)
-                .background(ColorPapelera.copy(alpha = 0.12f)),
+                .background(ColorCampoAjustes)
+                .border(1.dp, ColorSeparadorAjustes, CircleShape),
             contentAlignment = Alignment.Center
         ) {
             Icon(
                 imageVector = Icons.Filled.DeleteSweep,
                 contentDescription = null,
-                tint = ColorPapelera,
-                modifier = Modifier.size(50.dp)
+                tint = ColorAcento,
+                modifier = Modifier.size(46.dp)
             )
         }
 

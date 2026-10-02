@@ -7,13 +7,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjusteGris
-import com.jlnavas3.bovedalocal.ui.theme.Ambar
-import com.jlnavas3.bovedalocal.ui.theme.ColorSobreAcento
-import com.jlnavas3.bovedalocal.ui.theme.esOscuroActivo
+import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorCampoAjustes
+import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
+import com.jlnavas3.bovedalocal.ui.theme.colorContraste
 
 /**
  * Switch estándar para toda la app con diseño nativo Honor MagicOS / Samsung One UI.
- * Sin bordes duros, con track redondeado y colores sólidos.
+ * Sin bordes duros, con track redondeado y colores calibrados con la paleta de capas sobria.
  */
 @Composable
 fun SwitchBoveda(
@@ -21,7 +21,9 @@ fun SwitchBoveda(
     onCheckedChange: ((Boolean) -> Unit)?,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
-    colorActivo: Color = Ambar
+    colorActivo: Color = ColorAcento,
+    colorInactivoTrack: Color = ColorCampoAjustes,
+    colorInactivoThumb: Color = ColorAjusteGris
 ) {
     Switch(
         checked = checked,
@@ -29,12 +31,16 @@ fun SwitchBoveda(
         modifier = modifier,
         enabled = enabled,
         colors = SwitchDefaults.colors(
-            checkedThumbColor = ColorSobreAcento,
+            checkedThumbColor = colorContraste(colorActivo),
             checkedTrackColor = colorActivo,
             checkedBorderColor = Color.Transparent,
-            uncheckedThumbColor = ColorAjusteGris,
-            uncheckedTrackColor = if (esOscuroActivo) Color(0xFF333238) else Color(0xFFE5E5EA),
-            uncheckedBorderColor = Color.Transparent
+            uncheckedThumbColor = colorInactivoThumb,
+            uncheckedTrackColor = colorInactivoTrack,
+            uncheckedBorderColor = Color.Transparent,
+            disabledCheckedTrackColor = colorActivo.copy(alpha = 0.4f),
+            disabledCheckedThumbColor = colorContraste(colorActivo).copy(alpha = 0.6f),
+            disabledUncheckedTrackColor = colorInactivoTrack.copy(alpha = 0.4f),
+            disabledUncheckedThumbColor = colorInactivoThumb.copy(alpha = 0.4f)
         )
     )
 }

@@ -150,7 +150,7 @@ fun BarraSuperiorAutenticador(
                     SeparadorOpcionMenu()
                     com.jlnavas3.bovedalocal.ui.componentes.ElementoMenuCompacto(
                         texto = "Exportación selectiva",
-                        icono = Icons.Filled.FileDownload,
+                        icono = Icons.Filled.FileUpload,
                         colorIcono = Color2FA,
                         onClick = {
                             menuOpcionesDesplegado = false
@@ -161,7 +161,7 @@ fun BarraSuperiorAutenticador(
                     SeparadorOpcionMenu()
                     com.jlnavas3.bovedalocal.ui.componentes.ElementoMenuCompacto(
                         texto = "Importar de Google Auth",
-                        icono = Icons.Filled.FileUpload,
+                        icono = Icons.Filled.FileDownload,
                         colorIcono = ColorExportacion,
                         onClick = {
                             menuOpcionesDesplegado = false

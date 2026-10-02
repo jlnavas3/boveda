@@ -9,11 +9,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorCampoAjustes
+import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorSeparadorAjustes
+import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorTarjetaAjustes
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
-import com.jlnavas3.bovedalocal.ui.theme.Menta
-import com.jlnavas3.bovedalocal.ui.theme.Peligro
-import com.jlnavas3.bovedalocal.ui.theme.colorLegibleParaTema
-import com.jlnavas3.bovedalocal.ui.theme.fondoBadgeParaTema
+import com.jlnavas3.bovedalocal.ui.theme.TextoPrincipal
+import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
 
 @Composable
 fun BarraChipsFiltroDuplicados(
@@ -26,6 +27,19 @@ fun BarraChipsFiltroDuplicados(
     cantVariantes: Int,
     alSeleccionarFiltro: (FiltroDuplicados) -> Unit
 ) {
+    val coloresChip = FilterChipDefaults.filterChipColors(
+        containerColor = ColorTarjetaAjustes,
+        labelColor = TextoSecundario,
+        selectedContainerColor = ColorCampoAjustes,
+        selectedLabelColor = ColorAcento
+    )
+    val bordeChip = FilterChipDefaults.filterChipBorder(
+        enabled = true,
+        selected = false,
+        borderColor = ColorSeparadorAjustes,
+        selectedBorderColor = ColorAcento
+    )
+
     LazyRow(
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         modifier = Modifier.fillMaxWidth()
@@ -35,10 +49,8 @@ fun BarraChipsFiltroDuplicados(
                 selected = filtroActivo == FiltroDuplicados.TODOS,
                 onClick = { alSeleccionarFiltro(FiltroDuplicados.TODOS) },
                 label = { Text("Todos ($totalGrupos)") },
-                colors = FilterChipDefaults.filterChipColors(
-                    selectedContainerColor = fondoBadgeParaTema(ColorAcento),
-                    selectedLabelColor = colorLegibleParaTema(ColorAcento)
-                )
+                colors = coloresChip,
+                border = bordeChip
             )
         }
         if (totalSobrantesIdenticas > 0) {
@@ -47,10 +59,8 @@ fun BarraChipsFiltroDuplicados(
                     selected = filtroActivo == FiltroDuplicados.IDENTICOS,
                     onClick = { alSeleccionarFiltro(FiltroDuplicados.IDENTICOS) },
                     label = { Text("Idénticos ($totalSobrantesIdenticas)") },
-                    colors = FilterChipDefaults.filterChipColors(
-                        selectedContainerColor = fondoBadgeParaTema(Menta),
-                        selectedLabelColor = colorLegibleParaTema(Menta)
-                    )
+                    colors = coloresChip,
+                    border = bordeChip
                 )
             }
         }
@@ -59,7 +69,9 @@ fun BarraChipsFiltroDuplicados(
                 FilterChip(
                     selected = filtroActivo == FiltroDuplicados.APPS_ANDROID,
                     onClick = { alSeleccionarFiltro(FiltroDuplicados.APPS_ANDROID) },
-                    label = { Text("Apps Android ($cantAppsAndroid)") }
+                    label = { Text("Apps Android ($cantAppsAndroid)") },
+                    colors = coloresChip,
+                    border = bordeChip
                 )
             }
         }
@@ -68,7 +80,9 @@ fun BarraChipsFiltroDuplicados(
                 FilterChip(
                     selected = filtroActivo == FiltroDuplicados.SITIOS_WEB,
                     onClick = { alSeleccionarFiltro(FiltroDuplicados.SITIOS_WEB) },
-                    label = { Text("Sitios web ($cantWeb)") }
+                    label = { Text("Sitios web ($cantWeb)") },
+                    colors = coloresChip,
+                    border = bordeChip
                 )
             }
         }
@@ -78,10 +92,8 @@ fun BarraChipsFiltroDuplicados(
                     selected = filtroActivo == FiltroDuplicados.MISMA_CUENTA,
                     onClick = { alSeleccionarFiltro(FiltroDuplicados.MISMA_CUENTA) },
                     label = { Text("Misma cuenta ($cantMismaCuenta)") },
-                    colors = FilterChipDefaults.filterChipColors(
-                        selectedContainerColor = fondoBadgeParaTema(Peligro),
-                        selectedLabelColor = colorLegibleParaTema(Peligro)
-                    )
+                    colors = coloresChip,
+                    border = bordeChip
                 )
             }
         }
@@ -90,7 +102,9 @@ fun BarraChipsFiltroDuplicados(
                 FilterChip(
                     selected = filtroActivo == FiltroDuplicados.VARIANTES,
                     onClick = { alSeleccionarFiltro(FiltroDuplicados.VARIANTES) },
-                    label = { Text("Variantes ($cantVariantes)") }
+                    label = { Text("Variantes ($cantVariantes)") },
+                    colors = coloresChip,
+                    border = bordeChip
                 )
             }
         }

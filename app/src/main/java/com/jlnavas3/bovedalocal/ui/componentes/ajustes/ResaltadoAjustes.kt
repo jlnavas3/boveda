@@ -70,7 +70,6 @@ class CoordinadorResaltadoAjustes(
         if (dest == "03.3.G1" && item == "03.3.3") return true
         if (dest == "03.3.3" && item == "03.3.G1") return true
         if (dest == "04-HER-WGT-G01" && item == "04-HER-WGT-TOT") return true
-        if (dest == "03-LST-DES" && (item == "03-LST-DES-GRP" || item == "03-LST-DES-G01")) return true
         if ((dest == "03-COP-AUT" || dest == "05-COP-ATM") && (item == "05-COP-ATM-G01" || item.startsWith("05-COP-ATM") || item == "03.2.1")) return true
         if (dest == "03-LST-CAM" && (item == "03-LST-FMT" || item == "03-LST-FMT-G01" || item.startsWith("03-LST-FMT"))) return true
         if (dest == "01-SEG-DAT" && (item == "01-SEG-DAT-G01" || item.startsWith("01-SEG-DAT"))) return true

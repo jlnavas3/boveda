@@ -66,6 +66,7 @@ import com.jlnavas3.bovedalocal.ui.pantallas.salud.SelectorPestanasSalud
 import com.jlnavas3.bovedalocal.ui.pantallas.salud.coincideBusquedaSalud
 import com.jlnavas3.bovedalocal.ui.pantallas.salud.diasDesde
 import com.jlnavas3.bovedalocal.ui.theme.Ambar
+import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
 import com.jlnavas3.bovedalocal.ui.theme.ColorSalud
 import com.jlnavas3.bovedalocal.util.ContrasenasComunes
@@ -194,7 +195,7 @@ fun PantallaSaludBoveda(
                             },
                             icono = Icons.Filled.Analytics,
                             descripcion = "Resumen de auditoría",
-                            tint = ColorSalud
+                            tint = ColorAcento
                         )
                         var menuAbiertoSalud by remember { mutableStateOf(false) }
                         Box {
@@ -212,7 +213,7 @@ fun PantallaSaludBoveda(
                                 com.jlnavas3.bovedalocal.ui.componentes.ElementoMenuCompacto(
                                     texto = "Contraseñas duplicadas...",
                                     icono = androidx.compose.material.icons.Icons.Filled.ContentCopy,
-                                    colorIcono = ColorSalud,
+                                    colorIcono = ColorAcento,
                                     onClick = {
                                         menuAbiertoSalud = false
                                         vm.ir(Pantalla.Duplicados())
@@ -222,7 +223,7 @@ fun PantallaSaludBoveda(
                                 com.jlnavas3.bovedalocal.ui.componentes.ElementoMenuCompacto(
                                     texto = "Ajustes de seguridad...",
                                     icono = androidx.compose.material.icons.Icons.Filled.Security,
-                                    colorIcono = ColorSalud,
+                                    colorIcono = ColorAcento,
                                     onClick = {
                                         menuAbiertoSalud = false
                                         vm.ir(Pantalla.Seguridad("01-SEG"))
@@ -232,7 +233,7 @@ fun PantallaSaludBoveda(
                                 com.jlnavas3.bovedalocal.ui.componentes.ElementoMenuCompacto(
                                     texto = "Generador de contraseñas...",
                                     icono = androidx.compose.material.icons.Icons.Filled.Key,
-                                    colorIcono = ColorSalud,
+                                    colorIcono = ColorAcento,
                                     onClick = {
                                         menuAbiertoSalud = false
                                         vm.ir(Pantalla.Generador)
@@ -417,7 +418,7 @@ fun PantallaSaludBoveda(
         titulo = "Auditoría de Salud",
         descripcion = "${claves.size} contraseñas analizadas",
         icono = Icons.Filled.Analytics,
-        colorIcono = ColorSalud
+        colorIcono = ColorAcento
     ) {
             Column(
                 modifier = Modifier
@@ -432,7 +433,7 @@ fun PantallaSaludBoveda(
                             titulo = "Detectadas $totalSobrantesDuplicadas copias repetidas",
                             subtitulo = "Entradas idénticas de importación. Pulsa para limpiar con 1 toque",
                             icono = Icons.Filled.AutoFixHigh,
-                            colorIcono = ColorSalud,
+                            colorIcono = ColorAcento,
                             alPulsar = {
                                 mostrarModalAuditoria = false
                                 vm.ir(Pantalla.Duplicados)

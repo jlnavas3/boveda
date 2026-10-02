@@ -87,7 +87,7 @@ import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorTarjetaAjustes
 import com.jlnavas3.bovedalocal.ui.pantallas.lista.DialogoRenombrarSeleccion
 import com.jlnavas3.bovedalocal.ui.pantallas.lista.EstadoVacioLista
 import com.jlnavas3.bovedalocal.ui.pantallas.lista.FilaEntrada
-import com.jlnavas3.bovedalocal.ui.pantallas.lista.MenuLateral
+import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.Ambar
 import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
 import com.jlnavas3.bovedalocal.ui.theme.ColorSobreAcento
@@ -527,7 +527,7 @@ fun PantallaLista(vm: VaultViewModel, estado: EstadoBoveda) {
                             vm.bloquear()
                         },
                         containerColor = ColorTarjetaAjustes,
-                        contentColor = Peligro,
+                        contentColor = ColorAcento,
                         shape = formaFab,
                         modifier = Modifier.then(
                             if (GrosorBorde > 0.dp && EstiloBorde != "ninguno") {
@@ -545,7 +545,7 @@ fun PantallaLista(vm: VaultViewModel, estado: EstadoBoveda) {
                     // FAB inferior: Nueva entrada (+)
                     FloatingActionButton(
                         onClick = { haptica.toque(); vm.ir(Pantalla.Editar(null)) },
-                        containerColor = Ambar,
+                        containerColor = ColorAcento,
                         contentColor = ColorSobreAcento,
                         shape = formaFab,
                         modifier = Modifier.then(

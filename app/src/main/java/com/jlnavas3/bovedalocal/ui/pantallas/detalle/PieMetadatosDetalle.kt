@@ -28,7 +28,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.jlnavas3.bovedalocal.ui.theme.Ambar
-import com.jlnavas3.bovedalocal.ui.theme.ColorDatosUsuario
+import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.CurvaturaEsquinas
 import com.jlnavas3.bovedalocal.ui.theme.colorLegibleParaTema
 import com.jlnavas3.bovedalocal.ui.theme.fondoBadgeParaTema
@@ -74,7 +74,7 @@ fun PieMetadatosDetalle(
                         titulo = "Creada:",
                         fecha = formatoFecha.format(Date(creadaEn)),
                         icono = Icons.Filled.CalendarToday,
-                        colorBase = ColorDatosUsuario
+                        colorBase = ColorAcento
                     )
                 }
                 if (mostrarEditada) {
@@ -82,7 +82,7 @@ fun PieMetadatosDetalle(
                         titulo = "Editada:",
                         fecha = formatoFecha.format(Date(modificadaEn)),
                         icono = Icons.Filled.Edit,
-                        colorBase = Ambar
+                        colorBase = ColorAcento
                     )
                 }
             }
@@ -97,7 +97,7 @@ fun PieMetadatosDetalle(
                     titulo = "Último uso:",
                     fecha = formatoFecha.format(Date(ultimoUsoEn)),
                     icono = Icons.Filled.History,
-                    colorBase = Color(0xFF64B5F6)
+                    colorBase = ColorAcento
                 )
             }
         }

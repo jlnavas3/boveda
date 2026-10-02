@@ -49,6 +49,7 @@ import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorTarjetaAjustes
 import com.jlnavas3.bovedalocal.ui.preview.BovedaPreview
 import com.jlnavas3.bovedalocal.ui.preview.PreviewTemaBoveda
 import com.jlnavas3.bovedalocal.ui.theme.Ambar
+import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
 import com.jlnavas3.bovedalocal.ui.theme.ColorTitulos
 import com.jlnavas3.bovedalocal.ui.theme.Peligro
@@ -233,8 +234,8 @@ fun BarraSuperiorLista(
                         SeparadorOpcionMenu()
                         ElementoMenuCompacto(
                             texto = "Importar...",
-                            icono = androidx.compose.material.icons.Icons.Filled.FileUpload,
-                            colorIcono = Ambar,
+                            icono = androidx.compose.material.icons.Icons.Filled.FileDownload,
+                            colorIcono = ColorAcento,
                             iconoFinal = androidx.compose.material.icons.Icons.AutoMirrored.Filled.ArrowForward,
                             onClick = {
                                 submenuActivo = SubmenuLista.IMPORTAR
@@ -243,8 +244,8 @@ fun BarraSuperiorLista(
                         SeparadorOpcionMenu()
                         ElementoMenuCompacto(
                             texto = "Exportar...",
-                            icono = androidx.compose.material.icons.Icons.Filled.FileDownload,
-                            colorIcono = Ambar,
+                            icono = androidx.compose.material.icons.Icons.Filled.FileUpload,
+                            colorIcono = ColorAcento,
                             iconoFinal = androidx.compose.material.icons.Icons.AutoMirrored.Filled.ArrowForward,
                             onClick = {
                                 submenuActivo = SubmenuLista.EXPORTAR
@@ -272,7 +273,7 @@ fun BarraSuperiorLista(
                         SeparadorOpcionMenu()
                         ElementoMenuCompacto(
                             texto = "Copia de seguridad (.bvda)",
-                            icono = Icons.Filled.FileUpload,
+                            icono = Icons.Filled.FileDownload,
                             onClick = {
                                 menuOpcionesDesplegado = false
                                 alIrCopiaSeguridad()
@@ -281,7 +282,7 @@ fun BarraSuperiorLista(
                         SeparadorOpcionMenu()
                         ElementoMenuCompacto(
                             texto = "Contraseñas de Google (.csv)",
-                            icono = Icons.Filled.FileUpload,
+                            icono = Icons.Filled.FileDownload,
                             onClick = {
                                 menuOpcionesDesplegado = false
                                 alIrCsvGoogle()
@@ -314,7 +315,7 @@ fun BarraSuperiorLista(
                         SeparadorOpcionMenu()
                         ElementoMenuCompacto(
                             texto = "Exportación selectiva (.bvda)",
-                            icono = Icons.Filled.FileDownload,
+                            icono = Icons.Filled.FileUpload,
                             onClick = {
                                 menuOpcionesDesplegado = false
                                 alIrExportarSelectivo()

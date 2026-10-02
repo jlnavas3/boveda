@@ -223,7 +223,7 @@ fun SeparadorFilaSimple(modifier: Modifier = Modifier, paddingInicio: Dp = 16.dp
 
 /**
  * Switch estándar para toda la app con diseño nativo Honor MagicOS / Samsung One UI.
- * Sin bordes duros, con track redondeado y colores sólidos.
+ * Sin bordes duros, con track redondeado y colores calibrados con la paleta de capas sobria.
  */
 @Composable
 fun SwitchBoveda(
@@ -231,14 +231,18 @@ fun SwitchBoveda(
     onCheckedChange: ((Boolean) -> Unit)?,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
-    colorActivo: Color = Ambar
+    colorActivo: Color = com.jlnavas3.bovedalocal.ui.theme.ColorAcento,
+    colorInactivoTrack: Color = ColorCampoAjustes,
+    colorInactivoThumb: Color = ColorAjusteGris
 ) {
-    SwitchBoveda(
+    com.jlnavas3.bovedalocal.ui.componentes.SwitchBoveda(
         checked = checked,
         onCheckedChange = onCheckedChange,
         modifier = modifier,
         enabled = enabled,
-        colorActivo = colorActivo
+        colorActivo = colorActivo,
+        colorInactivoTrack = colorInactivoTrack,
+        colorInactivoThumb = colorInactivoThumb
     )
 }
 

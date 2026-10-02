@@ -8,6 +8,8 @@ import com.jlnavas3.bovedalocal.ui.theme.aHex
 
 /** Estado reactivo global para previsualizar y ajustar la paleta sobria en tiempo real */
 var paletaSobriaEnVivo by mutableStateOf<PaletaSobria?>(null)
+var paletaSobriaGuardadaOscura by mutableStateOf<PaletaSobria?>(null)
+var paletaSobriaGuardadaClara by mutableStateOf<PaletaSobria?>(null)
 
 /**
  * Representa una configuración armónica de colores basada en la filosofía 90/10:
@@ -157,3 +159,82 @@ fun restringirLuminancia(
         if (esSuperficie) valor.coerceIn(0.80f, 1.00f) else valor.coerceIn(0.05f, 0.45f)
     }
 }
+
+object GestorPaletaSobria {
+    private const val PREFS_NAME = "boveda_paleta_sobria"
+
+    fun guardar(context: android.content.Context, paletaOscura: PaletaSobria?, paletaClara: PaletaSobria?) {
+        val prefs = context.getSharedPreferences(PREFS_NAME, android.content.Context.MODE_PRIVATE)
+        val ed = prefs.edit()
+        if (paletaOscura != null) {
+            paletaSobriaGuardadaOscura = paletaOscura
+            ed.putString("oscuro_fondo", paletaOscura.fondo.aHexConAlfa())
+            ed.putString("oscuro_tarjeta", paletaOscura.tarjeta.aHexConAlfa())
+            ed.putString("oscuro_campo", paletaOscura.campo.aHexConAlfa())
+            ed.putString("oscuro_borde", paletaOscura.borde.aHexConAlfa())
+            ed.putString("oscuro_texto_principal", paletaOscura.textoPrincipal.aHexConAlfa())
+            ed.putString("oscuro_texto_secundario", paletaOscura.textoSecundario.aHexConAlfa())
+            ed.putString("oscuro_acento", paletaOscura.acento.aHexConAlfa())
+            ed.putBoolean("tiene_guardado_oscuro", true)
+        }
+        if (paletaClara != null) {
+            paletaSobriaGuardadaClara = paletaClara
+            ed.putString("claro_fondo", paletaClara.fondo.aHexConAlfa())
+            ed.putString("claro_tarjeta", paletaClara.tarjeta.aHexConAlfa())
+            ed.putString("claro_campo", paletaClara.campo.aHexConAlfa())
+            ed.putString("claro_borde", paletaClara.borde.aHexConAlfa())
+            ed.putString("claro_texto_principal", paletaClara.textoPrincipal.aHexConAlfa())
+            ed.putString("claro_texto_secundario", paletaClara.textoSecundario.aHexConAlfa())
+            ed.putString("claro_acento", paletaClara.acento.aHexConAlfa())
+            ed.putBoolean("tiene_guardado_claro", true)
+        }
+        ed.apply()
+    }
+
+    fun cargar(context: android.content.Context): Pair<PaletaSobria?, PaletaSobria?> {
+        val prefs = context.getSharedPreferences(PREFS_NAME, android.content.Context.MODE_PRIVATE)
+        val oscura = if (prefs.getBoolean("tiene_guardado_oscuro", false)) {
+            PaletaSobria(
+                esOscuro = true,
+                fondo = parsearColorHex(prefs.getString("oscuro_fondo", null), PaletaSobriaDefaults.OSCURA.fondo),
+                tarjeta = parsearColorHex(prefs.getString("oscuro_tarjeta", null), PaletaSobriaDefaults.OSCURA.tarjeta),
+                campo = parsearColorHex(prefs.getString("oscuro_campo", null), PaletaSobriaDefaults.OSCURA.campo),
+                borde = parsearColorHex(prefs.getString("oscuro_borde", null), PaletaSobriaDefaults.OSCURA.borde),
+                textoPrincipal = parsearColorHex(prefs.getString("oscuro_texto_principal", null), PaletaSobriaDefaults.OSCURA.textoPrincipal),
+                textoSecundario = parsearColorHex(prefs.getString("oscuro_texto_secundario", null), PaletaSobriaDefaults.OSCURA.textoSecundario),
+                acento = parsearColorHex(prefs.getString("oscuro_acento", null), PaletaSobriaDefaults.OSCURA.acento)
+            )
+        } else null
+
+        val clara = if (prefs.getBoolean("tiene_guardado_claro", false)) {
+            PaletaSobria(
+                esOscuro = false,
+                fondo = parsearColorHex(prefs.getString("claro_fondo", null), PaletaSobriaDefaults.CLARA.fondo),
+                tarjeta = parsearColorHex(prefs.getString("claro_tarjeta", null), PaletaSobriaDefaults.CLARA.tarjeta),
+                campo = parsearColorHex(prefs.getString("claro_campo", null), PaletaSobriaDefaults.CLARA.campo),
+                borde = parsearColorHex(prefs.getString("claro_borde", null), PaletaSobriaDefaults.CLARA.borde),
+                textoPrincipal = parsearColorHex(prefs.getString("claro_texto_principal", null), PaletaSobriaDefaults.CLARA.textoPrincipal),
+                textoSecundario = parsearColorHex(prefs.getString("claro_texto_secundario", null), PaletaSobriaDefaults.CLARA.textoSecundario),
+                acento = parsearColorHex(prefs.getString("claro_acento", null), PaletaSobriaDefaults.CLARA.acento)
+            )
+        } else null
+
+        return oscura to clara
+    }
+
+    private fun parsearColorHex(hex: String?, fallback: Color): Color {
+        if (hex.isNullOrBlank()) return fallback
+        return try {
+            val limpio = hex.removePrefix("#").trim()
+            val uLongVal = limpio.toLong(16)
+            if (limpio.length <= 6) {
+                Color(uLongVal or 0xFF000000)
+            } else {
+                Color(uLongVal)
+            }
+        } catch (_: Exception) {
+            fallback
+        }
+    }
+}
+

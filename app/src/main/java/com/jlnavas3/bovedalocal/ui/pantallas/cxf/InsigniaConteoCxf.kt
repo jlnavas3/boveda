@@ -1,5 +1,6 @@
 package com.jlnavas3.bovedalocal.ui.pantallas.cxf
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
@@ -16,9 +17,11 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorCampoAjustes
+import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorSeparadorAjustes
+import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.FormaPequena
-import com.jlnavas3.bovedalocal.ui.theme.colorLegibleParaTema
-import com.jlnavas3.bovedalocal.ui.theme.fondoBadgeParaTema
+import com.jlnavas3.bovedalocal.ui.theme.TextoPrincipal
 
 /**
  * Insignia visual modular para representar el conteo y tipo de credencial
@@ -28,28 +31,29 @@ import com.jlnavas3.bovedalocal.ui.theme.fondoBadgeParaTema
 fun InsigniaConteoCxf(
     icono: ImageVector,
     texto: String,
-    color: Color,
+    color: Color = ColorAcento,
     modifier: Modifier = Modifier
 ) {
     Surface(
         shape = FormaPequena,
-        color = fondoBadgeParaTema(color),
+        color = ColorCampoAjustes,
+        border = BorderStroke(1.dp, ColorSeparadorAjustes),
         modifier = modifier
     ) {
         Row(
             modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(4.dp)
+            horizontalArrangement = Arrangement.spacedBy(5.dp)
         ) {
             Icon(
                 imageVector = icono,
                 contentDescription = null,
-                tint = colorLegibleParaTema(color),
+                tint = ColorAcento,
                 modifier = Modifier.size(14.dp)
             )
             Text(
                 text = texto,
-                color = colorLegibleParaTema(color),
+                color = TextoPrincipal,
                 style = MaterialTheme.typography.labelSmall.copy(
                     fontWeight = FontWeight.SemiBold,
                     fontSize = 11.sp

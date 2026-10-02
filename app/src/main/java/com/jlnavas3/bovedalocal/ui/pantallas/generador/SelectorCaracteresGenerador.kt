@@ -44,6 +44,7 @@ import com.jlnavas3.bovedalocal.ui.componentes.FilaOpcionModal
 import com.jlnavas3.bovedalocal.ui.componentes.ModalInferiorBoveda
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.SwitchBoveda
 import com.jlnavas3.bovedalocal.ui.theme.Ambar
+import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
 import com.jlnavas3.bovedalocal.ui.theme.ColorGenerador
 import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
@@ -166,7 +167,7 @@ fun SelectorCaracteresGenerador(
                 descripcion = "Selecciona qué conjuntos incluir en la clave",
                 icono = Icons.Filled.Tune,
                 colorIcono = Color.White,
-                fondoIcono = ColorGenerador,
+                fondoIcono = ColorAcento,
                 mostrarBotonCerrar = false
             ) {
                 Column(verticalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(4.dp)) {
@@ -176,7 +177,7 @@ fun SelectorCaracteresGenerador(
                             titulo = nombre,
                             descripcion = desc,
                             seleccionado = activo,
-                            colorAcento = ColorGenerador,
+                            colorAcento = ColorAcento,
                             alPulsar = { alTocar() },
                             controlFinal = {
                                 SwitchBoveda(
@@ -199,7 +200,7 @@ fun SelectorCaracteresGenerador(
                     ) {
                         Text(
                             text = "Listo",
-                            color = ColorGenerador,
+                            color = ColorAcento,
                             style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold)
                         )
                     }

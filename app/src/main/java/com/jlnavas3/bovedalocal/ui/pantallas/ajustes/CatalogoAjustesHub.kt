@@ -8,7 +8,7 @@ import androidx.compose.material.icons.filled.Badge
 import androidx.compose.material.icons.filled.CameraAlt
 import androidx.compose.material.icons.filled.DeleteForever
 import androidx.compose.material.icons.filled.Description
-import androidx.compose.material.icons.filled.FileUpload
+import androidx.compose.material.icons.filled.FileDownload
 import androidx.compose.material.icons.filled.Fingerprint
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Info
@@ -169,7 +169,7 @@ fun crearCatalogoAjustesHub(
             grupo = "Lista de cuentas",
             palabrasClave = "agrupar agrupamiento lista densidad compacta comoda cuentas sitio dominio carpetas orden",
             valorTexto = if (ajustes.agruparPorSitio) "Agrupada" else "Individual",
-            alPulsar = { vm.ir(Pantalla.OrganizacionLista("03-LST-DES")) }
+            alPulsar = { vm.ir(Pantalla.OrganizacionLista(null)) }
         ),
         ElementoMenuAjustes(
             titulo = "Índice A-Z",
@@ -269,7 +269,7 @@ fun crearCatalogoAjustesHub(
         ElementoMenuAjustes(
             titulo = "Importar de Google",
             subtitulo = "Importar archivo CSV de Google Passwords",
-            icono = Icons.Filled.FileUpload,
+            icono = Icons.Filled.FileDownload,
             colorIcono = Color(0xFF0288D1),
             idEtiqueta = "05-COP-CSV",
             grupo = "Copias y datos",

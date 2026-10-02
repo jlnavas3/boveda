@@ -65,8 +65,11 @@ import com.jlnavas3.bovedalocal.ui.pantallas.duplicados.FiltroDuplicados
 import com.jlnavas3.bovedalocal.ui.pantallas.duplicados.IlustracionSinDuplicados
 import com.jlnavas3.bovedalocal.ui.pantallas.duplicados.TarjetaGrupoDuplicado
 import com.jlnavas3.bovedalocal.ui.pantallas.lista.BarraBusquedaAnimada
+import androidx.compose.foundation.border
 import com.jlnavas3.bovedalocal.ui.theme.Ambar
+import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
+import com.jlnavas3.bovedalocal.ui.theme.ColorSobreAcento
 import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
 import com.jlnavas3.bovedalocal.ui.theme.CurvaturaEsquinas
 import com.jlnavas3.bovedalocal.ui.theme.EstiloBorde
@@ -167,7 +170,7 @@ fun PantallaDuplicados(
                         },
                         icono = Icons.Filled.AutoFixHigh,
                         descripcion = "Limpieza rápida masiva",
-                        tint = Menta
+                        tint = ColorAcento
                     )
                 }
                 var menuAbiertoDup by remember { mutableStateOf(false) }
@@ -395,7 +398,7 @@ fun PantallaDuplicados(
                                 modifier = Modifier
                                     .size(56.dp)
                                     .clip(formaFab)
-                                    .background(Menta)
+                                    .background(ColorAcento)
                                     .then(
                                         if (GrosorBorde > 0.dp && EstiloBorde != "ninguno") {
                                             Modifier.border(GrosorBorde, ColorBordeActual, formaFab)
@@ -410,7 +413,7 @@ fun PantallaDuplicados(
                                 Icon(
                                     imageVector = Icons.Filled.AutoFixHigh,
                                     contentDescription = "Limpiar $totalSobrantesIdenticas copias idénticas",
-                                    tint = colorContraste(Menta),
+                                    tint = ColorSobreAcento,
                                     modifier = Modifier.size(26.dp)
                                 )
                             }

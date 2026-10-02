@@ -20,7 +20,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Sort
 import androidx.compose.material.icons.filled.Backup
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.FileDownload
+import androidx.compose.material.icons.filled.FileUpload
 import androidx.compose.material.icons.filled.Fingerprint
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Search
@@ -152,7 +152,7 @@ fun BarraSuperiorPasskeys(
                         SeparadorOpcionMenu()
                         com.jlnavas3.bovedalocal.ui.componentes.ElementoMenuCompacto(
                             texto = "Exportación selectiva",
-                            icono = Icons.Filled.FileDownload,
+                            icono = Icons.Filled.FileUpload,
                             colorIcono = ColorPasskeys,
                             onClick = alIrExportacionSelectiva
                         )

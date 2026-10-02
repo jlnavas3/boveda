@@ -41,6 +41,8 @@ import androidx.compose.ui.unit.sp
 import com.jlnavas3.bovedalocal.data.Entrada
 import com.jlnavas3.bovedalocal.data.TipoEntrada
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjusteGris
+import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorCampoAjustes
+import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorSeparadorAjustes
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorTextoAjustes
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.ColorExportacion
@@ -165,13 +167,14 @@ fun FilaPapeleraNativa(
                     modifier = Modifier
                         .size(38.dp)
                         .clip(FormaPequena)
-                        .background(fondoBadgeParaTema(colorIcono)),
+                        .background(ColorCampoAjustes)
+                        .border(0.8.dp, ColorSeparadorAjustes, FormaPequena),
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
                         imageVector = icono,
                         contentDescription = null,
-                        tint = colorLegibleParaTema(colorIcono),
+                        tint = ColorAcento,
                         modifier = Modifier.size(20.dp)
                     )
                 }

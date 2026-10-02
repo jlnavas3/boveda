@@ -2,6 +2,7 @@ package com.jlnavas3.bovedalocal.ui.pantallas.detalle
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -30,6 +31,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorCampoAjustes
+import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorSeparadorAjustes
+import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.ColorDatosApp
 import com.jlnavas3.bovedalocal.ui.theme.ColorDatosWeb
 import com.jlnavas3.bovedalocal.ui.theme.FormaPequena
@@ -116,13 +120,14 @@ fun TarjetaSitiosYAppsDetalle(
                             modifier = Modifier
                                 .size(38.dp)
                                 .clip(FormaPequena)
-                                .background(fondoBadgeParaTema(colorDato)),
+                                .background(ColorCampoAjustes)
+                                .border(1.dp, ColorSeparadorAjustes, FormaPequena),
                             contentAlignment = Alignment.Center
                         ) {
                             Icon(
                                 imageVector = if (esApp) Icons.Filled.Android else Icons.Filled.Language,
                                 contentDescription = null,
-                                tint = colorLegibleParaTema(colorDato),
+                                tint = ColorAcento,
                                 modifier = Modifier.size(20.dp)
                             )
                         }
@@ -146,7 +151,7 @@ fun TarjetaSitiosYAppsDetalle(
                         Text(
                             text = subtitulo,
                             style = MaterialTheme.typography.labelSmall.copy(fontSize = 11.sp),
-                            color = if (esApp && estaInstalada) Menta else TextoSecundario,
+                            color = TextoSecundario,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis
                         )

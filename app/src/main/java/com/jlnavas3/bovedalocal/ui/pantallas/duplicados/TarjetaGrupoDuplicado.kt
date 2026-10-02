@@ -43,6 +43,8 @@ import com.jlnavas3.bovedalocal.data.TipoEntrada
 import com.jlnavas3.bovedalocal.ui.componentes.AccionDeslizamiento
 import com.jlnavas3.bovedalocal.ui.componentes.ContenedorDeslizamientoBoveda
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjusteGris
+import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorCampoAjustes
+import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorSeparadorAjustes
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorTarjetaAjustes
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorTextoAjustes
 import com.jlnavas3.bovedalocal.ui.pantallas.lista.ComponenteGrupoLista
@@ -240,13 +242,14 @@ fun FilaEntradaDuplicada(
                         modifier = Modifier
                             .size(34.dp)
                             .clip(FormaPequena)
-                            .background(fondoBadgeParaTema(colorTipo)),
+                            .background(ColorCampoAjustes)
+                            .border(0.8.dp, ColorSeparadorAjustes, FormaPequena),
                         contentAlignment = Alignment.Center
                     ) {
                         Icon(
                             imageVector = iconoTipo,
                             contentDescription = null,
-                            tint = colorLegible,
+                            tint = ColorAcento,
                             modifier = Modifier.size(18.dp)
                         )
                     }
@@ -277,8 +280,9 @@ fun FilaEntradaDuplicada(
                             Box(
                                 modifier = Modifier
                                     .clip(FormaPequena)
-                                    .background(fondoBadgeParaTema(Menta))
-                                    .padding(horizontal = 5.dp, vertical = 1.dp)
+                                    .background(ColorCampoAjustes)
+                                    .border(0.8.dp, ColorSeparadorAjustes, FormaPequena)
+                                    .padding(horizontal = 6.dp, vertical = 1.5.dp)
                             ) {
                                 Text(
                                     "Sugerida",
@@ -286,7 +290,7 @@ fun FilaEntradaDuplicada(
                                         fontWeight = FontWeight.SemiBold,
                                         fontSize = 10.sp
                                     ),
-                                    color = colorLegibleParaTema(Menta)
+                                    color = ColorAcento
                                 )
                             }
                         }

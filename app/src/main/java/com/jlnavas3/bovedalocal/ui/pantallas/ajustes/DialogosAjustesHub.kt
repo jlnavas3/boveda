@@ -102,8 +102,8 @@ fun DialogoProveedorPasskeys(
         alCerrar = alCerrar,
         titulo = "Proveedor de credenciales",
         icono = Icons.Filled.Key,
-        colorIcono = colorLegibleParaTema(ColorPasskeys),
-        fondoIcono = fondoBadgeParaTema(ColorPasskeys),
+        colorIcono = ColorAcento,
+        fondoIcono = ColorAcento.copy(alpha = 0.15f),
         botonConfirmar = {
             TextButton(onClick = {
                 alCerrar()
@@ -111,7 +111,7 @@ fun DialogoProveedorPasskeys(
                     vm.avisar("Ajustes › Contraseñas y cuentas › Contraseñas y llaves de acceso")
                 }
             }) {
-                Text("Configurar proveedor", color = ColorPasskeys, fontWeight = FontWeight.Bold)
+                Text("Configurar proveedor", color = ColorAcento, fontWeight = FontWeight.Bold)
             }
         },
         botonDescartar = {

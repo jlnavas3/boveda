@@ -22,12 +22,12 @@ object AjustesDefaults {
     object Tema {
         const val NOMBRE_PERSONALIZADO = ""
         const val ICONO_LAUNCHER = "ambar"
-        const val COLOR_ACENTO = "ambar"
+        const val COLOR_ACENTO = ""
         const val COLOR_ICONOS_INTERNOS = ""
         const val COLOR_TITULOS = ""
         const val COLOR_TARJETAS = ""
         const val TEMA_APP = "sistema"
-        const val COLOR_DINAMICO_SISTEMA = true
+        const val COLOR_DINAMICO_SISTEMA = false
     }
 
     // 3. Colores Semánticos / Funcionales de Secciones

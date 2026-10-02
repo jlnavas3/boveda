@@ -12,14 +12,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorCampoAjustes
+import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorSeparadorAjustes
+import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorTarjetaAjustes
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
-import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
 import com.jlnavas3.bovedalocal.ui.theme.CurvaturaEsquinas
-import com.jlnavas3.bovedalocal.ui.theme.GrosorBorde
-import com.jlnavas3.bovedalocal.ui.theme.Menta
-import com.jlnavas3.bovedalocal.ui.theme.Peligro
-import com.jlnavas3.bovedalocal.ui.theme.colorLegibleParaTema
-import com.jlnavas3.bovedalocal.ui.theme.fondoBadgeParaTema
+import com.jlnavas3.bovedalocal.ui.theme.TextoPrincipal
+import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
 
 @Composable
 fun SelectorPestanasSalud(
@@ -50,7 +49,18 @@ fun SelectorPestanasSalud(
     if (pestanasVisibles.isEmpty()) return
 
     val forma = RoundedCornerShape(CurvaturaEsquinas)
-    val bordeChip = if (GrosorBorde > 0.dp) BorderStroke(GrosorBorde, ColorBordeActual.copy(alpha = 0.5f)) else null
+    val coloresChip = FilterChipDefaults.filterChipColors(
+        containerColor = ColorTarjetaAjustes,
+        labelColor = TextoSecundario,
+        selectedContainerColor = ColorCampoAjustes,
+        selectedLabelColor = ColorAcento
+    )
+    val bordeChip = FilterChipDefaults.filterChipBorder(
+        enabled = true,
+        selected = false,
+        borderColor = ColorSeparadorAjustes,
+        selectedBorderColor = ColorAcento
+    )
     val buscando = textoBusqueda.isNotBlank()
 
     LazyRow(
@@ -71,10 +81,7 @@ fun SelectorPestanasSalud(
                         label = { Text(textoLabel) },
                         shape = forma,
                         border = bordeChip,
-                        colors = FilterChipDefaults.filterChipColors(
-                            selectedContainerColor = fondoBadgeParaTema(Peligro),
-                            selectedLabelColor = colorLegibleParaTema(Peligro)
-                        )
+                        colors = coloresChip
                     )
                 }
                 PestanaSalud.COMUNES -> {
@@ -85,10 +92,7 @@ fun SelectorPestanasSalud(
                         label = { Text(textoLabel) },
                         shape = forma,
                         border = bordeChip,
-                        colors = FilterChipDefaults.filterChipColors(
-                            selectedContainerColor = fondoBadgeParaTema(Peligro),
-                            selectedLabelColor = colorLegibleParaTema(Peligro)
-                        )
+                        colors = coloresChip
                     )
                 }
                 PestanaSalud.DEBILES -> {
@@ -99,10 +103,7 @@ fun SelectorPestanasSalud(
                         label = { Text(textoLabel) },
                         shape = forma,
                         border = bordeChip,
-                        colors = FilterChipDefaults.filterChipColors(
-                            selectedContainerColor = fondoBadgeParaTema(Peligro),
-                            selectedLabelColor = colorLegibleParaTema(Peligro)
-                        )
+                        colors = coloresChip
                     )
                 }
                 PestanaSalud.ANTIGUAS -> {
@@ -113,10 +114,7 @@ fun SelectorPestanasSalud(
                         label = { Text(textoLabel) },
                         shape = forma,
                         border = bordeChip,
-                        colors = FilterChipDefaults.filterChipColors(
-                            selectedContainerColor = fondoBadgeParaTema(ColorAcento),
-                            selectedLabelColor = colorLegibleParaTema(ColorAcento)
-                        )
+                        colors = coloresChip
                     )
                 }
             }

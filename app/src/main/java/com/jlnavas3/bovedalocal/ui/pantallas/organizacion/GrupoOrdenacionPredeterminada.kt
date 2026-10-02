@@ -11,6 +11,8 @@ import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteGrupo
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteRadio
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteSeparador
 
+import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
+
 @Composable
 fun GrupoOrdenacionPredeterminada(
     mostrarId: Boolean,
@@ -22,7 +24,7 @@ fun GrupoOrdenacionPredeterminada(
     ComponenteGrupo(
         etiqueta = "Orden predeterminado",
         icono = Icons.AutoMirrored.Filled.Sort,
-        colorIcono = Color(0xFF00ACC1),
+        colorIcono = ColorAcento,
         alRestablecer = alRestablecerGrupo,
         idGrupo = "03-LST-DES-G03",
         mostrarId = mostrarId,
