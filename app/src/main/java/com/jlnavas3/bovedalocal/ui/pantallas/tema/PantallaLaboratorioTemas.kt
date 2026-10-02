@@ -109,24 +109,52 @@ fun PantallaLaboratorioTemas(
     var lumTextoSecundario by remember(modoOscuro) { mutableFloatStateOf(if (modoOscuro) 0.62f else 0.40f) }
     var colorAcentoActual by remember(modoOscuro) { mutableStateOf(defaults.acento) }
 
+    // Control de Tono Unificado vs Individual
+    var unificarTonos by remember { mutableStateOf(true) }
+    var tonoGlobal by remember { mutableFloatStateOf(215f) } // 215° = Pizarra / Slate
+    var saturacionTinte by remember { mutableFloatStateOf(0.08f) } // 8% tinte ergonómico
+
+    var tonoFondo by remember { mutableFloatStateOf(215f) }
+    var tonoTarjeta by remember { mutableFloatStateOf(215f) }
+    var tonoCampo by remember { mutableFloatStateOf(215f) }
+    var tonoBorde by remember { mutableFloatStateOf(215f) }
+    var tonoTextoPrincipal by remember { mutableFloatStateOf(215f) }
+    var tonoTextoSecundario by remember { mutableFloatStateOf(215f) }
+
+    val tonoEfectivoFondo = if (unificarTonos) tonoGlobal else tonoFondo
+    val tonoEfectivoTarjeta = if (unificarTonos) tonoGlobal else tonoTarjeta
+    val tonoEfectivoCampo = if (unificarTonos) tonoGlobal else tonoCampo
+    val tonoEfectivoBorde = if (unificarTonos) tonoGlobal else tonoBorde
+    val tonoEfectivoTextoPrincipal = if (unificarTonos) tonoGlobal else tonoTextoPrincipal
+    val tonoEfectivoTextoSecundario = if (unificarTonos) tonoGlobal else tonoTextoSecundario
+
+    fun calcularColorCapa(tono: Float, lum: Float, esSuperficie: Boolean): Color {
+        val lumRestringida = restringirLuminancia(lum, modoOscuro, esSuperficie)
+        return if (saturacionTinte <= 0.001f) {
+            crearGris(lumRestringida)
+        } else {
+            Color.hsv(tono, saturacionTinte.coerceIn(0f, 1f), lumRestringida)
+        }
+    }
+
     // Colores calculados reactivamente
-    val colorFondo = remember(lumFondo, modoOscuro) {
-        crearGris(restringirLuminancia(lumFondo, modoOscuro, esSuperficie = true))
+    val colorFondo = remember(lumFondo, tonoEfectivoFondo, saturacionTinte, modoOscuro) {
+        calcularColorCapa(tonoEfectivoFondo, lumFondo, esSuperficie = true)
     }
-    val colorTarjeta = remember(lumTarjeta, modoOscuro) {
-        crearGris(restringirLuminancia(lumTarjeta, modoOscuro, esSuperficie = true))
+    val colorTarjeta = remember(lumTarjeta, tonoEfectivoTarjeta, saturacionTinte, modoOscuro) {
+        calcularColorCapa(tonoEfectivoTarjeta, lumTarjeta, esSuperficie = true)
     }
-    val colorCampo = remember(lumCampo, modoOscuro) {
-        crearGris(restringirLuminancia(lumCampo, modoOscuro, esSuperficie = true))
+    val colorCampo = remember(lumCampo, tonoEfectivoCampo, saturacionTinte, modoOscuro) {
+        calcularColorCapa(tonoEfectivoCampo, lumCampo, esSuperficie = true)
     }
-    val colorBorde = remember(lumBorde, modoOscuro) {
-        crearGris(restringirLuminancia(lumBorde, modoOscuro, esSuperficie = true))
+    val colorBorde = remember(lumBorde, tonoEfectivoBorde, saturacionTinte, modoOscuro) {
+        calcularColorCapa(tonoEfectivoBorde, lumBorde, esSuperficie = true)
     }
-    val colorTextoPrincipal = remember(lumTextoPrincipal, modoOscuro) {
-        crearGris(restringirLuminancia(lumTextoPrincipal, modoOscuro, esSuperficie = false))
+    val colorTextoPrincipal = remember(lumTextoPrincipal, tonoEfectivoTextoPrincipal, saturacionTinte, modoOscuro) {
+        calcularColorCapa(tonoEfectivoTextoPrincipal, lumTextoPrincipal, esSuperficie = false)
     }
-    val colorTextoSecundario = remember(lumTextoSecundario, modoOscuro) {
-        crearGris(restringirLuminancia(lumTextoSecundario, modoOscuro, esSuperficie = false))
+    val colorTextoSecundario = remember(lumTextoSecundario, tonoEfectivoTextoSecundario, saturacionTinte, modoOscuro) {
+        calcularColorCapa(tonoEfectivoTextoSecundario, lumTextoSecundario, esSuperficie = false)
     }
 
     val paletaActual = remember(
@@ -213,6 +241,15 @@ fun PantallaLaboratorioTemas(
         lumBorde = if (modoOscuro) 0.22f else 0.85f
         lumTextoPrincipal = if (modoOscuro) 0.95f else 0.08f
         lumTextoSecundario = if (modoOscuro) 0.62f else 0.40f
+        unificarTonos = true
+        tonoGlobal = 215f
+        saturacionTinte = 0.08f
+        tonoFondo = 215f
+        tonoTarjeta = 215f
+        tonoCampo = 215f
+        tonoBorde = 215f
+        tonoTextoPrincipal = 215f
+        tonoTextoSecundario = 215f
         colorAcentoActual = d.acento
         esPersonalizadoActivo = false
         mostrarAjustePersonalizado = false
@@ -340,62 +377,166 @@ fun PantallaLaboratorioTemas(
 
             Spacer(Modifier.height(18.dp))
 
-            // SECCIÓN 1: Escala de Grises (90% de la interfaz)
+            // SECCIÓN 1: Escala de Capas y Tonos (90% de la interfaz)
             ComponenteGrupo(
-                etiqueta = "Escala de Grises (Capas de Elevación)",
+                etiqueta = "Escala de Capas y Tonos (90% Interfaz)",
                 icono = Icons.Filled.Palette
             ) {
+                // Control Maestro de Tono y Switch de Unificación
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 12.dp)
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(
+                                text = "Aplicar el mismo tono a todos",
+                                style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold),
+                                color = colorTextoPrincipal
+                            )
+                            Spacer(Modifier.height(2.dp))
+                            Text(
+                                text = if (unificarTonos) "Todas las capas comparten el mismo tono" else "Tono independiente por cada capa",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = colorTextoSecundario
+                            )
+                        }
+                        SwitchBoveda(
+                            checked = unificarTonos,
+                            colorActivo = colorAcentoActual,
+                            onCheckedChange = {
+                                haptica.tic()
+                                unificarTonos = it
+                            }
+                        )
+                    }
+
+                    Spacer(Modifier.height(10.dp))
+
+                    if (unificarTonos) {
+                        // Slider de Tono Unificado
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .size(16.dp)
+                                    .clip(CircleShape)
+                                    .background(Color.hsv(tonoGlobal, 0.8f, 0.9f))
+                                    .border(1.dp, colorBorde, CircleShape)
+                            )
+                            Spacer(Modifier.width(8.dp))
+                            Text(
+                                text = "Tono cromático unificado: ${tonoGlobal.toInt()}°",
+                                style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Medium),
+                                color = colorTextoPrincipal,
+                                modifier = Modifier.weight(1f)
+                            )
+                        }
+                        SliderBoveda(
+                            value = tonoGlobal,
+                            onValueChange = {
+                                tonoGlobal = it
+                                if (unificarTonos) {
+                                    val (_, s, v) = colorAhsv(colorAcentoActual)
+                                    colorAcentoActual = Color.hsv(it, if (s < 0.05f) 0.75f else s, v, colorAcentoActual.alpha)
+                                    huePersonalizado = it
+                                }
+                            },
+                            valueRange = 0f..360f
+                        )
+                        Spacer(Modifier.height(8.dp))
+                    }
+
+                    // Slider de Saturación / Intensidad de tinte en grises
+                    Text(
+                        text = "Intensidad de tinte en grises: ${(saturacionTinte * 100).toInt()}% ${if (saturacionTinte <= 0.001f) "(Gris puro)" else if (saturacionTinte <= 0.12f) "(Matiz Apple)" else ""}",
+                        style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Medium),
+                        color = colorTextoSecundario
+                    )
+                    SliderBoveda(
+                        value = saturacionTinte,
+                        onValueChange = { saturacionTinte = it },
+                        valueRange = 0f..0.35f
+                    )
+                }
+
+                SeparadorFilaAjuste()
+
                 // Capa 0: Fondo de Pantalla
-                ControlLuminanciaFila(
+                ControlCapaFila(
                     etiqueta = "Fondo general (Capa 0)",
                     colorActual = colorFondo,
-                    valor = lumFondo,
-                    alCambiar = { lumFondo = it }
+                    luminancia = lumFondo,
+                    alCambiarLuminancia = { lumFondo = it },
+                    mostrarControlTono = !unificarTonos,
+                    tono = tonoFondo,
+                    alCambiarTono = { tonoFondo = it }
                 )
                 SeparadorFilaAjuste()
 
                 // Capa 1: Tarjetas y Grupos
-                ControlLuminanciaFila(
+                ControlCapaFila(
                     etiqueta = "Tarjetas y grupos (Capa 1)",
                     colorActual = colorTarjeta,
-                    valor = lumTarjeta,
-                    alCambiar = { lumTarjeta = it }
+                    luminancia = lumTarjeta,
+                    alCambiarLuminancia = { lumTarjeta = it },
+                    mostrarControlTono = !unificarTonos,
+                    tono = tonoTarjeta,
+                    alCambiarTono = { tonoTarjeta = it }
                 )
                 SeparadorFilaAjuste()
 
                 // Capa 2: Campos de entrada y chips
-                ControlLuminanciaFila(
+                ControlCapaFila(
                     etiqueta = "Campos y chips (Capa 2)",
                     colorActual = colorCampo,
-                    valor = lumCampo,
-                    alCambiar = { lumCampo = it }
+                    luminancia = lumCampo,
+                    alCambiarLuminancia = { lumCampo = it },
+                    mostrarControlTono = !unificarTonos,
+                    tono = tonoCampo,
+                    alCambiarTono = { tonoCampo = it }
                 )
                 SeparadorFilaAjuste()
 
                 // Bordes y separadores
-                ControlLuminanciaFila(
+                ControlCapaFila(
                     etiqueta = "Bordes y líneas divisorias",
                     colorActual = colorBorde,
-                    valor = lumBorde,
-                    alCambiar = { lumBorde = it }
+                    luminancia = lumBorde,
+                    alCambiarLuminancia = { lumBorde = it },
+                    mostrarControlTono = !unificarTonos,
+                    tono = tonoBorde,
+                    alCambiarTono = { tonoBorde = it }
                 )
                 SeparadorFilaAjuste()
 
                 // Texto Principal
-                ControlLuminanciaFila(
+                ControlCapaFila(
                     etiqueta = "Texto principal (Títulos y datos)",
                     colorActual = colorTextoPrincipal,
-                    valor = lumTextoPrincipal,
-                    alCambiar = { lumTextoPrincipal = it }
+                    luminancia = lumTextoPrincipal,
+                    alCambiarLuminancia = { lumTextoPrincipal = it },
+                    mostrarControlTono = !unificarTonos,
+                    tono = tonoTextoPrincipal,
+                    alCambiarTono = { tonoTextoPrincipal = it }
                 )
                 SeparadorFilaAjuste()
 
                 // Texto Secundario
-                ControlLuminanciaFila(
+                ControlCapaFila(
                     etiqueta = "Texto secundario (Subtítulos)",
                     colorActual = colorTextoSecundario,
-                    valor = lumTextoSecundario,
-                    alCambiar = { lumTextoSecundario = it }
+                    luminancia = lumTextoSecundario,
+                    alCambiarLuminancia = { lumTextoSecundario = it },
+                    mostrarControlTono = !unificarTonos,
+                    tono = tonoTextoSecundario,
+                    alCambiarTono = { tonoTextoSecundario = it }
                 )
             }
 
@@ -589,6 +730,9 @@ fun PantallaLaboratorioTemas(
                                 value = huePersonalizado,
                                 onValueChange = {
                                     huePersonalizado = it
+                                    if (unificarTonos) {
+                                        tonoGlobal = it
+                                    }
                                     esPersonalizadoActivo = true
                                     colorAcentoActual = Color.hsv(huePersonalizado, satPersonalizado, valPersonalizado, alfaPersonalizado)
                                 },
@@ -840,16 +984,19 @@ private fun TarjetaFlotantePreviaLaboratorio(
 }
 
 @Composable
-private fun ControlLuminanciaFila(
+private fun ControlCapaFila(
     etiqueta: String,
     colorActual: Color,
-    valor: Float,
-    alCambiar: (Float) -> Unit
+    luminancia: Float,
+    alCambiarLuminancia: (Float) -> Unit,
+    mostrarControlTono: Boolean = false,
+    tono: Float = 0f,
+    alCambiarTono: ((Float) -> Unit)? = null
 ) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 12.dp)
+            .padding(horizontal = 16.dp, vertical = 10.dp)
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -869,17 +1016,59 @@ private fun ControlLuminanciaFila(
                 modifier = Modifier.weight(1f)
             )
             Text(
-                text = colorActual.aHex(),
+                text = colorActual.aHexConAlfa(),
                 style = EstiloMono.copy(fontSize = 12.sp, fontWeight = FontWeight.Bold),
                 color = Color.Gray
             )
         }
         Spacer(Modifier.height(4.dp))
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(
+                text = "Luminancia / Brillo",
+                style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.sp),
+                color = Color.Gray
+            )
+            Text(
+                text = "${(luminancia * 100).toInt()}%",
+                style = EstiloMono.copy(fontSize = 11.sp),
+                color = Color.Gray
+            )
+        }
         SliderBoveda(
-            value = valor,
-            onValueChange = alCambiar,
+            value = luminancia,
+            onValueChange = alCambiarLuminancia,
             valueRange = 0.0f..1.0f
         )
+
+        if (mostrarControlTono && alCambiarTono != null) {
+            Spacer(Modifier.height(4.dp))
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Box(
+                    modifier = Modifier
+                        .size(12.dp)
+                        .clip(CircleShape)
+                        .background(Color.hsv(tono, 0.8f, 0.9f))
+                )
+                Spacer(Modifier.width(6.dp))
+                Text(
+                    text = "Tono individual: ${tono.toInt()}°",
+                    style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.sp),
+                    color = Color.Gray,
+                    modifier = Modifier.weight(1f)
+                )
+            }
+            SliderBoveda(
+                value = tono,
+                onValueChange = alCambiarTono,
+                valueRange = 0.0f..360.0f
+            )
+        }
     }
 }
 
