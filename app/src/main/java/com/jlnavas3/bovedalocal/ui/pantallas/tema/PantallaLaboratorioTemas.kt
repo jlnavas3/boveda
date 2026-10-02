@@ -203,11 +203,30 @@ fun PantallaLaboratorioTemas(
             }
         )
 
+        var switchMuestraActivo by remember { mutableStateOf(true) }
+
+        // VISTA PREVIA FLOTANTE SUPERIOR (STICKY TOP)
+        TarjetaFlotantePreviaLaboratorio(
+            colorFondo = colorFondo,
+            colorTarjeta = colorTarjeta,
+            colorBorde = colorBorde,
+            colorCampo = colorCampo,
+            colorTextoPrincipal = colorTextoPrincipal,
+            colorTextoSecundario = colorTextoSecundario,
+            colorAcento = colorAcentoActual,
+            switchActivo = switchMuestraActivo,
+            onAlternarSwitch = {
+                haptica.tic()
+                switchMuestraActivo = it
+            }
+        )
+
         Column(
             modifier = Modifier
-                .fillMaxSize()
+                .fillMaxWidth()
+                .weight(1f)
                 .verticalScroll(scrollState)
-                .padding(horizontal = 16.dp, vertical = 12.dp)
+                .padding(horizontal = 16.dp, vertical = 8.dp)
         ) {
             // Selector de Modo (Oscuro / Claro)
             Row(
@@ -390,77 +409,9 @@ fun PantallaLaboratorioTemas(
                 }
             }
 
-            Spacer(Modifier.height(18.dp))
+            Spacer(Modifier.height(20.dp))
 
-            // SECCIÓN 3: Muestrario en Vivo (Live Preview)
-            ComponenteGrupo(
-                etiqueta = "Muestrario en Vivo (Vista Previa)",
-                icono = Icons.Filled.Lock
-            ) {
-                Column(modifier = Modifier.padding(16.dp)) {
-                    // Muestra 1: Fila de menú One UI
-                    FilaAjusteMenu(
-                        titulo = "Bloqueo por huella dactilar",
-                        icono = Icons.Filled.Lock,
-                        colorIcono = colorAcentoActual,
-                        subtitulo = "Activo • 1 minuto",
-                        alPulsar = {}
-                    )
-
-                    Spacer(Modifier.height(14.dp))
-
-                    // Muestra 2: Campo de texto
-                    var textoEjemplo by remember { mutableStateOf("usuario@ejemplo.com") }
-                    CampoBoveda(
-                        valor = textoEjemplo,
-                        alCambiar = { textoEjemplo = it },
-                        etiqueta = "Nombre de usuario o correo"
-                    )
-
-                    Spacer(Modifier.height(14.dp))
-
-                    // Muestra 3: Botón Primario y Botón Peligro
-                    Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                        BotonBoveda(
-                            texto = "Guardar",
-                            alPulsar = {},
-                            modifier = Modifier.weight(1f)
-                        )
-                        BotonPeligro(
-                            texto = "Eliminar",
-                            alPulsar = {},
-                            modifier = Modifier.weight(1f)
-                        )
-                    }
-
-                    Spacer(Modifier.height(14.dp))
-
-                    // Muestra 4: Switch interactivo
-                    var switchActivo by remember { mutableStateOf(true) }
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = "Interruptor de seguridad",
-                            style = MaterialTheme.typography.bodyMedium.copy(color = colorTextoPrincipal),
-                            modifier = Modifier.weight(1f)
-                        )
-                        SwitchBoveda(
-                            checked = switchActivo,
-                            colorActivo = colorAcentoActual,
-                            onCheckedChange = {
-                                haptica.tic()
-                                switchActivo = it
-                            }
-                        )
-                    }
-                }
-            }
-
-            Spacer(Modifier.height(24.dp))
-
-            // SECCIÓN 4: Acciones Finales
+            // SECCIÓN 3: Acciones Finales
             BotonBoveda(
                 texto = "📋 Copiar Paleta para el Asistente",
                 alPulsar = { copiarPaletaAlPortapapeles() },
@@ -476,6 +427,158 @@ fun PantallaLaboratorioTemas(
             )
 
             Spacer(Modifier.height(32.dp))
+        }
+    }
+}
+
+/**
+ * Tarjeta de vista previa compacta que permanece flotante/fijada arriba (Sticky Top)
+ * permitiendo ver en tiempo real la combinación de colores mientras se hace scroll en los controles.
+ * Sin títulos innecesarios para maximizar el área visible.
+ */
+@Composable
+private fun TarjetaFlotantePreviaLaboratorio(
+    colorFondo: Color,
+    colorTarjeta: Color,
+    colorBorde: Color,
+    colorCampo: Color,
+    colorTextoPrincipal: Color,
+    colorTextoSecundario: Color,
+    colorAcento: Color,
+    switchActivo: Boolean,
+    onAlternarSwitch: (Boolean) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .background(colorFondo)
+            .padding(horizontal = 16.dp, vertical = 6.dp)
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(CurvaturaEsquinas))
+                .background(colorTarjeta)
+                .border(1.dp, colorBorde, RoundedCornerShape(CurvaturaEsquinas))
+                .padding(horizontal = 14.dp, vertical = 10.dp)
+        ) {
+            // Fila 1: Credencial con Icono, Textos y Switch
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Box(
+                    modifier = Modifier
+                        .size(36.dp)
+                        .clip(RoundedCornerShape(9.dp))
+                        .background(colorAcento),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.Lock,
+                        contentDescription = null,
+                        tint = if (colorAcento == Color(0xFFE5A93C) || colorAcento == Color(0xFFD4AF37)) Color.Black else Color.White,
+                        modifier = Modifier.size(20.dp)
+                    )
+                }
+
+                Spacer(Modifier.width(12.dp))
+
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = "Google Workspace",
+                        style = MaterialTheme.typography.bodyLarge.copy(
+                            fontWeight = FontWeight.SemiBold,
+                            fontSize = 15.sp,
+                            color = colorTextoPrincipal
+                        ),
+                        maxLines = 1
+                    )
+                    Spacer(Modifier.height(1.dp))
+                    Text(
+                        text = "usuario@empresa.com • TOTP activo",
+                        style = MaterialTheme.typography.bodySmall.copy(
+                            fontSize = 12.sp,
+                            color = colorTextoSecundario
+                        ),
+                        maxLines = 1
+                    )
+                }
+
+                Spacer(Modifier.width(8.dp))
+
+                SwitchBoveda(
+                    checked = switchActivo,
+                    colorActivo = colorAcento,
+                    onCheckedChange = onAlternarSwitch
+                )
+            }
+
+            Spacer(Modifier.height(8.dp))
+
+            // Divisor sutil
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(0.6.dp)
+                    .background(colorBorde)
+            )
+
+            Spacer(Modifier.height(8.dp))
+
+            // Fila 2: Campo interactivo (Capa 2) y Botón Primario
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(10.dp)
+            ) {
+                // Campo de texto simulado con Capa 2
+                Row(
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(34.dp)
+                        .clip(RoundedCornerShape(8.dp))
+                        .background(colorCampo)
+                        .border(0.8.dp, colorBorde, RoundedCornerShape(8.dp))
+                        .padding(horizontal = 10.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.Security,
+                        contentDescription = null,
+                        tint = colorTextoSecundario,
+                        modifier = Modifier.size(15.dp)
+                    )
+                    Spacer(Modifier.width(6.dp))
+                    Text(
+                        text = "Contraseña segura...",
+                        style = MaterialTheme.typography.bodySmall.copy(
+                            fontSize = 12.sp,
+                            color = colorTextoSecundario
+                        ),
+                        maxLines = 1
+                    )
+                }
+
+                // Botón Primario compacto
+                Box(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(8.dp))
+                        .background(colorAcento)
+                        .padding(horizontal = 14.dp, vertical = 8.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = "Guardar",
+                        style = MaterialTheme.typography.bodySmall.copy(
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 12.sp,
+                            color = if (colorAcento == Color(0xFFE5A93C) || colorAcento == Color(0xFFD4AF37)) Color.Black else Color.White
+                        )
+                    )
+                }
+            }
         }
     }
 }
