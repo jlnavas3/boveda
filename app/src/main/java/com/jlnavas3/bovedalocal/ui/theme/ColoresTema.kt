@@ -26,24 +26,23 @@ internal class PaletaBase(
 )
 
 internal val paletaOscura = PaletaBase(
-    fondo = Color(0xFF000000),
-    superficie = Color(0xFF212023),
-    superficieAlta = Color(0xFF2A292E),
-    borde = Color(0xFF38373C),
-    // Gris claro, no blanco puro: de noche, el blanco a #FFF brilla y molesta a la vista.
-    textoPrincipal = Color(0xFFE6E6EA),
-    textoSecundario = Color(0xFF9E9EA4),
+    fondo = Color(0xFF101012),
+    superficie = Color(0xFF1A1A1E),
+    superficieAlta = Color(0xFF26262B),
+    borde = Color(0xFF33333D),
+    textoPrincipal = Color(0xFFF3F3F6),
+    textoSecundario = Color(0xFF9A9AA4),
     menta = Color(0xFF57E6B4),
     peligro = Color(0xFFFF5D5D)
 )
 
 internal val paletaClara = PaletaBase(
-    fondo = Color(0xFFF7F7FA),
+    fondo = Color(0xFFF5F6F9),
     superficie = Color(0xFFFFFFFF),
-    superficieAlta = Color(0xFFEFEFF3),
-    borde = Color(0xFFDBDEE6),
-    textoPrincipal = Color(0xFF15171F),
-    textoSecundario = Color(0xFF5C6270),
+    superficieAlta = Color(0xFFECEEF2),
+    borde = Color(0xFFD9DCE3),
+    textoPrincipal = Color(0xFF141519),
+    textoSecundario = Color(0xFF5E636E),
     menta = Color(0xFF1F9C74),
     peligro = Color(0xFFD23F3F)
 )
@@ -51,14 +50,14 @@ internal val paletaClara = PaletaBase(
 internal var paletaActiva by mutableStateOf(paletaOscura)
 var esOscuroActivo by mutableStateOf(true)
 
-val Obsidiana: Color get() = paletaActiva.fondo
-val Superficie: Color get() = paletaActiva.superficie
-val SuperficieAlta: Color get() = paletaActiva.superficieAlta
-val Borde: Color get() = paletaActiva.borde
+val Obsidiana: Color get() = paletaSobriaEnVivo?.fondo ?: paletaActiva.fondo
+val Superficie: Color get() = paletaSobriaEnVivo?.tarjeta ?: paletaActiva.superficie
+val SuperficieAlta: Color get() = paletaSobriaEnVivo?.campo ?: paletaActiva.superficieAlta
+val Borde: Color get() = paletaSobriaEnVivo?.borde ?: paletaActiva.borde
 val Menta: Color get() = paletaActiva.menta
 val Peligro: Color get() = paletaActiva.peligro
-val TextoPrincipal: Color get() = paletaActiva.textoPrincipal
-val TextoSecundario: Color get() = paletaActiva.textoSecundario
+val TextoPrincipal: Color get() = paletaSobriaEnVivo?.textoPrincipal ?: paletaActiva.textoPrincipal
+val TextoSecundario: Color get() = paletaSobriaEnVivo?.textoSecundario ?: paletaActiva.textoSecundario
 
 /** "sistema", "claro" u "oscuro"; "sistema" sigue el tema actual del teléfono. */
 fun aplicarTema(claveTema: String, sistemaEnOscuro: Boolean) {
@@ -81,6 +80,7 @@ private var colorTarjetasBase by mutableStateOf<Color?>(null)
 
 var ColorAcento: Color
     get() {
+        if (paletaSobriaEnVivo != null) return paletaSobriaEnVivo!!.acento
         if (colorDinamicoSistemaBase && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && colorDinamicoMonet != null) {
             return colorDinamicoMonet!!
         }
@@ -93,6 +93,7 @@ var ColorAcento: Color
 
 var ColorAcentoFuerte: Color
     get() {
+        if (paletaSobriaEnVivo != null) return paletaSobriaEnVivo!!.acento
         if (colorDinamicoSistemaBase && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && colorDinamicoFuerteMonet != null) {
             return colorDinamicoFuerteMonet!!
         }
@@ -103,15 +104,15 @@ var ColorAcentoFuerte: Color
 val ColorSobreAcento: Color get() = colorContraste(ColorAcento)
 
 var ColorIconosInternos: Color
-    get() = colorIconosBase ?: if (esOscuroActivo) Color(0xFFD6DAE2) else Color(0xFF1E232E)
+    get() = paletaSobriaEnVivo?.textoSecundario ?: colorIconosBase ?: if (esOscuroActivo) Color(0xFFD6DAE2) else Color(0xFF1E232E)
     set(valor) { colorIconosBase = valor }
 
 var ColorTitulos: Color
-    get() = colorTitulosBase ?: if (esOscuroActivo) Color(0xFFF3F4F8) else Color(0xFF11141A)
+    get() = paletaSobriaEnVivo?.textoPrincipal ?: colorTitulosBase ?: if (esOscuroActivo) Color(0xFFF3F4F8) else Color(0xFF11141A)
     set(valor) { colorTitulosBase = valor }
 
 var ColorTarjetas: Color
-    get() = colorTarjetasBase ?: if (esOscuroActivo) paletaOscura.superficieAlta else paletaClara.superficie
+    get() = paletaSobriaEnVivo?.tarjeta ?: colorTarjetasBase ?: if (esOscuroActivo) paletaOscura.superficieAlta else paletaClara.superficie
     set(valor) { colorTarjetasBase = valor }
 
 val ColorSobreTarjetas: Color get() = colorContraste(ColorTarjetas)

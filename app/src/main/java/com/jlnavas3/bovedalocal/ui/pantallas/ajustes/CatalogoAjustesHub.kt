@@ -118,6 +118,16 @@ fun crearCatalogoAjustesHub(
             alPulsar = { vm.ir(Pantalla.Tema("02-APA-THM")) }
         ),
         ElementoMenuAjustes(
+            titulo = "Laboratorio de temas y paleta",
+            subtitulo = "Escala neutra de grises, luminancia y exportar",
+            icono = Icons.Filled.Palette,
+            colorIcono = Color(0xFF673AB7),
+            idEtiqueta = "02-APA-LAB",
+            grupo = "Apariencia",
+            palabrasClave = "laboratorio temas paleta grises luminancia sobrio exportar copiar color",
+            alPulsar = { vm.ir(Pantalla.LaboratorioTemas()) }
+        ),
+        ElementoMenuAjustes(
             titulo = "Formas y bordes",
             subtitulo = "Curvatura de esquinas y estilo de bordes",
             icono = Icons.Filled.SquareFoot,

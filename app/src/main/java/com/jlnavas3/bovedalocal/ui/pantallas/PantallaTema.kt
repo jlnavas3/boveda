@@ -164,6 +164,21 @@ fun PantallaTema(
                     alSolicitarCambioIcono = { paleta -> dialogoConfirmarIcono = paleta }
                 )
 
+                // 5. Laboratorio de Temas y Paleta Sobria
+                Spacer(Modifier.height(14.dp))
+                ComponenteGrupo(
+                    etiqueta = "Laboratorio y personalización",
+                    idGrupo = "02-APA-THM-G07",
+                    mostrarId = ajustes.mostrarIdsAjustes
+                ) {
+                    ComponenteNavegacion(
+                        titulo = "Laboratorio de temas y paleta",
+                        subtitulo = "Escala de grises, restricción de luminancia y exportar",
+                        icono = Icons.Filled.Palette,
+                        alPulsar = { vm.ir(Pantalla.LaboratorioTemas()) }
+                    )
+                }
+
                 Spacer(Modifier.height(32.dp))
             }
         }

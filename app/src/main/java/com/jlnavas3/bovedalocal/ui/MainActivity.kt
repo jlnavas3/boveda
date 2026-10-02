@@ -394,6 +394,7 @@ fun RaizBoveda(vm: VaultViewModel, actividad: FragmentActivity) {
                     is Pantalla.Widget1x1Modo -> PantallaWidget1x1Modo(vm, destino.seccionId)
                     is Pantalla.Widget1x1Comportamiento -> PantallaWidget1x1Comportamiento(vm, destino.seccionId)
                     is Pantalla.Tema -> com.jlnavas3.bovedalocal.ui.pantallas.PantallaTema(vm, destino.seccionId)
+                    is Pantalla.LaboratorioTemas -> com.jlnavas3.bovedalocal.ui.pantallas.tema.PantallaLaboratorioTemas(vm, destino.seccionId)
                     is Pantalla.CalibracionAnimacion -> com.jlnavas3.bovedalocal.ui.pantallas.PantallaCalibracionAnimacion(vm, destino.seccionId)
                     is Pantalla.CalibracionWidgetTotp -> com.jlnavas3.bovedalocal.ui.pantallas.PantallaCalibracionWidgetTotp(vm, destino.seccionId)
                     is Pantalla.CalibracionWidget1x1 -> com.jlnavas3.bovedalocal.ui.pantallas.PantallaCalibracionWidget1x1(vm, destino.seccionId)
