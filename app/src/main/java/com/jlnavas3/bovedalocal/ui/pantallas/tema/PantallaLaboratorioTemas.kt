@@ -71,6 +71,7 @@ import com.jlnavas3.bovedalocal.ui.theme.CurvaturaEsquinas
 import com.jlnavas3.bovedalocal.ui.theme.EstiloMono
 import com.jlnavas3.bovedalocal.ui.theme.PaletaSobria
 import com.jlnavas3.bovedalocal.ui.theme.PaletaSobriaDefaults
+import com.jlnavas3.bovedalocal.ui.theme.PaletaSobriaParametrosDefaults
 import com.jlnavas3.bovedalocal.ui.theme.aHex
 import com.jlnavas3.bovedalocal.ui.theme.aHexConAlfa
 import com.jlnavas3.bovedalocal.ui.theme.colorContraste
@@ -100,26 +101,30 @@ fun PantallaLaboratorioTemas(
 
     // Valores iniciales según el modo
     val defaults = if (modoOscuro) PaletaSobriaDefaults.OSCURA else PaletaSobriaDefaults.CLARA
+    val paramDefaults = if (modoOscuro) PaletaSobriaParametrosDefaults.OSCURO else PaletaSobriaParametrosDefaults.CLARO
 
-    var lumFondo by remember(modoOscuro) { mutableFloatStateOf(if (modoOscuro) 0.07f else 0.96f) }
-    var lumTarjeta by remember(modoOscuro) { mutableFloatStateOf(if (modoOscuro) 0.11f else 1.00f) }
-    var lumCampo by remember(modoOscuro) { mutableFloatStateOf(if (modoOscuro) 0.16f else 0.93f) }
-    var lumBorde by remember(modoOscuro) { mutableFloatStateOf(if (modoOscuro) 0.22f else 0.85f) }
-    var lumTextoPrincipal by remember(modoOscuro) { mutableFloatStateOf(if (modoOscuro) 0.95f else 0.08f) }
-    var lumTextoSecundario by remember(modoOscuro) { mutableFloatStateOf(if (modoOscuro) 0.62f else 0.40f) }
+    var lumFondo by remember(modoOscuro) { mutableFloatStateOf(paramDefaults.lumFondo) }
+    var lumTarjeta by remember(modoOscuro) { mutableFloatStateOf(paramDefaults.lumTarjeta) }
+    var lumCampo by remember(modoOscuro) { mutableFloatStateOf(paramDefaults.lumCampo) }
+    var lumBorde by remember(modoOscuro) { mutableFloatStateOf(paramDefaults.lumBorde) }
+    var lumTextoPrincipal by remember(modoOscuro) { mutableFloatStateOf(paramDefaults.lumTextoPrincipal) }
+    var lumTextoSecundario by remember(modoOscuro) { mutableFloatStateOf(paramDefaults.lumTextoSecundario) }
     var colorAcentoActual by remember(modoOscuro) { mutableStateOf(defaults.acento) }
 
     // Control de Tono Unificado vs Individual
     var unificarTonos by remember { mutableStateOf(true) }
-    var tonoGlobal by remember { mutableFloatStateOf(215f) } // 215° = Pizarra / Slate
-    var saturacionTinte by remember { mutableFloatStateOf(0.08f) } // 8% tinte ergonómico
+    var tonoGlobal by remember(modoOscuro) { mutableFloatStateOf(paramDefaults.tonoGlobal) }
+    var saturacionTinte by remember(modoOscuro) { mutableFloatStateOf(paramDefaults.saturacionTinte) }
 
-    var tonoFondo by remember { mutableFloatStateOf(215f) }
-    var tonoTarjeta by remember { mutableFloatStateOf(215f) }
-    var tonoCampo by remember { mutableFloatStateOf(215f) }
-    var tonoBorde by remember { mutableFloatStateOf(215f) }
-    var tonoTextoPrincipal by remember { mutableFloatStateOf(215f) }
-    var tonoTextoSecundario by remember { mutableFloatStateOf(215f) }
+    var tonoFondo by remember(modoOscuro) { mutableFloatStateOf(paramDefaults.tonoGlobal) }
+    var tonoTarjeta by remember(modoOscuro) { mutableFloatStateOf(paramDefaults.tonoGlobal) }
+    var tonoCampo by remember(modoOscuro) { mutableFloatStateOf(paramDefaults.tonoGlobal) }
+    var tonoBorde by remember(modoOscuro) { mutableFloatStateOf(paramDefaults.tonoGlobal) }
+    var tonoTextoPrincipal by remember(modoOscuro) { mutableFloatStateOf(paramDefaults.tonoGlobal) }
+    var tonoTextoSecundario by remember(modoOscuro) { mutableFloatStateOf(paramDefaults.tonoGlobal) }
+
+    var modificadoOscuro by remember { mutableStateOf(false) }
+    var modificadoClaro by remember { mutableStateOf(false) }
 
     val tonoEfectivoFondo = if (unificarTonos) tonoGlobal else tonoFondo
     val tonoEfectivoTarjeta = if (unificarTonos) tonoGlobal else tonoTarjeta
@@ -225,6 +230,10 @@ fun PantallaLaboratorioTemas(
     var esPersonalizadoActivo by remember(modoOscuro) { mutableStateOf(false) }
     var mostrarAjustePersonalizado by remember(modoOscuro) { mutableStateOf(false) }
 
+    fun marcarModificado() {
+        if (modoOscuro) modificadoOscuro = true else modificadoClaro = true
+    }
+
     fun copiarPaletaAlPortapapeles() {
         haptica.exito()
         val (hAcento, sAcento, vAcento) = colorAhsv(colorAcentoActual)
@@ -292,21 +301,22 @@ fun PantallaLaboratorioTemas(
     fun restablecerValores() {
         haptica.toque()
         val d = if (modoOscuro) PaletaSobriaDefaults.OSCURA else PaletaSobriaDefaults.CLARA
-        lumFondo = if (modoOscuro) 0.07f else 0.96f
-        lumTarjeta = if (modoOscuro) 0.11f else 1.00f
-        lumCampo = if (modoOscuro) 0.16f else 0.93f
-        lumBorde = if (modoOscuro) 0.22f else 0.85f
-        lumTextoPrincipal = if (modoOscuro) 0.95f else 0.08f
-        lumTextoSecundario = if (modoOscuro) 0.62f else 0.40f
+        val p = if (modoOscuro) PaletaSobriaParametrosDefaults.OSCURO else PaletaSobriaParametrosDefaults.CLARO
+        lumFondo = p.lumFondo
+        lumTarjeta = p.lumTarjeta
+        lumCampo = p.lumCampo
+        lumBorde = p.lumBorde
+        lumTextoPrincipal = p.lumTextoPrincipal
+        lumTextoSecundario = p.lumTextoSecundario
         unificarTonos = true
-        tonoGlobal = 215f
-        saturacionTinte = 0.08f
-        tonoFondo = 215f
-        tonoTarjeta = 215f
-        tonoCampo = 215f
-        tonoBorde = 215f
-        tonoTextoPrincipal = 215f
-        tonoTextoSecundario = 215f
+        tonoGlobal = p.tonoGlobal
+        saturacionTinte = p.saturacionTinte
+        tonoFondo = p.tonoGlobal
+        tonoTarjeta = p.tonoGlobal
+        tonoCampo = p.tonoGlobal
+        tonoBorde = p.tonoGlobal
+        tonoTextoPrincipal = p.tonoGlobal
+        tonoTextoSecundario = p.tonoGlobal
         colorAcentoActual = d.acento
         esPersonalizadoActivo = false
         mostrarAjustePersonalizado = false
@@ -315,6 +325,7 @@ fun PantallaLaboratorioTemas(
         satPersonalizado = s
         valPersonalizado = v
         alfaPersonalizado = d.acento.alpha
+        if (modoOscuro) modificadoOscuro = false else modificadoClaro = false
         Toast.makeText(contexto, "Valores sobrios restablecidos", Toast.LENGTH_SHORT).show()
     }
 
@@ -362,7 +373,7 @@ fun PantallaLaboratorioTemas(
                 .verticalScroll(scrollState)
                 .padding(horizontal = 16.dp, vertical = 8.dp)
         ) {
-            // Selector de Modo (Oscuro / Claro)
+            // Selector de Modo (Oscuro / Claro) con indicador (*) de cambios
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -388,15 +399,15 @@ fun PantallaLaboratorioTemas(
                     Icon(
                         imageVector = Icons.Filled.DarkMode,
                         contentDescription = null,
-                        tint = if (modoOscuro) Color.Black else colorTextoSecundario,
+                        tint = if (modoOscuro) colorContraste(colorAcentoActual) else colorTextoSecundario,
                         modifier = Modifier.size(18.dp)
                     )
                     Spacer(Modifier.width(8.dp))
                     Text(
-                        text = "Modo Oscuro",
+                        text = "Modo Oscuro" + if (modificadoOscuro) " (*)" else "",
                         style = MaterialTheme.typography.bodyMedium.copy(
                             fontWeight = if (modoOscuro) FontWeight.Bold else FontWeight.Normal,
-                            color = if (modoOscuro) Color.Black else colorTextoPrincipal
+                            color = if (modoOscuro) colorContraste(colorAcentoActual) else colorTextoPrincipal
                         )
                     )
                 }
@@ -418,15 +429,15 @@ fun PantallaLaboratorioTemas(
                     Icon(
                         imageVector = Icons.Filled.LightMode,
                         contentDescription = null,
-                        tint = if (!modoOscuro) Color.Black else colorTextoSecundario,
+                        tint = if (!modoOscuro) colorContraste(colorAcentoActual) else colorTextoSecundario,
                         modifier = Modifier.size(18.dp)
                     )
                     Spacer(Modifier.width(8.dp))
                     Text(
-                        text = "Modo Claro",
+                        text = "Modo Claro" + if (modificadoClaro) " (*)" else "",
                         style = MaterialTheme.typography.bodyMedium.copy(
                             fontWeight = if (!modoOscuro) FontWeight.Bold else FontWeight.Normal,
-                            color = if (!modoOscuro) Color.Black else colorTextoPrincipal
+                            color = if (!modoOscuro) colorContraste(colorAcentoActual) else colorTextoPrincipal
                         )
                     )
                 }
@@ -499,6 +510,7 @@ fun PantallaLaboratorioTemas(
                             value = tonoGlobal,
                             onValueChange = {
                                 tonoGlobal = it
+                                marcarModificado()
                                 if (unificarTonos) {
                                     val (_, s, v) = colorAhsv(colorAcentoActual)
                                     colorAcentoActual = Color.hsv(it, if (s < 0.05f) 0.75f else s, v, colorAcentoActual.alpha)
@@ -518,7 +530,10 @@ fun PantallaLaboratorioTemas(
                     )
                     SliderBoveda(
                         value = saturacionTinte,
-                        onValueChange = { saturacionTinte = it },
+                        onValueChange = {
+                            saturacionTinte = it
+                            marcarModificado()
+                        },
                         valueRange = 0f..0.35f
                     )
                 }
@@ -530,10 +545,16 @@ fun PantallaLaboratorioTemas(
                     etiqueta = "Fondo general (Capa 0)",
                     colorActual = colorFondo,
                     luminancia = lumFondo,
-                    alCambiarLuminancia = { lumFondo = it },
+                    alCambiarLuminancia = {
+                        lumFondo = it
+                        marcarModificado()
+                    },
                     mostrarControlTono = !unificarTonos,
                     tono = tonoFondo,
-                    alCambiarTono = { tonoFondo = it }
+                    alCambiarTono = {
+                        tonoFondo = it
+                        marcarModificado()
+                    }
                 )
                 SeparadorFilaAjuste()
 
@@ -542,10 +563,16 @@ fun PantallaLaboratorioTemas(
                     etiqueta = "Tarjetas y grupos (Capa 1)",
                     colorActual = colorTarjeta,
                     luminancia = lumTarjeta,
-                    alCambiarLuminancia = { lumTarjeta = it },
+                    alCambiarLuminancia = {
+                        lumTarjeta = it
+                        marcarModificado()
+                    },
                     mostrarControlTono = !unificarTonos,
                     tono = tonoTarjeta,
-                    alCambiarTono = { tonoTarjeta = it }
+                    alCambiarTono = {
+                        tonoTarjeta = it
+                        marcarModificado()
+                    }
                 )
                 SeparadorFilaAjuste()
 
@@ -554,10 +581,16 @@ fun PantallaLaboratorioTemas(
                     etiqueta = "Campos y chips (Capa 2)",
                     colorActual = colorCampo,
                     luminancia = lumCampo,
-                    alCambiarLuminancia = { lumCampo = it },
+                    alCambiarLuminancia = {
+                        lumCampo = it
+                        marcarModificado()
+                    },
                     mostrarControlTono = !unificarTonos,
                     tono = tonoCampo,
-                    alCambiarTono = { tonoCampo = it }
+                    alCambiarTono = {
+                        tonoCampo = it
+                        marcarModificado()
+                    }
                 )
                 SeparadorFilaAjuste()
 
@@ -566,10 +599,16 @@ fun PantallaLaboratorioTemas(
                     etiqueta = "Bordes y líneas divisorias",
                     colorActual = colorBorde,
                     luminancia = lumBorde,
-                    alCambiarLuminancia = { lumBorde = it },
+                    alCambiarLuminancia = {
+                        lumBorde = it
+                        marcarModificado()
+                    },
                     mostrarControlTono = !unificarTonos,
                     tono = tonoBorde,
-                    alCambiarTono = { tonoBorde = it }
+                    alCambiarTono = {
+                        tonoBorde = it
+                        marcarModificado()
+                    }
                 )
                 SeparadorFilaAjuste()
 
@@ -578,10 +617,16 @@ fun PantallaLaboratorioTemas(
                     etiqueta = "Texto principal (Títulos y datos)",
                     colorActual = colorTextoPrincipal,
                     luminancia = lumTextoPrincipal,
-                    alCambiarLuminancia = { lumTextoPrincipal = it },
+                    alCambiarLuminancia = {
+                        lumTextoPrincipal = it
+                        marcarModificado()
+                    },
                     mostrarControlTono = !unificarTonos,
                     tono = tonoTextoPrincipal,
-                    alCambiarTono = { tonoTextoPrincipal = it }
+                    alCambiarTono = {
+                        tonoTextoPrincipal = it
+                        marcarModificado()
+                    }
                 )
                 SeparadorFilaAjuste()
 
@@ -590,10 +635,16 @@ fun PantallaLaboratorioTemas(
                     etiqueta = "Texto secundario (Subtítulos)",
                     colorActual = colorTextoSecundario,
                     luminancia = lumTextoSecundario,
-                    alCambiarLuminancia = { lumTextoSecundario = it },
+                    alCambiarLuminancia = {
+                        lumTextoSecundario = it
+                        marcarModificado()
+                    },
                     mostrarControlTono = !unificarTonos,
                     tono = tonoTextoSecundario,
-                    alCambiarTono = { tonoTextoSecundario = it }
+                    alCambiarTono = {
+                        tonoTextoSecundario = it
+                        marcarModificado()
+                    }
                 )
             }
 
@@ -645,6 +696,7 @@ fun PantallaLaboratorioTemas(
                                         satPersonalizado = s
                                         valPersonalizado = v
                                         alfaPersonalizado = color.alpha
+                                        marcarModificado()
                                     },
                                 contentAlignment = Alignment.Center
                             ) {
@@ -694,6 +746,7 @@ fun PantallaLaboratorioTemas(
                                         satPersonalizado = s
                                         valPersonalizado = v
                                         alfaPersonalizado = color.alpha
+                                        marcarModificado()
                                     },
                                 contentAlignment = Alignment.Center
                             ) {
@@ -727,6 +780,7 @@ fun PantallaLaboratorioTemas(
                                     esPersonalizadoActivo = true
                                     mostrarAjustePersonalizado = true
                                     colorAcentoActual = Color.hsv(huePersonalizado, satPersonalizado, valPersonalizado, alfaPersonalizado)
+                                    marcarModificado()
                                 },
                             contentAlignment = Alignment.Center
                         ) {
@@ -792,6 +846,7 @@ fun PantallaLaboratorioTemas(
                                     }
                                     esPersonalizadoActivo = true
                                     colorAcentoActual = Color.hsv(huePersonalizado, satPersonalizado, valPersonalizado, alfaPersonalizado)
+                                    marcarModificado()
                                 },
                                 valueRange = 0f..360f
                             )
@@ -810,6 +865,7 @@ fun PantallaLaboratorioTemas(
                                     satPersonalizado = it
                                     esPersonalizadoActivo = true
                                     colorAcentoActual = Color.hsv(huePersonalizado, satPersonalizado, valPersonalizado, alfaPersonalizado)
+                                    marcarModificado()
                                 },
                                 valueRange = 0f..1f
                             )
@@ -828,6 +884,7 @@ fun PantallaLaboratorioTemas(
                                     valPersonalizado = it
                                     esPersonalizadoActivo = true
                                     colorAcentoActual = Color.hsv(huePersonalizado, satPersonalizado, valPersonalizado, alfaPersonalizado)
+                                    marcarModificado()
                                 },
                                 valueRange = 0.10f..1f
                             )
@@ -848,6 +905,7 @@ fun PantallaLaboratorioTemas(
                                     alfaPersonalizado = it
                                     esPersonalizadoActivo = true
                                     colorAcentoActual = Color.hsv(huePersonalizado, satPersonalizado, valPersonalizado, alfaPersonalizado)
+                                    marcarModificado()
                                 },
                                 valueRange = 0.10f..1f
                             )

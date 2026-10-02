@@ -65,24 +65,71 @@ data class PaletaSobria(
 object PaletaSobriaDefaults {
     val OSCURA = PaletaSobria(
         esOscuro = true,
-        fondo = Color(0xFF101012),
-        tarjeta = Color(0xFF1A1A1E),
-        campo = Color(0xFF26262B),
-        borde = Color(0xFF33333D),
-        textoPrincipal = Color(0xFFF3F3F6),
-        textoSecundario = Color(0xFF9A9AA4),
-        acento = Color(0xFFE5A93C)
+        fondo = Color(0xFF09090A),
+        tarjeta = Color(0xFF1A1C1E),
+        campo = Color(0xFF303337),
+        borde = Color(0xFF242629),
+        textoPrincipal = Color(0xFF8A929E),
+        textoSecundario = Color(0xFF7A828C),
+        acento = Color(0xCE959AA7)
     )
 
     val CLARA = PaletaSobria(
         esOscuro = false,
-        fondo = Color(0xFFF5F6F9),
-        tarjeta = Color(0xFFFFFFFF),
-        campo = Color(0xFFECEEF2),
-        borde = Color(0xFFD9DCE3),
-        textoPrincipal = Color(0xFF141519),
-        textoSecundario = Color(0xFF5E636E),
-        acento = Color(0xFFD48B12)
+        fondo = Color(0xFFB2BDCC),
+        tarjeta = Color(0xFFCAD6E7),
+        campo = Color(0xFFDEECFF),
+        borde = Color(0xFFB2BDCC),
+        textoPrincipal = Color(0xFF43484D),
+        textoSecundario = Color(0xFF646A73),
+        acento = Color(0xCE323842)
+    )
+}
+
+data class ParametrosLaboratorioPreset(
+    val tonoGlobal: Float,
+    val saturacionTinte: Float,
+    val lumFondo: Float,
+    val lumTarjeta: Float,
+    val lumCampo: Float,
+    val lumBorde: Float,
+    val lumTextoPrincipal: Float,
+    val lumTextoSecundario: Float,
+    val acentoHue: Float,
+    val acentoSat: Float,
+    val acentoVal: Float,
+    val acentoAlfa: Float
+)
+
+object PaletaSobriaParametrosDefaults {
+    val OSCURO = ParametrosLaboratorioPreset(
+        tonoGlobal = 215f,
+        saturacionTinte = 0.12f,
+        lumFondo = 0.00f,
+        lumTarjeta = 0.11f,
+        lumCampo = 0.21f,
+        lumBorde = 0.16f,
+        lumTextoPrincipal = 0.62f,
+        lumTextoSecundario = 0.53f,
+        acentoHue = 223f,
+        acentoSat = 0.10f,
+        acentoVal = 0.65f,
+        acentoAlfa = 0.80784315f
+    )
+
+    val CLARO = ParametrosLaboratorioPreset(
+        tonoGlobal = 215f,
+        saturacionTinte = 0.12f,
+        lumFondo = 0.80f,
+        lumTarjeta = 0.90f,
+        lumCampo = 1.00f,
+        lumBorde = 0.80f,
+        lumTextoPrincipal = 0.30f,
+        lumTextoSecundario = 0.45f,
+        acentoHue = 217f,
+        acentoSat = 0.24f,
+        acentoVal = 0.25f,
+        acentoAlfa = 0.80784315f
     )
 }
 

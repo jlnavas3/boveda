@@ -26,23 +26,23 @@ internal class PaletaBase(
 )
 
 internal val paletaOscura = PaletaBase(
-    fondo = Color(0xFF101012),
-    superficie = Color(0xFF1A1A1E),
-    superficieAlta = Color(0xFF26262B),
-    borde = Color(0xFF33333D),
-    textoPrincipal = Color(0xFFF3F3F6),
-    textoSecundario = Color(0xFF9A9AA4),
+    fondo = PaletaSobriaDefaults.OSCURA.fondo,
+    superficie = PaletaSobriaDefaults.OSCURA.tarjeta,
+    superficieAlta = PaletaSobriaDefaults.OSCURA.campo,
+    borde = PaletaSobriaDefaults.OSCURA.borde,
+    textoPrincipal = PaletaSobriaDefaults.OSCURA.textoPrincipal,
+    textoSecundario = PaletaSobriaDefaults.OSCURA.textoSecundario,
     menta = Color(0xFF57E6B4),
     peligro = Color(0xFFFF5D5D)
 )
 
 internal val paletaClara = PaletaBase(
-    fondo = Color(0xFFF5F6F9),
-    superficie = Color(0xFFFFFFFF),
-    superficieAlta = Color(0xFFECEEF2),
-    borde = Color(0xFFD9DCE3),
-    textoPrincipal = Color(0xFF141519),
-    textoSecundario = Color(0xFF5E636E),
+    fondo = PaletaSobriaDefaults.CLARA.fondo,
+    superficie = PaletaSobriaDefaults.CLARA.tarjeta,
+    superficieAlta = PaletaSobriaDefaults.CLARA.campo,
+    borde = PaletaSobriaDefaults.CLARA.borde,
+    textoPrincipal = PaletaSobriaDefaults.CLARA.textoPrincipal,
+    textoSecundario = PaletaSobriaDefaults.CLARA.textoSecundario,
     menta = Color(0xFF1F9C74),
     peligro = Color(0xFFD23F3F)
 )
@@ -69,7 +69,7 @@ fun aplicarTema(claveTema: String, sistemaEnOscuro: Boolean) {
     paletaActiva = if (esOscuroActivo) paletaOscura else paletaClara
 }
 
-internal var paletaAcentoActiva by mutableStateOf<PaletaAcento?>(PaletaAcento.AMBAR)
+internal var paletaAcentoActiva by mutableStateOf<PaletaAcento?>(null)
 internal var colorAcentoManual by mutableStateOf<Color?>(null)
 internal var colorAcentoFuerteManual by mutableStateOf<Color?>(null)
 internal var colorDinamicoMonet by mutableStateOf<Color?>(null)
@@ -84,7 +84,7 @@ var ColorAcento: Color
         if (colorDinamicoSistemaBase && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && colorDinamicoMonet != null) {
             return colorDinamicoMonet!!
         }
-        return colorAcentoManual ?: paletaAcentoActiva?.base ?: PaletaAcento.AMBAR.base
+        return colorAcentoManual ?: paletaAcentoActiva?.base ?: (if (esOscuroActivo) PaletaSobriaDefaults.OSCURA.acento else PaletaSobriaDefaults.CLARA.acento)
     }
     set(valor) {
         colorAcentoManual = valor
@@ -97,7 +97,7 @@ var ColorAcentoFuerte: Color
         if (colorDinamicoSistemaBase && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && colorDinamicoFuerteMonet != null) {
             return colorDinamicoFuerteMonet!!
         }
-        return colorAcentoFuerteManual ?: paletaAcentoActiva?.fuerte ?: PaletaAcento.AMBAR.fuerte
+        return colorAcentoFuerteManual ?: paletaAcentoActiva?.fuerte ?: (if (esOscuroActivo) PaletaSobriaDefaults.OSCURA.acento else PaletaSobriaDefaults.CLARA.acento)
     }
     set(valor) { colorAcentoFuerteManual = valor }
 
