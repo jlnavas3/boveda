@@ -48,8 +48,10 @@ import java.util.Locale
 @Composable
 fun TarjetaHistorialDetalle(
     entrada: Entrada,
-    vm: VaultViewModel,
-    haptica: Haptica
+    vm: VaultViewModel? = null,
+    haptica: Haptica,
+    alCopiarClave: ((String) -> Unit)? = null,
+    alGuardarEntrada: ((Entrada) -> Unit)? = null
 ) {
     val historialUnico = remember(entrada.historialContrasenas, entrada.contrasena) {
         entrada.historialContrasenas
@@ -90,7 +92,8 @@ fun TarjetaHistorialDetalle(
                 },
                 onCopiar = {
                     haptica.exito()
-                    vm.copiar("Contraseña anterior", cambio.contrasena, sensible = true)
+                    vm?.copiar("Contraseña anterior", cambio.contrasena, sensible = true)
+                    alCopiarClave?.invoke(cambio.contrasena)
                     claveCopiadaReciente = cambio.contrasena
                 },
                 onEliminar = {
@@ -117,7 +120,9 @@ fun TarjetaHistorialDetalle(
                 claveARestaurar = null
                 if (nuevaClave != null) {
                     haptica.exito()
-                    vm.guardar(entrada.copy(contrasena = nuevaClave))
+                    val actualizada = entrada.copy(contrasena = nuevaClave)
+                    vm?.guardar(actualizada)
+                    alGuardarEntrada?.invoke(actualizada)
                 }
             },
             alDescartar = { claveARestaurar = null }
@@ -137,13 +142,16 @@ fun TarjetaHistorialDetalle(
                 if (clave != null) {
                     haptica.error()
                     val nuevoHistorial = entrada.historialContrasenas.filterNot { it.contrasena == clave }
-                    vm.guardar(entrada.copy(historialContrasenas = nuevoHistorial))
+                    val actualizada = entrada.copy(historialContrasenas = nuevoHistorial)
+                    vm?.guardar(actualizada)
+                    alGuardarEntrada?.invoke(actualizada)
                 }
             },
             alDescartar = { claveAEliminar = null }
         )
     }
 }
+
 
 @Composable
 private fun FilaHistorialContrasena(
@@ -236,3 +244,25 @@ private fun formatearFechaDetalle(milisegundos: Long): String {
         "Fecha desconocida"
     }
 }
+
+// -------------------------------------------------------------------------------------------------
+// Previews
+// -------------------------------------------------------------------------------------------------
+
+@com.jlnavas3.bovedalocal.ui.preview.BovedaPreview
+@Composable
+private fun TarjetaHistorialDetallePreview() {
+    com.jlnavas3.bovedalocal.ui.preview.PreviewTemaBoveda {
+        val contexto = androidx.compose.ui.platform.LocalContext.current
+        TarjetaHistorialDetalle(
+            entrada = com.jlnavas3.bovedalocal.ui.preview.PreviewMocks.entradaEjemplo.copy(
+                historialContrasenas = listOf(
+                    CambioContrasena(contrasena = "ViejaClave123!", cambiadaEn = System.currentTimeMillis() - 86400000L * 15),
+                    CambioContrasena(contrasena = "AnteriorSegura2023", cambiadaEn = System.currentTimeMillis() - 86400000L * 90)
+                )
+            ),
+            haptica = remember { Haptica(contexto) }
+        )
+    }
+}
+

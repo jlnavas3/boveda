@@ -175,3 +175,30 @@ fun AnilloTotp(
         }
     }
 }
+
+// -------------------------------------------------------------------------------------------------
+// Previews
+// -------------------------------------------------------------------------------------------------
+
+@com.jlnavas3.bovedalocal.ui.preview.BovedaPreview
+@Composable
+private fun TotpComponentesPreview() {
+    com.jlnavas3.bovedalocal.ui.preview.PreviewTemaBoveda {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(16.dp)
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(12.dp)
+            ) {
+                IndicadorTotpTarta(segundosRestantes = 25)
+                IndicadorTotpTarta(segundosRestantes = 8)
+                IndicadorTotpTarta(segundosRestantes = 3)
+            }
+
+            AnilloTotp(codigo = "482 910", segundosRestantes = 18, tamano = 92)
+        }
+    }
+}
+

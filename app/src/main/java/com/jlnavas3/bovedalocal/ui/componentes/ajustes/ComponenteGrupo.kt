@@ -205,3 +205,37 @@ fun ComponenteGrupo(
         }
     }
 }
+
+// -------------------------------------------------------------------------------------------------
+// Previews
+// -------------------------------------------------------------------------------------------------
+
+@com.jlnavas3.bovedalocal.ui.preview.BovedaPreview
+@Composable
+private fun ComponenteGrupoPreview() {
+    com.jlnavas3.bovedalocal.ui.preview.PreviewTemaBoveda {
+        ComponenteGrupo(
+            etiqueta = "SEGURIDAD DE ACCESO",
+            idGrupo = "01-SEG",
+            mostrarId = true,
+            alRestablecer = {},
+            descripcion = "Configura los métodos de autenticación rápida y bloqueo de la aplicación."
+        ) {
+            ComponenteFila(
+                titulo = "Autenticación Biométrica",
+                subtitulo = "Usar huella o reconocimiento facial",
+                idFila = "01-SEG-BIO",
+                mostrarId = true,
+                valorTexto = "Activo"
+            )
+            ComponenteFila(
+                titulo = "PIN de Acceso Rápido",
+                subtitulo = "Alternativa a la contraseña maestra",
+                idFila = "01-SEG-PIN",
+                mostrarId = true,
+                valorTexto = "Configurado"
+            )
+        }
+    }
+}
+

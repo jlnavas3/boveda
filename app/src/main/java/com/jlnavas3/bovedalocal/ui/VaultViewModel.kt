@@ -56,6 +56,9 @@ class VaultViewModel(app: Application) : AndroidViewModel(app),
     val aviso: StateFlow<String?> = _aviso
     override val avisoInterno: MutableStateFlow<String?> get() = _aviso
 
+    fun mostrarAviso(mensaje: String) { _aviso.value = mensaje }
+    fun mostrarError(mensaje: String) { _error.value = mensaje }
+
     private val _cuentaAtrasPortapapeles = MutableStateFlow(0)
     val cuentaAtrasPortapapeles: StateFlow<Int> = _cuentaAtrasPortapapeles
 
@@ -159,7 +162,7 @@ class VaultViewModel(app: Application) : AndroidViewModel(app),
         val accionDesc = when (etiqueta.lowercase()) {
             "usuario" -> "Usuario copiado al portapapeles"
             "contraseña" -> "Contraseña copiada al portapapeles"
-            "código", "código totp", "código 2fa" -> "Código 2FA copiado al portapapeles"
+            "código", "código totp", "código 2fa", "código de verificación" -> "Código de verificación copiado al portapapeles"
             "contraseña anterior" -> "Contraseña anterior copiada al portapapeles"
             else -> "$etiqueta copiado/a al portapapeles"
         }

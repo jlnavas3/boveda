@@ -105,6 +105,19 @@ fun construirItemsAgrupadosPorSitio(
                 is ItemAgrupado.Hijo -> 0L
             }
         }
+        CriterioOrdenacion.USO_RECIENTE -> compareByDescending<ItemAgrupado> { item ->
+            when (item) {
+                is ItemAgrupado.Grupo -> item.entradas.maxOfOrNull { it.ultimoUsoEn } ?: 0L
+                is ItemAgrupado.Suelto -> item.entrada.ultimoUsoEn
+                is ItemAgrupado.Hijo -> 0L
+            }
+        }.thenBy { item ->
+            when (item) {
+                is ItemAgrupado.Grupo -> item.clave.lowercase()
+                is ItemAgrupado.Suelto -> item.entrada.titulo.lowercase()
+                is ItemAgrupado.Hijo -> ""
+            }
+        }
     }
 
     val principalesOrdenados = itemsPrincipales.sortedWith(comparadorTopLevel)
@@ -126,6 +139,7 @@ private fun ordenarEntradasInternas(entradas: List<Entrada>, criterio: CriterioO
         CriterioOrdenacion.MODIFICACION_RECIENTE -> compareByDescending<Entrada> { it.modificadaEn }
         CriterioOrdenacion.CREACION_RECIENTE -> compareByDescending<Entrada> { it.creadaEn }
         CriterioOrdenacion.ANTIGUEDAD -> compareBy<Entrada> { it.creadaEn }
+        CriterioOrdenacion.USO_RECIENTE -> compareByDescending<Entrada> { it.ultimoUsoEn }.thenBy { it.titulo.lowercase() }
     }
     return entradas.sortedWith(comp)
 }
@@ -209,6 +223,19 @@ fun construirItemsAgrupadosPorTitulo(
                 is ItemAgrupado.Grupo -> item.entradas.minOfOrNull { it.creadaEn } ?: 0L
                 is ItemAgrupado.Suelto -> item.entrada.creadaEn
                 is ItemAgrupado.Hijo -> 0L
+            }
+        }
+        CriterioOrdenacion.USO_RECIENTE -> compareByDescending<ItemAgrupado> { item ->
+            when (item) {
+                is ItemAgrupado.Grupo -> item.entradas.maxOfOrNull { it.ultimoUsoEn } ?: 0L
+                is ItemAgrupado.Suelto -> item.entrada.ultimoUsoEn
+                is ItemAgrupado.Hijo -> 0L
+            }
+        }.thenBy { item ->
+            when (item) {
+                is ItemAgrupado.Grupo -> item.clave.lowercase()
+                is ItemAgrupado.Suelto -> item.entrada.titulo.lowercase()
+                is ItemAgrupado.Hijo -> ""
             }
         }
     }

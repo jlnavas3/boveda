@@ -24,7 +24,7 @@ fun TarjetaPasskeyDetalle(
 ) {
     val servicio = passkey.rpName.ifBlank { passkey.rpId }
     Column(modifier = Modifier.fillMaxWidth()) {
-        EtiquetaSeccionDetalle(texto = "Llave de acceso (Passkey)")
+        EtiquetaSeccionDetalle(texto = "Llave de paso")
         TarjetaDatoDetalle(colorBorde = ColorDatosPasskey) {
             Column(
                 modifier = Modifier
@@ -64,3 +64,25 @@ fun TarjetaPasskeyDetalle(
         }
     }
 }
+
+// -------------------------------------------------------------------------------------------------
+// Previews
+// -------------------------------------------------------------------------------------------------
+
+@com.jlnavas3.bovedalocal.ui.preview.BovedaPreview
+@Composable
+private fun TarjetaPasskeyDetallePreview() {
+    com.jlnavas3.bovedalocal.ui.preview.PreviewTemaBoveda {
+        TarjetaPasskeyDetalle(
+            passkey = DatosPasskey(
+                rpId = "google.com",
+                rpName = "Google Accounts",
+                userHandle = "user-12345",
+                credId = "cred-passkey-abc",
+                clavePrivada = "privkey-mock",
+                usuario = "usuario@correo.com"
+            )
+        )
+    }
+}
+

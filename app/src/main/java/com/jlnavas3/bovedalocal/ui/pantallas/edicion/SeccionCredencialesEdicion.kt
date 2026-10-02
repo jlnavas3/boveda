@@ -83,13 +83,13 @@ fun SeccionCredencialesEdicion(
             ) {
                 Icon(
                     imageVector = Icons.Filled.Fingerprint,
-                    contentDescription = "Passkey activa",
+                    contentDescription = "Llave de paso activa",
                     tint = colorLegibleParaTema(ColorDatosPasskey),
                     modifier = Modifier.size(22.dp)
                 )
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
-                        text = "Passkey WebAuthn registrada",
+                        text = "Llave de paso registrada",
                         style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
                         color = colorLegibleParaTema(ColorDatosPasskey)
                     )
@@ -186,3 +186,28 @@ fun SeccionCredencialesEdicion(
         haptica = haptica
     )
 }
+
+// -------------------------------------------------------------------------------------------------
+// Previews
+// -------------------------------------------------------------------------------------------------
+
+@com.jlnavas3.bovedalocal.ui.preview.BovedaPreview
+@Composable
+private fun SeccionCredencialesEdicionPreview() {
+    com.jlnavas3.bovedalocal.ui.preview.PreviewTemaBoveda {
+        val contexto = androidx.compose.ui.platform.LocalContext.current
+        SeccionCredencialesEdicion(
+            passkey = null,
+            usuario = "usuario@correo.com",
+            alCambiarUsuario = {},
+            contrasena = "K8#mP9_xL2!vQ4zR",
+            alCambiarContrasena = {},
+            mostrarContrasena = false,
+            alAlternarMostrarContrasena = {},
+            opcionesGenerador = OpcionesGenerador(),
+            alCambiarOpcionesGenerador = {},
+            haptica = remember { Haptica(contexto) }
+        )
+    }
+}
+

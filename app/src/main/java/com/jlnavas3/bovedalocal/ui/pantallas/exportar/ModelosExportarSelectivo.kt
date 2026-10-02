@@ -12,8 +12,8 @@ data class CategoriaExportacion(
 object ProveedorCategoriasExportacion {
     fun obtenerTodas(): List<CategoriaExportacion> = listOf(
         CategoriaExportacion("todos", "Todos") { true },
-        CategoriaExportacion("passkeys", "Passkeys") { it.tipo == TipoEntrada.PASSKEY || it.passkey != null },
-        CategoriaExportacion("2fa", "2FA (TOTP)") { !it.secretoTotp.isNullOrBlank() },
+        CategoriaExportacion("passkeys", "Llaves de paso") { it.tipo == TipoEntrada.PASSKEY || it.passkey != null },
+        CategoriaExportacion("2fa", "Dos pasos") { !it.secretoTotp.isNullOrBlank() },
         CategoriaExportacion("login", "Cuentas") { it.tipo == TipoEntrada.LOGIN },
         CategoriaExportacion("tarjetas", "Tarjetas") { it.tipo == TipoEntrada.TARJETA },
         CategoriaExportacion("identidades", "Identidades") { it.tipo == TipoEntrada.IDENTIDAD },

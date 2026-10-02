@@ -119,6 +119,7 @@ android {
         }
         debug {
             isMinifyEnabled = false
+            if (hayFirma) signingConfig = signingConfigs.getByName("release")
         }
     }
 
@@ -146,7 +147,7 @@ android {
 }
 
 dependencies {
-    implementation("androidx.core:core-ktx:1.15.0")
+    implementation("androidx.core:core-ktx:1.16.0")
     implementation("androidx.activity:activity-compose:1.10.0")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.7")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.7")
@@ -163,6 +164,8 @@ dependencies {
 
     implementation("androidx.biometric:biometric:1.1.0")
     implementation("androidx.credentials:credentials:1.5.0")
+    implementation("androidx.credentials.providerevents:providerevents:1.0.0-beta01")
+    implementation("androidx.credentials.providerevents:providerevents-play-services:1.0.0-beta01")
     implementation("com.google.guava:guava:33.4.8-android")
 
     // Cámara solo para leer QR de 2FA. ZXing es Java puro: no habla con ninguna red.

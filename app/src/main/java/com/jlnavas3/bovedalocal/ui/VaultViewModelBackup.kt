@@ -131,6 +131,22 @@ interface VaultBackupDelegate {
         }
     }
 
+    fun importarEntradasCxf(entradas: List<com.jlnavas3.bovedalocal.data.Entrada>, onCompletado: ((Int) -> Unit)? = null) {
+        ejecutar {
+            try {
+                val nuevas = withContext(Dispatchers.IO) {
+                    repositorio.importarEntradas(entradas)
+                }
+                Diagnostico.apuntar("bóveda", "Importación directa CXF completada ($nuevas entradas guardadas)")
+                avisoInterno.value = if (nuevas == 1) "1 credencial importada correctamente" else "$nuevas credenciales importadas correctamente"
+                onCompletado?.invoke(nuevas)
+            } catch (e: Exception) {
+                Diagnostico.apuntar("bóveda", "Fallo al importar credenciales CXF", e)
+                errorInterno.value = "No se pudieron importar las credenciales: ${e.message ?: "error desconocido"}"
+            }
+        }
+    }
+
     fun cambiarContrasenaMaestra(actual: String, nueva: String) {
         ejecutar {
             val viejaChars = actual.toCharArray()

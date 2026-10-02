@@ -76,3 +76,23 @@ fun Monograma(titulo: String, semilla: String, tamano: Int = 46) {
         )
     }
 }
+
+// -------------------------------------------------------------------------------------------------
+// Previews
+// -------------------------------------------------------------------------------------------------
+
+@com.jlnavas3.bovedalocal.ui.preview.BovedaPreview
+@Composable
+private fun MonogramaPreview() {
+    com.jlnavas3.bovedalocal.ui.preview.PreviewTemaBoveda {
+        androidx.compose.foundation.layout.Row(
+            horizontalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(12.dp)
+        ) {
+            Monograma(titulo = "Google", semilla = "google.com")
+            Monograma(titulo = "GitHub Inc", semilla = "github.com")
+            Monograma(titulo = "Amazon Web", semilla = "aws.amazon.com")
+            Monograma(titulo = "Netflix", semilla = "netflix.com")
+        }
+    }
+}
+

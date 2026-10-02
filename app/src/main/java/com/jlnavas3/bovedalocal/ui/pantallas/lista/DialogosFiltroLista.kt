@@ -55,7 +55,7 @@ fun DialogoFiltrosLista(
     val tipos = listOf(
         null to ("Todo" to Icons.Filled.SelectAll),
         TipoEntrada.LOGIN to ("Claves / Logins" to Icons.Filled.Lock),
-        TipoEntrada.PASSKEY to ("Passkeys" to Icons.Filled.Fingerprint),
+        TipoEntrada.PASSKEY to ("Llaves de paso" to Icons.Filled.Fingerprint),
         TipoEntrada.NOTA to ("Notas seguras" to Icons.Filled.Description),
         TipoEntrada.TARJETA to ("Tarjetas bancarias" to Icons.Filled.CreditCard),
         TipoEntrada.WIFI to ("Redes Wi-Fi" to Icons.Filled.Wifi),

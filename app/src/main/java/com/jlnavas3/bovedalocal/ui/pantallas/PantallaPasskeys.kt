@@ -20,6 +20,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.activity.compose.BackHandler
+import com.jlnavas3.bovedalocal.data.Entrada
+import kotlinx.coroutines.launch
 import com.jlnavas3.bovedalocal.ui.CriterioOrdenacion
 import com.jlnavas3.bovedalocal.ui.Pantalla
 import com.jlnavas3.bovedalocal.ui.VaultViewModel
@@ -57,11 +59,49 @@ fun PantallaPasskeys(vm: VaultViewModel) {
     var menuOpcionesDesplegado by remember { mutableStateOf(false) }
     var mostrarDialogoOrdenacion by remember { mutableStateOf(false) }
 
+    val ambitoCorutina = androidx.compose.runtime.rememberCoroutineScope()
+    val actividad = remember(contexto) {
+        var c = contexto
+        while (c is android.content.ContextWrapper) {
+            if (c is android.app.Activity) break
+            c = c.baseContext
+        }
+        c as? android.app.Activity
+    }
+
+    val dispararImportacionPasskeys: () -> Unit = {
+        val act = actividad
+        if (act != null) {
+            haptica.tic()
+            ambitoCorutina.launch {
+                when (val res = com.jlnavas3.bovedalocal.cxf.CxfGestorTransferencia.importarCredenciales(act)) {
+                    is com.jlnavas3.bovedalocal.cxf.ResultadoImportacionCxf.Exito -> {
+                        haptica.exito()
+                        vm.ir(Pantalla.ConfirmarImportacionCxf(res.jsonPayload))
+                    }
+                    is com.jlnavas3.bovedalocal.cxf.ResultadoImportacionCxf.Cancelado -> {
+                        // Cancelado por el usuario
+                    }
+                    is com.jlnavas3.bovedalocal.cxf.ResultadoImportacionCxf.SinOpciones -> {
+                        haptica.error()
+                        vm.mostrarAviso(res.mensaje)
+                    }
+                    is com.jlnavas3.bovedalocal.cxf.ResultadoImportacionCxf.Error -> {
+                        haptica.error()
+                        vm.mostrarError(res.mensaje)
+                    }
+                }
+            }
+        }
+    }
+
     var seleccionados by remember { mutableStateOf(setOf<String>()) }
     val modoSeleccion = seleccionados.isNotEmpty()
     var dialogoRenombrarSeleccion by remember { mutableStateOf(false) }
     var nuevoTituloRenombrar by remember { mutableStateOf("") }
     var dialogoBorrarSeleccion by remember { mutableStateOf(false) }
+    var mostrarDialogoExportarCxf by remember { mutableStateOf(false) }
+    var entradasParaTransferirCxf by remember { mutableStateOf<List<Entrada>?>(null) }
 
     BackHandler(enabled = modoSeleccion) {
         seleccionados = emptySet()
@@ -93,6 +133,7 @@ fun PantallaPasskeys(vm: VaultViewModel) {
                     CriterioOrdenacion.MODIFICACION_RECIENTE -> b.modificadaEn.compareTo(a.modificadaEn)
                     CriterioOrdenacion.ANTIGUEDAD -> a.creadaEn.compareTo(b.creadaEn)
                     CriterioOrdenacion.CREACION_RECIENTE -> b.creadaEn.compareTo(a.creadaEn)
+                    CriterioOrdenacion.USO_RECIENTE -> b.ultimoUsoEn.compareTo(a.ultimoUsoEn)
                 }
             }
     }
@@ -162,6 +203,8 @@ fun PantallaPasskeys(vm: VaultViewModel) {
                 alIrCopiaSeguridad = {
                     vm.ir(Pantalla.CopiaSeguridad("05-COP-SEG"))
                 },
+                alImportarPasskeys = dispararImportacionPasskeys,
+                alExportarDirectoCxf = { mostrarDialogoExportarCxf = true },
                 alRestablecerFiltros = {
                     menuOpcionesDesplegado = false
                     haptica.tic()
@@ -180,14 +223,15 @@ fun PantallaPasskeys(vm: VaultViewModel) {
                 .padding(horizontal = 16.dp, vertical = 12.dp)
         ) {
             DescripcionPantalla(
-                subtitulo = if (passkeysFiltradas.isEmpty()) "Sin llaves registradas" else "${passkeysFiltradas.size} llave${if (passkeysFiltradas.size == 1) "" else "s"} de acceso FIDO2 almacenada${if (passkeysFiltradas.size == 1) "" else "s"}"
+                subtitulo = if (passkeysFiltradas.isEmpty()) "Sin llaves registradas" else "${passkeysFiltradas.size} llave${if (passkeysFiltradas.size == 1) "" else "s"} de paso almacenada${if (passkeysFiltradas.size == 1) "" else "s"}"
             )
 
             Spacer(Modifier.height(10.dp))
 
             if (passkeysFiltradas.isEmpty()) {
                 EstadoVacioPasskeys(
-                    sinPasskeysEnTotal = todasLasPasskeys.isEmpty()
+                    sinPasskeysEnTotal = todasLasPasskeys.isEmpty(),
+                    alImportarPasskeys = dispararImportacionPasskeys
                 )
             } else {
                 Column(
@@ -259,6 +303,12 @@ fun PantallaPasskeys(vm: VaultViewModel) {
                     seleccionados = emptySet()
                     vm.ir(Pantalla.ExportarSelectivo("ids:$idsParam"))
                 },
+                alTransferirCxf = {
+                    haptica.tic()
+                    val copia = itemsSeleccionados.toList()
+                    seleccionados = emptySet()
+                    entradasParaTransferirCxf = copia
+                },
                 alRenombrar = {
                     haptica.tic()
                     val primerSeleccionado = todasLasPasskeys.find { it.id == seleccionados.firstOrNull() }
@@ -310,6 +360,22 @@ fun PantallaPasskeys(vm: VaultViewModel) {
                 dialogoRenombrarSeleccion = false
             },
             alDescartar = { dialogoRenombrarSeleccion = false }
+        )
+    }
+
+    entradasParaTransferirCxf?.let { passkeysSeleccionadas ->
+        com.jlnavas3.bovedalocal.ui.pantallas.cxf.DialogoExportacionDirectaCxf(
+            entradas = passkeysSeleccionadas,
+            esSeleccionPersonalizada = true,
+            alCerrar = { entradasParaTransferirCxf = null }
+        )
+    }
+
+    if (mostrarDialogoExportarCxf) {
+        com.jlnavas3.bovedalocal.ui.pantallas.cxf.DialogoExportacionDirectaCxf(
+            entradas = todasLasPasskeys,
+            esSeleccionPersonalizada = false,
+            alCerrar = { mostrarDialogoExportarCxf = false }
         )
     }
 }

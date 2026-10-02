@@ -46,7 +46,7 @@ class BovedaAutofillService : AutofillService() {
         val descCampos = buildList {
             if (campos.usuario != null) add("usuario")
             if (campos.contrasena != null) add("contraseña")
-            if (campos.otp != null) add("código 2FA")
+            if (campos.otp != null) add("código de verificación")
         }.joinToString(" y ")
         Diagnostico.apuntar("autofill", "Formulario reconocido: $descCampos")
         val paquete = estructura.activityComponent?.packageName ?: ""

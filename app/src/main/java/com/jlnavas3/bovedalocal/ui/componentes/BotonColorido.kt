@@ -118,3 +118,36 @@ fun BotonColorido(
         }
     }
 }
+
+// -------------------------------------------------------------------------------------------------
+// Previews
+// -------------------------------------------------------------------------------------------------
+
+@com.jlnavas3.bovedalocal.ui.preview.BovedaPreview
+@Composable
+private fun BotonColoridoPreview() {
+    com.jlnavas3.bovedalocal.ui.preview.PreviewTemaBoveda {
+        androidx.compose.foundation.layout.Column(
+            verticalArrangement = Arrangement.spacedBy(10.dp),
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            BotonColorido(
+                texto = "Acción Primaria",
+                color = com.jlnavas3.bovedalocal.ui.theme.ColorAcento,
+                alPulsar = {}
+            )
+            BotonColorido(
+                texto = "Acción Peligro",
+                color = com.jlnavas3.bovedalocal.ui.theme.Peligro,
+                alPulsar = {}
+            )
+            BotonColorido(
+                texto = "Acción Inactiva",
+                color = com.jlnavas3.bovedalocal.ui.theme.ColorAcento,
+                activo = false,
+                alPulsar = {}
+            )
+        }
+    }
+}
+

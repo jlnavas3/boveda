@@ -215,3 +215,28 @@ fun CabeceraPantalla(
         }
     }
 }
+
+// -------------------------------------------------------------------------------------------------
+// Previews
+// -------------------------------------------------------------------------------------------------
+
+@com.jlnavas3.bovedalocal.ui.preview.BovedaPreview
+@Composable
+private fun CabeceraPantallaPreview() {
+    com.jlnavas3.bovedalocal.ui.preview.PreviewTemaBoveda {
+        Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+            BarraSuperiorPantalla(
+                titulo = "Ajustes de Seguridad",
+                idEtiqueta = "01-SEG",
+                mostrarId = true,
+                alVolver = {}
+            )
+            CabeceraPantalla(
+                titulo = "Generador de Claves",
+                subtitulo = "Personaliza longitud y caracteres",
+                alVolver = {}
+            )
+        }
+    }
+}
+

@@ -53,6 +53,7 @@ fun BarraInferiorSeleccion(
     alAlternarFavoritos: (() -> Unit)? = null,
     alComparar: (() -> Unit)? = null,
     alRespaldar: (() -> Unit)? = null,
+    alTransferirCxf: (() -> Unit)? = null,
     alRenombrar: (() -> Unit)? = null,
     alBorrar: (() -> Unit)? = null,
     modifier: Modifier = Modifier
@@ -125,7 +126,7 @@ fun BarraInferiorSeleccion(
                 }
             }
 
-            // 2. Respaldar (Copia cifrada selectiva)
+            // 3. Respaldar (Copia cifrada selectiva)
             if (alRespaldar != null) {
                 IconButton(
                     onClick = {
@@ -144,7 +145,15 @@ fun BarraInferiorSeleccion(
                 }
             }
 
-            // 3. Renombrar
+            // 4. Transferir (FIDO CXF selectivo)
+            if (alTransferirCxf != null) {
+                BotonTransferirSeleccion(
+                    habilitado = habilitado,
+                    alPulsar = alTransferirCxf
+                )
+            }
+
+            // 5. Renombrar
             if (alRenombrar != null) {
                 IconButton(
                     onClick = {
@@ -184,3 +193,25 @@ fun BarraInferiorSeleccion(
         }
     }
 }
+
+// -------------------------------------------------------------------------------------------------
+// Previews
+// -------------------------------------------------------------------------------------------------
+
+@com.jlnavas3.bovedalocal.ui.preview.BovedaPreview
+@Composable
+private fun BarraInferiorSeleccionPreview() {
+    com.jlnavas3.bovedalocal.ui.preview.PreviewTemaBoveda {
+        BarraInferiorSeleccion(
+            cantidad = 3,
+            todosSonFavoritos = false,
+            alAlternarFavoritos = {},
+            alComparar = {},
+            alRespaldar = {},
+            alTransferirCxf = {},
+            alRenombrar = {},
+            alBorrar = {}
+        )
+    }
+}
+

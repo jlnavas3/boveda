@@ -24,6 +24,7 @@ import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.Tune
+import androidx.compose.material.icons.filled.VpnKey
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -45,6 +46,8 @@ import com.jlnavas3.bovedalocal.ui.componentes.ElementoRetornoSubmenu
 import com.jlnavas3.bovedalocal.ui.componentes.MenuDesplegableBoveda
 import com.jlnavas3.bovedalocal.ui.componentes.SeparadorOpcionMenu
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorTarjetaAjustes
+import com.jlnavas3.bovedalocal.ui.preview.BovedaPreview
+import com.jlnavas3.bovedalocal.ui.preview.PreviewTemaBoveda
 import com.jlnavas3.bovedalocal.ui.theme.Ambar
 import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
 import com.jlnavas3.bovedalocal.ui.theme.ColorTitulos
@@ -55,7 +58,8 @@ import com.jlnavas3.bovedalocal.util.Haptica
 
 private enum class SubmenuLista {
     PRINCIPAL,
-    IMPORTAR_EXPORTAR
+    IMPORTAR,
+    EXPORTAR
 }
 
 @Composable
@@ -80,6 +84,8 @@ fun BarraSuperiorLista(
     alIrCopiaSeguridadManual: () -> Unit,
     alIrCopiaSeguridad: () -> Unit,
     alIrCsvGoogle: () -> Unit,
+    alImportarDirectoCxf: () -> Unit = {},
+    alExportarDirectoCxf: () -> Unit = {},
     alRestablecerFiltros: () -> Unit
 ) {
     val contexto = LocalContext.current
@@ -226,12 +232,22 @@ fun BarraSuperiorLista(
                         )
                         SeparadorOpcionMenu()
                         ElementoMenuCompacto(
-                            texto = "Importar / exportar",
+                            texto = "Importar...",
                             icono = androidx.compose.material.icons.Icons.Filled.FileUpload,
                             colorIcono = Ambar,
                             iconoFinal = androidx.compose.material.icons.Icons.AutoMirrored.Filled.ArrowForward,
                             onClick = {
-                                submenuActivo = SubmenuLista.IMPORTAR_EXPORTAR
+                                submenuActivo = SubmenuLista.IMPORTAR
+                            }
+                        )
+                        SeparadorOpcionMenu()
+                        ElementoMenuCompacto(
+                            texto = "Exportar...",
+                            icono = androidx.compose.material.icons.Icons.Filled.FileDownload,
+                            colorIcono = Ambar,
+                            iconoFinal = androidx.compose.material.icons.Icons.AutoMirrored.Filled.ArrowForward,
+                            onClick = {
+                                submenuActivo = SubmenuLista.EXPORTAR
                             }
                         )
                         if (hayFiltrosParaRestablecer) {
@@ -248,32 +264,14 @@ fun BarraSuperiorLista(
                             )
                         }
                     }
-                    SubmenuLista.IMPORTAR_EXPORTAR -> {
+                    SubmenuLista.IMPORTAR -> {
                         ElementoRetornoSubmenu(
-                            titulo = "Importar / exportar",
+                            titulo = "Importar",
                             alVolver = { submenuActivo = SubmenuLista.PRINCIPAL }
                         )
                         SeparadorOpcionMenu()
                         ElementoMenuCompacto(
-                            texto = "Exportación selectiva",
-                            icono = Icons.Filled.FileDownload,
-                            onClick = {
-                                menuOpcionesDesplegado = false
-                                alIrExportarSelectivo()
-                            }
-                        )
-                        SeparadorOpcionMenu()
-                        ElementoMenuCompacto(
-                            texto = "Exportación manual (.bvda)",
-                            icono = androidx.compose.material.icons.Icons.Filled.Backup,
-                            onClick = {
-                                menuOpcionesDesplegado = false
-                                alIrCopiaSeguridadManual()
-                            }
-                        )
-                        SeparadorOpcionMenu()
-                        ElementoMenuCompacto(
-                            texto = "Importar copia de seguridad",
+                            texto = "Copia de seguridad (.bvda)",
                             icono = Icons.Filled.FileUpload,
                             onClick = {
                                 menuOpcionesDesplegado = false
@@ -282,11 +280,53 @@ fun BarraSuperiorLista(
                         )
                         SeparadorOpcionMenu()
                         ElementoMenuCompacto(
-                            texto = "Importar contraseñas de Google",
+                            texto = "Contraseñas de Google (.csv)",
                             icono = Icons.Filled.FileUpload,
                             onClick = {
                                 menuOpcionesDesplegado = false
                                 alIrCsvGoogle()
+                            }
+                        )
+                        SeparadorOpcionMenu()
+                        ElementoMenuCompacto(
+                            texto = "Importación directa de llaves de paso y contraseñas",
+                            icono = androidx.compose.material.icons.Icons.Filled.VpnKey,
+                            onClick = {
+                                menuOpcionesDesplegado = false
+                                alImportarDirectoCxf()
+                            }
+                        )
+                    }
+                    SubmenuLista.EXPORTAR -> {
+                        ElementoRetornoSubmenu(
+                            titulo = "Exportar",
+                            alVolver = { submenuActivo = SubmenuLista.PRINCIPAL }
+                        )
+                        SeparadorOpcionMenu()
+                        ElementoMenuCompacto(
+                            texto = "Copia de seguridad completa (.bvda)",
+                            icono = androidx.compose.material.icons.Icons.Filled.Backup,
+                            onClick = {
+                                menuOpcionesDesplegado = false
+                                alIrCopiaSeguridadManual()
+                            }
+                        )
+                        SeparadorOpcionMenu()
+                        ElementoMenuCompacto(
+                            texto = "Exportación selectiva (.bvda)",
+                            icono = Icons.Filled.FileDownload,
+                            onClick = {
+                                menuOpcionesDesplegado = false
+                                alIrExportarSelectivo()
+                            }
+                        )
+                        SeparadorOpcionMenu()
+                        ElementoMenuCompacto(
+                            texto = "Exportación directa de llaves de paso y contraseñas",
+                            icono = androidx.compose.material.icons.Icons.Filled.VpnKey,
+                            onClick = {
+                                menuOpcionesDesplegado = false
+                                alExportarDirectoCxf()
                             }
                         )
                     }
@@ -295,3 +335,34 @@ fun BarraSuperiorLista(
         }
     }
 }
+
+@BovedaPreview
+@Composable
+private fun PreviewBarraSuperiorLista() {
+    PreviewTemaBoveda {
+        BarraSuperiorLista(
+            nombreBoveda = "Mi Bóveda Personal",
+            totalEntradas = 42,
+            busquedaVisible = false,
+            busquedaActiva = false,
+            tieneFiltrosActivos = false,
+            soloFavoritos = false,
+            agruparPorSitio = false,
+            mostrarIndicadoresContenido = true,
+            hayFiltrosParaRestablecer = false,
+            alAbrirMenu = {},
+            alAlternarBusqueda = {},
+            alMostrarOrdenacion = {},
+            alMostrarFiltros = {},
+            alAlternarSoloFavoritos = {},
+            alIrOrganizacionGrupo = {},
+            alIrOrganizacionIndicadores = {},
+            alIrExportarSelectivo = {},
+            alIrCopiaSeguridadManual = {},
+            alIrCopiaSeguridad = {},
+            alIrCsvGoogle = {},
+            alRestablecerFiltros = {}
+        )
+    }
+}
+

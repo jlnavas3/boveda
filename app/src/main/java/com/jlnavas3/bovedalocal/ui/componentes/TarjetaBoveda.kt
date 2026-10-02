@@ -218,3 +218,45 @@ fun TarjetaBovedaDesplegable(
         }
     }
 }
+
+// -------------------------------------------------------------------------------------------------
+// Previews
+// -------------------------------------------------------------------------------------------------
+
+@com.jlnavas3.bovedalocal.ui.preview.BovedaPreview
+@Composable
+private fun TarjetasBovedaPreview() {
+    com.jlnavas3.bovedalocal.ui.preview.PreviewTemaBoveda {
+        Column(
+            verticalArrangement = Arrangement.spacedBy(14.dp),
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            TarjetaBoveda {
+                Text(
+                    text = "Contenido de tarjeta estándar",
+                    color = ColorTitulos,
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            }
+
+            TarjetaBovedaDesplegable(
+                titulo = "Tarjeta Desplegable (Cerrada)",
+                icono = androidx.compose.material.icons.Icons.Filled.ExpandMore,
+                descripcion = "Toca para ver los detalles ocultos"
+            ) {
+                Text("Detalle interno oculto", color = TextoSecundario)
+            }
+
+            TarjetaBovedaDesplegable(
+                titulo = "Tarjeta Desplegable (Abierta)",
+                icono = androidx.compose.material.icons.Icons.Filled.ExpandLess,
+                descripcion = "Configuración avanzada desplegada",
+                inicialmenteAbierta = true
+            ) {
+                Text("Detalle interno visible respetando tema", color = TextoSecundario)
+            }
+        }
+    }
+}
+
+

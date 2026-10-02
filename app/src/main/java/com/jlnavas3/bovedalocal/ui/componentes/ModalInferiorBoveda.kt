@@ -257,3 +257,29 @@ fun FilaOpcionModal(
         }
     }
 }
+
+// -------------------------------------------------------------------------------------------------
+// Previews
+// -------------------------------------------------------------------------------------------------
+
+@com.jlnavas3.bovedalocal.ui.preview.BovedaPreview
+@Composable
+private fun FilaOpcionModalPreview() {
+    com.jlnavas3.bovedalocal.ui.preview.PreviewTemaBoveda {
+        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            FilaOpcionModal(
+                titulo = "Opción Seleccionada",
+                descripcion = "Explicación breve de la opción activa",
+                seleccionado = true,
+                alPulsar = {}
+            )
+            FilaOpcionModal(
+                titulo = "Opción Inactiva",
+                descripcion = "Explicación breve de la opción secundaria",
+                seleccionado = false,
+                alPulsar = {}
+            )
+        }
+    }
+}
+

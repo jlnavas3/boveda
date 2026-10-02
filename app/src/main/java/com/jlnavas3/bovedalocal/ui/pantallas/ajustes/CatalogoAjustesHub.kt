@@ -185,13 +185,13 @@ fun crearCatalogoAjustesHub(
 
         // ⚡ Grupo 4: Herramientas
         ElementoMenuAjustes(
-            titulo = "Autenticador (2FA)",
-            subtitulo = "Parámetros predeterminados de códigos TOTP",
+            titulo = "Verificación en dos pasos",
+            subtitulo = "Parámetros predeterminados de códigos de dos pasos",
             icono = Icons.Filled.Timer,
             colorIcono = Color(0xFF3949AB),
             idEtiqueta = "04-HER-AUT",
             grupo = "Herramientas",
-            palabrasClave = "2fa totp autenticador codigos periodo hmac digitos",
+            palabrasClave = "2fa totp autenticador codigos periodo hmac digitos verificacion dos pasos",
             alPulsar = { vm.ir(Pantalla.AjustesAutenticador("04-HER-AUT")) }
         ),
         ElementoMenuAjustes(
@@ -235,13 +235,13 @@ fun crearCatalogoAjustesHub(
             alPulsar = { vm.ir(Pantalla.TileRapido("04-HER-MSK")) }
         ),
         ElementoMenuAjustes(
-            titulo = "Passkeys",
-            subtitulo = "Proveedor de llaves de acceso en Android",
+            titulo = "Llaves de paso",
+            subtitulo = "Proveedor de llaves de paso en Android",
             icono = Icons.Filled.Key,
             colorIcono = Color(0xFF8B5CF6),
             idEtiqueta = "04-HER-PSK",
             grupo = "Herramientas",
-            palabrasClave = "passkey passkeys proveedor credenciales llaves acceso android servicio activar",
+            palabrasClave = "passkey passkeys proveedor credenciales llaves paso acceso android servicio activar",
             alPulsar = alAbrirProveedorPasskeys
         ),
 

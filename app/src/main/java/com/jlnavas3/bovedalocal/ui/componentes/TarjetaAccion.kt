@@ -160,3 +160,29 @@ fun TarjetaAccion(
         )
     }
 }
+
+// -------------------------------------------------------------------------------------------------
+// Previews
+// -------------------------------------------------------------------------------------------------
+
+@com.jlnavas3.bovedalocal.ui.preview.BovedaPreview
+@Composable
+private fun TarjetaAccionPreview() {
+    com.jlnavas3.bovedalocal.ui.preview.PreviewTemaBoveda {
+        Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+            ContenedorDestacado(
+                titulo = "Aviso de Seguridad",
+                descripcion = "Se recomienda activar la biometría para un desbloqueo más rápido y seguro."
+            )
+
+            TarjetaAccion(
+                titulo = "Copia de Seguridad",
+                descripcion = "Crea un respaldo cifrado de todas tus credenciales en almacenamiento local.",
+                textoBoton = "Crear Respaldo Ahora",
+                colorBoton = ColorAcento,
+                alPulsar = {}
+            )
+        }
+    }
+}
+

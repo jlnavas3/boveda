@@ -55,7 +55,7 @@ fun GrupoSelectoresColoresDatos(
         ComponenteSeparador()
 
         ComponenteColorPicker(
-            titulo = "Código 2FA (TOTP)",
+            titulo = "Verificación en dos pasos",
             colorActual = ColorDatos2FA,
             icono = Icons.Filled.Timer,
             colorIcono = ColorDatos2FA,
@@ -65,7 +65,7 @@ fun GrupoSelectoresColoresDatos(
         ComponenteSeparador()
 
         ComponenteColorPicker(
-            titulo = "Passkey WebAuthn",
+            titulo = "Llave de paso",
             colorActual = ColorDatosPasskey,
             icono = Icons.Filled.Fingerprint,
             colorIcono = ColorDatosPasskey,

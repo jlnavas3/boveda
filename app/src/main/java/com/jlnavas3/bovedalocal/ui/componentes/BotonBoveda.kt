@@ -265,3 +265,32 @@ fun BotonTextoBoveda(
         )
     }
 }
+
+// -------------------------------------------------------------------------------------------------
+// Previews
+// -------------------------------------------------------------------------------------------------
+
+@com.jlnavas3.bovedalocal.ui.preview.BovedaPreview
+@Composable
+private fun BotonesBovedaPreview() {
+    com.jlnavas3.bovedalocal.ui.preview.PreviewTemaBoveda {
+        androidx.compose.foundation.layout.Column(
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            BotonBoveda(texto = "Botón Primario", alPulsar = {}, variante = VarianteBoton.PRIMARIO)
+            BotonBoveda(texto = "Botón Secundario", alPulsar = {}, variante = VarianteBoton.SECUNDARIO)
+            BotonBoveda(texto = "Botón Peligro", alPulsar = {}, variante = VarianteBoton.PELIGRO)
+            BotonBorde(texto = "Botón con Borde", alPulsar = {})
+            Row(
+                horizontalArrangement = Arrangement.End,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                BotonTextoBoveda(texto = "Cancelar", alPulsar = {}, tipo = TipoBotonTexto.SECUNDARIO)
+                Spacer(modifier = Modifier.width(8.dp))
+                BotonTextoBoveda(texto = "Confirmar", alPulsar = {}, tipo = TipoBotonTexto.PRIMARIO)
+            }
+        }
+    }
+}
+

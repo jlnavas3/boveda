@@ -81,3 +81,23 @@ fun DialogoConfirmacionBoveda(
         }
     )
 }
+
+// -------------------------------------------------------------------------------------------------
+// Previews
+// -------------------------------------------------------------------------------------------------
+
+@com.jlnavas3.bovedalocal.ui.preview.BovedaPreview
+@Composable
+private fun DialogoConfirmacionBovedaPreview() {
+    com.jlnavas3.bovedalocal.ui.preview.PreviewTemaBoveda {
+        DialogoConfirmacionBoveda(
+            titulo = "¿Eliminar credencial?",
+            mensaje = "Esta acción moverá la credencial seleccionada a la papelera de reciclaje.",
+            textoConfirmar = "Eliminar",
+            tipoConfirmacion = TipoBotonTexto.PELIGRO,
+            alConfirmar = {},
+            alDescartar = {}
+        )
+    }
+}
+

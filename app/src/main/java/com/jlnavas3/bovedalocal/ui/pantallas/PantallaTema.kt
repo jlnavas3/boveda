@@ -1,6 +1,7 @@
 package com.jlnavas3.bovedalocal.ui.pantallas
 
 import android.app.Activity
+import android.os.Build
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
@@ -76,6 +77,7 @@ fun PantallaTema(
     val scrollState = rememberScrollState()
 
     ProveedorResaltadoAjustes(seccionDestino, scrollState) {
+        val mostrarColorAcento = !ajustes.colorDinamicoSistema || Build.VERSION.SDK_INT < Build.VERSION_CODES.S
         val coordinador = LocalCoordinadorResaltado.current
         Column(
             modifier = Modifier
@@ -91,14 +93,17 @@ fun PantallaTema(
                 colorFondo = ColorAjustesFondo,
                 acciones = {
                     BotonMenuOpcionesPantalla(
-                        grupos = listOf(
-                            AccionSaltoGrupo("02-APA-THM-G01", "Modo de tema"),
-                            AccionSaltoGrupo("02-APA-THM-G02", "Pantalla de desbloqueo"),
-                            AccionSaltoGrupo("02-APA-THM-G03", "Color dinámico"),
-                            AccionSaltoGrupo("02-APA-THM-G04", "Campos y datos"),
-                            AccionSaltoGrupo("02-APA-THM-G05", "Color de acento"),
-                            AccionSaltoGrupo("02-APA-THM-G06", "Ícono en el launcher")
-                        ),
+                        grupos = buildList {
+                            add(AccionSaltoGrupo("02-APA-THM-G01", "Modo de tema"))
+                            add(AccionSaltoGrupo("02-APA-THM-G02", "Pantalla de desbloqueo"))
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                                add(AccionSaltoGrupo("02-APA-THM-G03", "Color dinámico"))
+                            }
+                            if (mostrarColorAcento) {
+                                add(AccionSaltoGrupo("02-APA-THM-G05", "Color de acento"))
+                            }
+                            add(AccionSaltoGrupo("02-APA-THM-G06", "Ícono en el launcher"))
+                        },
                         alRestablecerPantalla = {
                             haptica.tic()
                             vm.restablecerColoresTema()
@@ -140,31 +145,15 @@ fun PantallaTema(
                     alAlternarColorDinamico = { vm.alternarColorDinamicoSistema(it) }
                 )
 
-                // Colores de campos y datos
-                Spacer(Modifier.height(14.dp))
-                ComponenteGrupo(
-                    etiqueta = "CAMPOS Y DATOS",
-                    icono = Icons.Filled.Palette,
-                    colorIcono = Color(0xFF8E24AA),
-                    idGrupo = "02-APA-THM-G04",
-                    mostrarId = ajustes.mostrarIdsAjustes
-                ) {
-                    ComponenteNavegacion(
-                        titulo = "Colores de campos y datos",
-                        icono = null,
-                        idFila = "02-APA-THM-DAT",
-                        mostrarId = ajustes.mostrarIdsAjustes,
-                        alPulsar = { vm.ir(Pantalla.ColoresDatos()) }
+                // 2. Color de acento principal (solo si Material You está desactivado)
+                if (mostrarColorAcento) {
+                    Spacer(Modifier.height(14.dp))
+                    SeccionColorAcento(
+                        ajustes = ajustes,
+                        reqAcento = reqAcento,
+                        alAjustarColorAcento = { vm.ajustarColorAcento(it) }
                     )
                 }
-
-                // 2. Color de acento principal
-                Spacer(Modifier.height(14.dp))
-                SeccionColorAcento(
-                    ajustes = ajustes,
-                    reqAcento = reqAcento,
-                    alAjustarColorAcento = { vm.ajustarColorAcento(it) }
-                )
 
                 // 4. Ícono de la app en el Launcher
                 Spacer(Modifier.height(14.dp))

@@ -335,3 +335,39 @@ fun TarjetaCampoPersonalizadoEdicion(
         }
     }
 }
+
+// -------------------------------------------------------------------------------------------------
+// Previews
+// -------------------------------------------------------------------------------------------------
+
+@com.jlnavas3.bovedalocal.ui.preview.BovedaPreview
+@Composable
+private fun TarjetaCampoPersonalizadoEdicionPreview() {
+    com.jlnavas3.bovedalocal.ui.preview.PreviewTemaBoveda {
+        Column(verticalArrangement = Arrangement.spacedBy(14.dp)) {
+            TarjetaCampoPersonalizadoEdicion(
+                numero = 1,
+                campo = CampoPersonalizado(
+                    etiqueta = "PIN de Acceso",
+                    valor = "9942",
+                    tipo = TipoCampo.PIN,
+                    esSensible = true
+                ),
+                alModificar = {},
+                alEliminar = {}
+            )
+            TarjetaCampoPersonalizadoEdicion(
+                numero = 2,
+                campo = CampoPersonalizado(
+                    etiqueta = "Fecha de Emisión",
+                    valor = "15/04/2025",
+                    tipo = TipoCampo.FECHA,
+                    esSensible = false
+                ),
+                alModificar = {},
+                alEliminar = {}
+            )
+        }
+    }
+}
+

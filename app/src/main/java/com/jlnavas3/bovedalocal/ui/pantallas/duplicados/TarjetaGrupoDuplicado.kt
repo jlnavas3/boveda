@@ -368,3 +368,31 @@ fun FilaEntradaDuplicada(
         }
     }
 }
+
+// -------------------------------------------------------------------------------------------------
+// Previews
+// -------------------------------------------------------------------------------------------------
+
+@com.jlnavas3.bovedalocal.ui.preview.BovedaPreview
+@Composable
+private fun TarjetaGrupoDuplicadoPreview() {
+    com.jlnavas3.bovedalocal.ui.preview.PreviewTemaBoveda {
+        val entrada1 = com.jlnavas3.bovedalocal.ui.preview.PreviewMocks.entradaEjemplo
+        val entrada2 = entrada1.copy(id = "mock-dup-2", titulo = "Google (Copia)")
+        val grupo = GrupoDuplicado(
+            idGrupo = "grupo-1",
+            tipo = com.jlnavas3.bovedalocal.data.TipoDuplicado.IDENTICO,
+            claveVisual = "google.com",
+            entradas = listOf(entrada1, entrada2),
+            sugeridaPrincipal = entrada1
+        )
+        TarjetaGrupoDuplicado(
+            grupo = grupo,
+            expandido = true,
+            alAlternar = {},
+            alConservar = {},
+            alVerDetalle = {}
+        )
+    }
+}
+

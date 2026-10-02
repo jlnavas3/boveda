@@ -3,6 +3,7 @@ package com.jlnavas3.bovedalocal.ui.componentes
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.unit.dp
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteCampoTexto
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.TipoCampoTexto
 
@@ -49,3 +50,32 @@ fun CampoBoveda(
         formateadorMascara = formateadorMascara
     )
 }
+
+// -------------------------------------------------------------------------------------------------
+// Previews
+// -------------------------------------------------------------------------------------------------
+
+@com.jlnavas3.bovedalocal.ui.preview.BovedaPreview
+@Composable
+private fun CampoBovedaPreview() {
+    com.jlnavas3.bovedalocal.ui.preview.PreviewTemaBoveda {
+        androidx.compose.foundation.layout.Column(
+            verticalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(12.dp)
+        ) {
+            CampoBoveda(
+                valor = "usuario@correo.com",
+                etiqueta = "Usuario / Correo",
+                alCambiar = {}
+            )
+            CampoBoveda(
+                valor = "ContraseñaSecreta123",
+                etiqueta = "Contraseña Maestra",
+                esContrasena = true,
+                mostrarContrasena = false,
+                alAlternarMostrarContrasena = {},
+                alCambiar = {}
+            )
+        }
+    }
+}
+

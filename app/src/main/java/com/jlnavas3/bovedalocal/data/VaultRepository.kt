@@ -215,6 +215,21 @@ class VaultRepository private constructor(contexto: Context) {
         }
     }
 
+    /** Registra la marca de tiempo de último uso de una credencial sin alterar su fecha de edición. */
+    fun registrarUsoEntrada(id: String, momento: Long = System.currentTimeMillis()) {
+        synchronized(candado) {
+            val idx = contenido.entradas.indexOfFirst { it.id == id }
+            if (idx >= 0) {
+                val lista = contenido.entradas.toMutableList()
+                val actual = lista[idx]
+                lista[idx] = actual.copy(ultimoUsoEn = momento)
+                contenido = contenido.copy(entradas = lista)
+                persistir()
+                publicar()
+            }
+        }
+    }
+
     /** No borra de verdad: manda a la papelera, de donde se puede recuperar. */
     fun eliminarEntrada(id: String) {
         synchronized(candado) {
@@ -552,6 +567,22 @@ class VaultRepository private constructor(contexto: Context) {
             val lista = contenido.entradas.toMutableList()
             lista.addAll(nuevasEntradas)
             contenido = contenido.copy(entradas = lista.sortedBy { it.titulo.lowercase() })
+            persistir()
+            publicar()
+        }
+        return nuevasEntradas.size
+    }
+
+    /** Importa una lista de entradas (ej. desde FIDO CXF o importación directa). */
+    fun importarEntradas(nuevasEntradas: List<Entrada>): Int {
+        if (claveMaestra == null) throw IllegalStateException("La bóveda está bloqueada")
+        synchronized(candado) {
+            if (claveMaestra == null) throw IllegalStateException("La bóveda está bloqueada")
+            val porId = contenido.entradas.associateBy { it.id }.toMutableMap()
+            nuevasEntradas.forEach { entrada ->
+                porId[entrada.id] = entrada
+            }
+            contenido = contenido.copy(entradas = porId.values.sortedBy { it.titulo.lowercase() })
             persistir()
             publicar()
         }

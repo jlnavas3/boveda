@@ -193,3 +193,32 @@ fun ContenedorFila(
         }
     }
 }
+
+// -------------------------------------------------------------------------------------------------
+// Previews
+// -------------------------------------------------------------------------------------------------
+
+@com.jlnavas3.bovedalocal.ui.preview.BovedaPreview
+@Composable
+private fun ContenedoresPreview() {
+    com.jlnavas3.bovedalocal.ui.preview.PreviewTemaBoveda {
+        Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+            ContenedorSeccion(
+                titulo = "Sección de Seguridad",
+                subtitulo = "Parámetros avanzados de protección de la bóveda"
+            ) {
+                ContenedorTarjeta {
+                    Text("Tarjeta dentro de sección con forma dinámica", color = TextoPrincipal)
+                }
+            }
+
+            ContenedorTarjeta {
+                ContenedorFila(
+                    titulo = "Bloqueo por Inactividad",
+                    subtitulo = "Bloquear tras 5 minutos de no uso"
+                )
+            }
+        }
+    }
+}
+

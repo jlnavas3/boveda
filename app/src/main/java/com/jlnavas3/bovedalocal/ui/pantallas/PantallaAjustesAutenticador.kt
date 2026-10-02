@@ -44,7 +44,7 @@ fun PantallaAjustesAutenticador(
                 .background(ColorAjustesFondo)
         ) {
             BarraSuperiorPantalla(
-                titulo = "Autenticador (2FA)",
+                titulo = "Verificación en dos pasos",
                 idEtiqueta = "04-HER-AUT",
                 mostrarId = ajustes.mostrarIdsAjustes,
                 alVolver = { vm.volverAtras() },
@@ -59,7 +59,7 @@ fun PantallaAjustesAutenticador(
                         alRestablecerPantalla = {
                             vm.restablecerTotpManual()
                         },
-                        mensajeToastRestablecer = "Autenticador (2FA) restablecido"
+                        mensajeToastRestablecer = "Verificación en dos pasos restablecida"
                     )
                 }
             )

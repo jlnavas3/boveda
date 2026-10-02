@@ -25,11 +25,11 @@ fun SeccionTotpEdicion(
     alAlternarMostrarSecreto: () -> Unit,
     totpValido: Boolean
 ) {
-    GrupoAjustes(etiqueta = "Autenticador 2FA (Opcional)") {
+    GrupoAjustes(etiqueta = "Verificación en dos pasos (Opcional)") {
         Column(modifier = Modifier.padding(14.dp)) {
             ComponenteCampoTexto(
                 valor = totp,
-                etiqueta = "Clave secreta 2FA (TOTP)",
+                etiqueta = "Clave secreta de verificación",
                 alCambiar = { alCambiarTotp(it.uppercase()) },
                 tipo = TipoCampoTexto.CONTRASENA,
                 mostrarIcono = true,
@@ -46,3 +46,22 @@ fun SeccionTotpEdicion(
         }
     }
 }
+
+// -------------------------------------------------------------------------------------------------
+// Previews
+// -------------------------------------------------------------------------------------------------
+
+@com.jlnavas3.bovedalocal.ui.preview.BovedaPreview
+@Composable
+private fun SeccionTotpEdicionPreview() {
+    com.jlnavas3.bovedalocal.ui.preview.PreviewTemaBoveda {
+        SeccionTotpEdicion(
+            totp = "JBSWY3DPEHPK3PXP",
+            alCambiarTotp = {},
+            mostrarSecretoTotp = true,
+            alAlternarMostrarSecreto = {},
+            totpValido = true
+        )
+    }
+}
+

@@ -203,3 +203,32 @@ fun ComponenteAlerta(
         }
     }
 }
+
+// -------------------------------------------------------------------------------------------------
+// Previews
+// -------------------------------------------------------------------------------------------------
+
+@com.jlnavas3.bovedalocal.ui.preview.BovedaPreview
+@Composable
+private fun ComponenteAlertaPreview() {
+    com.jlnavas3.bovedalocal.ui.preview.PreviewTemaBoveda {
+        Column(verticalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(12.dp)) {
+            ComponenteAlerta(
+                tipo = TipoAlerta.INFO,
+                titulo = "Información Importante",
+                mensaje = "Las credenciales se cifran localmente en el dispositivo utilizando AES-256-GCM."
+            )
+            ComponenteAlerta(
+                tipo = TipoAlerta.WARNING,
+                titulo = "Copia de Seguridad Recomendada",
+                mensaje = "Hace más de 30 días que no exportas un respaldo de tu bóveda."
+            )
+            ComponenteAlerta(
+                tipo = TipoAlerta.DANGER,
+                titulo = "Atención",
+                mensaje = "Si olvidas tu contraseña maestra y no tienes biometría configurada, los datos serán irrecuperables."
+            )
+        }
+    }
+}
+

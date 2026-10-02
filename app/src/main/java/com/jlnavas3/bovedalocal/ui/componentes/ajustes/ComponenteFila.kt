@@ -188,3 +188,31 @@ fun ComponenteFila(
         }
     }
 }
+
+// -------------------------------------------------------------------------------------------------
+// Previews
+// -------------------------------------------------------------------------------------------------
+
+@com.jlnavas3.bovedalocal.ui.preview.BovedaPreview
+@Composable
+private fun ComponenteFilaPreview() {
+    com.jlnavas3.bovedalocal.ui.preview.PreviewTemaBoveda {
+        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            ComponenteFila(
+                titulo = "Bloqueo Automático",
+                subtitulo = "Bloquear la bóveda al salir de la aplicación",
+                idFila = "01-SEG-BLQ",
+                mostrarId = true,
+                valorTexto = "Inmediato"
+            )
+            ComponenteFila(
+                titulo = "Tema de la Aplicación",
+                subtitulo = "Seguir tema del sistema",
+                idFila = "02-APA-TEM",
+                mostrarId = false,
+                valorTexto = "Sistema"
+            )
+        }
+    }
+}
+

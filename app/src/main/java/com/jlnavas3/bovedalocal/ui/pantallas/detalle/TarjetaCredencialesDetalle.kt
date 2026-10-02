@@ -131,3 +131,33 @@ fun TarjetaCredencialesDetalle(
         }
     }
 }
+
+// -------------------------------------------------------------------------------------------------
+// Previews
+// -------------------------------------------------------------------------------------------------
+
+@com.jlnavas3.bovedalocal.ui.preview.BovedaPreview
+@Composable
+private fun TarjetaCredencialesDetallePreview() {
+    com.jlnavas3.bovedalocal.ui.preview.PreviewTemaBoveda {
+        Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+            TarjetaCredencialesDetalle(
+                entrada = com.jlnavas3.bovedalocal.ui.preview.PreviewMocks.entradaEjemplo,
+                revelada = false,
+                ultimaCopia = null,
+                alAlternarRevelada = {},
+                alCopiarUsuario = {},
+                alCopiarContrasena = {}
+            )
+            TarjetaCredencialesDetalle(
+                entrada = com.jlnavas3.bovedalocal.ui.preview.PreviewMocks.entradaEjemplo,
+                revelada = true,
+                ultimaCopia = "contrasena",
+                alAlternarRevelada = {},
+                alCopiarUsuario = {},
+                alCopiarContrasena = {}
+            )
+        }
+    }
+}
+

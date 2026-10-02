@@ -60,6 +60,7 @@ class MenuLateralTest {
         assertEquals("Modificado recientemente", CriterioOrdenacion.MODIFICACION_RECIENTE.etiqueta)
         assertEquals("Añadido recientemente", CriterioOrdenacion.CREACION_RECIENTE.etiqueta)
         assertEquals("Más antiguos primero", CriterioOrdenacion.ANTIGUEDAD.etiqueta)
+        assertEquals("Último usado", CriterioOrdenacion.USO_RECIENTE.etiqueta)
     }
 
     @Test

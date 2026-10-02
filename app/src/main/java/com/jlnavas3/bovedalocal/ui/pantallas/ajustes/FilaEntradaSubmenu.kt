@@ -26,6 +26,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.jlnavas3.bovedalocal.ui.preview.BovedaPreview
+import com.jlnavas3.bovedalocal.ui.preview.PreviewTemaBoveda
 import com.jlnavas3.bovedalocal.ui.theme.EstiloMono
 import com.jlnavas3.bovedalocal.ui.theme.Peligro
 import com.jlnavas3.bovedalocal.util.Haptica
@@ -131,3 +133,25 @@ fun FilaEntradaSubmenu(
         }
     }
 }
+
+@BovedaPreview
+@Composable
+private fun PreviewFilaEntradaSubmenu() {
+    PreviewTemaBoveda {
+        Column {
+            FilaEntradaSubmenu(
+                titulo = "Bloqueo por inactividad",
+                subtitulo = "Bloquear tras 5 minutos sin uso",
+                valorTexto = "5 min",
+                alPulsar = {}
+            )
+            FilaEntradaSubmenu(
+                titulo = "Eliminar todos los datos",
+                subtitulo = "Acción irreversible",
+                esPeligro = true,
+                alPulsar = {}
+            )
+        }
+    }
+}
+

@@ -13,6 +13,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.History
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -39,43 +40,66 @@ import java.util.Locale
 fun PieMetadatosDetalle(
     creadaEn: Long,
     modificadaEn: Long,
+    ultimoUsoEn: Long = 0L,
     modifier: Modifier = Modifier
 ) {
     val mostrarCreada = creadaEn > 0L
     val mostrarEditada = modificadaEn > 0L && modificadaEn != creadaEn
+    val mostrarUltimoUso = ultimoUsoEn > 0L
 
-    if (!mostrarCreada && !mostrarEditada) return
+    if (!mostrarCreada && !mostrarEditada && !mostrarUltimoUso) return
 
     val formatoFecha = remember {
         SimpleDateFormat("dd/MM/yy HH:mm", Locale.forLanguageTag("es-ES"))
     }
 
-    Row(
+    Column(
         modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = 4.dp, vertical = 8.dp),
-        horizontalArrangement = when {
-            mostrarCreada && mostrarEditada -> Arrangement.SpaceBetween
-            mostrarCreada -> Arrangement.Start
-            else -> Arrangement.End
-        },
-        verticalAlignment = Alignment.CenterVertically
+        verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        if (mostrarCreada) {
-            EtiquetaFechaMetadato(
-                titulo = "Creada:",
-                fecha = formatoFecha.format(Date(creadaEn)),
-                icono = Icons.Filled.CalendarToday,
-                colorBase = ColorDatosUsuario
-            )
+        if (mostrarCreada || mostrarEditada) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = when {
+                    mostrarCreada && mostrarEditada -> Arrangement.SpaceBetween
+                    mostrarCreada -> Arrangement.Start
+                    else -> Arrangement.End
+                },
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                if (mostrarCreada) {
+                    EtiquetaFechaMetadato(
+                        titulo = "Creada:",
+                        fecha = formatoFecha.format(Date(creadaEn)),
+                        icono = Icons.Filled.CalendarToday,
+                        colorBase = ColorDatosUsuario
+                    )
+                }
+                if (mostrarEditada) {
+                    EtiquetaFechaMetadato(
+                        titulo = "Editada:",
+                        fecha = formatoFecha.format(Date(modificadaEn)),
+                        icono = Icons.Filled.Edit,
+                        colorBase = Ambar
+                    )
+                }
+            }
         }
-        if (mostrarEditada) {
-            EtiquetaFechaMetadato(
-                titulo = "Editada:",
-                fecha = formatoFecha.format(Date(modificadaEn)),
-                icono = Icons.Filled.Edit,
-                colorBase = Ambar
-            )
+        if (mostrarUltimoUso) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Start,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                EtiquetaFechaMetadato(
+                    titulo = "Último uso:",
+                    fecha = formatoFecha.format(Date(ultimoUsoEn)),
+                    icono = Icons.Filled.History,
+                    colorBase = Color(0xFF64B5F6)
+                )
+            }
         }
     }
 }
@@ -128,3 +152,20 @@ private fun EtiquetaFechaMetadato(
         }
     }
 }
+
+// -------------------------------------------------------------------------------------------------
+// Previews
+// -------------------------------------------------------------------------------------------------
+
+@com.jlnavas3.bovedalocal.ui.preview.BovedaPreview
+@Composable
+private fun PieMetadatosDetallePreview() {
+    com.jlnavas3.bovedalocal.ui.preview.PreviewTemaBoveda {
+        PieMetadatosDetalle(
+            creadaEn = System.currentTimeMillis() - 86400000L * 120,
+            modificadaEn = System.currentTimeMillis() - 86400000L * 2,
+            ultimoUsoEn = System.currentTimeMillis() - 3600000L * 4
+        )
+    }
+}
+

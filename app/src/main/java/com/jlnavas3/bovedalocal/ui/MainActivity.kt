@@ -426,6 +426,7 @@ fun RaizBoveda(vm: VaultViewModel, actividad: FragmentActivity) {
                     is Pantalla.CopiaSeguridad -> com.jlnavas3.bovedalocal.ui.pantallas.PantallaCopiaSeguridad(vm, destino.seccionId)
                     is Pantalla.CsvGoogle -> com.jlnavas3.bovedalocal.ui.pantallas.PantallaCsvGoogle(vm, destino.seccionId)
                     is Pantalla.ConfirmarMigracion -> PantallaConfirmarMigracion(vm, destino.urlMigracion)
+                    is Pantalla.ConfirmarImportacionCxf -> com.jlnavas3.bovedalocal.ui.pantallas.cxf.PantallaConfirmarImportacionCxf(vm, destino.jsonCxf)
                     is Pantalla.ExportarSelectivo -> com.jlnavas3.bovedalocal.ui.pantallas.PantallaExportarSelectivo(vm, destino.seccionInicial)
                     is Pantalla.ColoresDatos -> com.jlnavas3.bovedalocal.ui.pantallas.PantallaColoresDatos(vm, destino.seccionId)
                     is Pantalla.ColoresIdentificadores -> com.jlnavas3.bovedalocal.ui.pantallas.avanzada.PantallaColoresIds(vm, destino.seccionId)

@@ -78,8 +78,8 @@ fun PantallaConfirmarMigracion(
             .background(ColorAjustesFondo)
     ) {
         BarraSuperiorPantalla(
-            titulo = "Importar de Google Authenticator",
-            idEtiqueta = "2FA",
+            titulo = "Importar doble factor de Google",
+            idEtiqueta = "04-HER-2FA",
             mostrarId = ajustes.mostrarIdsAjustes,
             alVolver = { vm.volverAtras() },
             colorFondo = ColorAjustesFondo

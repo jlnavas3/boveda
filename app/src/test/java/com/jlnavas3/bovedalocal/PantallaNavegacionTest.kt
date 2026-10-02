@@ -43,6 +43,12 @@ class PantallaNavegacionTest {
         val detalle1 = Pantalla.Detalle("123")
         val detalle2 = Pantalla.Detalle("456")
         assertNotEquals(detalle1, detalle2)
+
+        val cxf1 = Pantalla.ConfirmarImportacionCxf("json1")
+        val cxf2 = Pantalla.ConfirmarImportacionCxf("json2")
+        val cxf1Clon = Pantalla.ConfirmarImportacionCxf("json1")
+        assertEquals(cxf1, cxf1Clon)
+        assertNotEquals(cxf1, cxf2)
     }
 
     @Test
@@ -92,12 +98,13 @@ class PantallaNavegacionTest {
     @Test
     fun `verificar valores y orden de CriterioOrdenacion`() {
         val criterios = CriterioOrdenacion.values()
-        assertEquals(5, criterios.size)
+        assertEquals(6, criterios.size)
         assertTrue(criterios.contains(CriterioOrdenacion.NOMBRE_AZ))
         assertTrue(criterios.contains(CriterioOrdenacion.NOMBRE_ZA))
         assertTrue(criterios.contains(CriterioOrdenacion.MODIFICACION_RECIENTE))
         assertTrue(criterios.contains(CriterioOrdenacion.CREACION_RECIENTE))
         assertTrue(criterios.contains(CriterioOrdenacion.ANTIGUEDAD))
+        assertTrue(criterios.contains(CriterioOrdenacion.USO_RECIENTE))
     }
 
     @Test

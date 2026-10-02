@@ -118,3 +118,25 @@ fun <T> ComponenteSelector(
         }
     }
 }
+
+// -------------------------------------------------------------------------------------------------
+// Previews
+// -------------------------------------------------------------------------------------------------
+
+@com.jlnavas3.bovedalocal.ui.preview.BovedaPreview
+@Composable
+private fun ComponenteSelectorPreview() {
+    com.jlnavas3.bovedalocal.ui.preview.PreviewTemaBoveda {
+        ComponenteSelector(
+            titulo = "Tiempo de Inactividad",
+            valorSeleccionado = 5,
+            opciones = listOf(
+                OpcionItemSelector(1, "1 minuto"),
+                OpcionItemSelector(5, "5 minutos"),
+                OpcionItemSelector(10, "10 minutos")
+            ),
+            alSeleccionar = {}
+        )
+    }
+}
+

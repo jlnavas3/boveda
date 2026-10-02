@@ -110,7 +110,7 @@ fun MenuLateral(
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
                     SeparadorItemMenu()
                     ItemMenu(
-                        texto = "Passkeys",
+                        texto = "Llaves de paso",
                         icono = Icons.Filled.Fingerprint,
                         colorIcono = ColorPasskeys,
                         idEtiqueta = "04-HER-PSK",
@@ -122,7 +122,7 @@ fun MenuLateral(
                 SeparadorItemMenu()
 
                 ItemMenu(
-                    texto = "Autenticador 2FA",
+                    texto = "Verificación en dos pasos",
                     icono = Icons.Filled.Timer,
                     colorIcono = Color2FA,
                     idEtiqueta = "04-HER-2FA",

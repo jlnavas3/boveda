@@ -63,8 +63,7 @@ class CoordinadorResaltadoAjustes(
         // Equivalencias y jerarquías conocidas
         if (dest == "03.2.G2" && item == "03.2.6") return true
         if (dest == "03.2.6" && item == "03.2.G2") return true
-        if (dest == "02-APA-THM-G02" && item == "02-APA-THM-DAT") return true
-        if (dest == "02-APA-THM-DAT" && item == "02-APA-THM-G02") return true
+        if ((dest == "02-APA-THM-G04" || dest == "02-APA-THM-DAT" || dest == "02-APA-THM-G02") && (item == "02-APA-THM-G04" || item == "02-APA-THM-DAT" || item == "02-APA-THM-G02")) return true
         if (dest == "05.1.G2" && item == "05.1.6") return true
         if (dest == "05.1.6" && item == "05.1.G2") return true
         if (dest == "05-COP-MAN-G02" && item == "05-COP-MAN") return true
@@ -319,7 +318,8 @@ fun recordarEstadoAlumbrado(idFila: String?): EstadoAlumbradoFila {
         if (!idFila.isNullOrBlank() && !destinoActual.isNullOrBlank() && coordinador == null) {
             val coincide = (idFila == destinoActual) ||
                 (destinoActual == "03.2.G2" && idFila == "03.2.6") ||
-                (destinoActual == "02-APA-THM-G02" && idFila == "02-APA-THM-DAT") ||
+                ((destinoActual == "02-APA-THM-G04" || destinoActual == "02-APA-THM-DAT" || destinoActual == "02-APA-THM-G02") &&
+                 (idFila == "02-APA-THM-G04" || idFila == "02-APA-THM-DAT" || idFila == "02-APA-THM-G02")) ||
                 (destinoActual == "05.1.G2" && idFila == "05.1.6") ||
                 (destinoActual == "05-COP-MAN-G02" && idFila == "05-COP-MAN")
             if (coincide) {

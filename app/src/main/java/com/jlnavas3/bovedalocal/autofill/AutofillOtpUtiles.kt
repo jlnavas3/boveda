@@ -91,7 +91,7 @@ object AutofillOtpUtiles {
         }
         val vista = AutofillUtiles.presentacion(
             contexto = contexto,
-            titulo = "$tituloBase (Código 2FA)",
+            titulo = "$tituloBase (Código de verificación)",
             subtitulo = "Código actual: $codigo",
             iconoBitmap = iconoBitmap
         )

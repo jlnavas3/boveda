@@ -40,6 +40,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.jlnavas3.bovedalocal.data.Entrada
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorTarjetaAjustes
+import com.jlnavas3.bovedalocal.ui.preview.BovedaPreview
+import com.jlnavas3.bovedalocal.ui.preview.PreviewMocks
+import com.jlnavas3.bovedalocal.ui.preview.PreviewTemaBoveda
 import com.jlnavas3.bovedalocal.ui.theme.Ambar
 import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
 import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
@@ -171,3 +174,32 @@ fun ComponenteGrupoLista(
         }
     }
 }
+
+@BovedaPreview
+@Composable
+private fun PreviewComponenteGrupoLista() {
+    PreviewTemaBoveda {
+        Column(modifier = Modifier.padding(16.dp)) {
+            ComponenteGrupoLista(
+                clave = "google.com",
+                entradas = listOf(PreviewMocks.entradaEjemplo, PreviewMocks.entradaBancaria),
+                expandido = true,
+                alAlternar = {},
+                contenidoEntrada = { entrada, _, _ ->
+                    FilaEntrada(
+                        entrada = entrada,
+                        seleccionActiva = false,
+                        seleccionado = false,
+                        alAbrir = {},
+                        alCopiarUsuario = {},
+                        alCopiarContrasena = {},
+                        alFavorito = {},
+                        alPulsarLargo = {},
+                        alAlternarSeleccion = {}
+                    )
+                }
+            )
+        }
+    }
+}
+

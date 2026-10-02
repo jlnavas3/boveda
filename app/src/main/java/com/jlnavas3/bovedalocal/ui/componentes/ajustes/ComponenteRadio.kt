@@ -55,3 +55,29 @@ fun ComponenteRadio(
         }
     )
 }
+
+// -------------------------------------------------------------------------------------------------
+// Previews
+// -------------------------------------------------------------------------------------------------
+
+@com.jlnavas3.bovedalocal.ui.preview.BovedaPreview
+@Composable
+private fun ComponenteRadioPreview() {
+    com.jlnavas3.bovedalocal.ui.preview.PreviewTemaBoveda {
+        androidx.compose.foundation.layout.Column(
+            verticalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(8.dp)
+        ) {
+            ComponenteRadio(
+                titulo = "Modo Oscuro Permanente",
+                seleccionado = true,
+                alSeleccionar = {}
+            )
+            ComponenteRadio(
+                titulo = "Modo Claro Permanente",
+                seleccionado = false,
+                alSeleccionar = {}
+            )
+        }
+    }
+}
+

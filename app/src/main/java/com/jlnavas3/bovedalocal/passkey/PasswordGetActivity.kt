@@ -85,6 +85,7 @@ class PasswordGetActivity : FragmentActivity() {
                 fallar("No hay ninguna contraseña guardada para $objetivo")
                 return
             }
+            repositorio.registrarUsoEntrada(entrada.id)
             val respuesta = Intent()
             PendingIntentHandler.setGetCredentialResponse(
                 respuesta,

@@ -3,6 +3,7 @@ package com.jlnavas3.bovedalocal.ui.pantallas.ajustes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -25,6 +26,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.unit.dp
+import com.jlnavas3.bovedalocal.ui.preview.BovedaPreview
+import com.jlnavas3.bovedalocal.ui.preview.PreviewTemaBoveda
 import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
 import com.jlnavas3.bovedalocal.ui.theme.CurvaturaEsquinas
 import com.jlnavas3.bovedalocal.ui.theme.EstiloBorde
@@ -95,3 +98,16 @@ fun BarraBusquedaAjustes(
         }
     }
 }
+
+@BovedaPreview
+@Composable
+private fun PreviewBarraBusquedaAjustes() {
+    PreviewTemaBoveda {
+        Column(modifier = Modifier.padding(16.dp)) {
+            BarraBusquedaAjustes(texto = "", alCambiarTexto = {})
+            Spacer(Modifier.height(12.dp))
+            BarraBusquedaAjustes(texto = "Biometría", alCambiarTexto = {})
+        }
+    }
+}
+

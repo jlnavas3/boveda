@@ -68,11 +68,11 @@ class PasskeyCreateActivity : FragmentActivity() {
                 HojaPasskey(
                     actividad = this,
                     repositorio = repositorio,
-                    titulo = "Crear passkey",
+                    titulo = "Crear llave de paso",
                     sitio = sitioMostrar,
-                    detalle = "$sitioMostrar quiere crear una passkey para " +
+                    detalle = "$sitioMostrar quiere crear una llave de paso para " +
                         datos.usuario.ifBlank { "tu cuenta" } + ".",
-                    textoAccion = "Crear la passkey",
+                    textoAccion = "Crear la llave de paso",
                     iconoBitmap = iconoBitmap,
                     alConfirmar = { crear(datos, paquete, nombreApp) },
                     alCancelar = { cancelar() }
@@ -86,7 +86,7 @@ class PasskeyCreateActivity : FragmentActivity() {
             val par = WebAuthn.generarPar()
             val credId = WebAuthn.nuevoCredId()
             if (!WebAuthn.credIdValido(credId)) {
-                fallar("El autenticador generó un identificador de passkey inválido")
+                fallar("El autenticador generó un identificador de llave de paso inválido")
                 return
             }
             val info = peticion?.callingAppInfo

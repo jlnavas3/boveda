@@ -58,7 +58,7 @@ class RegistroCrudTest {
         // Verificación de tipos tradicionales
         assertTrue(lineas.any { it.contains("Nueva entrada creada (contraseña)") })
         assertTrue(lineas.any { it.contains("Nueva entrada creada (nota segura)") })
-        assertTrue(lineas.any { it.contains("Nueva entrada creada (passkey)") })
+        assertTrue(lineas.any { it.contains("Nueva entrada creada (llave de paso)") })
         assertTrue(lineas.any { it.contains("Entrada (contraseña) enviada a la papelera") })
         assertTrue(lineas.any { it.contains("Entrada (nota segura) enviada a la papelera") })
 

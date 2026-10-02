@@ -14,7 +14,7 @@ interface VaultNavegacionDelegate {
     fun padreDe(pantalla: Pantalla): Pantalla? = when (pantalla) {
         // Nivel 3 -> Nivel 2
         is Pantalla.CalibracionAnimacion -> Pantalla.Tema("02-APA-THM-ANI")
-        is Pantalla.ColoresDatos -> Pantalla.Tema("02-APA-THM-DAT")
+        is Pantalla.ColoresDatos -> Pantalla.OrganizacionLista("02-APA-THM-G04")
         is Pantalla.CalibracionWidgetTotp -> {
             ultimoWidgetAjustesSeleccionado = 0
             Pantalla.AjustesWidget("04-HER-WGT-CAL")
@@ -153,7 +153,7 @@ interface VaultNavegacionDelegate {
             limpio.startsWith("01-SEG-CRY") || limpio.startsWith("01.5") -> Pantalla.Argon2id(limpio)
 
             limpio.startsWith("02-APA-THM-ANI") || limpio.startsWith("02-APA-THM-CAL") || limpio.startsWith("03.2.G2") -> Pantalla.CalibracionAnimacion(limpio)
-            limpio.startsWith("02-APA-THM-DAT") || limpio.startsWith("03.2.1") -> Pantalla.ColoresDatos(limpio)
+            limpio.startsWith("02-APA-THM-DAT") || limpio.startsWith("02-APA-THM-G04") || limpio.startsWith("03.2.1") -> Pantalla.ColoresDatos(limpio)
             limpio.startsWith("02-APA-THM") || limpio.startsWith("02.1") || limpio.startsWith("09.2") -> Pantalla.Tema(limpio)
 
             limpio.startsWith("02-APA-GEO-PRE") -> Pantalla.FormasPresets(limpio)

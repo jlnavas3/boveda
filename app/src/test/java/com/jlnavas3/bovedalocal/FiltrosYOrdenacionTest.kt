@@ -35,6 +35,7 @@ class FiltrosYOrdenacionTest {
             CriterioOrdenacion.MODIFICACION_RECIENTE -> compareByDescending<Entrada> { it.modificadaEn }.thenByDescending { it.favorito }
             CriterioOrdenacion.CREACION_RECIENTE -> compareByDescending<Entrada> { it.creadaEn }.thenByDescending { it.favorito }
             CriterioOrdenacion.ANTIGUEDAD -> compareBy<Entrada> { it.creadaEn }.thenByDescending { it.favorito }
+            CriterioOrdenacion.USO_RECIENTE -> compareByDescending<Entrada> { it.ultimoUsoEn }.thenByDescending { it.favorito }
         }
         return filtradas.sortedWith(comparador)
     }
@@ -100,10 +101,10 @@ class FiltrosYOrdenacionTest {
     }
 
     @Test
-    fun `ordena correctamente por los 5 criterios`() {
-        val eA = Entrada("1", titulo = "Alfa", creadaEn = 1000L, modificadaEn = 5000L)
-        val eB = Entrada("2", titulo = "Beta", creadaEn = 3000L, modificadaEn = 2000L)
-        val eC = Entrada("3", titulo = "Gamma", creadaEn = 2000L, modificadaEn = 8000L)
+    fun `ordena correctamente por los 6 criterios`() {
+        val eA = Entrada("1", titulo = "Alfa", creadaEn = 1000L, modificadaEn = 5000L, ultimoUsoEn = 200L)
+        val eB = Entrada("2", titulo = "Beta", creadaEn = 3000L, modificadaEn = 2000L, ultimoUsoEn = 900L)
+        val eC = Entrada("3", titulo = "Gamma", creadaEn = 2000L, modificadaEn = 8000L, ultimoUsoEn = 500L)
 
         val lista = listOf(eB, eC, eA)
 
@@ -121,13 +122,16 @@ class FiltrosYOrdenacionTest {
 
         // ANTIGUEDAD (menor creadaEn primero: Alfa=1000, Gamma=2000, Beta=3000)
         assertEquals(listOf(eA, eC, eB), filtrarYOrdenar(lista, criterio = CriterioOrdenacion.ANTIGUEDAD))
+
+        // USO_RECIENTE (mayor ultimoUsoEn primero: Beta=900, Gamma=500, Alfa=200)
+        assertEquals(listOf(eB, eC, eA), filtrarYOrdenar(lista, criterio = CriterioOrdenacion.USO_RECIENTE))
     }
 
     @Test
     fun `en criterios distintos de NOMBRE_AZ el criterio principal manda sobre favorito`() {
         // Alfa es favorito antiguo, Zeta es no-favorito nuevo
-        val eFav = Entrada("1", titulo = "Alfa", creadaEn = 1000L, modificadaEn = 1000L, favorito = true)
-        val eNuevo = Entrada("2", titulo = "Zeta", creadaEn = 9000L, modificadaEn = 9000L, favorito = false)
+        val eFav = Entrada("1", titulo = "Alfa", creadaEn = 1000L, modificadaEn = 1000L, ultimoUsoEn = 100L, favorito = true)
+        val eNuevo = Entrada("2", titulo = "Zeta", creadaEn = 9000L, modificadaEn = 9000L, ultimoUsoEn = 900L, favorito = false)
 
         val lista = listOf(eFav, eNuevo)
 
@@ -145,5 +149,8 @@ class FiltrosYOrdenacionTest {
 
         // En ANTIGUEDAD, Alfa va primero por tener menor timestamp
         assertEquals(listOf(eFav, eNuevo), filtrarYOrdenar(lista, criterio = CriterioOrdenacion.ANTIGUEDAD))
+
+        // En USO_RECIENTE, Zeta va primero por tener mayor ultimoUsoEn
+        assertEquals(listOf(eNuevo, eFav), filtrarYOrdenar(lista, criterio = CriterioOrdenacion.USO_RECIENTE))
     }
 }

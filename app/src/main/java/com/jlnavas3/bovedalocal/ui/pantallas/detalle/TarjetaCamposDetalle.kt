@@ -47,10 +47,11 @@ import com.jlnavas3.bovedalocal.util.Haptica
 @Composable
 fun TarjetaCamposDetalle(
     campos: List<CampoPersonalizado>,
-    vm: VaultViewModel,
+    vm: VaultViewModel? = null,
     haptica: Haptica,
     ultimaCopia: String?,
-    alCopiarCampo: (String) -> Unit
+    alCopiarCampo: (String) -> Unit,
+    alCopiarValor: ((String, String, Boolean) -> Unit)? = null
 ) {
     if (campos.isEmpty()) return
 
@@ -66,7 +67,8 @@ fun TarjetaCamposDetalle(
                 vm = vm,
                 haptica = haptica,
                 copiado = ultimaCopia == "campo_${campo.id}",
-                alCopiar = { alCopiarCampo("campo_${campo.id}") }
+                alCopiar = { alCopiarCampo("campo_${campo.id}") },
+                alCopiarValor = alCopiarValor
             )
         }
     }
@@ -75,10 +77,11 @@ fun TarjetaCamposDetalle(
 @Composable
 private fun FilaCampoPersonalizadoDetalle(
     campo: CampoPersonalizado,
-    vm: VaultViewModel,
+    vm: VaultViewModel?,
     haptica: Haptica,
     copiado: Boolean,
-    alCopiar: () -> Unit
+    alCopiar: () -> Unit,
+    alCopiarValor: ((String, String, Boolean) -> Unit)? = null
 ) {
     var revelado by remember { mutableStateOf(false) }
     val esSensible = campo.esSensibleEfectivo
@@ -179,7 +182,9 @@ private fun FilaCampoPersonalizadoDetalle(
                         copiado = copiado,
                         alPulsar = {
                             haptica.exito()
-                            vm.copiar(campo.etiqueta.ifBlank { "Campo personalizado" }, campo.valor, sensible = esSensible)
+                            val eti = campo.etiqueta.ifBlank { "Campo personalizado" }
+                            vm?.copiar(eti, campo.valor, sensible = esSensible)
+                            alCopiarValor?.invoke(eti, campo.valor, esSensible)
                             alCopiar()
                         }
                     )
@@ -188,3 +193,25 @@ private fun FilaCampoPersonalizadoDetalle(
         }
     }
 }
+
+// -------------------------------------------------------------------------------------------------
+// Previews
+// -------------------------------------------------------------------------------------------------
+
+@com.jlnavas3.bovedalocal.ui.preview.BovedaPreview
+@Composable
+private fun TarjetaCamposDetallePreview() {
+    com.jlnavas3.bovedalocal.ui.preview.PreviewTemaBoveda {
+        val contexto = androidx.compose.ui.platform.LocalContext.current
+        TarjetaCamposDetalle(
+            campos = listOf(
+                CampoPersonalizado(etiqueta = "PIN de Acceso", valor = "8492", tipo = TipoCampo.PIN, esSensible = true),
+                CampoPersonalizado(etiqueta = "Número de Cuenta", valor = "ES91 2100 0418 4502 0005 1234", tipo = TipoCampo.TEXTO, esSensible = false)
+            ),
+            haptica = remember { Haptica(contexto) },
+            ultimaCopia = null,
+            alCopiarCampo = {}
+        )
+    }
+}
+

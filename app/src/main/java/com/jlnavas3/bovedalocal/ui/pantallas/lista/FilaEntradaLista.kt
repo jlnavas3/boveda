@@ -271,3 +271,42 @@ fun FilaEntrada(
         )
     }
 }
+
+// -------------------------------------------------------------------------------------------------
+// Previews
+// -------------------------------------------------------------------------------------------------
+
+@com.jlnavas3.bovedalocal.ui.preview.BovedaPreview
+@Composable
+private fun FilaEntradaListaPreview() {
+    com.jlnavas3.bovedalocal.ui.preview.PreviewTemaBoveda {
+        androidx.compose.foundation.layout.Column(
+            verticalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(10.dp)
+        ) {
+            FilaEntrada(
+                entrada = com.jlnavas3.bovedalocal.ui.preview.PreviewMocks.entradaEjemplo,
+                seleccionActiva = false,
+                seleccionado = false,
+                alAbrir = {},
+                alCopiarUsuario = {},
+                alCopiarContrasena = {},
+                alFavorito = {},
+                alPulsarLargo = {},
+                alAlternarSeleccion = {}
+            )
+
+            FilaEntrada(
+                entrada = com.jlnavas3.bovedalocal.ui.preview.PreviewMocks.entradaBancaria,
+                seleccionActiva = true,
+                seleccionado = true,
+                alAbrir = {},
+                alCopiarUsuario = {},
+                alCopiarContrasena = {},
+                alFavorito = {},
+                alPulsarLargo = {},
+                alAlternarSeleccion = {}
+            )
+        }
+    }
+}
+

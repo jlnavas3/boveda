@@ -127,7 +127,7 @@ fun DialogoProveedorPasskeys(
                 style = MaterialTheme.typography.bodyMedium
             )
             Text(
-                "En \"Contraseñas y llaves de acceso\" activa Bóveda local para permitir el inicio de sesión automático con Passkeys.",
+                "En \"Contraseñas y llaves de acceso\" activa Bóveda local para permitir el inicio de sesión automático con llaves de paso.",
                 color = TextoSecundario,
                 style = MaterialTheme.typography.bodyMedium
             )

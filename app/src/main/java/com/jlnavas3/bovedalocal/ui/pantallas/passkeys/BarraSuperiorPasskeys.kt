@@ -25,6 +25,7 @@ import androidx.compose.material.icons.filled.Fingerprint
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.filled.VpnKey
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -42,6 +43,8 @@ import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjustesFondo
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorTarjetaAjustes
 import com.jlnavas3.bovedalocal.ui.pantallas.lista.BarraBusquedaAnimada
 import com.jlnavas3.bovedalocal.ui.pantallas.lista.ChipFiltroActivo
+import com.jlnavas3.bovedalocal.ui.preview.BovedaPreview
+import com.jlnavas3.bovedalocal.ui.preview.PreviewTemaBoveda
 import com.jlnavas3.bovedalocal.ui.theme.Ambar
 import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
 import com.jlnavas3.bovedalocal.ui.theme.ColorPasskeys
@@ -57,7 +60,7 @@ fun BarraSuperiorPasskeys(
     soloFavoritos: Boolean,
     criterioOrdenacion: CriterioOrdenacion,
     menuOpcionesDesplegado: Boolean,
-    haptica: Haptica,
+    haptica: Haptica = Haptica(androidx.compose.ui.platform.LocalContext.current),
     alVolver: () -> Unit,
     alAlternarBusqueda: () -> Unit,
     alCambiarTextoBusqueda: (String) -> Unit,
@@ -69,6 +72,8 @@ fun BarraSuperiorPasskeys(
     alIrExportacionSelectiva: () -> Unit,
     alIrSeguridadBiometria: () -> Unit,
     alIrCopiaSeguridad: () -> Unit,
+    alImportarPasskeys: () -> Unit = {},
+    alExportarDirectoCxf: () -> Unit = {},
     alRestablecerFiltros: () -> Unit,
     modifier: Modifier = Modifier,
     idEtiqueta: String = "04-HER-PSK",
@@ -76,7 +81,7 @@ fun BarraSuperiorPasskeys(
 ) {
     Column(modifier = modifier) {
         BarraSuperiorPantalla(
-            titulo = "Passkeys",
+            titulo = "Llaves de paso",
             idEtiqueta = idEtiqueta,
             mostrarId = mostrarId,
             alVolver = alVolver,
@@ -96,7 +101,7 @@ fun BarraSuperiorPasskeys(
                 ) {
                     Icon(
                         imageVector = Icons.Filled.Search,
-                        contentDescription = "Buscar passkeys",
+                        contentDescription = "Buscar llaves de paso",
                         tint = if (busquedaVisible || textoBusqueda.isNotBlank()) ColorPasskeys else ColorIconosInternos,
                         modifier = Modifier.size(20.dp)
                     )
@@ -171,6 +176,26 @@ fun BarraSuperiorPasskeys(
                                 alIrCopiaSeguridad()
                             }
                         )
+                        SeparadorOpcionMenu()
+                        com.jlnavas3.bovedalocal.ui.componentes.ElementoMenuCompacto(
+                            texto = "Importar llaves de paso...",
+                            icono = androidx.compose.material.icons.Icons.Filled.VpnKey,
+                            colorIcono = ColorPasskeys,
+                            onClick = {
+                                alCerrarMenu()
+                                alImportarPasskeys()
+                            }
+                        )
+                        SeparadorOpcionMenu()
+                        com.jlnavas3.bovedalocal.ui.componentes.ElementoMenuCompacto(
+                            texto = "Exportación directa de llaves de paso...",
+                            icono = androidx.compose.material.icons.Icons.Filled.VpnKey,
+                            colorIcono = ColorPasskeys,
+                            onClick = {
+                                alCerrarMenu()
+                                alExportarDirectoCxf()
+                            }
+                        )
                         if (soloFavoritos || criterioOrdenacion != CriterioOrdenacion.NOMBRE_AZ || textoBusqueda.isNotBlank()) {
                             SeparadorOpcionMenu()
                             com.jlnavas3.bovedalocal.ui.componentes.ElementoMenuCompacto(
@@ -221,3 +246,31 @@ fun BarraSuperiorPasskeys(
         }
     }
 }
+
+@BovedaPreview
+@Composable
+private fun PreviewBarraSuperiorPasskeys() {
+    PreviewTemaBoveda {
+        BarraSuperiorPasskeys(
+            conSeparador = true,
+            busquedaVisible = false,
+            textoBusqueda = "",
+            soloFavoritos = false,
+            criterioOrdenacion = CriterioOrdenacion.NOMBRE_AZ,
+            menuOpcionesDesplegado = false,
+            alVolver = {},
+            alAlternarBusqueda = {},
+            alCambiarTextoBusqueda = {},
+            alCerrarBusqueda = {},
+            alAbrirMenu = {},
+            alCerrarMenu = {},
+            alAbrirOrdenacion = {},
+            alAlternarFavoritos = {},
+            alIrExportacionSelectiva = {},
+            alIrSeguridadBiometria = {},
+            alIrCopiaSeguridad = {},
+            alRestablecerFiltros = {}
+        )
+    }
+}
+

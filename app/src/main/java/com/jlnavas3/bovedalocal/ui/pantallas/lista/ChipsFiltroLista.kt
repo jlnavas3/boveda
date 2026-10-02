@@ -21,7 +21,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.foundation.layout.Column
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorTarjetaAjustes
+import com.jlnavas3.bovedalocal.ui.preview.BovedaPreview
+import com.jlnavas3.bovedalocal.ui.preview.PreviewTemaBoveda
 import com.jlnavas3.bovedalocal.ui.theme.Ambar
 import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
 import com.jlnavas3.bovedalocal.ui.theme.ColorSobreAcento
@@ -93,3 +96,20 @@ fun ChipFiltroActivo(
         )
     }
 }
+
+@BovedaPreview
+@Composable
+private fun PreviewChipsFiltroLista() {
+    PreviewTemaBoveda {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Row {
+                ChipFiltro(texto = "Todos", activo = true, alPulsar = {})
+                Spacer(Modifier.width(8.dp))
+                ChipFiltro(texto = "Favoritos", activo = false, alPulsar = {})
+            }
+            Spacer(Modifier.padding(top = 12.dp))
+            ChipFiltroActivo(texto = "google.com", alLimpiar = {})
+        }
+    }
+}
+

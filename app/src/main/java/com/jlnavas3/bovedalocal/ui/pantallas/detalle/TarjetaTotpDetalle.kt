@@ -82,7 +82,7 @@ fun TarjetaTotpDetalle(
     }
 
     Column(modifier = Modifier.fillMaxWidth()) {
-        EtiquetaSeccionDetalle(texto = "Código de verificación (2FA)")
+        EtiquetaSeccionDetalle(texto = "Verificación en dos pasos")
 
         TarjetaDatoDetalle(
             colorBorde = ColorDatos2FA,
@@ -140,3 +140,22 @@ fun TarjetaTotpDetalle(
         }
     }
 }
+
+// -------------------------------------------------------------------------------------------------
+// Previews
+// -------------------------------------------------------------------------------------------------
+
+@com.jlnavas3.bovedalocal.ui.preview.BovedaPreview
+@Composable
+private fun TarjetaTotpDetallePreview() {
+    com.jlnavas3.bovedalocal.ui.preview.PreviewTemaBoveda {
+        val contexto = androidx.compose.ui.platform.LocalContext.current
+        TarjetaTotpDetalle(
+            entrada = com.jlnavas3.bovedalocal.ui.preview.PreviewMocks.entradaEjemplo,
+            ajustes = com.jlnavas3.bovedalocal.ui.preview.PreviewMocks.ajustes,
+            haptica = remember { Haptica(contexto) },
+            alCopiarTotp = {}
+        )
+    }
+}
+

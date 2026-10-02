@@ -302,3 +302,38 @@ fun ComponenteCampoTexto(
         }
     }
 }
+
+// -------------------------------------------------------------------------------------------------
+// Previews
+// -------------------------------------------------------------------------------------------------
+
+@com.jlnavas3.bovedalocal.ui.preview.BovedaPreview
+@Composable
+private fun ComponenteCampoTextoPreview() {
+    com.jlnavas3.bovedalocal.ui.preview.PreviewTemaBoveda {
+        Column(verticalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(12.dp)) {
+            ComponenteCampoTexto(
+                valor = "admin@empresa.com",
+                etiqueta = "Correo Electrónico",
+                alCambiar = {},
+                placeholder = "ejemplo@correo.com"
+            )
+            ComponenteCampoTexto(
+                valor = "P@ssw0rdSecure!2024",
+                etiqueta = "Contraseña",
+                esContrasena = true,
+                mostrarContrasena = false,
+                alAlternarMostrarContrasena = {},
+                alCambiar = {}
+            )
+            ComponenteCampoTexto(
+                valor = "Entrada inválida",
+                etiqueta = "Campo con Error",
+                esError = true,
+                mensajeError = "El formato introducido no es válido",
+                alCambiar = {}
+            )
+        }
+    }
+}
+

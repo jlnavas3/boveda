@@ -163,7 +163,7 @@ class BovedaCredentialProviderService : CredentialProviderService() {
                         opcion
                     )
                         .setDisplayName(tituloMostrar)
-                        .setLastUsedTime(Instant.ofEpochMilli(entrada.modificadaEn.takeIf { it > 0 } ?: entrada.creadaEn))
+                        .setLastUsedTime(Instant.ofEpochMilli(entrada.ultimoUsoEn.takeIf { it > 0 } ?: (entrada.modificadaEn.takeIf { it > 0 } ?: entrada.creadaEn)))
 
                     if (iconoBitmap != null) {
                         builder.setIcon(Icon.createWithBitmap(iconoBitmap))
@@ -236,6 +236,7 @@ class BovedaCredentialProviderService : CredentialProviderService() {
                     opcion
                 )
                     .setDisplayName(tituloMostrar)
+                    .setLastUsedTime(Instant.ofEpochMilli(entrada.ultimoUsoEn.takeIf { it > 0 } ?: (entrada.modificadaEn.takeIf { it > 0 } ?: entrada.creadaEn)))
 
                 if (iconoBitmap != null) {
                     pubKeyBuilder.setIcon(Icon.createWithBitmap(iconoBitmap))

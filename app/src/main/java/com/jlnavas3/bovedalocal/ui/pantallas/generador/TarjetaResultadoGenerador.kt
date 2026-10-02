@@ -68,3 +68,22 @@ fun TarjetaResultadoGenerador(
         }
     }
 }
+
+// -------------------------------------------------------------------------------------------------
+// Previews
+// -------------------------------------------------------------------------------------------------
+
+@com.jlnavas3.bovedalocal.ui.preview.BovedaPreview
+@Composable
+private fun TarjetaResultadoGeneradorPreview() {
+    com.jlnavas3.bovedalocal.ui.preview.PreviewTemaBoveda {
+        val contexto = androidx.compose.ui.platform.LocalContext.current
+        TarjetaResultadoGenerador(
+            generada = "gT8#vK2\$mQ9!wZ4p",
+            generacion = 1,
+            bits = 96.0,
+            haptica = androidx.compose.runtime.remember { Haptica(contexto) }
+        )
+    }
+}
+

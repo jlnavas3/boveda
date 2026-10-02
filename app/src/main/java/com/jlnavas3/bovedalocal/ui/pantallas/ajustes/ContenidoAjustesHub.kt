@@ -16,11 +16,14 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteGrupo
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteNavegacion
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteSeparador
+import com.jlnavas3.bovedalocal.ui.preview.BovedaPreview
+import com.jlnavas3.bovedalocal.ui.preview.PreviewTemaBoveda
 import com.jlnavas3.bovedalocal.ui.theme.EspaciadoComponentes
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
 
@@ -113,3 +116,37 @@ fun VistaGruposAjustesHub(
         }
     }
 }
+
+@BovedaPreview
+@Composable
+private fun PreviewContenidoAjustesHub() {
+    PreviewTemaBoveda {
+        val mockElementos = listOf(
+            ElementoMenuAjustes(
+                titulo = "Biometría",
+                subtitulo = "Huella dactilar, bloqueo y portapapeles",
+                icono = Icons.Filled.Security,
+                colorIcono = Color(0xFF1E88E5),
+                idEtiqueta = "01-SEG-BIO",
+                grupo = "Seguridad",
+                alPulsar = {}
+            ),
+            ElementoMenuAjustes(
+                titulo = "Apariencia",
+                subtitulo = "Tema claro/oscuro y colores",
+                icono = Icons.Filled.Palette,
+                colorIcono = Color(0xFF9C27B0),
+                idEtiqueta = "02-APA-TEM",
+                grupo = "Apariencia",
+                alPulsar = {}
+            )
+        )
+        Column(modifier = Modifier.padding(16.dp)) {
+            VistaGruposAjustesHub(
+                todosLosElementos = mockElementos,
+                mostrarIds = true
+            )
+        }
+    }
+}
+

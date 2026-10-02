@@ -51,6 +51,9 @@ interface VaultEntradasDelegate {
             CriterioOrdenacion.MODIFICACION_RECIENTE -> compareByDescending<Entrada> { it.modificadaEn }.thenByDescending { it.favorito }
             CriterioOrdenacion.CREACION_RECIENTE -> compareByDescending<Entrada> { it.creadaEn }.thenByDescending { it.favorito }
             CriterioOrdenacion.ANTIGUEDAD -> compareBy<Entrada> { it.creadaEn }.thenByDescending { it.favorito }
+            CriterioOrdenacion.USO_RECIENTE -> compareByDescending<Entrada> { it.ultimoUsoEn }
+                .thenByDescending { it.favorito }
+                .thenBy { it.titulo.lowercase() }
         }
         return filtradas.sortedWith(comparador)
     }
@@ -80,6 +83,14 @@ interface VaultEntradasDelegate {
     fun etiquetasUsadas(): List<String> = repositorio.etiquetasUsadas()
 
     fun entrada(id: String): Entrada? = repositorio.entrada(id)
+
+    fun registrarUsoEntrada(id: String) {
+        ejecutar {
+            withContext(Dispatchers.IO) {
+                repositorio.registrarUsoEntrada(id)
+            }
+        }
+    }
 
     fun guardar(entrada: Entrada) {
         ejecutar {

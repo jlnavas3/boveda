@@ -67,3 +67,28 @@ fun ComponenteBotonFila(
         }
     )
 }
+
+// -------------------------------------------------------------------------------------------------
+// Previews
+// -------------------------------------------------------------------------------------------------
+
+@com.jlnavas3.bovedalocal.ui.preview.BovedaPreview
+@Composable
+private fun ComponenteBotonFilaPreview() {
+    com.jlnavas3.bovedalocal.ui.preview.PreviewTemaBoveda {
+        androidx.compose.foundation.layout.Column(
+            verticalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(8.dp)
+        ) {
+            ComponenteBotonFila(
+                titulo = "Restablecer valores del grupo",
+                alPulsar = {}
+            )
+            ComponenteBotonFila(
+                titulo = "Exportar datos en formato JSON",
+                icono = androidx.compose.material.icons.Icons.Filled.ChevronRight,
+                alPulsar = {}
+            )
+        }
+    }
+}
+

@@ -243,3 +243,36 @@ fun TarjetaCuentaTotp(
         }
     }
 }
+
+// -------------------------------------------------------------------------------------------------
+// Previews
+// -------------------------------------------------------------------------------------------------
+
+@com.jlnavas3.bovedalocal.ui.preview.BovedaPreview
+@Composable
+private fun TarjetaCuentaTotpPreview() {
+    com.jlnavas3.bovedalocal.ui.preview.PreviewTemaBoveda {
+        val contexto = androidx.compose.ui.platform.LocalContext.current
+        Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+            TarjetaCuentaTotp(
+                entrada = com.jlnavas3.bovedalocal.ui.preview.PreviewMocks.entradaEjemplo,
+                ahora = System.currentTimeMillis() / 1000,
+                separarDigitos = true,
+                haptica = remember { Haptica(contexto) },
+                alCopiarCodigo = {},
+                alAlternarFavorito = {}
+            )
+            TarjetaCuentaTotp(
+                entrada = com.jlnavas3.bovedalocal.ui.preview.PreviewMocks.entradaEjemplo,
+                ahora = System.currentTimeMillis() / 1000,
+                separarDigitos = true,
+                haptica = remember { Haptica(contexto) },
+                alCopiarCodigo = {},
+                alAlternarFavorito = {},
+                seleccionActiva = true,
+                seleccionado = true
+            )
+        }
+    }
+}
+

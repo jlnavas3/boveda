@@ -2,6 +2,7 @@ package com.jlnavas3.bovedalocal.ui.pantallas.salud
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -62,10 +63,15 @@ fun ContenidoPestanaSalud(
     modifier: Modifier = Modifier,
     agruparPorSitio: Boolean = false,
     mostrarIndicadores: Boolean = false,
-    espaciadoFilas: Dp = calcularEspaciadoFilas()
+    espaciadoFilas: Dp = calcularEspaciadoFilas(),
+    seleccionActiva: Boolean = false,
+    seleccionados: Set<String> = emptySet(),
+    alAlternarSeleccion: ((String) -> Unit)? = null,
+    alPulsarLargo: ((String) -> Unit)? = null
 ) {
     val consulta = textoBusqueda.trim()
     var gruposExpandidos by rememberSaveable { mutableStateOf(emptySet<String>()) }
+    val rellenoInferior = PaddingValues(bottom = if (seleccionActiva) 96.dp else 16.dp)
 
     Box(modifier = modifier) {
         when (pestanaActiva) {
@@ -99,7 +105,8 @@ fun ContenidoPestanaSalud(
                 } else {
                     LazyColumn(
                         modifier = Modifier.fillMaxSize(),
-                        verticalArrangement = Arrangement.spacedBy(espaciadoFilas)
+                        verticalArrangement = Arrangement.spacedBy(espaciadoFilas),
+                        contentPadding = rellenoInferior
                     ) {
                         if (!agruparPorSitio) {
                             val todasEntradas = gruposFiltrados.flatMap { it.second }
@@ -111,7 +118,11 @@ fun ContenidoPestanaSalud(
                                     alCambiarRapido = { alCambiarClave(entrada) },
                                     alVerDetalle = { alVerDetalle(entrada.id) },
                                     mostrarIndicadores = mostrarIndicadores,
-                                    enGrupo = false
+                                    enGrupo = false,
+                                    seleccionActiva = seleccionActiva,
+                                    seleccionado = seleccionados.contains(entrada.id),
+                                    alAlternarSeleccion = { alAlternarSeleccion?.invoke(entrada.id) },
+                                    alPulsarLargo = { alPulsarLargo?.invoke(entrada.id) }
                                 )
                             }
                         } else {
@@ -134,7 +145,11 @@ fun ContenidoPestanaSalud(
                                         } else {
                                             gruposExpandidos + claveGrupo
                                         }
-                                    }
+                                    },
+                                    seleccionActiva = seleccionActiva,
+                                    seleccionados = seleccionados,
+                                    alAlternarSeleccion = alAlternarSeleccion,
+                                    alPulsarLargo = alPulsarLargo
                                 )
                             }
                         }
@@ -179,7 +194,11 @@ fun ContenidoPestanaSalud(
                         },
                         alCambiarClave = alCambiarClave,
                         alVerDetalle = alVerDetalle,
-                        infoDetalle = { "Filtrada" to Peligro }
+                        infoDetalle = { "Filtrada" to Peligro },
+                        seleccionActiva = seleccionActiva,
+                        seleccionados = seleccionados,
+                        alAlternarSeleccion = alAlternarSeleccion,
+                        alPulsarLargo = alPulsarLargo
                     )
                 }
             }
@@ -224,7 +243,11 @@ fun ContenidoPestanaSalud(
                         infoDetalle = { entrada ->
                             val fuerza = MedidorFuerza.medir(entrada.contrasena)
                             fuerza.etiqueta to Peligro
-                        }
+                        },
+                        seleccionActiva = seleccionActiva,
+                        seleccionados = seleccionados,
+                        alAlternarSeleccion = alAlternarSeleccion,
+                        alPulsarLargo = alPulsarLargo
                     )
                 }
             }
@@ -269,7 +292,11 @@ fun ContenidoPestanaSalud(
                         infoDetalle = { entrada ->
                             val dias = diasDesde(entrada.modificadaEn, ahora)
                             "hace $dias d" to ColorAcento
-                        }
+                        },
+                        seleccionActiva = seleccionActiva,
+                        seleccionados = seleccionados,
+                        alAlternarSeleccion = alAlternarSeleccion,
+                        alPulsarLargo = alPulsarLargo
                     )
                 }
             }
@@ -287,12 +314,19 @@ private fun ListaProblemasSalud(
     alAlternarGrupo: (String) -> Unit,
     alCambiarClave: (Entrada) -> Unit,
     alVerDetalle: (String) -> Unit,
-    infoDetalle: (Entrada) -> Pair<String, Color>
+    infoDetalle: (Entrada) -> Pair<String, Color>,
+    seleccionActiva: Boolean = false,
+    seleccionados: Set<String> = emptySet(),
+    alAlternarSeleccion: ((String) -> Unit)? = null,
+    alPulsarLargo: ((String) -> Unit)? = null
 ) {
+    val rellenoInferior = PaddingValues(bottom = if (seleccionActiva) 96.dp else 16.dp)
+
     if (!agruparPorSitio) {
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.spacedBy(espaciadoFilas)
+            verticalArrangement = Arrangement.spacedBy(espaciadoFilas),
+            contentPadding = rellenoInferior
         ) {
             items(entradas, key = { it.id }) { entrada ->
                 val (etiqueta, color) = infoDetalle(entrada)
@@ -303,7 +337,11 @@ private fun ListaProblemasSalud(
                     alCambiarRapido = { alCambiarClave(entrada) },
                     alVerDetalle = { alVerDetalle(entrada.id) },
                     mostrarIndicadores = mostrarIndicadores,
-                    enGrupo = false
+                    enGrupo = false,
+                    seleccionActiva = seleccionActiva,
+                    seleccionado = seleccionados.contains(entrada.id),
+                    alAlternarSeleccion = { alAlternarSeleccion?.invoke(entrada.id) },
+                    alPulsarLargo = { alPulsarLargo?.invoke(entrada.id) }
                 )
             }
         }
@@ -317,7 +355,8 @@ private fun ListaProblemasSalud(
         }
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.spacedBy(espaciadoFilas)
+            verticalArrangement = Arrangement.spacedBy(espaciadoFilas),
+            contentPadding = rellenoInferior
         ) {
             items(itemsAgrupados, key = { item ->
                 when (item) {
@@ -342,7 +381,11 @@ private fun ListaProblemasSalud(
                                     alCambiarRapido = { alCambiarClave(entradaHija) },
                                     alVerDetalle = { alVerDetalle(entradaHija.id) },
                                     mostrarIndicadores = mostrarIndicadores,
-                                    enGrupo = true
+                                    enGrupo = true,
+                                    seleccionActiva = seleccionActiva,
+                                    seleccionado = seleccionados.contains(entradaHija.id),
+                                    alAlternarSeleccion = { alAlternarSeleccion?.invoke(entradaHija.id) },
+                                    alPulsarLargo = { alPulsarLargo?.invoke(entradaHija.id) }
                                 )
                             }
                         )
@@ -356,7 +399,11 @@ private fun ListaProblemasSalud(
                             alCambiarRapido = { alCambiarClave(item.entrada) },
                             alVerDetalle = { alVerDetalle(item.entrada.id) },
                             mostrarIndicadores = mostrarIndicadores,
-                            enGrupo = false
+                            enGrupo = false,
+                            seleccionActiva = seleccionActiva,
+                            seleccionado = seleccionados.contains(item.entrada.id),
+                            alAlternarSeleccion = { alAlternarSeleccion?.invoke(item.entrada.id) },
+                            alPulsarLargo = { alPulsarLargo?.invoke(item.entrada.id) }
                         )
                     }
                     is ItemAgrupado.Hijo -> Unit

@@ -19,8 +19,8 @@ fun DialogoSelectorColorDato(
     val tituloModal = when (claveColor) {
         "usuario" -> "Usuario / Correo"
         "contrasena" -> "Contraseña"
-        "2fa" -> "Código 2FA (TOTP)"
-        "passkey" -> "Passkey WebAuthn"
+        "2fa" -> "Verificación en dos pasos"
+        "passkey" -> "Llave de paso"
         "web" -> "Sitio Web (URL)"
         else -> "App Android vinculada"
     }

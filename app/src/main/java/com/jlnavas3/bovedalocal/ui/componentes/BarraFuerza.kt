@@ -106,3 +106,20 @@ fun BarraFuerza(
         }
     }
 }
+
+// -------------------------------------------------------------------------------------------------
+// Previews
+// -------------------------------------------------------------------------------------------------
+
+@com.jlnavas3.bovedalocal.ui.preview.BovedaPreview
+@Composable
+private fun BarraFuerzaPreview() {
+    com.jlnavas3.bovedalocal.ui.preview.PreviewTemaBoveda {
+        Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+            BarraFuerza(fraccion = 0.25f, etiqueta = "Débil", tiempo = "3 minutos", bits = 28.0)
+            BarraFuerza(fraccion = 0.55f, etiqueta = "Media", tiempo = "5 meses", bits = 52.0)
+            BarraFuerza(fraccion = 0.95f, etiqueta = "Excelente", tiempo = "siglos", bits = 96.0)
+        }
+    }
+}
+

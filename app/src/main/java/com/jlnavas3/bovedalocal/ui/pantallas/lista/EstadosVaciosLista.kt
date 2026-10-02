@@ -11,8 +11,8 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Backup
 import androidx.compose.material.icons.filled.FileUpload
-import androidx.compose.material.icons.filled.Key
 import androidx.compose.material.icons.filled.QrCodeScanner
+import androidx.compose.material.icons.filled.VpnKey
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -33,7 +33,8 @@ fun EstadoVacioLista(
     entradasVacias: Boolean,
     alImportarCopia: () -> Unit,
     alImportarCsvGoogle: () -> Unit,
-    alImportarGoogleAuthenticator: () -> Unit
+    alImportarGoogleAuthenticator: () -> Unit,
+    alImportarDirectoCxf: () -> Unit = {}
 ) {
     if (entradasVacias) {
         Column(
@@ -62,16 +63,23 @@ fun EstadoVacioLista(
                 ComponenteSeparador(sangriaInicio = 68.dp)
                 ComponenteNavegacion(
                     titulo = "Contraseñas de Google",
-                    icono = Icons.Filled.Key,
+                    icono = Icons.Filled.VpnKey,
                     colorIcono = Color(0xFF4285F4),
                     alPulsar = alImportarCsvGoogle
                 )
                 ComponenteSeparador(sangriaInicio = 68.dp)
                 ComponenteNavegacion(
-                    titulo = "Autenticador de Google",
+                    titulo = "Verificación en dos pasos de Google",
                     icono = Icons.Filled.QrCodeScanner,
                     colorIcono = Color(0xFFEA4335),
                     alPulsar = alImportarGoogleAuthenticator
+                )
+                ComponenteSeparador(sangriaInicio = 68.dp)
+                ComponenteNavegacion(
+                    titulo = "Importación directa de llaves de paso y contraseñas",
+                    icono = androidx.compose.material.icons.Icons.Filled.VpnKey,
+                    colorIcono = com.jlnavas3.bovedalocal.ui.theme.Ambar,
+                    alPulsar = alImportarDirectoCxf
                 )
             }
 
@@ -93,3 +101,22 @@ fun EstadoVacioLista(
         }
     }
 }
+
+// -------------------------------------------------------------------------------------------------
+// Previews
+// -------------------------------------------------------------------------------------------------
+
+@com.jlnavas3.bovedalocal.ui.preview.BovedaPreview
+@Composable
+private fun EstadoVacioListaPreview() {
+    com.jlnavas3.bovedalocal.ui.preview.PreviewTemaBoveda {
+        EstadoVacioLista(
+            entradasVacias = true,
+            alImportarCopia = {},
+            alImportarCsvGoogle = {},
+            alImportarGoogleAuthenticator = {},
+            alImportarDirectoCxf = {}
+        )
+    }
+}
+

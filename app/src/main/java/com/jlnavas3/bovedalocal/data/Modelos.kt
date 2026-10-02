@@ -29,7 +29,7 @@ enum class TipoEntrada {
             IDENTIDAD -> "Documento de identidad"
             SERVIDOR -> "Servidor / SSH"
             WALLET -> "Cripto Wallet"
-            PASSKEY -> "Passkey"
+            PASSKEY -> "Llave de paso"
         }
 }
 
@@ -123,6 +123,8 @@ data class Entrada(
     val favorito: Boolean = false,
     val creadaEn: Long = 0L,
     val modificadaEn: Long = 0L,
+    /** Marca de tiempo (milisegundos) del último uso registrado (autofill, passkey, copia o apertura). */
+    val ultimoUsoEn: Long = 0L,
     /** 0 si está activa; si no, cuándo se mandó a la papelera. */
     val eliminadaEn: Long = 0L,
     /** Etiquetas libres que pone el usuario (ej. "Trabajo", "Familia"). */

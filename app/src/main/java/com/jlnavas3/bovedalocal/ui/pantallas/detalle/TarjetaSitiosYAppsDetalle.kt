@@ -47,7 +47,8 @@ import kotlinx.coroutines.delay
 fun TarjetaSitiosYAppsDetalle(
     urls: List<String>,
     alCopiarUrl: (String) -> Unit,
-    alAvisar: (String) -> Unit
+    alAvisar: (String) -> Unit,
+    alAbrirUrl: ((String) -> Unit)? = null
 ) {
     val contexto = LocalContext.current
     val haptica = remember { Haptica(contexto) }
@@ -92,6 +93,7 @@ fun TarjetaSitiosYAppsDetalle(
                 colorBorde = colorDato,
                 alPulsar = {
                     haptica.toque()
+                    alAbrirUrl?.invoke(url)
                     LanzadorEnlaces.abrir(contexto, url, onAviso = alAvisar)
                 }
             ) {
@@ -163,3 +165,23 @@ fun TarjetaSitiosYAppsDetalle(
         }
     }
 }
+
+// -------------------------------------------------------------------------------------------------
+// Previews
+// -------------------------------------------------------------------------------------------------
+
+@com.jlnavas3.bovedalocal.ui.preview.BovedaPreview
+@Composable
+private fun TarjetaSitiosYAppsDetallePreview() {
+    com.jlnavas3.bovedalocal.ui.preview.PreviewTemaBoveda {
+        TarjetaSitiosYAppsDetalle(
+            urls = listOf(
+                "https://accounts.google.com",
+                "androidapp://com.google.android.gm"
+            ),
+            alCopiarUrl = {},
+            alAvisar = {}
+        )
+    }
+}
+

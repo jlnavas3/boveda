@@ -141,3 +141,32 @@ fun DialogoBoveda(
         tonalElevation = tonalElevation
     )
 }
+
+// -------------------------------------------------------------------------------------------------
+// Previews
+// -------------------------------------------------------------------------------------------------
+
+@com.jlnavas3.bovedalocal.ui.preview.BovedaPreview
+@Composable
+private fun DialogoBovedaPreview() {
+    com.jlnavas3.bovedalocal.ui.preview.PreviewTemaBoveda {
+        DialogoBoveda(
+            abierto = true,
+            alCerrar = {},
+            titulo = "Confirmar Acción",
+            botonConfirmar = {
+                BotonTextoBoveda(texto = "Aceptar", alPulsar = {})
+            },
+            botonDescartar = {
+                BotonTextoBoveda(texto = "Cancelar", alPulsar = {}, tipo = TipoBotonTexto.SECUNDARIO)
+            }
+        ) {
+            Text(
+                text = "Este es un diálogo modal estándar que respeta las configuraciones globales de forma y bordes.",
+                color = TextoPrincipal,
+                style = MaterialTheme.typography.bodyMedium
+            )
+        }
+    }
+}
+

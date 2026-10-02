@@ -7,6 +7,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteGrupo
+import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteNavegacion
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteSeparador
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteSwitch
 
@@ -17,6 +18,7 @@ fun GrupoAgrupamientoEIndicadores(
     mostrarIndicadoresContenido: Boolean,
     alCambiarAgruparPorSitio: (Boolean) -> Unit,
     alCambiarMostrarIndicadores: (Boolean) -> Unit,
+    alIrAColoresDatos: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     ComponenteGrupo(
@@ -44,5 +46,15 @@ fun GrupoAgrupamientoEIndicadores(
             mostrarId = mostrarId,
             alCambiar = alCambiarMostrarIndicadores
         )
+        if (mostrarIndicadoresContenido) {
+            ComponenteSeparador(sangriaInicio = 16.dp)
+            ComponenteNavegacion(
+                titulo = "Colores de campos y datos",
+                icono = null,
+                idFila = "02-APA-THM-G04",
+                mostrarId = mostrarId,
+                alPulsar = alIrAColoresDatos
+            )
+        }
     }
 }

@@ -33,7 +33,11 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.Palette
 import com.jlnavas3.bovedalocal.ui.componentes.SwitchBoveda
+import com.jlnavas3.bovedalocal.ui.preview.BovedaPreview
+import com.jlnavas3.bovedalocal.ui.preview.PreviewTemaBoveda
 import com.jlnavas3.bovedalocal.ui.theme.Ambar
 import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
 import com.jlnavas3.bovedalocal.ui.theme.CurvaturaEsquinas
@@ -237,3 +241,31 @@ fun SwitchBoveda(
         colorActivo = colorActivo
     )
 }
+
+@BovedaPreview
+@Composable
+private fun PreviewFilasAjustes() {
+    PreviewTemaBoveda {
+        Column(modifier = Modifier.padding(16.dp)) {
+            GrupoAjustes(etiqueta = "Preferencias") {
+                FilaAjusteMenu(
+                    titulo = "Seguridad",
+                    icono = Icons.Filled.Lock,
+                    colorIcono = Color(0xFF4CAF50),
+                    subtitulo = "Autenticación biométrica, bloqueo",
+                    alPulsar = {}
+                )
+                SeparadorFilaAjuste()
+                FilaAjusteMenu(
+                    titulo = "Personalización",
+                    icono = Icons.Filled.Palette,
+                    colorIcono = Color(0xFF2196F3),
+                    subtitulo = "Tema, colores, bordes",
+                    valorTexto = "Oscuro",
+                    alPulsar = {}
+                )
+            }
+        }
+    }
+}
+

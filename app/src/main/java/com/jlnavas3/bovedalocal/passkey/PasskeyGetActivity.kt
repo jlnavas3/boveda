@@ -74,9 +74,9 @@ class PasskeyGetActivity : FragmentActivity() {
                 HojaPasskey(
                     actividad = this,
                     repositorio = repositorio,
-                    titulo = "Entrar con passkey",
+                    titulo = "Entrar con llave de paso",
                     sitio = sitioMostrar,
-                    detalle = "$sitioMostrar quiere que firmes con tu passkey. " +
+                    detalle = "$sitioMostrar quiere que firmes con tu llave de paso. " +
                         "Bóveda local firma el reto sin enviar tu clave privada.",
                     textoAccion = "Firmar y entrar",
                     iconoBitmap = iconoBitmap,
@@ -101,7 +101,7 @@ class PasskeyGetActivity : FragmentActivity() {
             val entrada = elegir(datos, entradaId)
             val passkey = entrada?.passkey
             if (passkey == null) {
-                fallar("No hay ninguna passkey guardada para ${datos.rpId}")
+                fallar("No hay ninguna llave de paso guardada para ${datos.rpId}")
                 return
             }
             val info = peticion?.callingAppInfo
@@ -121,7 +121,8 @@ class PasskeyGetActivity : FragmentActivity() {
                 firma = firma,
                 userHandle = passkey.userHandle.takeIf { it.isNotBlank() }?.let { WebAuthn.deB64Url(it) }
             )
-            Diagnostico.apuntar("passkey", "Autenticación con passkey completada con éxito")
+            Diagnostico.apuntar("passkey", "Autenticación con llave de paso completada con éxito")
+            repositorio.registrarUsoEntrada(entrada.id)
             val respuesta = Intent()
             PendingIntentHandler.setGetCredentialResponse(
                 respuesta,
@@ -130,7 +131,7 @@ class PasskeyGetActivity : FragmentActivity() {
             setResult(Activity.RESULT_OK, respuesta)
             finish()
         } catch (e: Exception) {
-            fallar("No se pudo firmar con la passkey: ${e.javaClass.simpleName}")
+            fallar("No se pudo firmar con la llave de paso: ${e.javaClass.simpleName}")
         }
     }
 

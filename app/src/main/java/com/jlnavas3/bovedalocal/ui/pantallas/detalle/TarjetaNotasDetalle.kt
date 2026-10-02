@@ -47,3 +47,20 @@ fun TarjetaNotasDetalle(
         }
     }
 }
+
+// -------------------------------------------------------------------------------------------------
+// Previews
+// -------------------------------------------------------------------------------------------------
+
+@com.jlnavas3.bovedalocal.ui.preview.BovedaPreview
+@Composable
+private fun TarjetaNotasDetallePreview() {
+    com.jlnavas3.bovedalocal.ui.preview.PreviewTemaBoveda {
+        TarjetaNotasDetalle(
+            notas = "Recuerda renovar la suscripción anual en noviembre.\nNúmero de contrato: CT-884920.",
+            ultimaCopia = null,
+            alCopiarNotas = {}
+        )
+    }
+}
+

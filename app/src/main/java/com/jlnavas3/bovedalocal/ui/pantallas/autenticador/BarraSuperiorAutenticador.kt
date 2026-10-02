@@ -45,6 +45,8 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.Tune
 import androidx.compose.material.icons.filled.Widgets
+import com.jlnavas3.bovedalocal.ui.preview.BovedaPreview
+import com.jlnavas3.bovedalocal.ui.preview.PreviewTemaBoveda
 
 @Composable
 fun BarraSuperiorAutenticador(
@@ -53,7 +55,7 @@ fun BarraSuperiorAutenticador(
     soloFavoritos: Boolean,
     criterioOrdenacion: CriterioOrdenacion,
     conSeparador: Boolean,
-    haptica: Haptica,
+    haptica: Haptica = Haptica(androidx.compose.ui.platform.LocalContext.current),
     alVolver: () -> Unit,
     alAlternarBusqueda: () -> Unit,
     alSolicitarOrdenacion: () -> Unit,
@@ -71,7 +73,7 @@ fun BarraSuperiorAutenticador(
     val tieneFiltrosActivos = soloFavoritos || criterioOrdenacion != CriterioOrdenacion.NOMBRE_AZ
 
     BarraSuperiorPantalla(
-        titulo = "Autenticador 2FA",
+        titulo = "Verificación en dos pasos",
         idEtiqueta = idEtiqueta,
         mostrarId = mostrarId,
         alVolver = alVolver,
@@ -91,7 +93,7 @@ fun BarraSuperiorAutenticador(
             ) {
                 Icon(
                     imageVector = Icons.Filled.Search,
-                    contentDescription = "Buscar cuentas 2FA",
+                    contentDescription = "Buscar cuentas",
                     tint = if (busquedaVisible || textoBusqueda.isNotBlank()) Color2FA else ColorIconosInternos,
                     modifier = Modifier.size(19.dp)
                 )
@@ -169,7 +171,7 @@ fun BarraSuperiorAutenticador(
                     )
                     SeparadorOpcionMenu()
                     com.jlnavas3.bovedalocal.ui.componentes.ElementoMenuCompacto(
-                        texto = "Ajustes del autenticador...",
+                        texto = "Ajustes de dos pasos...",
                         icono = androidx.compose.material.icons.Icons.Filled.Tune,
                         colorIcono = Color2FA,
                         onClick = {
@@ -217,3 +219,28 @@ fun BarraSuperiorAutenticador(
         }
     )
 }
+
+@BovedaPreview
+@Composable
+private fun PreviewBarraSuperiorAutenticador() {
+    PreviewTemaBoveda {
+        BarraSuperiorAutenticador(
+            busquedaVisible = false,
+            textoBusqueda = "",
+            soloFavoritos = false,
+            criterioOrdenacion = CriterioOrdenacion.NOMBRE_AZ,
+            conSeparador = true,
+            alVolver = {},
+            alAlternarBusqueda = {},
+            alSolicitarOrdenacion = {},
+            alAlternarFavoritos = {},
+            alExportarSelectivo = {},
+            alImportarGoogleAuthenticator = {},
+            alMostrarComoFunciona = {},
+            alIrAjustesAutenticador = {},
+            alIrAjustesWidgetTotp = {},
+            alRestablecerFiltros = {}
+        )
+    }
+}
+

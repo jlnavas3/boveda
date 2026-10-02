@@ -337,11 +337,13 @@ private fun ContenidoEntradaDetalle(
             alCopiarUsuario = {
                 haptica.toque()
                 vm.copiar("Usuario", entrada.usuario, sensible = false)
+                vm.registrarUsoEntrada(entrada.id)
                 ultimaCopia = "usuario"
             },
             alCopiarContrasena = {
                 haptica.exito()
                 vm.copiar("Contraseña", entrada.contrasena, sensible = true)
+                vm.registrarUsoEntrada(entrada.id)
                 ultimaCopia = "contrasena"
             }
         )
@@ -356,6 +358,7 @@ private fun ContenidoEntradaDetalle(
             haptica = haptica,
             alCopiarTotp = { codigo ->
                 vm.copiar("Código TOTP", codigo, sensible = true)
+                vm.registrarUsoEntrada(entrada.id)
             }
         )
         if (!entrada.secretoTotp.isNullOrBlank()) {
@@ -368,7 +371,8 @@ private fun ContenidoEntradaDetalle(
             alCopiarUrl = { url ->
                 vm.copiar("Enlace", url, sensible = false)
             },
-            alAvisar = { vm.avisar(it) }
+            alAvisar = { vm.avisar(it) },
+            alAbrirUrl = { vm.registrarUsoEntrada(entrada.id) }
         )
         if (entrada.urls.any { it.isNotBlank() }) {
             Spacer(Modifier.height(16.dp))
@@ -428,12 +432,13 @@ private fun ContenidoEntradaDetalle(
             Spacer(Modifier.height(16.dp))
         }
 
-        // Metadatos: Fechas de creación y edición
+        // Metadatos: Fechas de creación, edición y último uso
         PieMetadatosDetalle(
             creadaEn = entrada.creadaEn,
-            modificadaEn = entrada.modificadaEn
+            modificadaEn = entrada.modificadaEn,
+            ultimoUsoEn = entrada.ultimoUsoEn
         )
-        if (entrada.creadaEn > 0L || entrada.modificadaEn > 0L) {
+        if (entrada.creadaEn > 0L || entrada.modificadaEn > 0L || entrada.ultimoUsoEn > 0L) {
             Spacer(Modifier.height(16.dp))
         }
 

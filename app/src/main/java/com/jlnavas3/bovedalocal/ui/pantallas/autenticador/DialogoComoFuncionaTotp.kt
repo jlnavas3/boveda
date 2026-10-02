@@ -47,7 +47,7 @@ fun DialogoComoFuncionaTotp(alDescartar: () -> Unit) {
         },
         title = {
             Text(
-                "¿Cómo funciona el 2FA?",
+                "¿Cómo funciona la verificación en dos pasos?",
                 color = TextoPrincipal,
                 style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold)
             )
@@ -65,7 +65,7 @@ fun DialogoComoFuncionaTotp(alDescartar: () -> Unit) {
                     style = MaterialTheme.typography.bodyMedium
                 )
                 Text(
-                    "Puedes activar 2FA escaneando el código QR del servicio o escribiendo la clave secreta manualmente con los botones de la cabecera superior.",
+                    "Puedes activar la verificación en dos pasos escaneando el código QR del servicio o escribiendo la clave secreta manualmente con los botones de la esquina inferior.",
                     color = TextoSecundario.copy(alpha = 0.85f),
                     style = MaterialTheme.typography.bodySmall
                 )
@@ -80,3 +80,16 @@ fun DialogoComoFuncionaTotp(alDescartar: () -> Unit) {
         }
     )
 }
+
+// -------------------------------------------------------------------------------------------------
+// Previews
+// -------------------------------------------------------------------------------------------------
+
+@com.jlnavas3.bovedalocal.ui.preview.BovedaPreview
+@Composable
+private fun DialogoComoFuncionaTotpPreview() {
+    com.jlnavas3.bovedalocal.ui.preview.PreviewTemaBoveda {
+        DialogoComoFuncionaTotp(alDescartar = {})
+    }
+}
+

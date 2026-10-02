@@ -43,6 +43,8 @@ import androidx.compose.ui.unit.sp
 import com.jlnavas3.bovedalocal.ui.componentes.MenuDesplegableBoveda
 import com.jlnavas3.bovedalocal.ui.componentes.SeparadorOpcionMenu
 import com.jlnavas3.bovedalocal.ui.componentes.TarjetaBovedaDesplegable
+import com.jlnavas3.bovedalocal.ui.preview.BovedaPreview
+import com.jlnavas3.bovedalocal.ui.preview.PreviewTemaBoveda
 import com.jlnavas3.bovedalocal.ui.theme.Ambar
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
@@ -280,3 +282,31 @@ fun BotonRestablecerItem(
         }
     }
 }
+
+@BovedaPreview
+@Composable
+private fun PreviewSelectoresAjustes() {
+    PreviewTemaBoveda {
+        Column(modifier = Modifier.padding(16.dp)) {
+            SelectorAjuste(
+                titulo = "Tema visual",
+                icono = Icons.Filled.Refresh,
+                seleccionado = "Oscuro",
+                opciones = listOf(
+                    OpcionAjuste("oscuro", "Oscuro", Icons.Filled.Refresh),
+                    OpcionAjuste("claro", "Claro", Icons.Filled.Refresh)
+                ),
+                alSeleccionar = {}
+            )
+            Spacer(Modifier.height(16.dp))
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                SwatchColor(color = Color(0xFFFF9800), seleccionado = true, descripcion = "Ámbar", alPulsar = {})
+                SwatchColor(color = Color(0xFF2196F3), seleccionado = false, descripcion = "Azul", alPulsar = {})
+                SwatchColor(color = Color(0xFF4CAF50), seleccionado = false, descripcion = "Verde", alPulsar = {})
+            }
+            Spacer(Modifier.height(16.dp))
+            BotonRestablecerItem(alRestaurar = {})
+        }
+    }
+}
+

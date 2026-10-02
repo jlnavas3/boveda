@@ -115,6 +115,7 @@ fun PantallaAutenticador(vm: VaultViewModel, estado: EstadoBoveda) {
                     CriterioOrdenacion.MODIFICACION_RECIENTE -> b.modificadaEn.compareTo(a.modificadaEn)
                     CriterioOrdenacion.ANTIGUEDAD -> a.creadaEn.compareTo(b.creadaEn)
                     CriterioOrdenacion.CREACION_RECIENTE -> b.creadaEn.compareTo(a.creadaEn)
+                    CriterioOrdenacion.USO_RECIENTE -> b.ultimoUsoEn.compareTo(a.ultimoUsoEn)
                 }
             }
     }
@@ -197,7 +198,7 @@ fun PantallaAutenticador(vm: VaultViewModel, estado: EstadoBoveda) {
                     .verticalScroll(scrollState)
                     .padding(horizontal = 16.dp, vertical = 10.dp)
             ) {
-                DescripcionPantalla(subtitulo = "Códigos de doble factor calculados en el dispositivo")
+                DescripcionPantalla(subtitulo = "Códigos de verificación en dos pasos calculados en el dispositivo")
                 Spacer(Modifier.height(12.dp))
 
                 // Lista de cuentas o estado vacío
@@ -221,7 +222,7 @@ fun PantallaAutenticador(vm: VaultViewModel, estado: EstadoBoveda) {
                         }
                     },
                     alCopiarCodigo = { codigo ->
-                        vm.copiar("Código 2FA", codigo, true)
+                        vm.copiar("Código de verificación", codigo, true)
                     },
                     alAlternarFavorito = { id ->
                         vm.alternarFavorito(id)

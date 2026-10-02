@@ -38,3 +38,22 @@ fun InsigniaValorBoveda(
         )
     }
 }
+
+// -------------------------------------------------------------------------------------------------
+// Previews
+// -------------------------------------------------------------------------------------------------
+
+@com.jlnavas3.bovedalocal.ui.preview.BovedaPreview
+@Composable
+private fun InsigniaValorBovedaPreview() {
+    com.jlnavas3.bovedalocal.ui.preview.PreviewTemaBoveda {
+        androidx.compose.foundation.layout.Row(
+            horizontalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(8.dp)
+        ) {
+            InsigniaValorBoveda(texto = "969")
+            InsigniaValorBoveda(texto = "2FA", colorAcento = com.jlnavas3.bovedalocal.ui.theme.Menta)
+            InsigniaValorBoveda(texto = "Alerta", colorAcento = com.jlnavas3.bovedalocal.ui.theme.Peligro)
+        }
+    }
+}
+

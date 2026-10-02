@@ -19,12 +19,26 @@
     kotlinx.serialization.KSerializer serializer(...);
 }
 
+# Credential Transfer / Provider Events (androidx.credentials.providerevents)
+# Las clases de providerevents y play-services se instancian por reflexión mediante ProviderFactory
+# a través de nombres de clase definidos en el AndroidManifest.
+-keep class androidx.credentials.providerevents.** { *; }
+-keep interface androidx.credentials.providerevents.** { *; }
+-keep class com.google.android.gms.identitycredentials.** { *; }
+-keep interface com.google.android.gms.identitycredentials.** { *; }
+
+# Modelos CXF (FIDO Credential Exchange Format) serializados con kotlinx.serialization
+-keep,includedescriptorclasses class com.jlnavas3.bovedalocal.cxf.**$$serializer { *; }
+-keepclassmembers class com.jlnavas3.bovedalocal.cxf.** {
+    *** Companion;
+}
+-keepclasseswithmembers class com.jlnavas3.bovedalocal.cxf.** {
+    kotlinx.serialization.KSerializer serializer(...);
+}
+-keep class com.jlnavas3.bovedalocal.cxf.** { *; }
+
 # Numeros de linea en las trazas, para que un informe de fallo siga sirviendo de
 # algo. El nombre del fichero se sustituye por uno falso: guardarlo de verdad
 # seria regalar la estructura del codigo, que es justo lo que se quiere esconder.
 -keepattributes SourceFile,LineNumberTable
 -renamesourcefileattribute SourceFile
-
-# Nada mas. Ni -keep de los paquetes de la app (eso deja todo sin ofuscar y
-# convierte el minify en un gesto), ni reglas de librerias que este proyecto no
-# usa, ni -dontwarn en bloque que tape avisos de verdad.

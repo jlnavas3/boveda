@@ -56,6 +56,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.jlnavas3.bovedalocal.data.AnalizadorDuplicados
+import com.jlnavas3.bovedalocal.data.Entrada
 import com.jlnavas3.bovedalocal.data.EstadoBoveda
 import com.jlnavas3.bovedalocal.data.normalizarEtiqueta
 import com.jlnavas3.bovedalocal.ui.theme.calcularEspaciadoFilas
@@ -137,6 +138,41 @@ fun PantallaLista(vm: VaultViewModel, estado: EstadoBoveda) {
     fun abrirMenu() = ambitoCorutina.launch { estadoCajon.open() }
     fun cerrarMenu() = ambitoCorutina.launch { estadoCajon.close() }
 
+    val actividad = remember(contexto) {
+        var c = contexto
+        while (c is android.content.ContextWrapper) {
+            if (c is android.app.Activity) break
+            c = c.baseContext
+        }
+        c as? android.app.Activity
+    }
+
+    val dispararImportacionDirectoCxf: () -> Unit = {
+        val act = actividad
+        if (act != null) {
+            haptica.tic()
+            ambitoCorutina.launch {
+                when (val res = com.jlnavas3.bovedalocal.cxf.CxfGestorTransferencia.importarCredenciales(act)) {
+                    is com.jlnavas3.bovedalocal.cxf.ResultadoImportacionCxf.Exito -> {
+                        haptica.exito()
+                        vm.ir(Pantalla.ConfirmarImportacionCxf(res.jsonPayload))
+                    }
+                    is com.jlnavas3.bovedalocal.cxf.ResultadoImportacionCxf.Cancelado -> {
+                        // El usuario canceló la hoja del sistema
+                    }
+                    is com.jlnavas3.bovedalocal.cxf.ResultadoImportacionCxf.SinOpciones -> {
+                        haptica.error()
+                        vm.mostrarAviso(res.mensaje)
+                    }
+                    is com.jlnavas3.bovedalocal.cxf.ResultadoImportacionCxf.Error -> {
+                        haptica.error()
+                        vm.mostrarError(res.mensaje)
+                    }
+                }
+            }
+        }
+    }
+
     LaunchedEffect(abrirDrawerAlVolver) {
         if (abrirDrawerAlVolver) {
             if (!estadoCajon.isOpen) {
@@ -158,6 +194,8 @@ fun PantallaLista(vm: VaultViewModel, estado: EstadoBoveda) {
     var modoSeleccion by remember { mutableStateOf(false) }
     var seleccionados by remember { mutableStateOf(setOf<String>()) }
     var dialogoBorrarSeleccion by remember { mutableStateOf(false) }
+    var mostrarDialogoExportarCxf by remember { mutableStateOf(false) }
+    var entradasParaTransferirCxf by remember { mutableStateOf<List<Entrada>?>(null) }
     var dialogoRenombrarSeleccion by remember { mutableStateOf(false) }
     var textoNuevoTitulo by remember { mutableStateOf("") }
 
@@ -302,6 +340,8 @@ fun PantallaLista(vm: VaultViewModel, estado: EstadoBoveda) {
                         alIrCopiaSeguridadManual = { vm.ir(Pantalla.CopiaSeguridad("05-COP-MAN")) },
                         alIrCopiaSeguridad = { vm.ir(Pantalla.CopiaSeguridad("05-COP-MAN-IMP")) },
                         alIrCsvGoogle = { vm.ir(Pantalla.CsvGoogle("05-COP-CSV-IMP")) },
+                        alImportarDirectoCxf = dispararImportacionDirectoCxf,
+                        alExportarDirectoCxf = { mostrarDialogoExportarCxf = true },
                         alRestablecerFiltros = {
                             vm.filtrarPorTipo(null)
                             if (soloFavoritos) vm.alternarSoloFavoritos()
@@ -419,7 +459,8 @@ fun PantallaLista(vm: VaultViewModel, estado: EstadoBoveda) {
                         alImportarGoogleAuthenticator = {
                             haptica.tic()
                             vm.ir(Pantalla.Escaner())
-                        }
+                        },
+                        alImportarDirectoCxf = dispararImportacionDirectoCxf
                     )
                 } else {
                     CuerpoListaEntradas(
@@ -437,17 +478,20 @@ fun PantallaLista(vm: VaultViewModel, estado: EstadoBoveda) {
                             val listaIdsVisibles = visibles.map { it.id }
                             vm.ir(Pantalla.Detalle(id, idsContexto = listaIdsVisibles))
                         },
-                        alCopiarUsuario = { usuario ->
+                        alCopiarUsuario = { id, usuario ->
                             haptica.toque()
                             vm.copiar("Usuario", usuario, sensible = false)
+                            vm.registrarUsoEntrada(id)
                         },
-                        alCopiarContrasena = { contrasena ->
+                        alCopiarContrasena = { id, contrasena ->
                             haptica.exito()
                             vm.copiar("Contraseña", contrasena, sensible = true)
+                            vm.registrarUsoEntrada(id)
                         },
-                        alCopiarCodigoTotp = { codigo ->
+                        alCopiarCodigoTotp = { id, codigo ->
                             haptica.exito()
                             vm.copiar("Código", codigo, sensible = true)
+                            vm.registrarUsoEntrada(id)
                         },
                         alAlternarFavorito = { id ->
                             haptica.tic()
@@ -547,6 +591,11 @@ fun PantallaLista(vm: VaultViewModel, estado: EstadoBoveda) {
                         salirDeSeleccion()
                         vm.ir(Pantalla.ExportarSelectivo("ids:$ids"))
                     },
+                    alTransferirCxf = {
+                        val copia = itemsSeleccionados.toList()
+                        salirDeSeleccion()
+                        entradasParaTransferirCxf = copia
+                    },
                     alRenombrar = {
                         val primera = entradas.firstOrNull { seleccionados.contains(it.id) }
                         textoNuevoTitulo = primera?.titulo ?: ""
@@ -590,6 +639,22 @@ fun PantallaLista(vm: VaultViewModel, estado: EstadoBoveda) {
                 }
             },
             alDescartar = { dialogoRenombrarSeleccion = false }
+        )
+    }
+
+    entradasParaTransferirCxf?.let { entradasSeleccionadas ->
+        com.jlnavas3.bovedalocal.ui.pantallas.cxf.DialogoExportacionDirectaCxf(
+            entradas = entradasSeleccionadas,
+            esSeleccionPersonalizada = true,
+            alCerrar = { entradasParaTransferirCxf = null }
+        )
+    }
+
+    if (mostrarDialogoExportarCxf && estado is EstadoBoveda.Desbloqueada) {
+        com.jlnavas3.bovedalocal.ui.pantallas.cxf.DialogoExportacionDirectaCxf(
+            entradas = estado.entradas,
+            esSeleccionPersonalizada = false,
+            alCerrar = { mostrarDialogoExportarCxf = false }
         )
     }
 }

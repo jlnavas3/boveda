@@ -123,7 +123,7 @@ class PresetsCamposTest {
         assertEquals("Documento de identidad", TipoEntrada.IDENTIDAD.etiqueta)
         assertEquals("Servidor / SSH", TipoEntrada.SERVIDOR.etiqueta)
         assertEquals("Cripto Wallet", TipoEntrada.WALLET.etiqueta)
-        assertEquals("Passkey", TipoEntrada.PASSKEY.etiqueta)
+        assertEquals("Llave de paso", TipoEntrada.PASSKEY.etiqueta)
     }
 
     @Test

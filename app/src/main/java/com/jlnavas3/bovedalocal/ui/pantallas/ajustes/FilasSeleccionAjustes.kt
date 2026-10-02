@@ -27,6 +27,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.jlnavas3.bovedalocal.ui.componentes.SwitchBoveda
+import com.jlnavas3.bovedalocal.ui.preview.BovedaPreview
+import com.jlnavas3.bovedalocal.ui.preview.PreviewTemaBoveda
 import com.jlnavas3.bovedalocal.ui.theme.Ambar
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.TextoPrincipal
@@ -147,3 +149,35 @@ fun FilaAjuste(
         )
     }
 }
+
+@BovedaPreview
+@Composable
+private fun PreviewFilasSeleccionAjustes() {
+    PreviewTemaBoveda {
+        Column(modifier = Modifier.padding(16.dp)) {
+            FilaOpcionRadio(
+                titulo = "5 minutos",
+                subtitulo = "Recomendado para uso frecuente",
+                seleccionado = true,
+                alSeleccionar = {}
+            )
+            FilaOpcionRadio(
+                titulo = "15 minutos",
+                seleccionado = false,
+                alSeleccionar = {}
+            )
+            Spacer(Modifier.height(16.dp))
+            FilaAjuste(
+                titulo = "Bloqueo biométrico",
+                descripcion = "Usar huella digital para desbloquear",
+                activo = true,
+                alCambiar = {}
+            )
+            EnlaceAjuste(
+                texto = "Más opciones avanzadas",
+                alPulsar = {}
+            )
+        }
+    }
+}
+

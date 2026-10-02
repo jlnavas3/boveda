@@ -239,6 +239,7 @@ sealed interface Pantalla {
         override fun hashCode(): Int = seccionId?.hashCode() ?: 0
     }
     data class ConfirmarMigracion(val urlMigracion: String) : Pantalla
+    data class ConfirmarImportacionCxf(val jsonCxf: String) : Pantalla
     open class ExportarSelectivo(val seccionInicial: String = "todos") : Pantalla {
         companion object : ExportarSelectivo("todos")
         override fun equals(other: Any?): Boolean = other is ExportarSelectivo && other.seccionInicial == seccionInicial
@@ -281,5 +282,6 @@ enum class CriterioOrdenacion(val etiqueta: String) {
     NOMBRE_ZA("Nombre (Z-A)"),
     MODIFICACION_RECIENTE("Modificado recientemente"),
     CREACION_RECIENTE("Añadido recientemente"),
-    ANTIGUEDAD("Más antiguos primero")
+    ANTIGUEDAD("Más antiguos primero"),
+    USO_RECIENTE("Último usado")
 }

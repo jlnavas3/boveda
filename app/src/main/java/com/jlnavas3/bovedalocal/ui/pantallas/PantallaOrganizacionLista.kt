@@ -17,6 +17,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.jlnavas3.bovedalocal.ui.CriterioOrdenacion
+import com.jlnavas3.bovedalocal.ui.Pantalla
 import com.jlnavas3.bovedalocal.ui.VaultViewModel
 import com.jlnavas3.bovedalocal.ui.componentes.BarraSuperiorPantalla
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.AccionSaltoGrupo
@@ -92,6 +93,10 @@ fun PantallaOrganizacionLista(
                     alCambiarMostrarIndicadores = {
                         haptica.tic()
                         vm.ajustarMostrarIndicadoresContenido(it)
+                    },
+                    alIrAColoresDatos = {
+                        haptica.tic()
+                        vm.ir(Pantalla.ColoresDatos())
                     }
                 )
 
