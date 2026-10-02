@@ -227,9 +227,66 @@ fun PantallaLaboratorioTemas(
 
     fun copiarPaletaAlPortapapeles() {
         haptica.exito()
-        val json = paletaActual.aJson()
-        portapapeles.setText(AnnotatedString(json))
-        Toast.makeText(contexto, "¡Paleta copiada al portapapeles! Pégala en el chat.", Toast.LENGTH_LONG).show()
+        val (hAcento, sAcento, vAcento) = colorAhsv(colorAcentoActual)
+        val jsonDetallado = """
+        {
+          "modo": "${if (modoOscuro) "oscuro" else "claro"}",
+          "fondo": "${colorFondo.aHexConAlfa()}",
+          "tarjeta": "${colorTarjeta.aHexConAlfa()}",
+          "campo": "${colorCampo.aHexConAlfa()}",
+          "borde": "${colorBorde.aHexConAlfa()}",
+          "textoPrincipal": "${colorTextoPrincipal.aHexConAlfa()}",
+          "textoSecundario": "${colorTextoSecundario.aHexConAlfa()}",
+          "acento": "${colorAcentoActual.aHexConAlfa()}",
+          "parametrosLaboratorio": {
+            "unificarTonos": $unificarTonos,
+            "tonoGlobal": "${tonoGlobal.toInt()}°",
+            "saturacionTinteGrises": "${(saturacionTinte * 100).toInt()}%",
+            "capas": {
+              "fondo": {
+                "hex": "${colorFondo.aHexConAlfa()}",
+                "luminancia": "${(lumFondo * 100).toInt()}%",
+                "tono": "${tonoEfectivoFondo.toInt()}°"
+              },
+              "tarjeta": {
+                "hex": "${colorTarjeta.aHexConAlfa()}",
+                "luminancia": "${(lumTarjeta * 100).toInt()}%",
+                "tono": "${tonoEfectivoTarjeta.toInt()}°"
+              },
+              "campo": {
+                "hex": "${colorCampo.aHexConAlfa()}",
+                "luminancia": "${(lumCampo * 100).toInt()}%",
+                "tono": "${tonoEfectivoCampo.toInt()}°"
+              },
+              "borde": {
+                "hex": "${colorBorde.aHexConAlfa()}",
+                "luminancia": "${(lumBorde * 100).toInt()}%",
+                "tono": "${tonoEfectivoBorde.toInt()}°"
+              },
+              "textoPrincipal": {
+                "hex": "${colorTextoPrincipal.aHexConAlfa()}",
+                "luminancia": "${(lumTextoPrincipal * 100).toInt()}%",
+                "tono": "${tonoEfectivoTextoPrincipal.toInt()}°"
+              },
+              "textoSecundario": {
+                "hex": "${colorTextoSecundario.aHexConAlfa()}",
+                "luminancia": "${(lumTextoSecundario * 100).toInt()}%",
+                "tono": "${tonoEfectivoTextoSecundario.toInt()}°"
+              }
+            },
+            "acento": {
+              "hex": "${colorAcentoActual.aHexConAlfa()}",
+              "tono": "${hAcento.toInt()}°",
+              "saturacion": "${(sAcento * 100).toInt()}%",
+              "brillo": "${(vAcento * 100).toInt()}%",
+              "opacidad": "${(colorAcentoActual.alpha * 100).toInt()}%",
+              "canalAlfa": ${colorAcentoActual.alpha}
+            }
+          }
+        }
+        """.trimIndent()
+        portapapeles.setText(AnnotatedString(jsonDetallado))
+        Toast.makeText(contexto, "¡Paleta y parámetros copiados! Pégala en el chat.", Toast.LENGTH_LONG).show()
     }
 
     fun restablecerValores() {
