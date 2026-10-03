@@ -27,15 +27,23 @@ import androidx.compose.material.icons.filled.LightMode
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Palette
 import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.icons.filled.RestartAlt
 import androidx.compose.material.icons.filled.Save
 import androidx.compose.material.icons.filled.Security
 import androidx.compose.material.icons.filled.Tune
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.material3.Text
 import com.jlnavas3.bovedalocal.ui.componentes.DialogoConfirmacionBoveda
+import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
+import com.jlnavas3.bovedalocal.ui.theme.ColorSobreAcento
+import com.jlnavas3.bovedalocal.ui.theme.EstiloBorde
 import com.jlnavas3.bovedalocal.ui.theme.GestorPaletaSobria
+import com.jlnavas3.bovedalocal.ui.theme.GrosorBorde
+import com.jlnavas3.bovedalocal.ui.theme.ParametrosLaboratorio
 import com.jlnavas3.bovedalocal.ui.theme.paletaSobriaGuardadaClara
 import com.jlnavas3.bovedalocal.ui.theme.paletaSobriaGuardadaOscura
 import androidx.compose.runtime.Composable
@@ -58,8 +66,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.jlnavas3.bovedalocal.ui.VaultViewModel
 import com.jlnavas3.bovedalocal.ui.componentes.BarraSuperiorPantalla
-import com.jlnavas3.bovedalocal.ui.componentes.BotonBoveda
-import com.jlnavas3.bovedalocal.ui.componentes.BotonPeligro
 import com.jlnavas3.bovedalocal.ui.componentes.CampoBoveda
 import com.jlnavas3.bovedalocal.ui.componentes.SwitchBoveda
 import com.jlnavas3.bovedalocal.ui.componentes.colorAhsv
@@ -87,7 +93,7 @@ import com.jlnavas3.bovedalocal.ui.theme.esOscuroActivo
 import com.jlnavas3.bovedalocal.ui.theme.restringirLuminancia
 import com.jlnavas3.bovedalocal.util.Haptica
 
-private class EstadoLaboratorioTemas {
+private class EstadoLaboratorioTemas(contexto: android.content.Context) {
     var modoOscuro by mutableStateOf(esOscuroActivo)
 
     val paramOscuro = PaletaSobriaParametrosDefaults.OSCURO
@@ -95,51 +101,56 @@ private class EstadoLaboratorioTemas {
     val paramClaro = PaletaSobriaParametrosDefaults.CLARO
     val defClaro = PaletaSobriaDefaults.CLARA
 
-    var lumFondoOscuro by mutableFloatStateOf(paramOscuro.lumFondo)
-    var lumTarjetaOscuro by mutableFloatStateOf(paramOscuro.lumTarjeta)
-    var lumCampoOscuro by mutableFloatStateOf(paramOscuro.lumCampo)
-    var lumBordeOscuro by mutableFloatStateOf(paramOscuro.lumBorde)
-    var lumTextoPrincipalOscuro by mutableFloatStateOf(paramOscuro.lumTextoPrincipal)
-    var lumTextoSecundarioOscuro by mutableFloatStateOf(paramOscuro.lumTextoSecundario)
-    var colorAcentoOscuro by mutableStateOf(defOscuro.acento)
-    var tonoGlobalOscuro by mutableFloatStateOf(paramOscuro.tonoGlobal)
-    var saturacionTinteOscuro by mutableFloatStateOf(paramOscuro.saturacionTinte)
-    var tonoFondoOscuro by mutableFloatStateOf(paramOscuro.tonoGlobal)
-    var tonoTarjetaOscuro by mutableFloatStateOf(paramOscuro.tonoGlobal)
-    var tonoCampoOscuro by mutableFloatStateOf(paramOscuro.tonoGlobal)
-    var tonoBordeOscuro by mutableFloatStateOf(paramOscuro.tonoGlobal)
-    var tonoTextoPrincipalOscuro by mutableFloatStateOf(paramOscuro.tonoGlobal)
-    var tonoTextoSecundarioOscuro by mutableFloatStateOf(paramOscuro.tonoGlobal)
-    var huePersonalizadoOscuro by mutableFloatStateOf(paramOscuro.acentoHue)
-    var satPersonalizadoOscuro by mutableFloatStateOf(paramOscuro.acentoSat)
-    var valPersonalizadoOscuro by mutableFloatStateOf(paramOscuro.acentoVal)
-    var alfaPersonalizadoOscuro by mutableFloatStateOf(paramOscuro.acentoAlfa)
-    var esPersonalizadoActivoOscuro by mutableStateOf(false)
-    var mostrarAjustePersonalizadoOscuro by mutableStateOf(false)
+    val guardados = GestorPaletaSobria.cargarParametros(contexto)
+    val guardadoOsc = guardados.oscuro
+    val guardadoCla = guardados.claro
+    val paletasGuardadas = GestorPaletaSobria.cargar(contexto)
 
-    var lumFondoClaro by mutableFloatStateOf(paramClaro.lumFondo)
-    var lumTarjetaClaro by mutableFloatStateOf(paramClaro.lumTarjeta)
-    var lumCampoClaro by mutableFloatStateOf(paramClaro.lumCampo)
-    var lumBordeClaro by mutableFloatStateOf(paramClaro.lumBorde)
-    var lumTextoPrincipalClaro by mutableFloatStateOf(paramClaro.lumTextoPrincipal)
-    var lumTextoSecundarioClaro by mutableFloatStateOf(paramClaro.lumTextoSecundario)
-    var colorAcentoClaro by mutableStateOf(defClaro.acento)
-    var tonoGlobalClaro by mutableFloatStateOf(paramClaro.tonoGlobal)
-    var saturacionTinteClaro by mutableFloatStateOf(paramClaro.saturacionTinte)
-    var tonoFondoClaro by mutableFloatStateOf(paramClaro.tonoGlobal)
-    var tonoTarjetaClaro by mutableFloatStateOf(paramClaro.tonoGlobal)
-    var tonoCampoClaro by mutableFloatStateOf(paramClaro.tonoGlobal)
-    var tonoBordeClaro by mutableFloatStateOf(paramClaro.tonoGlobal)
-    var tonoTextoPrincipalClaro by mutableFloatStateOf(paramClaro.tonoGlobal)
-    var tonoTextoSecundarioClaro by mutableFloatStateOf(paramClaro.tonoGlobal)
-    var huePersonalizadoClaro by mutableFloatStateOf(paramClaro.acentoHue)
-    var satPersonalizadoClaro by mutableFloatStateOf(paramClaro.acentoSat)
-    var valPersonalizadoClaro by mutableFloatStateOf(paramClaro.acentoVal)
-    var alfaPersonalizadoClaro by mutableFloatStateOf(paramClaro.acentoAlfa)
-    var esPersonalizadoActivoClaro by mutableStateOf(false)
-    var mostrarAjustePersonalizadoClaro by mutableStateOf(false)
+    var lumFondoOscuro by mutableFloatStateOf(guardadoOsc?.lumFondo ?: paramOscuro.lumFondo)
+    var lumTarjetaOscuro by mutableFloatStateOf(guardadoOsc?.lumTarjeta ?: paramOscuro.lumTarjeta)
+    var lumCampoOscuro by mutableFloatStateOf(guardadoOsc?.lumCampo ?: paramOscuro.lumCampo)
+    var lumBordeOscuro by mutableFloatStateOf(guardadoOsc?.lumBorde ?: paramOscuro.lumBorde)
+    var lumTextoPrincipalOscuro by mutableFloatStateOf(guardadoOsc?.lumTextoPrincipal ?: paramOscuro.lumTextoPrincipal)
+    var lumTextoSecundarioOscuro by mutableFloatStateOf(guardadoOsc?.lumTextoSecundario ?: paramOscuro.lumTextoSecundario)
+    var colorAcentoOscuro by mutableStateOf(paletasGuardadas.first?.acento ?: defOscuro.acento)
+    var tonoGlobalOscuro by mutableFloatStateOf(guardadoOsc?.tonoGlobal ?: paramOscuro.tonoGlobal)
+    var saturacionTinteOscuro by mutableFloatStateOf(guardadoOsc?.saturacionTinte ?: paramOscuro.saturacionTinte)
+    var tonoFondoOscuro by mutableFloatStateOf(guardadoOsc?.tonoFondo ?: paramOscuro.tonoGlobal)
+    var tonoTarjetaOscuro by mutableFloatStateOf(guardadoOsc?.tonoTarjeta ?: paramOscuro.tonoGlobal)
+    var tonoCampoOscuro by mutableFloatStateOf(guardadoOsc?.tonoCampo ?: paramOscuro.tonoGlobal)
+    var tonoBordeOscuro by mutableFloatStateOf(guardadoOsc?.tonoBorde ?: paramOscuro.tonoGlobal)
+    var tonoTextoPrincipalOscuro by mutableFloatStateOf(guardadoOsc?.tonoTextoPrincipal ?: paramOscuro.tonoGlobal)
+    var tonoTextoSecundarioOscuro by mutableFloatStateOf(guardadoOsc?.tonoTextoSecundario ?: paramOscuro.tonoGlobal)
+    var huePersonalizadoOscuro by mutableFloatStateOf(guardadoOsc?.acentoHue ?: paramOscuro.acentoHue)
+    var satPersonalizadoOscuro by mutableFloatStateOf(guardadoOsc?.acentoSat ?: paramOscuro.acentoSat)
+    var valPersonalizadoOscuro by mutableFloatStateOf(guardadoOsc?.acentoVal ?: paramOscuro.acentoVal)
+    var alfaPersonalizadoOscuro by mutableFloatStateOf(guardadoOsc?.acentoAlfa ?: paramOscuro.acentoAlfa)
+    var esPersonalizadoActivoOscuro by mutableStateOf(guardadoOsc?.esPersonalizado ?: false)
+    var mostrarAjustePersonalizadoOscuro by mutableStateOf(guardadoOsc?.esPersonalizado ?: false)
 
-    var unificarTonos by mutableStateOf(true)
+    var lumFondoClaro by mutableFloatStateOf(guardadoCla?.lumFondo ?: paramClaro.lumFondo)
+    var lumTarjetaClaro by mutableFloatStateOf(guardadoCla?.lumTarjeta ?: paramClaro.lumTarjeta)
+    var lumCampoClaro by mutableFloatStateOf(guardadoCla?.lumCampo ?: paramClaro.lumCampo)
+    var lumBordeClaro by mutableFloatStateOf(guardadoCla?.lumBorde ?: paramClaro.lumBorde)
+    var lumTextoPrincipalClaro by mutableFloatStateOf(guardadoCla?.lumTextoPrincipal ?: paramClaro.lumTextoPrincipal)
+    var lumTextoSecundarioClaro by mutableFloatStateOf(guardadoCla?.lumTextoSecundario ?: paramClaro.lumTextoSecundario)
+    var colorAcentoClaro by mutableStateOf(paletasGuardadas.second?.acento ?: defClaro.acento)
+    var tonoGlobalClaro by mutableFloatStateOf(guardadoCla?.tonoGlobal ?: paramClaro.tonoGlobal)
+    var saturacionTinteClaro by mutableFloatStateOf(guardadoCla?.saturacionTinte ?: paramClaro.saturacionTinte)
+    var tonoFondoClaro by mutableFloatStateOf(guardadoCla?.tonoFondo ?: paramClaro.tonoGlobal)
+    var tonoTarjetaClaro by mutableFloatStateOf(guardadoCla?.tonoTarjeta ?: paramClaro.tonoGlobal)
+    var tonoCampoClaro by mutableFloatStateOf(guardadoCla?.tonoCampo ?: paramClaro.tonoGlobal)
+    var tonoBordeClaro by mutableFloatStateOf(guardadoCla?.tonoBorde ?: paramClaro.tonoGlobal)
+    var tonoTextoPrincipalClaro by mutableFloatStateOf(guardadoCla?.tonoTextoPrincipal ?: paramClaro.tonoGlobal)
+    var tonoTextoSecundarioClaro by mutableFloatStateOf(guardadoCla?.tonoTextoSecundario ?: paramClaro.tonoGlobal)
+    var huePersonalizadoClaro by mutableFloatStateOf(guardadoCla?.acentoHue ?: paramClaro.acentoHue)
+    var satPersonalizadoClaro by mutableFloatStateOf(guardadoCla?.acentoSat ?: paramClaro.acentoSat)
+    var valPersonalizadoClaro by mutableFloatStateOf(guardadoCla?.acentoVal ?: paramClaro.acentoVal)
+    var alfaPersonalizadoClaro by mutableFloatStateOf(guardadoCla?.acentoAlfa ?: paramClaro.acentoAlfa)
+    var esPersonalizadoActivoClaro by mutableStateOf(guardadoCla?.esPersonalizado ?: false)
+    var mostrarAjustePersonalizadoClaro by mutableStateOf(guardadoCla?.esPersonalizado ?: false)
+
+    var unificarTonos by mutableStateOf(guardados.unificarTonos)
     var modificadoOscuro by mutableStateOf(false)
     var modificadoClaro by mutableStateOf(false)
 
@@ -334,7 +345,7 @@ fun PantallaLaboratorioTemas(
     val portapapeles = LocalClipboardManager.current
     val scrollState = rememberScrollState()
 
-    val estadoLab = remember { EstadoLaboratorioTemas() }
+    val estadoLab = remember { EstadoLaboratorioTemas(contexto) }
 
     with(estadoLab) {
 
@@ -462,7 +473,59 @@ fun PantallaLaboratorioTemas(
         haptica.exito()
         val paletaOsc = if (modificadoOscuro) construirPaleta(true) else paletaSobriaGuardadaOscura ?: PaletaSobriaDefaults.OSCURA
         val paletaCla = if (modificadoClaro) construirPaleta(false) else paletaSobriaGuardadaClara ?: PaletaSobriaDefaults.CLARA
-        GestorPaletaSobria.guardar(contexto, paletaOsc, paletaCla)
+
+        val paramsOsc = ParametrosLaboratorio(
+            lumFondo = lumFondoOscuro,
+            lumTarjeta = lumTarjetaOscuro,
+            lumCampo = lumCampoOscuro,
+            lumBorde = lumBordeOscuro,
+            lumTextoPrincipal = lumTextoPrincipalOscuro,
+            lumTextoSecundario = lumTextoSecundarioOscuro,
+            tonoGlobal = tonoGlobalOscuro,
+            saturacionTinte = saturacionTinteOscuro,
+            tonoFondo = tonoFondoOscuro,
+            tonoTarjeta = tonoTarjetaOscuro,
+            tonoCampo = tonoCampoOscuro,
+            tonoBorde = tonoBordeOscuro,
+            tonoTextoPrincipal = tonoTextoPrincipalOscuro,
+            tonoTextoSecundario = tonoTextoSecundarioOscuro,
+            acentoHue = huePersonalizadoOscuro,
+            acentoSat = satPersonalizadoOscuro,
+            acentoVal = valPersonalizadoOscuro,
+            acentoAlfa = alfaPersonalizadoOscuro,
+            esPersonalizado = esPersonalizadoActivoOscuro
+        )
+
+        val paramsCla = ParametrosLaboratorio(
+            lumFondo = lumFondoClaro,
+            lumTarjeta = lumTarjetaClaro,
+            lumCampo = lumCampoClaro,
+            lumBorde = lumBordeClaro,
+            lumTextoPrincipal = lumTextoPrincipalClaro,
+            lumTextoSecundario = lumTextoSecundarioClaro,
+            tonoGlobal = tonoGlobalClaro,
+            saturacionTinte = saturacionTinteClaro,
+            tonoFondo = tonoFondoClaro,
+            tonoTarjeta = tonoTarjetaClaro,
+            tonoCampo = tonoCampoClaro,
+            tonoBorde = tonoBordeClaro,
+            tonoTextoPrincipal = tonoTextoPrincipalClaro,
+            tonoTextoSecundario = tonoTextoSecundarioClaro,
+            acentoHue = huePersonalizadoClaro,
+            acentoSat = satPersonalizadoClaro,
+            acentoVal = valPersonalizadoClaro,
+            acentoAlfa = alfaPersonalizadoClaro,
+            esPersonalizado = esPersonalizadoActivoClaro
+        )
+
+        GestorPaletaSobria.guardar(
+            context = contexto,
+            paletaOscura = paletaOsc,
+            paletaClara = paletaCla,
+            unificarTonos = unificarTonos,
+            paramsOscuro = paramsOsc,
+            paramsClaro = paramsCla
+        )
         modificadoOscuro = false
         modificadoClaro = false
         Toast.makeText(contexto, "¡Tema guardado con éxito!", Toast.LENGTH_SHORT).show()
@@ -551,23 +614,7 @@ fun PantallaLaboratorioTemas(
     ) {
         BarraSuperiorPantalla(
             titulo = "Laboratorio de Temas",
-            alVolver = alVolver,
-            acciones = {
-                IconButton(onClick = { solicitarGuardar() }) {
-                    Icon(
-                        imageVector = Icons.Filled.Save,
-                        contentDescription = "Guardar tema",
-                        tint = colorAcentoActual
-                    )
-                }
-                IconButton(onClick = { copiarPaletaAlPortapapeles() }) {
-                    Icon(
-                        imageVector = Icons.Filled.ContentCopy,
-                        contentDescription = "Copiar paleta",
-                        tint = colorAcentoActual
-                    )
-                }
-            }
+            alVolver = alVolver
         )
 
         // Selector de Modo (Oscuro / Claro) FIJO / VISIBLE ARRIBA
@@ -659,13 +706,17 @@ fun PantallaLaboratorioTemas(
             }
         )
 
-        Column(
+        Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .weight(1f)
-                .verticalScroll(scrollState)
-                .padding(horizontal = 16.dp, vertical = 8.dp)
         ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(scrollState)
+                    .padding(horizontal = 16.dp, vertical = 8.dp)
+            ) {
 
             // SECCIÓN 1: Escala de Capas y Tonos (90% de la interfaz)
             ComponenteGrupo(
@@ -703,6 +754,7 @@ fun PantallaLaboratorioTemas(
                             onCheckedChange = {
                                 haptica.tic()
                                 unificarTonos = it
+                                marcarModificado()
                             }
                         )
                     }
@@ -1135,36 +1187,83 @@ fun PantallaLaboratorioTemas(
                 }
             }
 
-            Spacer(Modifier.height(20.dp))
+                Spacer(Modifier.height(180.dp))
+            }
 
-            // SECCIÓN 3: Acciones Finales
-            BotonBoveda(
-                texto = "💾 Guardar Tema",
-                alPulsar = { solicitarGuardar() },
-                modifier = Modifier.fillMaxWidth()
-            )
+            // Botones flotantes monocromáticos alineados verticalmente abajo a la derecha
+            val formaFab = RoundedCornerShape(CurvaturaEsquinas)
+            Column(
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .padding(20.dp),
+                horizontalAlignment = Alignment.End,
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                // FAB 1 (superior): Restablecer valores predeterminados
+                SmallFloatingActionButton(
+                    onClick = {
+                        haptica.toque()
+                        restablecerValores(contexto)
+                        Toast.makeText(contexto, "Valores de fábrica restablecidos", Toast.LENGTH_SHORT).show()
+                    },
+                    containerColor = ColorTarjetaAjustes,
+                    contentColor = colorAcentoActual,
+                    shape = formaFab,
+                    modifier = Modifier.then(
+                        if (GrosorBorde > 0.dp && EstiloBorde != "ninguno") {
+                            Modifier.border(GrosorBorde, ColorBordeActual, formaFab)
+                        } else Modifier
+                    )
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.RestartAlt,
+                        contentDescription = "Restablecer valores predeterminados",
+                        modifier = Modifier.size(20.dp)
+                    )
+                }
 
-            Spacer(Modifier.height(10.dp))
+                // FAB 2 (intermedio): Copiar paleta al portapapeles
+                SmallFloatingActionButton(
+                    onClick = {
+                        copiarPaletaAlPortapapeles()
+                    },
+                    containerColor = ColorTarjetaAjustes,
+                    contentColor = colorAcentoActual,
+                    shape = formaFab,
+                    modifier = Modifier.then(
+                        if (GrosorBorde > 0.dp && EstiloBorde != "ninguno") {
+                            Modifier.border(GrosorBorde, ColorBordeActual, formaFab)
+                        } else Modifier
+                    )
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.ContentCopy,
+                        contentDescription = "Copiar paleta",
+                        modifier = Modifier.size(20.dp)
+                    )
+                }
 
-            BotonBoveda(
-                texto = "📋 Copiar Paleta para el Asistente",
-                alPulsar = { copiarPaletaAlPortapapeles() },
-                modifier = Modifier.fillMaxWidth()
-            )
-
-            Spacer(Modifier.height(10.dp))
-
-            BotonPeligro(
-                texto = "🔄 Restablecer Valores Predeterminados",
-                alPulsar = {
-                    haptica.toque()
-                    restablecerValores(contexto)
-                    Toast.makeText(contexto, "Valores de fábrica restablecidos", Toast.LENGTH_SHORT).show()
-                },
-                modifier = Modifier.fillMaxWidth()
-            )
-
-            Spacer(Modifier.height(32.dp))
+                // FAB 3 (inferior): Guardar tema
+                FloatingActionButton(
+                    onClick = {
+                        solicitarGuardar()
+                    },
+                    containerColor = colorAcentoActual,
+                    contentColor = colorContraste(colorAcentoActual),
+                    shape = formaFab,
+                    modifier = Modifier.then(
+                        if (GrosorBorde > 0.dp && EstiloBorde != "ninguno") {
+                            Modifier.border(GrosorBorde, ColorBordeActual, formaFab)
+                        } else Modifier
+                    )
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.Save,
+                        contentDescription = "Guardar tema",
+                        modifier = Modifier.size(24.dp)
+                    )
+                }
+            }
         }
     }
 

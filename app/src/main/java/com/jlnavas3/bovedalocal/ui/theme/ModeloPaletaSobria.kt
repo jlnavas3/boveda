@@ -159,6 +159,34 @@ fun restringirLuminancia(
     }
 }
 
+data class ParametrosLaboratorio(
+    val lumFondo: Float,
+    val lumTarjeta: Float,
+    val lumCampo: Float,
+    val lumBorde: Float,
+    val lumTextoPrincipal: Float,
+    val lumTextoSecundario: Float,
+    val tonoGlobal: Float,
+    val saturacionTinte: Float,
+    val tonoFondo: Float,
+    val tonoTarjeta: Float,
+    val tonoCampo: Float,
+    val tonoBorde: Float,
+    val tonoTextoPrincipal: Float,
+    val tonoTextoSecundario: Float,
+    val acentoHue: Float,
+    val acentoSat: Float,
+    val acentoVal: Float,
+    val acentoAlfa: Float,
+    val esPersonalizado: Boolean = false
+)
+
+data class EstadoLaboratorioGuardado(
+    val unificarTonos: Boolean,
+    val oscuro: ParametrosLaboratorio?,
+    val claro: ParametrosLaboratorio?
+)
+
 object GestorPaletaSobria {
     private const val PREFS_NAME = "boveda_paleta_sobria"
 
@@ -169,7 +197,14 @@ object GestorPaletaSobria {
         paletaSobriaGuardadaClara = null
     }
 
-    fun guardar(context: android.content.Context, paletaOscura: PaletaSobria?, paletaClara: PaletaSobria?) {
+    fun guardar(
+        context: android.content.Context,
+        paletaOscura: PaletaSobria?,
+        paletaClara: PaletaSobria?,
+        unificarTonos: Boolean? = null,
+        paramsOscuro: ParametrosLaboratorio? = null,
+        paramsClaro: ParametrosLaboratorio? = null
+    ) {
         val prefs = context.getSharedPreferences(PREFS_NAME, android.content.Context.MODE_PRIVATE)
         val ed = prefs.edit()
         if (paletaOscura != null) {
@@ -183,6 +218,28 @@ object GestorPaletaSobria {
             ed.putString("oscuro_acento", paletaOscura.acento.aHexConAlfa())
             ed.putBoolean("tiene_guardado_oscuro", true)
         }
+        if (paramsOscuro != null) {
+            ed.putFloat("param_osc_lum_fondo", paramsOscuro.lumFondo)
+            ed.putFloat("param_osc_lum_tarjeta", paramsOscuro.lumTarjeta)
+            ed.putFloat("param_osc_lum_campo", paramsOscuro.lumCampo)
+            ed.putFloat("param_osc_lum_borde", paramsOscuro.lumBorde)
+            ed.putFloat("param_osc_lum_texto_p", paramsOscuro.lumTextoPrincipal)
+            ed.putFloat("param_osc_lum_texto_s", paramsOscuro.lumTextoSecundario)
+            ed.putFloat("param_osc_tono_global", paramsOscuro.tonoGlobal)
+            ed.putFloat("param_osc_sat_tinte", paramsOscuro.saturacionTinte)
+            ed.putFloat("param_osc_tono_fondo", paramsOscuro.tonoFondo)
+            ed.putFloat("param_osc_tono_tarjeta", paramsOscuro.tonoTarjeta)
+            ed.putFloat("param_osc_tono_campo", paramsOscuro.tonoCampo)
+            ed.putFloat("param_osc_tono_borde", paramsOscuro.tonoBorde)
+            ed.putFloat("param_osc_tono_texto_p", paramsOscuro.tonoTextoPrincipal)
+            ed.putFloat("param_osc_tono_texto_s", paramsOscuro.tonoTextoSecundario)
+            ed.putFloat("param_osc_acento_hue", paramsOscuro.acentoHue)
+            ed.putFloat("param_osc_acento_sat", paramsOscuro.acentoSat)
+            ed.putFloat("param_osc_acento_val", paramsOscuro.acentoVal)
+            ed.putFloat("param_osc_acento_alfa", paramsOscuro.acentoAlfa)
+            ed.putBoolean("param_osc_es_personalizado", paramsOscuro.esPersonalizado)
+            ed.putBoolean("tiene_params_oscuro", true)
+        }
         if (paletaClara != null) {
             paletaSobriaGuardadaClara = paletaClara
             ed.putString("claro_fondo", paletaClara.fondo.aHexConAlfa())
@@ -194,7 +251,86 @@ object GestorPaletaSobria {
             ed.putString("claro_acento", paletaClara.acento.aHexConAlfa())
             ed.putBoolean("tiene_guardado_claro", true)
         }
+        if (paramsClaro != null) {
+            ed.putFloat("param_cla_lum_fondo", paramsClaro.lumFondo)
+            ed.putFloat("param_cla_lum_tarjeta", paramsClaro.lumTarjeta)
+            ed.putFloat("param_cla_lum_campo", paramsClaro.lumCampo)
+            ed.putFloat("param_cla_lum_borde", paramsClaro.lumBorde)
+            ed.putFloat("param_cla_lum_texto_p", paramsClaro.lumTextoPrincipal)
+            ed.putFloat("param_cla_lum_texto_s", paramsClaro.lumTextoSecundario)
+            ed.putFloat("param_cla_tono_global", paramsClaro.tonoGlobal)
+            ed.putFloat("param_cla_sat_tinte", paramsClaro.saturacionTinte)
+            ed.putFloat("param_cla_tono_fondo", paramsClaro.tonoFondo)
+            ed.putFloat("param_cla_tono_tarjeta", paramsClaro.tonoTarjeta)
+            ed.putFloat("param_cla_tono_campo", paramsClaro.tonoCampo)
+            ed.putFloat("param_cla_tono_borde", paramsClaro.tonoBorde)
+            ed.putFloat("param_cla_tono_texto_p", paramsClaro.tonoTextoPrincipal)
+            ed.putFloat("param_cla_tono_texto_s", paramsClaro.tonoTextoSecundario)
+            ed.putFloat("param_cla_acento_hue", paramsClaro.acentoHue)
+            ed.putFloat("param_cla_acento_sat", paramsClaro.acentoSat)
+            ed.putFloat("param_cla_acento_val", paramsClaro.acentoVal)
+            ed.putFloat("param_cla_acento_alfa", paramsClaro.acentoAlfa)
+            ed.putBoolean("param_cla_es_personalizado", paramsClaro.esPersonalizado)
+            ed.putBoolean("tiene_params_claro", true)
+        }
+        if (unificarTonos != null) {
+            ed.putBoolean("unificar_tonos", unificarTonos)
+        }
         ed.apply()
+    }
+
+    fun cargarParametros(context: android.content.Context): EstadoLaboratorioGuardado {
+        val prefs = context.getSharedPreferences(PREFS_NAME, android.content.Context.MODE_PRIVATE)
+        val unificar = prefs.getBoolean("unificar_tonos", true)
+        val osc = if (prefs.getBoolean("tiene_params_oscuro", false)) {
+            ParametrosLaboratorio(
+                lumFondo = prefs.getFloat("param_osc_lum_fondo", PaletaSobriaParametrosDefaults.OSCURO.lumFondo),
+                lumTarjeta = prefs.getFloat("param_osc_lum_tarjeta", PaletaSobriaParametrosDefaults.OSCURO.lumTarjeta),
+                lumCampo = prefs.getFloat("param_osc_lum_campo", PaletaSobriaParametrosDefaults.OSCURO.lumCampo),
+                lumBorde = prefs.getFloat("param_osc_lum_borde", PaletaSobriaParametrosDefaults.OSCURO.lumBorde),
+                lumTextoPrincipal = prefs.getFloat("param_osc_lum_texto_p", PaletaSobriaParametrosDefaults.OSCURO.lumTextoPrincipal),
+                lumTextoSecundario = prefs.getFloat("param_osc_lum_texto_s", PaletaSobriaParametrosDefaults.OSCURO.lumTextoSecundario),
+                tonoGlobal = prefs.getFloat("param_osc_tono_global", PaletaSobriaParametrosDefaults.OSCURO.tonoGlobal),
+                saturacionTinte = prefs.getFloat("param_osc_sat_tinte", PaletaSobriaParametrosDefaults.OSCURO.saturacionTinte),
+                tonoFondo = prefs.getFloat("param_osc_tono_fondo", PaletaSobriaParametrosDefaults.OSCURO.tonoGlobal),
+                tonoTarjeta = prefs.getFloat("param_osc_tono_tarjeta", PaletaSobriaParametrosDefaults.OSCURO.tonoGlobal),
+                tonoCampo = prefs.getFloat("param_osc_tono_campo", PaletaSobriaParametrosDefaults.OSCURO.tonoGlobal),
+                tonoBorde = prefs.getFloat("param_osc_tono_borde", PaletaSobriaParametrosDefaults.OSCURO.tonoGlobal),
+                tonoTextoPrincipal = prefs.getFloat("param_osc_tono_texto_p", PaletaSobriaParametrosDefaults.OSCURO.tonoGlobal),
+                tonoTextoSecundario = prefs.getFloat("param_osc_tono_texto_s", PaletaSobriaParametrosDefaults.OSCURO.tonoGlobal),
+                acentoHue = prefs.getFloat("param_osc_acento_hue", PaletaSobriaParametrosDefaults.OSCURO.acentoHue),
+                acentoSat = prefs.getFloat("param_osc_acento_sat", PaletaSobriaParametrosDefaults.OSCURO.acentoSat),
+                acentoVal = prefs.getFloat("param_osc_acento_val", PaletaSobriaParametrosDefaults.OSCURO.acentoVal),
+                acentoAlfa = prefs.getFloat("param_osc_acento_alfa", PaletaSobriaParametrosDefaults.OSCURO.acentoAlfa),
+                esPersonalizado = prefs.getBoolean("param_osc_es_personalizado", false)
+            )
+        } else null
+
+        val cla = if (prefs.getBoolean("tiene_params_claro", false)) {
+            ParametrosLaboratorio(
+                lumFondo = prefs.getFloat("param_cla_lum_fondo", PaletaSobriaParametrosDefaults.CLARO.lumFondo),
+                lumTarjeta = prefs.getFloat("param_cla_lum_tarjeta", PaletaSobriaParametrosDefaults.CLARO.lumTarjeta),
+                lumCampo = prefs.getFloat("param_cla_lum_campo", PaletaSobriaParametrosDefaults.CLARO.lumCampo),
+                lumBorde = prefs.getFloat("param_cla_lum_borde", PaletaSobriaParametrosDefaults.CLARO.lumBorde),
+                lumTextoPrincipal = prefs.getFloat("param_cla_lum_texto_p", PaletaSobriaParametrosDefaults.CLARO.lumTextoPrincipal),
+                lumTextoSecundario = prefs.getFloat("param_cla_lum_texto_s", PaletaSobriaParametrosDefaults.CLARO.lumTextoSecundario),
+                tonoGlobal = prefs.getFloat("param_cla_tono_global", PaletaSobriaParametrosDefaults.CLARO.tonoGlobal),
+                saturacionTinte = prefs.getFloat("param_cla_sat_tinte", PaletaSobriaParametrosDefaults.CLARO.saturacionTinte),
+                tonoFondo = prefs.getFloat("param_cla_tono_fondo", PaletaSobriaParametrosDefaults.CLARO.tonoGlobal),
+                tonoTarjeta = prefs.getFloat("param_cla_tono_tarjeta", PaletaSobriaParametrosDefaults.CLARO.tonoGlobal),
+                tonoCampo = prefs.getFloat("param_cla_tono_campo", PaletaSobriaParametrosDefaults.CLARO.tonoGlobal),
+                tonoBorde = prefs.getFloat("param_cla_tono_borde", PaletaSobriaParametrosDefaults.CLARO.tonoGlobal),
+                tonoTextoPrincipal = prefs.getFloat("param_cla_tono_texto_p", PaletaSobriaParametrosDefaults.CLARO.tonoGlobal),
+                tonoTextoSecundario = prefs.getFloat("param_cla_tono_texto_s", PaletaSobriaParametrosDefaults.CLARO.tonoGlobal),
+                acentoHue = prefs.getFloat("param_cla_acento_hue", PaletaSobriaParametrosDefaults.CLARO.acentoHue),
+                acentoSat = prefs.getFloat("param_cla_acento_sat", PaletaSobriaParametrosDefaults.CLARO.acentoSat),
+                acentoVal = prefs.getFloat("param_cla_acento_val", PaletaSobriaParametrosDefaults.CLARO.acentoVal),
+                acentoAlfa = prefs.getFloat("param_cla_acento_alfa", PaletaSobriaParametrosDefaults.CLARO.acentoAlfa),
+                esPersonalizado = prefs.getBoolean("param_cla_es_personalizado", false)
+            )
+        } else null
+
+        return EstadoLaboratorioGuardado(unificar, osc, cla)
     }
 
     fun cargar(context: android.content.Context): Pair<PaletaSobria?, PaletaSobria?> {
