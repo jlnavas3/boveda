@@ -33,6 +33,12 @@ interface VaultAjustesDelegate {
         Diagnostico.apuntar("seguridad", "Tiempo de limpieza de portapapeles configurado en $desc")
     }
 
+    fun ajustarUmbralAntiguedad(dias: Int) {
+        repositorio.ajustes.actualizar { it.copy(umbralAntiguedadDias = dias) }
+        val desc = if (dias == 0) "desactivado" else "${dias} días"
+        Diagnostico.apuntar("seguridad", "Umbral de contraseñas antiguas configurado en $desc")
+    }
+
     fun ajustarTileModo(modo: String) = repositorio.ajustes.actualizar { it.copy(tileModo = modo) }
 
     fun ajustarTileLongitud(longitud: Int) = repositorio.ajustes.actualizar { it.copy(tileLongitud = longitud) }
@@ -1160,6 +1166,7 @@ interface VaultAjustesDelegate {
         ajustarProteccionPantalla(AjustesDefaults.Seguridad.PROTECCION_PANTALLA)
     }
     fun restablecerPortapapeles() = ajustarPortapapeles(AjustesDefaults.Seguridad.PORTAPAPELES_SEGUNDOS)
+    fun restablecerUmbralAntiguedad() = ajustarUmbralAntiguedad(AjustesDefaults.Seguridad.UMBRAL_ANTIGUEDAD_DIAS)
     fun restablecerCamara() = ajustarMotorCamara(AjustesDefaults.Seguridad.MOTOR_CAMARA)
     fun restablecerArgon2() = repositorio.ajustes.actualizar { it.copy(perfilArgon2 = AjustesDefaults.Seguridad.PERFIL_ARGON2) }
     fun restablecerIconoLauncher() = ajustarIconoLauncher(AjustesDefaults.Tema.ICONO_LAUNCHER)

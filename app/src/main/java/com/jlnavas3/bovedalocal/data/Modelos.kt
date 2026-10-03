@@ -132,7 +132,9 @@ data class Entrada(
     /** Contraseñas anteriores de esta entrada, la más reciente primero. */
     val historialContrasenas: List<CambioContrasena> = emptyList(),
     val passkey: DatosPasskey? = null,
-    val camposPersonalizados: List<CampoPersonalizado> = emptyList()
+    val camposPersonalizados: List<CampoPersonalizado> = emptyList(),
+    /** Si es true, esta entrada se ignora en el cálculo y avisos de auditoría de salud. */
+    val ignoradaEnSalud: Boolean = false
 )
 
 @Serializable

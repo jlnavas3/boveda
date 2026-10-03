@@ -80,8 +80,14 @@ fun PantallaSaludBoveda(
     seccionDestino: String? = null
 ) {
     val contexto = LocalContext.current
+    val ajustes by vm.ajustes.collectAsStateWithLifecycle()
     val entradas = (estado as? EstadoBoveda.Desbloqueada)?.entradas ?: emptyList()
-    val claves = remember(entradas) { entradas.filter { it.tipo == TipoEntrada.LOGIN && it.contrasena.isNotBlank() } }
+    val claves = remember(entradas) {
+        entradas.filter { it.tipo == TipoEntrada.LOGIN && it.contrasena.isNotBlank() && !it.ignoradaEnSalud }
+    }
+    val ignoradas = remember(entradas) {
+        entradas.filter { it.ignoradaEnSalud }
+    }
 
     val duplicadas = remember(claves) {
         claves.groupBy { it.contrasena }.values.filter { it.size > 1 }
@@ -94,9 +100,13 @@ fun PantallaSaludBoveda(
         claves.filter { ContrasenasComunes.esComun(contexto, it.contrasena) }
     }
     val ahora = remember { System.currentTimeMillis() }
-    val antiguas = remember(claves) {
-        claves.filter { it.modificadaEn > 0 && diasDesde(it.modificadaEn, ahora) >= DIAS_AVISO_ANTIGUEDAD }
-            .sortedBy { it.modificadaEn }
+    val umbralDias = ajustes.umbralAntiguedadDias
+    val antiguas = remember(claves, umbralDias) {
+        if (umbralDias <= 0) emptyList()
+        else {
+            claves.filter { it.modificadaEn > 0 && diasDesde(it.modificadaEn, ahora) >= umbralDias.toLong() }
+                .sortedBy { it.modificadaEn }
+        }
     }
 
     // Análisis de duplicados para alertar de copias de CSV
@@ -117,12 +127,13 @@ fun PantallaSaludBoveda(
         seleccionados = emptySet()
     }
 
-    val pestanasConDatos = remember(duplicadas.size, muyComunes.size, debiles.size, antiguas.size) {
+    val pestanasConDatos = remember(duplicadas.size, muyComunes.size, debiles.size, antiguas.size, ignoradas.size) {
         buildList {
             if (duplicadas.isNotEmpty()) add(PestanaSalud.REPETIDAS)
             if (muyComunes.isNotEmpty()) add(PestanaSalud.COMUNES)
             if (debiles.isNotEmpty()) add(PestanaSalud.DEBILES)
             if (antiguas.isNotEmpty()) add(PestanaSalud.ANTIGUAS)
+            if (ignoradas.isNotEmpty()) add(PestanaSalud.IGNORADAS)
         }
     }
 
@@ -133,18 +144,17 @@ fun PantallaSaludBoveda(
     }
 
     LaunchedEffect(claves.size) {
-        val resumen = "Auditoría de salud ejecutada: ${claves.size} claves analizadas (${debiles.size} débiles, ${duplicadas.size} grupos repetidos, ${muyComunes.size} comunes, ${antiguas.size} antiguas)"
+        val resumen = "Auditoría de salud ejecutada: ${claves.size} claves analizadas (${debiles.size} débiles, ${duplicadas.size} grupos repetidos, ${muyComunes.size} comunes, ${antiguas.size} antiguas, ${ignoradas.size} ignoradas)"
         Diagnostico.apuntar("salud", resumen)
     }
 
-    val ajustes by vm.ajustes.collectAsStateWithLifecycle()
-
-    val entradasVisiblesPestana = remember(pestanaActiva, duplicadas, muyComunes, debiles, antiguas, textoBusqueda) {
+    val entradasVisiblesPestana = remember(pestanaActiva, duplicadas, muyComunes, debiles, antiguas, ignoradas, textoBusqueda) {
         val lista = when (pestanaActiva) {
             PestanaSalud.REPETIDAS -> duplicadas.flatten()
             PestanaSalud.COMUNES -> muyComunes
             PestanaSalud.DEBILES -> debiles
             PestanaSalud.ANTIGUAS -> antiguas
+            PestanaSalud.IGNORADAS -> ignoradas
         }
         if (textoBusqueda.isBlank()) lista
         else lista.filter { coincideBusquedaSalud(it, textoBusqueda) }
@@ -171,7 +181,7 @@ fun PantallaSaludBoveda(
                 )
             } else {
                 BarraSuperiorPantalla(
-                    titulo = "Salud de la Bóveda",
+                    titulo = "Salud",
                     idEtiqueta = "03-LST-SLD",
                     mostrarId = ajustes.mostrarIdsAjustes,
                     alVolver = { vm.volverAtras() },
@@ -210,7 +220,7 @@ fun PantallaSaludBoveda(
                                 modifier = Modifier.widthIn(min = 220.dp, max = 280.dp)
                             ) {
                                 com.jlnavas3.bovedalocal.ui.componentes.ElementoMenuCompacto(
-                                    texto = "Contraseñas duplicadas...",
+                                    texto = "Duplicados...",
                                     icono = androidx.compose.material.icons.Icons.Filled.ContentCopy,
                                     colorIcono = ColorAcento,
                                     onClick = {
@@ -298,6 +308,11 @@ fun PantallaSaludBoveda(
                         if (q.isEmpty()) antiguas.size
                         else antiguas.count { coincideBusquedaSalud(it, q) }
                     }
+                    val ignoradasFiltradas = remember(ignoradas, textoBusqueda) {
+                        val q = textoBusqueda.trim()
+                        if (q.isEmpty()) ignoradas.size
+                        else ignoradas.count { coincideBusquedaSalud(it, q) }
+                    }
 
                     SelectorPestanasSalud(
                         pestanaActiva = pestanaActiva,
@@ -310,12 +325,14 @@ fun PantallaSaludBoveda(
                         muyComunesCount = muyComunes.size,
                         debilesCount = debiles.size,
                         antiguasCount = antiguas.size,
+                        ignoradasCount = ignoradas.size,
                         textoBusqueda = textoBusqueda,
                         gruposDuplicadosFiltrados = gruposDuplicadosFiltrados,
                         totalDuplicadasFiltradas = totalDuplicadasFiltradas,
                         muyComunesFiltrados = muyComunesFiltrados,
                         debilesFiltrados = debilesFiltrados,
-                        antiguasFiltradas = antiguasFiltradas
+                        antiguasFiltradas = antiguasFiltradas,
+                        ignoradasFiltradas = ignoradasFiltradas
                     )
                     Spacer(Modifier.height(8.dp))
                 }
@@ -327,10 +344,12 @@ fun PantallaSaludBoveda(
                     muyComunes = muyComunes,
                     debiles = debiles,
                     antiguas = antiguas,
+                    ignoradas = ignoradas,
                     textoBusqueda = textoBusqueda,
                     ahora = ahora,
                     alCambiarClave = { entrada -> entradaParaCambioRapido = entrada },
                     alVerDetalle = { id -> vm.ir(Pantalla.Detalle(id)) },
+                    alIgnorar = { entrada -> vm.alternarIgnorarSalud(entrada.id) },
                     modifier = Modifier
                         .fillMaxWidth()
                         .weight(1f),
@@ -376,12 +395,6 @@ fun PantallaSaludBoveda(
                             modoComparacion = true
                         )
                     )
-                },
-                alRespaldar = {
-                    haptica.tic()
-                    val idsParam = seleccionados.joinToString(",")
-                    seleccionados = emptySet()
-                    vm.ir(Pantalla.ExportarSelectivo("ids:$idsParam"))
                 },
                 alBorrar = {
                     haptica.error()
@@ -448,7 +461,9 @@ fun PantallaSaludBoveda(
                     debilesCount = debiles.size,
                     antiguasCount = antiguas.size,
                     expandido = true,
-                    alAlternarExpandido = {}
+                    alAlternarExpandido = {},
+                    umbralAntiguedadDias = umbralDias,
+                    ignoradasCount = ignoradas.size
                 )
             }
         }

@@ -29,20 +29,23 @@ fun SelectorPestanasSalud(
     muyComunesCount: Int,
     debilesCount: Int,
     antiguasCount: Int,
+    ignoradasCount: Int = 0,
     textoBusqueda: String = "",
     gruposDuplicadosFiltrados: Int = gruposDuplicadosCount,
     totalDuplicadasFiltradas: Int = totalDuplicadasCount,
     muyComunesFiltrados: Int = muyComunesCount,
     debilesFiltrados: Int = debilesCount,
     antiguasFiltradas: Int = antiguasCount,
+    ignoradasFiltradas: Int = ignoradasCount,
     modifier: Modifier = Modifier
 ) {
-    val pestanasVisibles = remember(gruposDuplicadosCount, muyComunesCount, debilesCount, antiguasCount) {
+    val pestanasVisibles = remember(gruposDuplicadosCount, muyComunesCount, debilesCount, antiguasCount, ignoradasCount) {
         buildList {
             if (gruposDuplicadosCount > 0) add(PestanaSalud.REPETIDAS)
             if (muyComunesCount > 0) add(PestanaSalud.COMUNES)
             if (debilesCount > 0) add(PestanaSalud.DEBILES)
             if (antiguasCount > 0) add(PestanaSalud.ANTIGUAS)
+            if (ignoradasCount > 0) add(PestanaSalud.IGNORADAS)
         }
     }
 
@@ -111,6 +114,17 @@ fun SelectorPestanasSalud(
                     FilterChip(
                         selected = pestanaActiva == PestanaSalud.ANTIGUAS,
                         onClick = { alSeleccionarPestana(PestanaSalud.ANTIGUAS) },
+                        label = { Text(textoLabel) },
+                        shape = forma,
+                        border = bordeChip,
+                        colors = coloresChip
+                    )
+                }
+                PestanaSalud.IGNORADAS -> {
+                    val textoLabel = if (buscando) "Ignoradas ($ignoradasFiltradas)" else "Ignoradas ($ignoradasCount)"
+                    FilterChip(
+                        selected = pestanaActiva == PestanaSalud.IGNORADAS,
+                        onClick = { alSeleccionarPestana(PestanaSalud.IGNORADAS) },
                         label = { Text(textoLabel) },
                         shape = forma,
                         border = bordeChip,

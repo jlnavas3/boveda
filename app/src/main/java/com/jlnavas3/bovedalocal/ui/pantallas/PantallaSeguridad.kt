@@ -35,6 +35,7 @@ import com.jlnavas3.bovedalocal.ui.pantallas.seguridad.DialogoDesactivarSecure
 import com.jlnavas3.bovedalocal.ui.pantallas.seguridad.GrupoBiometria
 import com.jlnavas3.bovedalocal.ui.pantallas.seguridad.GrupoBloqueoApp
 import com.jlnavas3.bovedalocal.ui.pantallas.seguridad.GrupoPortapapeles
+import com.jlnavas3.bovedalocal.ui.pantallas.seguridad.GrupoAntiguedadSalud
 import com.jlnavas3.bovedalocal.util.AjustesSistema
 import com.jlnavas3.bovedalocal.util.Biometria
 import com.jlnavas3.bovedalocal.util.Haptica
@@ -198,6 +199,23 @@ fun PantallaSeguridad(
                         haptica.tic()
                         vm.restablecerPortapapeles()
                         vm.avisar("Tiempo de portapapeles restablecido")
+                    }
+                )
+
+                Spacer(Modifier.height(18.dp))
+
+                // Grupo 4: Auditoría de contraseñas (Salud)
+                GrupoAntiguedadSalud(
+                    umbralAntiguedadDias = ajustes.umbralAntiguedadDias,
+                    mostrarIdsAjustes = ajustes.mostrarIdsAjustes,
+                    alAjustarUmbral = { valor ->
+                        haptica.tic()
+                        vm.ajustarUmbralAntiguedad(valor)
+                    },
+                    alRestablecer = {
+                        haptica.tic()
+                        vm.restablecerUmbralAntiguedad()
+                        vm.avisar("Umbral de antigüedad restablecido")
                     }
                 )
 

@@ -288,5 +288,6 @@ enum class CriterioOrdenacion(val etiqueta: String) {
     MODIFICACION_RECIENTE("Modificado recientemente"),
     CREACION_RECIENTE("Añadido recientemente"),
     ANTIGUEDAD("Más antiguos primero"),
-    USO_RECIENTE("Último usado")
+    USO_RECIENTE("Último usado"),
+    IGNORADAS("Ignoradas primero")
 }

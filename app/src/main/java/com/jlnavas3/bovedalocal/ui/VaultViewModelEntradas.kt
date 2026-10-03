@@ -54,6 +54,9 @@ interface VaultEntradasDelegate {
             CriterioOrdenacion.USO_RECIENTE -> compareByDescending<Entrada> { it.ultimoUsoEn }
                 .thenByDescending { it.favorito }
                 .thenBy { it.titulo.lowercase() }
+            CriterioOrdenacion.IGNORADAS -> compareByDescending<Entrada> { it.ignoradaEnSalud }
+                .thenByDescending { it.favorito }
+                .thenBy { it.titulo.lowercase() }
         }
         return filtradas.sortedWith(comparador)
     }
@@ -245,6 +248,18 @@ interface VaultEntradasDelegate {
             }
             val estadoFav = if (ent?.favorito == true) "marcada como favorita" else "desmarcada de favoritos"
             Diagnostico.apuntar("bóveda", "Entrada $estadoFav")
+        }
+    }
+
+    fun alternarIgnorarSalud(id: String, forzar: Boolean? = null) {
+        ejecutar {
+            val ent = withContext(Dispatchers.IO) {
+                repositorio.alternarIgnorarSalud(id, forzar)
+                repositorio.entrada(id)
+            }
+            val estado = if (ent?.ignoradaEnSalud == true) "ignorada en auditoría de salud" else "restaurada a la auditoría de salud"
+            Diagnostico.apuntar("salud", "Entrada $estado")
+            avisoInterno.value = if (ent?.ignoradaEnSalud == true) "Entrada ignorada en salud" else "Entrada incluida en salud"
         }
     }
 

@@ -21,6 +21,8 @@ fun BarraChipsFiltroDuplicados(
     filtroActivo: FiltroDuplicados,
     totalGrupos: Int,
     totalSobrantesIdenticas: Int,
+    cantPasskeys: Int,
+    cantTotp: Int,
     cantAppsAndroid: Int,
     cantWeb: Int,
     cantMismaCuenta: Int,
@@ -59,6 +61,28 @@ fun BarraChipsFiltroDuplicados(
                     selected = filtroActivo == FiltroDuplicados.IDENTICOS,
                     onClick = { alSeleccionarFiltro(FiltroDuplicados.IDENTICOS) },
                     label = { Text("Idénticos ($totalSobrantesIdenticas)") },
+                    colors = coloresChip,
+                    border = bordeChip
+                )
+            }
+        }
+        if (cantPasskeys > 0) {
+            item {
+                FilterChip(
+                    selected = filtroActivo == FiltroDuplicados.PASSKEY,
+                    onClick = { alSeleccionarFiltro(FiltroDuplicados.PASSKEY) },
+                    label = { Text("Passkey ($cantPasskeys)") },
+                    colors = coloresChip,
+                    border = bordeChip
+                )
+            }
+        }
+        if (cantTotp > 0) {
+            item {
+                FilterChip(
+                    selected = filtroActivo == FiltroDuplicados.TOTP,
+                    onClick = { alSeleccionarFiltro(FiltroDuplicados.TOTP) },
+                    label = { Text("TOTP ($cantTotp)") },
                     colors = coloresChip,
                     border = bordeChip
                 )

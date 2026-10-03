@@ -21,6 +21,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -200,6 +201,16 @@ fun FilaEntrada(
                             overflow = TextOverflow.Ellipsis,
                             modifier = Modifier.weight(1f, fill = false)
                         )
+
+                        if (entrada.ignoradaEnSalud) {
+                            Spacer(Modifier.width(4.dp))
+                            Icon(
+                                imageVector = Icons.Filled.VisibilityOff,
+                                contentDescription = "Ignorada en salud",
+                                tint = TextoSecundario.copy(alpha = 0.55f),
+                                modifier = Modifier.size(13.dp)
+                            )
+                        }
 
                         if (tieneTotp) {
                             ContenidoTotpEnFila(

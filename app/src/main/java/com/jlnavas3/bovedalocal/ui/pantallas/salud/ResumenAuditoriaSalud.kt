@@ -41,7 +41,9 @@ fun ResumenAuditoriaSalud(
     antiguasCount: Int,
     expandido: Boolean,
     alAlternarExpandido: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    umbralAntiguedadDias: Int = 180,
+    ignoradasCount: Int = 0
 ) {
     Column(modifier = modifier) {
         Row(
@@ -106,11 +108,24 @@ fun ResumenAuditoriaSalud(
                     color = if (debilesCount == 0) Menta else Peligro
                 )
                 SeparadorFilaSimple()
+                val etiquetaAntiguas = if (umbralAntiguedadDias <= 0) {
+                    "Sin actualizar (Desactivado)"
+                } else {
+                    "Sin actualizar (> $umbralAntiguedadDias días)"
+                }
                 FilaMetricaSalud(
-                    etiqueta = "Sin actualizar (> $DIAS_AVISO_ANTIGUEDAD días)",
+                    etiqueta = etiquetaAntiguas,
                     valor = antiguasCount.toString(),
                     color = if (antiguasCount == 0) Menta else ColorAcento
                 )
+                if (ignoradasCount > 0) {
+                    SeparadorFilaSimple()
+                    FilaMetricaSalud(
+                        etiqueta = "Ignoradas de la auditoría",
+                        valor = ignoradasCount.toString(),
+                        color = ColorAjusteGris
+                    )
+                }
             }
         } else {
             // Modo compacto: cápsula horizontal estilo Honor MagicOS / One UI

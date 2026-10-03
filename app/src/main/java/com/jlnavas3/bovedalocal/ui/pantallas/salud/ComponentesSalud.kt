@@ -95,7 +95,8 @@ enum class PestanaSalud(val titulo: String) {
     REPETIDAS("Repetidas"),
     COMUNES("Filtradas"),
     DEBILES("Débiles"),
-    ANTIGUAS("Antiguas")
+    ANTIGUAS("Antiguas"),
+    IGNORADAS("Ignoradas")
 }
 
 fun diasDesde(momento: Long, ahora: Long): Long =
@@ -168,6 +169,7 @@ fun FilaProblemaAgil(
     alCambiarRapido: () -> Unit,
     alVerDetalle: () -> Unit,
     modifier: Modifier = Modifier,
+    alIgnorar: () -> Unit = {},
     mostrarIndicadores: Boolean = false,
     enGrupo: Boolean = true,
     seleccionActiva: Boolean = false,
@@ -203,10 +205,10 @@ fun FilaProblemaAgil(
             alEjecutar = alCambiarRapido
         ),
         accionDerecha = if (seleccionActiva) null else AccionDeslizamiento(
-            texto = "Ver\nDetalle",
-            icono = Icons.AutoMirrored.Filled.ArrowForwardIos,
-            color = ColorAcento,
-            alEjecutar = alVerDetalle
+            texto = if (entrada.ignoradaEnSalud) "Restaurar" else "Ignorar",
+            icono = if (entrada.ignoradaEnSalud) Icons.Filled.Visibility else Icons.Filled.VisibilityOff,
+            color = if (entrada.ignoradaEnSalud) Menta else Peligro,
+            alEjecutar = alIgnorar
         )
     ) {
         Box(
@@ -414,6 +416,7 @@ fun TarjetaGrupoRepetido(
     colapsable: Boolean = true,
     expandido: Boolean = false,
     alAlternar: () -> Unit = {},
+    alIgnorar: (Entrada) -> Unit = {},
     seleccionActiva: Boolean = false,
     seleccionados: Set<String> = emptySet(),
     alAlternarSeleccion: ((String) -> Unit)? = null,
@@ -432,6 +435,7 @@ fun TarjetaGrupoRepetido(
                 colorDetalle = Peligro,
                 alCambiarRapido = { alCambiarClave(entrada) },
                 alVerDetalle = { alVerDetalle(entrada.id) },
+                alIgnorar = { alIgnorar(entrada) },
                 mostrarIndicadores = mostrarIndicadores,
                 enGrupo = true,
                 seleccionActiva = seleccionActiva,

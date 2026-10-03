@@ -16,6 +16,7 @@ object AjustesDefaults {
         const val MOTOR_CAMARA = "auto"
         const val PROTECCION_PANTALLA = true
         const val PERFIL_ARGON2 = "estandar"
+        const val UMBRAL_ANTIGUEDAD_DIAS = 180
     }
 
     // 2. Apariencia y Tema General

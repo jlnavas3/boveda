@@ -85,6 +85,20 @@ import com.jlnavas3.bovedalocal.ui.theme.Borde
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.ColorSobreAcento
 
+import com.jlnavas3.bovedalocal.crypto.Base32
+import com.jlnavas3.bovedalocal.crypto.Totp
+
+private fun obtenerPrimerGrupoPasskey(credId: String): String {
+    val limpio = credId.trim()
+    return when {
+        limpio.isBlank() -> "—"
+        limpio.contains("-") -> limpio.substringBefore("-")
+        limpio.contains(":") -> limpio.substringBefore(":")
+        limpio.length > 10 -> limpio.take(10)
+        else -> limpio
+    }
+}
+
 @Composable
 fun TarjetaGrupoDuplicado(
     grupo: GrupoDuplicado,
@@ -153,6 +167,7 @@ fun FilaEntradaDuplicada(
     }
     val colorLegible = colorLegibleParaTema(colorTipo)
     var mostrarContrasena by rememberSaveable { mutableStateOf(false) }
+    var mostrarTotp by rememberSaveable { mutableStateOf(false) }
 
     ContenedorDeslizamientoBoveda(
         idItem = entrada.id,
@@ -346,6 +361,106 @@ fun FilaEntradaDuplicada(
                                 Icon(
                                     imageVector = if (mostrarContrasena) Icons.Filled.VisibilityOff else Icons.Filled.Visibility,
                                     contentDescription = if (mostrarContrasena) "Ocultar contraseña" else "Mostrar contraseña",
+                                    tint = ColorAjusteGris,
+                                    modifier = Modifier.size(15.dp)
+                                )
+                            }
+                        }
+                    }
+
+                    // Llave de paso (Passkey) si está presente
+                    if (entrada.passkey != null) {
+                        Spacer(Modifier.height(2.dp))
+                        val primerGrupoPasskey = remember(entrada.passkey.credId) {
+                            obtenerPrimerGrupoPasskey(entrada.passkey.credId)
+                        }
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(5.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Filled.Fingerprint,
+                                contentDescription = null,
+                                tint = ColorPasskeys,
+                                modifier = Modifier.size(14.dp)
+                            )
+                            Text(
+                                text = "Passkey: $primerGrupoPasskey...",
+                                color = ColorTextoAjustes.copy(alpha = 0.85f),
+                                style = MaterialTheme.typography.bodySmall.copy(
+                                    fontFamily = FontFamily.Monospace,
+                                    fontSize = 11.sp
+                                ),
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                        }
+                    }
+
+                    // Verificación de dos pasos (TOTP) si está presente
+                    if (!entrada.secretoTotp.isNullOrBlank()) {
+                        val codigoTotp = remember(entrada.secretoTotp, entrada.totpDigitos, entrada.totpPeriodo, entrada.totpAlgoritmo) {
+                            try {
+                                val secretoBytes = Base32.decodificar(entrada.secretoTotp.replace(" ", "").uppercase())
+                                val ahora = System.currentTimeMillis() / 1000
+                                val periodo = entrada.totpPeriodo.toLong().coerceAtLeast(1L)
+                                val digitos = entrada.totpDigitos.coerceIn(6, 8)
+                                val algo = when (entrada.totpAlgoritmo.uppercase()) {
+                                    "SHA256", "HMACSHA256" -> "HmacSHA256"
+                                    "SHA512", "HMACSHA512" -> "HmacSHA512"
+                                    else -> "HmacSHA1"
+                                }
+                                Totp.codigo(secretoBytes, ahora, digitos, periodo, algo)
+                            } catch (_: Exception) {
+                                "------"
+                            }
+                        }
+
+                        Spacer(Modifier.height(2.dp))
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            val textoTotp = if (mostrarTotp) {
+                                if (codigoTotp.length == 6) "${codigoTotp.take(3)} ${codigoTotp.drop(3)}" else codigoTotp
+                            } else {
+                                "•".repeat(entrada.totpDigitos.coerceIn(6, 8))
+                            }
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(5.dp),
+                                modifier = Modifier.weight(1f, fill = false)
+                            ) {
+                                Text(
+                                    text = "TOTP: ",
+                                    color = ColorAjusteGris,
+                                    style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.sp)
+                                )
+                                Text(
+                                    text = textoTotp,
+                                    color = ColorTextoAjustes.copy(alpha = 0.9f),
+                                    style = if (mostrarTotp) {
+                                        MaterialTheme.typography.bodySmall.copy(
+                                            fontFamily = FontFamily.Monospace,
+                                            fontWeight = FontWeight.SemiBold,
+                                            fontSize = 12.sp
+                                        )
+                                    } else {
+                                        MaterialTheme.typography.bodySmall.copy(fontSize = 11.5.sp)
+                                    },
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis
+                                )
+                            }
+                            IconButton(
+                                onClick = { mostrarTotp = !mostrarTotp },
+                                modifier = Modifier.size(22.dp)
+                            ) {
+                                Icon(
+                                    imageVector = if (mostrarTotp) Icons.Filled.VisibilityOff else Icons.Filled.Visibility,
+                                    contentDescription = if (mostrarTotp) "Ocultar TOTP" else "Mostrar TOTP",
                                     tint = ColorAjusteGris,
                                     modifier = Modifier.size(15.dp)
                                 )

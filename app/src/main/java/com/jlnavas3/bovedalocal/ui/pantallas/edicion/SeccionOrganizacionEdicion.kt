@@ -25,7 +25,9 @@ fun SeccionOrganizacionEdicion(
     alCambiarEtiquetas: (List<String>) -> Unit,
     etiquetasSugeridas: List<String>,
     favorito: Boolean,
-    alAlternarFavorito: (Boolean) -> Unit
+    alAlternarFavorito: (Boolean) -> Unit,
+    ignoradaEnSalud: Boolean = false,
+    alAlternarIgnoradaEnSalud: (Boolean) -> Unit = {}
 ) {
     GrupoAjustes(etiqueta = "Organización") {
         Column(modifier = Modifier.padding(14.dp)) {
@@ -50,6 +52,24 @@ fun SeccionOrganizacionEdicion(
                 SwitchBoveda(
                     checked = favorito,
                     onCheckedChange = alAlternarFavorito
+                )
+            }
+
+            Spacer(Modifier.height(10.dp))
+            SeparadorFilaSimple()
+            Spacer(Modifier.height(10.dp))
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column(modifier = Modifier.weight(1f)) {
+                    Text("Ignorar en salud", color = TextoPrincipal, style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold))
+                    Text("Excluir de la auditoría de seguridad y avisos", color = TextoSecundario, style = MaterialTheme.typography.bodySmall)
+                }
+                SwitchBoveda(
+                    checked = ignoradaEnSalud,
+                    onCheckedChange = alAlternarIgnoradaEnSalud
                 )
             }
         }

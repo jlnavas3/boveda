@@ -1,6 +1,7 @@
 package com.jlnavas3.bovedalocal.ui.pantallas.detalle
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -24,9 +25,11 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.filled.AutoFixHigh
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Icon
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.runtime.remember
+import com.jlnavas3.bovedalocal.ui.theme.Peligro
 import com.jlnavas3.bovedalocal.data.Entrada
 import com.jlnavas3.bovedalocal.data.TipoEntrada
 import com.jlnavas3.bovedalocal.ui.componentes.BotonColorido
@@ -99,17 +102,47 @@ fun CabeceraHeroDetalle(
             overflow = TextOverflow.Ellipsis
         )
         Spacer(Modifier.height(4.dp))
-        Box(
-            modifier = Modifier
-                .clip(FormaPequena)
-                .background(ColorAcento.copy(alpha = 0.12f))
-                .padding(horizontal = 10.dp, vertical = 3.dp)
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(6.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(
-                text = entrada.tipo.etiqueta,
-                style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Medium),
-                color = ColorAcento
-            )
+            Box(
+                modifier = Modifier
+                    .clip(FormaPequena)
+                    .background(ColorAcento.copy(alpha = 0.12f))
+                    .padding(horizontal = 10.dp, vertical = 3.dp)
+            ) {
+                Text(
+                    text = entrada.tipo.etiqueta,
+                    style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Medium),
+                    color = ColorAcento
+                )
+            }
+            if (entrada.ignoradaEnSalud) {
+                Box(
+                    modifier = Modifier
+                        .clip(FormaPequena)
+                        .background(Peligro.copy(alpha = 0.12f))
+                        .padding(horizontal = 8.dp, vertical = 3.dp)
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.VisibilityOff,
+                            contentDescription = null,
+                            tint = Peligro,
+                            modifier = Modifier.size(12.dp)
+                        )
+                        Text(
+                            text = "Ignorada",
+                            style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Medium),
+                            color = Peligro
+                        )
+                    }
+                }
+            }
         }
         if (esTituloTecnico && nombreApp != null && alActualizarTitulo != null) {
             Spacer(Modifier.height(8.dp))

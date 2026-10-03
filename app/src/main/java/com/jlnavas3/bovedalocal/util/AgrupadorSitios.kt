@@ -118,6 +118,25 @@ fun construirItemsAgrupadosPorSitio(
                 is ItemAgrupado.Hijo -> ""
             }
         }
+        CriterioOrdenacion.IGNORADAS -> compareByDescending<ItemAgrupado> { item ->
+            when (item) {
+                is ItemAgrupado.Grupo -> if (item.entradas.any { it.ignoradaEnSalud }) 1 else 0
+                is ItemAgrupado.Suelto -> if (item.entrada.ignoradaEnSalud) 1 else 0
+                is ItemAgrupado.Hijo -> 0
+            }
+        }.thenByDescending { item ->
+            when (item) {
+                is ItemAgrupado.Grupo -> if (item.entradas.any { it.favorito }) 1 else 0
+                is ItemAgrupado.Suelto -> if (item.entrada.favorito) 1 else 0
+                is ItemAgrupado.Hijo -> 0
+            }
+        }.thenBy { item ->
+            when (item) {
+                is ItemAgrupado.Grupo -> item.clave.lowercase()
+                is ItemAgrupado.Suelto -> item.entrada.titulo.lowercase()
+                is ItemAgrupado.Hijo -> ""
+            }
+        }
     }
 
     val principalesOrdenados = itemsPrincipales.sortedWith(comparadorTopLevel)
@@ -140,6 +159,7 @@ private fun ordenarEntradasInternas(entradas: List<Entrada>, criterio: CriterioO
         CriterioOrdenacion.CREACION_RECIENTE -> compareByDescending<Entrada> { it.creadaEn }
         CriterioOrdenacion.ANTIGUEDAD -> compareBy<Entrada> { it.creadaEn }
         CriterioOrdenacion.USO_RECIENTE -> compareByDescending<Entrada> { it.ultimoUsoEn }.thenBy { it.titulo.lowercase() }
+        CriterioOrdenacion.IGNORADAS -> compareByDescending<Entrada> { it.ignoradaEnSalud }.thenByDescending { it.favorito }.thenBy { it.titulo.lowercase() }
     }
     return entradas.sortedWith(comp)
 }
@@ -230,6 +250,25 @@ fun construirItemsAgrupadosPorTitulo(
                 is ItemAgrupado.Grupo -> item.entradas.maxOfOrNull { it.ultimoUsoEn } ?: 0L
                 is ItemAgrupado.Suelto -> item.entrada.ultimoUsoEn
                 is ItemAgrupado.Hijo -> 0L
+            }
+        }.thenBy { item ->
+            when (item) {
+                is ItemAgrupado.Grupo -> item.clave.lowercase()
+                is ItemAgrupado.Suelto -> item.entrada.titulo.lowercase()
+                is ItemAgrupado.Hijo -> ""
+            }
+        }
+        CriterioOrdenacion.IGNORADAS -> compareByDescending<ItemAgrupado> { item ->
+            when (item) {
+                is ItemAgrupado.Grupo -> if (item.entradas.any { it.ignoradaEnSalud }) 1 else 0
+                is ItemAgrupado.Suelto -> if (item.entrada.ignoradaEnSalud) 1 else 0
+                is ItemAgrupado.Hijo -> 0
+            }
+        }.thenByDescending { item ->
+            when (item) {
+                is ItemAgrupado.Grupo -> if (item.entradas.any { it.favorito }) 1 else 0
+                is ItemAgrupado.Suelto -> if (item.entrada.favorito) 1 else 0
+                is ItemAgrupado.Hijo -> 0
             }
         }.thenBy { item ->
             when (item) {

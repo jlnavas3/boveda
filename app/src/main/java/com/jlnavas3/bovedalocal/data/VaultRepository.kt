@@ -424,6 +424,22 @@ class VaultRepository private constructor(contexto: Context) {
         }
     }
 
+    fun alternarIgnorarSalud(id: String, forzar: Boolean? = null) {
+        synchronized(candado) {
+            val entrada = contenido.entradas.firstOrNull { it.id == id } ?: return
+            val lista = contenido.entradas.toMutableList()
+            val posicion = lista.indexOfFirst { it.id == id }
+            val nuevoValor = forzar ?: !entrada.ignoradaEnSalud
+            lista[posicion] = entrada.copy(
+                ignoradaEnSalud = nuevoValor,
+                modificadaEn = System.currentTimeMillis()
+            )
+            contenido = contenido.copy(entradas = lista)
+            persistir()
+            publicar()
+        }
+    }
+
     fun alternarFavoritos(ids: Set<String>, forzarMarcar: Boolean? = null) {
         if (ids.isEmpty()) return
         synchronized(candado) {

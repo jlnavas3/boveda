@@ -165,6 +165,8 @@ data class AjustesApp(
     val perfilArgon2: String = AjustesDefaults.Seguridad.PERFIL_ARGON2,
     /** FLAG_SECURE: protección anti-captura de pantalla y anti-recientes. Activa por defecto. */
     val proteccionPantalla: Boolean = AjustesDefaults.Seguridad.PROTECCION_PANTALLA,
+    /** Umbral en días para advertir sobre contraseñas antiguas en Salud (0 = desactivado). */
+    val umbralAntiguedadDias: Int = AjustesDefaults.Seguridad.UMBRAL_ANTIGUEDAD_DIAS,
     // Historial temporal de contraseñas generadas
     val historialClavesMax: Int = AjustesDefaults.HistorialCopias.HISTORIAL_MAX,
     val historialClavesVaciadoAuto: Boolean = AjustesDefaults.HistorialCopias.HISTORIAL_VACIADO_AUTO,
@@ -420,6 +422,7 @@ class AlmacenAjustes(contexto: Context) {
             separadorDecimal = prefs.getString("separador_decimal", AjustesDefaults.ListaFormatos.SEPARADOR_DECIMAL) ?: AjustesDefaults.ListaFormatos.SEPARADOR_DECIMAL,
             perfilArgon2 = prefs.getString("perfil_argon2", AjustesDefaults.Seguridad.PERFIL_ARGON2) ?: AjustesDefaults.Seguridad.PERFIL_ARGON2,
             proteccionPantalla = prefs.getBoolean("proteccion_pantalla", AjustesDefaults.Seguridad.PROTECCION_PANTALLA),
+            umbralAntiguedadDias = prefs.getInt("umbral_antiguedad_dias", AjustesDefaults.Seguridad.UMBRAL_ANTIGUEDAD_DIAS),
             historialClavesMax = prefs.getInt("historial_claves_max", AjustesDefaults.HistorialCopias.HISTORIAL_MAX),
             historialClavesVaciadoAuto = prefs.getBoolean("historial_claves_vaciado_auto", AjustesDefaults.HistorialCopias.HISTORIAL_VACIADO_AUTO),
             historialClavesTiempoAutoDestruccion = prefs.getLong("historial_claves_tiempo_autodestruccion", AjustesDefaults.HistorialCopias.HISTORIAL_TIEMPO_AUTO_DESTRUCCION_MS),
@@ -602,6 +605,7 @@ class AlmacenAjustes(contexto: Context) {
             .putString("separador_decimal", nuevo.separadorDecimal)
             .putString("perfil_argon2", nuevo.perfilArgon2)
             .putBoolean("proteccion_pantalla", nuevo.proteccionPantalla)
+            .putInt("umbral_antiguedad_dias", nuevo.umbralAntiguedadDias)
             .putInt("historial_claves_max", nuevo.historialClavesMax)
             .putBoolean("historial_claves_vaciado_auto", nuevo.historialClavesVaciadoAuto)
             .putLong("historial_claves_tiempo_autodestruccion", nuevo.historialClavesTiempoAutoDestruccion)
@@ -687,6 +691,15 @@ class AlmacenAjustes(contexto: Context) {
             15 to "15 segundos",
             30 to "30 segundos",
             60 to "1 minuto"
+        )
+        val OPCIONES_UMBRAL_ANTIGUEDAD = listOf(
+            0 to "Desactivado",
+            90 to "3 meses",
+            180 to "6 meses",
+            270 to "9 meses",
+            365 to "12 meses",
+            455 to "15 meses",
+            545 to "18 meses"
         )
         val OPCIONES_TEMA = listOf(
             "sistema" to "Sistema",

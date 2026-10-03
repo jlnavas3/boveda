@@ -112,6 +112,7 @@ fun PantallaEdicion(vm: VaultViewModel, id: String?, contrasenaInicial: String) 
     var totp by remember { mutableStateOf(original?.secretoTotp ?: "") }
     var mostrarSecretoTotp by remember { mutableStateOf(false) }
     var favorito by remember { mutableStateOf(original?.favorito ?: false) }
+    var ignoradaEnSalud by remember { mutableStateOf(original?.ignoradaEnSalud ?: false) }
     var etiquetas by remember { mutableStateOf(original?.etiquetas ?: emptyList()) }
     var camposPersonalizados by remember { mutableStateOf(original?.camposPersonalizados ?: emptyList()) }
     var opcionesGenerador by remember { mutableStateOf(OpcionesGenerador()) }
@@ -147,7 +148,8 @@ fun PantallaEdicion(vm: VaultViewModel, id: String?, contrasenaInicial: String) 
             etiquetas = etiquetas.map(::normalizarEtiqueta).filter { it.isNotEmpty() }.distinct(),
             historialContrasenas = original?.historialContrasenas ?: emptyList(),
             passkey = original?.passkey,
-            camposPersonalizados = camposPersonalizados.filter { it.etiqueta.isNotBlank() || it.valor.isNotBlank() }
+            camposPersonalizados = camposPersonalizados.filter { it.etiqueta.isNotBlank() || it.valor.isNotBlank() },
+            ignoradaEnSalud = ignoradaEnSalud
         )
         vm.guardar(entrada)
         vm.volverAtras()
@@ -384,7 +386,9 @@ fun PantallaEdicion(vm: VaultViewModel, id: String?, contrasenaInicial: String) 
                 alCambiarEtiquetas = { etiquetas = it },
                 etiquetasSugeridas = etiquetasSugeridas,
                 favorito = favorito,
-                alAlternarFavorito = { favorito = it; haptica.tic() }
+                alAlternarFavorito = { favorito = it; haptica.tic() },
+                ignoradaEnSalud = ignoradaEnSalud,
+                alAlternarIgnoradaEnSalud = { ignoradaEnSalud = it; haptica.tic() }
             )
 
             Spacer(Modifier.height(80.dp))

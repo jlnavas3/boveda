@@ -45,7 +45,64 @@ object AnalizadorDuplicados {
             idsProcesados.addAll(lista.map { it.id })
         }
 
-        // 2. Detección de duplicados de la MISMA cuenta (mismo servicio y mismo usuario normalizado)
+        // 2. Detección de duplicados de Passkey (mismo credId o mismo RP ID + usuario)
+        val restantesParaPasskey = activas.filterNot { it.id in idsProcesados }
+        val gruposPasskey = restantesParaPasskey
+            .filter { it.passkey != null && (it.passkey.credId.isNotBlank() || it.passkey.rpId.isNotBlank()) }
+            .groupBy { entrada ->
+                val pk = entrada.passkey!!
+                if (pk.credId.isNotBlank()) {
+                    "credId|||${pk.credId.trim()}"
+                } else {
+                    val serv = pk.rpId.ifBlank { NormalizadorDuplicados.normalizarServicio(entrada) }
+                    val usr = pk.usuario.ifBlank { entrada.usuario }.trim().lowercase()
+                    "rpId|||$serv|||$usr"
+                }
+            }
+            .filter { it.value.size > 1 }
+
+        for ((clave, lista) in gruposPasskey) {
+            val principal = seleccionarMejorEntrada(lista)
+            val claveVisual = NormalizadorDuplicados.armarClaveVisual(principal)
+            resultado.add(
+                GrupoDuplicado(
+                    idGrupo = "passkey_${clave.hashCode()}",
+                    tipo = TipoDuplicado.PASSKEY,
+                    claveVisual = claveVisual,
+                    entradas = lista,
+                    sugeridaPrincipal = principal,
+                    esAppAndroid = lista.any { NormalizadorDuplicados.esAppAndroid(it) }
+                )
+            )
+            idsProcesados.addAll(lista.map { it.id })
+        }
+
+        // 3. Detección de duplicados de TOTP (mismo secreto)
+        val restantesParaTotp = activas.filterNot { it.id in idsProcesados }
+        val gruposTotp = restantesParaTotp
+            .filter { !it.secretoTotp.isNullOrBlank() }
+            .groupBy { entrada ->
+                entrada.secretoTotp!!.replace(" ", "").trim().uppercase()
+            }
+            .filter { it.value.size > 1 }
+
+        for ((clave, lista) in gruposTotp) {
+            val principal = seleccionarMejorEntrada(lista)
+            val claveVisual = NormalizadorDuplicados.armarClaveVisual(principal)
+            resultado.add(
+                GrupoDuplicado(
+                    idGrupo = "totp_${clave.hashCode()}",
+                    tipo = TipoDuplicado.TOTP,
+                    claveVisual = claveVisual,
+                    entradas = lista,
+                    sugeridaPrincipal = principal,
+                    esAppAndroid = lista.any { NormalizadorDuplicados.esAppAndroid(it) }
+                )
+            )
+            idsProcesados.addAll(lista.map { it.id })
+        }
+
+        // 4. Detección de duplicados de la MISMA cuenta (mismo servicio y mismo usuario normalizado)
         // IMPORTANTE: Cuentas con usuarios diferentes NUNCA se agrupan aquí aunque compartan clave y servicio.
         val restantes = activas.filterNot { it.id in idsProcesados }
         val gruposPorCuenta = restantes

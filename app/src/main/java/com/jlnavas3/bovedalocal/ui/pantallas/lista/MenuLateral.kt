@@ -140,7 +140,7 @@ fun MenuLateral(
                 ajustes = ajustes
             ) {
                 ItemMenu(
-                    texto = "Salud de la bóveda",
+                    texto = "Salud",
                     icono = Icons.Filled.HealthAndSafety,
                     colorIcono = ColorSalud,
                     idEtiqueta = "03-LST-SLD",
@@ -151,7 +151,7 @@ fun MenuLateral(
                 SeparadorItemMenu()
 
                 ItemMenu(
-                    texto = "Limpiar duplicados",
+                    texto = "Duplicados",
                     icono = Icons.Filled.ContentCopy,
                     colorIcono = if (totalDuplicadas > 0) Peligro else ColorIconosInternos,
                     badge = if (totalDuplicadas > 0) totalDuplicadas.toString() else null,

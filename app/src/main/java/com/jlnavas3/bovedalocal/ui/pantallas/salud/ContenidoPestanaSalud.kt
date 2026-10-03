@@ -20,6 +20,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.jlnavas3.bovedalocal.data.Entrada
+import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjusteGris
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.GrupoAjustes
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.SeparadorFilaSimple
 import com.jlnavas3.bovedalocal.ui.pantallas.lista.ComponenteGrupoLista
@@ -55,10 +56,12 @@ fun ContenidoPestanaSalud(
     muyComunes: List<Entrada>,
     debiles: List<Entrada>,
     antiguas: List<Entrada>,
+    ignoradas: List<Entrada> = emptyList(),
     textoBusqueda: String,
     ahora: Long,
     alCambiarClave: (Entrada) -> Unit,
     alVerDetalle: (String) -> Unit,
+    alIgnorar: (Entrada) -> Unit = {},
     modifier: Modifier = Modifier,
     agruparPorSitio: Boolean = false,
     mostrarIndicadores: Boolean = false,
@@ -116,6 +119,7 @@ fun ContenidoPestanaSalud(
                                     colorDetalle = Peligro,
                                     alCambiarRapido = { alCambiarClave(entrada) },
                                     alVerDetalle = { alVerDetalle(entrada.id) },
+                                    alIgnorar = { alIgnorar(entrada) },
                                     mostrarIndicadores = mostrarIndicadores,
                                     enGrupo = false,
                                     seleccionActiva = seleccionActiva,
@@ -135,6 +139,7 @@ fun ContenidoPestanaSalud(
                                     totalEnGrupo = grupoOriginal.size,
                                     alCambiarClave = { alCambiarClave(it) },
                                     alVerDetalle = { alVerDetalle(it) },
+                                    alIgnorar = alIgnorar,
                                     mostrarIndicadores = mostrarIndicadores,
                                     colapsable = true,
                                     expandido = gruposExpandidos.contains(claveGrupo),
@@ -193,6 +198,7 @@ fun ContenidoPestanaSalud(
                         },
                         alCambiarClave = alCambiarClave,
                         alVerDetalle = alVerDetalle,
+                        alIgnorar = alIgnorar,
                         infoDetalle = { "Filtrada" to Peligro },
                         seleccionActiva = seleccionActiva,
                         seleccionados = seleccionados,
@@ -239,6 +245,7 @@ fun ContenidoPestanaSalud(
                         },
                         alCambiarClave = alCambiarClave,
                         alVerDetalle = alVerDetalle,
+                        alIgnorar = alIgnorar,
                         infoDetalle = { entrada ->
                             val fuerza = MedidorFuerza.medir(entrada.contrasena)
                             fuerza.etiqueta to Peligro
@@ -288,10 +295,58 @@ fun ContenidoPestanaSalud(
                         },
                         alCambiarClave = alCambiarClave,
                         alVerDetalle = alVerDetalle,
+                        alIgnorar = alIgnorar,
                         infoDetalle = { entrada ->
                             val dias = diasDesde(entrada.modificadaEn, ahora)
                             "hace $dias d" to ColorAcento
                         },
+                        seleccionActiva = seleccionActiva,
+                        seleccionados = seleccionados,
+                        alAlternarSeleccion = alAlternarSeleccion,
+                        alPulsarLargo = alPulsarLargo
+                    )
+                }
+            }
+
+            PestanaSalud.IGNORADAS -> {
+                val filtradas = remember(ignoradas, consulta) {
+                    if (consulta.isEmpty()) ignoradas
+                    else ignoradas.filter { coincideBusquedaSalud(it, consulta) }
+                }
+
+                if (filtradas.isEmpty()) {
+                    if (consulta.isNotEmpty()) {
+                        MensajeExitoPestana(
+                            icono = Icons.Filled.SearchOff,
+                            titulo = "Sin resultados",
+                            subtitulo = "No se encontraron entradas ignoradas para \"$consulta\".",
+                            colorIcono = ColorAcento
+                        )
+                    } else {
+                        MensajeExitoPestana(
+                            icono = Icons.Filled.Check,
+                            titulo = "Sin entradas ignoradas",
+                            subtitulo = "Todas tus contraseñas activas participan en la auditoría de salud."
+                        )
+                    }
+                } else {
+                    ListaProblemasSalud(
+                        entradas = filtradas,
+                        agruparPorSitio = agruparPorSitio,
+                        mostrarIndicadores = mostrarIndicadores,
+                        gruposExpandidos = gruposExpandidos,
+                        espaciadoFilas = espaciadoFilas,
+                        alAlternarGrupo = { clave ->
+                            gruposExpandidos = if (gruposExpandidos.contains(clave)) {
+                                gruposExpandidos - clave
+                            } else {
+                                gruposExpandidos + clave
+                            }
+                        },
+                        alCambiarClave = alCambiarClave,
+                        alVerDetalle = alVerDetalle,
+                        alIgnorar = alIgnorar,
+                        infoDetalle = { "Ignorada" to ColorAjusteGris },
                         seleccionActiva = seleccionActiva,
                         seleccionados = seleccionados,
                         alAlternarSeleccion = alAlternarSeleccion,
@@ -313,6 +368,7 @@ private fun ListaProblemasSalud(
     alAlternarGrupo: (String) -> Unit,
     alCambiarClave: (Entrada) -> Unit,
     alVerDetalle: (String) -> Unit,
+    alIgnorar: (Entrada) -> Unit = {},
     infoDetalle: (Entrada) -> Pair<String, Color>,
     seleccionActiva: Boolean = false,
     seleccionados: Set<String> = emptySet(),
@@ -335,6 +391,7 @@ private fun ListaProblemasSalud(
                     colorDetalle = color,
                     alCambiarRapido = { alCambiarClave(entrada) },
                     alVerDetalle = { alVerDetalle(entrada.id) },
+                    alIgnorar = { alIgnorar(entrada) },
                     mostrarIndicadores = mostrarIndicadores,
                     enGrupo = false,
                     seleccionActiva = seleccionActiva,
@@ -379,6 +436,7 @@ private fun ListaProblemasSalud(
                                     colorDetalle = color,
                                     alCambiarRapido = { alCambiarClave(entradaHija) },
                                     alVerDetalle = { alVerDetalle(entradaHija.id) },
+                                    alIgnorar = { alIgnorar(entradaHija) },
                                     mostrarIndicadores = mostrarIndicadores,
                                     enGrupo = true,
                                     seleccionActiva = seleccionActiva,
@@ -397,6 +455,7 @@ private fun ListaProblemasSalud(
                             colorDetalle = color,
                             alCambiarRapido = { alCambiarClave(item.entrada) },
                             alVerDetalle = { alVerDetalle(item.entrada.id) },
+                            alIgnorar = { alIgnorar(item.entrada) },
                             mostrarIndicadores = mostrarIndicadores,
                             enGrupo = false,
                             seleccionActiva = seleccionActiva,

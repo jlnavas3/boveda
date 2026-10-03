@@ -5,6 +5,14 @@ enum class TipoDuplicado(val titulo: String, val descripcion: String) {
         "Copia idéntica",
         "Mismo usuario, contraseña y servicio. Típico al re-importar el mismo archivo CSV."
     ),
+    PASSKEY(
+        "Llave de paso duplicada",
+        "Entradas que comparten la misma credencial passkey o dominio RP."
+    ),
+    TOTP(
+        "2FA / TOTP duplicado",
+        "Entradas que comparten la misma clave secreta de verificación en dos pasos."
+    ),
     MISMA_CUENTA_DISTINTA_CLAVE(
         "Misma cuenta (distinta clave)",
         "Mismo usuario y servicio, pero con contraseñas distintas."

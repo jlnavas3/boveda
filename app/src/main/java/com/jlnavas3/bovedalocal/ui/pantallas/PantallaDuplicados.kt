@@ -95,6 +95,16 @@ fun PantallaDuplicados(
     val cantWeb = remember(grupos) { grupos.count { !it.esAppAndroid } }
     val cantMismaCuenta = remember(grupos) { grupos.count { it.tipo == TipoDuplicado.MISMA_CUENTA_DISTINTA_CLAVE } }
     val cantVariantes = remember(grupos) { grupos.count { it.tipo == TipoDuplicado.VARIANTE_USUARIO } }
+    val cantPasskeys = remember(grupos) {
+        grupos.count { grupo ->
+            grupo.tipo == TipoDuplicado.PASSKEY || grupo.entradas.count { it.passkey != null } > 1
+        }
+    }
+    val cantTotp = remember(grupos) {
+        grupos.count { grupo ->
+            grupo.tipo == TipoDuplicado.TOTP || grupo.entradas.count { !it.secretoTotp.isNullOrBlank() } > 1
+        }
+    }
 
     val contexto = LocalContext.current
     val haptica = remember { Haptica(contexto) }
@@ -121,6 +131,8 @@ fun PantallaDuplicados(
             val coincideFiltro = when (filtroActivo) {
                 FiltroDuplicados.TODOS -> true
                 FiltroDuplicados.IDENTICOS -> grupo.tipo == TipoDuplicado.IDENTICO
+                FiltroDuplicados.PASSKEY -> grupo.tipo == TipoDuplicado.PASSKEY || grupo.entradas.count { it.passkey != null } > 1
+                FiltroDuplicados.TOTP -> grupo.tipo == TipoDuplicado.TOTP || grupo.entradas.count { !it.secretoTotp.isNullOrBlank() } > 1
                 FiltroDuplicados.APPS_ANDROID -> grupo.esAppAndroid
                 FiltroDuplicados.SITIOS_WEB -> !grupo.esAppAndroid
                 FiltroDuplicados.MISMA_CUENTA -> grupo.tipo == TipoDuplicado.MISMA_CUENTA_DISTINTA_CLAVE
@@ -145,7 +157,7 @@ fun PantallaDuplicados(
             .background(ColorAjustesFondo)
     ) {
         BarraSuperiorPantalla(
-            titulo = "Contraseñas duplicadas",
+            titulo = "Duplicados",
             idEtiqueta = "03-LST-DUP",
             mostrarId = ajustes.mostrarIdsAjustes,
             alVolver = { vm.volverAtras() },
@@ -186,7 +198,7 @@ fun PantallaDuplicados(
                         modifier = Modifier.widthIn(min = 220.dp, max = 280.dp)
                     ) {
                         com.jlnavas3.bovedalocal.ui.componentes.ElementoMenuCompacto(
-                            texto = "Salud de la bóveda...",
+                            texto = "Salud...",
                             icono = Icons.Filled.HealthAndSafety,
                             colorIcono = ColorAcento,
                             onClick = {
@@ -251,6 +263,8 @@ fun PantallaDuplicados(
                     filtroActivo = filtroActivo,
                     totalGrupos = grupos.size,
                     totalSobrantesIdenticas = totalSobrantesIdenticas,
+                    cantPasskeys = cantPasskeys,
+                    cantTotp = cantTotp,
                     cantAppsAndroid = cantAppsAndroid,
                     cantWeb = cantWeb,
                     cantMismaCuenta = cantMismaCuenta,
@@ -369,12 +383,6 @@ fun PantallaDuplicados(
                                         modoComparacion = true
                                     )
                                 )
-                            },
-                            alRespaldar = {
-                                haptica.tic()
-                                val idsParam = seleccionados.joinToString(",")
-                                seleccionados = emptySet()
-                                vm.ir(Pantalla.ExportarSelectivo("ids:$idsParam"))
                             },
                             alBorrar = {
                                 haptica.error()
