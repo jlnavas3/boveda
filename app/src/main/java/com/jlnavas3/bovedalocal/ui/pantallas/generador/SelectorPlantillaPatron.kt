@@ -35,6 +35,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.jlnavas3.bovedalocal.ui.componentes.MenuDesplegableBoveda
 import com.jlnavas3.bovedalocal.ui.componentes.SeparadorOpcionMenu
+import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorCampoAjustes
 import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
 import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
 import com.jlnavas3.bovedalocal.ui.theme.ColorTitulos
@@ -61,8 +62,7 @@ fun SelectorPlantillaPatron(
 ) {
     var abierto by remember { mutableStateOf(false) }
     val forma = FormaCampo
-    val esOscuro = androidx.compose.foundation.isSystemInDarkTheme()
-    val fondo = if (esOscuro) Color(0xFF161518) else Color(0xFFF4F4F6)
+    val fondo = ColorCampoAjustes
 
     val nombreSeleccionado = PLANTILLAS_PATRON_RAPIDO.firstOrNull { it.second == patronActual }?.first ?: "Plantilla personalizada"
 

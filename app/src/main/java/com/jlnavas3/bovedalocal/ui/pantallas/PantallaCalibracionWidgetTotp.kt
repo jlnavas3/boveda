@@ -22,10 +22,12 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.jlnavas3.bovedalocal.crypto.Totp
+import com.jlnavas3.bovedalocal.data.AjustesDefaults
 import com.jlnavas3.bovedalocal.ui.VaultViewModel
 import com.jlnavas3.bovedalocal.ui.componentes.BarraSuperiorPantalla
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ProveedorResaltadoAjustes
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjustesFondo
+import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorCampoAjustes
 import com.jlnavas3.bovedalocal.ui.pantallas.calibracion.widgettotp.SeccionColoresWidgetTotp
 import com.jlnavas3.bovedalocal.ui.pantallas.calibracion.widgettotp.SeccionFormaYTransparenciaWidgetTotp
 import com.jlnavas3.bovedalocal.ui.pantallas.calibracion.widgettotp.SimuladorWidgetTotpFlotante
@@ -59,7 +61,13 @@ fun PantallaCalibracionWidgetTotp(
     val colorContadorEfectivo = parsearColorO(ajustes.widgetColorContador, Color.White)
     val colorCodigoEfectivo = parsearColorO(ajustes.widgetColorCodigo, Ambar)
     val colorTituloIconoEfectivo = parsearColorO(ajustes.widgetColorTituloIcono, Color.White)
-    val colorFilasEfectivo = parsearColorO(if (ajustes.widgetColorFilas.isBlank() || ajustes.widgetColorFilas == "#00000000") "#26231E" else ajustes.widgetColorFilas, Color(0xFF26231E))
+    val colorFilasEfectivo = parsearColorO(
+        if (ajustes.widgetColorFilas.isBlank() || ajustes.widgetColorFilas == AjustesDefaults.WidgetTotp.COLOR_FILAS)
+            AjustesDefaults.WidgetTotp.COLOR_FILAS_DEFECTO
+        else
+            ajustes.widgetColorFilas,
+        ColorCampoAjustes
+    )
 
     ProveedorResaltadoAjustes(seccionDestino, scrollState) {
         Column(

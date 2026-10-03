@@ -21,6 +21,7 @@ import com.jlnavas3.bovedalocal.ui.VaultViewModel
 import com.jlnavas3.bovedalocal.ui.componentes.BarraSuperiorPantalla
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ProveedorResaltadoAjustes
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjustesFondo
+import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorCampoAjustes
 import com.jlnavas3.bovedalocal.ui.pantallas.calibracion.widget1x1.AccionesWidget1x1
 import com.jlnavas3.bovedalocal.ui.pantallas.calibracion.widget1x1.SeccionAspectoWidget1x1
 import com.jlnavas3.bovedalocal.ui.pantallas.calibracion.widget1x1.SeccionColoresWidget1x1
@@ -43,7 +44,7 @@ fun PantallaCalibracionWidget1x1(
 
     val color1x1BordeEfectivo = parsearColorO(ajustes.widget1x1ColorBorde, Ambar)
     val color1x1IconoEfectivo = parsearColorO(ajustes.widget1x1ColorIcono, Ambar)
-    val color1x1FondoEfectivo = parsearColorO(ajustes.widget1x1ColorFondo, Color(0xFF1C1A17))
+    val color1x1FondoEfectivo = parsearColorO(ajustes.widget1x1ColorFondo, ColorCampoAjustes)
 
     ProveedorResaltadoAjustes(seccionDestino, scrollState) {
         Column(

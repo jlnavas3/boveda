@@ -109,8 +109,7 @@ fun SelectorAjuste(
     var abierto by remember { mutableStateOf(false) }
     val forma = FormaCampo
     val tieneBadge = mostrarId && !idEtiqueta.isNullOrBlank()
-    val esOscuro = isSystemInDarkTheme()
-    val fondoCaja = if (esOscuro) Color(0xFF161518) else Color(0xFFF4F4F6)
+    val fondoCaja = ColorCampoAjustes
 
     Box(modifier = Modifier.fillMaxWidth()) {
         Row(

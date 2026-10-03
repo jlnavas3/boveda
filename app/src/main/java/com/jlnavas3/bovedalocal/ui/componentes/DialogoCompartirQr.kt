@@ -29,6 +29,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.jlnavas3.bovedalocal.data.Entrada
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjusteGris
+import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorCampoAjustes
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorTarjetaAjustes
 import com.jlnavas3.bovedalocal.ui.theme.esOscuroActivo
 import com.jlnavas3.bovedalocal.util.GeneradorQr
@@ -100,7 +101,7 @@ fun DialogoCompartirQr(
 
             Spacer(Modifier.height(16.dp))
 
-            val fondoSelector = if (esOscuroActivo) Color(0xFF161518) else Color(0xFFEFEFF2)
+            val fondoSelector = ColorCampoAjustes
             SelectorModosCompartirQr(
                 modosDisponibles = estadoQr.modosDisponibles,
                 modoSeleccionado = modoSeleccionado,

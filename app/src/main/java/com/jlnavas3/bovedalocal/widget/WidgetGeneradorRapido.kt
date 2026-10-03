@@ -18,6 +18,7 @@ import android.widget.RemoteViews
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
 import com.jlnavas3.bovedalocal.R
+import com.jlnavas3.bovedalocal.data.AjustesDefaults
 import com.jlnavas3.bovedalocal.data.VaultRepository
 import com.jlnavas3.bovedalocal.quicksettings.GeneradorRapidoHelper
 import kotlin.math.roundToInt
@@ -108,9 +109,9 @@ class WidgetGeneradorRapido : AppWidgetProvider() {
 
             // Fondo
             val colorFondoBase = try {
-                Color.parseColor(ajustes.widget1x1ColorFondo.ifBlank { "#1C1A17" })
+                Color.parseColor(ajustes.widget1x1ColorFondo.ifBlank { AjustesDefaults.Widget1x1.COLOR_FONDO })
             } catch (_: Exception) {
-                0xFF1C1A17.toInt()
+                Color.parseColor(AjustesDefaults.Widget1x1.COLOR_FONDO)
             }
             val alphaFondo = (ajustes.widget1x1TransparenciaFondo.coerceIn(0f, 1f) * 255).roundToInt()
             if (alphaFondo > 0) {
@@ -129,9 +130,9 @@ class WidgetGeneradorRapido : AppWidgetProvider() {
             // Borde
             if (grosorPx > 0.2f) {
                 val colorBordeBase = try {
-                    Color.parseColor(ajustes.widget1x1ColorBorde.ifBlank { "#FFB300" })
+                    Color.parseColor(ajustes.widget1x1ColorBorde.ifBlank { AjustesDefaults.Widget1x1.COLOR_BORDE })
                 } catch (_: Exception) {
-                    0xFFFFB300.toInt()
+                    Color.parseColor(AjustesDefaults.Widget1x1.COLOR_BORDE)
                 }
                 val alphaBorde = (alphaFondo.coerceAtLeast(140)).coerceAtMost(255)
                 val paintBorde = Paint(Paint.ANTI_ALIAS_FLAG).apply {
@@ -157,9 +158,9 @@ class WidgetGeneradorRapido : AppWidgetProvider() {
 
             // Ícono
             val colorIconoBase = try {
-                Color.parseColor(ajustes.widget1x1ColorIcono.ifBlank { "#FFB300" })
+                Color.parseColor(ajustes.widget1x1ColorIcono.ifBlank { AjustesDefaults.Widget1x1.COLOR_ICONO })
             } catch (_: Exception) {
-                0xFFFFB300.toInt()
+                Color.parseColor(AjustesDefaults.Widget1x1.COLOR_ICONO)
             }
             val drawable = ContextCompat.getDrawable(context, R.drawable.ic_widget_generador)?.mutate()
             if (drawable != null) {

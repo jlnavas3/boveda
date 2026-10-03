@@ -23,6 +23,7 @@ import android.widget.Toast
 import com.jlnavas3.bovedalocal.R
 import com.jlnavas3.bovedalocal.crypto.Base32
 import com.jlnavas3.bovedalocal.crypto.Totp
+import com.jlnavas3.bovedalocal.data.AjustesDefaults
 import com.jlnavas3.bovedalocal.data.EstadoBoveda
 import com.jlnavas3.bovedalocal.data.VaultRepository
 import com.jlnavas3.bovedalocal.ui.MainActivity
@@ -291,9 +292,9 @@ class WidgetTotpFavoritos : AppWidgetProvider() {
 
             // Colores de cabecera: Título e Ícono
             val colorTituloIconoInt = try {
-                Color.parseColor(ajustes.widgetColorTituloIcono.ifBlank { "#FFFFFF" })
+                Color.parseColor(ajustes.widgetColorTituloIcono.ifBlank { AjustesDefaults.WidgetTotp.COLOR_TITULO_ICONO })
             } catch (_: Exception) {
-                0xFFFFFFFF.toInt()
+                Color.parseColor(AjustesDefaults.WidgetTotp.COLOR_TITULO_ICONO)
             }
             views.setTextColor(R.id.widget_titulo, colorTituloIconoInt)
             views.setInt(R.id.widget_icono_cabecera, "setColorFilter", colorTituloIconoInt)
@@ -338,9 +339,9 @@ class WidgetTotpFavoritos : AppWidgetProvider() {
                     )
 
                     val colorCodigoInt = try {
-                        Color.parseColor(ajustes.widgetColorCodigo.ifBlank { "#FFB300" })
+                        Color.parseColor(ajustes.widgetColorCodigo.ifBlank { AjustesDefaults.WidgetTotp.COLOR_CODIGO })
                     } catch (_: Exception) {
-                        0xFFFFB300.toInt()
+                        Color.parseColor(AjustesDefaults.WidgetTotp.COLOR_CODIGO)
                     }
 
                     filas.forEachIndexed { i, (layoutId, tituloId, codTiempo) ->
@@ -433,9 +434,9 @@ class WidgetTotpFavoritos : AppWidgetProvider() {
             // Borde perimetral si grosor > 0
             if (grosorPx > 0.2f) {
                 val colorBordeBase = try {
-                    Color.parseColor(colorBordeHex.ifBlank { "#FFB300" })
+                    Color.parseColor(colorBordeHex.ifBlank { AjustesDefaults.WidgetTotp.COLOR_BORDE })
                 } catch (_: Exception) {
-                    0xFFFFB300.toInt()
+                    Color.parseColor(AjustesDefaults.WidgetTotp.COLOR_BORDE)
                 }
                 val alphaBorde = (alphaInt.coerceAtLeast(140)).coerceAtMost(255)
                 val paintBorde = Paint(Paint.ANTI_ALIAS_FLAG).apply {
@@ -477,13 +478,13 @@ class WidgetTotpFavoritos : AppWidgetProvider() {
 
             val radioPx = curvaturaDp * density
             val colorBase = try {
-                if (colorFilaHex.isBlank() || colorFilaHex == "#00000000") {
-                    Color.parseColor("#26231E")
+                if (colorFilaHex.isBlank() || colorFilaHex == AjustesDefaults.WidgetTotp.COLOR_FILAS) {
+                    Color.parseColor(AjustesDefaults.WidgetTotp.COLOR_FILAS_DEFECTO)
                 } else {
                     Color.parseColor(colorFilaHex)
                 }
             } catch (_: Exception) {
-                Color.parseColor("#26231E")
+                Color.parseColor(AjustesDefaults.WidgetTotp.COLOR_FILAS_DEFECTO)
             }
 
             val alphaInt = (opacidadFila.coerceIn(0f, 1f) * 255).roundToInt()
@@ -508,7 +509,7 @@ class WidgetTotpFavoritos : AppWidgetProvider() {
             segundosRestantes: Long,
             periodo: Long,
             density: Float,
-            colorContadorHex: String = "#FFFFFF"
+            colorContadorHex: String = AjustesDefaults.WidgetTotp.COLOR_CONTADOR
         ): Bitmap {
             val tamanoPx = (16 * density).roundToInt().coerceAtLeast(32)
             val bitmap = Bitmap.createBitmap(tamanoPx, tamanoPx, Bitmap.Config.ARGB_8888)
@@ -518,9 +519,9 @@ class WidgetTotpFavoritos : AppWidgetProvider() {
             val fraccion = (segundosRestantes.toFloat() / periodoValido).coerceIn(0f, 1f)
 
             val colorInt = try {
-                Color.parseColor(colorContadorHex.ifBlank { "#FFFFFF" })
+                Color.parseColor(colorContadorHex.ifBlank { AjustesDefaults.WidgetTotp.COLOR_CONTADOR })
             } catch (_: Exception) {
-                0xFFFFFFFF.toInt()
+                Color.parseColor(AjustesDefaults.WidgetTotp.COLOR_CONTADOR)
             }
 
             val centro = tamanoPx / 2f

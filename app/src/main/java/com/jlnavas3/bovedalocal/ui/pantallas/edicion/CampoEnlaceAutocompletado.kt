@@ -37,6 +37,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteCampoTexto
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.TipoCampoTexto
+import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorTarjetaAjustes
 import com.jlnavas3.bovedalocal.ui.theme.Ambar
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.EstiloMono
@@ -88,8 +89,7 @@ fun CampoEnlaceAutocompletado(
 ) {
     val contexto = LocalContext.current
     val haptica = remember { Haptica(contexto) }
-    val esOscuro = isSystemInDarkTheme()
-    val fondoPopup = if (esOscuro) Color(0xFF28272A) else Color(0xFFF5F5F7)
+    val fondoPopup = ColorTarjetaAjustes
 
     var enFoco by remember { mutableStateOf(false) }
     var ignorarSugerencias by remember { mutableStateOf(false) }

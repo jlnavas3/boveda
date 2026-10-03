@@ -28,7 +28,9 @@ import androidx.compose.ui.unit.dp
 import com.jlnavas3.bovedalocal.data.CampoPersonalizado
 import com.jlnavas3.bovedalocal.data.TipoCampo
 import com.jlnavas3.bovedalocal.ui.componentes.CampoBoveda
+import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorCampoAjustes
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
+import com.jlnavas3.bovedalocal.ui.theme.ColorSobreAcento
 import com.jlnavas3.bovedalocal.ui.theme.Obsidiana
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
 
@@ -82,7 +84,7 @@ fun FormularioEdicionWifi(
                     Box(
                         modifier = Modifier
                             .clip(RoundedCornerShape(8.dp))
-                            .background(if (seleccionado) ColorAcento else Color(0xFF161518))
+                            .background(if (seleccionado) ColorAcento else ColorCampoAjustes)
                             .clickable {
                                 alCambiarCampos(GestorCamposBase.actualizarValor(campos, "Tipo de seguridad", opcion, TipoCampo.TEXTO))
                             }
@@ -90,7 +92,7 @@ fun FormularioEdicionWifi(
                     ) {
                         Text(
                             text = opcion,
-                            color = if (seleccionado) Obsidiana else TextoSecundario,
+                            color = if (seleccionado) ColorSobreAcento else TextoSecundario,
                             style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.SemiBold)
                         )
                     }

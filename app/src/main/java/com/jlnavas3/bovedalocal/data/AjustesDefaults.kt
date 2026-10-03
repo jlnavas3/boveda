@@ -143,6 +143,7 @@ object AjustesDefaults {
         const val COLOR_CODIGO = "#FFB300"
         const val COLOR_TITULO_ICONO = "#FFFFFF"
         const val COLOR_FILAS = "#00000000"
+        const val COLOR_FILAS_DEFECTO = "#26231E"
         const val TRANSPARENCIA_FILAS = 0.0f
         const val HAPTICA = true
         const val HAPTICA_INTENSIDAD = 0.20f

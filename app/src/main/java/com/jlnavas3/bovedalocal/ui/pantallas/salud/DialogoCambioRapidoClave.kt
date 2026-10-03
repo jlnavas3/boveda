@@ -41,6 +41,7 @@ import com.jlnavas3.bovedalocal.data.Entrada
 import com.jlnavas3.bovedalocal.ui.componentes.BotonColorido
 import com.jlnavas3.bovedalocal.ui.componentes.DialogoBoveda
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjusteGris
+import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorCampoAjustes
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorTextoAjustes
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
@@ -97,8 +98,7 @@ fun DialogoCambioRapidoClave(
 
             Spacer(Modifier.height(10.dp))
 
-            val esOscuro = isSystemInDarkTheme()
-            val fondoGenerada = if (esOscuro) Color(0xFF161518) else Color(0xFFF4F4F6)
+            val fondoGenerada = ColorCampoAjustes
 
             Row(
                 modifier = Modifier

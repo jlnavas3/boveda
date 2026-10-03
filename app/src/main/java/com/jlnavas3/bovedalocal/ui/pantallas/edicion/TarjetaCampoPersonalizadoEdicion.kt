@@ -44,10 +44,12 @@ import com.jlnavas3.bovedalocal.data.TipoCampo
 import com.jlnavas3.bovedalocal.ui.componentes.CampoBoveda
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteCampoTexto
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.TipoCampoTexto
+import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorCampoAjustes
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
 import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
 import com.jlnavas3.bovedalocal.ui.theme.ColorTitulos
+import com.jlnavas3.bovedalocal.ui.theme.FormaCampo
 import com.jlnavas3.bovedalocal.ui.theme.FormaPequena
 import com.jlnavas3.bovedalocal.ui.theme.GrosorBorde
 import com.jlnavas3.bovedalocal.ui.theme.Peligro
@@ -100,15 +102,15 @@ fun TarjetaCampoPersonalizadoEdicion(
         }, h, min, es24h).show()
     }
 
-    val fondoTarjeta = if (esOscuroActivo) Color(0xFF161518) else Color(0xFFF4F4F6)
-    val bordeTarjeta = if (esOscuroActivo) Color(0xFF333238) else Color(0xFFDFDFE3)
+    val fondoTarjeta = ColorCampoAjustes
+    val bordeTarjeta = ColorBordeActual
 
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(12.dp))
+            .clip(FormaCampo)
             .background(fondoTarjeta)
-            .border(1.dp, bordeTarjeta, RoundedCornerShape(12.dp))
+            .border(1.dp, bordeTarjeta, FormaCampo)
             .padding(12.dp)
     ) {
         // Cabecera del campo: Número, Badge de Tipo, Sensible y Eliminar

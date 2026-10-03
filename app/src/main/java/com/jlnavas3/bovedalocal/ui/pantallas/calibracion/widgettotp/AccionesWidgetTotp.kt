@@ -23,13 +23,7 @@ fun AccionesWidgetTotp(
             colorIcono = ColorIconosInternos,
             alPulsar = {
                 haptica.exito()
-                vm.ajustarWidgetGrosorBorde(0f)
-                vm.ajustarWidgetCurvaturaEsquinas(0f)
-                vm.ajustarWidgetTransparenciaFondo(0.50f)
-                vm.ajustarWidgetColorBorde("#FFB300")
-                vm.ajustarWidgetColorContador("#FFFFFF")
-                vm.ajustarWidgetColorCodigo("#FFB300")
-                vm.ajustarWidgetColorTituloIcono("#FFFFFF")
+                vm.restablecerAjustesWidget()
                 vm.avisar("Aspecto del widget 2FA restablecido")
             }
         )

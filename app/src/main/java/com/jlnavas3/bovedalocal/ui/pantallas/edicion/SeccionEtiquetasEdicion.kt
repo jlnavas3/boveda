@@ -44,14 +44,16 @@ import com.jlnavas3.bovedalocal.ui.theme.TextoPrincipal
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
 
 import androidx.compose.foundation.shape.RoundedCornerShape
+import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorCampoAjustes
+import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorTarjetaAjustes
 import com.jlnavas3.bovedalocal.ui.theme.esOscuroActivo
 
 @Composable
 fun ChipEtiqueta(texto: String, sugerida: Boolean = false, alPulsar: () -> Unit) {
-    val forma = RoundedCornerShape(8.dp)
-    val fondoChip = if (esOscuroActivo) Color(0xFF19181B) else Color(0xFFF0F0F3)
-    val fondoSugerida = if (esOscuroActivo) Color(0xFF262529) else Color(0xFFE6E6EB)
-    val bordeChip = if (esOscuroActivo) Color(0xFF38373C) else Color(0xFFDADAE0)
+    val forma = FormaPequena
+    val fondoChip = ColorCampoAjustes
+    val fondoSugerida = ColorTarjetaAjustes
+    val bordeChip = ColorBordeActual
 
     Row(
         modifier = Modifier

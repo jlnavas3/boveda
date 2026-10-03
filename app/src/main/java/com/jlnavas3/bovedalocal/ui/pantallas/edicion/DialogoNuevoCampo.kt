@@ -41,6 +41,8 @@ import com.jlnavas3.bovedalocal.data.TipoCampo
 import com.jlnavas3.bovedalocal.ui.componentes.BotonColorido
 import com.jlnavas3.bovedalocal.ui.componentes.CampoBoveda
 import com.jlnavas3.bovedalocal.ui.componentes.DialogoBoveda
+import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorCampoAjustes
+import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorTarjetaAjustes
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.SwitchBoveda
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
@@ -140,7 +142,7 @@ fun DialogoNuevoCampo(
             ) {
                 tiposDisponibles.forEach { tipo ->
                     val seleccionado = tipo == tipoSeleccionado
-                    val colorFondo = if (seleccionado) ColorAcento else if (esOscuroActivo) Color(0xFF2A292E) else Color(0xFFEFEFF3)
+                    val colorFondo = if (seleccionado) ColorAcento else ColorCampoAjustes
                     val colorTexto = if (seleccionado) com.jlnavas3.bovedalocal.ui.theme.ColorSobreAcento else TextoPrincipal
 
                     Row(
@@ -178,7 +180,7 @@ fun DialogoNuevoCampo(
             }
 
             // Switch de Sensibilidad
-            val fondoSensible = if (esOscuroActivo) Color(0xFF18171A) else Color(0xFFF4F4F6)
+            val fondoSensible = ColorTarjetaAjustes
 
             Row(
                 modifier = Modifier

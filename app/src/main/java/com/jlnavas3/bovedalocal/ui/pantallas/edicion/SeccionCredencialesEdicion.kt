@@ -37,6 +37,7 @@ import com.jlnavas3.bovedalocal.data.DatosPasskey
 import com.jlnavas3.bovedalocal.ui.componentes.BarraFuerza
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteCampoTexto
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.TipoCampoTexto
+import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorCampoAjustes
 import com.jlnavas3.bovedalocal.ui.theme.ColorDatosContrasena
 import com.jlnavas3.bovedalocal.ui.theme.ColorDatosPasskey
 import com.jlnavas3.bovedalocal.ui.theme.ColorDatosUsuario
@@ -66,8 +67,7 @@ fun SeccionCredencialesEdicion(
 
     if (passkey != null) {
         Spacer(Modifier.height(12.dp))
-        val esOscuro = esOscuroActivo
-        val colorFondoCampo = if (esOscuro) Color(0xFF242327) else Color(0xFFF1F2F5)
+        val colorFondoCampo = ColorCampoAjustes
         Box(
             modifier = Modifier
                 .fillMaxWidth()
