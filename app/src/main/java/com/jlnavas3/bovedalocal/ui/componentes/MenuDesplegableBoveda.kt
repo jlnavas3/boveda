@@ -33,7 +33,9 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.PopupProperties
-import com.jlnavas3.bovedalocal.ui.theme.Ambar
+import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorCampoAjustes
+import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorSeparadorAjustes
+import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.ColorBordeDropdown
 import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
 import com.jlnavas3.bovedalocal.ui.theme.CurvaturaEsquinas
@@ -53,7 +55,7 @@ fun SeparadorOpcionMenu(modifier: Modifier = Modifier) {
         modifier = modifier
             .fillMaxWidth()
             .height(0.8.dp)
-            .background(if (esOscuroActivo) Color(0xFF2D2C30) else Color(0xFFEBEBEB))
+            .background(ColorSeparadorAjustes)
     )
 }
 
@@ -68,23 +70,24 @@ fun MenuDesplegableBoveda(
     modifier: Modifier = Modifier,
     offset: DpOffset = DpOffset(0.dp, 0.dp),
     properties: PopupProperties = PopupProperties(focusable = true),
+    containerColor: Color = ColorCampoAjustes,
     content: @Composable ColumnScope.() -> Unit
 ) {
     val forma = RoundedCornerShape(CurvaturaEsquinas)
-    val fondoMenu = if (esOscuroActivo) Color(0xFF262529) else Color(0xFFFFFFFF)
 
     DropdownMenu(
         expanded = expanded,
         onDismissRequest = onDismissRequest,
         offset = offset,
         properties = properties,
+        shape = forma,
+        containerColor = containerColor,
+        tonalElevation = 0.dp,
+        shadowElevation = 6.dp,
+        border = if (GrosorBorde > 0.dp && EstiloBorde != "ninguno") {
+            androidx.compose.foundation.BorderStroke(GrosorBorde, ColorBordeDropdown)
+        } else null,
         modifier = modifier
-            .clip(forma)
-            .background(fondoMenu)
-            .then(
-                if (GrosorBorde > 0.dp && EstiloBorde != "ninguno") Modifier.border(GrosorBorde, ColorBordeDropdown, forma)
-                else Modifier
-            )
     ) {
         content()
     }
@@ -100,7 +103,7 @@ fun ElementoMenuCompacto(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     icono: ImageVector? = null,
-    colorIcono: Color = Ambar,
+    colorIcono: Color = ColorAcento,
     colorTexto: Color = TextoPrincipal,
     iconoFinal: ImageVector? = null,
     colorIconoFinal: Color = ColorIconosInternos.copy(alpha = 0.6f),
@@ -175,7 +178,7 @@ fun ElementoRetornoSubmenu(
         Icon(
             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
             contentDescription = "Volver",
-            tint = Ambar,
+            tint = ColorAcento,
             modifier = Modifier.size(18.dp)
         )
         Spacer(Modifier.width(8.dp))

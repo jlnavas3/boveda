@@ -47,6 +47,7 @@ import com.jlnavas3.bovedalocal.ui.theme.FormaPequena
 import com.jlnavas3.bovedalocal.ui.theme.GrosorBorde
 import com.jlnavas3.bovedalocal.ui.theme.TextoPrincipal
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
+import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorTarjetaAjustes
 import com.jlnavas3.bovedalocal.ui.theme.esOscuroActivo
 
 /**
@@ -67,11 +68,12 @@ fun ModalInferiorBoveda(
     fondoIcono: Color = colorIcono.copy(alpha = 0.15f),
     mostrarBotonCerrar: Boolean = false,
     fijarAbajo: Boolean = true,
+    fondo: Color = ColorTarjetaAjustes,
     contenido: @Composable ColumnScope.() -> Unit
 ) {
     if (!abierto) return
 
-    val fondoModal = if (esOscuroActivo) Color(0xFF222225) else Color.White
+    val fondoModal = fondo
     val formaModal = RoundedCornerShape(CurvaturaEsquinas)
 
     Dialog(

@@ -22,6 +22,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorTarjetaAjustes
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
 import com.jlnavas3.bovedalocal.ui.theme.CurvaturaEsquinas
@@ -47,7 +48,7 @@ fun DialogoBoveda(
     title: @Composable (() -> Unit)? = null,
     text: @Composable (() -> Unit)? = null,
     shape: Shape = RoundedCornerShape(CurvaturaEsquinas),
-    containerColor: Color = if (esOscuroActivo) Color(0xFF212023) else Color(0xFFFFFFFF),
+    containerColor: Color = ColorTarjetaAjustes,
     tonalElevation: Dp = 0.dp
 ) {
     val formaDialogo = shape as? RoundedCornerShape ?: RoundedCornerShape(CurvaturaEsquinas)
@@ -84,7 +85,7 @@ fun DialogoBoveda(
     botonConfirmar: (@Composable () -> Unit)? = null,
     botonDescartar: (@Composable () -> Unit)? = null,
     shape: Shape = RoundedCornerShape(CurvaturaEsquinas),
-    containerColor: Color = if (esOscuroActivo) Color(0xFF212023) else Color(0xFFFFFFFF),
+    containerColor: Color = ColorTarjetaAjustes,
     tonalElevation: Dp = 0.dp,
     contenido: @Composable ColumnScope.() -> Unit
 ) {
