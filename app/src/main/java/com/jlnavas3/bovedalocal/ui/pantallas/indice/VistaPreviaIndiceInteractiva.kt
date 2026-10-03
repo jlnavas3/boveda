@@ -1,7 +1,6 @@
 package com.jlnavas3.bovedalocal.ui.pantallas.indice
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -83,9 +82,6 @@ fun VistaPreviaIndiceInteractiva(
                             .fillMaxWidth()
                             .clip(FormaPequena)
                             .background(if (coincide) Ambar.copy(alpha = 0.18f) else SuperficieAlta)
-                            .then(
-                                if (coincide) Modifier.border(1.5.dp, Ambar, FormaPequena) else Modifier
-                            )
                             .padding(horizontal = 8.dp, vertical = 5.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {

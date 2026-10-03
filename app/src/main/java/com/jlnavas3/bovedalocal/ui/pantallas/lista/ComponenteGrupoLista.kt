@@ -86,8 +86,7 @@ fun ComponenteGrupoLista(
             .clip(formaGrupo)
             .background(if (resaltado) Ambar.copy(alpha = 0.16f) else ColorTarjetaAjustes)
             .then(
-                if (resaltado) Modifier.border(1.5.dp, Ambar, formaGrupo)
-                else if (GrosorBorde > 0.dp && EstiloBorde != "ninguno") Modifier.border(GrosorBorde, ColorBordeActual, formaGrupo)
+                if (GrosorBorde > 0.dp && EstiloBorde != "ninguno") Modifier.border(GrosorBorde, ColorBordeActual, formaGrupo)
                 else Modifier
             )
     ) {

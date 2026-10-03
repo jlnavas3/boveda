@@ -48,6 +48,7 @@ import com.jlnavas3.bovedalocal.ui.theme.CurvaturaEsquinas
 import com.jlnavas3.bovedalocal.util.Dominios
 import com.jlnavas3.bovedalocal.util.GestorAppsInstaladas
 import com.jlnavas3.bovedalocal.util.LanzadorEnlaces
+import com.jlnavas3.bovedalocal.ui.theme.EstiloBorde
 import com.jlnavas3.bovedalocal.ui.theme.GrosorBorde
 import com.jlnavas3.bovedalocal.ui.theme.TextoPrincipal
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
@@ -133,9 +134,8 @@ fun FilaEntrada(
                 .clip(forma)
                 .background(fondoFila)
                 .then(
-                    if (resaltado) Modifier.border(1.5.dp, Ambar, forma)
-                    else if (seleccionado) Modifier.border(1.dp, Ambar.copy(alpha = 0.5f), forma)
-                    else if (GrosorBorde > 0.dp && !enGrupo) Modifier.border(GrosorBorde, ColorBordeActual, forma)
+                    if (seleccionado) Modifier.border(1.dp, Ambar.copy(alpha = 0.5f), forma)
+                    else if (GrosorBorde > 0.dp && EstiloBorde != "ninguno" && !enGrupo) Modifier.border(GrosorBorde, ColorBordeActual, forma)
                     else Modifier
                 )
                 .combinedClickable(

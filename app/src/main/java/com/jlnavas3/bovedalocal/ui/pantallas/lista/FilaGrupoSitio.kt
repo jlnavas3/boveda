@@ -63,8 +63,7 @@ fun FilaGrupoSitio(
             .clip(forma)
             .background(if (resaltado) Ambar.copy(alpha = 0.16f) else ColorTarjetaAjustes)
             .then(
-                if (resaltado) Modifier.border(1.5.dp, Ambar, forma)
-                else if (GrosorBorde > 0.dp && EstiloBorde != "ninguno") Modifier.border(GrosorBorde, ColorBordeActual, forma)
+                if (GrosorBorde > 0.dp && EstiloBorde != "ninguno") Modifier.border(GrosorBorde, ColorBordeActual, forma)
                 else Modifier
             )
             .clickable { alAlternar() }
