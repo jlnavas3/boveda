@@ -37,6 +37,7 @@ fun ComponenteBotonFila(
     idFila: String? = null,
     mostrarId: Boolean = false,
     habilitado: Boolean = true,
+    ejecutarHapticaAlPulsar: Boolean = true,
     mensajeToastRestablecer: String? = null
 ) {
     val contexto = LocalContext.current
@@ -50,11 +51,11 @@ fun ComponenteBotonFila(
         mostrarId = mostrarId,
         valorTexto = valorTexto,
         habilitado = habilitado,
+        ejecutarHapticaAlPulsar = ejecutarHapticaAlPulsar,
         alPulsar = {
             alPulsar()
-            if (icono == Icons.Filled.RestartAlt) {
-                val mensaje = mensajeToastRestablecer ?: "Restablecido: $titulo"
-                Toast.makeText(contexto, mensaje, Toast.LENGTH_SHORT).show()
+            if (mensajeToastRestablecer != null) {
+                Toast.makeText(contexto, mensajeToastRestablecer, Toast.LENGTH_SHORT).show()
             }
         },
         contenidoFinal = {

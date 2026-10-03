@@ -70,6 +70,7 @@ fun ComponenteFila(
     maxSubtituloLines: Int = 3,
     habilitado: Boolean = true,
     alPulsar: (() -> Unit)? = null,
+    ejecutarHapticaAlPulsar: Boolean = true,
     estadoAlumbrado: EstadoAlumbradoFila? = null,
     contenidoFinal: (@Composable () -> Unit)? = null
 ) {
@@ -82,7 +83,9 @@ fun ComponenteFila(
 
     val modifierClick = if (alPulsar != null && habilitado) {
         Modifier.clickable {
-            haptica.tic()
+            if (ejecutarHapticaAlPulsar) {
+                haptica.tic()
+            }
             alPulsar()
         }
     } else {

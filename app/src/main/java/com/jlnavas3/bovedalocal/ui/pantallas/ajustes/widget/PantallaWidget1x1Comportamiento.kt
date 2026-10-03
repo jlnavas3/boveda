@@ -87,6 +87,7 @@ fun PantallaWidget1x1Comportamiento(
 
                 ComponenteBotonFila(
                     titulo = "Probar notificación emergente (Toast)",
+                    icono = null,
                     alPulsar = {
                         Toast.makeText(contexto, "Prueba: Contraseña generada y copiada al portapapeles", Toast.LENGTH_SHORT).show()
                     }
@@ -134,13 +135,20 @@ fun PantallaWidget1x1Comportamiento(
                     idFila = "04-HER-WGT-CMP-HIN",
                     mostrarId = ajustes.mostrarIdsAjustes,
                     alRestablecer = {
-                        haptica.tic()
                         vm.ajustarWidget1x1HapticaIntensidad(AjustesDefaults.Widget1x1.HAPTICA_INTENSIDAD)
-                        haptica.probar(AjustesDefaults.Widget1x1.HAPTICA_INTENSIDAD)
+                        Haptica.vibrarExterno(
+                            context = contexto,
+                            activo = true,
+                            intensidad = AjustesDefaults.Widget1x1.HAPTICA_INTENSIDAD
+                        )
                     },
                     alCambiar = {
                         vm.ajustarWidget1x1HapticaIntensidad(it)
-                        haptica.probar(it)
+                        Haptica.vibrarExterno(
+                            context = contexto,
+                            activo = true,
+                            intensidad = it
+                        )
                     }
                 )
 
@@ -148,7 +156,15 @@ fun PantallaWidget1x1Comportamiento(
 
                 ComponenteBotonFila(
                     titulo = "Probar vibración del widget 1x1",
-                    alPulsar = { haptica.probar(ajustes.widget1x1HapticaIntensidad) }
+                    icono = null,
+                    ejecutarHapticaAlPulsar = false,
+                    alPulsar = {
+                        Haptica.vibrarExterno(
+                            context = contexto,
+                            activo = true,
+                            intensidad = ajustes.widget1x1HapticaIntensidad
+                        )
+                    }
                 )
             }
         }

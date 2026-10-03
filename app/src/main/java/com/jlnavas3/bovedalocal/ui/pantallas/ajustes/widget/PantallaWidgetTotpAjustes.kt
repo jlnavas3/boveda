@@ -74,13 +74,20 @@ fun PantallaWidgetTotpAjustes(
                     idFila = "04-HER-WGT-TOT-HIN",
                     mostrarId = ajustes.mostrarIdsAjustes,
                     alRestablecer = {
-                        haptica.tic()
                         vm.ajustarWidgetHapticaIntensidad(AjustesDefaults.WidgetTotp.HAPTICA_INTENSIDAD)
-                        haptica.probar(AjustesDefaults.WidgetTotp.HAPTICA_INTENSIDAD)
+                        Haptica.vibrarExterno(
+                            context = contexto,
+                            activo = true,
+                            intensidad = AjustesDefaults.WidgetTotp.HAPTICA_INTENSIDAD
+                        )
                     },
                     alCambiar = {
                         vm.ajustarWidgetHapticaIntensidad(it)
-                        haptica.probar(it)
+                        Haptica.vibrarExterno(
+                            context = contexto,
+                            activo = true,
+                            intensidad = it
+                        )
                     }
                 )
 
@@ -88,7 +95,15 @@ fun PantallaWidgetTotpAjustes(
 
                 ComponenteBotonFila(
                     titulo = "Probar vibración del widget",
-                    alPulsar = { haptica.probar(ajustes.widgetHapticaIntensidad) }
+                    icono = null,
+                    ejecutarHapticaAlPulsar = false,
+                    alPulsar = {
+                        Haptica.vibrarExterno(
+                            context = contexto,
+                            activo = true,
+                            intensidad = ajustes.widgetHapticaIntensidad
+                        )
+                    }
                 )
             }
         }
