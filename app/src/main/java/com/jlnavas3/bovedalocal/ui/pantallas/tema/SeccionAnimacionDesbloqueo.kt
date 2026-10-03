@@ -52,7 +52,7 @@ fun SeccionAnimacionDesbloqueo(
         )
         ComponenteSeparador()
         ComponenteRadio(
-            titulo = "Ninguna (Estática / Ahorro de energía)",
+            titulo = "Ninguna (Ahorro de energía)",
             icono = null,
             seleccionado = ajustes.animacionDesbloqueo == "ninguna",
             idFila = "02-APA-THM-NON",

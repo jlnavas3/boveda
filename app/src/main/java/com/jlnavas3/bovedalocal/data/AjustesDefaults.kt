@@ -26,7 +26,7 @@ object AjustesDefaults {
         const val COLOR_ICONOS_INTERNOS = ""
         const val COLOR_TITULOS = ""
         const val COLOR_TARJETAS = ""
-        const val TEMA_APP = "oscuro"
+        const val TEMA_APP = "sistema"
         const val COLOR_DINAMICO_SISTEMA = false
     }
 
