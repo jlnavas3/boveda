@@ -77,7 +77,8 @@ fun PasoCrearContrasena(
         PerfilArgon2.entries.map { perfil ->
             OpcionSelectorModal(
                 valor = perfil,
-                etiquetaFila = perfil.titulo,
+                etiquetaFila = perfil.nombreCorto,
+                subetiquetaFila = perfil.memoriaTexto,
                 etiquetaModal = perfil.titulo,
                 descripcionModal = "${perfil.resumen}\n${perfil.detalle}",
                 icono = Icons.Filled.Memory

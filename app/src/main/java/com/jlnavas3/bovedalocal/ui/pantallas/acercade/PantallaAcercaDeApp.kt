@@ -203,6 +203,7 @@ fun PantallaAcercaDeApp(
                 ComponenteFila(
                     titulo = "Cifrado Simétrico",
                     subtitulo = "AES-256 en modo GCM con autenticación de integridad en cada bloque",
+                    maxSubtituloLines = 3,
                     icono = Icons.Filled.Lock,
                     colorIcono = ColorAjusteGris.copy(alpha = 0.15f),
                     colorTinteIcono = ColorIconosInternos

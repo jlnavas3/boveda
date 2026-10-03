@@ -117,4 +117,43 @@ object GeneradorRapidoHelper {
         } catch (_: Exception) {
         }
     }
+
+    fun solicitarAgregarTile(contexto: Context, alTerminar: ((Boolean) -> Unit)? = null) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            val statusBarManager = contexto.getSystemService(android.app.StatusBarManager::class.java)
+            val componentName = android.content.ComponentName(contexto, TileGeneradorRapido::class.java)
+            val icon = android.graphics.drawable.Icon.createWithResource(
+                contexto,
+                com.jlnavas3.bovedalocal.R.drawable.ic_tile_generador
+            )
+
+            statusBarManager?.requestAddTileService(
+                componentName,
+                "Generador Rápido",
+                icon,
+                androidx.core.content.ContextCompat.getMainExecutor(contexto)
+            ) { resultCode ->
+                when (resultCode) {
+                    android.app.StatusBarManager.TILE_ADD_REQUEST_RESULT_TILE_ADDED -> {
+                        Toast.makeText(contexto, "Mosaico añadido a Ajustes Rápidos", Toast.LENGTH_SHORT).show()
+                        alTerminar?.invoke(true)
+                    }
+                    android.app.StatusBarManager.TILE_ADD_REQUEST_RESULT_TILE_ALREADY_ADDED -> {
+                        Toast.makeText(contexto, "El mosaico ya está en los Ajustes Rápidos", Toast.LENGTH_SHORT).show()
+                        alTerminar?.invoke(true)
+                    }
+                    android.app.StatusBarManager.TILE_ADD_REQUEST_RESULT_TILE_NOT_ADDED -> {
+                        alTerminar?.invoke(false)
+                    }
+                }
+            }
+        } else {
+            Toast.makeText(
+                contexto,
+                "Desliza el panel de notificaciones y pulsa Editar para arrastrar «Generador Rápido»",
+                Toast.LENGTH_LONG
+            ).show()
+            alTerminar?.invoke(false)
+        }
+    }
 }

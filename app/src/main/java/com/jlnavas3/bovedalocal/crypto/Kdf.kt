@@ -55,6 +55,20 @@ enum class PerfilArgon2(
         detalle = "Cúspide de resistencia criptográfica para dispositivos potentes con 8–12 GB de RAM."
     );
 
+    val nombreCorto: String
+        get() = when (this) {
+            ESTANDAR -> "Estándar"
+            REFORZADO -> "Reforzado"
+            ULTRASEGURO -> "Ultra-Seguro"
+        }
+
+    val memoriaTexto: String
+        get() = when (this) {
+            ESTANDAR -> "(64 MiB)"
+            REFORZADO -> "(128 MiB)"
+            ULTRASEGURO -> "(256 MiB)"
+        }
+
     fun aKdfParams(): KdfParams = KdfParams(
         memoryKiB = memoriaKiB,
         iterations = iteraciones,

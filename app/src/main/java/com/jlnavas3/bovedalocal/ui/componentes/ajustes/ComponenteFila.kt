@@ -66,6 +66,8 @@ fun ComponenteFila(
     idFila: String? = null,
     mostrarId: Boolean = false,
     valorTexto: String? = null,
+    subvalorTexto: String? = null,
+    maxSubtituloLines: Int = 3,
     habilitado: Boolean = true,
     alPulsar: (() -> Unit)? = null,
     estadoAlumbrado: EstadoAlumbradoFila? = null,
@@ -151,7 +153,7 @@ fun ComponenteFila(
                     text = subtitulo,
                     color = ColorAjusteGris,
                     style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp),
-                    maxLines = 2,
+                    maxLines = maxSubtituloLines,
                     overflow = TextOverflow.Ellipsis
                 )
             }
@@ -162,21 +164,35 @@ fun ComponenteFila(
             }
         }
 
-        // Bloque derecho: Valor textual + Slot final
+        // Bloque derecho: Valor textual (opcionalmente doble línea) + Slot final
         Row(
             modifier = Modifier.widthIn(max = 160.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.End
         ) {
             if (!valorTexto.isNullOrBlank()) {
-                Text(
-                    text = valorTexto,
-                    color = ColorAjusteGris,
-                    style = MaterialTheme.typography.bodyMedium.copy(fontSize = 14.sp),
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
+                Column(
+                    horizontalAlignment = Alignment.End,
+                    verticalArrangement = Arrangement.Center,
                     modifier = Modifier.weight(1f, fill = false)
-                )
+                ) {
+                    Text(
+                        text = valorTexto,
+                        color = ColorAjusteGris,
+                        style = MaterialTheme.typography.bodyMedium.copy(fontSize = 13.5.sp),
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                    if (!subvalorTexto.isNullOrBlank()) {
+                        Text(
+                            text = subvalorTexto,
+                            color = ColorAjusteGris.copy(alpha = 0.75f),
+                            style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.sp),
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    }
+                }
             }
 
             if (contenidoFinal != null) {

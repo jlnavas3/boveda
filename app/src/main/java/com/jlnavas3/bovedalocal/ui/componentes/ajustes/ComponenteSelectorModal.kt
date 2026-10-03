@@ -75,7 +75,8 @@ data class OpcionSelectorModal<T>(
     val etiquetaFila: String,
     val etiquetaModal: String = etiquetaFila,
     val descripcionModal: String? = null,
-    val icono: ImageVector? = null
+    val icono: ImageVector? = null,
+    val subetiquetaFila: String? = null
 )
 
 /**
@@ -109,6 +110,7 @@ fun <T> ComponenteSelectorModal(
 
     val opcionActual = opciones.firstOrNull { it.valor == valorSeleccionado }
     val textoFila = opcionActual?.etiquetaFila ?: valorSeleccionado.toString()
+    val subtextoFila = opcionActual?.subetiquetaFila
 
     ComponenteFila(
         titulo = tituloFila,
@@ -119,6 +121,7 @@ fun <T> ComponenteSelectorModal(
         idFila = idFila,
         mostrarId = mostrarId,
         valorTexto = textoFila,
+        subvalorTexto = subtextoFila,
         habilitado = habilitado,
         alPulsar = { if (habilitado) abierto = true },
         contenidoFinal = {

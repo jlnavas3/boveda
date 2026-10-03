@@ -101,7 +101,8 @@ fun PantallaArgon2id(
                             val icono = if (perfil == PerfilArgon2.ULTRASEGURO) Icons.Filled.Shield else Icons.Filled.Memory
                             OpcionSelectorModal(
                                 valor = perfil,
-                                etiquetaFila = perfil.titulo,
+                                etiquetaFila = perfil.nombreCorto,
+                                subetiquetaFila = perfil.memoriaTexto,
                                 etiquetaModal = perfil.titulo,
                                 descripcionModal = "${perfil.resumen}\n${perfil.detalle}",
                                 icono = icono

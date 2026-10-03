@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.DashboardCustomize
 import androidx.compose.material.icons.filled.Lightbulb
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Icon
@@ -46,6 +47,9 @@ import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
  */
 @Composable
 fun DialogoConsejoTile(alCerrar: () -> Unit) {
+    val contexto = androidx.compose.ui.platform.LocalContext.current
+    val haptica = remember { com.jlnavas3.bovedalocal.util.Haptica(contexto) }
+
     ModalInferiorBoveda(
         abierto = true,
         alCerrar = alCerrar,
@@ -63,7 +67,20 @@ fun DialogoConsejoTile(alCerrar: () -> Unit) {
             color = TextoSecundario
         )
 
-        Spacer(Modifier.height(18.dp))
+        Spacer(Modifier.height(16.dp))
+
+        com.jlnavas3.bovedalocal.ui.componentes.BotonColorido(
+            texto = "Añadir a Ajustes Rápidos",
+            icono = Icons.Filled.DashboardCustomize,
+            color = ColorAcento,
+            modifier = Modifier.fillMaxWidth(),
+            alPulsar = {
+                haptica.toque()
+                com.jlnavas3.bovedalocal.quicksettings.GeneradorRapidoHelper.solicitarAgregarTile(contexto)
+            }
+        )
+
+        Spacer(Modifier.height(14.dp))
 
         Row(
             modifier = Modifier.fillMaxWidth(),

@@ -239,5 +239,19 @@ fun GrupoConfiguracionTile(
                 }
             )
         }
+
+        ComponenteSeparador(sangriaInicio = 16.dp)
+
+        val contexto = androidx.compose.ui.platform.LocalContext.current
+        com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteBotonFila(
+            titulo = "Añadir a Ajustes Rápidos",
+            icono = Icons.Filled.DashboardCustomize,
+            colorIcono = com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjusteGris.copy(alpha = 0.15f),
+            colorTinteIcono = com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos,
+            alPulsar = {
+                haptica.toque()
+                com.jlnavas3.bovedalocal.quicksettings.GeneradorRapidoHelper.solicitarAgregarTile(contexto)
+            }
+        )
     }
 }
