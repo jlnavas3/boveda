@@ -51,7 +51,7 @@ fun DialogoNombreBoveda(
     DialogoBoveda(
         abierto = true,
         alCerrar = alCerrar,
-        titulo = "Nombre de la app",
+        titulo = "Nombre app",
         botonConfirmar = {
             TextButton(onClick = {
                 alCerrar()

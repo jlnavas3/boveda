@@ -118,7 +118,7 @@ fun crearCatalogoAjustesHub(
             alPulsar = { vm.ir(Pantalla.Tema("02-APA-THM")) }
         ),
         ElementoMenuAjustes(
-            titulo = "Laboratorio de temas y paleta",
+            titulo = "Laboratorio de temas",
             subtitulo = "Escala neutra de grises, luminancia y exportar",
             icono = Icons.Filled.Palette,
             colorIcono = Color(0xFF673AB7),
@@ -148,7 +148,7 @@ fun crearCatalogoAjustesHub(
             alPulsar = { vm.ir(Pantalla.Tipografia("02-APA-TYP")) }
         ),
         ElementoMenuAjustes(
-            titulo = "Nombre de la app",
+            titulo = "Nombre app",
             subtitulo = "Personalizar nombre visible en cabecera",
             icono = Icons.Filled.Badge,
             colorIcono = Color(0xFF00897B),
@@ -183,7 +183,7 @@ fun crearCatalogoAjustesHub(
             alPulsar = { vm.ir(Pantalla.AjustesIndice("03-LST-AZX")) }
         ),
         ElementoMenuAjustes(
-            titulo = "Plantillas de campos",
+            titulo = "Formatos",
             subtitulo = "Campos personalizados predeterminados",
             icono = Icons.AutoMirrored.Filled.FormatListBulleted,
             colorIcono = Color(0xFFFFA000),

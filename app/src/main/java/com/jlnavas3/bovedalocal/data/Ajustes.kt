@@ -150,6 +150,7 @@ data class AjustesApp(
     val indiceIncluirEnie: Boolean = AjustesDefaults.Indice.INCLUIR_ENIE,
     val indiceResaltarEntradas: Boolean = AjustesDefaults.Indice.RESALTAR_ENTRADAS,
     val indiceResaltarSoloPrimera: Boolean = AjustesDefaults.Indice.RESALTAR_SOLO_PRIMERA,
+    val indiceAlinearConCresta: Boolean = AjustesDefaults.Indice.ALINEAR_CON_CRESTA,
     val formatoFecha: String = AjustesDefaults.ListaFormatos.FORMATO_FECHA,
     val formatoHora: String = AjustesDefaults.ListaFormatos.FORMATO_HORA,
     val formatoTelefono: String = AjustesDefaults.ListaFormatos.FORMATO_TELEFONO,
@@ -382,6 +383,7 @@ class AlmacenAjustes(contexto: Context) {
             indiceIncluirEnie = prefs.getBoolean("indice_incluir_enie", AjustesDefaults.Indice.INCLUIR_ENIE),
             indiceResaltarEntradas = prefs.getBoolean("indice_resaltar_entradas", AjustesDefaults.Indice.RESALTAR_ENTRADAS),
             indiceResaltarSoloPrimera = prefs.getBoolean("indice_resaltar_solo_primera", AjustesDefaults.Indice.RESALTAR_SOLO_PRIMERA),
+            indiceAlinearConCresta = prefs.getBoolean("indice_alinear_con_cresta", AjustesDefaults.Indice.ALINEAR_CON_CRESTA),
             formatoFecha = prefs.getString("formato_fecha", AjustesDefaults.ListaFormatos.FORMATO_FECHA) ?: AjustesDefaults.ListaFormatos.FORMATO_FECHA,
             formatoHora = prefs.getString("formato_hora", AjustesDefaults.ListaFormatos.FORMATO_HORA) ?: AjustesDefaults.ListaFormatos.FORMATO_HORA,
             formatoTelefono = prefs.getString("formato_telefono", AjustesDefaults.ListaFormatos.FORMATO_TELEFONO) ?: AjustesDefaults.ListaFormatos.FORMATO_TELEFONO,
@@ -557,6 +559,7 @@ class AlmacenAjustes(contexto: Context) {
             .putBoolean("indice_incluir_enie", nuevo.indiceIncluirEnie)
             .putBoolean("indice_resaltar_entradas", nuevo.indiceResaltarEntradas)
             .putBoolean("indice_resaltar_solo_primera", nuevo.indiceResaltarSoloPrimera)
+            .putBoolean("indice_alinear_con_cresta", nuevo.indiceAlinearConCresta)
             .putString("formato_fecha", nuevo.formatoFecha)
             .putString("formato_hora", nuevo.formatoHora)
             .putString("formato_telefono", nuevo.formatoTelefono)

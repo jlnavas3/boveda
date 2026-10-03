@@ -98,6 +98,7 @@ object AjustesDefaults {
         const val INCLUIR_ENIE = true
         const val RESALTAR_ENTRADAS = true
         const val RESALTAR_SOLO_PRIMERA = true
+        const val ALINEAR_CON_CRESTA = true
     }
 
     // 9. Animación Desbloqueo: Engranajes y Puerta

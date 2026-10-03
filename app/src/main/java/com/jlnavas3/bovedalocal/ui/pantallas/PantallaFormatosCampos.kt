@@ -49,7 +49,7 @@ fun PantallaFormatosCampos(
                 .background(ColorAjustesFondo)
         ) {
             BarraSuperiorPantalla(
-                titulo = "Plantillas de campos",
+                titulo = "Formatos",
                 idEtiqueta = "03-LST-FMT",
                 mostrarId = ajustes.mostrarIdsAjustes,
                 alVolver = { vm.volverAtras() },
@@ -64,7 +64,7 @@ fun PantallaFormatosCampos(
                         alRestablecerPantalla = {
                             haptica.tic()
                             vm.restablecerFormatos()
-                            vm.avisar("Plantillas de campos restablecidas")
+                            vm.avisar("Formatos restablecidos")
                         }
                     )
                 }
@@ -114,7 +114,7 @@ fun PantallaFormatosCampos(
                     alRestablecerGrupo = {
                         haptica.tic()
                         vm.restablecerFormatos()
-                        vm.avisar("Plantillas de campos restablecidas")
+                        vm.avisar("Formatos restablecidos")
                     }
                 )
 

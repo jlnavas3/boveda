@@ -172,7 +172,7 @@ fun PantallaTema(
                     mostrarId = ajustes.mostrarIdsAjustes
                 ) {
                     ComponenteNavegacion(
-                        titulo = "Laboratorio de temas y paleta",
+                        titulo = "Laboratorio de temas",
                         subtitulo = "Escala de grises, restricción de luminancia y exportar",
                         icono = Icons.Filled.Palette,
                         alPulsar = { vm.ir(Pantalla.LaboratorioTemas()) }

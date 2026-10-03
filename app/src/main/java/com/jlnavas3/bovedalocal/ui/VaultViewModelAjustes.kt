@@ -594,6 +594,9 @@ interface VaultAjustesDelegate {
     fun ajustarIndiceResaltarSoloPrimera(activo: Boolean) =
         repositorio.ajustes.actualizar { it.copy(indiceResaltarSoloPrimera = activo) }
 
+    fun ajustarIndiceAlinearConCresta(activo: Boolean) =
+        repositorio.ajustes.actualizar { it.copy(indiceAlinearConCresta = activo) }
+
     fun restablecerAjustesIndiceAlfabetico() {
         repositorio.ajustes.actualizar {
             it.copy(
@@ -610,7 +613,8 @@ interface VaultAjustesDelegate {
                 indiceTonoLetras = AjustesDefaults.Indice.TONO_LETRAS,
                 indiceIncluirEnie = AjustesDefaults.Indice.INCLUIR_ENIE,
                 indiceResaltarEntradas = AjustesDefaults.Indice.RESALTAR_ENTRADAS,
-                indiceResaltarSoloPrimera = AjustesDefaults.Indice.RESALTAR_SOLO_PRIMERA
+                indiceResaltarSoloPrimera = AjustesDefaults.Indice.RESALTAR_SOLO_PRIMERA,
+                indiceAlinearConCresta = AjustesDefaults.Indice.ALINEAR_CON_CRESTA
             )
         }
     }

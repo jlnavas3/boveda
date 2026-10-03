@@ -59,6 +59,7 @@ fun PantallaIndiceResaltado(
                 haptica.tic()
                 vm.ajustarIndiceResaltarEntradas(AjustesDefaults.Indice.RESALTAR_ENTRADAS)
                 vm.ajustarIndiceResaltarSoloPrimera(AjustesDefaults.Indice.RESALTAR_SOLO_PRIMERA)
+                vm.ajustarIndiceAlinearConCresta(AjustesDefaults.Indice.ALINEAR_CON_CRESTA)
                 vm.avisar("Valores de resaltado restablecidos")
             },
             idGrupo = "03-LST-AZX-RES-G01",
@@ -89,6 +90,19 @@ fun PantallaIndiceResaltado(
                     }
                 )
             }
+
+            ComponenteSeparador(sangriaInicio = 16.dp)
+
+            ComponenteSwitch(
+                titulo = "Alinear con la cresta de la ola",
+                activo = ajustes.indiceAlinearConCresta,
+                idFila = "03-LST-AZX-RES-ALI",
+                mostrarId = ajustes.mostrarIdsAjustes,
+                alCambiar = {
+                    haptica.tic()
+                    vm.ajustarIndiceAlinearConCresta(it)
+                }
+            )
         }
     }
 }

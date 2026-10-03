@@ -164,12 +164,14 @@ fun IndiceAlfabetico(
     anchoZonaTactilDp: Float = 45f,
     tonoLetras: Float = 55f,
     incluirEnie: Boolean = true,
+    alSeleccionarLetraConOffset: ((Char, Float) -> Unit)? = null,
     alCambiarLetraActiva: (Char?) -> Unit = {}
 ) {
     val contexto = LocalContext.current
     val haptica = remember { Haptica(contexto) }
     val hapticaActivaActual by rememberUpdatedState(hapticaActiva)
     val alSeleccionarLetraActual by rememberUpdatedState(alSeleccionarLetra)
+    val alSeleccionarLetraConOffsetActual by rememberUpdatedState(alSeleccionarLetraConOffset)
     val alCambiarLetraActivaActual by rememberUpdatedState(alCambiarLetraActiva)
 
     var arrastrando by remember { mutableStateOf(false) }
@@ -229,6 +231,7 @@ fun IndiceAlfabetico(
                     alCambiarLetraActivaActual(letraNueva)
                     if (hapticaActivaActual) haptica.tic()
                     alSeleccionarLetraActual(letraNueva)
+                    alSeleccionarLetraConOffsetActual?.invoke(letraNueva, down.position.y)
 
                     val pointerId = down.id
                     while (true) {
@@ -244,6 +247,7 @@ fun IndiceAlfabetico(
                             alCambiarLetraActivaActual(l)
                             if (hapticaActivaActual) haptica.tic()
                             alSeleccionarLetraActual(l)
+                            alSeleccionarLetraConOffsetActual?.invoke(l, change.position.y)
                         }
                         change.consume()
                     }

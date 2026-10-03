@@ -17,6 +17,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.jlnavas3.bovedalocal.data.AjustesApp
@@ -53,6 +54,7 @@ fun CuerpoListaEntradas(
     alAlternarGrupo: (String) -> Unit
 ) {
     val ambitoCorutina = rememberCoroutineScope()
+    val densidad = LocalDensity.current
     val expandidoEnLista: (String) -> Boolean = { clave ->
         busqueda.isNotBlank() || gruposExpandidos.contains(clave)
     }
@@ -198,10 +200,47 @@ fun CuerpoListaEntradas(
         if (mostrarIndice) {
             IndiceAlfabetico(
                 alSeleccionarLetra = { letra ->
+                    if (!ajustes.indiceAlinearConCresta) {
+                        val indice = encontrarIndiceParaLetra(itemsAMostrar, letra, ajustes.indiceIncluirEnie)
+                        if (indice != null && indice in itemsAMostrar.indices) {
+                            ambitoCorutina.launch {
+                                estadoLista.scrollToItem(indice, 0)
+                            }
+                        }
+                    }
+                },
+                alSeleccionarLetraConOffset = { letra, touchY ->
                     val indice = encontrarIndiceParaLetra(itemsAMostrar, letra, ajustes.indiceIncluirEnie)
                     if (indice != null && indice in itemsAMostrar.indices) {
                         ambitoCorutina.launch {
-                            estadoLista.scrollToItem(indice)
+                            if (!ajustes.indiceAlinearConCresta) {
+                                estadoLista.scrollToItem(indice, 0)
+                            } else {
+                                val alturaFilaPx = with(densidad) { densidadAltura.toPx() }
+                                val espaciadoFilasPx = with(densidad) { espaciadoFilas.toPx() }
+                                val pasoItemPx = alturaFilaPx + espaciadoFilasPx
+                                val touchYEnViewport = touchY + with(densidad) { 4.dp.toPx() }
+                                val targetItemTop = touchYEnViewport - (alturaFilaPx / 2f)
+
+                                if (targetItemTop <= 0f || pasoItemPx <= 0f) {
+                                    estadoLista.scrollToItem(indice, 0)
+                                } else {
+                                    val numItems = (targetItemTop / pasoItemPx).toInt()
+                                    val resto = targetItemTop - (numItems * pasoItemPx)
+                                    if (resto <= 0.001f) {
+                                        val indiceTop = (indice - numItems).coerceAtLeast(0)
+                                        estadoLista.scrollToItem(indiceTop, 0)
+                                    } else {
+                                        val indiceTop = indice - numItems - 1
+                                        if (indiceTop >= 0) {
+                                            val scrollOffset = (pasoItemPx - resto).toInt().coerceAtLeast(0)
+                                            estadoLista.scrollToItem(indiceTop, scrollOffset)
+                                        } else {
+                                            estadoLista.scrollToItem(0, 0)
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }
                 },

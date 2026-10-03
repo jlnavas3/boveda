@@ -72,6 +72,7 @@ class AjustesTest {
         assertTrue(ajustes.indiceIncluirEnie)
         assertTrue(ajustes.indiceResaltarEntradas)
         assertTrue(ajustes.indiceResaltarSoloPrimera)
+        assertTrue(ajustes.indiceAlinearConCresta)
     }
 
     @Test
