@@ -26,7 +26,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -66,27 +68,71 @@ fun SimuladorWidgetTotpFlotante(
                 .padding(10.dp)
         ) {
             val formaWidget = RoundedCornerShape(ajustes.widgetCurvaturaEsquinasDp.dp)
-            val colorFondoWidget = Color(0xFF1A1815).copy(alpha = ajustes.widgetTransparenciaFondo.coerceIn(0f, 1f))
+            val alphaFondo = ajustes.widgetTransparenciaFondo.coerceIn(0f, 1f)
+            val colorFondoBase = Color(0xFF1C1C1E)
             val grosorDp = ajustes.widgetGrosorBordeDp.dp
+
+            val brushFondoWidget = if (ajustes.widgetTotpVidrioEsmerilado) {
+                val luz = ajustes.widgetTotpEsmeriladoLuz
+                val intensidad = ajustes.widgetTotpEsmeriladoIntensidad
+                val brilloSuperior = (0.24f * luz * intensidad).coerceIn(0f, 0.40f)
+                val brilloInferior = (0.04f * luz * intensidad).coerceIn(0f, 0.15f)
+                Brush.verticalGradient(
+                    colors = listOf(
+                        Color.White.copy(alpha = (alphaFondo * 0.35f + brilloSuperior).coerceIn(0f, 1f)),
+                        colorFondoBase.copy(alpha = alphaFondo),
+                        colorFondoBase.copy(alpha = (alphaFondo * 0.95f + brilloInferior).coerceIn(0f, 1f))
+                    )
+                )
+            } else {
+                SolidColor(colorFondoBase.copy(alpha = alphaFondo))
+            }
+
+            val brushBordeWidget = if (ajustes.widgetTotpVidrioEsmerilado && ajustes.widgetGrosorBordeDp > 0.1f) {
+                val luz = ajustes.widgetTotpEsmeriladoLuz
+                Brush.verticalGradient(
+                    colors = listOf(
+                        Color.White.copy(alpha = (0.45f + 0.50f * luz).coerceIn(0f, 0.95f)),
+                        colorBordeEfectivo.copy(alpha = (alphaFondo.coerceAtLeast(0.5f))),
+                        colorBordeEfectivo.copy(alpha = (alphaFondo.coerceAtLeast(0.3f)))
+                    )
+                )
+            } else {
+                SolidColor(colorBordeEfectivo.copy(alpha = (alphaFondo.coerceAtLeast(0.6f))))
+            }
 
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .clip(formaWidget)
-                    .background(colorFondoWidget)
+                    .background(brushFondoWidget)
                     .then(
                         if (ajustes.widgetGrosorBordeDp > 0.1f) {
-                            Modifier.border(
-                                grosorDp,
-                                colorBordeEfectivo.copy(alpha = (ajustes.widgetTransparenciaFondo.coerceAtLeast(0.6f))),
-                                formaWidget
-                            )
+                            Modifier.border(grosorDp, brushBordeWidget, formaWidget)
                         } else {
                             Modifier
                         }
                     )
                     .padding(10.dp)
             ) {
+                if (ajustes.widgetTotpVidrioEsmerilado && ajustes.widgetTotpEsmeriladoLuz > 0.05f) {
+                    Box(
+                        modifier = Modifier
+                            .matchParentSize()
+                            .clip(formaWidget)
+                            .background(
+                                Brush.verticalGradient(
+                                    colors = listOf(
+                                        Color.White.copy(alpha = (0.24f * ajustes.widgetTotpEsmeriladoLuz * ajustes.widgetTotpEsmeriladoIntensidad).coerceIn(0f, 0.40f)),
+                                        Color.Transparent
+                                    ),
+                                    startY = 0f,
+                                    endY = 38f
+                                )
+                            )
+                    )
+                }
+
                 Column(modifier = Modifier.fillMaxWidth()) {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,

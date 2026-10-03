@@ -1,4 +1,4 @@
-package com.jlnavas3.bovedalocal.ui.pantallas.calibracion.widget1x1
+package com.jlnavas3.bovedalocal.ui.pantallas.calibracion.widgettotp
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -7,9 +7,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
@@ -36,180 +34,131 @@ import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
 import com.jlnavas3.bovedalocal.ui.theme.parsearColorO
 import com.jlnavas3.bovedalocal.util.Haptica
 
-data class PresetEstilo1x1(
+data class PresetEstiloTotp(
     val nombre: String,
     val curvaturaDp: Float,
     val grosorDp: Float,
     val transparenciaFondo: Float,
-    val colorFondo: String,
+    val transparenciaFilas: Float,
     val colorBorde: String,
-    val colorIcono: String,
+    val colorCodigo: String,
+    val colorContador: String,
+    val colorTitulo: String,
+    val colorFilas: String,
     val vidrioEsmerilado: Boolean,
-    val esmeriladoIntensidad: Float = 0.60f,
-    val bloquearProporcion: Boolean? = null
+    val esmeriladoIntensidad: Float = 0.60f
 ) {
     fun esSeleccionado(ajustes: AjustesApp): Boolean {
-        val coincideCurvatura = kotlin.math.abs(ajustes.widget1x1CurvaturaEsquinasDp - curvaturaDp) < 0.5f
-        val coincideGrosor = kotlin.math.abs(ajustes.widget1x1GrosorBordeDp - grosorDp) < 0.2f
-        val coincideTransparencia = kotlin.math.abs(ajustes.widget1x1TransparenciaFondo - transparenciaFondo) < 0.05f
-        val coincideFondo = ajustes.widget1x1ColorFondo.equals(colorFondo, ignoreCase = true)
-        val coincideBorde = grosorDp <= 0.1f || ajustes.widget1x1ColorBorde.equals(colorBorde, ignoreCase = true)
-        val coincideIcono = ajustes.widget1x1ColorIcono.equals(colorIcono, ignoreCase = true)
-        val coincideVidrio = ajustes.widget1x1VidrioEsmerilado == vidrioEsmerilado
-        return coincideCurvatura && coincideGrosor && coincideTransparencia && coincideFondo && coincideBorde && coincideIcono && coincideVidrio
+        val coincideCurvatura = kotlin.math.abs(ajustes.widgetCurvaturaEsquinasDp - curvaturaDp) < 0.5f
+        val coincideGrosor = kotlin.math.abs(ajustes.widgetGrosorBordeDp - grosorDp) < 0.2f
+        val coincideTransparenciaFondo = kotlin.math.abs(ajustes.widgetTransparenciaFondo - transparenciaFondo) < 0.05f
+        val coincideBorde = grosorDp <= 0.1f || ajustes.widgetColorBorde.equals(colorBorde, ignoreCase = true)
+        val coincideCodigo = ajustes.widgetColorCodigo.equals(colorCodigo, ignoreCase = true)
+        val coincideVidrio = ajustes.widgetTotpVidrioEsmerilado == vidrioEsmerilado
+        return coincideCurvatura && coincideGrosor && coincideTransparenciaFondo && coincideBorde && coincideCodigo && coincideVidrio
     }
 }
 
 @Composable
-fun SeccionPresetsWidget1x1(
+fun SeccionPresetsWidgetTotp(
     ajustes: AjustesApp,
     vm: VaultViewModel,
-    haptica: Haptica
+    haptica: Haptica,
+    modifier: Modifier = Modifier
 ) {
-    // 1. Presets de tamaño
-    ComponenteGrupo(
-        etiqueta = "Presets de tamaño",
-        idGrupo = "04-HER-WGT-1X1-G01",
-        mostrarId = ajustes.mostrarIdsAjustes
-    ) {
-        val presetsTamano = listOf(
-            "Compacto" to 42f,
-            "Estándar" to 52f,
-            "Grande" to 60f,
-            "Honor" to 55f
-        )
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 10.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            presetsTamano.forEach { (nombre, tamano) ->
-                val seleccionado = if (nombre == "Honor") {
-                    ajustes.widget1x1AnchoDp == 55f && ajustes.widget1x1AltoDp == 51f &&
-                            ajustes.widget1x1CurvaturaEsquinasDp == 15f && ajustes.widget1x1GrosorBordeDp == 0f
-                } else {
-                    ajustes.widget1x1AnchoDp == tamano && ajustes.widget1x1AltoDp == tamano
-                }
-                Box(
-                    modifier = Modifier
-                        .weight(1f)
-                        .clip(RoundedCornerShape(8.dp))
-                        .background(if (seleccionado) ColorAcento.copy(alpha = 0.22f) else SuperficieAlta)
-                        .then(
-                            if (seleccionado) Modifier.border(1.5.dp, ColorAcento, RoundedCornerShape(8.dp))
-                            else Modifier
-                        )
-                        .clickable {
-                            haptica.tic()
-                            if (nombre == "Honor") {
-                                vm.aplicarPresetHonorWidget1x1()
-                            } else {
-                                vm.ajustarWidget1x1PresetTamano(tamano)
-                            }
-                        }
-                        .padding(vertical = 8.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = nombre,
-                        color = if (seleccionado) ColorAcento else TextoPrincipal,
-                        style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.SemiBold)
-                    )
-                }
-            }
-        }
-    }
-
-    Spacer(Modifier.height(14.dp))
-
-    // 2. Estilos visuales clasificados por filas
     ComponenteGrupo(
         etiqueta = "Estilos visuales",
-        idGrupo = "04-HER-WGT-1X1-G02",
-        mostrarId = ajustes.mostrarIdsAjustes
+        idGrupo = "04-HER-WGT-CAL-G00",
+        mostrarId = ajustes.mostrarIdsAjustes,
+        modifier = modifier
     ) {
         val presetsSinBorde = listOf(
-            PresetEstilo1x1("Grafito", 16f, 0f, 0.85f, "#1C1C1E", "#38383A", "#FFFFFF", vidrioEsmerilado = true),
-            PresetEstilo1x1("OLED", 16f, 0f, 1.0f, "#000000", "#000000", "#FFFFFF", vidrioEsmerilado = false),
-            PresetEstilo1x1("Plata", 16f, 0f, 0.70f, "#E5E5EA", "#E5E5EA", "#1C1C1E", vidrioEsmerilado = true),
-            PresetEstilo1x1("Medianoche", 16f, 0f, 0.88f, "#0D1117", "#30363D", "#58A6FF", vidrioEsmerilado = true)
+            PresetEstiloTotp("Grafito", 22f, 0f, 0.85f, 0.0f, "#38383A", "#FFFFFF", "#FFFFFF", "#FFFFFF", "#1C1C1E", vidrioEsmerilado = true),
+            PresetEstiloTotp("OLED", 22f, 0f, 1.0f, 0.0f, "#000000", "#FFFFFF", "#FFFFFF", "#FFFFFF", "#1C1C1E", vidrioEsmerilado = false),
+            PresetEstiloTotp("Plata", 22f, 0f, 0.70f, 0.25f, "#E5E5EA", "#0A84FF", "#1C1C1E", "#1C1C1E", "#E5E5EA", vidrioEsmerilado = true),
+            PresetEstiloTotp("Medianoche", 22f, 0f, 0.88f, 0.15f, "#30363D", "#58A6FF", "#58A6FF", "#FFFFFF", "#161B22", vidrioEsmerilado = true)
         )
 
         val presetsConBorde = listOf(
-            PresetEstilo1x1("Titanio", 16f, 1.2f, 0.85f, "#1C1C1E", "#48484A", "#FFFFFF", vidrioEsmerilado = true),
-            PresetEstilo1x1("Cian", 16f, 1.2f, 0.85f, "#1C1C1E", "#0A84FF", "#0A84FF", vidrioEsmerilado = true),
-            PresetEstilo1x1("Menta", 16f, 1.2f, 0.85f, "#1C1C1E", "#30D158", "#30D158", vidrioEsmerilado = true),
-            PresetEstilo1x1("Blanco", 16f, 1.2f, 0.75f, "#2C2C2E", "#FFFFFF", "#FFFFFF", vidrioEsmerilado = true)
+            PresetEstiloTotp("Titanio", 22f, 1.2f, 0.85f, 0.0f, "#48484A", "#FFFFFF", "#FFFFFF", "#FFFFFF", "#1C1C1E", vidrioEsmerilado = true),
+            PresetEstiloTotp("Cian", 22f, 1.2f, 0.85f, 0.0f, "#0A84FF", "#0A84FF", "#0A84FF", "#FFFFFF", "#1C1C1E", vidrioEsmerilado = true),
+            PresetEstiloTotp("Menta", 22f, 1.2f, 0.85f, 0.0f, "#30D158", "#30D158", "#30D158", "#FFFFFF", "#1C1C1E", vidrioEsmerilado = true),
+            PresetEstiloTotp("Blanco", 22f, 1.2f, 0.75f, 0.20f, "#FFFFFF", "#FFFFFF", "#FFFFFF", "#FFFFFF", "#2C2C2E", vidrioEsmerilado = true)
         )
 
         val presetsCirculares = listOf(
-            PresetEstilo1x1("Esfera Grafito", 50f, 0f, 0.85f, "#1C1C1E", "#38383A", "#FFFFFF", vidrioEsmerilado = true, bloquearProporcion = true),
-            PresetEstilo1x1("Esfera Titanio", 50f, 1.2f, 0.85f, "#1C1C1E", "#48484A", "#FFFFFF", vidrioEsmerilado = true, bloquearProporcion = true),
-            PresetEstilo1x1("Esfera Cian", 50f, 1.2f, 0.85f, "#1C1C1E", "#0A84FF", "#0A84FF", vidrioEsmerilado = true, bloquearProporcion = true),
-            PresetEstilo1x1("Esfera OLED", 50f, 0f, 1.0f, "#000000", "#000000", "#FFFFFF", vidrioEsmerilado = false, bloquearProporcion = true)
+            PresetEstiloTotp("Cápsula Grafito", 32f, 0f, 0.85f, 0.0f, "#38383A", "#FFFFFF", "#FFFFFF", "#FFFFFF", "#1C1C1E", vidrioEsmerilado = true),
+            PresetEstiloTotp("Cápsula Titanio", 32f, 1.2f, 0.85f, 0.0f, "#48484A", "#FFFFFF", "#FFFFFF", "#FFFFFF", "#1C1C1E", vidrioEsmerilado = true),
+            PresetEstiloTotp("Cápsula Cian", 32f, 1.2f, 0.85f, 0.0f, "#0A84FF", "#0A84FF", "#0A84FF", "#FFFFFF", "#1C1C1E", vidrioEsmerilado = true),
+            PresetEstiloTotp("Cápsula OLED", 32f, 0f, 1.0f, 0.0f, "#000000", "#FFFFFF", "#FFFFFF", "#FFFFFF", "#1C1C1E", vidrioEsmerilado = false)
         )
 
-        FilaSubgrupoEstilo(
+        FilaSubgrupoEstiloTotp(
             titulo = "Sin bordes",
             presets = presetsSinBorde,
             ajustes = ajustes,
             onSeleccionar = { p ->
                 haptica.tic()
-                vm.aplicarPresetEstiloWidget1x1(
+                vm.aplicarPresetEstiloWidgetTotp(
                     curvaturaDp = p.curvaturaDp,
                     grosorDp = p.grosorDp,
                     transparenciaFondo = p.transparenciaFondo,
-                    colorFondo = p.colorFondo,
+                    transparenciaFilas = p.transparenciaFilas,
                     colorBorde = p.colorBorde,
-                    colorIcono = p.colorIcono,
+                    colorCodigo = p.colorCodigo,
+                    colorContador = p.colorContador,
+                    colorTitulo = p.colorTitulo,
+                    colorFilas = p.colorFilas,
                     vidrioEsmerilado = p.vidrioEsmerilado,
-                    esmeriladoIntensidad = p.esmeriladoIntensidad,
-                    bloquearProporcion = p.bloquearProporcion
+                    esmeriladoIntensidad = p.esmeriladoIntensidad
                 )
             }
         )
 
         ComponenteSeparador(sangriaInicio = 16.dp)
 
-        FilaSubgrupoEstilo(
+        FilaSubgrupoEstiloTotp(
             titulo = "Con bordes sutiles",
             presets = presetsConBorde,
             ajustes = ajustes,
             onSeleccionar = { p ->
                 haptica.tic()
-                vm.aplicarPresetEstiloWidget1x1(
+                vm.aplicarPresetEstiloWidgetTotp(
                     curvaturaDp = p.curvaturaDp,
                     grosorDp = p.grosorDp,
                     transparenciaFondo = p.transparenciaFondo,
-                    colorFondo = p.colorFondo,
+                    transparenciaFilas = p.transparenciaFilas,
                     colorBorde = p.colorBorde,
-                    colorIcono = p.colorIcono,
+                    colorCodigo = p.colorCodigo,
+                    colorContador = p.colorContador,
+                    colorTitulo = p.colorTitulo,
+                    colorFilas = p.colorFilas,
                     vidrioEsmerilado = p.vidrioEsmerilado,
-                    esmeriladoIntensidad = p.esmeriladoIntensidad,
-                    bloquearProporcion = p.bloquearProporcion
+                    esmeriladoIntensidad = p.esmeriladoIntensidad
                 )
             }
         )
 
         ComponenteSeparador(sangriaInicio = 16.dp)
 
-        FilaSubgrupoEstilo(
-            titulo = "Circulares",
+        FilaSubgrupoEstiloTotp(
+            titulo = "Circulares (Cápsula)",
             presets = presetsCirculares,
             ajustes = ajustes,
             onSeleccionar = { p ->
                 haptica.tic()
-                vm.aplicarPresetEstiloWidget1x1(
+                vm.aplicarPresetEstiloWidgetTotp(
                     curvaturaDp = p.curvaturaDp,
                     grosorDp = p.grosorDp,
                     transparenciaFondo = p.transparenciaFondo,
-                    colorFondo = p.colorFondo,
+                    transparenciaFilas = p.transparenciaFilas,
                     colorBorde = p.colorBorde,
-                    colorIcono = p.colorIcono,
+                    colorCodigo = p.colorCodigo,
+                    colorContador = p.colorContador,
+                    colorTitulo = p.colorTitulo,
+                    colorFilas = p.colorFilas,
                     vidrioEsmerilado = p.vidrioEsmerilado,
-                    esmeriladoIntensidad = p.esmeriladoIntensidad,
-                    bloquearProporcion = p.bloquearProporcion
+                    esmeriladoIntensidad = p.esmeriladoIntensidad
                 )
             }
         )
@@ -217,11 +166,11 @@ fun SeccionPresetsWidget1x1(
 }
 
 @Composable
-private fun FilaSubgrupoEstilo(
+private fun FilaSubgrupoEstiloTotp(
     titulo: String,
-    presets: List<PresetEstilo1x1>,
+    presets: List<PresetEstiloTotp>,
     ajustes: AjustesApp,
-    onSeleccionar: (PresetEstilo1x1) -> Unit
+    onSeleccionar: (PresetEstiloTotp) -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -243,9 +192,8 @@ private fun FilaSubgrupoEstilo(
         ) {
             presets.forEach { preset ->
                 val seleccionado = preset.esSeleccionado(ajustes)
-                val colorFondoPreset = parsearColorO(preset.colorFondo, Color.DarkGray)
                 val colorBordePreset = parsearColorO(preset.colorBorde, Color.Gray)
-                val colorIconoPreset = parsearColorO(preset.colorIcono, Color.White)
+                val colorCodigoPreset = parsearColorO(preset.colorCodigo, Color.White)
 
                 Box(
                     modifier = Modifier
@@ -264,17 +212,16 @@ private fun FilaSubgrupoEstilo(
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.spacedBy(4.dp)
                     ) {
-                        // Muestra visual circular / rectangular
                         Box(
                             modifier = Modifier
                                 .size(14.dp)
-                                .clip(if (preset.curvaturaDp >= 40f) CircleShape else RoundedCornerShape(3.dp))
-                                .background(colorFondoPreset)
+                                .clip(if (preset.curvaturaDp >= 30f) CircleShape else RoundedCornerShape(3.dp))
+                                .background(Color(0xFF1C1C1E))
                                 .then(
                                     if (preset.grosorDp > 0.1f) Modifier.border(
                                         1.dp,
                                         colorBordePreset,
-                                        if (preset.curvaturaDp >= 40f) CircleShape else RoundedCornerShape(3.dp)
+                                        if (preset.curvaturaDp >= 30f) CircleShape else RoundedCornerShape(3.dp)
                                     )
                                     else Modifier
                                 ),
@@ -284,7 +231,7 @@ private fun FilaSubgrupoEstilo(
                                 modifier = Modifier
                                     .size(4.dp)
                                     .clip(CircleShape)
-                                    .background(colorIconoPreset)
+                                    .background(colorCodigoPreset)
                             )
                         }
                         Text(

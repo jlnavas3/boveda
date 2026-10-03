@@ -34,8 +34,8 @@ class AjustesTest {
 
         // Widget 2FA
         assertEquals(0f, ajustes.widgetGrosorBordeDp, 0.01f)
-        assertEquals(0f, ajustes.widgetCurvaturaEsquinasDp, 0.01f)
-        assertEquals(0.50f, ajustes.widgetTransparenciaFondo, 0.01f)
+        assertEquals(22f, ajustes.widgetCurvaturaEsquinasDp, 0.01f)
+        assertEquals(0.85f, ajustes.widgetTransparenciaFondo, 0.01f)
 
         // Historial de contraseñas generadas
         assertEquals(15, ajustes.historialClavesMax)

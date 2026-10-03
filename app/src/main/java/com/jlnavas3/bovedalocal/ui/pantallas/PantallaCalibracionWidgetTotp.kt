@@ -30,6 +30,7 @@ import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjustesFondo
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorCampoAjustes
 import com.jlnavas3.bovedalocal.ui.pantallas.calibracion.widgettotp.SeccionColoresWidgetTotp
 import com.jlnavas3.bovedalocal.ui.pantallas.calibracion.widgettotp.SeccionFormaYTransparenciaWidgetTotp
+import com.jlnavas3.bovedalocal.ui.pantallas.calibracion.widgettotp.SeccionPresetsWidgetTotp
 import com.jlnavas3.bovedalocal.ui.pantallas.calibracion.widgettotp.SimuladorWidgetTotpFlotante
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.BotonMenuOpcionesPantalla
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
@@ -115,6 +116,14 @@ fun PantallaCalibracionWidgetTotp(
                     .verticalScroll(scrollState)
                     .padding(horizontal = 16.dp, vertical = 8.dp)
             ) {
+                SeccionPresetsWidgetTotp(
+                    ajustes = ajustes,
+                    vm = vm,
+                    haptica = haptica
+                )
+
+                Spacer(Modifier.height(16.dp))
+
                 SeccionFormaYTransparenciaWidgetTotp(
                     ajustes = ajustes,
                     vm = vm,

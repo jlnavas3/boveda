@@ -10,8 +10,10 @@ import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
+import android.graphics.LinearGradient
 import android.graphics.Paint
 import android.graphics.RectF
+import android.graphics.Shader
 import android.os.Build
 import android.os.Bundle
 import android.widget.RemoteViews
@@ -106,6 +108,9 @@ class WidgetGeneradorRapido : AppWidgetProvider() {
             val radioPx = ajustes.widget1x1CurvaturaEsquinasDp * density
             val grosorPx = ajustes.widget1x1GrosorBordeDp * density
             val rectBoton = RectF(left, top, left + anchoPx, top + altoPx)
+            val vidrioActivo = ajustes.widget1x1VidrioEsmerilado
+            val esmIntensidad = ajustes.widget1x1EsmeriladoIntensidad.coerceIn(0.1f, 1f)
+            val esmLuz = ajustes.widget1x1EsmeriladoLuz.coerceIn(0f, 1f)
 
             // Fondo
             val colorFondoBase = try {
@@ -116,15 +121,55 @@ class WidgetGeneradorRapido : AppWidgetProvider() {
             val alphaFondo = (ajustes.widget1x1TransparenciaFondo.coerceIn(0f, 1f) * 255).roundToInt()
             if (alphaFondo > 0) {
                 val paintFondo = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-                    color = Color.argb(
-                        alphaFondo,
-                        Color.red(colorFondoBase),
-                        Color.green(colorFondoBase),
-                        Color.blue(colorFondoBase)
-                    )
+                    if (vidrioActivo) {
+                        val r = Color.red(colorFondoBase)
+                        val g = Color.green(colorFondoBase)
+                        val b = Color.blue(colorFondoBase)
+                        val alphaTop = ((alphaFondo * 0.45f) + (65 * esmLuz * esmIntensidad)).roundToInt().coerceIn(0, 255)
+                        val rTop = (r + ((255 - r) * 0.40f * esmLuz)).roundToInt().coerceIn(0, 255)
+                        val gTop = (g + ((255 - g) * 0.40f * esmLuz)).roundToInt().coerceIn(0, 255)
+                        val bTop = (b + ((255 - b) * 0.40f * esmLuz)).roundToInt().coerceIn(0, 255)
+                        val colorTop = Color.argb(alphaTop, rTop, gTop, bTop)
+                        val colorMid = Color.argb(alphaFondo, r, g, b)
+                        val colorBot = Color.argb(
+                            alphaFondo,
+                            (r * 0.90f).roundToInt(),
+                            (g * 0.90f).roundToInt(),
+                            (b * 0.90f).roundToInt()
+                        )
+                        shader = LinearGradient(
+                            rectBoton.left, rectBoton.top, rectBoton.left, rectBoton.bottom,
+                            intArrayOf(colorTop, colorMid, colorBot),
+                            floatArrayOf(0f, 0.40f, 1f),
+                            Shader.TileMode.CLAMP
+                        )
+                    } else {
+                        color = Color.argb(
+                            alphaFondo,
+                            Color.red(colorFondoBase),
+                            Color.green(colorFondoBase),
+                            Color.blue(colorFondoBase)
+                        )
+                    }
                     style = Paint.Style.FILL
                 }
                 canvas.drawRoundRect(rectBoton, radioPx, radioPx, paintFondo)
+
+                // Reflejo cenital sutil en la parte superior del vidrio
+                if (vidrioActivo && esmLuz > 0.05f) {
+                    val paintSheen = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+                        val alphaSheen = (75 * esmLuz * esmIntensidad).roundToInt().coerceIn(0, 255)
+                        shader = LinearGradient(
+                            rectBoton.left, rectBoton.top,
+                            rectBoton.left, rectBoton.top + (rectBoton.height() * 0.38f),
+                            Color.argb(alphaSheen, 255, 255, 255),
+                            Color.TRANSPARENT,
+                            Shader.TileMode.CLAMP
+                        )
+                        style = Paint.Style.FILL
+                    }
+                    canvas.drawRoundRect(rectBoton, radioPx, radioPx, paintSheen)
+                }
             }
 
             // Borde
@@ -136,12 +181,28 @@ class WidgetGeneradorRapido : AppWidgetProvider() {
                 }
                 val alphaBorde = (alphaFondo.coerceAtLeast(140)).coerceAtMost(255)
                 val paintBorde = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-                    color = Color.argb(
-                        alphaBorde,
-                        Color.red(colorBordeBase),
-                        Color.green(colorBordeBase),
-                        Color.blue(colorBordeBase)
-                    )
+                    if (vidrioActivo) {
+                        val alphaBordeTop = ((alphaBorde * 0.6f) + (90 * esmLuz)).roundToInt().coerceIn(0, 255)
+                        val colorBordeTop = Color.argb(alphaBordeTop, 255, 255, 255)
+                        val colorBordeBot = Color.argb(
+                            alphaBorde,
+                            Color.red(colorBordeBase),
+                            Color.green(colorBordeBase),
+                            Color.blue(colorBordeBase)
+                        )
+                        shader = LinearGradient(
+                            rectBoton.left, rectBoton.top, rectBoton.left, rectBoton.bottom,
+                            colorBordeTop, colorBordeBot,
+                            Shader.TileMode.CLAMP
+                        )
+                    } else {
+                        color = Color.argb(
+                            alphaBorde,
+                            Color.red(colorBordeBase),
+                            Color.green(colorBordeBase),
+                            Color.blue(colorBordeBase)
+                        )
+                    }
                     style = Paint.Style.STROKE
                     strokeWidth = grosorPx
                 }

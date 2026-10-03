@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.CropSquare
 import androidx.compose.material.icons.filled.LineWeight
 import androidx.compose.runtime.Composable
@@ -15,6 +16,7 @@ import com.jlnavas3.bovedalocal.ui.VaultViewModel
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteGrupo
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteSeparador
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteSlider
+import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteSwitch
 import com.jlnavas3.bovedalocal.ui.theme.Color2FA
 import com.jlnavas3.bovedalocal.util.Haptica
 import kotlin.math.roundToInt
@@ -125,6 +127,70 @@ fun SeccionFormaYTransparenciaWidgetTotp(
                 idFila = "04-HER-WGT-CAL-FIL",
                 mostrarId = ajustes.mostrarIdsAjustes
             )
+        }
+
+        Spacer(Modifier.height(14.dp))
+
+        // Vidrio esmerilado
+        ComponenteGrupo(
+            etiqueta = "Vidrio esmerilado",
+            icono = Icons.Filled.AutoAwesome,
+            colorIcono = Color2FA,
+            idGrupo = "04-HER-WGT-CAL-G03",
+            mostrarId = ajustes.mostrarIdsAjustes,
+            alRestablecer = {
+                haptica.tic()
+                vm.ajustarWidgetTotpVidrioEsmerilado(AjustesDefaults.WidgetTotp.VIDRIO_ESMERILADO)
+                vm.ajustarWidgetTotpEsmeriladoIntensidad(AjustesDefaults.WidgetTotp.ESMERILADO_INTENSIDAD)
+                vm.ajustarWidgetTotpEsmeriladoLuz(AjustesDefaults.WidgetTotp.ESMERILADO_LUZ)
+            }
+        ) {
+            ComponenteSwitch(
+                titulo = "Efecto vidrio esmerilado",
+                activo = ajustes.widgetTotpVidrioEsmerilado,
+                alCambiar = {
+                    haptica.tic()
+                    vm.ajustarWidgetTotpVidrioEsmerilado(it)
+                },
+                idFila = "04-HER-WGT-CAL-ESM",
+                mostrarId = ajustes.mostrarIdsAjustes
+            )
+            if (ajustes.widgetTotpVidrioEsmerilado) {
+                ComponenteSeparador(sangriaInicio = 16.dp)
+                ComponenteSlider(
+                    titulo = "Intensidad del esmerilado",
+                    icono = null,
+                    valor = ajustes.widgetTotpEsmeriladoIntensidad,
+                    valorTexto = "${(ajustes.widgetTotpEsmeriladoIntensidad * 100).roundToInt()}%",
+                    alCambiar = {
+                        haptica.tic()
+                        vm.ajustarWidgetTotpEsmeriladoIntensidad(it)
+                    },
+                    rango = 0.1f..1.0f,
+                    pasos = 89,
+                    etiquetaMin = "10%",
+                    etiquetaMax = "100%",
+                    idFila = "04-HER-WGT-CAL-EINT",
+                    mostrarId = ajustes.mostrarIdsAjustes
+                )
+                ComponenteSeparador(sangriaInicio = 16.dp)
+                ComponenteSlider(
+                    titulo = "Reflejo de luz cenital",
+                    icono = null,
+                    valor = ajustes.widgetTotpEsmeriladoLuz,
+                    valorTexto = "${(ajustes.widgetTotpEsmeriladoLuz * 100).roundToInt()}%",
+                    alCambiar = {
+                        haptica.tic()
+                        vm.ajustarWidgetTotpEsmeriladoLuz(it)
+                    },
+                    rango = 0.0f..1.0f,
+                    pasos = 99,
+                    etiquetaMin = "0%",
+                    etiquetaMax = "100%",
+                    idFila = "04-HER-WGT-CAL-ELUZ",
+                    mostrarId = ajustes.mostrarIdsAjustes
+                )
+            }
         }
     }
 }

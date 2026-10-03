@@ -100,6 +100,12 @@ data class AjustesApp(
     val widget1x1DicewareSeparador: String = AjustesDefaults.Widget1x1.DICEWARE_SEPARADOR,
     val widgetColorFilas: String = AjustesDefaults.WidgetTotp.COLOR_FILAS,
     val widgetTransparenciaFilas: Float = AjustesDefaults.WidgetTotp.TRANSPARENCIA_FILAS,
+    val widgetTotpVidrioEsmerilado: Boolean = AjustesDefaults.WidgetTotp.VIDRIO_ESMERILADO,
+    val widgetTotpEsmeriladoIntensidad: Float = AjustesDefaults.WidgetTotp.ESMERILADO_INTENSIDAD,
+    val widgetTotpEsmeriladoLuz: Float = AjustesDefaults.WidgetTotp.ESMERILADO_LUZ,
+    val widget1x1VidrioEsmerilado: Boolean = AjustesDefaults.Widget1x1.VIDRIO_ESMERILADO,
+    val widget1x1EsmeriladoIntensidad: Float = AjustesDefaults.Widget1x1.ESMERILADO_INTENSIDAD,
+    val widget1x1EsmeriladoLuz: Float = AjustesDefaults.Widget1x1.ESMERILADO_LUZ,
     // Personalización de tipografía y textos
     val escalaTexto: Float = AjustesDefaults.Tipografia.ESCALA_TEXTO,
     val pesoTexto: String = AjustesDefaults.Tipografia.PESO_TEXTO,
@@ -357,6 +363,12 @@ class AlmacenAjustes(contexto: Context) {
             widget1x1DicewareSeparador = prefs.getString("widget_1x1_diceware_separador", AjustesDefaults.Widget1x1.DICEWARE_SEPARADOR) ?: AjustesDefaults.Widget1x1.DICEWARE_SEPARADOR,
             widgetColorFilas = prefs.getString("widget_color_filas", AjustesDefaults.WidgetTotp.COLOR_FILAS) ?: AjustesDefaults.WidgetTotp.COLOR_FILAS,
             widgetTransparenciaFilas = prefs.getFloat("widget_transparencia_filas", AjustesDefaults.WidgetTotp.TRANSPARENCIA_FILAS),
+            widgetTotpVidrioEsmerilado = prefs.getBoolean("widget_totp_vidrio_esmerilado", AjustesDefaults.WidgetTotp.VIDRIO_ESMERILADO),
+            widgetTotpEsmeriladoIntensidad = prefs.getFloat("widget_totp_esmerilado_intensidad", AjustesDefaults.WidgetTotp.ESMERILADO_INTENSIDAD),
+            widgetTotpEsmeriladoLuz = prefs.getFloat("widget_totp_esmerilado_luz", AjustesDefaults.WidgetTotp.ESMERILADO_LUZ),
+            widget1x1VidrioEsmerilado = prefs.getBoolean("widget_1x1_vidrio_esmerilado", AjustesDefaults.Widget1x1.VIDRIO_ESMERILADO),
+            widget1x1EsmeriladoIntensidad = prefs.getFloat("widget_1x1_esmerilado_intensidad", AjustesDefaults.Widget1x1.ESMERILADO_INTENSIDAD),
+            widget1x1EsmeriladoLuz = prefs.getFloat("widget_1x1_esmerilado_luz", AjustesDefaults.Widget1x1.ESMERILADO_LUZ),
             tileSimbolos = prefs.getString("tile_simbolos", AjustesDefaults.Tile.SIMBOLOS) ?: AjustesDefaults.Tile.SIMBOLOS,
             tileDicewarePalabras = prefs.getInt("tile_diceware_palabras", AjustesDefaults.Tile.DICEWARE_PALABRAS),
             tileDicewareSeparador = prefs.getString("tile_diceware_separador", AjustesDefaults.Tile.DICEWARE_SEPARADOR) ?: AjustesDefaults.Tile.DICEWARE_SEPARADOR,
@@ -533,6 +545,12 @@ class AlmacenAjustes(contexto: Context) {
             .putString("widget_1x1_diceware_separador", nuevo.widget1x1DicewareSeparador)
             .putString("widget_color_filas", nuevo.widgetColorFilas)
             .putFloat("widget_transparencia_filas", nuevo.widgetTransparenciaFilas)
+            .putBoolean("widget_totp_vidrio_esmerilado", nuevo.widgetTotpVidrioEsmerilado)
+            .putFloat("widget_totp_esmerilado_intensidad", nuevo.widgetTotpEsmeriladoIntensidad)
+            .putFloat("widget_totp_esmerilado_luz", nuevo.widgetTotpEsmeriladoLuz)
+            .putBoolean("widget_1x1_vidrio_esmerilado", nuevo.widget1x1VidrioEsmerilado)
+            .putFloat("widget_1x1_esmerilado_intensidad", nuevo.widget1x1EsmeriladoIntensidad)
+            .putFloat("widget_1x1_esmerilado_luz", nuevo.widget1x1EsmeriladoLuz)
             .putString("tile_simbolos", nuevo.tileSimbolos)
             .putInt("tile_diceware_palabras", nuevo.tileDicewarePalabras)
             .putString("tile_diceware_separador", nuevo.tileDicewareSeparador)

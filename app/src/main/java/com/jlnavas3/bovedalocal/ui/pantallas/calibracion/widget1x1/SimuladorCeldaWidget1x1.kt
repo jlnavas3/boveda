@@ -17,7 +17,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.jlnavas3.bovedalocal.crypto.OpcionesGenerador
@@ -64,25 +66,50 @@ fun SimuladorCeldaWidget1x1(
             contentAlignment = alineacionPreview
         ) {
             val forma1x1 = RoundedCornerShape(ajustes.widget1x1CurvaturaEsquinasDp.dp)
-            val colorFondo1x1 = colorFondo.copy(alpha = ajustes.widget1x1TransparenciaFondo.coerceIn(0f, 1f))
+            val alphaFondo = ajustes.widget1x1TransparenciaFondo.coerceIn(0f, 1f)
             val grosor1x1Dp = ajustes.widget1x1GrosorBordeDp.dp
             val ancho1x1Dp = ajustes.widget1x1AnchoDp.dp
             val alto1x1Dp = ajustes.widget1x1AltoDp.dp
             val minDimDp = minOf(ajustes.widget1x1AnchoDp, ajustes.widget1x1AltoDp).dp
+
+            val brushFondo = if (ajustes.widget1x1VidrioEsmerilado) {
+                val luz = ajustes.widget1x1EsmeriladoLuz
+                val intensidad = ajustes.widget1x1EsmeriladoIntensidad
+                val brilloSuperior = (0.28f * luz * intensidad).coerceIn(0f, 0.45f)
+                val brilloInferior = (0.05f * luz * intensidad).coerceIn(0f, 0.20f)
+                Brush.verticalGradient(
+                    colors = listOf(
+                        Color.White.copy(alpha = (alphaFondo * 0.40f + brilloSuperior).coerceIn(0f, 1f)),
+                        colorFondo.copy(alpha = alphaFondo),
+                        colorFondo.copy(alpha = (alphaFondo * 0.95f + brilloInferior).coerceIn(0f, 1f))
+                    )
+                )
+            } else {
+                SolidColor(colorFondo.copy(alpha = alphaFondo))
+            }
+
+            val brushBorde = if (ajustes.widget1x1VidrioEsmerilado && ajustes.widget1x1GrosorBordeDp > 0.1f) {
+                val luz = ajustes.widget1x1EsmeriladoLuz
+                Brush.verticalGradient(
+                    colors = listOf(
+                        Color.White.copy(alpha = (0.45f + 0.50f * luz).coerceIn(0f, 0.95f)),
+                        colorBorde.copy(alpha = (alphaFondo.coerceAtLeast(0.5f))),
+                        colorBorde.copy(alpha = (alphaFondo.coerceAtLeast(0.3f)))
+                    )
+                )
+            } else {
+                SolidColor(colorBorde.copy(alpha = (alphaFondo.coerceAtLeast(0.6f))))
+            }
 
             Box(
                 modifier = Modifier
                     .offset(x = ajustes.widget1x1OffsetX.dp, y = ajustes.widget1x1OffsetY.dp)
                     .size(width = ancho1x1Dp, height = alto1x1Dp)
                     .clip(forma1x1)
-                    .background(colorFondo1x1)
+                    .background(brushFondo)
                     .then(
                         if (ajustes.widget1x1GrosorBordeDp > 0.1f) {
-                            Modifier.border(
-                                grosor1x1Dp,
-                                colorBorde.copy(alpha = (ajustes.widget1x1TransparenciaFondo.coerceAtLeast(0.6f))),
-                                forma1x1
-                            )
+                            Modifier.border(grosor1x1Dp, brushBorde, forma1x1)
                         } else {
                             Modifier
                         }
@@ -110,6 +137,24 @@ fun SimuladorCeldaWidget1x1(
                     },
                 contentAlignment = Alignment.Center
             ) {
+                if (ajustes.widget1x1VidrioEsmerilado && ajustes.widget1x1EsmeriladoLuz > 0.05f) {
+                    Box(
+                        modifier = Modifier
+                            .matchParentSize()
+                            .clip(forma1x1)
+                            .background(
+                                Brush.verticalGradient(
+                                    colors = listOf(
+                                        Color.White.copy(alpha = (0.28f * ajustes.widget1x1EsmeriladoLuz * ajustes.widget1x1EsmeriladoIntensidad).coerceIn(0f, 0.45f)),
+                                        Color.Transparent
+                                    ),
+                                    startY = 0f,
+                                    endY = 32f
+                                )
+                            )
+                    )
+                }
+
                 Icon(
                     imageVector = Icons.Filled.Key,
                     contentDescription = "Generador Rápido 1x1",

@@ -136,15 +136,18 @@ object AjustesDefaults {
     // 10. Widgets
     object WidgetTotp {
         const val GROSOR_BORDE_DP = 0f
-        const val CURVATURA_ESQUINAS_DP = 0f
-        const val TRANSPARENCIA_FONDO = 0.50f
-        const val COLOR_BORDE = "#9EABB8"
+        const val CURVATURA_ESQUINAS_DP = 22f
+        const val TRANSPARENCIA_FONDO = 0.85f
+        const val COLOR_BORDE = "#38383A"
         const val COLOR_CONTADOR = "#FFFFFF"
-        const val COLOR_CODIGO = "#E2E4E9"
+        const val COLOR_CODIGO = "#FFFFFF"
         const val COLOR_TITULO_ICONO = "#FFFFFF"
         const val COLOR_FILAS = "#00000000"
-        const val COLOR_FILAS_DEFECTO = "#26231E"
+        const val COLOR_FILAS_DEFECTO = "#1C1C1E"
         const val TRANSPARENCIA_FILAS = 0.0f
+        const val VIDRIO_ESMERILADO = false
+        const val ESMERILADO_INTENSIDAD = 0.60f
+        const val ESMERILADO_LUZ = 0.40f
         const val HAPTICA = true
         const val HAPTICA_INTENSIDAD = 0.20f
     }
@@ -160,7 +163,7 @@ object AjustesDefaults {
         const val MOSTRAR_TOAST = true
         const val GROSOR_BORDE_DP = 0f
         const val CURVATURA_ESQUINAS_DP = 15f
-        const val TRANSPARENCIA_FONDO = 1.0f
+        const val TRANSPARENCIA_FONDO = 0.85f
         const val TAMANO_DP = 55f
         const val ANCHO_DP = 55f
         const val ALTO_DP = 51f
@@ -168,9 +171,12 @@ object AjustesDefaults {
         const val OFFSET_X = 0f
         const val OFFSET_Y = 4f
         const val ALINEAMIENTO = "arriba"
-        const val COLOR_BORDE = "#33332E"
-        const val COLOR_ICONO = "#E6FCFF"
-        const val COLOR_FONDO = "#2E3333"
+        const val COLOR_BORDE = "#38383A"
+        const val COLOR_ICONO = "#FFFFFF"
+        const val COLOR_FONDO = "#1C1C1E"
+        const val VIDRIO_ESMERILADO = false
+        const val ESMERILADO_INTENSIDAD = 0.60f
+        const val ESMERILADO_LUZ = 0.40f
         const val DICEWARE_PALABRAS = 5
         const val DICEWARE_SEPARADOR = "-"
     }

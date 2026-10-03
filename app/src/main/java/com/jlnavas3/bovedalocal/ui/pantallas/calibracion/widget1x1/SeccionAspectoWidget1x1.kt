@@ -3,6 +3,7 @@ package com.jlnavas3.bovedalocal.ui.pantallas.calibracion.widget1x1
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.CropSquare
 import androidx.compose.material.icons.filled.LineWeight
 import androidx.compose.runtime.Composable
@@ -14,6 +15,7 @@ import com.jlnavas3.bovedalocal.ui.VaultViewModel
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteGrupo
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteSeparador
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteSlider
+import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteSwitch
 import com.jlnavas3.bovedalocal.ui.theme.ColorExportacion
 import com.jlnavas3.bovedalocal.util.Haptica
 import kotlin.math.roundToInt
@@ -62,10 +64,10 @@ fun SeccionAspectoWidget1x1(
                 haptica.tic()
                 vm.ajustarWidget1x1CurvaturaEsquinas(it)
             },
-            rango = 0f..32f,
-            pasos = 31,
+            rango = 0f..50f,
+            pasos = 49,
             etiquetaMin = "Recto",
-            etiquetaMax = "32 dp",
+            etiquetaMax = "50 dp (Circular)",
             idFila = "04-HER-WGT-1X1-CRV",
             mostrarId = ajustes.mostrarIdsAjustes
         )
@@ -101,5 +103,69 @@ fun SeccionAspectoWidget1x1(
             idFila = "04-HER-WGT-1X1-TRA",
             mostrarId = ajustes.mostrarIdsAjustes
         )
+    }
+
+    Spacer(Modifier.height(14.dp))
+
+    // Vidrio esmerilado
+    ComponenteGrupo(
+        etiqueta = "Vidrio esmerilado",
+        icono = Icons.Filled.AutoAwesome,
+        colorIcono = ColorExportacion,
+        idGrupo = "04-HER-WGT-1X1-G05",
+        mostrarId = ajustes.mostrarIdsAjustes,
+        alRestablecer = {
+            haptica.tic()
+            vm.ajustarWidget1x1VidrioEsmerilado(AjustesDefaults.Widget1x1.VIDRIO_ESMERILADO)
+            vm.ajustarWidget1x1EsmeriladoIntensidad(AjustesDefaults.Widget1x1.ESMERILADO_INTENSIDAD)
+            vm.ajustarWidget1x1EsmeriladoLuz(AjustesDefaults.Widget1x1.ESMERILADO_LUZ)
+        }
+    ) {
+        ComponenteSwitch(
+            titulo = "Efecto vidrio esmerilado",
+            activo = ajustes.widget1x1VidrioEsmerilado,
+            alCambiar = {
+                haptica.tic()
+                vm.ajustarWidget1x1VidrioEsmerilado(it)
+            },
+            idFila = "04-HER-WGT-1X1-ESM",
+            mostrarId = ajustes.mostrarIdsAjustes
+        )
+        if (ajustes.widget1x1VidrioEsmerilado) {
+            ComponenteSeparador(sangriaInicio = 16.dp)
+            ComponenteSlider(
+                titulo = "Intensidad del esmerilado",
+                icono = null,
+                valor = ajustes.widget1x1EsmeriladoIntensidad,
+                valorTexto = "${(ajustes.widget1x1EsmeriladoIntensidad * 100).roundToInt()}%",
+                alCambiar = {
+                    haptica.tic()
+                    vm.ajustarWidget1x1EsmeriladoIntensidad(it)
+                },
+                rango = 0.1f..1.0f,
+                pasos = 89,
+                etiquetaMin = "10%",
+                etiquetaMax = "100%",
+                idFila = "04-HER-WGT-1X1-EINT",
+                mostrarId = ajustes.mostrarIdsAjustes
+            )
+            ComponenteSeparador(sangriaInicio = 16.dp)
+            ComponenteSlider(
+                titulo = "Reflejo de luz cenital",
+                icono = null,
+                valor = ajustes.widget1x1EsmeriladoLuz,
+                valorTexto = "${(ajustes.widget1x1EsmeriladoLuz * 100).roundToInt()}%",
+                alCambiar = {
+                    haptica.tic()
+                    vm.ajustarWidget1x1EsmeriladoLuz(it)
+                },
+                rango = 0.0f..1.0f,
+                pasos = 99,
+                etiquetaMin = "0%",
+                etiquetaMax = "100%",
+                idFila = "04-HER-WGT-1X1-ELUZ",
+                mostrarId = ajustes.mostrarIdsAjustes
+            )
+        }
     }
 }

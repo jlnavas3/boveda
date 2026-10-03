@@ -14,8 +14,10 @@ import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
+import android.graphics.LinearGradient
 import android.graphics.Paint
 import android.graphics.RectF
+import android.graphics.Shader
 import android.os.Bundle
 import android.view.View
 import android.widget.RemoteViews
@@ -108,7 +110,10 @@ class WidgetTotpFavoritos : AppWidgetProvider() {
             val grosorDp: Float,
             val curvaturaDp: Float,
             val opacidad: Float,
-            val colorBorde: String
+            val colorBorde: String,
+            val vidrioEsmerilado: Boolean,
+            val esmeriladoIntensidad: Float,
+            val esmeriladoLuz: Float
         )
         private val fondoCacheMap = mutableMapOf<Int, Pair<FondoCacheKey, Bitmap>>()
 
@@ -239,7 +244,10 @@ class WidgetTotpFavoritos : AppWidgetProvider() {
                 grosorDp = ajustes.widgetGrosorBordeDp,
                 curvaturaDp = ajustes.widgetCurvaturaEsquinasDp,
                 opacidad = ajustes.widgetTransparenciaFondo,
-                colorBorde = ajustes.widgetColorBorde
+                colorBorde = ajustes.widgetColorBorde,
+                vidrioEsmerilado = ajustes.widgetTotpVidrioEsmerilado,
+                esmeriladoIntensidad = ajustes.widgetTotpEsmeriladoIntensidad,
+                esmeriladoLuz = ajustes.widgetTotpEsmeriladoLuz
             )
 
             val cachedFondo = fondoCacheMap[widgetId]
@@ -253,7 +261,10 @@ class WidgetTotpFavoritos : AppWidgetProvider() {
                     curvaturaDp = ajustes.widgetCurvaturaEsquinasDp,
                     opacidadFondo = ajustes.widgetTransparenciaFondo,
                     colorBordeHex = ajustes.widgetColorBorde,
-                    density = density
+                    density = density,
+                    vidrioEsmerilado = ajustes.widgetTotpVidrioEsmerilado,
+                    esmeriladoIntensidad = ajustes.widgetTotpEsmeriladoIntensidad,
+                    esmeriladoLuz = ajustes.widgetTotpEsmeriladoLuz
                 )
                 fondoCacheMap[widgetId] = Pair(fondoKey, nuevo)
                 nuevo
@@ -410,7 +421,10 @@ class WidgetTotpFavoritos : AppWidgetProvider() {
             curvaturaDp: Float,
             opacidadFondo: Float,
             colorBordeHex: String,
-            density: Float
+            density: Float,
+            vidrioEsmerilado: Boolean = false,
+            esmeriladoIntensidad: Float = 0.60f,
+            esmeriladoLuz: Float = 0.40f
         ): Bitmap {
             val w = anchoPx.coerceIn(40, 1600)
             val h = altoPx.coerceIn(40, 1600)
@@ -419,16 +433,57 @@ class WidgetTotpFavoritos : AppWidgetProvider() {
 
             val radioPx = curvaturaDp * density
             val grosorPx = grosorDp * density
+            val rectFondo = RectF(0f, 0f, w.toFloat(), h.toFloat())
 
             // Fondo con opacidad configurable
             val alphaInt = (opacidadFondo.coerceIn(0f, 1f) * 255).roundToInt()
             if (alphaInt > 0) {
                 val paintFondo = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-                    color = Color.argb(alphaInt, 0x1A, 0x18, 0x15)
+                    if (vidrioEsmerilado) {
+                        val baseR = 0x1C
+                        val baseG = 0x1C
+                        val baseB = 0x1E
+                        val luz = esmeriladoLuz.coerceIn(0f, 1f)
+                        val intensidad = esmeriladoIntensidad.coerceIn(0.1f, 1f)
+                        val alphaTop = ((alphaInt * 0.45f) + (65 * luz * intensidad)).roundToInt().coerceIn(0, 255)
+                        val rTop = (baseR + ((255 - baseR) * 0.35f * luz)).roundToInt().coerceIn(0, 255)
+                        val gTop = (baseG + ((255 - baseG) * 0.35f * luz)).roundToInt().coerceIn(0, 255)
+                        val bTop = (baseB + ((255 - baseB) * 0.35f * luz)).roundToInt().coerceIn(0, 255)
+                        val colorTop = Color.argb(alphaTop, rTop, gTop, bTop)
+                        val colorMid = Color.argb(alphaInt, baseR, baseG, baseB)
+                        val colorBot = Color.argb(
+                            alphaInt,
+                            (baseR * 0.88f).roundToInt(),
+                            (baseG * 0.88f).roundToInt(),
+                            (baseB * 0.88f).roundToInt()
+                        )
+                        shader = LinearGradient(
+                            0f, 0f, 0f, h.toFloat(),
+                            intArrayOf(colorTop, colorMid, colorBot),
+                            floatArrayOf(0f, 0.40f, 1f),
+                            Shader.TileMode.CLAMP
+                        )
+                    } else {
+                        color = Color.argb(alphaInt, 0x1A, 0x18, 0x15)
+                    }
                     style = Paint.Style.FILL
                 }
-                val rectFondo = RectF(0f, 0f, w.toFloat(), h.toFloat())
                 canvas.drawRoundRect(rectFondo, radioPx, radioPx, paintFondo)
+
+                // Reflejo cenital en la parte superior si está activo el vidrio
+                if (vidrioEsmerilado && esmeriladoLuz > 0.05f) {
+                    val paintSheen = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+                        val alphaSheen = (70 * esmeriladoLuz * esmeriladoIntensidad).roundToInt().coerceIn(0, 255)
+                        shader = LinearGradient(
+                            0f, 0f, 0f, h.toFloat() * 0.35f,
+                            Color.argb(alphaSheen, 255, 255, 255),
+                            Color.TRANSPARENT,
+                            Shader.TileMode.CLAMP
+                        )
+                        style = Paint.Style.FILL
+                    }
+                    canvas.drawRoundRect(rectFondo, radioPx, radioPx, paintSheen)
+                }
             }
 
             // Borde perimetral si grosor > 0
@@ -440,12 +495,28 @@ class WidgetTotpFavoritos : AppWidgetProvider() {
                 }
                 val alphaBorde = (alphaInt.coerceAtLeast(140)).coerceAtMost(255)
                 val paintBorde = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-                    color = Color.argb(
-                        alphaBorde,
-                        Color.red(colorBordeBase),
-                        Color.green(colorBordeBase),
-                        Color.blue(colorBordeBase)
-                    )
+                    if (vidrioEsmerilado) {
+                        val alphaBordeTop = ((alphaBorde * 0.6f) + (85 * esmeriladoLuz)).roundToInt().coerceIn(0, 255)
+                        val colorBordeTop = Color.argb(alphaBordeTop, 255, 255, 255)
+                        val colorBordeBot = Color.argb(
+                            alphaBorde,
+                            Color.red(colorBordeBase),
+                            Color.green(colorBordeBase),
+                            Color.blue(colorBordeBase)
+                        )
+                        shader = LinearGradient(
+                            0f, 0f, 0f, h.toFloat(),
+                            colorBordeTop, colorBordeBot,
+                            Shader.TileMode.CLAMP
+                        )
+                    } else {
+                        color = Color.argb(
+                            alphaBorde,
+                            Color.red(colorBordeBase),
+                            Color.green(colorBordeBase),
+                            Color.blue(colorBordeBase)
+                        )
+                    }
                     style = Paint.Style.STROKE
                     strokeWidth = grosorPx
                 }

@@ -92,7 +92,7 @@ class AjustesMappersTest {
         val ajustes = com.jlnavas3.bovedalocal.data.AjustesApp()
         assertEquals(0f, ajustes.widget1x1GrosorBordeDp)
         assertEquals(15f, ajustes.widget1x1CurvaturaEsquinasDp)
-        assertEquals(1.0f, ajustes.widget1x1TransparenciaFondo)
+        assertEquals(0.85f, ajustes.widget1x1TransparenciaFondo)
         assertEquals(55f, ajustes.widget1x1TamanoDp)
         assertEquals(55f, ajustes.widget1x1AnchoDp)
         assertEquals(51f, ajustes.widget1x1AltoDp)
@@ -100,9 +100,9 @@ class AjustesMappersTest {
         assertEquals(0f, ajustes.widget1x1OffsetX)
         assertEquals(4f, ajustes.widget1x1OffsetY)
         assertEquals("arriba", ajustes.widget1x1Alineamiento)
-        assertEquals("#33332E", ajustes.widget1x1ColorBorde)
-        assertEquals("#E6FCFF", ajustes.widget1x1ColorIcono)
-        assertEquals("#2E3333", ajustes.widget1x1ColorFondo)
+        assertEquals("#38383A", ajustes.widget1x1ColorBorde)
+        assertEquals("#FFFFFF", ajustes.widget1x1ColorIcono)
+        assertEquals("#1C1C1E", ajustes.widget1x1ColorFondo)
         assertEquals("aleatoria", ajustes.widget1x1Modo)
     }
 

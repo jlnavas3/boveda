@@ -699,6 +699,52 @@ interface VaultAjustesDelegate {
         com.jlnavas3.bovedalocal.widget.WidgetTotpFavoritos.actualizarTodos(obtenerApp())
     }
 
+    fun ajustarWidgetTotpVidrioEsmerilado(activo: Boolean) {
+        repositorio.ajustes.actualizar { it.copy(widgetTotpVidrioEsmerilado = activo) }
+        com.jlnavas3.bovedalocal.widget.WidgetTotpFavoritos.actualizarTodos(obtenerApp())
+    }
+
+    fun ajustarWidgetTotpEsmeriladoIntensidad(intensidad: Float) {
+        repositorio.ajustes.actualizar { it.copy(widgetTotpEsmeriladoIntensidad = intensidad) }
+        com.jlnavas3.bovedalocal.widget.WidgetTotpFavoritos.actualizarTodos(obtenerApp())
+    }
+
+    fun ajustarWidgetTotpEsmeriladoLuz(luz: Float) {
+        repositorio.ajustes.actualizar { it.copy(widgetTotpEsmeriladoLuz = luz) }
+        com.jlnavas3.bovedalocal.widget.WidgetTotpFavoritos.actualizarTodos(obtenerApp())
+    }
+
+    fun aplicarPresetEstiloWidgetTotp(
+        curvaturaDp: Float,
+        grosorDp: Float,
+        transparenciaFondo: Float,
+        transparenciaFilas: Float,
+        colorBorde: String,
+        colorCodigo: String,
+        colorContador: String,
+        colorTitulo: String,
+        colorFilas: String,
+        vidrioEsmerilado: Boolean = false,
+        esmeriladoIntensidad: Float = 0.60f
+    ) {
+        repositorio.ajustes.actualizar {
+            it.copy(
+                widgetCurvaturaEsquinasDp = curvaturaDp,
+                widgetGrosorBordeDp = grosorDp,
+                widgetTransparenciaFondo = transparenciaFondo,
+                widgetTransparenciaFilas = transparenciaFilas,
+                widgetColorBorde = colorBorde,
+                widgetColorCodigo = colorCodigo,
+                widgetColorContador = colorContador,
+                widgetColorTituloIcono = colorTitulo,
+                widgetColorFilas = colorFilas,
+                widgetTotpVidrioEsmerilado = vidrioEsmerilado,
+                widgetTotpEsmeriladoIntensidad = esmeriladoIntensidad
+            )
+        }
+        com.jlnavas3.bovedalocal.widget.WidgetTotpFavoritos.actualizarTodos(obtenerApp())
+    }
+
     fun ajustarWidgetHaptica(activo: Boolean) =
         repositorio.ajustes.actualizar { it.copy(widgetHaptica = activo) }
 
@@ -827,6 +873,48 @@ interface VaultAjustesDelegate {
 
     fun ajustarWidget1x1ColorFondo(colorHex: String) {
         repositorio.ajustes.actualizar { it.copy(widget1x1ColorFondo = colorHex) }
+        com.jlnavas3.bovedalocal.widget.WidgetGeneradorRapido.actualizarTodos(obtenerApp())
+    }
+
+    fun ajustarWidget1x1VidrioEsmerilado(activo: Boolean) {
+        repositorio.ajustes.actualizar { it.copy(widget1x1VidrioEsmerilado = activo) }
+        com.jlnavas3.bovedalocal.widget.WidgetGeneradorRapido.actualizarTodos(obtenerApp())
+    }
+
+    fun ajustarWidget1x1EsmeriladoIntensidad(intensidad: Float) {
+        repositorio.ajustes.actualizar { it.copy(widget1x1EsmeriladoIntensidad = intensidad) }
+        com.jlnavas3.bovedalocal.widget.WidgetGeneradorRapido.actualizarTodos(obtenerApp())
+    }
+
+    fun ajustarWidget1x1EsmeriladoLuz(luz: Float) {
+        repositorio.ajustes.actualizar { it.copy(widget1x1EsmeriladoLuz = luz) }
+        com.jlnavas3.bovedalocal.widget.WidgetGeneradorRapido.actualizarTodos(obtenerApp())
+    }
+
+    fun aplicarPresetEstiloWidget1x1(
+        curvaturaDp: Float,
+        grosorDp: Float,
+        transparenciaFondo: Float,
+        colorFondo: String,
+        colorBorde: String,
+        colorIcono: String,
+        vidrioEsmerilado: Boolean = false,
+        esmeriladoIntensidad: Float = 0.60f,
+        bloquearProporcion: Boolean? = null
+    ) {
+        repositorio.ajustes.actualizar {
+            it.copy(
+                widget1x1CurvaturaEsquinasDp = curvaturaDp,
+                widget1x1GrosorBordeDp = grosorDp,
+                widget1x1TransparenciaFondo = transparenciaFondo,
+                widget1x1ColorFondo = colorFondo,
+                widget1x1ColorBorde = colorBorde,
+                widget1x1ColorIcono = colorIcono,
+                widget1x1VidrioEsmerilado = vidrioEsmerilado,
+                widget1x1EsmeriladoIntensidad = esmeriladoIntensidad,
+                widget1x1BloquearProporcion = bloquearProporcion ?: it.widget1x1BloquearProporcion
+            )
+        }
         com.jlnavas3.bovedalocal.widget.WidgetGeneradorRapido.actualizarTodos(obtenerApp())
     }
 
