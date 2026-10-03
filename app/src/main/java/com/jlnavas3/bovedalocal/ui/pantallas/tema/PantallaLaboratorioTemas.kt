@@ -262,55 +262,59 @@ private class EstadoLaboratorioTemas {
         )
     }
 
-    fun restablecerValores() {
-        if (modoOscuro) {
-            lumFondoOscuro = paramOscuro.lumFondo
-            lumTarjetaOscuro = paramOscuro.lumTarjeta
-            lumCampoOscuro = paramOscuro.lumCampo
-            lumBordeOscuro = paramOscuro.lumBorde
-            lumTextoPrincipalOscuro = paramOscuro.lumTextoPrincipal
-            lumTextoSecundarioOscuro = paramOscuro.lumTextoSecundario
-            tonoGlobalOscuro = paramOscuro.tonoGlobal
-            saturacionTinteOscuro = paramOscuro.saturacionTinte
-            tonoFondoOscuro = paramOscuro.tonoGlobal
-            tonoTarjetaOscuro = paramOscuro.tonoGlobal
-            tonoCampoOscuro = paramOscuro.tonoGlobal
-            tonoBordeOscuro = paramOscuro.tonoGlobal
-            tonoTextoPrincipalOscuro = paramOscuro.tonoGlobal
-            tonoTextoSecundarioOscuro = paramOscuro.tonoGlobal
-            colorAcentoOscuro = defOscuro.acento
-            huePersonalizadoOscuro = paramOscuro.acentoHue
-            satPersonalizadoOscuro = paramOscuro.acentoSat
-            valPersonalizadoOscuro = paramOscuro.acentoVal
-            alfaPersonalizadoOscuro = paramOscuro.acentoAlfa
-            esPersonalizadoActivoOscuro = false
-            mostrarAjustePersonalizadoOscuro = false
-            modificadoOscuro = false
-        } else {
-            lumFondoClaro = paramClaro.lumFondo
-            lumTarjetaClaro = paramClaro.lumTarjeta
-            lumCampoClaro = paramClaro.lumCampo
-            lumBordeClaro = paramClaro.lumBorde
-            lumTextoPrincipalClaro = paramClaro.lumTextoPrincipal
-            lumTextoSecundarioClaro = paramClaro.lumTextoSecundario
-            tonoGlobalClaro = paramClaro.tonoGlobal
-            saturacionTinteClaro = paramClaro.saturacionTinte
-            tonoFondoClaro = paramClaro.tonoGlobal
-            tonoTarjetaClaro = paramClaro.tonoGlobal
-            tonoCampoClaro = paramClaro.tonoGlobal
-            tonoBordeClaro = paramClaro.tonoGlobal
-            tonoTextoPrincipalClaro = paramClaro.tonoGlobal
-            tonoTextoSecundarioClaro = paramClaro.tonoGlobal
-            colorAcentoClaro = defClaro.acento
-            huePersonalizadoClaro = paramClaro.acentoHue
-            satPersonalizadoClaro = paramClaro.acentoSat
-            valPersonalizadoClaro = paramClaro.acentoVal
-            alfaPersonalizadoClaro = paramClaro.acentoAlfa
-            esPersonalizadoActivoClaro = false
-            mostrarAjustePersonalizadoClaro = false
-            modificadoClaro = false
-        }
+    fun restablecerValores(contexto: android.content.Context) {
+        // 1. Restaurar valores de fábrica del Modo Oscuro
+        lumFondoOscuro = paramOscuro.lumFondo
+        lumTarjetaOscuro = paramOscuro.lumTarjeta
+        lumCampoOscuro = paramOscuro.lumCampo
+        lumBordeOscuro = paramOscuro.lumBorde
+        lumTextoPrincipalOscuro = paramOscuro.lumTextoPrincipal
+        lumTextoSecundarioOscuro = paramOscuro.lumTextoSecundario
+        tonoGlobalOscuro = paramOscuro.tonoGlobal
+        saturacionTinteOscuro = paramOscuro.saturacionTinte
+        tonoFondoOscuro = paramOscuro.tonoGlobal
+        tonoTarjetaOscuro = paramOscuro.tonoGlobal
+        tonoCampoOscuro = paramOscuro.tonoGlobal
+        tonoBordeOscuro = paramOscuro.tonoGlobal
+        tonoTextoPrincipalOscuro = paramOscuro.tonoGlobal
+        tonoTextoSecundarioOscuro = paramOscuro.tonoGlobal
+        colorAcentoOscuro = defOscuro.acento
+        huePersonalizadoOscuro = paramOscuro.acentoHue
+        satPersonalizadoOscuro = paramOscuro.acentoSat
+        valPersonalizadoOscuro = paramOscuro.acentoVal
+        alfaPersonalizadoOscuro = paramOscuro.acentoAlfa
+        esPersonalizadoActivoOscuro = false
+        mostrarAjustePersonalizadoOscuro = false
+        modificadoOscuro = false
+
+        // 2. Restaurar valores de fábrica del Modo Claro
+        lumFondoClaro = paramClaro.lumFondo
+        lumTarjetaClaro = paramClaro.lumTarjeta
+        lumCampoClaro = paramClaro.lumCampo
+        lumBordeClaro = paramClaro.lumBorde
+        lumTextoPrincipalClaro = paramClaro.lumTextoPrincipal
+        lumTextoSecundarioClaro = paramClaro.lumTextoSecundario
+        tonoGlobalClaro = paramClaro.tonoGlobal
+        saturacionTinteClaro = paramClaro.saturacionTinte
+        tonoFondoClaro = paramClaro.tonoGlobal
+        tonoTarjetaClaro = paramClaro.tonoGlobal
+        tonoCampoClaro = paramClaro.tonoGlobal
+        tonoBordeClaro = paramClaro.tonoGlobal
+        tonoTextoPrincipalClaro = paramClaro.tonoGlobal
+        tonoTextoSecundarioClaro = paramClaro.tonoGlobal
+        colorAcentoClaro = defClaro.acento
+        huePersonalizadoClaro = paramClaro.acentoHue
+        satPersonalizadoClaro = paramClaro.acentoSat
+        valPersonalizadoClaro = paramClaro.acentoVal
+        alfaPersonalizadoClaro = paramClaro.acentoAlfa
+        esPersonalizadoActivoClaro = false
+        mostrarAjustePersonalizadoClaro = false
+        modificadoClaro = false
+
         unificarTonos = true
+
+        // 3. Limpiar almacenamiento y variables globales en memoria
+        GestorPaletaSobria.restablecer(contexto)
     }
 }
 
@@ -540,59 +544,6 @@ fun PantallaLaboratorioTemas(
         Toast.makeText(contexto, "¡Paleta y parámetros copiados! Pégala en el chat.", Toast.LENGTH_LONG).show()
     }
 
-    fun restablecerValores() {
-        haptica.toque()
-        if (modoOscuro) {
-            lumFondoOscuro = paramOscuro.lumFondo
-            lumTarjetaOscuro = paramOscuro.lumTarjeta
-            lumCampoOscuro = paramOscuro.lumCampo
-            lumBordeOscuro = paramOscuro.lumBorde
-            lumTextoPrincipalOscuro = paramOscuro.lumTextoPrincipal
-            lumTextoSecundarioOscuro = paramOscuro.lumTextoSecundario
-            tonoGlobalOscuro = paramOscuro.tonoGlobal
-            saturacionTinteOscuro = paramOscuro.saturacionTinte
-            tonoFondoOscuro = paramOscuro.tonoGlobal
-            tonoTarjetaOscuro = paramOscuro.tonoGlobal
-            tonoCampoOscuro = paramOscuro.tonoGlobal
-            tonoBordeOscuro = paramOscuro.tonoGlobal
-            tonoTextoPrincipalOscuro = paramOscuro.tonoGlobal
-            tonoTextoSecundarioOscuro = paramOscuro.tonoGlobal
-            colorAcentoOscuro = defOscuro.acento
-            huePersonalizadoOscuro = paramOscuro.acentoHue
-            satPersonalizadoOscuro = paramOscuro.acentoSat
-            valPersonalizadoOscuro = paramOscuro.acentoVal
-            alfaPersonalizadoOscuro = paramOscuro.acentoAlfa
-            esPersonalizadoActivoOscuro = false
-            mostrarAjustePersonalizadoOscuro = false
-            modificadoOscuro = false
-        } else {
-            lumFondoClaro = paramClaro.lumFondo
-            lumTarjetaClaro = paramClaro.lumTarjeta
-            lumCampoClaro = paramClaro.lumCampo
-            lumBordeClaro = paramClaro.lumBorde
-            lumTextoPrincipalClaro = paramClaro.lumTextoPrincipal
-            lumTextoSecundarioClaro = paramClaro.lumTextoSecundario
-            tonoGlobalClaro = paramClaro.tonoGlobal
-            saturacionTinteClaro = paramClaro.saturacionTinte
-            tonoFondoClaro = paramClaro.tonoGlobal
-            tonoTarjetaClaro = paramClaro.tonoGlobal
-            tonoCampoClaro = paramClaro.tonoGlobal
-            tonoBordeClaro = paramClaro.tonoGlobal
-            tonoTextoPrincipalClaro = paramClaro.tonoGlobal
-            tonoTextoSecundarioClaro = paramClaro.tonoGlobal
-            colorAcentoClaro = defClaro.acento
-            huePersonalizadoClaro = paramClaro.acentoHue
-            satPersonalizadoClaro = paramClaro.acentoSat
-            valPersonalizadoClaro = paramClaro.acentoVal
-            alfaPersonalizadoClaro = paramClaro.acentoAlfa
-            esPersonalizadoActivoClaro = false
-            mostrarAjustePersonalizadoClaro = false
-            modificadoClaro = false
-        }
-        unificarTonos = true
-        Toast.makeText(contexto, "Valores sobrios restablecidos", Toast.LENGTH_SHORT).show()
-    }
-
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -619,6 +570,77 @@ fun PantallaLaboratorioTemas(
             }
         )
 
+        // Selector de Modo (Oscuro / Claro) FIJO / VISIBLE ARRIBA
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 4.dp)
+                .clip(RoundedCornerShape(CurvaturaEsquinas))
+                .background(ColorTarjetaAjustes)
+                .padding(4.dp),
+            horizontalArrangement = Arrangement.spacedBy(6.dp)
+        ) {
+            // Píldora Oscuro
+            Row(
+                modifier = Modifier
+                    .weight(1f)
+                    .clip(RoundedCornerShape(CurvaturaEsquinas - 4.dp))
+                    .background(if (modoOscuro) colorAcentoActual else Color.Transparent)
+                    .clickable {
+                        haptica.tic()
+                        modoOscuro = true
+                    }
+                    .padding(vertical = 8.dp),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.DarkMode,
+                    contentDescription = null,
+                    tint = if (modoOscuro) colorContraste(colorAcentoActual) else ColorAjusteGris,
+                    modifier = Modifier.size(18.dp)
+                )
+                Spacer(Modifier.width(8.dp))
+                Text(
+                    text = "Modo Oscuro" + if (modificadoOscuro) " (*)" else "",
+                    style = MaterialTheme.typography.bodyMedium.copy(
+                        fontWeight = if (modoOscuro) FontWeight.Bold else FontWeight.Normal,
+                        color = if (modoOscuro) colorContraste(colorAcentoActual) else ColorTextoAjustes
+                    )
+                )
+            }
+
+            // Píldora Claro
+            Row(
+                modifier = Modifier
+                    .weight(1f)
+                    .clip(RoundedCornerShape(CurvaturaEsquinas - 4.dp))
+                    .background(if (!modoOscuro) colorAcentoActual else Color.Transparent)
+                    .clickable {
+                        haptica.tic()
+                        modoOscuro = false
+                    }
+                    .padding(vertical = 8.dp),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.LightMode,
+                    contentDescription = null,
+                    tint = if (!modoOscuro) colorContraste(colorAcentoActual) else ColorAjusteGris,
+                    modifier = Modifier.size(18.dp)
+                )
+                Spacer(Modifier.width(8.dp))
+                Text(
+                    text = "Modo Claro" + if (modificadoClaro) " (*)" else "",
+                    style = MaterialTheme.typography.bodyMedium.copy(
+                        fontWeight = if (!modoOscuro) FontWeight.Bold else FontWeight.Normal,
+                        color = if (!modoOscuro) colorContraste(colorAcentoActual) else ColorTextoAjustes
+                    )
+                )
+            }
+        }
+
         var switchMuestraActivo by remember { mutableStateOf(true) }
 
         // VISTA PREVIA FLOTANTE SUPERIOR (STICKY TOP)
@@ -644,77 +666,6 @@ fun PantallaLaboratorioTemas(
                 .verticalScroll(scrollState)
                 .padding(horizontal = 16.dp, vertical = 8.dp)
         ) {
-            // Selector de Modo (Oscuro / Claro) con indicador (*) de cambios
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(CurvaturaEsquinas))
-                    .background(ColorTarjetaAjustes)
-                    .padding(6.dp),
-                horizontalArrangement = Arrangement.spacedBy(6.dp)
-            ) {
-                // Píldora Oscuro
-                Row(
-                    modifier = Modifier
-                        .weight(1f)
-                        .clip(RoundedCornerShape(CurvaturaEsquinas - 4.dp))
-                        .background(if (modoOscuro) colorAcentoActual else Color.Transparent)
-                        .clickable {
-                            haptica.tic()
-                            modoOscuro = true
-                        }
-                        .padding(vertical = 10.dp),
-                    horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Icon(
-                        imageVector = Icons.Filled.DarkMode,
-                        contentDescription = null,
-                        tint = if (modoOscuro) colorContraste(colorAcentoActual) else ColorAjusteGris,
-                        modifier = Modifier.size(18.dp)
-                    )
-                    Spacer(Modifier.width(8.dp))
-                    Text(
-                        text = "Modo Oscuro" + if (modificadoOscuro) " (*)" else "",
-                        style = MaterialTheme.typography.bodyMedium.copy(
-                            fontWeight = if (modoOscuro) FontWeight.Bold else FontWeight.Normal,
-                            color = if (modoOscuro) colorContraste(colorAcentoActual) else ColorTextoAjustes
-                        )
-                    )
-                }
-
-                // Píldora Claro
-                Row(
-                    modifier = Modifier
-                        .weight(1f)
-                        .clip(RoundedCornerShape(CurvaturaEsquinas - 4.dp))
-                        .background(if (!modoOscuro) colorAcentoActual else Color.Transparent)
-                        .clickable {
-                            haptica.tic()
-                            modoOscuro = false
-                        }
-                        .padding(vertical = 10.dp),
-                    horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Icon(
-                        imageVector = Icons.Filled.LightMode,
-                        contentDescription = null,
-                        tint = if (!modoOscuro) colorContraste(colorAcentoActual) else ColorAjusteGris,
-                        modifier = Modifier.size(18.dp)
-                    )
-                    Spacer(Modifier.width(8.dp))
-                    Text(
-                        text = "Modo Claro" + if (modificadoClaro) " (*)" else "",
-                        style = MaterialTheme.typography.bodyMedium.copy(
-                            fontWeight = if (!modoOscuro) FontWeight.Bold else FontWeight.Normal,
-                            color = if (!modoOscuro) colorContraste(colorAcentoActual) else ColorTextoAjustes
-                        )
-                    )
-                }
-            }
-
-            Spacer(Modifier.height(18.dp))
 
             // SECCIÓN 1: Escala de Capas y Tonos (90% de la interfaz)
             ComponenteGrupo(
@@ -1114,9 +1065,6 @@ fun PantallaLaboratorioTemas(
                                 value = huePersonalizado,
                                 onValueChange = {
                                     huePersonalizado = it
-                                    if (unificarTonos) {
-                                        tonoGlobal = it
-                                    }
                                     esPersonalizadoActivo = true
                                     colorAcentoActual = Color.hsv(huePersonalizado, satPersonalizado, valPersonalizado, alfaPersonalizado)
                                     marcarModificado()
@@ -1208,7 +1156,11 @@ fun PantallaLaboratorioTemas(
 
             BotonPeligro(
                 texto = "🔄 Restablecer Valores Predeterminados",
-                alPulsar = { restablecerValores() },
+                alPulsar = {
+                    haptica.toque()
+                    restablecerValores(contexto)
+                    Toast.makeText(contexto, "Valores de fábrica restablecidos", Toast.LENGTH_SHORT).show()
+                },
                 modifier = Modifier.fillMaxWidth()
             )
 

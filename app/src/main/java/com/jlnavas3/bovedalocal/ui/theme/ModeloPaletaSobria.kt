@@ -72,7 +72,7 @@ object PaletaSobriaDefaults {
         borde = Color(0xFF242629),
         textoPrincipal = Color(0xFF8A929E),
         textoSecundario = Color(0xFF7A828C),
-        acento = Color(0xCE959AA7)
+        acento = Color(0xFF959AA7)
     )
 
     val CLARA = PaletaSobria(
@@ -83,7 +83,7 @@ object PaletaSobriaDefaults {
         borde = Color(0xFFB2BDCC),
         textoPrincipal = Color(0xFF43484D),
         textoSecundario = Color(0xFF646A73),
-        acento = Color(0xCE323842)
+        acento = Color(0xFF323842)
     )
 }
 
@@ -115,7 +115,7 @@ object PaletaSobriaParametrosDefaults {
         acentoHue = 223f,
         acentoSat = 0.10f,
         acentoVal = 0.65f,
-        acentoAlfa = 0.80784315f
+        acentoAlfa = 1.0f
     )
 
     val CLARO = ParametrosLaboratorioPreset(
@@ -130,7 +130,7 @@ object PaletaSobriaParametrosDefaults {
         acentoHue = 217f,
         acentoSat = 0.24f,
         acentoVal = 0.25f,
-        acentoAlfa = 0.80784315f
+        acentoAlfa = 1.0f
     )
 }
 
@@ -161,6 +161,13 @@ fun restringirLuminancia(
 
 object GestorPaletaSobria {
     private const val PREFS_NAME = "boveda_paleta_sobria"
+
+    fun restablecer(context: android.content.Context) {
+        val prefs = context.getSharedPreferences(PREFS_NAME, android.content.Context.MODE_PRIVATE)
+        prefs.edit().clear().apply()
+        paletaSobriaGuardadaOscura = null
+        paletaSobriaGuardadaClara = null
+    }
 
     fun guardar(context: android.content.Context, paletaOscura: PaletaSobria?, paletaClara: PaletaSobria?) {
         val prefs = context.getSharedPreferences(PREFS_NAME, android.content.Context.MODE_PRIVATE)
