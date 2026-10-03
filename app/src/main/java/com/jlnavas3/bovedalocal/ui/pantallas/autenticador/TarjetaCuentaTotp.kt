@@ -221,7 +221,7 @@ fun TarjetaCuentaTotp(
                 )
             }
 
-            if (!seleccionActiva) {
+            if (!seleccionActiva && entrada.favorito) {
                 Box(
                     modifier = Modifier
                         .size(36.dp)
@@ -234,8 +234,8 @@ fun TarjetaCuentaTotp(
                 ) {
                     Icon(
                         imageVector = Icons.Filled.Star,
-                        contentDescription = if (entrada.favorito) "Quitar de favoritos" else "Marcar como favorito",
-                        tint = if (entrada.favorito) Ambar else ColorIconosInternos.copy(alpha = 0.25f),
+                        contentDescription = "Quitar de favoritos",
+                        tint = Ambar,
                         modifier = Modifier.size(20.dp)
                     )
                 }

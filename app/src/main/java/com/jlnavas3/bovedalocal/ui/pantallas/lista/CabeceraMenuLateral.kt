@@ -26,9 +26,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
 import com.jlnavas3.bovedalocal.ui.theme.ColorTitulos
-import com.jlnavas3.bovedalocal.ui.theme.esOscuroActivo
+import com.jlnavas3.bovedalocal.ui.theme.colorLegibleParaTema
+import com.jlnavas3.bovedalocal.ui.theme.fondoBadgeParaTema
 
 /**
  * Cabecera destacada estilo MagicOS / One UI para el menú lateral.
@@ -78,14 +80,14 @@ fun CabeceraMenuLateral(
                 horizontalArrangement = Arrangement.spacedBy(6.dp),
                 modifier = Modifier
                     .clip(RoundedCornerShape(8.dp))
-                    .background(if (esOscuroActivo) Color(0xFF19271E) else Color(0xFFE8F5E9))
+                    .background(fondoBadgeParaTema(ColorAcento))
                     .padding(horizontal = 7.dp, vertical = 2.dp)
             ) {
                 Box(
                     modifier = Modifier
                         .size(6.dp)
                         .clip(CircleShape)
-                        .background(if (esOscuroActivo) Color(0xFF4CAF50) else Color(0xFF2E7D32))
+                        .background(ColorAcento)
                 )
                 Text(
                     text = "Bóveda cifrada",
@@ -93,7 +95,7 @@ fun CabeceraMenuLateral(
                         fontWeight = FontWeight.Medium,
                         fontSize = 11.sp
                     ),
-                    color = if (esOscuroActivo) Color(0xFF81C784) else Color(0xFF1B5E20),
+                    color = colorLegibleParaTema(ColorAcento),
                     maxLines = 1
                 )
             }

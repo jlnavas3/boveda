@@ -31,6 +31,7 @@ import com.jlnavas3.bovedalocal.crypto.PerfilArgon2
 import com.jlnavas3.bovedalocal.data.AjustesApp
 import com.jlnavas3.bovedalocal.ui.Pantalla
 import com.jlnavas3.bovedalocal.ui.theme.Color2FA
+import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.ColorExportacion
 import com.jlnavas3.bovedalocal.ui.theme.ColorGenerador
 import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
@@ -167,7 +168,7 @@ fun MenuLateral(
                     icono = Icons.Filled.Delete,
                     colorIcono = if (totalPapelera > 0) ColorPapelera else ColorIconosInternos,
                     badge = if (totalPapelera > 0) totalPapelera.toString() else null,
-                    colorBadge = ColorPapelera,
+                    colorBadge = ColorAcento,
                     idEtiqueta = "03-LST-PAP",
                     mostrarId = mostrarIds,
                     ajustes = ajustes
@@ -196,5 +197,10 @@ fun MenuLateral(
 
         // Pie de Menú: Cápsulas de seguridad y versión
         PieMenuLateral(perfilArgon2 = perfilArgon2)
+
+        Spacer(Modifier.height(10.dp))
+
+        // Botón Bloquear aplicación
+        BotonFilaBloquear(alBloquear = alBloquear)
     }
 }

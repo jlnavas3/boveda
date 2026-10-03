@@ -17,6 +17,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ChevronRight
+import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -39,9 +40,11 @@ import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorSeparadorAjustes
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorTarjetaAjustes
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorTextoAjustes
 import com.jlnavas3.bovedalocal.ui.theme.Ambar
+import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
 import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
 import com.jlnavas3.bovedalocal.ui.theme.CurvaturaEsquinas
+import com.jlnavas3.bovedalocal.ui.theme.EstiloBorde
 import com.jlnavas3.bovedalocal.ui.theme.GrosorBorde
 import com.jlnavas3.bovedalocal.util.Haptica
 
@@ -77,7 +80,7 @@ fun GrupoMenuLateral(
             )
             if (mostrarId && !idEtiqueta.isNullOrBlank()) {
                 Spacer(modifier = Modifier.width(8.dp))
-                InsigniaIdAjuste(id = idEtiqueta, ajustes = ajustes)
+                InsigniaIdAjuste(id = idEtiqueta, ajustes = ajustes, colorForzado = ColorAcento)
             }
         }
         val formaGrupo = RoundedCornerShape(CurvaturaEsquinas)
@@ -85,7 +88,7 @@ fun GrupoMenuLateral(
             modifier = Modifier
                 .fillMaxWidth()
                 .then(
-                    if (GrosorBorde > 0.dp) {
+                    if (GrosorBorde > 0.dp && EstiloBorde != "ninguno") {
                         Modifier.border(
                             width = GrosorBorde,
                             color = ColorBordeActual,
@@ -162,7 +165,7 @@ fun ItemMenu(
 
             if (mostrarId && !idEtiqueta.isNullOrBlank()) {
                 Spacer(Modifier.height(3.dp))
-                InsigniaIdAjuste(id = idEtiqueta, ajustes = ajustes)
+                InsigniaIdAjuste(id = idEtiqueta, ajustes = ajustes, colorForzado = ColorAcento)
             }
         }
 
@@ -208,4 +211,52 @@ fun SeparadorItemMenu(modifier: Modifier = Modifier) {
             .height(0.5.dp)
             .background(ColorSeparadorAjustes)
     )
+}
+
+/**
+ * Botón estilo fila para bloquear la aplicación situado debajo del pie del menú lateral.
+ * Sigue los colores dinámicos del tema activo (claro / oscuro).
+ */
+@Composable
+fun BotonFilaBloquear(
+    alBloquear: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val forma = RoundedCornerShape(CurvaturaEsquinas)
+
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .then(
+                if (GrosorBorde > 0.dp && EstiloBorde != "ninguno") {
+                    Modifier.border(
+                        width = GrosorBorde,
+                        color = ColorBordeActual,
+                        shape = forma
+                    )
+                } else Modifier
+            )
+            .clip(forma)
+            .background(ColorTarjetaAjustes)
+            .clickable { alBloquear() }
+            .padding(horizontal = 14.dp, vertical = 11.dp),
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Icon(
+            imageVector = Icons.Filled.Lock,
+            contentDescription = null,
+            tint = ColorAcento,
+            modifier = Modifier.size(19.dp)
+        )
+        Spacer(Modifier.width(8.dp))
+        Text(
+            text = "Bloquear aplicación",
+            style = MaterialTheme.typography.bodyMedium.copy(
+                fontSize = 13.5.sp,
+                fontWeight = FontWeight.Medium
+            ),
+            color = ColorTextoAjustes
+        )
+    }
 }

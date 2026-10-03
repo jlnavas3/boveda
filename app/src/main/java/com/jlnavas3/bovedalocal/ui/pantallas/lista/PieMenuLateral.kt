@@ -24,7 +24,9 @@ import androidx.compose.ui.unit.sp
 import com.jlnavas3.bovedalocal.BuildConfig
 import com.jlnavas3.bovedalocal.crypto.PerfilArgon2
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjusteGris
-import com.jlnavas3.bovedalocal.ui.theme.esOscuroActivo
+import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
+import com.jlnavas3.bovedalocal.ui.theme.colorLegibleParaTema
+import com.jlnavas3.bovedalocal.ui.theme.fondoBadgeParaTema
 
 /**
  * Pie de página del menú lateral con cápsulas de seguridad (Argon2id, AES-256, 100% Offline) y versión.
@@ -34,8 +36,8 @@ fun PieMenuLateral(
     perfilArgon2: PerfilArgon2 = PerfilArgon2.ESTANDAR,
     modifier: Modifier = Modifier
 ) {
-    val fondoVerdeInsignia = if (esOscuroActivo) Color(0xFF14291B) else Color(0xFFE8F5E9)
-    val textoVerdeInsignia = if (esOscuroActivo) Color(0xFF81C784) else Color(0xFF1B5E20)
+    val fondoInsignia = fondoBadgeParaTema(ColorAcento)
+    val textoInsignia = colorLegibleParaTema(ColorAcento)
 
     Column(
         modifier = modifier
@@ -51,13 +53,13 @@ fun PieMenuLateral(
             Box(
                 modifier = Modifier
                     .clip(CircleShape)
-                    .background(fondoVerdeInsignia)
+                    .background(fondoInsignia)
                     .padding(horizontal = 7.dp, vertical = 2.5.dp)
             ) {
                 Text(
                     text = "Argon2id · ${perfilArgon2.memoriaKiB / 1024}M",
                     style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.SemiBold, fontSize = 9.sp),
-                    color = textoVerdeInsignia,
+                    color = textoInsignia,
                     maxLines = 1
                 )
             }
@@ -65,13 +67,13 @@ fun PieMenuLateral(
             Box(
                 modifier = Modifier
                     .clip(CircleShape)
-                    .background(fondoVerdeInsignia)
+                    .background(fondoInsignia)
                     .padding(horizontal = 7.dp, vertical = 2.5.dp)
             ) {
                 Text(
                     text = "AES-256",
                     style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.SemiBold, fontSize = 9.sp),
-                    color = textoVerdeInsignia,
+                    color = textoInsignia,
                     maxLines = 1
                 )
             }
@@ -79,13 +81,13 @@ fun PieMenuLateral(
             Box(
                 modifier = Modifier
                     .clip(CircleShape)
-                    .background(fondoVerdeInsignia)
+                    .background(fondoInsignia)
                     .padding(horizontal = 7.dp, vertical = 2.5.dp)
             ) {
                 Text(
                     text = "100% Offline",
                     style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.SemiBold, fontSize = 9.sp),
-                    color = textoVerdeInsignia,
+                    color = textoInsignia,
                     maxLines = 1
                 )
             }

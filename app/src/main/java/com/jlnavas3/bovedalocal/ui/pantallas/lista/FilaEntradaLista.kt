@@ -235,8 +235,8 @@ fun FilaEntrada(
                     )
                 }
 
-                // Bloque derecho: solo botón de favorito (si no está en selección)
-                if (!seleccionActiva) {
+                // Bloque derecho: solo botón de favorito cuando la entrada es favorita (si no está en selección)
+                if (!seleccionActiva && entrada.favorito) {
                     Spacer(Modifier.width(6.dp))
                     Box(
                         modifier = Modifier
@@ -248,7 +248,7 @@ fun FilaEntrada(
                         Icon(
                             imageVector = Icons.Filled.Star,
                             contentDescription = "Favorito",
-                            tint = if (entrada.favorito) Ambar else ColorBordeActual.copy(alpha = 0.45f),
+                            tint = Ambar,
                             modifier = Modifier.size(18.dp)
                         )
                     }

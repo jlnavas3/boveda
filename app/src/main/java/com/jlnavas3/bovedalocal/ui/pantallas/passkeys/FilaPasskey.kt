@@ -183,26 +183,28 @@ fun FilaPasskey(
             }
 
             if (!seleccionActiva) {
-                // Botón de favorito con ripple circular
-                Box(
-                    modifier = Modifier
-                        .size(32.dp)
-                        .clip(CircleShape)
-                        .clickable {
-                            haptica.tic()
-                            alAlternarFavorito()
-                        },
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        imageVector = Icons.Filled.Star,
-                        contentDescription = if (entrada.favorito) "Quitar de favoritos" else "Marcar como favorito",
-                        tint = if (entrada.favorito) Ambar else ColorIconosInternos.copy(alpha = 0.25f),
-                        modifier = Modifier.size(18.dp)
-                    )
-                }
+                if (entrada.favorito) {
+                    // Botón de favorito con ripple circular
+                    Box(
+                        modifier = Modifier
+                            .size(32.dp)
+                            .clip(CircleShape)
+                            .clickable {
+                                haptica.tic()
+                                alAlternarFavorito()
+                            },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.Star,
+                            contentDescription = "Quitar de favoritos",
+                            tint = Ambar,
+                            modifier = Modifier.size(18.dp)
+                        )
+                    }
 
-                Spacer(Modifier.width(4.dp))
+                    Spacer(Modifier.width(4.dp))
+                }
 
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.ArrowForwardIos,
