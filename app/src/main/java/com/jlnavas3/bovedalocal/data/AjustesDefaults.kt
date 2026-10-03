@@ -21,7 +21,7 @@ object AjustesDefaults {
     // 2. Apariencia y Tema General
     object Tema {
         const val NOMBRE_PERSONALIZADO = ""
-        const val ICONO_LAUNCHER = "ambar"
+        const val ICONO_LAUNCHER = "gris"
         const val COLOR_ACENTO = ""
         const val COLOR_ICONOS_INTERNOS = ""
         const val COLOR_TITULOS = ""
@@ -138,9 +138,9 @@ object AjustesDefaults {
         const val GROSOR_BORDE_DP = 0f
         const val CURVATURA_ESQUINAS_DP = 0f
         const val TRANSPARENCIA_FONDO = 0.50f
-        const val COLOR_BORDE = "#FFB300"
+        const val COLOR_BORDE = "#9EABB8"
         const val COLOR_CONTADOR = "#FFFFFF"
-        const val COLOR_CODIGO = "#FFB300"
+        const val COLOR_CODIGO = "#E2E4E9"
         const val COLOR_TITULO_ICONO = "#FFFFFF"
         const val COLOR_FILAS = "#00000000"
         const val COLOR_FILAS_DEFECTO = "#26231E"

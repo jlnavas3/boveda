@@ -18,7 +18,7 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
-import com.jlnavas3.bovedalocal.ui.componentes.BotonAmbar
+import com.jlnavas3.bovedalocal.ui.componentes.BotonPrimario
 import com.jlnavas3.bovedalocal.ui.componentes.CampoBoveda
 import com.jlnavas3.bovedalocal.ui.componentes.TarjetaBoveda
 import com.jlnavas3.bovedalocal.ui.theme.ColorTitulos
@@ -83,7 +83,7 @@ fun SeccionEntradaManual(
                 )
             }
             Spacer(Modifier.height(12.dp))
-            BotonAmbar(
+            BotonPrimario(
                 texto = "Añadir este código",
                 icono = Icons.Filled.Add,
                 activo = manual.isNotBlank(),

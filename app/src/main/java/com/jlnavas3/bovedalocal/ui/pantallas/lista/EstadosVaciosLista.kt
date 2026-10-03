@@ -25,6 +25,7 @@ import com.jlnavas3.bovedalocal.ui.componentes.IlustracionVacio
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteGrupo
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteNavegacion
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteSeparador
+import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.ColorExportacion
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
 
@@ -78,7 +79,7 @@ fun EstadoVacioLista(
                 ComponenteNavegacion(
                     titulo = "Importación directa de llaves de paso y contraseñas",
                     icono = androidx.compose.material.icons.Icons.Filled.VpnKey,
-                    colorIcono = com.jlnavas3.bovedalocal.ui.theme.Ambar,
+                    colorIcono = ColorAcento,
                     alPulsar = alImportarDirectoCxf
                 )
             }

@@ -28,7 +28,9 @@ import com.jlnavas3.bovedalocal.ui.pantallas.calibracion.widget1x1.SeccionColore
 import com.jlnavas3.bovedalocal.ui.pantallas.calibracion.widget1x1.SeccionDimensionesWidget1x1
 import com.jlnavas3.bovedalocal.ui.pantallas.calibracion.widget1x1.SeccionPresetsWidget1x1
 import com.jlnavas3.bovedalocal.ui.pantallas.calibracion.widget1x1.SimuladorCeldaWidget1x1
-import com.jlnavas3.bovedalocal.ui.theme.Ambar
+import com.jlnavas3.bovedalocal.data.AjustesDefaults
+import com.jlnavas3.bovedalocal.ui.componentes.ajustes.BotonMenuOpcionesPantalla
+import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.parsearColorO
 import com.jlnavas3.bovedalocal.util.Haptica
 
@@ -42,8 +44,8 @@ fun PantallaCalibracionWidget1x1(
     val ajustes by vm.ajustes.collectAsStateWithLifecycle()
     val scrollState = rememberScrollState()
 
-    val color1x1BordeEfectivo = parsearColorO(ajustes.widget1x1ColorBorde, Ambar)
-    val color1x1IconoEfectivo = parsearColorO(ajustes.widget1x1ColorIcono, Ambar)
+    val color1x1BordeEfectivo = parsearColorO(ajustes.widget1x1ColorBorde, parsearColorO(AjustesDefaults.Widget1x1.COLOR_BORDE, ColorAcento))
+    val color1x1IconoEfectivo = parsearColorO(ajustes.widget1x1ColorIcono, parsearColorO(AjustesDefaults.Widget1x1.COLOR_ICONO, ColorAcento))
     val color1x1FondoEfectivo = parsearColorO(ajustes.widget1x1ColorFondo, ColorCampoAjustes)
 
     ProveedorResaltadoAjustes(seccionDestino, scrollState) {
@@ -59,7 +61,15 @@ fun PantallaCalibracionWidget1x1(
                 mostrarId = ajustes.mostrarIdsAjustes,
                 alVolver = { vm.volverAtras() },
                 conSeparador = false,
-                colorFondo = ColorAjustesFondo
+                colorFondo = ColorAjustesFondo,
+                acciones = {
+                    BotonMenuOpcionesPantalla(
+                        alRestablecerPantalla = {
+                            vm.restablecerAjustesWidget1x1()
+                        },
+                        mensajeToastRestablecer = "Aspecto del widget 1x1 restablecido"
+                    )
+                }
             )
 
             // 2. Cabecera FLOTANTE fija: Simulador visual de la celda 1x1 del launcher

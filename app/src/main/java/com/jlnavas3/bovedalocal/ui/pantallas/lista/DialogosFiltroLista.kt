@@ -41,7 +41,7 @@ import com.jlnavas3.bovedalocal.data.TipoEntrada
 import com.jlnavas3.bovedalocal.ui.CriterioOrdenacion
 import com.jlnavas3.bovedalocal.ui.componentes.DialogoBoveda
 import com.jlnavas3.bovedalocal.ui.componentes.FilaOpcionModal
-import com.jlnavas3.bovedalocal.ui.theme.Ambar
+import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
 import com.jlnavas3.bovedalocal.ui.theme.ColorTitulos
 import com.jlnavas3.bovedalocal.ui.theme.TextoPrincipal
@@ -70,10 +70,10 @@ fun DialogoFiltrosLista(
         alCerrar = alCerrar,
         titulo = "Filtrar por tipo",
         icono = Icons.Filled.SelectAll,
-        colorIcono = Ambar,
+        colorIcono = ColorAcento,
         botonConfirmar = {
             TextButton(onClick = alCerrar) {
-                Text("Cerrar", color = Ambar)
+                Text("Cerrar", color = ColorAcento)
             }
         }
     ) {
@@ -90,7 +90,7 @@ fun DialogoFiltrosLista(
                     titulo = nombre,
                     icono = icono,
                     seleccionado = seleccionado,
-                    colorAcento = Ambar,
+                    colorAcento = ColorAcento,
                     alPulsar = {
                         alSeleccionarTipo(tipo)
                         alCerrar()
@@ -100,7 +100,7 @@ fun DialogoFiltrosLista(
                             Icon(
                                 imageVector = Icons.Filled.Check,
                                 contentDescription = null,
-                                tint = Ambar,
+                                tint = ColorAcento,
                                 modifier = Modifier.size(18.dp)
                             )
                         }
@@ -122,10 +122,10 @@ fun DialogoOrdenacionLista(
         alCerrar = alCerrar,
         titulo = "Ordenar por",
         icono = Icons.AutoMirrored.Filled.Sort,
-        colorIcono = Ambar,
+        colorIcono = ColorAcento,
         botonConfirmar = {
             TextButton(onClick = alCerrar) {
-                Text("Cerrar", color = Ambar)
+                Text("Cerrar", color = ColorAcento)
             }
         }
     ) {
@@ -141,7 +141,7 @@ fun DialogoOrdenacionLista(
                     titulo = criterio.etiqueta,
                     icono = Icons.AutoMirrored.Filled.Sort,
                     seleccionado = seleccionado,
-                    colorAcento = Ambar,
+                    colorAcento = ColorAcento,
                     alPulsar = {
                         alSeleccionarCriterio(criterio)
                         alCerrar()
@@ -151,7 +151,7 @@ fun DialogoOrdenacionLista(
                             Icon(
                                 imageVector = Icons.Filled.Check,
                                 contentDescription = null,
-                                tint = Ambar,
+                                tint = ColorAcento,
                                 modifier = Modifier.size(18.dp)
                             )
                         }

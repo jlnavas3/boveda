@@ -31,7 +31,7 @@ import com.jlnavas3.bovedalocal.ui.componentes.CheckboxBoveda
 import com.jlnavas3.bovedalocal.ui.componentes.ContenedorDeslizamientoBoveda
 import com.jlnavas3.bovedalocal.ui.pantallas.lista.IconoTipoEntrada
 import com.jlnavas3.bovedalocal.ui.pantallas.lista.IndicadorContenidoTarjeta
-import com.jlnavas3.bovedalocal.ui.theme.Ambar
+import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
 import com.jlnavas3.bovedalocal.ui.theme.ColorTarjetas
 import com.jlnavas3.bovedalocal.ui.theme.ColorTitulos
@@ -63,7 +63,7 @@ fun FilaSeleccionCredencialCxf(
         AccionDeslizamiento(
             texto = if (seleccionada) "Deseleccionar" else "Seleccionar",
             icono = if (seleccionada) Icons.Filled.Close else Icons.Filled.Check,
-            color = if (seleccionada) Peligro else Ambar,
+            color = if (seleccionada) Peligro else ColorAcento,
             alEjecutar = { alAlternar(!seleccionada) }
         )
     }

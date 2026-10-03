@@ -59,6 +59,7 @@ val SuperficieAlta: Color get() = paletaSobriaEfectiva.campo
 val Borde: Color get() = paletaSobriaEfectiva.borde
 val Menta: Color get() = paletaActiva.menta
 val Peligro: Color get() = paletaActiva.peligro
+val Advertencia: Color get() = if (esOscuroActivo) Color(0xFFFBBF24) else Color(0xFFD97706)
 val TextoPrincipal: Color get() = paletaSobriaEfectiva.textoPrincipal
 val TextoSecundario: Color get() = paletaSobriaEfectiva.textoSecundario
 
@@ -126,18 +127,24 @@ var ColorTarjetas: Color
 
 val ColorSobreTarjetas: Color get() = colorContraste(ColorTarjetas)
 
-// Compatibilidad directa con el código existente
+// Compatibilidad heredada con código previo (se recomienda usar ColorAcento)
+@Deprecated("Usar ColorAcento en su lugar", ReplaceWith("ColorAcento"))
 var Ambar: Color
     get() = ColorAcento
     set(valor) { ColorAcento = valor }
 
+@Deprecated("Usar ColorAcentoFuerte en su lugar", ReplaceWith("ColorAcentoFuerte"))
 var AmbarFuerte: Color
     get() = ColorAcentoFuerte
     set(valor) { ColorAcentoFuerte = valor }
 
-val DegradadoAmbar: Brush get() = Brush.horizontalGradient(listOf(ColorAcento, ColorAcentoFuerte))
+val DegradadoAcento: Brush get() = Brush.horizontalGradient(listOf(ColorAcento, ColorAcentoFuerte))
+fun degradadoAcentoVertical() = Brush.verticalGradient(listOf(ColorAcento, ColorAcentoFuerte))
 
-fun degradadoAmbarVertical() = Brush.verticalGradient(listOf(ColorAcento, ColorAcentoFuerte))
+@Deprecated("Usar DegradadoAcento en su lugar", ReplaceWith("DegradadoAcento"))
+val DegradadoAmbar: Brush get() = DegradadoAcento
+@Deprecated("Usar degradadoAcentoVertical en su lugar", ReplaceWith("degradadoAcentoVertical()"))
+fun degradadoAmbarVertical() = degradadoAcentoVertical()
 
 internal var colorDinamicoSistemaBase by mutableStateOf(false)
 

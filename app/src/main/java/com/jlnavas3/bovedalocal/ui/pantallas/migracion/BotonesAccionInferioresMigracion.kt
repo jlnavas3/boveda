@@ -6,7 +6,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import com.jlnavas3.bovedalocal.ui.componentes.BotonAmbar
+import com.jlnavas3.bovedalocal.ui.componentes.BotonPrimario
 
 @Composable
 fun BotonesAccionInferioresMigracion(
@@ -20,7 +20,7 @@ fun BotonesAccionInferioresMigracion(
         modifier = modifier.fillMaxWidth()
     ) {
         if (mostrarBotonImportar) {
-            BotonAmbar(
+            BotonPrimario(
                 texto = if (cuantasSeleccionadas > 0)
                     "Importar $cuantasSeleccionadas ${if (cuantasSeleccionadas == 1) "cuenta" else "cuentas"} a la Bóveda"
                 else

@@ -46,7 +46,7 @@ import com.jlnavas3.bovedalocal.ui.componentes.BarraSuperiorPantalla
 import com.jlnavas3.bovedalocal.ui.componentes.BotonIconoCabecera
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjustesFondo
 import com.jlnavas3.bovedalocal.ui.pantallas.lista.BarraBusquedaAnimada
-import com.jlnavas3.bovedalocal.ui.theme.Ambar
+import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
 import com.jlnavas3.bovedalocal.ui.theme.ColorSobreAcento
 import com.jlnavas3.bovedalocal.ui.theme.EscalaTexto
@@ -159,7 +159,7 @@ fun PantallaExportacionInteractivaCxf(
                         val seleccionadas = entradasDisponibles.filter { idsSeleccionadas.contains(it.id) }
                         alConfirmar(seleccionadas)
                     },
-                    containerColor = Ambar,
+                    containerColor = ColorAcento,
                     contentColor = ColorSobreAcento,
                     shape = FormaTarjeta,
                     modifier = Modifier.then(

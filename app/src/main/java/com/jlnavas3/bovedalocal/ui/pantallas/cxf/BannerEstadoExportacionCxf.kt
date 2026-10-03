@@ -19,7 +19,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.jlnavas3.bovedalocal.ui.theme.Ambar
+import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.ColorSalud
 import com.jlnavas3.bovedalocal.ui.theme.FormaTarjeta
 import com.jlnavas3.bovedalocal.ui.theme.GrosorBorde
@@ -36,7 +36,7 @@ fun BannerEstadoExportacionCxf(
     estaHabilitado: Boolean,
     modifier: Modifier = Modifier
 ) {
-    val colorFondo = if (estaHabilitado) ColorSalud else Ambar
+    val colorFondo = if (estaHabilitado) ColorSalud else ColorAcento
     val forma = FormaTarjeta
 
     Surface(

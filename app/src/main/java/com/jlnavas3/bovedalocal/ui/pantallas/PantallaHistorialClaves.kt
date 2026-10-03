@@ -21,7 +21,7 @@ import androidx.compose.material.icons.filled.Tune
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import com.jlnavas3.bovedalocal.ui.Pantalla
-import com.jlnavas3.bovedalocal.ui.theme.Ambar
+import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
 import com.jlnavas3.bovedalocal.ui.theme.Peligro
 import androidx.compose.runtime.Composable
@@ -137,7 +137,7 @@ fun PantallaHistorialClaves(
                                 com.jlnavas3.bovedalocal.ui.componentes.ElementoMenuCompacto(
                                     texto = "Ajustes del historial...",
                                     icono = Icons.Filled.Tune,
-                                    colorIcono = Ambar,
+                                    colorIcono = ColorAcento,
                                     onClick = {
                                         menuAbiertoHist = false
                                         vm.ir(Pantalla.AjustesHistorial("04-HER-HST-CFG"))
@@ -147,7 +147,7 @@ fun PantallaHistorialClaves(
                                 com.jlnavas3.bovedalocal.ui.componentes.ElementoMenuCompacto(
                                     texto = "Ajustes de portapapeles...",
                                     icono = androidx.compose.material.icons.Icons.Filled.Timer,
-                                    colorIcono = Ambar,
+                                    colorIcono = ColorAcento,
                                     onClick = {
                                         menuAbiertoHist = false
                                         vm.ir(Pantalla.AjustesCopiaAutomatica("03.2.1"))

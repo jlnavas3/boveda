@@ -32,7 +32,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.jlnavas3.bovedalocal.ui.theme.Ambar
+import com.jlnavas3.bovedalocal.ui.theme.Advertencia
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.ColorSeguridad
 import com.jlnavas3.bovedalocal.ui.theme.FormaTarjeta
@@ -85,7 +85,7 @@ fun ComponenteAlerta(
         TipoAlerta.SECONDARY -> if (esOscuro) Color(0xFF9E9EA4) else Color(0xFF5C6270)
         TipoAlerta.SUCCESS -> Menta
         TipoAlerta.DANGER -> Peligro
-        TipoAlerta.WARNING -> Ambar
+        TipoAlerta.WARNING -> Advertencia
         TipoAlerta.INFO -> ColorSeguridad
     }
 

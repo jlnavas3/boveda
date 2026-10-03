@@ -24,7 +24,7 @@ import com.jlnavas3.bovedalocal.ui.componentes.ElementoMenuCompacto
 import com.jlnavas3.bovedalocal.ui.componentes.MenuDesplegableBoveda
 import com.jlnavas3.bovedalocal.ui.componentes.SeparadorOpcionMenu
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjustesFondo
-import com.jlnavas3.bovedalocal.ui.theme.Ambar
+import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
 import com.jlnavas3.bovedalocal.ui.theme.Peligro
 
@@ -58,7 +58,7 @@ fun BarraSuperiorDetalle(
                 onClick = alAlternarFavorito,
                 icono = Icons.Filled.Star,
                 descripcion = if (esFavorito) "Quitar de favoritos" else "Marcar como favorito",
-                tint = if (esFavorito) Ambar else ColorIconosInternos.copy(alpha = 0.4f)
+                tint = if (esFavorito) ColorAcento else ColorIconosInternos.copy(alpha = 0.4f)
             )
             BotonIconoCabecera(
                 onClick = alMoverAPapelera,

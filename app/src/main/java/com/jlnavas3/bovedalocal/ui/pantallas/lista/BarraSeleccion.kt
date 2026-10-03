@@ -25,7 +25,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorTarjetaAjustes
-import com.jlnavas3.bovedalocal.ui.theme.Ambar
+import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.ColorTitulos
 import com.jlnavas3.bovedalocal.ui.theme.Peligro
 import com.jlnavas3.bovedalocal.ui.theme.TextoPrincipal
@@ -71,7 +71,7 @@ fun BarraSeleccion(
             Icon(
                 Icons.Filled.SelectAll,
                 contentDescription = if (todoSeleccionado) "Deseleccionar todo" else "Seleccionar todo",
-                tint = if (todoSeleccionado) Ambar else TextoPrincipal,
+                tint = if (todoSeleccionado) ColorAcento else TextoPrincipal,
                 modifier = Modifier.size(20.dp)
             )
         }

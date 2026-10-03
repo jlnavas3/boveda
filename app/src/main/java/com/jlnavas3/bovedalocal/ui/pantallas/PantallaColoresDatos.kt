@@ -9,8 +9,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Refresh
+import com.jlnavas3.bovedalocal.ui.componentes.ajustes.BotonMenuOpcionesPantalla
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -76,7 +75,16 @@ fun PantallaColoresDatos(
             idEtiqueta = "02-APA-THM-DAT",
             mostrarId = ajustes.mostrarIdsAjustes,
             alVolver = { vm.volverAtras() },
-            colorFondo = ColorAjustesFondo
+            colorFondo = ColorAjustesFondo,
+            acciones = {
+                BotonMenuOpcionesPantalla(
+                    alRestablecerPantalla = {
+                        haptica.tic()
+                        vm.restablecerColoresDatos()
+                    },
+                    mensajeToastRestablecer = "Colores de datos restablecidos"
+                )
+            }
         )
 
         // Tarjeta de Vista Previa FLOTANTE SUPERIOR FIJA (Sticky Top)

@@ -37,12 +37,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjusteGris
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorCampoAjustes
-import com.jlnavas3.bovedalocal.ui.theme.Ambar
 import com.jlnavas3.bovedalocal.ui.theme.Borde
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
 import com.jlnavas3.bovedalocal.ui.theme.ColorSobreAcento
-import com.jlnavas3.bovedalocal.ui.theme.DegradadoAmbar
+import com.jlnavas3.bovedalocal.ui.theme.DegradadoAcento
 import com.jlnavas3.bovedalocal.ui.theme.EscalaTexto
 import com.jlnavas3.bovedalocal.ui.theme.EstiloBorde
 import com.jlnavas3.bovedalocal.ui.theme.FormaBoton
@@ -65,14 +64,14 @@ fun BotonBoveda(
     icono: ImageVector? = null
 ) {
     when (variante) {
-        VarianteBoton.PRIMARIO -> BotonAmbar(texto = texto, modifier = modifier, activo = activo, icono = icono, alPulsar = alPulsar)
+        VarianteBoton.PRIMARIO -> BotonPrimario(texto = texto, modifier = modifier, activo = activo, icono = icono, alPulsar = alPulsar)
         VarianteBoton.SECUNDARIO -> BotonBorde(texto = texto, modifier = modifier, icono = icono, alPulsar = alPulsar)
         VarianteBoton.PELIGRO -> BotonPeligro(texto = texto, modifier = modifier, icono = icono, alPulsar = alPulsar)
     }
 }
 
 @Composable
-fun BotonAmbar(
+fun BotonPrimario(
     texto: String,
     modifier: Modifier = Modifier,
     activo: Boolean = true,
@@ -91,7 +90,7 @@ fun BotonAmbar(
             .fillMaxWidth()
             .height(42.dp)
             .clip(forma)
-            .background(if (activo) DegradadoAmbar else Brush.horizontalGradient(listOf(Borde, Borde)))
+            .background(if (activo) DegradadoAcento else Brush.horizontalGradient(listOf(Borde, Borde)))
             .then(
                 if (GrosorBorde > 0.dp && !activo) {
                     Modifier.border(GrosorBorde, Borde, forma)
@@ -147,6 +146,16 @@ fun BotonAmbar(
         }
     }
 }
+
+@Composable
+@Deprecated("Usar BotonPrimario en su lugar", ReplaceWith("BotonPrimario(texto, modifier, activo, icono, alPulsar)"))
+fun BotonAmbar(
+    texto: String,
+    modifier: Modifier = Modifier,
+    activo: Boolean = true,
+    icono: ImageVector? = null,
+    alPulsar: () -> Unit
+) = BotonPrimario(texto, modifier, activo, icono, alPulsar)
 
 @Composable
 fun BotonBorde(

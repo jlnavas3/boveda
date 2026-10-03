@@ -80,8 +80,8 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.sp
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorTarjetaAjustes
-import com.jlnavas3.bovedalocal.ui.theme.Ambar
 import com.jlnavas3.bovedalocal.ui.theme.Borde
+import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
 import com.jlnavas3.bovedalocal.ui.theme.ColorSobreAcento
 import com.jlnavas3.bovedalocal.ui.theme.CurvaturaEsquinas
@@ -188,7 +188,7 @@ fun FilaProblemaAgil(
     }
     val colorLegible = colorLegibleParaTema(colorTipo)
     val forma = if (enGrupo) RectangleShape else RoundedCornerShape(CurvaturaEsquinas)
-    val fondo = if (seleccionado) Ambar.copy(alpha = 0.22f) else if (enGrupo) androidx.compose.ui.graphics.Color.Transparent else ColorTarjetaAjustes
+    val fondo = if (seleccionado) ColorAcento.copy(alpha = 0.22f) else if (enGrupo) androidx.compose.ui.graphics.Color.Transparent else ColorTarjetaAjustes
     var mostrarContrasena by rememberSaveable { mutableStateOf(false) }
 
     ContenedorDeslizamientoBoveda(
@@ -215,7 +215,7 @@ fun FilaProblemaAgil(
                 .clip(forma)
                 .background(fondo)
                 .then(
-                    if (seleccionado) Modifier.border(1.dp, Ambar.copy(alpha = 0.5f), forma)
+                    if (seleccionado) Modifier.border(1.dp, ColorAcento.copy(alpha = 0.5f), forma)
                     else if (!enGrupo && GrosorBorde > 0.dp && EstiloBorde != "ninguno") {
                         Modifier.border(GrosorBorde, ColorBordeActual, forma)
                     } else Modifier
@@ -252,7 +252,7 @@ fun FilaProblemaAgil(
                         modifier = Modifier
                             .size(22.dp)
                             .clip(CircleShape)
-                            .background(if (seleccionado) Ambar else Borde),
+                            .background(if (seleccionado) ColorAcento else Borde),
                         contentAlignment = Alignment.Center
                     ) {
                         if (seleccionado) {

@@ -33,8 +33,7 @@ fun SeccionAspectoWidget1x1(
         mostrarId = ajustes.mostrarIdsAjustes,
         alRestablecer = {
             haptica.tic()
-            vm.ajustarWidget1x1GrosorBorde(AjustesDefaults.Widget1x1.GROSOR_BORDE_DP)
-            vm.ajustarWidget1x1CurvaturaEsquinas(AjustesDefaults.Widget1x1.CURVATURA_ESQUINAS_DP)
+            vm.restablecerAspectoWidget1x1()
         }
     ) {
         ComponenteSlider(

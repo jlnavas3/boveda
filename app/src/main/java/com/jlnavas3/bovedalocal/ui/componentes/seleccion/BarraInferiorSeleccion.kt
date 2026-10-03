@@ -26,7 +26,6 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorTarjetaAjustes
-import com.jlnavas3.bovedalocal.ui.theme.Ambar
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
 import com.jlnavas3.bovedalocal.ui.theme.CurvaturaEsquinas
@@ -100,7 +99,6 @@ fun BarraInferiorSeleccion(
                         imageVector = Icons.Filled.Star,
                         contentDescription = if (todosSonFavoritos) "Quitar de favoritos" else "Marcar como favorito",
                         tint = if (!habilitado) TextoSecundario.copy(alpha = 0.35f)
-                               else if (todosSonFavoritos) Ambar
                                else ColorAcento,
                         modifier = Modifier.size(23.dp)
                     )

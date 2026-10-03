@@ -35,12 +35,12 @@ import androidx.lifecycle.compose.LifecycleResumeEffect
 import com.jlnavas3.bovedalocal.crypto.Zeroizar
 import com.jlnavas3.bovedalocal.data.VaultRepository
 import com.jlnavas3.bovedalocal.ui.FlujoBiometria
-import com.jlnavas3.bovedalocal.ui.componentes.BotonAmbar
 import com.jlnavas3.bovedalocal.ui.componentes.BotonBorde
+import com.jlnavas3.bovedalocal.ui.componentes.BotonPrimario
 import com.jlnavas3.bovedalocal.ui.componentes.CampoBoveda
 import com.jlnavas3.bovedalocal.ui.componentes.TarjetaBoveda
-import com.jlnavas3.bovedalocal.ui.theme.Ambar
 import com.jlnavas3.bovedalocal.ui.theme.BovedaTheme
+import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.Peligro
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
 import com.jlnavas3.bovedalocal.util.Diagnostico
@@ -116,7 +116,7 @@ class AutofillAuthActivity : FragmentActivity() {
             contentAlignment = Alignment.Center
         ) {
             TarjetaBoveda {
-                Text("Bóveda local", style = MaterialTheme.typography.titleLarge, color = Ambar)
+                Text("Bóveda local", style = MaterialTheme.typography.titleLarge, color = ColorAcento)
                 Spacer(Modifier.height(6.dp))
                 Text(
                     "Desbloquea para rellenar en ${AutofillUtiles.contextoSolicitante(paquete, dominio)}",
@@ -135,7 +135,7 @@ class AutofillAuthActivity : FragmentActivity() {
                     Text(it, color = Peligro, style = MaterialTheme.typography.bodyMedium)
                 }
                 Spacer(Modifier.height(18.dp))
-                BotonAmbar(
+                BotonPrimario(
                     texto = if (trabajando) "Abriendo…" else "Desbloquear",
                     activo = contrasena.isNotEmpty() && !trabajando
                 ) {

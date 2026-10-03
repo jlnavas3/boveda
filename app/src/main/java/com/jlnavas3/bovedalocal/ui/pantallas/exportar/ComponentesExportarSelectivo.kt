@@ -34,9 +34,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.jlnavas3.bovedalocal.data.Entrada
-import com.jlnavas3.bovedalocal.ui.componentes.BotonAmbar
 import com.jlnavas3.bovedalocal.ui.componentes.BotonBorde
 import com.jlnavas3.bovedalocal.ui.componentes.BotonIconoCabecera
+import com.jlnavas3.bovedalocal.ui.componentes.BotonPrimario
 import com.jlnavas3.bovedalocal.ui.componentes.CheckboxBoveda
 import com.jlnavas3.bovedalocal.ui.componentes.Monograma
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
@@ -220,7 +220,7 @@ fun BotonesAccionInferioresExportar(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        BotonAmbar(
+        BotonPrimario(
             texto = if (cantidadSeleccionada > 0)
                 "Exportar ($cantidadSeleccionada)"
             else

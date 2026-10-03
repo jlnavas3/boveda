@@ -33,7 +33,7 @@ import com.jlnavas3.bovedalocal.ui.VaultViewModel
 import com.jlnavas3.bovedalocal.ui.componentes.DialogoConfirmacionBoveda
 import com.jlnavas3.bovedalocal.ui.componentes.TipoBotonTexto
 import com.jlnavas3.bovedalocal.ui.componentes.contrasenaColoreada
-import com.jlnavas3.bovedalocal.ui.theme.Ambar
+import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.ColorDatosContrasena
 import com.jlnavas3.bovedalocal.ui.theme.EstiloMono
 import com.jlnavas3.bovedalocal.ui.theme.EstiloMonoGrande
@@ -208,7 +208,7 @@ private fun FilaHistorialContrasena(
                         icono = Icons.Filled.Restore,
                         descripcion = "Restaurar como activa",
                         alPulsar = onSolicitarRestaurar,
-                        tint = Ambar
+                        tint = ColorAcento
                     )
                 }
             }

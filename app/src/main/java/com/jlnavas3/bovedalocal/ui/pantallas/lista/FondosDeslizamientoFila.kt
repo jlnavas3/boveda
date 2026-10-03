@@ -25,7 +25,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.jlnavas3.bovedalocal.ui.theme.Ambar
+import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
 import com.jlnavas3.bovedalocal.ui.theme.EstiloBorde
 import com.jlnavas3.bovedalocal.ui.theme.GrosorBorde
@@ -90,7 +90,7 @@ fun FondoDeslizamientoContrasena(
         modifier = modifier
             .fillMaxSize()
             .clip(forma)
-            .background(Ambar.copy(alpha = 0.14f + 0.10f * progreso))
+            .background(ColorAcento.copy(alpha = 0.14f + 0.10f * progreso))
             .then(
                 if (GrosorBorde > 0.dp && EstiloBorde != "ninguno" && !enGrupo) {
                     Modifier.border(GrosorBorde, ColorBordeActual, forma)
@@ -105,7 +105,7 @@ fun FondoDeslizamientoContrasena(
         ) {
             Text(
                 text = "Copiar\nContraseña",
-                color = Ambar.copy(alpha = opacidad),
+                color = ColorAcento.copy(alpha = opacidad),
                 style = MaterialTheme.typography.bodyMedium.copy(lineHeight = 16.sp),
                 fontWeight = FontWeight.SemiBold,
                 textAlign = TextAlign.Center
@@ -114,7 +114,7 @@ fun FondoDeslizamientoContrasena(
             Icon(
                 Icons.Filled.Key,
                 contentDescription = null,
-                tint = Ambar.copy(alpha = opacidad),
+                tint = ColorAcento.copy(alpha = opacidad),
                 modifier = Modifier.size(26.dp)
             )
         }

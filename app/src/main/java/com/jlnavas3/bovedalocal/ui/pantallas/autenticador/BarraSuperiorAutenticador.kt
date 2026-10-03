@@ -31,7 +31,7 @@ import com.jlnavas3.bovedalocal.ui.componentes.MenuDesplegableBoveda
 import com.jlnavas3.bovedalocal.ui.componentes.SeparadorOpcionMenu
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjustesFondo
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorTarjetaAjustes
-import com.jlnavas3.bovedalocal.ui.theme.Ambar
+import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.Color2FA
 import com.jlnavas3.bovedalocal.ui.theme.ColorExportacion
 import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
@@ -139,8 +139,8 @@ fun BarraSuperiorAutenticador(
                     com.jlnavas3.bovedalocal.ui.componentes.ElementoMenuCompacto(
                         texto = if (soloFavoritos) "Ver todas las cuentas" else "Solo favoritos",
                         icono = Icons.Filled.Star,
-                        colorIcono = if (soloFavoritos) Ambar else ColorIconosInternos,
-                        colorTexto = if (soloFavoritos) Ambar else TextoPrincipal,
+                        colorIcono = if (soloFavoritos) ColorAcento else ColorIconosInternos,
+                        colorTexto = if (soloFavoritos) ColorAcento else TextoPrincipal,
                         onClick = {
                             menuOpcionesDesplegado = false
                             haptica.tic()

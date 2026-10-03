@@ -37,8 +37,8 @@ import com.jlnavas3.bovedalocal.camara.MotorCamara
 import com.jlnavas3.bovedalocal.camara.PermisoCamara
 import com.jlnavas3.bovedalocal.ui.Pantalla
 import com.jlnavas3.bovedalocal.ui.VaultViewModel
-import com.jlnavas3.bovedalocal.ui.componentes.BotonAmbar
 import com.jlnavas3.bovedalocal.ui.componentes.BotonBorde
+import com.jlnavas3.bovedalocal.ui.componentes.BotonPrimario
 import com.jlnavas3.bovedalocal.ui.componentes.ContenedorPrincipal
 import com.jlnavas3.bovedalocal.ui.pantallas.escaner.EstadoPermiso
 import com.jlnavas3.bovedalocal.ui.pantallas.escaner.SeccionEntradaManual
@@ -141,7 +141,7 @@ fun PantallaEscaner(
         espaciado = 16.dp
     ) {
         if (!soloManual) {
-            BotonAmbar(
+            BotonPrimario(
                 texto = "Escanear código QR",
                 icono = Icons.Filled.QrCodeScanner
             ) {

@@ -44,7 +44,6 @@ import com.jlnavas3.bovedalocal.ui.componentes.FilaOpcionModal
 import com.jlnavas3.bovedalocal.ui.componentes.ModalInferiorBoveda
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorCampoAjustes
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.SwitchBoveda
-import com.jlnavas3.bovedalocal.ui.theme.Ambar
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
 import com.jlnavas3.bovedalocal.ui.theme.ColorGenerador

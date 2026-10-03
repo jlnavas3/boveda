@@ -65,7 +65,6 @@ import com.jlnavas3.bovedalocal.ui.pantallas.salud.ResumenAuditoriaSalud
 import com.jlnavas3.bovedalocal.ui.pantallas.salud.SelectorPestanasSalud
 import com.jlnavas3.bovedalocal.ui.pantallas.salud.coincideBusquedaSalud
 import com.jlnavas3.bovedalocal.ui.pantallas.salud.diasDesde
-import com.jlnavas3.bovedalocal.ui.theme.Ambar
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
 import com.jlnavas3.bovedalocal.ui.theme.ColorSalud
@@ -186,7 +185,7 @@ fun PantallaSaludBoveda(
                             },
                             icono = Icons.Filled.Search,
                             descripcion = "Buscar",
-                            tint = if (busquedaVisible || textoBusqueda.isNotBlank()) Ambar else ColorIconosInternos
+                            tint = if (busquedaVisible || textoBusqueda.isNotBlank()) ColorAcento else ColorIconosInternos
                         )
                         BotonIconoCabecera(
                             onClick = {

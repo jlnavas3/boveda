@@ -22,7 +22,7 @@ import androidx.compose.material.icons.filled.Timer
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import com.jlnavas3.bovedalocal.ui.Pantalla
-import com.jlnavas3.bovedalocal.ui.theme.Ambar
+import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -132,7 +132,7 @@ fun PantallaPapelera(
                         com.jlnavas3.bovedalocal.ui.componentes.ElementoMenuCompacto(
                             texto = "Diseño de lista...",
                             icono = androidx.compose.material.icons.Icons.Filled.Layers,
-                            colorIcono = Ambar,
+                            colorIcono = ColorAcento,
                             onClick = {
                                 menuAbiertoPap = false
                                 vm.ir(Pantalla.OrganizacionLista("03-LST-DES-GRP"))
@@ -142,7 +142,7 @@ fun PantallaPapelera(
                         com.jlnavas3.bovedalocal.ui.componentes.ElementoMenuCompacto(
                             texto = "Ajustes de autodestrucción...",
                             icono = androidx.compose.material.icons.Icons.Filled.Timer,
-                            colorIcono = Ambar,
+                            colorIcono = ColorAcento,
                             onClick = {
                                 menuAbiertoPap = false
                                 vm.ir(Pantalla.AjustesAutodestruccion("01-SEG-DES"))

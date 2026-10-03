@@ -38,7 +38,6 @@ import androidx.compose.material.icons.filled.Palette
 import com.jlnavas3.bovedalocal.ui.componentes.SwitchBoveda
 import com.jlnavas3.bovedalocal.ui.preview.BovedaPreview
 import com.jlnavas3.bovedalocal.ui.preview.PreviewTemaBoveda
-import com.jlnavas3.bovedalocal.ui.theme.Ambar
 import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
 import com.jlnavas3.bovedalocal.ui.theme.CurvaturaEsquinas
 import com.jlnavas3.bovedalocal.ui.theme.EstiloMono

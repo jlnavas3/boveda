@@ -22,7 +22,7 @@ import com.jlnavas3.bovedalocal.ui.componentes.DialogoBoveda
 import com.jlnavas3.bovedalocal.ui.componentes.DialogoConfirmacionBoveda
 import com.jlnavas3.bovedalocal.ui.componentes.TipoBotonTexto
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteCampoTexto
-import com.jlnavas3.bovedalocal.ui.theme.Ambar
+import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.TextoPrincipal
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
 
@@ -55,7 +55,7 @@ fun DialogoRenombrarSeleccion(
         abierto = true,
         alCerrar = alDescartar,
         icono = Icons.Filled.Edit,
-        colorIcono = Ambar,
+        colorIcono = ColorAcento,
         titulo = if (cantidad == 1) "Renombrar título" else "Renombrar título ($cantidad seleccionadas)",
         botonConfirmar = {
             TextButton(
@@ -66,7 +66,7 @@ fun DialogoRenombrarSeleccion(
                 },
                 enabled = textoNuevoTitulo.isNotBlank()
             ) {
-                Text("Renombrar", color = if (textoNuevoTitulo.isNotBlank()) Ambar else TextoSecundario)
+                Text("Renombrar", color = if (textoNuevoTitulo.isNotBlank()) ColorAcento else TextoSecundario)
             }
         },
         botonDescartar = {

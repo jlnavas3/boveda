@@ -37,7 +37,6 @@ import com.jlnavas3.bovedalocal.ui.pantallas.exportar.DialogoClaveExportarSelect
 import com.jlnavas3.bovedalocal.ui.pantallas.exportar.GuardadorBackupSelectivo
 import com.jlnavas3.bovedalocal.ui.pantallas.exportar.ListaEntradasExportarSelectivo
 import com.jlnavas3.bovedalocal.ui.pantallas.exportar.ProveedorCategoriasExportacion
-import com.jlnavas3.bovedalocal.ui.theme.Ambar
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
 import com.jlnavas3.bovedalocal.util.Haptica
@@ -142,7 +141,7 @@ fun PantallaExportarSelectivo(
                     },
                     icono = Icons.Filled.Search,
                     descripcion = "Buscar entradas",
-                    tint = if (busquedaVisible || textoBusqueda.isNotBlank()) Ambar else ColorIconosInternos
+                    tint = if (busquedaVisible || textoBusqueda.isNotBlank()) ColorAcento else ColorIconosInternos
                 )
 
                 BotonIconoCabecera(

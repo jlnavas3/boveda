@@ -19,6 +19,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.jlnavas3.bovedalocal.ui.VaultViewModel
 import com.jlnavas3.bovedalocal.ui.componentes.BarraSuperiorPantalla
+import com.jlnavas3.bovedalocal.ui.componentes.ajustes.BotonMenuOpcionesPantalla
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ProveedorResaltadoAjustes
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjustesFondo
 import com.jlnavas3.bovedalocal.ui.pantallas.calibracion.animacion.AccionesCalibracionEngranajes
@@ -53,7 +54,19 @@ fun PantallaCalibracionAnimacion(
                 mostrarId = ajustes.mostrarIdsAjustes,
                 alVolver = { vm.volverAtras() },
                 conSeparador = false,
-                colorFondo = ColorAjustesFondo
+                colorFondo = ColorAjustesFondo,
+                acciones = {
+                    BotonMenuOpcionesPantalla(
+                        alRestablecerPantalla = {
+                            if (esEngranajes) {
+                                vm.restablecerAjustesEngranajes()
+                            } else {
+                                vm.restablecerAjustesPuerta()
+                            }
+                        },
+                        mensajeToastRestablecer = "Animación restablecida"
+                    )
+                }
             )
 
             // 2. Cabecera FLOTANTE fija: Muestra solo la animación sin textos ni títulos

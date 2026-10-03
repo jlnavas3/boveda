@@ -22,6 +22,7 @@ import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.icons.filled.RestartAlt
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -43,9 +44,9 @@ import androidx.compose.ui.unit.sp
 import com.jlnavas3.bovedalocal.ui.componentes.MenuDesplegableBoveda
 import com.jlnavas3.bovedalocal.ui.componentes.SeparadorOpcionMenu
 import com.jlnavas3.bovedalocal.ui.componentes.TarjetaBovedaDesplegable
+import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteBotonFila
 import com.jlnavas3.bovedalocal.ui.preview.BovedaPreview
 import com.jlnavas3.bovedalocal.ui.preview.PreviewTemaBoveda
-import com.jlnavas3.bovedalocal.ui.theme.Ambar
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
 import com.jlnavas3.bovedalocal.ui.theme.ColorTitulos
@@ -241,45 +242,13 @@ fun BotonRestablecerItem(
     modifier: Modifier = Modifier,
     alRestaurar: () -> Unit
 ) {
-    val contexto = LocalContext.current
-    val haptica = remember { Haptica(contexto) }
-    val fondoSolido = if (esOscuroActivo) Color(0xFF2C2B30) else Color(0xFFEAEAEA)
-    val forma = RoundedCornerShape(10.dp)
-
-    Row(
+    ComponenteBotonFila(
+        titulo = texto,
+        icono = androidx.compose.material.icons.Icons.Filled.RestartAlt,
+        colorIcono = ColorIconosInternos,
+        alPulsar = alRestaurar,
         modifier = modifier
-            .fillMaxWidth()
-            .padding(top = 10.dp),
-        horizontalArrangement = Arrangement.Start
-    ) {
-        Row(
-            modifier = Modifier
-                .clip(forma)
-                .background(fondoSolido)
-                .clickable {
-                    haptica.tic()
-                    alRestaurar()
-                }
-                .padding(horizontal = 14.dp, vertical = 7.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Icon(
-                imageVector = Icons.Filled.Refresh,
-                contentDescription = null,
-                tint = Ambar,
-                modifier = Modifier.size(15.dp)
-            )
-            Spacer(Modifier.width(8.dp))
-            Text(
-                text = texto,
-                color = TextoPrincipal,
-                style = MaterialTheme.typography.bodySmall.copy(
-                    fontWeight = FontWeight.SemiBold,
-                    fontSize = 12.5.sp
-                )
-            )
-        }
-    }
+    )
 }
 
 @BovedaPreview

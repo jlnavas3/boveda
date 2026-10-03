@@ -9,7 +9,7 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.Dp
 import com.jlnavas3.bovedalocal.ui.componentes.AccionDeslizamiento
 import com.jlnavas3.bovedalocal.ui.componentes.ContenedorDeslizamientoBoveda
-import com.jlnavas3.bovedalocal.ui.theme.Ambar
+import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.Menta
 
 /**
@@ -41,7 +41,7 @@ fun ContenedorDeslizamientoFila(
         accionDerecha = AccionDeslizamiento(
             texto = "Copiar\nContraseña",
             icono = Icons.Filled.Key,
-            color = Ambar,
+            color = ColorAcento,
             alEjecutar = alCopiarContrasena
         ),
         modifier = modifier,

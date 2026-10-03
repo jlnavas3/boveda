@@ -56,7 +56,7 @@ import com.jlnavas3.bovedalocal.ui.VaultViewModel
 import com.jlnavas3.bovedalocal.ui.componentes.BarraSuperiorPantalla
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjustesFondo
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorTarjetaAjustes
-import com.jlnavas3.bovedalocal.ui.theme.Ambar
+import com.jlnavas3.bovedalocal.ui.theme.ColorPasskeys
 import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
 import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
 import com.jlnavas3.bovedalocal.ui.theme.ColorSobreAcento
@@ -160,7 +160,7 @@ fun PantallaConfirmarImportacionCxf(
                     InsigniaResumenCxf(
                         icono = Icons.Filled.VpnKey,
                         texto = "${resultadoCxf.totalPasskeys} llaves de paso",
-                        color = Ambar
+                        color = ColorPasskeys
                     )
                 }
                 if (resultadoCxf.totalContrasenas > 0) {
@@ -391,7 +391,7 @@ private fun FilaItemCxf(
             // Etiquetas de contenido
             Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                 if (item.entrada.passkey != null) {
-                    MiniChipCxf("Llave de paso", Ambar)
+                    MiniChipCxf("Llave de paso", ColorPasskeys)
                 }
                 if (item.entrada.contrasena.isNotBlank()) {
                     MiniChipCxf("Contraseña", Color(0xFF64B5F6))

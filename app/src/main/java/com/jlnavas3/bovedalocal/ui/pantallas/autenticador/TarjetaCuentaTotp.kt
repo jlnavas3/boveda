@@ -33,7 +33,7 @@ import com.jlnavas3.bovedalocal.crypto.Base32
 import com.jlnavas3.bovedalocal.crypto.Totp
 import com.jlnavas3.bovedalocal.data.Entrada
 import com.jlnavas3.bovedalocal.ui.componentes.IndicadorTotpTarta
-import com.jlnavas3.bovedalocal.ui.theme.Ambar
+import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.ColorDatos2FA
 import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
 import com.jlnavas3.bovedalocal.ui.theme.ColorTitulos
@@ -95,7 +95,7 @@ fun TarjetaCuentaTotp(
 
     val forma = RoundedCornerShape(CurvaturaEsquinas)
     val fondoFila = if (seleccionado) {
-        Ambar.copy(alpha = 0.22f)
+        ColorAcento.copy(alpha = 0.22f)
     } else {
         ColorTarjetaAjustes
     }
@@ -106,7 +106,7 @@ fun TarjetaCuentaTotp(
             .clip(forma)
             .background(fondoFila)
             .then(
-                if (seleccionado) Modifier.border(1.dp, Ambar.copy(alpha = 0.5f), forma)
+                if (seleccionado) Modifier.border(1.dp, ColorAcento.copy(alpha = 0.5f), forma)
                 else if (GrosorBorde > 0.dp && EstiloBorde != "ninguno") Modifier.border(GrosorBorde, ColorBordeActual, forma)
                 else Modifier
             )
@@ -152,7 +152,7 @@ fun TarjetaCuentaTotp(
                     modifier = Modifier
                         .size(24.dp)
                         .clip(CircleShape)
-                        .background(if (seleccionado) Ambar else Borde),
+                        .background(if (seleccionado) ColorAcento else Borde),
                     contentAlignment = Alignment.Center
                 ) {
                     if (seleccionado) {
@@ -235,7 +235,7 @@ fun TarjetaCuentaTotp(
                     Icon(
                         imageVector = Icons.Filled.Star,
                         contentDescription = "Quitar de favoritos",
-                        tint = Ambar,
+                        tint = ColorAcento,
                         modifier = Modifier.size(20.dp)
                     )
                 }

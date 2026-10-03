@@ -25,10 +25,10 @@ import androidx.compose.foundation.layout.Column
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorTarjetaAjustes
 import com.jlnavas3.bovedalocal.ui.preview.BovedaPreview
 import com.jlnavas3.bovedalocal.ui.preview.PreviewTemaBoveda
-import com.jlnavas3.bovedalocal.ui.theme.Ambar
+import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
 import com.jlnavas3.bovedalocal.ui.theme.ColorSobreAcento
-import com.jlnavas3.bovedalocal.ui.theme.DegradadoAmbar
+import com.jlnavas3.bovedalocal.ui.theme.DegradadoAcento
 import com.jlnavas3.bovedalocal.ui.theme.EstiloBorde
 import com.jlnavas3.bovedalocal.ui.theme.FormaPequena
 import com.jlnavas3.bovedalocal.ui.theme.GrosorBorde
@@ -43,10 +43,10 @@ fun ChipFiltro(texto: String, activo: Boolean, alPulsar: () -> Unit) {
     Box(
         modifier = Modifier
             .clip(forma)
-            .background(if (activo) DegradadoAmbar else Brush.horizontalGradient(listOf(ColorTarjetaAjustes, ColorTarjetaAjustes)))
+            .background(if (activo) DegradadoAcento else Brush.horizontalGradient(listOf(ColorTarjetaAjustes, ColorTarjetaAjustes)))
             .then(
                 if (GrosorBorde > 0.dp && EstiloBorde != "ninguno") {
-                    Modifier.border(GrosorBorde, if (activo) Ambar else ColorBordeActual, forma)
+                    Modifier.border(GrosorBorde, if (activo) ColorAcento else ColorBordeActual, forma)
                 } else Modifier
             )
             .clickable { alPulsar() }
@@ -72,10 +72,10 @@ fun ChipFiltroActivo(
     Row(
         modifier = modifier
             .clip(FormaPequena)
-            .background(Ambar.copy(alpha = 0.16f))
+            .background(ColorAcento.copy(alpha = 0.16f))
             .then(
                 if (GrosorBorde > 0.dp && EstiloBorde != "ninguno") {
-                    Modifier.border(GrosorBorde, Ambar.copy(alpha = 0.4f), FormaPequena)
+                    Modifier.border(GrosorBorde, ColorAcento.copy(alpha = 0.4f), FormaPequena)
                 } else Modifier
             )
             .clickable { alLimpiar() }
@@ -84,14 +84,14 @@ fun ChipFiltroActivo(
     ) {
         Text(
             text = texto,
-            color = Ambar,
+            color = ColorAcento,
             style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.SemiBold)
         )
         Spacer(Modifier.width(4.dp))
         Icon(
             imageVector = Icons.Filled.Close,
             contentDescription = "Quitar filtro",
-            tint = Ambar,
+            tint = ColorAcento,
             modifier = Modifier.size(14.dp)
         )
     }

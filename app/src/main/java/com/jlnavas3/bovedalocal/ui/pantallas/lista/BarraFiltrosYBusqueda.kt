@@ -29,7 +29,7 @@ import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorTarjetaAjustes
-import com.jlnavas3.bovedalocal.ui.theme.Ambar
+import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
 import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
 import com.jlnavas3.bovedalocal.ui.theme.CurvaturaEsquinas
@@ -71,7 +71,7 @@ fun BarraBusquedaAnimada(
         Icon(
             imageVector = Icons.Filled.Search,
             contentDescription = null,
-            tint = if (valor.isBlank()) TextoSecundario else Ambar,
+            tint = if (valor.isBlank()) TextoSecundario else ColorAcento,
             modifier = Modifier.size(20.dp)
         )
         Spacer(Modifier.width(10.dp))
@@ -80,7 +80,7 @@ fun BarraBusquedaAnimada(
             onValueChange = alCambiar,
             singleLine = true,
             textStyle = MaterialTheme.typography.bodyLarge.copy(color = TextoPrincipal, fontSize = 15.sp),
-            cursorBrush = SolidColor(Ambar),
+            cursorBrush = SolidColor(ColorAcento),
             modifier = Modifier
                 .weight(1f)
                 .focusRequester(focusRequester)
@@ -131,14 +131,14 @@ fun CampoBusquedaLista(valor: String, alCambiar: (String) -> Unit) {
             .padding(horizontal = 12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Icon(Icons.Filled.Search, contentDescription = null, tint = if (valor.isBlank()) TextoSecundario else Ambar, modifier = Modifier.size(18.dp))
+        Icon(Icons.Filled.Search, contentDescription = null, tint = if (valor.isBlank()) TextoSecundario else ColorAcento, modifier = Modifier.size(18.dp))
         Spacer(Modifier.width(8.dp))
         BasicTextField(
             value = valor,
             onValueChange = alCambiar,
             singleLine = true,
             textStyle = MaterialTheme.typography.bodyMedium.copy(color = TextoPrincipal),
-            cursorBrush = SolidColor(Ambar),
+            cursorBrush = SolidColor(ColorAcento),
             modifier = Modifier.weight(1f)
         )
         if (valor.isNotBlank()) {

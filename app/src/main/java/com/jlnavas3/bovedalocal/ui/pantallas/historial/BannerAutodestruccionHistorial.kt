@@ -23,7 +23,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.jlnavas3.bovedalocal.data.AlmacenAjustes
-import com.jlnavas3.bovedalocal.ui.theme.Ambar
+import com.jlnavas3.bovedalocal.ui.theme.Advertencia
 import com.jlnavas3.bovedalocal.ui.theme.FormaCampo
 import com.jlnavas3.bovedalocal.ui.theme.Menta
 import com.jlnavas3.bovedalocal.ui.theme.colorLegibleParaTema
@@ -36,7 +36,7 @@ fun BannerAutodestruccionHistorial(
     modifier: Modifier = Modifier,
     alPulsar: () -> Unit = {}
 ) {
-    val colorEstado = if (autodestruccionActiva) Menta else Ambar
+    val colorEstado = if (autodestruccionActiva) Menta else Advertencia
     val iconoEstado = if (autodestruccionActiva) Icons.Filled.Timer else Icons.Filled.WarningAmber
     val textoEstado = if (autodestruccionActiva) {
         val tiempoTexto = AlmacenAjustes.OPCIONES_AUTODESTRUCCION_HISTORIAL

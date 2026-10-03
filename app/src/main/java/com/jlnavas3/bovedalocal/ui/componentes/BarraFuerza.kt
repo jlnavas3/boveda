@@ -23,8 +23,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.jlnavas3.bovedalocal.ui.theme.Ambar
-import com.jlnavas3.bovedalocal.ui.theme.AmbarFuerte
+import androidx.compose.ui.graphics.Color
 import com.jlnavas3.bovedalocal.ui.theme.Borde
 import com.jlnavas3.bovedalocal.ui.theme.FormaPequena
 import com.jlnavas3.bovedalocal.ui.theme.Menta
@@ -47,8 +46,8 @@ fun BarraFuerza(
     val color by animateColorAsState(
         targetValue = when {
             fraccion < 0.35f -> Peligro
-            fraccion < 0.65f -> AmbarFuerte
-            fraccion < 0.85f -> Ambar
+            fraccion < 0.65f -> Color(0xFFF97316)
+            fraccion < 0.85f -> Color(0xFFEAB308)
             else -> Menta
         },
         animationSpec = spring(dampingRatio = 0.7f),

@@ -31,7 +31,7 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.jlnavas3.bovedalocal.ui.theme.Ambar
+import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.Menta
 
 /**
@@ -50,7 +50,7 @@ fun VisorMascaraQr(
 ) {
     val densidad = LocalDensity.current
     val colorEsquinas by animateColorAsState(
-        targetValue = if (codigoDetectado) Menta else Ambar,
+        targetValue = if (codigoDetectado) Menta else ColorAcento,
         animationSpec = tween(durationMillis = 200),
         label = "colorEsquinas"
     )

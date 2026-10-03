@@ -16,7 +16,7 @@ import com.jlnavas3.bovedalocal.data.AjustesApp
 import com.jlnavas3.bovedalocal.ui.componentes.EngranajesBoveda
 import com.jlnavas3.bovedalocal.ui.componentes.PuertaBoveda
 import com.jlnavas3.bovedalocal.ui.componentes.aEngranajesConfig
-import com.jlnavas3.bovedalocal.ui.theme.Ambar
+import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
 import com.jlnavas3.bovedalocal.ui.theme.FormaCampo
 import com.jlnavas3.bovedalocal.ui.theme.GrosorBorde
@@ -49,7 +49,7 @@ fun VisorAnimacionFlotante(
             )
         } else {
             val colorPuertaPersonalizado = if (ajustes.puertaColor.isNotBlank()) {
-                parsearColorO(ajustes.puertaColor, Ambar)
+                parsearColorO(ajustes.puertaColor, ColorAcento)
             } else null
 
             PuertaBoveda(

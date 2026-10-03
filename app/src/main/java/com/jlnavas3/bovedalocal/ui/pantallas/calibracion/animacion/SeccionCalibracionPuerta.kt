@@ -19,7 +19,7 @@ import com.jlnavas3.bovedalocal.ui.componentes.SelectorColorEnTiempoReal
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteGrupo
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteSeparador
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteSlider
-import com.jlnavas3.bovedalocal.ui.theme.Ambar
+import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
 import com.jlnavas3.bovedalocal.ui.theme.aHex
 import com.jlnavas3.bovedalocal.ui.theme.parsearColorO
@@ -70,8 +70,8 @@ fun SeccionCalibracionPuerta(
 
     // Grupo 2: Tonalidad cromática
     val colorActualPuerta = if (ajustes.puertaColor.isNotBlank()) {
-        parsearColorO(ajustes.puertaColor, Ambar)
-    } else Ambar
+        parsearColorO(ajustes.puertaColor, ColorAcento)
+    } else ColorAcento
 
     ComponenteGrupo(
         etiqueta = "Color de la puerta de bóveda",

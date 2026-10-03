@@ -39,7 +39,6 @@ import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjusteGris
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorSeparadorAjustes
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorTarjetaAjustes
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorTextoAjustes
-import com.jlnavas3.bovedalocal.ui.theme.Ambar
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
 import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
@@ -114,7 +113,7 @@ fun ItemMenu(
     colorIcono: Color = ColorIconosInternos,
     colorTexto: Color = ColorTextoAjustes,
     badge: String? = null,
-    colorBadge: Color = Ambar,
+    colorBadge: Color = ColorAcento,
     idEtiqueta: String? = null,
     mostrarId: Boolean = false,
     mostrarChevron: Boolean = true,

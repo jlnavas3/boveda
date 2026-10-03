@@ -31,7 +31,8 @@ import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorCampoAjustes
 import com.jlnavas3.bovedalocal.ui.pantallas.calibracion.widgettotp.SeccionColoresWidgetTotp
 import com.jlnavas3.bovedalocal.ui.pantallas.calibracion.widgettotp.SeccionFormaYTransparenciaWidgetTotp
 import com.jlnavas3.bovedalocal.ui.pantallas.calibracion.widgettotp.SimuladorWidgetTotpFlotante
-import com.jlnavas3.bovedalocal.ui.theme.Ambar
+import com.jlnavas3.bovedalocal.ui.componentes.ajustes.BotonMenuOpcionesPantalla
+import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.parsearColorO
 import com.jlnavas3.bovedalocal.util.Haptica
 import kotlinx.coroutines.delay
@@ -57,9 +58,9 @@ fun PantallaCalibracionWidgetTotp(
     }
     val segundosRestantes = Totp.segundosRestantes(ahoraSegundos, 30L)
 
-    val colorBordeEfectivo = parsearColorO(ajustes.widgetColorBorde, Ambar)
+    val colorBordeEfectivo = parsearColorO(ajustes.widgetColorBorde, parsearColorO(AjustesDefaults.WidgetTotp.COLOR_BORDE, ColorAcento))
     val colorContadorEfectivo = parsearColorO(ajustes.widgetColorContador, Color.White)
-    val colorCodigoEfectivo = parsearColorO(ajustes.widgetColorCodigo, Ambar)
+    val colorCodigoEfectivo = parsearColorO(ajustes.widgetColorCodigo, parsearColorO(AjustesDefaults.WidgetTotp.COLOR_CODIGO, ColorAcento))
     val colorTituloIconoEfectivo = parsearColorO(ajustes.widgetColorTituloIcono, Color.White)
     val colorFilasEfectivo = parsearColorO(
         if (ajustes.widgetColorFilas.isBlank() || ajustes.widgetColorFilas == AjustesDefaults.WidgetTotp.COLOR_FILAS)
@@ -81,7 +82,15 @@ fun PantallaCalibracionWidgetTotp(
                 mostrarId = ajustes.mostrarIdsAjustes,
                 alVolver = { vm.volverAtras() },
                 conSeparador = false,
-                colorFondo = ColorAjustesFondo
+                colorFondo = ColorAjustesFondo,
+                acciones = {
+                    BotonMenuOpcionesPantalla(
+                        alRestablecerPantalla = {
+                            vm.restablecerAjustesWidget()
+                        },
+                        mensajeToastRestablecer = "Aspecto del widget 2FA restablecido"
+                    )
+                }
             )
 
             SimuladorWidgetTotpFlotante(

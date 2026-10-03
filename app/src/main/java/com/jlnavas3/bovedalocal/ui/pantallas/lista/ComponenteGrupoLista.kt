@@ -45,7 +45,6 @@ import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.preview.BovedaPreview
 import com.jlnavas3.bovedalocal.ui.preview.PreviewMocks
 import com.jlnavas3.bovedalocal.ui.preview.PreviewTemaBoveda
-import com.jlnavas3.bovedalocal.ui.theme.Ambar
 import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
 import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
 import com.jlnavas3.bovedalocal.ui.theme.CurvaturaEsquinas
@@ -84,7 +83,7 @@ fun ComponenteGrupoLista(
         modifier = modifier
             .fillMaxWidth()
             .clip(formaGrupo)
-            .background(if (resaltado) Ambar.copy(alpha = 0.16f) else ColorTarjetaAjustes)
+            .background(if (resaltado) ColorAcento.copy(alpha = 0.16f) else ColorTarjetaAjustes)
             .then(
                 if (GrosorBorde > 0.dp && EstiloBorde != "ninguno") Modifier.border(GrosorBorde, ColorBordeActual, formaGrupo)
                 else Modifier
@@ -131,7 +130,7 @@ fun ComponenteGrupoLista(
                         } else {
                             MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold, fontSize = 15.sp)
                         },
-                        color = if (resaltado) Ambar else TextoPrincipal,
+                        color = if (resaltado) ColorAcento else TextoPrincipal,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
@@ -151,7 +150,7 @@ fun ComponenteGrupoLista(
                 Icon(
                     imageVector = if (expandido) Icons.Filled.ExpandLess else Icons.Filled.ExpandMore,
                     contentDescription = if (expandido) "Contraer" else "Expandir",
-                    tint = if (resaltado) Ambar else ColorIconosInternos
+                    tint = if (resaltado) ColorAcento else ColorIconosInternos
                 )
             }
 

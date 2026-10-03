@@ -45,7 +45,7 @@ object CambiadorIcono {
     fun aplicar(contexto: Context, clave: String) {
         val pm = contexto.packageManager
         val componentes = aliasPorClave.mapValues { ComponentName(contexto.packageName, it.value) }
-        val elegido = componentes[clave] ?: componentes.getValue("ambar")
+        val elegido = componentes[clave] ?: componentes.getValue("gris")
 
         // Primero se enciende el elegido y solo después se apagan los otros cuatro: así
         // nunca hay una ventana sin ningún icono de lanzador visible.

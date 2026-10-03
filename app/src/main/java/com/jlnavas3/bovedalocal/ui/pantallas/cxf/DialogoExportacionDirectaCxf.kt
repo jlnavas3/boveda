@@ -41,7 +41,6 @@ import com.jlnavas3.bovedalocal.ui.componentes.BotonBoveda
 import com.jlnavas3.bovedalocal.ui.componentes.BotonTextoBoveda
 import com.jlnavas3.bovedalocal.ui.componentes.DialogoBoveda
 import com.jlnavas3.bovedalocal.ui.componentes.VarianteBoton
-import com.jlnavas3.bovedalocal.ui.theme.Ambar
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.Color2FA
 import com.jlnavas3.bovedalocal.ui.theme.ColorDatosContrasena
@@ -203,7 +202,7 @@ fun DialogoExportacionDirectaCxf(
             } else {
                 BotonTextoBoveda(
                     texto = "Desactivar",
-                    colorPersonalizado = Ambar,
+                    colorPersonalizado = ColorAcento,
                     alPulsar = {
                         scope.launch {
                             enProgreso = true

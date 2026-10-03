@@ -70,7 +70,6 @@ import com.jlnavas3.bovedalocal.ui.pantallas.PantallaSaludBoveda
 import com.jlnavas3.bovedalocal.ui.pantallas.PantallaDuplicados
 import com.jlnavas3.bovedalocal.ui.pantallas.PantallaPapelera
 import com.jlnavas3.bovedalocal.ui.pantallas.PantallaRegistro
-import com.jlnavas3.bovedalocal.ui.theme.Ambar
 import com.jlnavas3.bovedalocal.ui.theme.Obsidiana
 import com.jlnavas3.bovedalocal.ui.theme.BovedaTheme
 import com.jlnavas3.bovedalocal.ui.theme.SuperficieAlta

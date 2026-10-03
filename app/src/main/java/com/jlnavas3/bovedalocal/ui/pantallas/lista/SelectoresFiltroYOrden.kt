@@ -50,7 +50,6 @@ import com.jlnavas3.bovedalocal.ui.CriterioOrdenacion
 import com.jlnavas3.bovedalocal.ui.componentes.MenuDesplegableBoveda
 import com.jlnavas3.bovedalocal.ui.componentes.SeparadorOpcionMenu
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorTarjetaAjustes
-import com.jlnavas3.bovedalocal.ui.theme.Ambar
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
 import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
@@ -116,7 +115,7 @@ fun SelectorFiltros(
             Icon(
                 Icons.Filled.Tune,
                 contentDescription = null,
-                tint = if (desplegado || filtro != null || soloFavoritos) Ambar else TextoSecundario,
+                tint = if (desplegado || filtro != null || soloFavoritos) ColorAcento else TextoSecundario,
                 modifier = Modifier.size(18.dp)
             )
             Spacer(Modifier.width(6.dp))

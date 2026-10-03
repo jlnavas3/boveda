@@ -48,7 +48,6 @@ import com.jlnavas3.bovedalocal.ui.pantallas.generador.SeccionConfiguracionAleat
 import com.jlnavas3.bovedalocal.ui.pantallas.generador.SeccionConfiguracionPatron
 import com.jlnavas3.bovedalocal.ui.pantallas.generador.SelectorModoEstrategia
 import com.jlnavas3.bovedalocal.ui.pantallas.generador.TarjetaResultadoGenerador
-import com.jlnavas3.bovedalocal.ui.theme.Ambar
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
 import com.jlnavas3.bovedalocal.ui.theme.ColorSobreAcento
@@ -172,7 +171,7 @@ fun PantallaGenerador(vm: VaultViewModel) {
                     vm.copiar("Contraseña", generada, sensible = true)
                 },
                 containerColor = ColorTarjetaAjustes,
-                contentColor = Ambar,
+                contentColor = ColorAcento,
                 shape = formaFab,
                 modifier = Modifier.then(
                     if (GrosorBorde > 0.dp && EstiloBorde != "ninguno") {

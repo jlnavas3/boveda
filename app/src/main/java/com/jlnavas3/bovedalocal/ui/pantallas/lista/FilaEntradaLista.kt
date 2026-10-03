@@ -40,7 +40,7 @@ import androidx.compose.runtime.remember
 import com.jlnavas3.bovedalocal.data.Entrada
 import com.jlnavas3.bovedalocal.data.TipoEntrada
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorTarjetaAjustes
-import com.jlnavas3.bovedalocal.ui.theme.Ambar
+import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.Borde
 import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
 import com.jlnavas3.bovedalocal.ui.theme.ColorSobreAcento
@@ -118,9 +118,9 @@ fun FilaEntrada(
         }
 
         val fondoFila = if (seleccionado) {
-            Ambar.copy(alpha = 0.22f)
+            ColorAcento.copy(alpha = 0.22f)
         } else if (resaltado) {
-            Ambar.copy(alpha = 0.16f)
+            ColorAcento.copy(alpha = 0.16f)
         } else if (enGrupo) {
             Color.Transparent
         } else {
@@ -134,7 +134,7 @@ fun FilaEntrada(
                 .clip(forma)
                 .background(fondoFila)
                 .then(
-                    if (seleccionado) Modifier.border(1.dp, Ambar.copy(alpha = 0.5f), forma)
+                    if (seleccionado) Modifier.border(1.dp, ColorAcento.copy(alpha = 0.5f), forma)
                     else if (GrosorBorde > 0.dp && EstiloBorde != "ninguno" && !enGrupo) Modifier.border(GrosorBorde, ColorBordeActual, forma)
                     else Modifier
                 )
@@ -161,7 +161,7 @@ fun FilaEntrada(
                         modifier = Modifier
                             .size(24.dp)
                             .clip(CircleShape)
-                            .background(if (seleccionado) Ambar else Borde),
+                            .background(if (seleccionado) ColorAcento else Borde),
                         contentAlignment = Alignment.Center
                     ) {
                         if (seleccionado) {
@@ -195,7 +195,7 @@ fun FilaEntrada(
                             } else {
                                 MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold, fontSize = 15.sp)
                             },
-                            color = if (resaltado) Ambar else TextoPrincipal,
+                            color = if (resaltado) ColorAcento else TextoPrincipal,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
                             modifier = Modifier.weight(1f, fill = false)
@@ -248,7 +248,7 @@ fun FilaEntrada(
                         Icon(
                             imageVector = Icons.Filled.Star,
                             contentDescription = "Favorito",
-                            tint = Ambar,
+                            tint = ColorAcento,
                             modifier = Modifier.size(18.dp)
                         )
                     }

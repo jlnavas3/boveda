@@ -48,7 +48,6 @@ import com.jlnavas3.bovedalocal.ui.componentes.SeparadorOpcionMenu
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorTarjetaAjustes
 import com.jlnavas3.bovedalocal.ui.preview.BovedaPreview
 import com.jlnavas3.bovedalocal.ui.preview.PreviewTemaBoveda
-import com.jlnavas3.bovedalocal.ui.theme.Ambar
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
 import com.jlnavas3.bovedalocal.ui.theme.ColorTitulos
@@ -140,12 +139,12 @@ fun BarraSuperiorLista(
             modifier = Modifier
                 .size(40.dp)
                 .clip(CircleShape)
-                .background(if (busquedaVisible || busquedaActiva) Ambar.copy(alpha = 0.16f) else ColorTarjetaAjustes)
+                .background(if (busquedaVisible || busquedaActiva) ColorAcento.copy(alpha = 0.16f) else ColorTarjetaAjustes)
         ) {
             Icon(
                 imageVector = Icons.Filled.Search,
                 contentDescription = "Buscar",
-                tint = if (busquedaVisible || busquedaActiva) Ambar else ColorIconosInternos,
+                tint = if (busquedaVisible || busquedaActiva) ColorAcento else ColorIconosInternos,
                 modifier = Modifier.size(20.dp)
             )
         }
@@ -163,12 +162,12 @@ fun BarraSuperiorLista(
                 modifier = Modifier
                     .size(40.dp)
                     .clip(CircleShape)
-                    .background(if (tieneFiltrosActivos) Ambar.copy(alpha = 0.16f) else ColorTarjetaAjustes)
+                    .background(if (tieneFiltrosActivos) ColorAcento.copy(alpha = 0.16f) else ColorTarjetaAjustes)
             ) {
                 Icon(
                     imageVector = Icons.Filled.MoreVert,
                     contentDescription = "Más opciones",
-                    tint = if (tieneFiltrosActivos) Ambar else ColorIconosInternos,
+                    tint = if (tieneFiltrosActivos) ColorAcento else ColorIconosInternos,
                     modifier = Modifier.size(20.dp)
                 )
             }
@@ -204,8 +203,8 @@ fun BarraSuperiorLista(
                         ElementoMenuCompacto(
                             texto = if (soloFavoritos) "Ver todas las cuentas" else "Solo favoritos",
                             icono = Icons.Filled.Star,
-                            colorIcono = if (soloFavoritos) Ambar else ColorIconosInternos,
-                            colorTexto = if (soloFavoritos) Ambar else TextoPrincipal,
+                            colorIcono = if (soloFavoritos) ColorAcento else ColorIconosInternos,
+                            colorTexto = if (soloFavoritos) ColorAcento else TextoPrincipal,
                             onClick = {
                                 menuOpcionesDesplegado = false
                                 alAlternarSoloFavoritos()
@@ -215,7 +214,7 @@ fun BarraSuperiorLista(
                         ElementoMenuCompacto(
                             texto = if (agruparPorSitio) "Ajustes de agrupación..." else "Agrupar cuentas...",
                             icono = androidx.compose.material.icons.Icons.Filled.Layers,
-                            colorIcono = Ambar,
+                            colorIcono = ColorAcento,
                             onClick = {
                                 menuOpcionesDesplegado = false
                                 alIrOrganizacionGrupo()
@@ -225,7 +224,7 @@ fun BarraSuperiorLista(
                         ElementoMenuCompacto(
                             texto = if (mostrarIndicadoresContenido) "Ajustes de indicadores..." else "Mostrar indicadores...",
                             icono = androidx.compose.material.icons.Icons.Filled.Tune,
-                            colorIcono = Ambar,
+                            colorIcono = ColorAcento,
                             onClick = {
                                 menuOpcionesDesplegado = false
                                 alIrOrganizacionIndicadores()

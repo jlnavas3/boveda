@@ -81,8 +81,8 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.sp
-import com.jlnavas3.bovedalocal.ui.theme.Ambar
 import com.jlnavas3.bovedalocal.ui.theme.Borde
+import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.ColorSobreAcento
 
 @Composable
@@ -138,7 +138,7 @@ fun FilaEntradaDuplicada(
     alPulsarLargo: (() -> Unit)? = null
 ) {
     val forma = if (enGrupo) RectangleShape else RoundedCornerShape(CurvaturaEsquinas)
-    val fondo = if (seleccionado) Ambar.copy(alpha = 0.22f) else ColorTarjetaAjustes
+    val fondo = if (seleccionado) ColorAcento.copy(alpha = 0.22f) else ColorTarjetaAjustes
 
     val (iconoTipo, colorTipo) = when (entrada.tipo) {
         TipoEntrada.LOGIN -> Icons.Filled.Lock to ColorSeguridad
@@ -178,7 +178,7 @@ fun FilaEntradaDuplicada(
                 .clip(forma)
                 .background(fondo)
                 .then(
-                    if (seleccionado) Modifier.border(1.dp, Ambar.copy(alpha = 0.5f), forma)
+                    if (seleccionado) Modifier.border(1.dp, ColorAcento.copy(alpha = 0.5f), forma)
                     else if (!enGrupo && GrosorBorde > 0.dp && EstiloBorde != "ninguno") {
                         Modifier.border(GrosorBorde, ColorBordeActual, forma)
                     } else Modifier
@@ -215,7 +215,7 @@ fun FilaEntradaDuplicada(
                         modifier = Modifier
                             .size(22.dp)
                             .clip(CircleShape)
-                            .background(if (seleccionado) Ambar else Borde),
+                            .background(if (seleccionado) ColorAcento else Borde),
                         contentAlignment = Alignment.Center
                     ) {
                         if (seleccionado) {

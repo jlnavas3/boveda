@@ -32,9 +32,9 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.jlnavas3.bovedalocal.crypto.Totp
-import com.jlnavas3.bovedalocal.ui.theme.Ambar
-import com.jlnavas3.bovedalocal.ui.theme.AmbarFuerte
 import com.jlnavas3.bovedalocal.ui.theme.Borde
+import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
+import com.jlnavas3.bovedalocal.ui.theme.ColorAcentoFuerte
 import com.jlnavas3.bovedalocal.ui.theme.EstiloMono
 import com.jlnavas3.bovedalocal.ui.theme.Peligro
 import com.jlnavas3.bovedalocal.ui.theme.TextoPrincipal
@@ -63,14 +63,14 @@ fun IndicadorTotpTarta(
         }
     }
     val fraccion = animada.value
-    val colorBase = colorPersonalizado ?: Ambar
+    val colorBase = colorPersonalizado ?: ColorAcento
     val color by animateColorAsState(
         targetValue = if (colorPersonalizado != null) {
             colorPersonalizado
         } else {
             when {
                 segundosRestantes <= 5 -> Peligro
-                segundosRestantes <= 10 -> AmbarFuerte
+                segundosRestantes <= 10 -> ColorAcentoFuerte
                 else -> colorBase
             }
         },
@@ -116,8 +116,8 @@ fun AnilloTotp(
     val color by animateColorAsState(
         targetValue = when {
             segundosRestantes <= 5 -> Peligro
-            segundosRestantes <= 10 -> AmbarFuerte
-            else -> Ambar
+            segundosRestantes <= 10 -> ColorAcentoFuerte
+            else -> ColorAcento
         },
         animationSpec = spring(dampingRatio = 0.7f),
         label = "colorAnillo"

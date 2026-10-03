@@ -7,7 +7,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjusteGris
-import com.jlnavas3.bovedalocal.ui.theme.Ambar
+import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
 
 /**
@@ -22,7 +22,7 @@ fun SliderBoveda(
     valueRange: ClosedFloatingPointRange<Float> = 0f..1f,
     steps: Int = 0,
     enabled: Boolean = true,
-    colorAcento: Color = Ambar,
+    colorAcento: Color = ColorAcento,
     colors: SliderColors? = null,
     onValueChangeFinished: (() -> Unit)? = null
 ) {

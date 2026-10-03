@@ -56,7 +56,7 @@ import com.jlnavas3.bovedalocal.ui.pantallas.registro.EstadoVacioRegistro
 import com.jlnavas3.bovedalocal.ui.pantallas.registro.EventoRegistro
 import com.jlnavas3.bovedalocal.ui.pantallas.registro.ModalCategoriasRegistro
 import com.jlnavas3.bovedalocal.ui.pantallas.registro.TarjetaEventoRegistro
-import com.jlnavas3.bovedalocal.ui.theme.Ambar
+import com.jlnavas3.bovedalocal.ui.theme.Advertencia
 import com.jlnavas3.bovedalocal.ui.theme.Color2FA
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.ColorPapelera
@@ -91,7 +91,7 @@ fun PantallaRegistro(
             CategoriaOpcion("Todos", "Todos los eventos del sistema", Icons.Filled.SelectAll, ColorAcento),
             CategoriaOpcion("Bóveda", "Apertura, cifrado, cambios de clave y entradas", Icons.Filled.Lock, Menta),
             CategoriaOpcion("Papelera", "Entradas eliminadas, restauradas y vaciado", Icons.Filled.Delete, ColorPapelera),
-            CategoriaOpcion("Portapapeles", "Elementos copiados y vaciado automático", Icons.Filled.ContentCopy, Ambar),
+            CategoriaOpcion("Portapapeles", "Elementos copiados y vaciado automático", Icons.Filled.ContentCopy, Advertencia),
             CategoriaOpcion("2FA", "Códigos TOTP, sincronización y doble factor", Icons.Filled.Password, Color2FA),
             CategoriaOpcion("Huella", "Autenticación biométrica y Keystore de Android", Icons.Filled.Fingerprint, ColorSeguridad),
             CategoriaOpcion("Cámara", "Escaneo de QR y motores de cámara", Icons.Filled.CameraAlt, ColorAcento),

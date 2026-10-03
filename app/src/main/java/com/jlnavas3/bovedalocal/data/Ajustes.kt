@@ -282,8 +282,26 @@ class AlmacenAjustes(contexto: Context) {
             biometriaModo = modo,
             motorCamara = prefs.getString("motor_camara", AjustesDefaults.Seguridad.MOTOR_CAMARA) ?: AjustesDefaults.Seguridad.MOTOR_CAMARA,
             nombrePersonalizado = prefs.getString("nombre_personalizado", AjustesDefaults.Tema.NOMBRE_PERSONALIZADO) ?: AjustesDefaults.Tema.NOMBRE_PERSONALIZADO,
-            iconoLauncher = prefs.getString("icono_launcher", prefs.getString("color_acento", AjustesDefaults.Tema.ICONO_LAUNCHER)) ?: AjustesDefaults.Tema.ICONO_LAUNCHER,
-            colorAcento = prefs.getString("color_acento", AjustesDefaults.Tema.COLOR_ACENTO) ?: AjustesDefaults.Tema.COLOR_ACENTO,
+            iconoLauncher = run {
+                val prefIcono = prefs.getString("icono_launcher", null)
+                if (prefIcono.isNullOrBlank() || prefIcono.equals("ambar", ignoreCase = true)) {
+                    if (prefIcono?.equals("ambar", ignoreCase = true) == true) {
+                        prefs.edit().putString("icono_launcher", AjustesDefaults.Tema.ICONO_LAUNCHER).apply()
+                    }
+                    AjustesDefaults.Tema.ICONO_LAUNCHER
+                } else {
+                    prefIcono
+                }
+            },
+            colorAcento = run {
+                val prefAcento = prefs.getString("color_acento", AjustesDefaults.Tema.COLOR_ACENTO) ?: AjustesDefaults.Tema.COLOR_ACENTO
+                if (prefAcento.equals("ambar", ignoreCase = true)) {
+                    prefs.edit().putString("color_acento", AjustesDefaults.Tema.COLOR_ACENTO).apply()
+                    AjustesDefaults.Tema.COLOR_ACENTO
+                } else {
+                    prefAcento
+                }
+            },
             colorIconosInternos = prefs.getString("color_iconos_internos", AjustesDefaults.Tema.COLOR_ICONOS_INTERNOS) ?: AjustesDefaults.Tema.COLOR_ICONOS_INTERNOS,
             colorTitulos = prefs.getString("color_titulos", AjustesDefaults.Tema.COLOR_TITULOS) ?: AjustesDefaults.Tema.COLOR_TITULOS,
             colorTarjetas = prefs.getString("color_tarjetas", AjustesDefaults.Tema.COLOR_TARJETAS) ?: AjustesDefaults.Tema.COLOR_TARJETAS,

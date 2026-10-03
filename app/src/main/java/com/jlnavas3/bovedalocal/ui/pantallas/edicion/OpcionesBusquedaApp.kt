@@ -26,7 +26,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.jlnavas3.bovedalocal.ui.theme.Ambar
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.FormaPequena
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
@@ -119,13 +118,13 @@ fun FilaOpcionPlayStore(
             modifier = Modifier
                 .size(36.dp)
                 .clip(FormaPequena)
-                .background(Ambar.copy(alpha = 0.15f)),
+                .background(ColorAcento.copy(alpha = 0.15f)),
             contentAlignment = Alignment.Center
         ) {
             Icon(
                 imageVector = Icons.Filled.ShoppingBag,
                 contentDescription = null,
-                tint = Ambar,
+                tint = ColorAcento,
                 modifier = Modifier.size(20.dp)
             )
         }
@@ -133,7 +132,7 @@ fun FilaOpcionPlayStore(
         Text(
             text = "Buscar en Play Store",
             style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold),
-            color = Ambar,
+            color = ColorAcento,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
             modifier = Modifier.weight(1f)

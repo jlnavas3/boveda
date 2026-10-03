@@ -74,7 +74,7 @@ import com.jlnavas3.bovedalocal.camara.MotorCameraX
 import com.jlnavas3.bovedalocal.camara.PermisoCamara
 import com.jlnavas3.bovedalocal.ui.Pantalla
 import com.jlnavas3.bovedalocal.ui.VaultViewModel
-import com.jlnavas3.bovedalocal.ui.theme.Ambar
+import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.FormaPequena
 import com.jlnavas3.bovedalocal.ui.theme.Menta
 import com.jlnavas3.bovedalocal.ui.theme.Peligro
@@ -470,8 +470,8 @@ fun PantallaCamaraQr(
                     },
                     valueRange = 0f..1f,
                     colors = SliderDefaults.colors(
-                        thumbColor = Ambar,
-                        activeTrackColor = Ambar,
+                        thumbColor = ColorAcento,
+                        activeTrackColor = ColorAcento,
                         inactiveTrackColor = Color.White.copy(alpha = 0.25f)
                     ),
                     modifier = Modifier.weight(1f)
@@ -530,20 +530,20 @@ private fun BotonAccionSuperior(
             modifier = Modifier
                 .size(36.dp)
                 .clip(CircleShape)
-                .background(if (activo) Ambar.copy(alpha = 0.25f) else Color.Black.copy(alpha = 0.45f)),
+                .background(if (activo) ColorAcento.copy(alpha = 0.25f) else Color.Black.copy(alpha = 0.45f)),
             contentAlignment = Alignment.Center
         ) {
             Icon(
                 imageVector = icono,
                 contentDescription = etiqueta,
-                tint = if (activo) Ambar else Color.White,
+                tint = if (activo) ColorAcento else Color.White,
                 modifier = Modifier.size(20.dp)
             )
         }
         Spacer(Modifier.height(3.dp))
         Text(
             text = etiqueta,
-            color = if (activo) Ambar else Color.White,
+            color = if (activo) ColorAcento else Color.White,
             style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.5.sp, fontWeight = FontWeight.Medium),
             maxLines = 1
         )

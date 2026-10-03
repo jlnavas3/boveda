@@ -33,7 +33,6 @@ import androidx.compose.ui.unit.sp
 import com.jlnavas3.bovedalocal.data.CampoPersonalizado
 import com.jlnavas3.bovedalocal.data.TipoCampo
 import com.jlnavas3.bovedalocal.ui.VaultViewModel
-import com.jlnavas3.bovedalocal.ui.theme.Ambar
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
 import com.jlnavas3.bovedalocal.ui.theme.EstiloMono
@@ -86,7 +85,7 @@ private fun FilaCampoPersonalizadoDetalle(
     var revelado by remember { mutableStateOf(false) }
     val esSensible = campo.esSensibleEfectivo
 
-    TarjetaDatoDetalle(colorBorde = Ambar) {
+    TarjetaDatoDetalle(colorBorde = ColorAcento) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -133,13 +132,13 @@ private fun FilaCampoPersonalizadoDetalle(
                     Box(
                         modifier = Modifier
                             .clip(FormaPequena)
-                            .background(Ambar.copy(alpha = 0.15f))
+                            .background(ColorAcento.copy(alpha = 0.15f))
                             .padding(horizontal = 6.dp, vertical = 2.dp)
                     ) {
                         Text(
                             campo.tipo.etiqueta,
                             style = MaterialTheme.typography.labelSmall.copy(fontSize = 11.sp),
-                            color = Ambar
+                            color = ColorAcento
                         )
                     }
                 }

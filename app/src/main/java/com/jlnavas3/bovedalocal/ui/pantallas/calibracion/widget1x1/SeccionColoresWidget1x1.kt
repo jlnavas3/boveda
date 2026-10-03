@@ -60,7 +60,11 @@ fun SeccionColoresWidget1x1(
         etiqueta = "Colores del widget",
         idGrupo = "04-HER-WGT-G13",
         mostrarId = ajustes.mostrarIdsAjustes,
-        descripcion = "Personaliza los colores de borde, ícono y fondo"
+        descripcion = "Personaliza los colores de borde, ícono y fondo",
+        alRestablecer = {
+            haptica.tic()
+            vm.restablecerColoresWidget1x1()
+        }
     ) {
         val pestanasColores1x1 = listOf(
             Triple("Borde", colorBorde, Icons.Filled.BorderColor),

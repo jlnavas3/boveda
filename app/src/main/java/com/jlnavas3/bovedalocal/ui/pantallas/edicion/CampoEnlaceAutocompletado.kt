@@ -38,7 +38,6 @@ import androidx.compose.ui.unit.sp
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteCampoTexto
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.TipoCampoTexto
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorTarjetaAjustes
-import com.jlnavas3.bovedalocal.ui.theme.Ambar
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.EstiloMono
 import com.jlnavas3.bovedalocal.ui.theme.FormaPequena
@@ -206,13 +205,13 @@ fun CampoEnlaceAutocompletado(
                                     modifier = Modifier
                                         .size(28.dp)
                                         .clip(FormaPequena)
-                                        .background(Ambar.copy(alpha = 0.15f)),
+                                        .background(ColorAcento.copy(alpha = 0.15f)),
                                     contentAlignment = Alignment.Center
                                 ) {
                                     Icon(
                                         imageVector = Icons.Filled.ShoppingBag,
                                         contentDescription = null,
-                                        tint = Ambar,
+                                        tint = ColorAcento,
                                         modifier = Modifier.size(16.dp)
                                     )
                                 }
@@ -222,7 +221,7 @@ fun CampoEnlaceAutocompletado(
                                 Text(
                                     text = "Buscar en Play Store",
                                     style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.SemiBold),
-                                    color = Ambar,
+                                    color = ColorAcento,
                                     maxLines = 1,
                                     overflow = TextOverflow.Ellipsis,
                                     modifier = Modifier.weight(1f)

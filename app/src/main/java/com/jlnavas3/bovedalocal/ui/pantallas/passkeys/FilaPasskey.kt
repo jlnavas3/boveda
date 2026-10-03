@@ -27,7 +27,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.jlnavas3.bovedalocal.data.Entrada
 import com.jlnavas3.bovedalocal.ui.componentes.Monograma
-import com.jlnavas3.bovedalocal.ui.theme.Ambar
+import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.util.IconoAppCircular
 import com.jlnavas3.bovedalocal.util.rememberIconoAppInstalada
 import com.jlnavas3.bovedalocal.ui.theme.ColorDatosPasskey
@@ -72,7 +72,7 @@ fun FilaPasskey(
     val forma = RoundedCornerShape(CurvaturaEsquinas)
 
     val fondoFila = if (seleccionado) {
-        Ambar.copy(alpha = 0.22f)
+        ColorAcento.copy(alpha = 0.22f)
     } else {
         ColorTarjetaAjustes
     }
@@ -83,7 +83,7 @@ fun FilaPasskey(
             .clip(forma)
             .background(fondoFila)
             .then(
-                if (seleccionado) Modifier.border(1.dp, Ambar.copy(alpha = 0.5f), forma)
+                if (seleccionado) Modifier.border(1.dp, ColorAcento.copy(alpha = 0.5f), forma)
                 else if (GrosorBorde > 0.dp && EstiloBorde != "ninguno") Modifier.border(GrosorBorde, ColorBordeActual, forma)
                 else Modifier
             )
@@ -129,7 +129,7 @@ fun FilaPasskey(
                     modifier = Modifier
                         .size(24.dp)
                         .clip(CircleShape)
-                        .background(if (seleccionado) Ambar else Borde),
+                        .background(if (seleccionado) ColorAcento else Borde),
                     contentAlignment = Alignment.Center
                 ) {
                     if (seleccionado) {
@@ -198,7 +198,7 @@ fun FilaPasskey(
                         Icon(
                             imageVector = Icons.Filled.Star,
                             contentDescription = "Quitar de favoritos",
-                            tint = Ambar,
+                            tint = ColorAcento,
                             modifier = Modifier.size(18.dp)
                         )
                     }

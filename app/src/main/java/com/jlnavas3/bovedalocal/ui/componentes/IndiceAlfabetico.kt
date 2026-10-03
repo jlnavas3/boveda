@@ -49,9 +49,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.jlnavas3.bovedalocal.ui.theme.Ambar
+import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.ColorSobreAcento
-import com.jlnavas3.bovedalocal.ui.theme.DegradadoAmbar
+import com.jlnavas3.bovedalocal.ui.theme.DegradadoAcento
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
 import com.jlnavas3.bovedalocal.ui.theme.esOscuroActivo
 import com.jlnavas3.bovedalocal.util.Haptica
@@ -274,7 +274,7 @@ fun IndiceAlfabetico(
 
                 Text(
                     text = letra.toString(),
-                    color = if (esActiva) Ambar else colorLetraInactiva,
+                    color = if (esActiva) ColorAcento else colorLetraInactiva,
                     style = MaterialTheme.typography.labelSmall.copy(
                         fontSize = 10.sp,
                         fontWeight = if (esActiva) FontWeight.ExtraBold else if (esOscuroActivo) FontWeight.Medium else FontWeight.SemiBold
@@ -329,7 +329,7 @@ fun IndiceAlfabetico(
                         .requiredSize(tamanoCirculoDp.dp)
                         .shadow(elevation = 14.dp, shape = CircleShape)
                         .clip(CircleShape)
-                        .background(DegradadoAmbar),
+                        .background(DegradadoAcento),
                     contentAlignment = Alignment.Center
                 ) {
                     @Suppress("DEPRECATION")

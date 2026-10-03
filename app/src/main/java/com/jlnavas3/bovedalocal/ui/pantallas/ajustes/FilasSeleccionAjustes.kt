@@ -29,7 +29,6 @@ import androidx.compose.ui.unit.sp
 import com.jlnavas3.bovedalocal.ui.componentes.SwitchBoveda
 import com.jlnavas3.bovedalocal.ui.preview.BovedaPreview
 import com.jlnavas3.bovedalocal.ui.preview.PreviewTemaBoveda
-import com.jlnavas3.bovedalocal.ui.theme.Ambar
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.TextoPrincipal
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
@@ -129,7 +128,7 @@ fun FilaAjuste(
     descripcion: String,
     activo: Boolean,
     habilitado: Boolean = true,
-    colorActivo: Color = Ambar,
+    colorActivo: Color = ColorAcento,
     alCambiar: (Boolean) -> Unit
 ) {
     Row(

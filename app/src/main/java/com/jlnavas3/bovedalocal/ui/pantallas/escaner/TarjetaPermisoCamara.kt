@@ -11,7 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import com.jlnavas3.bovedalocal.ui.componentes.BotonAmbar
+import com.jlnavas3.bovedalocal.ui.componentes.BotonPrimario
 import com.jlnavas3.bovedalocal.ui.componentes.TarjetaBoveda
 import com.jlnavas3.bovedalocal.ui.theme.ColorTitulos
 import com.jlnavas3.bovedalocal.ui.theme.Peligro
@@ -43,12 +43,12 @@ fun TarjetaPermisoCamara(
                     style = MaterialTheme.typography.bodyMedium
                 )
                 Spacer(Modifier.height(10.dp))
-                BotonAmbar("Abrir la ficha de la app", icono = Icons.Filled.Settings) {
+                BotonPrimario("Abrir la ficha de la app", icono = Icons.Filled.Settings) {
                     if (!AjustesSistema.abrirFichaApp(contexto)) alAvisar("No encuentro la ficha de la app en este móvil")
                 }
             }
             EstadoPermiso.DENEGADO -> {
-                BotonAmbar("Usar la cámara", icono = Icons.Filled.CameraAlt) { alPedirPermiso() }
+                BotonPrimario("Usar la cámara", icono = Icons.Filled.CameraAlt) { alPedirPermiso() }
                 Spacer(Modifier.height(8.dp))
                 Text(
                     "Sin permiso no hay cámara, y no pasa nada: lee el QR desde una captura o escribe el código a mano aquí abajo.",
@@ -56,7 +56,7 @@ fun TarjetaPermisoCamara(
                     style = MaterialTheme.typography.bodyMedium
                 )
             }
-            EstadoPermiso.NO_PEDIDO -> BotonAmbar("Usar la cámara", icono = Icons.Filled.CameraAlt) { alPedirPermiso() }
+            EstadoPermiso.NO_PEDIDO -> BotonPrimario("Usar la cámara", icono = Icons.Filled.CameraAlt) { alPedirPermiso() }
         }
     }
 }

@@ -45,13 +45,13 @@ import com.jlnavas3.bovedalocal.crypto.Wordlist
 import com.jlnavas3.bovedalocal.ui.componentes.CampoBoveda
 import com.jlnavas3.bovedalocal.ui.componentes.EtiquetaSeccion
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.SwitchBoveda
-import com.jlnavas3.bovedalocal.ui.theme.Ambar
+import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.Borde
 import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
 import com.jlnavas3.bovedalocal.ui.theme.ColorSeparadorDropdown
 import com.jlnavas3.bovedalocal.ui.theme.ColorSobreAcento
 import com.jlnavas3.bovedalocal.ui.theme.ColorTitulos
-import com.jlnavas3.bovedalocal.ui.theme.DegradadoAmbar
+import com.jlnavas3.bovedalocal.ui.theme.DegradadoAcento
 import com.jlnavas3.bovedalocal.ui.theme.FormaCampo
 import com.jlnavas3.bovedalocal.ui.theme.GrosorBorde
 import com.jlnavas3.bovedalocal.ui.theme.Peligro
@@ -222,10 +222,10 @@ fun PanelModoDiceware(
                 Box(
                     modifier = Modifier
                         .clip(FormaCampo)
-                        .background(if (activo) DegradadoAmbar else Brush.horizontalGradient(listOf(Superficie, Superficie)))
+                        .background(if (activo) DegradadoAcento else Brush.horizontalGradient(listOf(Superficie, Superficie)))
                         .then(
                             if (GrosorBorde > 0.dp && ColorBordeActual != Color.Transparent)
-                                Modifier.border(GrosorBorde, if (activo) Ambar else ColorBordeActual, FormaCampo)
+                                Modifier.border(GrosorBorde, if (activo) ColorAcento else ColorBordeActual, FormaCampo)
                             else Modifier
                         )
                         .clickable {

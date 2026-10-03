@@ -23,7 +23,7 @@ import androidx.compose.ui.unit.dp
 import com.jlnavas3.bovedalocal.data.AjustesApp
 import com.jlnavas3.bovedalocal.ui.componentes.ContenedorTarjeta
 import com.jlnavas3.bovedalocal.ui.componentes.letraInicialIndice
-import com.jlnavas3.bovedalocal.ui.theme.Ambar
+import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.Borde
 import com.jlnavas3.bovedalocal.ui.theme.ColorSobreAcento
 import com.jlnavas3.bovedalocal.ui.theme.FormaPequena
@@ -81,7 +81,7 @@ fun VistaPreviaIndiceInteractiva(
                         modifier = Modifier
                             .fillMaxWidth()
                             .clip(FormaPequena)
-                            .background(if (coincide) Ambar.copy(alpha = 0.18f) else SuperficieAlta)
+                            .background(if (coincide) ColorAcento.copy(alpha = 0.18f) else SuperficieAlta)
                             .padding(horizontal = 8.dp, vertical = 5.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
@@ -89,7 +89,7 @@ fun VistaPreviaIndiceInteractiva(
                             modifier = Modifier
                                 .size(22.dp)
                                 .clip(CircleShape)
-                                .background(if (coincide) Ambar else Borde),
+                                .background(if (coincide) ColorAcento else Borde),
                             contentAlignment = Alignment.Center
                         ) {
                             Text(
@@ -102,7 +102,7 @@ fun VistaPreviaIndiceInteractiva(
                         Column(modifier = Modifier.weight(1f)) {
                             Text(
                                 nombre,
-                                color = if (coincide) Ambar else TextoPrincipal,
+                                color = if (coincide) ColorAcento else TextoPrincipal,
                                 style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.SemiBold),
                                 maxLines = 1
                             )

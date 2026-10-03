@@ -28,7 +28,7 @@ import androidx.compose.ui.unit.sp
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjusteGris
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorTarjetaAjustes
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorTextoAjustes
-import com.jlnavas3.bovedalocal.ui.theme.Ambar
+import com.jlnavas3.bovedalocal.ui.theme.Advertencia
 import com.jlnavas3.bovedalocal.ui.theme.Color2FA
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
@@ -53,7 +53,7 @@ fun TarjetaEventoRegistro(ev: EventoRegistro) {
         ev.area.contains("huella", true) || ev.area.contains("keystore", true) || ev.area.contains("seguridad", true) -> ColorSeguridad
         ev.area.contains("camara", true) || ev.area.contains("cámara", true) -> ColorAcento
         ev.area.contains("autofill", true) || ev.area.contains("passkey", true) || ev.area.contains("credential", true) -> ColorPasskeys
-        ev.area.contains("portapapeles", true) -> Ambar
+        ev.area.contains("portapapeles", true) -> Advertencia
         ev.area.contains("papelera", true) -> ColorPapelera
         ev.area.contains("salud", true) -> ColorSalud
         ev.area.contains("2fa", true) || ev.area.contains("totp", true) -> Color2FA

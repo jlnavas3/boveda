@@ -33,7 +33,7 @@ import androidx.compose.ui.unit.dp
 import com.jlnavas3.bovedalocal.camara.EstadoCamara
 import com.jlnavas3.bovedalocal.camara.LectorQr
 import com.jlnavas3.bovedalocal.camara.MotorCamara
-import com.jlnavas3.bovedalocal.ui.componentes.BotonAmbar
+import com.jlnavas3.bovedalocal.ui.componentes.BotonPrimario
 import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
 import com.jlnavas3.bovedalocal.ui.theme.FormaPequena
 import com.jlnavas3.bovedalocal.ui.theme.FormaTarjeta
@@ -139,7 +139,7 @@ fun ZonaCamara(
                     style = MaterialTheme.typography.bodyMedium
                 )
                 Spacer(Modifier.height(12.dp))
-                BotonAmbar(
+                BotonPrimario(
                     texto = "Leer el QR de una imagen",
                     icono = Icons.Filled.Image
                 ) { alElegirImagen() }

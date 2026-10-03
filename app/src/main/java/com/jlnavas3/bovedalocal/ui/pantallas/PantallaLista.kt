@@ -88,7 +88,6 @@ import com.jlnavas3.bovedalocal.ui.pantallas.lista.DialogoRenombrarSeleccion
 import com.jlnavas3.bovedalocal.ui.pantallas.lista.EstadoVacioLista
 import com.jlnavas3.bovedalocal.ui.pantallas.lista.FilaEntrada
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
-import com.jlnavas3.bovedalocal.ui.theme.Ambar
 import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
 import com.jlnavas3.bovedalocal.ui.theme.ColorSobreAcento
 import com.jlnavas3.bovedalocal.ui.theme.CurvaturaEsquinas

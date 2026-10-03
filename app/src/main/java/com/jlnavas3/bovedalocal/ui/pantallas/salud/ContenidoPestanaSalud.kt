@@ -23,7 +23,6 @@ import com.jlnavas3.bovedalocal.data.Entrada
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.GrupoAjustes
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.SeparadorFilaSimple
 import com.jlnavas3.bovedalocal.ui.pantallas.lista.ComponenteGrupoLista
-import com.jlnavas3.bovedalocal.ui.theme.Ambar
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.Peligro
 import com.jlnavas3.bovedalocal.ui.theme.calcularEspaciadoFilas
@@ -93,7 +92,7 @@ fun ContenidoPestanaSalud(
                             icono = Icons.Filled.SearchOff,
                             titulo = "Sin resultados",
                             subtitulo = "No se encontraron contraseñas repetidas para \"$consulta\".",
-                            colorIcono = Ambar
+                            colorIcono = ColorAcento
                         )
                     } else {
                         MensajeExitoPestana(
@@ -169,7 +168,7 @@ fun ContenidoPestanaSalud(
                             icono = Icons.Filled.SearchOff,
                             titulo = "Sin resultados",
                             subtitulo = "No se encontraron contraseñas comunes para \"$consulta\".",
-                            colorIcono = Ambar
+                            colorIcono = ColorAcento
                         )
                     } else {
                         MensajeExitoPestana(
@@ -215,7 +214,7 @@ fun ContenidoPestanaSalud(
                             icono = Icons.Filled.SearchOff,
                             titulo = "Sin resultados",
                             subtitulo = "No se encontraron contraseñas débiles para \"$consulta\".",
-                            colorIcono = Ambar
+                            colorIcono = ColorAcento
                         )
                     } else {
                         MensajeExitoPestana(
@@ -264,7 +263,7 @@ fun ContenidoPestanaSalud(
                             icono = Icons.Filled.SearchOff,
                             titulo = "Sin resultados",
                             subtitulo = "No se encontraron contraseñas antiguas para \"$consulta\".",
-                            colorIcono = Ambar
+                            colorIcono = ColorAcento
                         )
                     } else {
                         MensajeExitoPestana(

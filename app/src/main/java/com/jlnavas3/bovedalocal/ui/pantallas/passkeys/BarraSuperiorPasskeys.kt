@@ -45,7 +45,7 @@ import com.jlnavas3.bovedalocal.ui.pantallas.lista.BarraBusquedaAnimada
 import com.jlnavas3.bovedalocal.ui.pantallas.lista.ChipFiltroActivo
 import com.jlnavas3.bovedalocal.ui.preview.BovedaPreview
 import com.jlnavas3.bovedalocal.ui.preview.PreviewTemaBoveda
-import com.jlnavas3.bovedalocal.ui.theme.Ambar
+import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
 import com.jlnavas3.bovedalocal.ui.theme.ColorPasskeys
 import com.jlnavas3.bovedalocal.ui.theme.Peligro
@@ -145,8 +145,8 @@ fun BarraSuperiorPasskeys(
                         com.jlnavas3.bovedalocal.ui.componentes.ElementoMenuCompacto(
                             texto = if (soloFavoritos) "Ver todas las llaves" else "Solo favoritos",
                             icono = Icons.Filled.Star,
-                            colorIcono = if (soloFavoritos) Ambar else ColorIconosInternos,
-                            colorTexto = if (soloFavoritos) Ambar else TextoPrincipal,
+                            colorIcono = if (soloFavoritos) ColorAcento else ColorIconosInternos,
+                            colorTexto = if (soloFavoritos) ColorAcento else TextoPrincipal,
                             onClick = alAlternarFavoritos
                         )
                         SeparadorOpcionMenu()

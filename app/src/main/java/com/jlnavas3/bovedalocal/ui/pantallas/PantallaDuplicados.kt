@@ -66,7 +66,6 @@ import com.jlnavas3.bovedalocal.ui.pantallas.duplicados.IlustracionSinDuplicados
 import com.jlnavas3.bovedalocal.ui.pantallas.duplicados.TarjetaGrupoDuplicado
 import com.jlnavas3.bovedalocal.ui.pantallas.lista.BarraBusquedaAnimada
 import androidx.compose.foundation.border
-import com.jlnavas3.bovedalocal.ui.theme.Ambar
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
 import com.jlnavas3.bovedalocal.ui.theme.ColorSobreAcento
@@ -160,7 +159,7 @@ fun PantallaDuplicados(
                     },
                     icono = Icons.Filled.Search,
                     descripcion = "Buscar",
-                    tint = if (busquedaVisible || textoBusqueda.isNotBlank()) Ambar else ColorIconosInternos
+                    tint = if (busquedaVisible || textoBusqueda.isNotBlank()) ColorAcento else ColorIconosInternos
                 )
                 if (totalSobrantesIdenticas > 0) {
                     BotonIconoCabecera(
@@ -189,7 +188,7 @@ fun PantallaDuplicados(
                         com.jlnavas3.bovedalocal.ui.componentes.ElementoMenuCompacto(
                             texto = "Salud de la bóveda...",
                             icono = Icons.Filled.HealthAndSafety,
-                            colorIcono = Ambar,
+                            colorIcono = ColorAcento,
                             onClick = {
                                 menuAbiertoDup = false
                                 vm.ir(Pantalla.SaludBoveda())
@@ -199,7 +198,7 @@ fun PantallaDuplicados(
                         com.jlnavas3.bovedalocal.ui.componentes.ElementoMenuCompacto(
                             texto = "Copia preventiva...",
                             icono = Icons.Filled.Backup,
-                            colorIcono = Ambar,
+                            colorIcono = ColorAcento,
                             onClick = {
                                 menuAbiertoDup = false
                                 vm.ir(Pantalla.CopiaSeguridad("05-COP-SEG"))

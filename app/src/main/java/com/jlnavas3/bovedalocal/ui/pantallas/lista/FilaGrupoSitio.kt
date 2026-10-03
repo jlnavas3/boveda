@@ -33,7 +33,6 @@ import androidx.compose.ui.unit.dp
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorCampoAjustes
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorTarjetaAjustes
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
-import com.jlnavas3.bovedalocal.ui.theme.Ambar
 import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
 import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
 import com.jlnavas3.bovedalocal.ui.theme.CurvaturaEsquinas
@@ -61,7 +60,7 @@ fun FilaGrupoSitio(
             .fillMaxWidth()
             .height(alturaFila)
             .clip(forma)
-            .background(if (resaltado) Ambar.copy(alpha = 0.16f) else ColorTarjetaAjustes)
+            .background(if (resaltado) ColorAcento.copy(alpha = 0.16f) else ColorTarjetaAjustes)
             .then(
                 if (GrosorBorde > 0.dp && EstiloBorde != "ninguno") Modifier.border(GrosorBorde, ColorBordeActual, forma)
                 else Modifier
@@ -89,7 +88,7 @@ fun FilaGrupoSitio(
             Text(
                 clave,
                 style = if (compacta) MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold) else MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold),
-                color = if (resaltado) Ambar else TextoPrincipal,
+                color = if (resaltado) ColorAcento else TextoPrincipal,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
@@ -103,7 +102,7 @@ fun FilaGrupoSitio(
         Icon(
             if (expandido) Icons.Filled.ExpandLess else Icons.Filled.ExpandMore,
             contentDescription = if (expandido) "Contraer" else "Expandir",
-            tint = if (resaltado) Ambar else ColorIconosInternos
+            tint = if (resaltado) ColorAcento else ColorIconosInternos
         )
     }
 }

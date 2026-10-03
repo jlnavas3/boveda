@@ -17,7 +17,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.jlnavas3.bovedalocal.crypto.OpcionesGenerador
 import com.jlnavas3.bovedalocal.crypto.PasswordGenerator
-import com.jlnavas3.bovedalocal.ui.componentes.BotonAmbar
+import com.jlnavas3.bovedalocal.ui.componentes.BotonPrimario
 import com.jlnavas3.bovedalocal.ui.componentes.CampoBoveda
 import com.jlnavas3.bovedalocal.ui.componentes.EtiquetaSeccion
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.SliderBoveda
@@ -40,7 +40,7 @@ fun GeneradorEnLineaEdicion(
         horizontalArrangement = Arrangement.spacedBy(10.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        BotonAmbar(
+        BotonPrimario(
             texto = "Generar",
             icono = Icons.Filled.AutoAwesome,
             modifier = Modifier.weight(1f)

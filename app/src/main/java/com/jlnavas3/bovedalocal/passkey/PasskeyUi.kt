@@ -31,12 +31,12 @@ import androidx.lifecycle.compose.LifecycleResumeEffect
 import com.jlnavas3.bovedalocal.crypto.Zeroizar
 import com.jlnavas3.bovedalocal.data.VaultRepository
 import com.jlnavas3.bovedalocal.ui.FlujoBiometria
-import com.jlnavas3.bovedalocal.ui.componentes.BotonAmbar
 import com.jlnavas3.bovedalocal.ui.componentes.BotonBorde
+import com.jlnavas3.bovedalocal.ui.componentes.BotonPrimario
 import com.jlnavas3.bovedalocal.ui.componentes.CampoBoveda
 import com.jlnavas3.bovedalocal.ui.componentes.Monograma
 import com.jlnavas3.bovedalocal.ui.componentes.TarjetaBoveda
-import com.jlnavas3.bovedalocal.ui.theme.Ambar
+import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.Peligro
 import com.jlnavas3.bovedalocal.ui.theme.TextoPrincipal
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
@@ -174,7 +174,7 @@ fun HojaPasskey(
                 Monograma(titulo = sitio.ifBlank { "Llave de paso" }, semilla = sitio, tamano = 52)
             }
             Spacer(Modifier.height(14.dp))
-            Text(titulo, style = MaterialTheme.typography.titleLarge, color = Ambar)
+            Text(titulo, style = MaterialTheme.typography.titleLarge, color = ColorAcento)
             Spacer(Modifier.height(6.dp))
             Text(detalle, style = MaterialTheme.typography.bodyMedium, color = TextoSecundario)
             Spacer(Modifier.height(18.dp))
@@ -191,7 +191,7 @@ fun HojaPasskey(
                     Text(it, color = Peligro, style = MaterialTheme.typography.bodyMedium)
                 }
                 Spacer(Modifier.height(16.dp))
-                BotonAmbar(
+                BotonPrimario(
                     texto = if (trabajando) "Abriendo…" else "Desbloquear",
                     activo = contrasena.isNotEmpty() && !trabajando
                 ) {
@@ -225,7 +225,7 @@ fun HojaPasskey(
                     Text(it, color = Peligro, style = MaterialTheme.typography.bodyMedium)
                     Spacer(Modifier.height(12.dp))
                 }
-                BotonAmbar(texto = textoAccion, activo = !trabajando) {
+                BotonPrimario(texto = textoAccion, activo = !trabajando) {
                     trabajando = true
                     haptica.exito()
                     alConfirmar()

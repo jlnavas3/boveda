@@ -51,7 +51,7 @@ fun SeccionIconoLauncher(
         mostrarId = ajustes.mostrarIdsAjustes,
         alRestablecer = {
             if (ajustes.iconoLauncher != AjustesDefaults.Tema.ICONO_LAUNCHER) {
-                alSolicitarCambioIcono(PaletaAcento.AMBAR)
+                alSolicitarCambioIcono(PaletaAcento.desde(AjustesDefaults.Tema.ICONO_LAUNCHER))
             }
         },
         modifier = Modifier.bringIntoViewRequester(reqLauncher)
