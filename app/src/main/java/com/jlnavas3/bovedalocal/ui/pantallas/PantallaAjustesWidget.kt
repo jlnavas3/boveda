@@ -1,6 +1,7 @@
 package com.jlnavas3.bovedalocal.ui.pantallas
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -31,9 +32,14 @@ import com.jlnavas3.bovedalocal.ui.componentes.ajustes.LocalCoordinadorResaltado
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ProveedorResaltadoAjustes
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.contenedorScrollAjustes
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjustesFondo
+import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.widget.PreviaWidget1x1Compacta
+import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.widget.PreviaWidgetTotpCompacta
 import com.jlnavas3.bovedalocal.ui.theme.Color2FA
 import com.jlnavas3.bovedalocal.ui.theme.ColorGenerador
 import com.jlnavas3.bovedalocal.util.Haptica
+import com.jlnavas3.bovedalocal.widget.WidgetGeneradorRapido
+import com.jlnavas3.bovedalocal.widget.WidgetPinHelper
+import com.jlnavas3.bovedalocal.widget.WidgetTotpFavoritos
 
 @Composable
 fun PantallaAjustesWidget(
@@ -85,6 +91,30 @@ fun PantallaAjustesWidget(
                     idGrupo = "04-HER-WGT-G01",
                     mostrarId = ajustes.mostrarIdsAjustes
                 ) {
+                    // Previa visual del widget sin títulos ni texto adicional
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 12.dp, vertical = 10.dp)
+                    ) {
+                        PreviaWidgetTotpCompacta(ajustes = ajustes)
+                    }
+
+                    ComponenteSeparador()
+
+                    ComponenteNavegacion(
+                        titulo = "Añadir al escritorio",
+                        icono = null,
+                        idFila = "04-HER-WGT-PIN-TOTP",
+                        mostrarId = ajustes.mostrarIdsAjustes,
+                        alPulsar = {
+                            haptica.tic()
+                            WidgetPinHelper.solicitarColocarWidget(contexto, WidgetTotpFavoritos::class.java)
+                        }
+                    )
+
+                    ComponenteSeparador(sangriaInicio = 16.dp)
+
                     ComponenteNavegacion(
                         titulo = "Ajustes y respuesta táctil",
                         valorTexto = if (ajustes.widgetHaptica) "Vibración activa" else "Desactivada",
@@ -122,6 +152,30 @@ fun PantallaAjustesWidget(
                     idGrupo = "04-HER-WGT-G02",
                     mostrarId = ajustes.mostrarIdsAjustes
                 ) {
+                    // Previa visual del widget sin títulos ni texto adicional
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 12.dp, vertical = 10.dp)
+                    ) {
+                        PreviaWidget1x1Compacta(ajustes = ajustes)
+                    }
+
+                    ComponenteSeparador()
+
+                    ComponenteNavegacion(
+                        titulo = "Añadir al escritorio",
+                        icono = null,
+                        idFila = "04-HER-WGT-PIN-1X1",
+                        mostrarId = ajustes.mostrarIdsAjustes,
+                        alPulsar = {
+                            haptica.tic()
+                            WidgetPinHelper.solicitarColocarWidget(contexto, WidgetGeneradorRapido::class.java)
+                        }
+                    )
+
+                    ComponenteSeparador(sangriaInicio = 16.dp)
+
                     ComponenteNavegacion(
                         titulo = "Modo de generación",
                         valorTexto = if (ajustes.widget1x1Modo == "aleatoria") "${ajustes.widget1x1Longitud} car." else "Patrón",
