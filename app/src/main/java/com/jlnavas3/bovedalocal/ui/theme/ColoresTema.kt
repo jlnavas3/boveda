@@ -50,17 +50,17 @@ internal val paletaClara = PaletaBase(
 internal var paletaActiva by mutableStateOf(paletaOscura)
 var esOscuroActivo by mutableStateOf(true)
 
-val paletaSobriaEfectiva: PaletaSobria?
-    get() = paletaSobriaEnVivo ?: if (esOscuroActivo) (paletaSobriaGuardadaOscura ?: PaletaSobriaDefaults.OSCURA) else (paletaSobriaGuardadaClara ?: PaletaSobriaDefaults.CLARA)
+val paletaSobriaEfectiva: PaletaSobria
+    get() = if (esOscuroActivo) (paletaSobriaGuardadaOscura ?: PaletaSobriaDefaults.OSCURA) else (paletaSobriaGuardadaClara ?: PaletaSobriaDefaults.CLARA)
 
-val Obsidiana: Color get() = paletaSobriaEfectiva?.fondo ?: paletaActiva.fondo
-val Superficie: Color get() = paletaSobriaEfectiva?.tarjeta ?: paletaActiva.superficie
-val SuperficieAlta: Color get() = paletaSobriaEfectiva?.campo ?: paletaActiva.superficieAlta
-val Borde: Color get() = paletaSobriaEfectiva?.borde ?: paletaActiva.borde
+val Obsidiana: Color get() = paletaSobriaEfectiva.fondo
+val Superficie: Color get() = paletaSobriaEfectiva.tarjeta
+val SuperficieAlta: Color get() = paletaSobriaEfectiva.campo
+val Borde: Color get() = paletaSobriaEfectiva.borde
 val Menta: Color get() = paletaActiva.menta
 val Peligro: Color get() = paletaActiva.peligro
-val TextoPrincipal: Color get() = paletaSobriaEfectiva?.textoPrincipal ?: paletaActiva.textoPrincipal
-val TextoSecundario: Color get() = paletaSobriaEfectiva?.textoSecundario ?: paletaActiva.textoSecundario
+val TextoPrincipal: Color get() = paletaSobriaEfectiva.textoPrincipal
+val TextoSecundario: Color get() = paletaSobriaEfectiva.textoSecundario
 
 /** "sistema", "claro" u "oscuro"; "sistema" sigue el tema actual del teléfono. */
 fun aplicarTema(claveTema: String, sistemaEnOscuro: Boolean) {
@@ -83,13 +83,14 @@ private var colorTarjetasBase by mutableStateOf<Color?>(null)
 
 var ColorAcento: Color
     get() {
-        if (paletaSobriaEnVivo != null) return paletaSobriaEnVivo!!.acento
         if (colorDinamicoSistemaBase && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && colorDinamicoMonet != null) {
             return colorDinamicoMonet!!
         }
+        if (colorAcentoManual != null) return colorAcentoManual!!
+        if (paletaAcentoActiva != null) return paletaAcentoActiva!!.base
         val guardada = if (esOscuroActivo) paletaSobriaGuardadaOscura else paletaSobriaGuardadaClara
         if (guardada != null) return guardada.acento
-        return colorAcentoManual ?: paletaAcentoActiva?.base ?: (if (esOscuroActivo) PaletaSobriaDefaults.OSCURA.acento else PaletaSobriaDefaults.CLARA.acento)
+        return if (esOscuroActivo) PaletaSobriaDefaults.OSCURA.acento else PaletaSobriaDefaults.CLARA.acento
     }
     set(valor) {
         colorAcentoManual = valor
@@ -98,28 +99,29 @@ var ColorAcento: Color
 
 var ColorAcentoFuerte: Color
     get() {
-        if (paletaSobriaEnVivo != null) return paletaSobriaEnVivo!!.acento
         if (colorDinamicoSistemaBase && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && colorDinamicoFuerteMonet != null) {
             return colorDinamicoFuerteMonet!!
         }
+        if (colorAcentoFuerteManual != null) return colorAcentoFuerteManual!!
+        if (paletaAcentoActiva != null) return paletaAcentoActiva!!.fuerte
         val guardada = if (esOscuroActivo) paletaSobriaGuardadaOscura else paletaSobriaGuardadaClara
         if (guardada != null) return guardada.acento
-        return colorAcentoFuerteManual ?: paletaAcentoActiva?.fuerte ?: (if (esOscuroActivo) PaletaSobriaDefaults.OSCURA.acento else PaletaSobriaDefaults.CLARA.acento)
+        return if (esOscuroActivo) PaletaSobriaDefaults.OSCURA.acento else PaletaSobriaDefaults.CLARA.acento
     }
     set(valor) { colorAcentoFuerteManual = valor }
 
 val ColorSobreAcento: Color get() = colorContraste(ColorAcento)
 
 var ColorIconosInternos: Color
-    get() = paletaSobriaEnVivo?.textoSecundario ?: colorIconosBase ?: if (esOscuroActivo) Color(0xFFD6DAE2) else Color(0xFF1E232E)
+    get() = colorIconosBase ?: if (esOscuroActivo) (paletaSobriaGuardadaOscura?.textoSecundario ?: Color(0xFFD6DAE2)) else (paletaSobriaGuardadaClara?.textoSecundario ?: Color(0xFF1E232E))
     set(valor) { colorIconosBase = valor }
 
 var ColorTitulos: Color
-    get() = paletaSobriaEnVivo?.textoPrincipal ?: colorTitulosBase ?: if (esOscuroActivo) Color(0xFFF3F4F8) else Color(0xFF11141A)
+    get() = colorTitulosBase ?: if (esOscuroActivo) (paletaSobriaGuardadaOscura?.textoPrincipal ?: Color(0xFFF3F4F8)) else (paletaSobriaGuardadaClara?.textoPrincipal ?: Color(0xFF11141A))
     set(valor) { colorTitulosBase = valor }
 
 var ColorTarjetas: Color
-    get() = paletaSobriaEnVivo?.tarjeta ?: colorTarjetasBase ?: if (esOscuroActivo) paletaOscura.superficieAlta else paletaClara.superficie
+    get() = colorTarjetasBase ?: if (esOscuroActivo) (paletaSobriaGuardadaOscura?.tarjeta ?: paletaOscura.superficieAlta) else (paletaSobriaGuardadaClara?.tarjeta ?: paletaClara.superficie)
     set(valor) { colorTarjetasBase = valor }
 
 val ColorSobreTarjetas: Color get() = colorContraste(ColorTarjetas)

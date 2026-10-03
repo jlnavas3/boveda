@@ -6,8 +6,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
 import com.jlnavas3.bovedalocal.ui.theme.aHex
 
-/** Estado reactivo global para previsualizar y ajustar la paleta sobria en tiempo real */
-var paletaSobriaEnVivo by mutableStateOf<PaletaSobria?>(null)
+/** Estado reactivo global para paletas sobrias guardadas */
 var paletaSobriaGuardadaOscura by mutableStateOf<PaletaSobria?>(null)
 var paletaSobriaGuardadaClara by mutableStateOf<PaletaSobria?>(null)
 

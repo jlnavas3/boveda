@@ -67,6 +67,8 @@ import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteGrupo
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.SliderBoveda
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjustesFondo
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorTarjetaAjustes
+import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorTextoAjustes
+import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjusteGris
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.FilaAjusteMenu
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.SeparadorFilaAjuste
 import com.jlnavas3.bovedalocal.ui.preview.BovedaPantallaPreview
@@ -82,7 +84,6 @@ import com.jlnavas3.bovedalocal.ui.theme.aHexConAlfa
 import com.jlnavas3.bovedalocal.ui.theme.colorContraste
 import com.jlnavas3.bovedalocal.ui.theme.crearGris
 import com.jlnavas3.bovedalocal.ui.theme.esOscuroActivo
-import com.jlnavas3.bovedalocal.ui.theme.paletaSobriaEnVivo
 import com.jlnavas3.bovedalocal.ui.theme.restringirLuminancia
 import com.jlnavas3.bovedalocal.util.Haptica
 
@@ -385,18 +386,6 @@ fun PantallaLaboratorioTemas(
         )
     }
 
-    // Inyectar en vivo para que los componentes y la pantalla se actualicen en tiempo real
-    LaunchedEffect(paletaActual) {
-        paletaSobriaEnVivo = paletaActual
-    }
-
-    // Limpiar al salir de la pantalla si se desea o conservar
-    DisposableEffect(Unit) {
-        onDispose {
-            // Se puede limpiar o mantener; mantener permite ver el resultado en toda la app mientras esté abierta
-        }
-    }
-
     val acentosPredefinidos = remember {
         listOf(
             Color(0xFFE5A93C) to "Ámbar Bóveda",
@@ -681,7 +670,7 @@ fun PantallaLaboratorioTemas(
                     Icon(
                         imageVector = Icons.Filled.DarkMode,
                         contentDescription = null,
-                        tint = if (modoOscuro) colorContraste(colorAcentoActual) else colorTextoSecundario,
+                        tint = if (modoOscuro) colorContraste(colorAcentoActual) else ColorAjusteGris,
                         modifier = Modifier.size(18.dp)
                     )
                     Spacer(Modifier.width(8.dp))
@@ -689,7 +678,7 @@ fun PantallaLaboratorioTemas(
                         text = "Modo Oscuro" + if (modificadoOscuro) " (*)" else "",
                         style = MaterialTheme.typography.bodyMedium.copy(
                             fontWeight = if (modoOscuro) FontWeight.Bold else FontWeight.Normal,
-                            color = if (modoOscuro) colorContraste(colorAcentoActual) else colorTextoPrincipal
+                            color = if (modoOscuro) colorContraste(colorAcentoActual) else ColorTextoAjustes
                         )
                     )
                 }
@@ -711,7 +700,7 @@ fun PantallaLaboratorioTemas(
                     Icon(
                         imageVector = Icons.Filled.LightMode,
                         contentDescription = null,
-                        tint = if (!modoOscuro) colorContraste(colorAcentoActual) else colorTextoSecundario,
+                        tint = if (!modoOscuro) colorContraste(colorAcentoActual) else ColorAjusteGris,
                         modifier = Modifier.size(18.dp)
                     )
                     Spacer(Modifier.width(8.dp))
@@ -719,7 +708,7 @@ fun PantallaLaboratorioTemas(
                         text = "Modo Claro" + if (modificadoClaro) " (*)" else "",
                         style = MaterialTheme.typography.bodyMedium.copy(
                             fontWeight = if (!modoOscuro) FontWeight.Bold else FontWeight.Normal,
-                            color = if (!modoOscuro) colorContraste(colorAcentoActual) else colorTextoPrincipal
+                            color = if (!modoOscuro) colorContraste(colorAcentoActual) else ColorTextoAjustes
                         )
                     )
                 }
@@ -746,13 +735,13 @@ fun PantallaLaboratorioTemas(
                             Text(
                                 text = "Aplicar el mismo tono a todos",
                                 style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold),
-                                color = colorTextoPrincipal
+                                color = ColorTextoAjustes
                             )
                             Spacer(Modifier.height(2.dp))
                             Text(
                                 text = if (unificarTonos) "Todas las capas comparten el mismo tono" else "Tono independiente por cada capa",
                                 style = MaterialTheme.typography.bodySmall,
-                                color = colorTextoSecundario
+                                color = ColorAjusteGris
                             )
                         }
                         SwitchBoveda(
@@ -786,7 +775,7 @@ fun PantallaLaboratorioTemas(
                             Text(
                                 text = "Tono cromático unificado: ${tonoGlobal.toInt()}°",
                                 style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Medium),
-                                color = colorTextoPrincipal,
+                                color = ColorTextoAjustes,
                                 modifier = Modifier.weight(1f)
                             )
                         }
@@ -810,7 +799,7 @@ fun PantallaLaboratorioTemas(
                     Text(
                         text = "Intensidad de tinte en grises: ${(saturacionTinte * 100).toInt()}% ${if (saturacionTinte <= 0.001f) "(Gris puro)" else if (saturacionTinte <= 0.12f) "(Matiz Apple)" else ""}",
                         style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Medium),
-                        color = colorTextoSecundario
+                        color = ColorAjusteGris
                     )
                     SliderBoveda(
                         value = saturacionTinte,
@@ -952,7 +941,7 @@ fun PantallaLaboratorioTemas(
                     Text(
                         text = "Acentos Cromáticos",
                         style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.SemiBold),
-                        color = colorTextoSecundario
+                        color = ColorAjusteGris
                     )
                     Spacer(Modifier.height(8.dp))
                     Row(
@@ -968,7 +957,7 @@ fun PantallaLaboratorioTemas(
                                     .background(color)
                                     .border(
                                         width = if (seleccionado) 3.dp else 1.dp,
-                                        color = if (seleccionado) colorTextoPrincipal else colorBorde,
+                                        color = if (seleccionado) ColorTextoAjustes else colorBorde,
                                         shape = CircleShape
                                     )
                                     .clickable {
@@ -1002,7 +991,7 @@ fun PantallaLaboratorioTemas(
                     Text(
                         text = "Matices Neutros (Estilo Apple) y Personalizado",
                         style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.SemiBold),
-                        color = colorTextoSecundario
+                        color = ColorAjusteGris
                     )
                     Spacer(Modifier.height(8.dp))
                     Row(
@@ -1018,7 +1007,7 @@ fun PantallaLaboratorioTemas(
                                     .background(color)
                                     .border(
                                         width = if (seleccionado) 3.dp else 1.dp,
-                                        color = if (seleccionado) colorTextoPrincipal else colorBorde,
+                                        color = if (seleccionado) ColorTextoAjustes else colorBorde,
                                         shape = CircleShape
                                     )
                                     .clickable {
@@ -1056,7 +1045,7 @@ fun PantallaLaboratorioTemas(
                                 )
                                 .border(
                                     width = if (seleccionadoPersonalizado) 3.dp else 1.dp,
-                                    color = if (seleccionadoPersonalizado) colorTextoPrincipal else colorBorde,
+                                    color = if (seleccionadoPersonalizado) ColorTextoAjustes else colorBorde,
                                     shape = CircleShape
                                 )
                                 .clickable {
@@ -1071,7 +1060,7 @@ fun PantallaLaboratorioTemas(
                             Icon(
                                 imageVector = Icons.Filled.Tune,
                                 contentDescription = "Personalizado",
-                                tint = if (seleccionadoPersonalizado) colorContraste(colorAcentoActual) else colorTextoPrincipal,
+                                tint = if (seleccionadoPersonalizado) colorContraste(colorAcentoActual) else ColorTextoAjustes,
                                 modifier = Modifier.size(20.dp)
                             )
                         }
