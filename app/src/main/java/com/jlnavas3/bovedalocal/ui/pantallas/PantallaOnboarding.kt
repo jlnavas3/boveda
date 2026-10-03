@@ -1,5 +1,6 @@
 package com.jlnavas3.bovedalocal.ui.pantallas
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
@@ -17,6 +18,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.fragment.app.FragmentActivity
 import com.jlnavas3.bovedalocal.crypto.PerfilArgon2
 import com.jlnavas3.bovedalocal.ui.VaultViewModel
+import com.jlnavas3.bovedalocal.ui.pantallas.acercade.PantallaAcercaDeApp
 import com.jlnavas3.bovedalocal.ui.pantallas.onboarding.PasoBienvenida
 import com.jlnavas3.bovedalocal.ui.pantallas.onboarding.PasoCrearContrasena
 import com.jlnavas3.bovedalocal.ui.pantallas.onboarding.PasoForjando
@@ -28,6 +30,7 @@ import com.jlnavas3.bovedalocal.util.Haptica
  * - Paso 0: Bienvenida y pilares de seguridad ([PasoBienvenida]).
  * - Paso 1: Creación de contraseña maestra y perfil KDF ([PasoCrearContrasena]).
  * - Paso 2: Animación de forjado criptográfico ([PasoForjando]).
+ * - Vista superpuesta: Acerca de la aplicación ([PantallaAcercaDeApp]).
  */
 @Composable
 fun PantallaOnboarding(vm: VaultViewModel, actividad: FragmentActivity) {
@@ -39,6 +42,25 @@ fun PantallaOnboarding(vm: VaultViewModel, actividad: FragmentActivity) {
     }
     var paso by remember { mutableIntStateOf(0) }
     var contrasenaMaestra by remember { mutableStateOf("") }
+    var mostrandoAcercaDe by remember { mutableStateOf(false) }
+
+    BackHandler(enabled = mostrandoAcercaDe) {
+        mostrandoAcercaDe = false
+    }
+
+    BackHandler(enabled = !mostrandoAcercaDe && paso == 1) {
+        paso = 0
+    }
+
+    if (mostrandoAcercaDe) {
+        PantallaAcercaDeApp(
+            alVolver = {
+                haptica.toque()
+                mostrandoAcercaDe = false
+            }
+        )
+        return
+    }
 
     AnimatedContent(
         targetState = paso,
@@ -50,15 +72,17 @@ fun PantallaOnboarding(vm: VaultViewModel, actividad: FragmentActivity) {
     ) { actual ->
         when (actual) {
             0 -> PasoBienvenida(
-                perfilSeleccionado = perfilSeleccionado,
                 ajustes = ajustes,
-                alCambiarPerfil = { nuevo ->
-                    perfilSeleccionado = nuevo
-                    vm.repositorio.ajustes.actualizar { it.copy(perfilArgon2 = nuevo.clave) }
-                },
                 alIniciarCreacion = {
                     haptica.toque()
                     paso = 1
+                },
+                alAbrirAcercaDe = {
+                    haptica.toque()
+                    mostrandoAcercaDe = true
+                },
+                alSalir = {
+                    actividad.finishAffinity()
                 }
             )
 
@@ -74,7 +98,12 @@ fun PantallaOnboarding(vm: VaultViewModel, actividad: FragmentActivity) {
                     paso = 2
                 },
                 alVolver = {
+                    haptica.toque()
                     paso = 0
+                },
+                alAbrirAcercaDe = {
+                    haptica.toque()
+                    mostrandoAcercaDe = true
                 }
             )
 

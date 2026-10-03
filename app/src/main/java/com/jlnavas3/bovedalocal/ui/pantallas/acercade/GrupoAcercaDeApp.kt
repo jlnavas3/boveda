@@ -17,12 +17,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.jlnavas3.bovedalocal.ui.componentes.BotonColorido
+import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteBotonFila
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteGrupo
-import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.SeparadorFilaSimple
-import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
+import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteSeparador
 import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
-import com.jlnavas3.bovedalocal.ui.theme.ColorSeguridad
 import com.jlnavas3.bovedalocal.ui.theme.TextoPrincipal
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
 
@@ -54,30 +52,26 @@ fun GrupoAcercaDeApp(
                 style = MaterialTheme.typography.bodySmall,
                 lineHeight = 16.sp
             )
-            Spacer(Modifier.height(12.dp))
-            SeparadorFilaSimple()
-            Spacer(Modifier.height(12.dp))
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(10.dp)
-            ) {
-                BotonColorido(
-                    texto = "Copiar auditoría",
-                    color = ColorSeguridad,
-                    icono = Icons.Filled.ContentCopy,
-                    modifier = Modifier.weight(1f),
-                    alPulsar = alCopiarAuditoria
-                )
-
-                BotonColorido(
-                    texto = "Ficha Android",
-                    color = ColorAcento,
-                    icono = Icons.Filled.Info,
-                    modifier = Modifier.weight(1f),
-                    alPulsar = alAbrirFichaApp
-                )
-            }
         }
+
+        ComponenteSeparador()
+
+        ComponenteBotonFila(
+            titulo = "Copiar auditoría",
+            icono = Icons.Filled.ContentCopy,
+            colorIcono = ColorIconosInternos,
+            colorTinteIcono = androidx.compose.ui.graphics.Color.White,
+            alPulsar = alCopiarAuditoria
+        )
+
+        ComponenteSeparador()
+
+        ComponenteBotonFila(
+            titulo = "Ficha Android",
+            icono = Icons.Filled.Info,
+            colorIcono = ColorIconosInternos,
+            colorTinteIcono = androidx.compose.ui.graphics.Color.White,
+            alPulsar = alAbrirFichaApp
+        )
     }
 }
