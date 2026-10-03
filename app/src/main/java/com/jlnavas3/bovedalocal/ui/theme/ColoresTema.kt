@@ -72,7 +72,7 @@ fun aplicarTema(claveTema: String, sistemaEnOscuro: Boolean) {
     paletaActiva = if (esOscuroActivo) paletaOscura else paletaClara
 }
 
-internal var paletaAcentoActiva by mutableStateOf<PaletaAcento?>(PaletaAcento.AMBAR)
+internal var paletaAcentoActiva by mutableStateOf<PaletaAcento?>(null)
 internal var colorAcentoManual by mutableStateOf<Color?>(null)
 internal var colorAcentoFuerteManual by mutableStateOf<Color?>(null)
 internal var colorDinamicoMonet by mutableStateOf<Color?>(null)
@@ -147,19 +147,18 @@ var ColorDinamicoSistema: Boolean
 
 fun aplicarPersonalizacionColores(ajustes: AjustesApp) {
     colorDinamicoSistemaBase = ajustes.colorDinamicoSistema
-    if (ajustes.colorAcento == "sobrio") {
+    if (ajustes.colorAcento == "sobrio" || ajustes.colorAcento.isBlank()) {
         paletaAcentoActiva = null
         colorAcentoManual = null
         colorAcentoFuerteManual = null
     } else if (ajustes.colorAcento.startsWith("#") || ajustes.colorAcento.startsWith("0x")) {
         paletaAcentoActiva = null
-        val fallback = PaletaAcento.AMBAR.base
+        val fallback = PaletaSobriaDefaults.OSCURA.acento
         val custom = parsearColorO(ajustes.colorAcento, fallback)
         colorAcentoManual = custom
         colorAcentoFuerteManual = custom
     } else {
-        val clave = if (ajustes.colorAcento.isBlank()) "ambar" else ajustes.colorAcento
-        val paleta = PaletaAcento.entries.firstOrNull { it.clave == clave } ?: PaletaAcento.AMBAR
+        val paleta = PaletaAcento.entries.firstOrNull { it.clave == ajustes.colorAcento }
         paletaAcentoActiva = paleta
         colorAcentoManual = null
         colorAcentoFuerteManual = null
