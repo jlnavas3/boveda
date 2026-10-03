@@ -42,6 +42,7 @@ import com.jlnavas3.bovedalocal.ui.componentes.MenuDesplegableBoveda
 import com.jlnavas3.bovedalocal.ui.componentes.SeparadorOpcionMenu
 import com.jlnavas3.bovedalocal.ui.componentes.FilaOpcionModal
 import com.jlnavas3.bovedalocal.ui.componentes.ModalInferiorBoveda
+import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorCampoAjustes
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.SwitchBoveda
 import com.jlnavas3.bovedalocal.ui.theme.Ambar
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
@@ -68,8 +69,7 @@ fun SelectorCaracteresGenerador(
     modifier: Modifier = Modifier
 ) {
     var abierto by remember { mutableStateOf(false) }
-    val esOscuro = androidx.compose.foundation.isSystemInDarkTheme()
-    val fondo = if (esOscuro) Color(0xFF161518) else Color(0xFFF4F4F6)
+    val fondo = ColorCampoAjustes
 
     val activos = buildList {
         if (opciones.mayusculas) add("A-Z")

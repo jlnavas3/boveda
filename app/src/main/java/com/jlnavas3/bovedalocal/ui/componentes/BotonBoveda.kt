@@ -36,12 +36,15 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjusteGris
+import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorCampoAjustes
 import com.jlnavas3.bovedalocal.ui.theme.Ambar
 import com.jlnavas3.bovedalocal.ui.theme.Borde
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
+import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
 import com.jlnavas3.bovedalocal.ui.theme.ColorSobreAcento
 import com.jlnavas3.bovedalocal.ui.theme.DegradadoAmbar
 import com.jlnavas3.bovedalocal.ui.theme.EscalaTexto
+import com.jlnavas3.bovedalocal.ui.theme.EstiloBorde
 import com.jlnavas3.bovedalocal.ui.theme.FormaBoton
 import com.jlnavas3.bovedalocal.ui.theme.GrosorBorde
 import com.jlnavas3.bovedalocal.ui.theme.Peligro
@@ -154,13 +157,18 @@ fun BotonBorde(
     alPulsar: () -> Unit
 ) {
     val forma = FormaBoton
-    val fondoBoton = if (esOscuroActivo) Color(0xFF2A292E) else Color(0xFFEFEFF3)
+    val fondoBoton = ColorCampoAjustes
     Box(
         modifier = modifier
             .fillMaxWidth()
             .height(42.dp)
             .clip(forma)
             .background(fondoBoton)
+            .then(
+                if (GrosorBorde > 0.dp && EstiloBorde != "ninguno") {
+                    Modifier.border(GrosorBorde, ColorBordeActual, forma)
+                } else Modifier
+            )
             .clickable { alPulsar() },
         contentAlignment = Alignment.Center
     ) {

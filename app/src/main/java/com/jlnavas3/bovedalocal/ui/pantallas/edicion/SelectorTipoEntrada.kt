@@ -39,14 +39,16 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.jlnavas3.bovedalocal.data.TipoEntrada
 import com.jlnavas3.bovedalocal.ui.componentes.MenuDesplegableBoveda
 import com.jlnavas3.bovedalocal.ui.componentes.SeparadorOpcionMenu
-import androidx.compose.ui.unit.sp
+import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorCampoAjustes
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
 import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
 import com.jlnavas3.bovedalocal.ui.theme.ColorTitulos
+import com.jlnavas3.bovedalocal.ui.theme.EstiloBorde
 import com.jlnavas3.bovedalocal.ui.theme.FormaBoton
 import com.jlnavas3.bovedalocal.ui.theme.GrosorBorde
 import com.jlnavas3.bovedalocal.ui.theme.Superficie
@@ -74,9 +76,8 @@ fun SelectorTipoEntrada(
     }
     val texto = tipoActual.etiqueta
 
-    val esOscuro = androidx.compose.foundation.isSystemInDarkTheme()
-    val fondoCaja = if (esOscuro) Color(0xFF161518) else Color(0xFFF4F4F6)
-    val bordeCaja = if (abierto) ColorAcento else (if (esOscuro) Color(0xFF333238) else Color(0xFFDFDFE3))
+    val fondoCaja = ColorCampoAjustes
+    val bordeCaja = if (abierto) ColorAcento else ColorBordeActual
 
     Box(modifier = Modifier.fillMaxWidth()) {
         Row(
@@ -85,6 +86,11 @@ fun SelectorTipoEntrada(
                 .height(42.dp)
                 .clip(forma)
                 .background(fondoCaja)
+                .then(
+                    if (abierto || (GrosorBorde > 0.dp && EstiloBorde != "ninguno")) {
+                        Modifier.border(if (abierto) 1.5.dp.coerceAtLeast(GrosorBorde) else GrosorBorde, bordeCaja, forma)
+                    } else Modifier
+                )
                 .clickable { abierto = true }
                 .padding(horizontal = 12.dp),
             verticalAlignment = Alignment.CenterVertically

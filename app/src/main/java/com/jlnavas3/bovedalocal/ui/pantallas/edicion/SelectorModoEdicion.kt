@@ -1,6 +1,7 @@
 package com.jlnavas3.bovedalocal.ui.pantallas.edicion
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -39,9 +40,14 @@ import androidx.compose.ui.unit.sp
 import com.jlnavas3.bovedalocal.crypto.OpcionesGenerador
 import com.jlnavas3.bovedalocal.ui.componentes.MenuDesplegableBoveda
 import com.jlnavas3.bovedalocal.ui.componentes.SeparadorOpcionMenu
+import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorCampoAjustes
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.SwitchBoveda
+import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
 import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
 import com.jlnavas3.bovedalocal.ui.theme.ColorTitulos
+import com.jlnavas3.bovedalocal.ui.theme.EstiloBorde
+import com.jlnavas3.bovedalocal.ui.theme.FormaCampo
+import com.jlnavas3.bovedalocal.ui.theme.GrosorBorde
 import com.jlnavas3.bovedalocal.ui.theme.TextoPrincipal
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
 import com.jlnavas3.bovedalocal.ui.theme.esOscuroActivo
@@ -68,8 +74,8 @@ fun SelectorModoEdicion(
     modifier: Modifier = Modifier
 ) {
     var abierto by remember { mutableStateOf(false) }
-    val forma = RoundedCornerShape(12.dp)
-    val fondo = if (esOscuroActivo) Color(0xFF161518) else Color(0xFFF4F4F6)
+    val forma = FormaCampo
+    val fondo = ColorCampoAjustes
 
     val (icono, titulo) = when {
         opciones.modoFrase -> Icons.AutoMirrored.Filled.MenuBook to "Diceware"
@@ -84,6 +90,11 @@ fun SelectorModoEdicion(
                 .height(42.dp)
                 .clip(forma)
                 .background(fondo)
+                .then(
+                    if (GrosorBorde > 0.dp && EstiloBorde != "ninguno") {
+                        Modifier.border(GrosorBorde, ColorBordeActual, forma)
+                    } else Modifier
+                )
                 .clickable { abierto = true }
                 .padding(horizontal = 12.dp),
             verticalAlignment = Alignment.CenterVertically

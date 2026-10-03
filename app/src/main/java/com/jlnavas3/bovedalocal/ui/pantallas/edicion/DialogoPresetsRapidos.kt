@@ -39,6 +39,7 @@ import com.jlnavas3.bovedalocal.data.CampoPersonalizado
 import com.jlnavas3.bovedalocal.data.PresetsCampos
 import com.jlnavas3.bovedalocal.data.TipoEntrada
 import com.jlnavas3.bovedalocal.ui.componentes.DialogoBoveda
+import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorCampoAjustes
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
 import com.jlnavas3.bovedalocal.ui.theme.ColorSobreAcento
@@ -81,7 +82,7 @@ fun DialogoPresetsRapidos(
 
             Spacer(Modifier.height(2.dp))
 
-            val fondoItem = if (esOscuroActivo) Color(0xFF2A292E) else Color(0xFFEFEFF3)
+            val fondoItem = ColorCampoAjustes
 
             PresetsCampos.todos.forEach { preset ->
                 val icono: ImageVector = when (preset.tipoEntradaSugerido) {

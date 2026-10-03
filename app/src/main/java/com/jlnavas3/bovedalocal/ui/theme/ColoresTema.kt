@@ -72,7 +72,7 @@ fun aplicarTema(claveTema: String, sistemaEnOscuro: Boolean) {
     paletaActiva = if (esOscuroActivo) paletaOscura else paletaClara
 }
 
-internal var paletaAcentoActiva by mutableStateOf<PaletaAcento?>(null)
+internal var paletaAcentoActiva by mutableStateOf<PaletaAcento?>(PaletaAcento.AMBAR)
 internal var colorAcentoManual by mutableStateOf<Color?>(null)
 internal var colorAcentoFuerteManual by mutableStateOf<Color?>(null)
 internal var colorDinamicoMonet by mutableStateOf<Color?>(null)
@@ -147,24 +147,20 @@ var ColorDinamicoSistema: Boolean
 
 fun aplicarPersonalizacionColores(ajustes: AjustesApp) {
     colorDinamicoSistemaBase = ajustes.colorDinamicoSistema
-    val esAcentoPersonalizado = ajustes.colorAcento.isNotBlank() &&
-            ajustes.colorAcento != "sobrio" &&
-            ajustes.colorAcento != "ambar"
-    val paleta = if (esAcentoPersonalizado) {
-        PaletaAcento.entries.firstOrNull { it.clave == ajustes.colorAcento }
-    } else null
-    if (paleta != null) {
-        paletaAcentoActiva = paleta
+    if (ajustes.colorAcento == "sobrio") {
+        paletaAcentoActiva = null
         colorAcentoManual = null
         colorAcentoFuerteManual = null
-    } else if (esAcentoPersonalizado && (ajustes.colorAcento.startsWith("#") || ajustes.colorAcento.startsWith("0x"))) {
+    } else if (ajustes.colorAcento.startsWith("#") || ajustes.colorAcento.startsWith("0x")) {
         paletaAcentoActiva = null
-        val fallback = if (esOscuroActivo) PaletaSobriaDefaults.OSCURA.acento else PaletaSobriaDefaults.CLARA.acento
+        val fallback = PaletaAcento.AMBAR.base
         val custom = parsearColorO(ajustes.colorAcento, fallback)
         colorAcentoManual = custom
         colorAcentoFuerteManual = custom
     } else {
-        paletaAcentoActiva = null
+        val clave = if (ajustes.colorAcento.isBlank()) "ambar" else ajustes.colorAcento
+        val paleta = PaletaAcento.entries.firstOrNull { it.clave == clave } ?: PaletaAcento.AMBAR
+        paletaAcentoActiva = paleta
         colorAcentoManual = null
         colorAcentoFuerteManual = null
     }

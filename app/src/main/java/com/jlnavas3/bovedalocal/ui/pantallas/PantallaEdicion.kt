@@ -392,8 +392,6 @@ fun PantallaEdicion(vm: VaultViewModel, id: String?, contrasenaInicial: String) 
     }
 
     val formaFab = RoundedCornerShape(CurvaturaEsquinas)
-    val colorFondoFab = if (puedeGuardar) ColorAcento else if (esOscuroActivo) Color(0xFF2C2B30) else Color(0xFFDCDFE6)
-    val colorContenidoFab = if (puedeGuardar) ColorSobreAcento else ColorIconosInternos.copy(alpha = 0.35f)
 
     FloatingActionButton(
         onClick = {
@@ -401,10 +399,11 @@ fun PantallaEdicion(vm: VaultViewModel, id: String?, contrasenaInicial: String) 
                 guardarEntrada()
             } else {
                 haptica.error()
+                vm.avisar("Introduce un título para guardar")
             }
         },
-        containerColor = colorFondoFab,
-        contentColor = colorContenidoFab,
+        containerColor = ColorAcento,
+        contentColor = ColorSobreAcento,
         shape = formaFab,
         modifier = Modifier
             .align(Alignment.BottomEnd)

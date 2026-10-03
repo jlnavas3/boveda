@@ -11,7 +11,7 @@ enum class PaletaAcento(
     val fuerteOscuro: Color,
     val fuerteClaro: Color
 ) {
-    AMBAR("ambar", "Ámbar", Color(0xFFFFB74D), Color(0xFFC05621), Color(0xFFFF8A3D), Color(0xFF9C4221)),
+    AMBAR("ambar", "Ámbar", Color(0xFFFFB74D), Color(0xFFFFB74D), Color(0xFFFF8A3D), Color(0xFFFF8A3D)),
     MENTA("menta", "Menta", Color(0xFF57E6B4), Color(0xFF0D9488), Color(0xFF23C08D), Color(0xFF0F766E)),
     AZUL("azul", "Azul", Color(0xFF6FA8FF), Color(0xFF2563EB), Color(0xFF3D7EFF), Color(0xFF1D4ED8)),
     ROSA("rosa", "Rosa", Color(0xFFFF8FCB), Color(0xFFDB2777), Color(0xFFFF5FA8), Color(0xFFBE185D)),
