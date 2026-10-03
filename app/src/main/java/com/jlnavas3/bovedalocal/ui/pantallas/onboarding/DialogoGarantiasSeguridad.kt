@@ -2,14 +2,11 @@ package com.jlnavas3.bovedalocal.ui.pantallas.onboarding
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
@@ -28,9 +25,7 @@ import androidx.compose.material.icons.filled.WifiOff
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -39,27 +34,24 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.window.Dialog
-import androidx.compose.ui.window.DialogProperties
+import com.jlnavas3.bovedalocal.ui.componentes.BotonBoveda
 import com.jlnavas3.bovedalocal.ui.componentes.ModalInferiorBoveda
+import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjusteGris
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
 import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
-import com.jlnavas3.bovedalocal.ui.theme.ColorSeguridad
 import com.jlnavas3.bovedalocal.ui.theme.ColorSobreAcento
 import com.jlnavas3.bovedalocal.ui.theme.ColorTitulos
+import com.jlnavas3.bovedalocal.ui.theme.CurvaturaEsquinas
 import com.jlnavas3.bovedalocal.ui.theme.EstiloBorde
-import com.jlnavas3.bovedalocal.ui.theme.FormaCampo
 import com.jlnavas3.bovedalocal.ui.theme.FormaPequena
 import com.jlnavas3.bovedalocal.ui.theme.GrosorBorde
-import com.jlnavas3.bovedalocal.ui.theme.Menta
 import com.jlnavas3.bovedalocal.ui.theme.TextoPrincipal
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
-import com.jlnavas3.bovedalocal.ui.theme.esOscuroActivo
 
 /**
- * Diálogo modal centrado con estética Samsung One UI / Honor MagicOS para mostrar
- * los pilares criptográficos de la aplicación sin sobrecargar la pantalla inicial.
+ * Diálogo modal con estética Samsung One UI / Honor MagicOS y Paleta Sobria para mostrar
+ * los pilares criptográficos de la aplicación respetando el tema visual global.
  */
 @Composable
 fun DialogoGarantiasSeguridad(alCerrar: () -> Unit) {
@@ -71,7 +63,7 @@ fun DialogoGarantiasSeguridad(alCerrar: () -> Unit) {
         descripcion = "Air-Gapped · Argon2id + AES-256 · Sin telemetría",
         icono = Icons.Filled.Shield,
         colorIcono = ColorSobreAcento,
-        fondoIcono = ColorSeguridad,
+        fondoIcono = ColorAcento,
         mostrarBotonCerrar = false
     ) {
         Column(
@@ -84,77 +76,74 @@ fun DialogoGarantiasSeguridad(alCerrar: () -> Unit) {
             FilaPilarSeguridad(
                 icono = Icons.Filled.WifiOff,
                 titulo = "Cero conexión a Internet (Air-Gapped)",
-                descripcion = "La aplicación carece por completo de permisos de red en el sistema operativo. Tus secretos jamás abandonan físicamente este dispositivo: no existen servidores remotos ni telemetría.",
-                colorIcono = ColorIconosInternos
+                descripcion = "La aplicación carece por completo de permisos de red en el sistema operativo. Tus secretos jamás abandonan físicamente este dispositivo: no existen servidores remotos ni telemetría."
             )
 
             FilaPilarSeguridad(
                 icono = Icons.Filled.Lock,
                 titulo = "Argon2id + AES-256-GCM (Estándar de Oro)",
-                descripcion = "La cúspide mundial del cifrado autenticado de grado militar. Derivación de clave intensiva en memoria contra granjas de GPUs/ASICs y cifrado simétrico autenticado inmune al algoritmo cuántico de Grover.",
-                colorIcono = ColorSeguridad
+                descripcion = "Cúspide del cifrado autenticado. Derivación de clave intensiva en memoria contra granjas GPU/ASIC y cifrado simétrico autenticado inmune al algoritmo cuántico de Grover."
             )
 
             FilaPilarSeguridad(
                 icono = Icons.Filled.VerifiedUser,
                 titulo = "Aislamiento y Transparencia Radical",
-                descripcion = "Únicamente biometría de hardware para acceso instantáneo y cámara para escaneo local de códigos QR/2FA. Sin acceso a tus contactos, fotos, archivos personales ni ubicación.",
-                colorIcono = Menta
+                descripcion = "Únicamente biometría de hardware para acceso instantáneo y cámara para escaneo local de códigos QR/2FA. Sin acceso a tus contactos, fotos, archivos personales ni ubicación."
             )
 
             Spacer(Modifier.height(4.dp))
 
-            // Distintivos de garantía inferior
-            val garantias = listOf(
-                "100% Fuera de línea",
-                "Cero conocimiento",
-                "Inmunidad post-cuántica"
-            )
-            garantias.forEach { garantia ->
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clip(FormaCampo)
-                        .background(Menta.copy(alpha = 0.08f))
-                        .then(
-                            if (GrosorBorde > 0.dp && EstiloBorde != "ninguno") {
-                                Modifier.border(GrosorBorde, Menta.copy(alpha = 0.45f), FormaCampo)
-                            } else Modifier
+            // Tarjeta de garantías sintetizada y sobria
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(CurvaturaEsquinas.coerceAtLeast(14.dp)))
+                    .background(ColorAjusteGris.copy(alpha = 0.08f))
+                    .then(
+                        if (GrosorBorde > 0.dp && EstiloBorde != "ninguno") {
+                            Modifier.border(GrosorBorde, ColorBordeActual.copy(alpha = 0.5f), RoundedCornerShape(CurvaturaEsquinas.coerceAtLeast(14.dp)))
+                        } else Modifier
+                    )
+                    .padding(horizontal = 14.dp, vertical = 10.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                listOf(
+                    "100% Offline",
+                    "Zero-Knowledge",
+                    "Post-Cuántica"
+                ).forEach { garantia ->
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.CheckCircle,
+                            contentDescription = null,
+                            tint = ColorAcento,
+                            modifier = Modifier.size(14.dp)
                         )
-                        .padding(horizontal = 12.dp, vertical = 9.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Icon(
-                        imageVector = Icons.Filled.CheckCircle,
-                        contentDescription = null,
-                        tint = Menta,
-                        modifier = Modifier.size(16.dp)
-                    )
-                    Spacer(Modifier.width(8.dp))
-                    Text(
-                        text = garantia,
-                        color = Menta,
-                        style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.SemiBold)
-                    )
+                        Text(
+                            text = garantia,
+                            color = TextoPrincipal,
+                            style = MaterialTheme.typography.labelSmall.copy(
+                                fontWeight = FontWeight.SemiBold,
+                                fontSize = 10.5.sp
+                            )
+                        )
+                    }
                 }
             }
         }
 
         Spacer(Modifier.height(16.dp))
 
-        // Botón de cierre
-        Row(
+        // Botón principal de cierre con el componente oficial BotonBoveda
+        BotonBoveda(
+            texto = "Entendido",
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.End
-        ) {
-            TextButton(onClick = alCerrar) {
-                Text(
-                    text = "Entendido",
-                    color = ColorAcento,
-                    style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold)
-                )
-            }
-        }
+            alPulsar = alCerrar
+        )
     }
 }
 
@@ -165,8 +154,7 @@ fun DialogoGarantiasSeguridad(alCerrar: () -> Unit) {
 private fun FilaPilarSeguridad(
     icono: ImageVector,
     titulo: String,
-    descripcion: String,
-    colorIcono: Color = ColorIconosInternos
+    descripcion: String
 ) {
     Row(
         modifier = Modifier
@@ -179,13 +167,13 @@ private fun FilaPilarSeguridad(
                 .padding(top = 2.dp)
                 .size(36.dp)
                 .clip(FormaPequena)
-                .background(colorIcono.copy(alpha = 0.14f)),
+                .background(ColorAjusteGris.copy(alpha = 0.15f)),
             contentAlignment = Alignment.Center
         ) {
             Icon(
                 imageVector = icono,
                 contentDescription = null,
-                tint = colorIcono,
+                tint = ColorIconosInternos,
                 modifier = Modifier.size(20.dp)
             )
         }

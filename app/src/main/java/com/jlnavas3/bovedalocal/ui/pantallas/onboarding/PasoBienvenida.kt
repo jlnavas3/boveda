@@ -52,13 +52,13 @@ import com.jlnavas3.bovedalocal.ui.componentes.aEngranajesConfig
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteBotonFila
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteGrupo
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjusteGris
+import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjustesFondo
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorTarjetaAjustes
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
 import com.jlnavas3.bovedalocal.ui.theme.ColorSobreAcento
 import com.jlnavas3.bovedalocal.ui.theme.ColorTitulos
 import com.jlnavas3.bovedalocal.ui.theme.CurvaturaEsquinas
-import com.jlnavas3.bovedalocal.ui.theme.Menta
 import com.jlnavas3.bovedalocal.ui.theme.Peligro
 import com.jlnavas3.bovedalocal.ui.theme.TextoPrincipal
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
@@ -77,7 +77,9 @@ fun PasoBienvenida(
     var menuAbierto by remember { mutableStateOf(false) }
 
     Column(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier
+            .fillMaxSize()
+            .background(ColorAjustesFondo)
     ) {
         // Cabecera superior limpia con menú de opciones contextuales
         Row(
@@ -122,8 +124,7 @@ fun PasoBienvenida(
                     )
 
                     SeparadorOpcionMenu()
-                    Spacer(Modifier.height(20.dp))
-                    SeparadorOpcionMenu()
+                    Spacer(Modifier.height(42.dp))
 
                     ElementoMenuCompacto(
                         texto = "Salir",
@@ -203,7 +204,7 @@ fun PasoBienvenida(
                         modifier = Modifier
                             .size(7.dp)
                             .clip(CircleShape)
-                            .background(Menta)
+                            .background(ColorAcento)
                     )
                     Spacer(Modifier.width(8.dp))
                     Text(

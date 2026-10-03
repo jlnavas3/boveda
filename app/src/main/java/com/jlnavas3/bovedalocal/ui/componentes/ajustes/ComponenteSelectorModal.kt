@@ -135,7 +135,7 @@ fun <T> ComponenteSelectorModal(
     )
 
     if (abierto) {
-        val colorAcentoFinal = colorIcono ?: ColorAcento
+        val colorAcentoFinal = ColorAcento
 
         val listaOpciones = @Composable {
             Column(

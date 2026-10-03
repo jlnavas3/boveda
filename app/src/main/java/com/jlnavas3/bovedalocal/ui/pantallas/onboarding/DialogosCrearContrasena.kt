@@ -2,44 +2,40 @@ package com.jlnavas3.bovedalocal.ui.pantallas.onboarding
 
 import android.content.Context
 import android.content.Intent
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DashboardCustomize
 import androidx.compose.material.icons.filled.Lightbulb
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.Warning
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.jlnavas3.bovedalocal.quicksettings.GeneradorRapidoHelper
+import com.jlnavas3.bovedalocal.ui.componentes.BotonBoveda
+import com.jlnavas3.bovedalocal.ui.componentes.BotonColorido
 import com.jlnavas3.bovedalocal.ui.componentes.ModalInferiorBoveda
+import com.jlnavas3.bovedalocal.ui.componentes.VarianteBoton
+import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteAlerta
+import com.jlnavas3.bovedalocal.ui.componentes.ajustes.TipoAlerta
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.ColorSobreAcento
 import com.jlnavas3.bovedalocal.ui.theme.Peligro
 import com.jlnavas3.bovedalocal.ui.theme.TextoPrincipal
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
+import com.jlnavas3.bovedalocal.util.Haptica
 
 /**
  * Diálogo informativo que orienta al usuario sobre cómo generar una contraseña rápida y segura
@@ -47,8 +43,8 @@ import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
  */
 @Composable
 fun DialogoConsejoTile(alCerrar: () -> Unit) {
-    val contexto = androidx.compose.ui.platform.LocalContext.current
-    val haptica = remember { com.jlnavas3.bovedalocal.util.Haptica(contexto) }
+    val contexto = LocalContext.current
+    val haptica = remember { Haptica(contexto) }
 
     ModalInferiorBoveda(
         abierto = true,
@@ -69,31 +65,25 @@ fun DialogoConsejoTile(alCerrar: () -> Unit) {
 
         Spacer(Modifier.height(16.dp))
 
-        com.jlnavas3.bovedalocal.ui.componentes.BotonColorido(
+        BotonColorido(
             texto = "Añadir a Ajustes Rápidos",
             icono = Icons.Filled.DashboardCustomize,
             color = ColorAcento,
             modifier = Modifier.fillMaxWidth(),
             alPulsar = {
                 haptica.toque()
-                com.jlnavas3.bovedalocal.quicksettings.GeneradorRapidoHelper.solicitarAgregarTile(contexto)
+                GeneradorRapidoHelper.solicitarAgregarTile(contexto)
             }
         )
 
-        Spacer(Modifier.height(14.dp))
+        Spacer(Modifier.height(12.dp))
 
-        Row(
+        BotonBoveda(
+            texto = "Entendido",
+            variante = VarianteBoton.SECUNDARIO,
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.End
-        ) {
-            TextButton(onClick = alCerrar) {
-                Text(
-                    text = "Entendido",
-                    color = ColorAcento,
-                    style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold)
-                )
-            }
-        }
+            alPulsar = alCerrar
+        )
     }
 }
 
@@ -128,26 +118,34 @@ fun DialogoAdvertenciaCompartir(
             style = MaterialTheme.typography.bodySmall.copy(lineHeight = 18.sp),
             color = TextoSecundario
         )
-        Spacer(Modifier.height(10.dp))
-        Text(
-            text = "⚠️ La app no guarda tu contraseña. Si la pierdes, no hay forma matemática de recuperar tu bóveda.",
-            style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
-            color = Peligro
+        Spacer(Modifier.height(12.dp))
+
+        ComponenteAlerta(
+            tipo = TipoAlerta.DANGER,
+            titulo = "Sin recuperación posible",
+            mensaje = "La app no almacena tu contraseña maestra. Si la olvidas o pierdes, será matemáticamente imposible descifrar tu bóveda."
         )
 
-        Spacer(Modifier.height(16.dp))
+        Spacer(Modifier.height(18.dp))
 
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.End,
+            horizontalArrangement = Arrangement.spacedBy(10.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            TextButton(onClick = alCerrar) {
-                Text("Cancelar", color = TextoSecundario)
-            }
-            Spacer(Modifier.width(8.dp))
-            TextButton(
-                onClick = {
+            BotonBoveda(
+                texto = "Cancelar",
+                variante = VarianteBoton.SECUNDARIO,
+                modifier = Modifier.weight(1f),
+                alPulsar = alCerrar
+            )
+
+            BotonBoveda(
+                texto = "Compartir",
+                variante = VarianteBoton.PELIGRO,
+                icono = Icons.Filled.Share,
+                modifier = Modifier.weight(1f),
+                alPulsar = {
                     alCerrar()
                     val intent = Intent(Intent.ACTION_SEND).apply {
                         type = "text/plain"
@@ -156,9 +154,7 @@ fun DialogoAdvertenciaCompartir(
                     }
                     contexto.startActivity(Intent.createChooser(intent, "Guardar o compartir contraseña"))
                 }
-            ) {
-                Text("Entendido, Compartir", color = ColorAcento, fontWeight = FontWeight.Bold)
-            }
+            )
         }
     }
 }
