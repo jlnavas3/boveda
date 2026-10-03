@@ -91,14 +91,10 @@ fun PantallaAjustesWidget(
                     idGrupo = "04-HER-WGT-G01",
                     mostrarId = ajustes.mostrarIdsAjustes
                 ) {
-                    // Previa visual del widget sin títulos ni texto adicional
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 12.dp, vertical = 10.dp)
-                    ) {
-                        PreviaWidgetTotpCompacta(ajustes = ajustes)
-                    }
+                    PreviaWidgetTotpCompacta(
+                        ajustes = ajustes,
+                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 10.dp)
+                    )
 
                     ComponenteSeparador()
 
@@ -152,14 +148,7 @@ fun PantallaAjustesWidget(
                     idGrupo = "04-HER-WGT-G02",
                     mostrarId = ajustes.mostrarIdsAjustes
                 ) {
-                    // Previa visual del widget sin títulos ni texto adicional
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 12.dp, vertical = 10.dp)
-                    ) {
-                        PreviaWidget1x1Compacta(ajustes = ajustes)
-                    }
+                    PreviaWidget1x1Compacta(ajustes = ajustes)
 
                     ComponenteSeparador()
 

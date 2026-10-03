@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.dp
 import com.jlnavas3.bovedalocal.crypto.OpcionesGenerador
 import com.jlnavas3.bovedalocal.crypto.PasswordGenerator
 import com.jlnavas3.bovedalocal.data.AjustesApp
+import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorSeparadorAjustes
 import com.jlnavas3.bovedalocal.util.Haptica
 
 @Composable
@@ -46,22 +47,20 @@ fun SimuladorCeldaWidget1x1(
         else -> Alignment.TopCenter
     }
 
+    val colorBordeCelda = ColorSeparadorAjustes.copy(alpha = 0.85f)
+
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 6.dp)
-            .clip(RoundedCornerShape(16.dp))
-            .background(Color(0xFF101216))
-            .padding(horizontal = 16.dp, vertical = 10.dp),
+            .padding(horizontal = 16.dp, vertical = 8.dp),
         contentAlignment = Alignment.Center
     ) {
-        // Marco simulador de la celda 1x1 del launcher (116x116 dp)
+        // Marco simulador de la celda 1x1 del launcher (116x116 dp) - solo bordes, sin relleno
         Box(
             modifier = Modifier
                 .size(116.dp)
                 .clip(RoundedCornerShape(14.dp))
-                .background(Color(0xFF17191E))
-                .border(1.dp, Color.White.copy(alpha = 0.08f), RoundedCornerShape(14.dp))
+                .border(1.2.dp, colorBordeCelda, RoundedCornerShape(14.dp))
                 .padding(4.dp),
             contentAlignment = alineacionPreview
         ) {
