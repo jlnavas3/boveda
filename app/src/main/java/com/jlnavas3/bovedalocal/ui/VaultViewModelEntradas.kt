@@ -13,9 +13,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.withContext
 
-interface VaultEntradasDelegate {
-    val repositorio: VaultRepository
-    val avisoInterno: MutableStateFlow<String?>
+interface VaultEntradasDelegate : VaultDuplicadosPapeleraDelegate {
+    override val repositorio: VaultRepository
+    override val avisoInterno: MutableStateFlow<String?>
     val errorInterno: MutableStateFlow<String?>
     val busquedaInterna: MutableStateFlow<String>
     val filtroTipoInterno: MutableStateFlow<TipoEntrada?>
@@ -23,7 +23,7 @@ interface VaultEntradasDelegate {
     val filtroEtiquetaInterno: MutableStateFlow<String?>
     val filtroColeccionInterno: MutableStateFlow<String?>
     val criterioOrdenacionInterno: MutableStateFlow<CriterioOrdenacion>
-    fun ejecutar(bloque: suspend () -> Unit)
+    override fun ejecutar(bloque: suspend () -> Unit)
     fun ir(pantalla: Pantalla)
     fun irRaiz(pantalla: Pantalla)
 
@@ -33,35 +33,16 @@ interface VaultEntradasDelegate {
 
     // ---------------------------------------------------------------- entradas
 
-    fun entradasVisibles(entradas: List<Entrada>): List<Entrada> {
-        val texto = busquedaInterna.value.trim().lowercase()
-        val filtradas = entradas
-            .filter { entrada ->
-                (filtroTipoInterno.value == null || entrada.tipo == filtroTipoInterno.value) &&
-                    (!soloFavoritosInterno.value || entrada.favorito) &&
-                    (filtroEtiquetaInterno.value == null || entrada.etiquetas.contains(filtroEtiquetaInterno.value)) &&
-                    (filtroColeccionInterno.value == null || entrada.colecciones.contains(filtroColeccionInterno.value)) &&
-                    (texto.isEmpty() ||
-                        entrada.titulo.lowercase().contains(texto) ||
-                        entrada.usuario.lowercase().contains(texto) ||
-                        entrada.urls.any { it.lowercase().contains(texto) } ||
-                        entrada.etiquetas.any { it.lowercase().contains(texto) })
-            }
-        val comparador: Comparator<Entrada> = when (criterioOrdenacionInterno.value) {
-            CriterioOrdenacion.NOMBRE_AZ -> compareByDescending<Entrada> { it.favorito }.thenBy { it.titulo.lowercase() }
-            CriterioOrdenacion.NOMBRE_ZA -> compareByDescending<Entrada> { it.titulo.lowercase() }.thenByDescending { it.favorito }
-            CriterioOrdenacion.MODIFICACION_RECIENTE -> compareByDescending<Entrada> { it.modificadaEn }.thenByDescending { it.favorito }
-            CriterioOrdenacion.CREACION_RECIENTE -> compareByDescending<Entrada> { it.creadaEn }.thenByDescending { it.favorito }
-            CriterioOrdenacion.ANTIGUEDAD -> compareBy<Entrada> { it.creadaEn }.thenByDescending { it.favorito }
-            CriterioOrdenacion.USO_RECIENTE -> compareByDescending<Entrada> { it.ultimoUsoEn }
-                .thenByDescending { it.favorito }
-                .thenBy { it.titulo.lowercase() }
-            CriterioOrdenacion.IGNORADAS -> compareByDescending<Entrada> { it.ignoradaEnSalud }
-                .thenByDescending { it.favorito }
-                .thenBy { it.titulo.lowercase() }
-        }
-        return filtradas.sortedWith(comparador)
-    }
+    fun entradasVisibles(entradas: List<Entrada>): List<Entrada> =
+        FiltradorEntradas.filtrarYOrdenar(
+            entradas = entradas,
+            busqueda = busquedaInterna.value,
+            filtroTipo = filtroTipoInterno.value,
+            soloFavoritos = soloFavoritosInterno.value,
+            filtroEtiqueta = filtroEtiquetaInterno.value,
+            filtroColeccion = filtroColeccionInterno.value,
+            criterioOrdenacion = criterioOrdenacionInterno.value
+        )
 
     fun cambiarCriterioOrdenacion(criterio: CriterioOrdenacion) {
         criterioOrdenacionInterno.value = criterio
@@ -167,80 +148,7 @@ interface VaultEntradasDelegate {
         }
     }
 
-    // ------------------------------------------------------------- duplicados y salud
-    fun eliminarDuplicadasExactasMasivo(grupos: List<GrupoDuplicado>) {
-        val idsABorrar = grupos
-            .filter { it.tipo == TipoDuplicado.IDENTICO }
-            .flatMap { it.entradasSecundarias.map { ent -> ent.id } }
-            .toSet()
-
-        if (idsABorrar.isEmpty()) return
-        ejecutar {
-            withContext(Dispatchers.IO) { repositorio.eliminarEntradas(idsABorrar) }
-            Diagnostico.apuntar("duplicados", "Limpieza masiva: ${idsABorrar.size} copias idénticas movidas a la papelera")
-            avisoInterno.value = "${idsABorrar.size} copias idénticas movidas a la papelera"
-        }
-    }
-
-    fun unificarEntradas(principal: Entrada, secundarias: List<Entrada>) {
-        val idsSecundarias = secundarias.map { it.id }.toSet()
-        if (idsSecundarias.isEmpty()) return
-        ejecutar {
-            val unificada = AnalizadorDuplicados.fusionar(principal, secundarias)
-            withContext(Dispatchers.IO) {
-                repositorio.guardarEntrada(unificada)
-                repositorio.eliminarEntradas(idsSecundarias)
-            }
-            Diagnostico.apuntar("duplicados", "Entrada unificada y ${idsSecundarias.size} duplicadas enviadas a la papelera")
-            avisoInterno.value = "Entradas unificadas con éxito"
-        }
-    }
-
-    fun actualizarContrasenaRapida(id: String, nuevaClave: String) {
-        if (nuevaClave.isBlank()) return
-        ejecutar {
-            val entrada = withContext(Dispatchers.IO) { repositorio.entrada(id) } ?: return@ejecutar
-            val entradaActualizada = entrada.copy(
-                contrasena = nuevaClave,
-                modificadaEn = System.currentTimeMillis()
-            )
-            withContext(Dispatchers.IO) { repositorio.guardarEntrada(entradaActualizada) }
-            Diagnostico.apuntar("salud", "Contraseña de \"${entrada.titulo}\" actualizada de forma rápida")
-            avisoInterno.value = "Contraseña actualizada con éxito"
-        }
-    }
-
-    // ------------------------------------------------------------- papelera
-
-    fun restaurarDeLaPapelera(id: String, sustituir: Boolean = false) {
-        ejecutar {
-            val ent = withContext(Dispatchers.IO) { repositorio.papelera().firstOrNull { it.id == id } }
-            val tipoDesc = ent?.tipo?.etiqueta?.lowercase() ?: "entrada"
-            withContext(Dispatchers.IO) { repositorio.restaurarDeLaPapelera(id, sustituir) }
-            val mensajeAccion = if (sustituir) "sustituida" else "restaurada"
-            Diagnostico.apuntar("papelera", "Entrada ($tipoDesc) $mensajeAccion desde la papelera a la bóveda")
-            avisoInterno.value = if (sustituir) "Entrada sustituida" else "Entrada restaurada"
-        }
-    }
-
-    fun borrarDefinitivamente(id: String) {
-        ejecutar {
-            val ent = withContext(Dispatchers.IO) { repositorio.entrada(id) }
-            val tipoDesc = ent?.tipo?.etiqueta?.lowercase() ?: "entrada"
-            withContext(Dispatchers.IO) { repositorio.borrarDefinitivamente(id) }
-            Diagnostico.apuntar("papelera", "Entrada ($tipoDesc) eliminada definitivamente de la papelera")
-            avisoInterno.value = "Borrada para siempre"
-        }
-    }
-
-    fun vaciarPapelera() {
-        ejecutar {
-            val cant = repositorio.papelera().size
-            withContext(Dispatchers.IO) { repositorio.vaciarPapelera() }
-            Diagnostico.apuntar("papelera", "Papelera vaciada por completo ($cant entradas eliminadas definitivamente)")
-            avisoInterno.value = "Papelera vaciada"
-        }
-    }
+    // ------------------------------------------------------------- favoritos y acciones
 
     fun alternarFavorito(id: String) {
         ejecutar {
