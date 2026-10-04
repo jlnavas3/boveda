@@ -30,7 +30,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.Sell
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
@@ -248,6 +251,25 @@ fun PantallaLista(vm: VaultViewModel, estado: EstadoBoveda) {
         haptica.tic()
     }
 
+    fun alternarSeleccionLote(ids: Set<String>) {
+        if (ids.isEmpty()) return
+        haptica.tic()
+        val todosEstanSeleccionados = seleccionados.containsAll(ids)
+        seleccionados = if (todosEstanSeleccionados) {
+            seleccionados - ids
+        } else {
+            seleccionados + ids
+        }
+        modoSeleccion = seleccionados.isNotEmpty()
+    }
+
+    fun entrarEnSeleccionLote(ids: Set<String>) {
+        if (ids.isEmpty()) return
+        haptica.tic()
+        modoSeleccion = true
+        seleccionados = seleccionados + ids
+    }
+
     // Selecciona/deselecciona todo lo que se ve ahora mismo (respeta búsqueda y filtros).
     val todoSeleccionado = visibles.isNotEmpty() && seleccionados.containsAll(visibles.map { it.id })
     fun alternarSeleccionarTodo() {
@@ -425,35 +447,42 @@ fun PantallaLista(vm: VaultViewModel, estado: EstadoBoveda) {
                 // Chips de Filtros Activos y Etiquetas
                 val hayFiltroActivo = filtro != null || soloFavoritos || filtroEtiqueta != null
                 if (hayFiltroActivo || etiquetasDisponibles.isNotEmpty()) {
-                    Spacer(Modifier.height(6.dp))
+                    Spacer(Modifier.height(4.dp))
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(horizontal = 20.dp)
-                            .horizontalScroll(rememberScrollState()),
+                            .horizontalScroll(rememberScrollState())
+                            .padding(horizontal = 20.dp, vertical = 4.dp),
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         if (soloFavoritos) {
                             ChipFiltroActivo(
-                                texto = "★ Favoritos",
+                                texto = "Favoritos",
+                                icono = Icons.Filled.Star,
                                 alLimpiar = { vm.alternarSoloFavoritos() }
                             )
                         }
                         if (filtro != null) {
                             ChipFiltroActivo(
                                 texto = filtro?.etiqueta ?: "Filtro",
+                                icono = Icons.Filled.FilterList,
                                 alLimpiar = { vm.filtrarPorTipo(null) }
                             )
                         }
                         if (filtroEtiqueta != null) {
                             ChipFiltroActivo(
-                                texto = "#${normalizarEtiqueta(filtroEtiqueta!!)}",
+                                texto = normalizarEtiqueta(filtroEtiqueta!!),
+                                icono = Icons.Filled.Sell,
                                 alLimpiar = { vm.filtrarPorEtiqueta(null) }
                             )
                         }
                         etiquetasDisponibles.filter { it != filtroEtiqueta }.forEach { etiqueta ->
-                            ChipFiltro("#${normalizarEtiqueta(etiqueta)}", false) {
+                            ChipFiltro(
+                                texto = normalizarEtiqueta(etiqueta),
+                                activo = false,
+                                icono = Icons.Filled.Sell
+                            ) {
                                 vm.filtrarPorEtiqueta(etiqueta)
                             }
                         }
@@ -538,6 +567,8 @@ fun PantallaLista(vm: VaultViewModel, estado: EstadoBoveda) {
                         },
                         alEntrarEnSeleccion = { entrarEnSeleccion(it) },
                         alAlternarSeleccion = { alternarSeleccion(it) },
+                        alEntrarEnSeleccionLote = { entrarEnSeleccionLote(it) },
+                        alAlternarSeleccionLote = { alternarSeleccionLote(it) },
                         alAlternarGrupo = { clave ->
                             haptica.tic()
                             gruposExpandidos = if (gruposExpandidos.contains(clave)) {

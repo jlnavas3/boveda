@@ -21,11 +21,14 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Dns
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
+import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -41,12 +44,14 @@ import androidx.compose.ui.unit.sp
 import com.jlnavas3.bovedalocal.data.Entrada
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorCampoAjustes
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorTarjetaAjustes
+import com.jlnavas3.bovedalocal.ui.theme.Borde
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.preview.BovedaPreview
 import com.jlnavas3.bovedalocal.ui.preview.PreviewMocks
 import com.jlnavas3.bovedalocal.ui.preview.PreviewTemaBoveda
 import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
 import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
+import com.jlnavas3.bovedalocal.ui.theme.ColorSobreAcento
 import com.jlnavas3.bovedalocal.ui.theme.CurvaturaEsquinas
 import com.jlnavas3.bovedalocal.ui.theme.EstiloBorde
 import com.jlnavas3.bovedalocal.ui.theme.GrosorBorde
@@ -71,13 +76,17 @@ fun ComponenteGrupoLista(
     alturaFila: Dp = 74.dp,
     tamanoMonograma: Int = 46,
     resaltado: Boolean = false,
+    seleccionActiva: Boolean = false,
+    seleccionado: Boolean = false,
+    parcialmenteSeleccionado: Boolean = false,
     alPulsarLargo: (() -> Unit)? = null,
+    alAlternarExpansion: (() -> Unit)? = null,
     contenidoEntrada: @Composable (entrada: Entrada, indice: Int, total: Int) -> Unit
 ) {
     val compacta = alturaFila.value <= 48f
     val formaGrupo = RoundedCornerShape(CurvaturaEsquinas)
     val tamanoIcono = if (compacta) 32 else if (alturaFila.value <= 64f) 36 else 40
-    val sangriaSeparador = (14 + tamanoIcono + 12).dp
+    val sangriaSeparador = (14 + (if (seleccionActiva) 34 else 0) + tamanoIcono + 12).dp
 
     Box(
         modifier = modifier
@@ -102,6 +111,33 @@ fun ComponenteGrupoLista(
                     .padding(horizontal = 14.dp, vertical = 6.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
+                if (seleccionActiva) {
+                    Box(
+                        modifier = Modifier
+                            .size(24.dp)
+                            .clip(CircleShape)
+                            .background(if (seleccionado || parcialmenteSeleccionado) ColorAcento else Borde),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        if (seleccionado) {
+                            Icon(
+                                imageVector = Icons.Filled.Check,
+                                contentDescription = null,
+                                tint = ColorSobreAcento,
+                                modifier = Modifier.size(15.dp)
+                            )
+                        } else if (parcialmenteSeleccionado) {
+                            Icon(
+                                imageVector = Icons.Filled.Remove,
+                                contentDescription = null,
+                                tint = ColorSobreAcento,
+                                modifier = Modifier.size(15.dp)
+                            )
+                        }
+                    }
+                    Spacer(Modifier.width(10.dp))
+                }
+
                 Box(
                     modifier = Modifier
                         .size(tamanoIcono.dp)
@@ -147,11 +183,17 @@ fun ComponenteGrupoLista(
                     )
                 }
 
-                Icon(
-                    imageVector = if (expandido) Icons.Filled.ExpandLess else Icons.Filled.ExpandMore,
-                    contentDescription = if (expandido) "Contraer" else "Expandir",
-                    tint = if (resaltado) ColorAcento else ColorIconosInternos
-                )
+                IconButton(
+                    onClick = {
+                        if (alAlternarExpansion != null) alAlternarExpansion() else alAlternar()
+                    }
+                ) {
+                    Icon(
+                        imageVector = if (expandido) Icons.Filled.ExpandLess else Icons.Filled.ExpandMore,
+                        contentDescription = if (expandido) "Contraer" else "Expandir",
+                        tint = if (resaltado) ColorAcento else ColorIconosInternos
+                    )
+                }
             }
 
             // Entradas hijas integradas dentro de la misma tarjeta

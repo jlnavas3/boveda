@@ -51,7 +51,9 @@ fun CuerpoListaEntradas(
     alAlternarFavorito: (String) -> Unit,
     alEntrarEnSeleccion: (String) -> Unit,
     alAlternarSeleccion: (String) -> Unit,
-    alAlternarGrupo: (String) -> Unit
+    alAlternarGrupo: (String) -> Unit,
+    alEntrarEnSeleccionLote: ((Set<String>) -> Unit)? = null,
+    alAlternarSeleccionLote: ((Set<String>) -> Unit)? = null
 ) {
     val ambitoCorutina = rememberCoroutineScope()
     val densidad = LocalDensity.current
@@ -137,38 +139,60 @@ fun CuerpoListaEntradas(
                     itemCoincideConLetra(item, letraArrastrada, ajustes.indiceIncluirEnie)
                 }
                 when (item) {
-                    is ItemAgrupado.Grupo -> ComponenteGrupoLista(
-                        clave = item.clave,
-                        entradas = item.entradas,
-                        expandido = expandidoEnLista(item.clave),
-                        alturaFila = densidadAltura,
-                        tamanoMonograma = densidadMonograma,
-                        resaltado = coincideLetra,
-                        alAlternar = {
-                            if (modoSeleccion) {
-                                val todosHijosSeleccionados = item.entradas.all { seleccionados.contains(it.id) }
-                                if (todosHijosSeleccionados) {
-                                    item.entradas.forEach { if (seleccionados.contains(it.id)) alAlternarSeleccion(it.id) }
+                    is ItemAgrupado.Grupo -> {
+                        val idsHijos = remember(item.entradas) { item.entradas.map { it.id }.toSet() }
+                        val todosHijosSeleccionados = idsHijos.isNotEmpty() && seleccionados.containsAll(idsHijos)
+                        val algunoHijoSeleccionado = idsHijos.any { seleccionados.contains(it) }
+                        val parcialmenteSeleccionado = algunoHijoSeleccionado && !todosHijosSeleccionados
+
+                        ComponenteGrupoLista(
+                            clave = item.clave,
+                            entradas = item.entradas,
+                            expandido = expandidoEnLista(item.clave),
+                            alturaFila = densidadAltura,
+                            tamanoMonograma = densidadMonograma,
+                            resaltado = coincideLetra,
+                            seleccionActiva = modoSeleccion,
+                            seleccionado = todosHijosSeleccionados,
+                            parcialmenteSeleccionado = parcialmenteSeleccionado,
+                            alAlternar = {
+                                if (modoSeleccion) {
+                                    if (alAlternarSeleccionLote != null) {
+                                        alAlternarSeleccionLote(idsHijos)
+                                    } else {
+                                        if (todosHijosSeleccionados) {
+                                            item.entradas.forEach { if (seleccionados.contains(it.id)) alAlternarSeleccion(it.id) }
+                                        } else {
+                                            item.entradas.forEach { if (!seleccionados.contains(it.id)) alAlternarSeleccion(it.id) }
+                                        }
+                                    }
                                 } else {
-                                    item.entradas.forEach { if (!seleccionados.contains(it.id)) alAlternarSeleccion(it.id) }
+                                    alAlternarGrupo(item.clave)
                                 }
-                            } else {
-                                alAlternarGrupo(item.clave)
-                            }
-                        },
-                        alPulsarLargo = {
-                            val todosHijosSeleccionados = item.entradas.all { seleccionados.contains(it.id) }
-                            if (todosHijosSeleccionados) {
-                                item.entradas.forEach { if (seleccionados.contains(it.id)) alAlternarSeleccion(it.id) }
-                            } else {
-                                item.entradas.forEach {
-                                    if (!seleccionados.contains(it.id)) {
-                                        if (!modoSeleccion) alEntrarEnSeleccion(it.id) else alAlternarSeleccion(it.id)
+                            },
+                            alPulsarLargo = {
+                                if (!modoSeleccion) {
+                                    if (alEntrarEnSeleccionLote != null) {
+                                        alEntrarEnSeleccionLote(idsHijos)
+                                    } else {
+                                        item.entradas.firstOrNull()?.let { alEntrarEnSeleccion(it.id) }
+                                    }
+                                } else {
+                                    if (alAlternarSeleccionLote != null) {
+                                        alAlternarSeleccionLote(idsHijos)
+                                    } else {
+                                        if (todosHijosSeleccionados) {
+                                            item.entradas.forEach { if (seleccionados.contains(it.id)) alAlternarSeleccion(it.id) }
+                                        } else {
+                                            item.entradas.forEach { if (!seleccionados.contains(it.id)) alAlternarSeleccion(it.id) }
+                                        }
                                     }
                                 }
-                            }
-                        },
-                        contenidoEntrada = { entradaHija, indiceHijo, totalHijos ->
+                            },
+                            alAlternarExpansion = {
+                                alAlternarGrupo(item.clave)
+                            },
+                            contenidoEntrada = { entradaHija, indiceHijo, totalHijos ->
                             val coincideLetraHijo = if (!ajustes.indiceResaltarEntradas || letraArrastrada == null) {
                                 false
                             } else {
@@ -199,7 +223,8 @@ fun CuerpoListaEntradas(
                             )
                         }
                     )
-                    is ItemAgrupado.Suelto -> FilaEntrada(
+                }
+                is ItemAgrupado.Suelto -> FilaEntrada(
                         entrada = item.entrada,
                         seleccionActiva = modoSeleccion,
                         seleccionado = seleccionados.contains(item.entrada.id),
