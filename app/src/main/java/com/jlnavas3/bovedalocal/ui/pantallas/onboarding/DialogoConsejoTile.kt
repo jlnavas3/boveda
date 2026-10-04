@@ -6,22 +6,19 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DashboardCustomize
 import androidx.compose.material.icons.filled.Lightbulb
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.jlnavas3.bovedalocal.quicksettings.GeneradorRapidoHelper
 import com.jlnavas3.bovedalocal.ui.componentes.BotonBoveda
 import com.jlnavas3.bovedalocal.ui.componentes.BotonColorido
 import com.jlnavas3.bovedalocal.ui.componentes.ModalInferiorBoveda
+import com.jlnavas3.bovedalocal.ui.componentes.TextoSubtitulo
 import com.jlnavas3.bovedalocal.ui.componentes.VarianteBoton
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.ColorSobreAcento
-import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
 import com.jlnavas3.bovedalocal.util.Haptica
 
 /**
@@ -44,10 +41,8 @@ fun DialogoConsejoTile(alCerrar: () -> Unit) {
         fondoIcono = ColorAcento,
         mostrarBotonCerrar = false
     ) {
-        Text(
-            text = "Puedes deslizar hacia abajo la barra de estado de Android y pulsar el botón «Generador rápido», o colocar el widget 1x1 «Generador Rápido» en tu pantalla de inicio.\n\nGenerará una clave ultra-segura al instante directamente en el portapapeles para pegarla aquí.",
-            style = MaterialTheme.typography.bodyMedium.copy(lineHeight = 20.sp),
-            color = TextoSecundario
+        TextoSubtitulo(
+            texto = "Puedes deslizar hacia abajo la barra de estado de Android y pulsar el botón «Generador rápido», o colocar el widget 1x1 «Generador Rápido» en tu pantalla de inicio.\n\nGenerará una clave ultra-segura al instante directamente en el portapapeles para pegarla aquí."
         )
 
         Spacer(Modifier.height(16.dp))

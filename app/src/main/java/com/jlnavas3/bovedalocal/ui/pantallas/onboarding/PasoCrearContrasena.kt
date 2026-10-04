@@ -8,8 +8,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
+import com.jlnavas3.bovedalocal.ui.componentes.TextoSubtitulo
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -73,11 +72,9 @@ fun PasoCrearContrasena(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            Text(
-                text = "Es la única llave de tu bóveda. Sin ella es matemáticamente imposible descifrar los datos.",
-                style = MaterialTheme.typography.bodyMedium,
-                color = TextoSecundario,
-                textAlign = TextAlign.Center,
+            TextoSubtitulo(
+                texto = "Es la única llave de tu bóveda. Sin ella es matemáticamente imposible descifrar los datos.",
+                alineacion = TextAlign.Center,
                 modifier = Modifier.padding(horizontal = 8.dp)
             )
 

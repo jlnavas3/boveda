@@ -10,16 +10,15 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.Warning
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.jlnavas3.bovedalocal.ui.componentes.BotonBoveda
 import com.jlnavas3.bovedalocal.ui.componentes.ModalInferiorBoveda
+import com.jlnavas3.bovedalocal.ui.componentes.TamanoCuerpo
+import com.jlnavas3.bovedalocal.ui.componentes.TextoCuerpo
 import com.jlnavas3.bovedalocal.ui.componentes.VarianteBoton
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteAlerta
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.TipoAlerta
@@ -47,15 +46,15 @@ fun DialogoAdvertenciaCompartir(
         fondoIcono = Peligro,
         mostrarBotonCerrar = false
     ) {
-        Text(
-            text = "Vas a compartir tu contraseña maestra mediante las opciones del sistema.",
-            style = MaterialTheme.typography.bodyMedium,
+        TextoCuerpo(
+            texto = "Vas a compartir tu contraseña maestra mediante las opciones del sistema.",
+            tamano = TamanoCuerpo.NORMAL,
             color = TextoPrincipal
         )
         Spacer(Modifier.height(8.dp))
-        Text(
-            text = "Si decides enviártela a ti mismo (por ejemplo en WhatsApp a tu propio chat, «Mensajes guardados» en Telegram o en tus notas), te recomendamos fuertemente memorizarla y resguardarla en un lugar seguro fuera del alcance de terceros.",
-            style = MaterialTheme.typography.bodySmall.copy(lineHeight = 18.sp),
+        TextoCuerpo(
+            texto = "Si decides enviártela a ti mismo (por ejemplo en WhatsApp a tu propio chat, «Mensajes guardados» en Telegram o en tus notas), te recomendamos fuertemente memorizarla y resguardarla en un lugar seguro fuera del alcance de terceros.",
+            tamano = TamanoCuerpo.PEQUENO,
             color = TextoSecundario
         )
         Spacer(Modifier.height(12.dp))

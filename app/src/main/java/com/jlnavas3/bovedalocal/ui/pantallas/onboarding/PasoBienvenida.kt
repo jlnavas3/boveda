@@ -12,8 +12,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.VpnKey
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -21,11 +19,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.jlnavas3.bovedalocal.data.AjustesApp
+import com.jlnavas3.bovedalocal.ui.componentes.TextoSubtitulo
+import com.jlnavas3.bovedalocal.ui.componentes.TextoTituloHero
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteBotonFila
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteGrupo
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjustesFondo
@@ -79,21 +77,13 @@ fun PasoBienvenida(
             ) {
                 InsigniaSeguridadOnboarding()
 
-                Text(
-                    text = "Bóveda Local",
-                    style = MaterialTheme.typography.headlineLarge.copy(
-                        fontWeight = FontWeight.ExtraBold,
-                        letterSpacing = (-0.5).sp
-                    ),
-                    color = ColorTitulos,
-                    textAlign = TextAlign.Center
+                TextoTituloHero(
+                    texto = "Bóveda Local"
                 )
 
-                Text(
-                    text = "Solo tú tienes la llave de acceso a tu información.",
-                    style = MaterialTheme.typography.bodyMedium.copy(lineHeight = 20.sp),
-                    color = TextoSecundario,
-                    textAlign = TextAlign.Center,
+                TextoSubtitulo(
+                    texto = "Solo tú tienes la llave de acceso a tu información.",
+                    alineacion = TextAlign.Center,
                     modifier = Modifier.padding(horizontal = 8.dp)
                 )
             }
