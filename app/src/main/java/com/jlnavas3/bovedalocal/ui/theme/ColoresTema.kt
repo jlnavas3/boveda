@@ -63,15 +63,6 @@ val Advertencia: Color get() = if (esOscuroActivo) Color(0xFFFBBF24) else Color(
 val TextoPrincipal: Color get() = paletaSobriaEfectiva.textoPrincipal
 val TextoSecundario: Color get() = paletaSobriaEfectiva.textoSecundario
 
-/** "sistema", "claro" u "oscuro"; "sistema" sigue el tema actual del teléfono. */
-fun aplicarTema(claveTema: String, sistemaEnOscuro: Boolean) {
-    esOscuroActivo = when (claveTema) {
-        "claro" -> false
-        "oscuro" -> true
-        else -> sistemaEnOscuro
-    }
-    paletaActiva = if (esOscuroActivo) paletaOscura else paletaClara
-}
 
 internal var paletaAcentoActiva by mutableStateOf<PaletaAcento?>(null)
 internal var colorAcentoManual by mutableStateOf<Color?>(null)
@@ -143,79 +134,13 @@ fun degradadoAcentoVertical() = Brush.verticalGradient(listOf(ColorAcento, Color
 
 @Deprecated("Usar DegradadoAcento en su lugar", ReplaceWith("DegradadoAcento"))
 val DegradadoAmbar: Brush get() = DegradadoAcento
-@Deprecated("Usar degradadoAcentoVertical en su lugar", ReplaceWith("degradadoAcentoVertical()"))
-fun degradadoAmbarVertical() = degradadoAcentoVertical()
-
 internal var colorDinamicoSistemaBase by mutableStateOf(false)
 
 var ColorDinamicoSistema: Boolean
     get() = colorDinamicoSistemaBase
     set(valor) { colorDinamicoSistemaBase = valor }
 
-fun aplicarPersonalizacionColores(ajustes: AjustesApp) {
-    colorDinamicoSistemaBase = ajustes.colorDinamicoSistema
-    if (ajustes.colorAcento == "sobrio" || ajustes.colorAcento.isBlank()) {
-        paletaAcentoActiva = null
-        colorAcentoManual = null
-        colorAcentoFuerteManual = null
-    } else if (ajustes.colorAcento.startsWith("#") || ajustes.colorAcento.startsWith("0x")) {
-        paletaAcentoActiva = null
-        val fallback = PaletaSobriaDefaults.OSCURA.acento
-        val custom = parsearColorO(ajustes.colorAcento, fallback)
-        colorAcentoManual = custom
-        colorAcentoFuerteManual = custom
-    } else {
-        val paleta = PaletaAcento.entries.firstOrNull { it.clave == ajustes.colorAcento }
-        paletaAcentoActiva = paleta
-        colorAcentoManual = null
-        colorAcentoFuerteManual = null
-    }
-
-    colorIconosBase = if (ajustes.colorIconosInternos.isNotBlank()) {
-        parsearColorO(ajustes.colorIconosInternos, if (esOscuroActivo) Color(0xFFD6DAE2) else Color(0xFF1E232E))
-    } else {
-        null
-    }
-
-    colorTitulosBase = if (ajustes.colorTitulos.isNotBlank()) {
-        parsearColorO(ajustes.colorTitulos, if (esOscuroActivo) Color(0xFFF3F4F8) else Color(0xFF11141A))
-    } else {
-        null
-    }
-
-    colorTarjetasBase = if (ajustes.colorTarjetas.isNotBlank()) {
-        parsearColorO(ajustes.colorTarjetas, if (esOscuroActivo) paletaOscura.superficieAlta else paletaClara.superficie)
-    } else {
-        null
-    }
-
-    // Colores semánticos de secciones funcionales
-    colorSeguridadBase = parsearColorO(ajustes.colorSeguridad, Color(0xFF0284C7))
-    colorArgon2Base = parsearColorO(ajustes.colorArgon2, Color(0xFF2563EB))
-    colorCamaraBase = parsearColorO(ajustes.colorCamara, Color(0xFF06B6D4))
-    color2FABase = parsearColorO(ajustes.color2FA, Color(0xFFF97316))
-    colorPasskeysBase = parsearColorO(ajustes.colorPasskeys, Color(0xFF8B5CF6))
-    colorGeneradorBase = parsearColorO(ajustes.colorGenerador, Color(0xFF0D9488))
-    colorSaludBase = parsearColorO(ajustes.colorSalud, Color(0xFF10B981))
-    colorPapeleraBase = parsearColorO(ajustes.colorPapelera, Color(0xFFEF4444))
-    colorExportacionBase = parsearColorO(ajustes.colorExportacion, Color(0xFF6366F1))
-
-    // Colores aislados exclusivos para datos e indicadores de tarjetas
-    colorDatosUsuarioBase = parsearColorO(ajustes.colorDatosUsuario, Color(0xFF0284C7))
-    colorDatosContrasenaBase = parsearColorO(ajustes.colorDatosContrasena, Color(0xFF0D9488))
-    colorDatos2FABase = parsearColorO(ajustes.colorDatos2FA, Color(0xFFF97316))
-    colorDatosPasskeyBase = parsearColorO(ajustes.colorDatosPasskey, Color(0xFF8B5CF6))
-    colorDatosWebBase = parsearColorO(ajustes.colorDatosWeb, Color(0xFF06B6D4))
-    colorDatosAppBase = parsearColorO(ajustes.colorDatosApp, Color(0xFF10B981))
-
-    // Colores de identificadores jerárquicos de Ajustes (06-SIS-AVZ-COL)
-    colorIdSeguridadBase = parsearColorO(ajustes.colorIdSeguridad, parsearColorO(AjustesDefaults.ColoresIds.SEGURIDAD, Color(0xFF3F51B5)))
-    colorIdAparienciaBase = parsearColorO(ajustes.colorIdApariencia, parsearColorO(AjustesDefaults.ColoresIds.APARIENCIA, Color(0xFF8E24AA)))
-    colorIdListaBase = parsearColorO(ajustes.colorIdLista, parsearColorO(AjustesDefaults.ColoresIds.LISTA, Color(0xFF00897B)))
-    colorIdHerramientasBase = parsearColorO(ajustes.colorIdHerramientas, parsearColorO(AjustesDefaults.ColoresIds.HERRAMIENTAS, Color(0xFFFB8C00)))
-    colorIdCopiasBase = parsearColorO(ajustes.colorIdCopias, parsearColorO(AjustesDefaults.ColoresIds.COPIAS, Color(0xFF1E88E5)))
-    colorIdSistemaBase = parsearColorO(ajustes.colorIdSistema, parsearColorO(AjustesDefaults.ColoresIds.SISTEMA, Color(0xFF607D8B)))
-}
+val DegradadoAcentoVertical: Brush get() = Brush.verticalGradient(listOf(ColorAcento, ColorAcentoFuerte))
 
 // Colores Semánticos de Secciones Funcionales
 private var colorSeguridadBase by mutableStateOf(Color(0xFF0284C7))

@@ -1,36 +1,30 @@
 package com.jlnavas3.bovedalocal.util
 
 import com.jlnavas3.bovedalocal.data.Entrada
-import com.jlnavas3.bovedalocal.data.TipoEntrada
 import com.jlnavas3.bovedalocal.ui.CriterioOrdenacion
 
-/**
- * Junta en un solo item plegable las entradas que comparten sitio o servicio;
- * si [agrupar] es false, se muestran todas individualmente.
- * Ordena los grupos y entradas sueltas según [criterio] para que la etiqueta
- * visible en pantalla respete en todo momento el orden visual esperado.
- */
-fun construirItemsAgrupadosPorSitio(
+fun construirItemsAgrupadosPorTitulo(
     entradas: List<Entrada>,
     criterio: CriterioOrdenacion = CriterioOrdenacion.NOMBRE_AZ,
     agrupar: Boolean = true,
-    expandido: (String) -> Boolean
+    expandido: (String) -> Boolean = { false }
 ): List<ItemAgrupado> {
     if (!agrupar) {
         return entradas.map { ItemAgrupado.Suelto(it) }
     }
 
-    val porSitio = entradas.groupBy { claveAgrupacionSitio(it) }
+    val porTitulo = entradas.groupBy { claveAgrupacionPorTitulo(it) }
     val vistos = mutableSetOf<String>()
     val itemsPrincipales = mutableListOf<ItemAgrupado>()
 
     entradas.forEach { entrada ->
-        val clave = claveAgrupacionSitio(entrada)
-        val delMismoSitio = clave?.let { porSitio[it] }
-        if (clave != null && delMismoSitio != null && delMismoSitio.size > 1) {
+        val clave = claveAgrupacionPorTitulo(entrada)
+        val delMismoTitulo = porTitulo[clave]
+        if (delMismoTitulo != null && delMismoTitulo.size > 1) {
             if (vistos.add(clave)) {
-                val hijosOrdenados = ordenarEntradasInternas(delMismoSitio, criterio)
-                itemsPrincipales.add(ItemAgrupado.Grupo(clave, hijosOrdenados))
+                val tituloVisible = delMismoTitulo.first().titulo.trim().ifBlank { clave }
+                val hijosOrdenados = ordenarEntradasInternas(delMismoTitulo, criterio)
+                itemsPrincipales.add(ItemAgrupado.Grupo(tituloVisible, hijosOrdenados))
             }
         } else {
             itemsPrincipales.add(ItemAgrupado.Suelto(entrada))

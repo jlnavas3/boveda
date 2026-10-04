@@ -21,10 +21,6 @@ import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorSeparadorAjustes
 import com.jlnavas3.bovedalocal.ui.theme.TextoPrincipal
 import com.jlnavas3.bovedalocal.util.Dominios
 
-fun coloresMonograma(semilla: String): Pair<Color, Color> {
-    return Color(0xFF2A2D30) to Color(0xFF2A2D30)
-}
-
 @Composable
 fun Monograma(titulo: String, semilla: String, tamano: Int = 46) {
     val forma = CircleShape

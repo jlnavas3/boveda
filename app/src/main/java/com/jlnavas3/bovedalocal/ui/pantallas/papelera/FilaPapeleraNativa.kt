@@ -70,10 +70,6 @@ import com.jlnavas3.bovedalocal.ui.theme.CurvaturaEsquinas
 import com.jlnavas3.bovedalocal.ui.theme.GrosorBorde
 import com.jlnavas3.bovedalocal.ui.theme.EstiloBorde
 import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
-import java.util.concurrent.TimeUnit
-
-fun diasDesde(momento: Long, ahora: Long): Long =
-    TimeUnit.MILLISECONDS.toDays((ahora - momento).coerceAtLeast(0))
 
 @Composable
 fun FilaPapeleraNativa(

@@ -53,15 +53,6 @@ var AlumbradoDuracionMs: Int
     get() = alumbradoDuracionMsBase
     set(valor) { alumbradoDuracionMsBase = valor }
 
-fun aplicarPersonalizacionTemaCompleto(ajustes: AjustesApp) {
-    aplicarPersonalizacionColores(ajustes)
-    aplicarPersonalizacionFormas(ajustes)
-    aplicarPersonalizacionTipografia(ajustes)
-    alumbradoActivoBase = ajustes.alumbradoActivo
-    alumbradoIntensidadBase = ajustes.alumbradoIntensidad
-    alumbradoRepeticionesBase = ajustes.alumbradoRepeticiones
-    alumbradoDuracionMsBase = ajustes.alumbradoDuracionMs
-}
 
 private val esquemaActual: ColorScheme
     @Composable get() = if (esOscuroActivo) {

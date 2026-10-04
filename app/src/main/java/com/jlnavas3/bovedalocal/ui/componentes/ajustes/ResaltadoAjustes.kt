@@ -36,20 +36,6 @@ val LocalDestinoHighlight = compositionLocalOf<String?> { null }
 val LocalCoordinadorResaltado = compositionLocalOf<CoordinadorResaltadoAjustes?> { null }
 
 /**
- * Modificador para asignar al contenedor con scroll vertical para medir su posición relativa y dotarlo de rebote elástico.
- */
-fun Modifier.contenedorScrollAjustes(coordinador: CoordinadorResaltadoAjustes?): Modifier =
-    this
-        .reboteElastico()
-        .then(
-            if (coordinador != null) {
-                Modifier.onGloballyPositioned { coords ->
-                    coordinador.contenedorCoordinates = coords
-                }
-            } else Modifier
-        )
-
-/**
  * Proveedor de contexto para resaltar y hacer scroll hacia una fila o grupo objetivo.
  */
 @Composable

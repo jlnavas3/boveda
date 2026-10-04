@@ -2,47 +2,13 @@ package com.jlnavas3.bovedalocal.ui.componentes
 
 import com.jlnavas3.bovedalocal.util.ItemAgrupado
 
-/**
- * Utilidades matemáticas y lingüísticas para el índice alfabético lateral:
- * normalización de caracteres diacríticos, soporte de la letra 'Ñ' y búsqueda rápida de posición.
- */
-
-/**
- * Lista de caracteres del abecedario ordenado con localización en español ('Ñ' opcional)
- * y símbolo '#' al inicio para números y caracteres especiales.
- */
-fun obtenerLetrasIndice(incluirEnie: Boolean = true): List<Char> =
-    listOf('#') + ('A'..'N').toList() + (if (incluirEnie) listOf('Ñ') else emptyList()) + ('O'..'Z').toList()
-
-val LETRAS_INDICE: List<Char> get() = obtenerLetrasIndice(true)
-
-fun normalizarCaracterIndice(c: Char, incluirEnie: Boolean = true): Char {
-    val mayus = c.uppercaseChar()
-    return when (mayus) {
-        'Á', 'À', 'Ä', 'Â', 'Ã' -> 'A'
-        'É', 'È', 'Ë', 'Ê' -> 'E'
-        'Í', 'Ì', 'Ï', 'Î' -> 'I'
-        'Ó', 'Ò', 'Ö', 'Ô', 'Õ' -> 'O'
-        'Ú', 'Ù', 'Ü', 'Û' -> 'U'
-        'Ñ' -> if (incluirEnie) 'Ñ' else 'N'
-        in 'A'..'Z' -> mayus
-        else -> '#'
-    }
-}
-
-fun letraInicialIndice(texto: String, incluirEnie: Boolean = true): Char {
-    val limpia = texto.trim()
-    if (limpia.isEmpty()) return '#'
-    return normalizarCaracterIndice(limpia.first(), incluirEnie)
-}
-
-fun ItemAgrupado.tituloParaIndice(): String = when (this) {
+private fun ItemAgrupado.tituloParaIndice(): String = when (this) {
     is ItemAgrupado.Suelto -> entrada.titulo
     is ItemAgrupado.Grupo -> clave.removePrefix("www.")
     is ItemAgrupado.Hijo -> entrada.titulo
 }
 
-fun ItemAgrupado.esFavorito(): Boolean = when (this) {
+private fun ItemAgrupado.esFavorito(): Boolean = when (this) {
     is ItemAgrupado.Suelto -> entrada.favorito
     is ItemAgrupado.Grupo -> entradas.any { it.favorito }
     is ItemAgrupado.Hijo -> entrada.favorito

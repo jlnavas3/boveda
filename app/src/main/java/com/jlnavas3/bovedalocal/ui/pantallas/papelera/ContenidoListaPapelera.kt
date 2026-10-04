@@ -12,6 +12,7 @@ import androidx.compose.ui.unit.Dp
 import com.jlnavas3.bovedalocal.data.AjustesApp
 import com.jlnavas3.bovedalocal.data.Entrada
 import com.jlnavas3.bovedalocal.ui.pantallas.lista.ComponenteGrupoLista
+import com.jlnavas3.bovedalocal.ui.pantallas.salud.diasDesde
 import com.jlnavas3.bovedalocal.util.ItemAgrupado
 
 private const val DIAS_PAPELERA = 30L
