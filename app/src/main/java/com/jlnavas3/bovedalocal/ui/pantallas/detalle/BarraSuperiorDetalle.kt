@@ -3,12 +3,9 @@ package com.jlnavas3.bovedalocal.ui.pantallas.detalle
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Palette
-import androidx.compose.material.icons.filled.QrCode
 import androidx.compose.material.icons.filled.Security
-import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.Timer
 import androidx.compose.material.icons.filled.Tune
 import androidx.compose.runtime.Composable
@@ -24,18 +21,11 @@ import com.jlnavas3.bovedalocal.ui.componentes.ElementoMenuCompacto
 import com.jlnavas3.bovedalocal.ui.componentes.MenuDesplegableBoveda
 import com.jlnavas3.bovedalocal.ui.componentes.SeparadorOpcionMenu
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjustesFondo
-import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
-import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
-import com.jlnavas3.bovedalocal.ui.theme.Peligro
 
 @Composable
 fun BarraSuperiorDetalle(
-    esFavorito: Boolean,
     conSeparador: Boolean,
     alVolver: () -> Unit,
-    alCompartirQr: () -> Unit,
-    alAlternarFavorito: () -> Unit,
-    alMoverAPapelera: () -> Unit,
     alIrCopiaRapida: () -> Unit,
     alIrFormatosCampos: () -> Unit,
     alIrSeguridadDatos: () -> Unit,
@@ -49,23 +39,6 @@ fun BarraSuperiorDetalle(
         conSeparador = conSeparador,
         colorFondo = ColorAjustesFondo,
         acciones = {
-            BotonIconoCabecera(
-                onClick = alCompartirQr,
-                icono = Icons.Filled.QrCode,
-                descripcion = "Compartir por código QR"
-            )
-            BotonIconoCabecera(
-                onClick = alAlternarFavorito,
-                icono = Icons.Filled.Star,
-                descripcion = if (esFavorito) "Quitar de favoritos" else "Marcar como favorito",
-                tint = if (esFavorito) ColorAcento else ColorIconosInternos.copy(alpha = 0.4f)
-            )
-            BotonIconoCabecera(
-                onClick = alMoverAPapelera,
-                icono = Icons.Filled.Delete,
-                descripcion = "Mover a papelera",
-                tint = Peligro
-            )
             Box {
                 BotonIconoCabecera(
                     onClick = { menuAbierto = true },

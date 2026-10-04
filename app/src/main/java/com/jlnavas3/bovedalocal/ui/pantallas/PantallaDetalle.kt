@@ -22,9 +22,12 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.CompareArrows
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.QrCode
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -46,6 +49,7 @@ import com.jlnavas3.bovedalocal.ui.theme.ColorSobreAcento
 import com.jlnavas3.bovedalocal.ui.theme.CurvaturaEsquinas
 import com.jlnavas3.bovedalocal.ui.theme.EstiloBorde
 import com.jlnavas3.bovedalocal.ui.theme.GrosorBorde
+import com.jlnavas3.bovedalocal.ui.theme.Peligro
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
 import com.jlnavas3.bovedalocal.data.EstadoBoveda
 import com.jlnavas3.bovedalocal.ui.Pantalla
@@ -140,21 +144,8 @@ fun PantallaDetalle(
             modifier = Modifier.fillMaxSize()
         ) {
             BarraSuperiorDetalle(
-                esFavorito = entradaActual?.favorito == true,
                 conSeparador = true,
                 alVolver = { vm.volverAtras() },
-                alCompartirQr = {
-                    haptica.tic()
-                    mostrarDialogoQr = true
-                },
-                alAlternarFavorito = {
-                    haptica.tic()
-                    entradaActual?.let { vm.alternarFavorito(it.id) }
-                },
-                alMoverAPapelera = {
-                    haptica.tic()
-                    confirmarBorrado = true
-                },
                 alIrCopiaRapida = { vm.ir(Pantalla.AjustesCopiaAutomatica("03.2.1")) },
                 alIrFormatosCampos = { vm.ir(Pantalla.FormatosCampos("03-LST-CAM")) },
                 alIrSeguridadDatos = { vm.ir(Pantalla.Seguridad("01-SEG-DAT")) },
@@ -223,31 +214,107 @@ fun PantallaDetalle(
         }
 
         val formaFab = RoundedCornerShape(CurvaturaEsquinas)
-        FloatingActionButton(
-            onClick = {
-                entradaActual?.let {
-                    haptica.toque()
-                    vm.ir(Pantalla.Editar(it.id))
-                }
-            },
-            containerColor = ColorAcento,
-            contentColor = ColorSobreAcento,
-            shape = formaFab,
+        Column(
             modifier = Modifier
                 .align(Alignment.BottomEnd)
                 .navigationBarsPadding()
-                .padding(20.dp)
-                .then(
+                .padding(20.dp),
+            horizontalAlignment = Alignment.End,
+            verticalArrangement = Arrangement.spacedBy(10.dp)
+        ) {
+            // 1. Eliminar / Mover a papelera
+            SmallFloatingActionButton(
+                onClick = {
+                    haptica.tic()
+                    confirmarBorrado = true
+                },
+                containerColor = ColorTarjetaAjustes,
+                contentColor = Peligro,
+                shape = formaFab,
+                modifier = Modifier.then(
                     if (GrosorBorde > 0.dp && EstiloBorde != "ninguno") {
                         Modifier.border(GrosorBorde, ColorBordeActual, formaFab)
                     } else Modifier
                 )
-        ) {
-            Icon(
-                imageVector = Icons.Filled.Edit,
-                contentDescription = "Editar entrada",
-                modifier = Modifier.size(24.dp)
-            )
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.Delete,
+                    contentDescription = "Mover a papelera",
+                    tint = Peligro,
+                    modifier = Modifier.size(20.dp)
+                )
+            }
+
+            // 2. Compartir por código QR
+            SmallFloatingActionButton(
+                onClick = {
+                    haptica.tic()
+                    mostrarDialogoQr = true
+                },
+                containerColor = ColorTarjetaAjustes,
+                contentColor = ColorAcento,
+                shape = formaFab,
+                modifier = Modifier.then(
+                    if (GrosorBorde > 0.dp && EstiloBorde != "ninguno") {
+                        Modifier.border(GrosorBorde, ColorBordeActual, formaFab)
+                    } else Modifier
+                )
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.QrCode,
+                    contentDescription = "Compartir por código QR",
+                    tint = ColorAcento,
+                    modifier = Modifier.size(20.dp)
+                )
+            }
+
+            // 3. Alternar Favorito
+            val esFavorito = entradaActual?.favorito == true
+            SmallFloatingActionButton(
+                onClick = {
+                    haptica.tic()
+                    entradaActual?.let { vm.alternarFavorito(it.id) }
+                },
+                containerColor = ColorTarjetaAjustes,
+                contentColor = if (esFavorito) ColorAcento else TextoSecundario,
+                shape = formaFab,
+                modifier = Modifier.then(
+                    if (GrosorBorde > 0.dp && EstiloBorde != "ninguno") {
+                        Modifier.border(GrosorBorde, ColorBordeActual, formaFab)
+                    } else Modifier
+                )
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.Star,
+                    contentDescription = if (esFavorito) "Quitar de favoritos" else "Marcar como favorito",
+                    tint = if (esFavorito) ColorAcento else TextoSecundario.copy(alpha = 0.5f),
+                    modifier = Modifier.size(20.dp)
+                )
+            }
+
+            // 4. Botón flotante principal: Editar
+            FloatingActionButton(
+                onClick = {
+                    entradaActual?.let {
+                        haptica.toque()
+                        vm.ir(Pantalla.Editar(it.id))
+                    }
+                },
+                containerColor = ColorAcento,
+                contentColor = ColorSobreAcento,
+                shape = formaFab,
+                modifier = Modifier.then(
+                    if (GrosorBorde > 0.dp && EstiloBorde != "ninguno") {
+                        Modifier.border(GrosorBorde, ColorBordeActual, formaFab)
+                    } else Modifier
+                )
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.Edit,
+                    contentDescription = "Editar entrada",
+                    modifier = Modifier.size(24.dp)
+                )
+            }
         }
     }
 
@@ -445,6 +512,6 @@ private fun ContenidoEntradaDetalle(
             Spacer(Modifier.height(16.dp))
         }
 
-        Spacer(Modifier.height(88.dp))
+        Spacer(Modifier.height(130.dp))
     }
 }

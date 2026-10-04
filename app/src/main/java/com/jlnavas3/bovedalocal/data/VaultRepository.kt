@@ -610,7 +610,8 @@ class VaultRepository private constructor(contexto: Context) {
             val entradasFiltradas = contenido.entradas.filter { idsEntradas.contains(it.id) }
             ContenidoBoveda(
                 version = contenido.version,
-                entradas = entradasFiltradas
+                entradas = entradasFiltradas,
+                colecciones = contenido.colecciones
             )
         }
         val saltExport = VaultCrypto.nuevoSalt()
@@ -648,9 +649,11 @@ class VaultRepository private constructor(contexto: Context) {
             }
             val idsImportados = importado.entradas.map { it.id }.toSet()
             val porIdCol = contenido.colecciones.associateBy { it.id }.toMutableMap()
+            var coleccionesImportadas = 0
             importado.colecciones.forEach { col ->
                 val previa = porIdCol[col.id]
-                if (previa == null || col.modificadaEn > previa.modificadaEn) {
+                if (previa == null || col.modificadaEn >= previa.modificadaEn) {
+                    if (previa == null) coleccionesImportadas++
                     porIdCol[col.id] = col
                 }
             }
@@ -661,6 +664,10 @@ class VaultRepository private constructor(contexto: Context) {
             )
             persistir()
             publicar()
+            com.jlnavas3.bovedalocal.util.Diagnostico.apuntar(
+                "bóveda",
+                "Importación completada: $nuevas entradas nuevas/actualizadas, $coleccionesImportadas colecciones añadidas (${importado.colecciones.size} en archivo)"
+            )
         }
         return nuevas
     }
