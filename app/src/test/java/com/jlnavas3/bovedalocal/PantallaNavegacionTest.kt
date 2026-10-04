@@ -98,13 +98,14 @@ class PantallaNavegacionTest {
     @Test
     fun `verificar valores y orden de CriterioOrdenacion`() {
         val criterios = CriterioOrdenacion.values()
-        assertEquals(6, criterios.size)
+        assertEquals(7, criterios.size)
         assertTrue(criterios.contains(CriterioOrdenacion.NOMBRE_AZ))
         assertTrue(criterios.contains(CriterioOrdenacion.NOMBRE_ZA))
         assertTrue(criterios.contains(CriterioOrdenacion.MODIFICACION_RECIENTE))
         assertTrue(criterios.contains(CriterioOrdenacion.CREACION_RECIENTE))
         assertTrue(criterios.contains(CriterioOrdenacion.ANTIGUEDAD))
         assertTrue(criterios.contains(CriterioOrdenacion.USO_RECIENTE))
+        assertTrue(criterios.contains(CriterioOrdenacion.IGNORADAS))
     }
 
     @Test

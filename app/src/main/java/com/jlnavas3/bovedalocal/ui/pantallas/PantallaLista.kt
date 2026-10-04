@@ -29,6 +29,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -56,6 +57,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.jlnavas3.bovedalocal.data.AnalizadorDuplicados
+import com.jlnavas3.bovedalocal.data.Coleccion
 import com.jlnavas3.bovedalocal.data.Entrada
 import com.jlnavas3.bovedalocal.data.EstadoBoveda
 import com.jlnavas3.bovedalocal.data.normalizarEtiqueta
@@ -63,6 +65,11 @@ import com.jlnavas3.bovedalocal.ui.theme.calcularEspaciadoFilas
 import com.jlnavas3.bovedalocal.ui.CriterioOrdenacion
 import com.jlnavas3.bovedalocal.ui.Pantalla
 import com.jlnavas3.bovedalocal.ui.VaultViewModel
+import com.jlnavas3.bovedalocal.ui.componentes.DialogoConfirmacionBoveda
+import com.jlnavas3.bovedalocal.ui.componentes.TipoBotonTexto
+import com.jlnavas3.bovedalocal.ui.pantallas.colecciones.BarraColeccionesLista
+import com.jlnavas3.bovedalocal.ui.pantallas.colecciones.DialogoCrearEditarColeccion
+import com.jlnavas3.bovedalocal.ui.pantallas.colecciones.DialogoAsignarColecciones
 import com.jlnavas3.bovedalocal.ui.pantallas.lista.BannerRecordatorioExportacion
 import com.jlnavas3.bovedalocal.ui.pantallas.lista.BarraBusquedaAnimada
 import com.jlnavas3.bovedalocal.ui.componentes.seleccion.BarraInferiorSeleccion
@@ -126,8 +133,20 @@ fun PantallaLista(vm: VaultViewModel, estado: EstadoBoveda) {
     }
     val espaciadoFilas = calcularEspaciadoFilas(densidad)
     val entradas = (estado as? EstadoBoveda.Desbloqueada)?.entradas ?: emptyList()
-    val visibles = remember(entradas, busqueda, filtro, soloFavoritos, filtroEtiqueta, criterioOrdenacion) { vm.entradasVisibles(entradas) }
+    val colecciones = remember(estado) { (estado as? EstadoBoveda.Desbloqueada)?.colecciones ?: emptyList() }
+    val coleccionSeleccionadaId by vm.filtroColeccion.collectAsStateWithLifecycle()
+    val conteoPorColeccion = remember(entradas, colecciones) {
+        colecciones.associate { col -> col.id to entradas.count { it.colecciones.contains(col.id) } }
+    }
+    val visibles = remember(entradas, busqueda, filtro, soloFavoritos, filtroEtiqueta, coleccionSeleccionadaId, criterioOrdenacion) {
+        vm.entradasVisibles(entradas)
+    }
     val etiquetasDisponibles = remember(entradas) { vm.etiquetasUsadas() }
+
+    var coleccionParaEditar by remember { mutableStateOf<Coleccion?>(null) }
+    var mostrarDialogoCrearColeccion by remember { mutableStateOf(false) }
+    var coleccionParaEliminar by remember { mutableStateOf<Coleccion?>(null) }
+    var mostrarDialogoAsignarColecciones by remember { mutableStateOf(false) }
 
     val abrirDrawerAlVolver by vm.abrirMenuLateralAlVolverALista.collectAsStateWithLifecycle()
     val estadoCajon = rememberDrawerState(
@@ -369,6 +388,27 @@ fun PantallaLista(vm: VaultViewModel, estado: EstadoBoveda) {
                             )
                         }
                     }
+
+                    // Barra horizontal de colecciones (Todas + Colecciones personalizadas)
+                    BarraColeccionesLista(
+                        colecciones = colecciones,
+                        coleccionSeleccionadaId = coleccionSeleccionadaId,
+                        totalEntradas = entradas.size,
+                        conteoPorColeccion = conteoPorColeccion,
+                        alSeleccionarColeccion = { id ->
+                            haptica.tic()
+                            vm.seleccionarColeccion(id)
+                        },
+                        alCrearColeccion = {
+                            mostrarDialogoCrearColeccion = true
+                        },
+                        alEditarColeccion = { col ->
+                            coleccionParaEditar = col
+                        },
+                        alEliminarColeccion = { col ->
+                            coleccionParaEliminar = col
+                        }
+                    )
                 }
 
                 val recordatorio = remember(ajustes, entradas) { vm.recordatorioExportacionInfo() }
@@ -600,6 +640,9 @@ fun PantallaLista(vm: VaultViewModel, estado: EstadoBoveda) {
                         textoNuevoTitulo = primera?.titulo ?: ""
                         dialogoRenombrarSeleccion = true
                     },
+                    alAsignarColeccion = {
+                        mostrarDialogoAsignarColecciones = true
+                    },
                     alBorrar = {
                         dialogoBorrarSeleccion = true
                     },
@@ -654,6 +697,64 @@ fun PantallaLista(vm: VaultViewModel, estado: EstadoBoveda) {
             entradas = estado.entradas,
             esSeleccionPersonalizada = false,
             alCerrar = { mostrarDialogoExportarCxf = false }
+        )
+    }
+
+    if (mostrarDialogoAsignarColecciones) {
+        val seleccionadosLista = remember(seleccionados, entradas) {
+            entradas.filter { seleccionados.contains(it.id) }
+        }
+        DialogoAsignarColecciones(
+            entradasSeleccionadas = seleccionadosLista,
+            coleccionesDisponibles = colecciones,
+            alCrearNuevaColeccion = {
+                mostrarDialogoCrearColeccion = true
+            },
+            alGuardar = { idsAgregar, idsQuitar ->
+                vm.asignarColeccionesAEntradas(seleccionados, idsAgregar, idsQuitar)
+                mostrarDialogoAsignarColecciones = false
+                salirDeSeleccion()
+                haptica.exito()
+            },
+            alDescartar = { mostrarDialogoAsignarColecciones = false }
+        )
+    }
+
+    if (mostrarDialogoCrearColeccion || coleccionParaEditar != null) {
+        DialogoCrearEditarColeccion(
+            coleccionAEditar = coleccionParaEditar,
+            alGuardar = { nombre, icono, colorHex ->
+                val colEdit = coleccionParaEditar
+                if (colEdit != null) {
+                    vm.actualizarColeccion(colEdit.id, nombre, icono, colorHex)
+                } else {
+                    vm.crearColeccion(nombre, icono, colorHex)
+                }
+                mostrarDialogoCrearColeccion = false
+                coleccionParaEditar = null
+                haptica.exito()
+            },
+            alDescartar = {
+                mostrarDialogoCrearColeccion = false
+                coleccionParaEditar = null
+            }
+        )
+    }
+
+    coleccionParaEliminar?.let { col ->
+        DialogoConfirmacionBoveda(
+            titulo = "¿Eliminar colección?",
+            mensaje = "Se eliminará la colección '${col.nombre}'. Las credenciales asociadas no se borrarán.",
+            textoConfirmar = "Eliminar",
+            tipoConfirmacion = TipoBotonTexto.PELIGRO,
+            iconoHeader = androidx.compose.material.icons.Icons.Filled.Delete,
+            alConfirmar = {
+                val id = col.id
+                coleccionParaEliminar = null
+                vm.eliminarColeccion(id)
+                haptica.exito()
+            },
+            alDescartar = { coleccionParaEliminar = null }
         )
     }
 }

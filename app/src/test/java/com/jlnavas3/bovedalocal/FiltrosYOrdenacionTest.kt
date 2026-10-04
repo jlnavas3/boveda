@@ -36,6 +36,7 @@ class FiltrosYOrdenacionTest {
             CriterioOrdenacion.CREACION_RECIENTE -> compareByDescending<Entrada> { it.creadaEn }.thenByDescending { it.favorito }
             CriterioOrdenacion.ANTIGUEDAD -> compareBy<Entrada> { it.creadaEn }.thenByDescending { it.favorito }
             CriterioOrdenacion.USO_RECIENTE -> compareByDescending<Entrada> { it.ultimoUsoEn }.thenByDescending { it.favorito }
+            CriterioOrdenacion.IGNORADAS -> compareByDescending<Entrada> { it.ignoradaEnSalud }
         }
         return filtradas.sortedWith(comparador)
     }

@@ -15,6 +15,7 @@ import androidx.compose.material.icons.automirrored.filled.CompareArrows
 import androidx.compose.material.icons.filled.Backup
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Folder
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -54,6 +55,7 @@ fun BarraInferiorSeleccion(
     alRespaldar: (() -> Unit)? = null,
     alTransferirCxf: (() -> Unit)? = null,
     alRenombrar: (() -> Unit)? = null,
+    alAsignarColeccion: (() -> Unit)? = null,
     alBorrar: (() -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
@@ -170,7 +172,26 @@ fun BarraInferiorSeleccion(
                 }
             }
 
-            // 4. Eliminar
+            // 6. Asignar a Colección
+            if (alAsignarColeccion != null) {
+                IconButton(
+                    onClick = {
+                        haptica.tic()
+                        alAsignarColeccion()
+                    },
+                    enabled = habilitado,
+                    modifier = Modifier.size(46.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.Folder,
+                        contentDescription = "Colección",
+                        tint = if (habilitado) ColorAcento else TextoSecundario.copy(alpha = 0.35f),
+                        modifier = Modifier.size(23.dp)
+                    )
+                }
+            }
+
+            // 7. Eliminar
             if (alBorrar != null) {
                 IconButton(
                     onClick = {

@@ -467,6 +467,89 @@ class VaultRepository private constructor(contexto: Context) {
     fun etiquetasUsadas(): List<String> =
         contenido.entradas.flatMap { it.etiquetas }.distinct().sortedBy { it.lowercase() }
 
+    // ------------------------------------------------------------ colecciones
+
+    fun colecciones(): List<Coleccion> = synchronized(candado) { contenido.colecciones }
+
+    fun crearColeccion(nombre: String, icono: String = "carpeta", colorHex: String? = null): Coleccion {
+        val nueva = Coleccion(
+            nombre = nombre.trim(),
+            icono = icono,
+            colorHex = colorHex
+        )
+        synchronized(candado) {
+            contenido = contenido.copy(
+                colecciones = contenido.colecciones + nueva
+            )
+            persistir()
+            publicar()
+        }
+        return nueva
+    }
+
+    fun actualizarColeccion(id: String, nombre: String, icono: String, colorHex: String?) {
+        synchronized(candado) {
+            val lista = contenido.colecciones.toMutableList()
+            val indice = lista.indexOfFirst { it.id == id }
+            if (indice >= 0) {
+                lista[indice] = lista[indice].copy(
+                    nombre = nombre.trim(),
+                    icono = icono,
+                    colorHex = colorHex,
+                    modificadaEn = System.currentTimeMillis()
+                )
+                contenido = contenido.copy(colecciones = lista)
+                persistir()
+                publicar()
+            }
+        }
+    }
+
+    fun eliminarColeccion(id: String) {
+        synchronized(candado) {
+            val nuevasColecciones = contenido.colecciones.filterNot { it.id == id }
+            val nuevasEntradas = contenido.entradas.map { entrada ->
+                if (entrada.colecciones.contains(id)) {
+                    entrada.copy(
+                        colecciones = entrada.colecciones.filterNot { it == id },
+                        modificadaEn = System.currentTimeMillis()
+                    )
+                } else entrada
+            }
+            contenido = contenido.copy(
+                colecciones = nuevasColecciones,
+                entradas = nuevasEntradas
+            )
+            persistir()
+            publicar()
+        }
+    }
+
+    fun asignarColeccionesAEntradas(
+        idsEntradas: Set<String>,
+        idsAgregar: Set<String>,
+        idsQuitar: Set<String>
+    ) {
+        if (idsEntradas.isEmpty()) return
+        synchronized(candado) {
+            val ahora = System.currentTimeMillis()
+            val nuevasEntradas = contenido.entradas.map { entrada ->
+                if (entrada.id in idsEntradas) {
+                    val coleccionesActuales = entrada.colecciones.toMutableSet()
+                    coleccionesActuales.addAll(idsAgregar)
+                    coleccionesActuales.removeAll(idsQuitar)
+                    entrada.copy(
+                        colecciones = coleccionesActuales.toList(),
+                        modificadaEn = ahora
+                    )
+                } else entrada
+            }
+            contenido = contenido.copy(entradas = nuevasEntradas)
+            persistir()
+            publicar()
+        }
+    }
+
     // ------------------------------------------------------------ persistencia
 
     /** Solo se llama con el candado cogido. */
@@ -497,7 +580,7 @@ class VaultRepository private constructor(contexto: Context) {
      */
     private fun publicar() {
         _estado.value = when {
-            claveMaestra != null -> EstadoBoveda.Desbloqueada(contenido.entradas, contenido.papelera)
+            claveMaestra != null -> EstadoBoveda.Desbloqueada(contenido.entradas, contenido.papelera, contenido.colecciones)
             archivoBoveda.exists() -> EstadoBoveda.Bloqueada
             else -> EstadoBoveda.SinCrear
         }
@@ -564,9 +647,17 @@ class VaultRepository private constructor(contexto: Context) {
                 }
             }
             val idsImportados = importado.entradas.map { it.id }.toSet()
+            val porIdCol = contenido.colecciones.associateBy { it.id }.toMutableMap()
+            importado.colecciones.forEach { col ->
+                val previa = porIdCol[col.id]
+                if (previa == null || col.modificadaEn > previa.modificadaEn) {
+                    porIdCol[col.id] = col
+                }
+            }
             contenido = contenido.copy(
                 entradas = porId.values.sortedBy { it.titulo.lowercase() },
-                papelera = contenido.papelera.filterNot { idsImportados.contains(it.id) }
+                papelera = contenido.papelera.filterNot { idsImportados.contains(it.id) },
+                colecciones = porIdCol.values.toList()
             )
             persistir()
             publicar()

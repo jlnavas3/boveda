@@ -50,6 +50,7 @@ import com.jlnavas3.bovedalocal.ui.theme.esOscuroActivo
 import com.jlnavas3.bovedalocal.crypto.Base32
 import com.jlnavas3.bovedalocal.crypto.OpcionesGenerador
 import com.jlnavas3.bovedalocal.data.Entrada
+import com.jlnavas3.bovedalocal.data.EstadoBoveda
 import com.jlnavas3.bovedalocal.data.TipoEntrada
 import com.jlnavas3.bovedalocal.data.normalizarEtiqueta
 import com.jlnavas3.bovedalocal.ui.VaultViewModel
@@ -73,6 +74,7 @@ import com.jlnavas3.bovedalocal.ui.pantallas.edicion.SeccionCredencialesEdicion
 import com.jlnavas3.bovedalocal.ui.pantallas.edicion.SeccionOrganizacionEdicion
 import com.jlnavas3.bovedalocal.ui.pantallas.edicion.SeccionSitiosYAppsEdicion
 import com.jlnavas3.bovedalocal.ui.pantallas.edicion.SelectorTipoEntrada
+import com.jlnavas3.bovedalocal.ui.pantallas.colecciones.DialogoCrearEditarColeccion
 import com.jlnavas3.bovedalocal.ui.pantallas.edicion.SeccionTotpEdicion
 import com.jlnavas3.bovedalocal.ui.pantallas.edicion.SelectorAppModal
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
@@ -113,6 +115,13 @@ fun PantallaEdicion(vm: VaultViewModel, id: String?, contrasenaInicial: String) 
     var mostrarSecretoTotp by remember { mutableStateOf(false) }
     var favorito by remember { mutableStateOf(original?.favorito ?: false) }
     var ignoradaEnSalud by remember { mutableStateOf(original?.ignoradaEnSalud ?: false) }
+    val estadoBoveda by vm.estado.collectAsStateWithLifecycle()
+    val coleccionesDisponibles = remember(estadoBoveda) {
+        (estadoBoveda as? EstadoBoveda.Desbloqueada)?.colecciones ?: emptyList()
+    }
+    var colecciones by remember { mutableStateOf(original?.colecciones ?: emptyList()) }
+    var mostrarDialogoNuevaColeccion by remember { mutableStateOf(false) }
+
     var etiquetas by remember { mutableStateOf(original?.etiquetas ?: emptyList()) }
     var camposPersonalizados by remember { mutableStateOf(original?.camposPersonalizados ?: emptyList()) }
     var opcionesGenerador by remember { mutableStateOf(OpcionesGenerador()) }
@@ -149,7 +158,8 @@ fun PantallaEdicion(vm: VaultViewModel, id: String?, contrasenaInicial: String) 
             historialContrasenas = original?.historialContrasenas ?: emptyList(),
             passkey = original?.passkey,
             camposPersonalizados = camposPersonalizados.filter { it.etiqueta.isNotBlank() || it.valor.isNotBlank() },
-            ignoradaEnSalud = ignoradaEnSalud
+            ignoradaEnSalud = ignoradaEnSalud,
+            colecciones = colecciones
         )
         vm.guardar(entrada)
         vm.volverAtras()
@@ -382,6 +392,10 @@ fun PantallaEdicion(vm: VaultViewModel, id: String?, contrasenaInicial: String) 
             // Grupo: Organización
             Spacer(Modifier.height(16.dp))
             SeccionOrganizacionEdicion(
+                coleccionesDisponibles = coleccionesDisponibles,
+                coleccionesSeleccionadas = colecciones,
+                alCambiarColecciones = { colecciones = it },
+                alCrearNuevaColeccion = { mostrarDialogoNuevaColeccion = true },
                 etiquetas = etiquetas,
                 alCambiarEtiquetas = { etiquetas = it },
                 etiquetasSugeridas = etiquetasSugeridas,
@@ -451,6 +465,17 @@ fun PantallaEdicion(vm: VaultViewModel, id: String?, contrasenaInicial: String) 
                 }
                 mostrarSelectorApp = false
             }
+        )
+    }
+
+    if (mostrarDialogoNuevaColeccion) {
+        DialogoCrearEditarColeccion(
+            alGuardar = { nombreCol, iconoCol, colorHexCol ->
+                val nueva = vm.crearColeccion(nombreCol, iconoCol, colorHexCol)
+                colecciones = colecciones + nueva.id
+                mostrarDialogoNuevaColeccion = false
+            },
+            alDescartar = { mostrarDialogoNuevaColeccion = false }
         )
     }
 }

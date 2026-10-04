@@ -144,7 +144,30 @@ fun CuerpoListaEntradas(
                         alturaFila = densidadAltura,
                         tamanoMonograma = densidadMonograma,
                         resaltado = coincideLetra,
-                        alAlternar = { alAlternarGrupo(item.clave) },
+                        alAlternar = {
+                            if (modoSeleccion) {
+                                val todosHijosSeleccionados = item.entradas.all { seleccionados.contains(it.id) }
+                                if (todosHijosSeleccionados) {
+                                    item.entradas.forEach { if (seleccionados.contains(it.id)) alAlternarSeleccion(it.id) }
+                                } else {
+                                    item.entradas.forEach { if (!seleccionados.contains(it.id)) alAlternarSeleccion(it.id) }
+                                }
+                            } else {
+                                alAlternarGrupo(item.clave)
+                            }
+                        },
+                        alPulsarLargo = {
+                            val todosHijosSeleccionados = item.entradas.all { seleccionados.contains(it.id) }
+                            if (todosHijosSeleccionados) {
+                                item.entradas.forEach { if (seleccionados.contains(it.id)) alAlternarSeleccion(it.id) }
+                            } else {
+                                item.entradas.forEach {
+                                    if (!seleccionados.contains(it.id)) {
+                                        if (!modoSeleccion) alEntrarEnSeleccion(it.id) else alAlternarSeleccion(it.id)
+                                    }
+                                }
+                            }
+                        },
                         contenidoEntrada = { entradaHija, indiceHijo, totalHijos ->
                             val coincideLetraHijo = if (!ajustes.indiceResaltarEntradas || letraArrastrada == null) {
                                 false

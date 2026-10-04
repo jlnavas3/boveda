@@ -13,14 +13,20 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.jlnavas3.bovedalocal.data.Coleccion
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.GrupoAjustes
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.SeparadorFilaSimple
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.SwitchBoveda
+import com.jlnavas3.bovedalocal.ui.pantallas.colecciones.SeccionColeccionesEdicion
 import com.jlnavas3.bovedalocal.ui.theme.TextoPrincipal
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
 
 @Composable
 fun SeccionOrganizacionEdicion(
+    coleccionesDisponibles: List<Coleccion> = emptyList(),
+    coleccionesSeleccionadas: List<String> = emptyList(),
+    alCambiarColecciones: (List<String>) -> Unit = {},
+    alCrearNuevaColeccion: () -> Unit = {},
     etiquetas: List<String>,
     alCambiarEtiquetas: (List<String>) -> Unit,
     etiquetasSugeridas: List<String>,
@@ -31,6 +37,17 @@ fun SeccionOrganizacionEdicion(
 ) {
     GrupoAjustes(etiqueta = "Organización") {
         Column(modifier = Modifier.padding(14.dp)) {
+            SeccionColeccionesEdicion(
+                coleccionesDisponibles = coleccionesDisponibles,
+                coleccionesSeleccionadas = coleccionesSeleccionadas,
+                alCambiarColecciones = alCambiarColecciones,
+                alCrearNuevaColeccion = alCrearNuevaColeccion
+            )
+
+            Spacer(Modifier.height(14.dp))
+            SeparadorFilaSimple()
+            Spacer(Modifier.height(10.dp))
+
             SeccionEtiquetasEdicion(
                 etiquetas = etiquetas,
                 alCambiarEtiquetas = alCambiarEtiquetas,

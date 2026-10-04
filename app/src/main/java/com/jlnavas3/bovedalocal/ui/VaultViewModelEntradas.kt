@@ -21,6 +21,7 @@ interface VaultEntradasDelegate {
     val filtroTipoInterno: MutableStateFlow<TipoEntrada?>
     val soloFavoritosInterno: MutableStateFlow<Boolean>
     val filtroEtiquetaInterno: MutableStateFlow<String?>
+    val filtroColeccionInterno: MutableStateFlow<String?>
     val criterioOrdenacionInterno: MutableStateFlow<CriterioOrdenacion>
     fun ejecutar(bloque: suspend () -> Unit)
     fun ir(pantalla: Pantalla)
@@ -39,6 +40,7 @@ interface VaultEntradasDelegate {
                 (filtroTipoInterno.value == null || entrada.tipo == filtroTipoInterno.value) &&
                     (!soloFavoritosInterno.value || entrada.favorito) &&
                     (filtroEtiquetaInterno.value == null || entrada.etiquetas.contains(filtroEtiquetaInterno.value)) &&
+                    (filtroColeccionInterno.value == null || entrada.colecciones.contains(filtroColeccionInterno.value)) &&
                     (texto.isEmpty() ||
                         entrada.titulo.lowercase().contains(texto) ||
                         entrada.usuario.lowercase().contains(texto) ||

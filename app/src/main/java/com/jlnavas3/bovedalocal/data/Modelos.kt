@@ -134,7 +134,19 @@ data class Entrada(
     val passkey: DatosPasskey? = null,
     val camposPersonalizados: List<CampoPersonalizado> = emptyList(),
     /** Si es true, esta entrada se ignora en el cálculo y avisos de auditoría de salud. */
-    val ignoradaEnSalud: Boolean = false
+    val ignoradaEnSalud: Boolean = false,
+    /** Lista de IDs de colecciones a las que pertenece esta entrada. */
+    val colecciones: List<String> = emptyList()
+)
+
+@Serializable
+data class Coleccion(
+    val id: String = java.util.UUID.randomUUID().toString(),
+    val nombre: String,
+    val icono: String = "carpeta",
+    val colorHex: String? = null,
+    val creadaEn: Long = System.currentTimeMillis(),
+    val modificadaEn: Long = System.currentTimeMillis()
 )
 
 @Serializable
@@ -142,11 +154,16 @@ data class ContenidoBoveda(
     val version: Int = 1,
     val entradas: List<Entrada> = emptyList(),
     /** Entradas borradas pero aún recuperables; se vacían solas pasado un tiempo. */
-    val papelera: List<Entrada> = emptyList()
+    val papelera: List<Entrada> = emptyList(),
+    val colecciones: List<Coleccion> = emptyList()
 )
 
 sealed interface EstadoBoveda {
     object SinCrear : EstadoBoveda
     object Bloqueada : EstadoBoveda
-    data class Desbloqueada(val entradas: List<Entrada>, val papelera: List<Entrada> = emptyList()) : EstadoBoveda
+    data class Desbloqueada(
+        val entradas: List<Entrada>,
+        val papelera: List<Entrada> = emptyList(),
+        val colecciones: List<Coleccion> = emptyList()
+    ) : EstadoBoveda
 }
