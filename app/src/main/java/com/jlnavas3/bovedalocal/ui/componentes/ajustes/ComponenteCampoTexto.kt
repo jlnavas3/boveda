@@ -13,12 +13,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -30,25 +28,21 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
 import com.jlnavas3.bovedalocal.ui.theme.FormaCampo
-import com.jlnavas3.bovedalocal.ui.theme.FormaPequena
 import com.jlnavas3.bovedalocal.ui.theme.GrosorBorde
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorCampoAjustes
 import com.jlnavas3.bovedalocal.ui.theme.Peligro
 import com.jlnavas3.bovedalocal.ui.theme.TextoPrincipal
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
 import com.jlnavas3.bovedalocal.ui.theme.esOscuroActivo
-import com.jlnavas3.bovedalocal.util.FormateadorCampos
 
 /**
  * Campo de texto reutilizable y sin bordes al estilo Honor MagicOS y Samsung One UI.
@@ -198,69 +192,6 @@ fun ComponenteCampoTexto(
     }
     val composablePlaceholder: (@Composable () -> Unit)? = placeholder?.let { { Text(it) } }
 
-    val bloqueCampo = @Composable {
-        if (formateadorMascara != null) {
-            var tfv by remember {
-                mutableStateOf(TextFieldValue(text = valor, selection = TextRange(valor.length)))
-            }
-            if (tfv.text != valor) {
-                val nuevoCursor = tfv.selection.end.coerceIn(0, valor.length)
-                tfv = tfv.copy(text = valor, selection = TextRange(nuevoCursor))
-            }
-            TextField(
-                value = tfv,
-                onValueChange = { nuevo ->
-                    val transformado = FormateadorCampos.transformarConMascara(
-                        nuevoTfv = nuevo,
-                        textoAnterior = tfv.text,
-                        formatear = formateadorMascara
-                    )
-                    tfv = transformado
-                    alCambiar(transformado.text)
-                },
-                label = { Text(etiqueta) },
-                placeholder = composablePlaceholder,
-                modifier = Modifier.fillMaxWidth(),
-                readOnly = readOnly,
-                enabled = habilitado,
-                isError = esError,
-                singleLine = !varias,
-                minLines = if (varias) 3 else 1,
-                textStyle = estiloTexto,
-                visualTransformation = transformacionVisual,
-                leadingIcon = leadingIconComposable,
-                trailingIcon = trailingIconComposable,
-                keyboardOptions = opcionesTeclado,
-                keyboardActions = keyboardActions,
-                shape = forma,
-                colors = coloresSinBordes,
-                interactionSource = interactionSource
-            )
-        } else {
-            TextField(
-                value = valor,
-                onValueChange = alCambiar,
-                label = { Text(etiqueta) },
-                placeholder = composablePlaceholder,
-                modifier = Modifier.fillMaxWidth(),
-                readOnly = readOnly,
-                enabled = habilitado,
-                isError = esError,
-                singleLine = !varias,
-                minLines = if (varias) 3 else 1,
-                textStyle = estiloTexto,
-                visualTransformation = transformacionVisual,
-                leadingIcon = leadingIconComposable,
-                trailingIcon = trailingIconComposable,
-                keyboardOptions = opcionesTeclado,
-                keyboardActions = keyboardActions,
-                shape = forma,
-                colors = coloresSinBordes,
-                interactionSource = interactionSource
-            )
-        }
-    }
-
     Column(modifier = modifier.fillMaxWidth()) {
         Box(
             modifier = Modifier
@@ -276,7 +207,26 @@ fun ComponenteCampoTexto(
                     }
                 )
         ) {
-            bloqueCampo()
+            CuerpoEntradaTextoBoveda(
+                valor = valor,
+                etiqueta = etiqueta,
+                alCambiar = alCambiar,
+                formateadorMascara = formateadorMascara,
+                composablePlaceholder = composablePlaceholder,
+                readOnly = readOnly,
+                habilitado = habilitado,
+                esError = esError,
+                varias = varias,
+                estiloTexto = estiloTexto,
+                transformacionVisual = transformacionVisual,
+                leadingIcon = leadingIconComposable,
+                trailingIcon = trailingIconComposable,
+                opcionesTeclado = opcionesTeclado,
+                keyboardActions = keyboardActions,
+                forma = forma,
+                colores = coloresSinBordes,
+                interactionSource = interactionSource
+            )
             if (colorBordeIzquierdo != null) {
                 Box(
                     modifier = Modifier.matchParentSize()
@@ -303,38 +253,3 @@ fun ComponenteCampoTexto(
         }
     }
 }
-
-// -------------------------------------------------------------------------------------------------
-// Previews
-// -------------------------------------------------------------------------------------------------
-
-@com.jlnavas3.bovedalocal.ui.preview.BovedaPreview
-@Composable
-private fun ComponenteCampoTextoPreview() {
-    com.jlnavas3.bovedalocal.ui.preview.PreviewTemaBoveda {
-        Column(verticalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(12.dp)) {
-            ComponenteCampoTexto(
-                valor = "admin@empresa.com",
-                etiqueta = "Correo Electrónico",
-                alCambiar = {},
-                placeholder = "ejemplo@correo.com"
-            )
-            ComponenteCampoTexto(
-                valor = "P@ssw0rdSecure!2024",
-                etiqueta = "Contraseña",
-                esContrasena = true,
-                mostrarContrasena = false,
-                alAlternarMostrarContrasena = {},
-                alCambiar = {}
-            )
-            ComponenteCampoTexto(
-                valor = "Entrada inválida",
-                etiqueta = "Campo con Error",
-                esError = true,
-                mensajeError = "El formato introducido no es válido",
-                alCambiar = {}
-            )
-        }
-    }
-}
-

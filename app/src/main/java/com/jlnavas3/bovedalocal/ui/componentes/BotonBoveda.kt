@@ -243,46 +243,6 @@ fun BotonPeligro(
     )
 }
 
-enum class TipoBotonTexto { PRIMARIO, SECUNDARIO, PELIGRO }
-
-/**
- * Botón de texto unificado para diálogos, modales y acciones secundarias.
- * Encapsula la háptica, tipografía y colores según la variante semántica.
- */
-@Composable
-fun BotonTextoBoveda(
-    texto: String,
-    alPulsar: () -> Unit,
-    modifier: Modifier = Modifier,
-    tipo: TipoBotonTexto = TipoBotonTexto.PRIMARIO,
-    colorPersonalizado: Color? = null,
-    habilitado: Boolean = true
-) {
-    val contexto = LocalContext.current
-    val haptica = remember { Haptica(contexto) }
-
-    val colorEfectivo = colorPersonalizado ?: when (tipo) {
-        TipoBotonTexto.PRIMARIO -> ColorAcento
-        TipoBotonTexto.SECUNDARIO -> TextoSecundario
-        TipoBotonTexto.PELIGRO -> Peligro
-    }
-
-    TextButton(
-        onClick = {
-            if (tipo == TipoBotonTexto.PELIGRO) haptica.exito() else haptica.tic()
-            alPulsar()
-        },
-        enabled = habilitado,
-        modifier = modifier
-    ) {
-        Text(
-            text = texto,
-            color = if (habilitado) colorEfectivo else ColorAjusteGris,
-            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold)
-        )
-    }
-}
-
 // -------------------------------------------------------------------------------------------------
 // Previews
 // -------------------------------------------------------------------------------------------------

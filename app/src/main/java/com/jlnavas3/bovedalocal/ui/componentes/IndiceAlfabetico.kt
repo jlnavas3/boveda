@@ -1,28 +1,16 @@
 package com.jlnavas3.bovedalocal.ui.componentes
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.scaleIn
-import androidx.compose.animation.scaleOut
-import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.requiredSize
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -34,111 +22,22 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.text.PlatformTextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
-import com.jlnavas3.bovedalocal.ui.theme.ColorSobreAcento
-import com.jlnavas3.bovedalocal.ui.theme.DegradadoAcento
-import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
 import com.jlnavas3.bovedalocal.ui.theme.esOscuroActivo
 import com.jlnavas3.bovedalocal.util.Haptica
-import com.jlnavas3.bovedalocal.util.ItemAgrupado
 import kotlin.math.abs
 import kotlin.math.cos
 import kotlin.math.pow
-import kotlin.math.roundToInt
-
-/**
- * Lista de caracteres del abecedario ordenado con localización en español ('Ñ' opcional)
- * y símbolo '#' al inicio para números y caracteres especiales.
- */
-fun obtenerLetrasIndice(incluirEnie: Boolean = true): List<Char> =
-    listOf('#') + ('A'..'N').toList() + (if (incluirEnie) listOf('Ñ') else emptyList()) + ('O'..'Z').toList()
-
-val LETRAS_INDICE: List<Char> get() = obtenerLetrasIndice(true)
-
-fun normalizarCaracterIndice(c: Char, incluirEnie: Boolean = true): Char {
-    val mayus = c.uppercaseChar()
-    return when (mayus) {
-        'Á', 'À', 'Ä', 'Â', 'Ã' -> 'A'
-        'É', 'È', 'Ë', 'Ê' -> 'E'
-        'Í', 'Ì', 'Ï', 'Î' -> 'I'
-        'Ó', 'Ò', 'Ö', 'Ô', 'Õ' -> 'O'
-        'Ú', 'Ù', 'Ü', 'Û' -> 'U'
-        'Ñ' -> if (incluirEnie) 'Ñ' else 'N'
-        in 'A'..'Z' -> mayus
-        else -> '#'
-    }
-}
-
-fun letraInicialIndice(texto: String, incluirEnie: Boolean = true): Char {
-    val limpia = texto.trim()
-    if (limpia.isEmpty()) return '#'
-    return normalizarCaracterIndice(limpia.first(), incluirEnie)
-}
-
-fun ItemAgrupado.tituloParaIndice(): String = when (this) {
-    is ItemAgrupado.Suelto -> entrada.titulo
-    is ItemAgrupado.Grupo -> clave.removePrefix("www.")
-    is ItemAgrupado.Hijo -> entrada.titulo
-}
-
-fun ItemAgrupado.esFavorito(): Boolean = when (this) {
-    is ItemAgrupado.Suelto -> entrada.favorito
-    is ItemAgrupado.Grupo -> entradas.any { it.favorito }
-    is ItemAgrupado.Hijo -> entrada.favorito
-}
-
-/**
- * Encuentra el índice del elemento en la lista correspondiente a la letra solicitada.
- * Prioriza los elementos de la sección alfabética general para no quedar atrapado
- * en elementos favoritos fijados arriba, y avanza a la siguiente letra disponible si no hay coincidencia directa.
- */
-fun encontrarIndiceParaLetra(items: List<ItemAgrupado>, letra: Char, incluirEnie: Boolean = true): Int? {
-    if (items.isEmpty()) return null
-    val listaLetras = obtenerLetrasIndice(incluirEnie)
-
-    if (letra == '#') {
-        val exactoNoFav = items.indexOfFirst { !it.esFavorito() && letraInicialIndice(it.tituloParaIndice(), incluirEnie) == '#' }
-        if (exactoNoFav >= 0) return exactoNoFav
-        val exactoCualquiera = items.indexOfFirst { letraInicialIndice(it.tituloParaIndice(), incluirEnie) == '#' }
-        return if (exactoCualquiera >= 0) exactoCualquiera else 0
-    }
-
-    // 1. Coincidencia directa en sección alfabética general (no favoritos)
-    val exactoNoFav = items.indexOfFirst { !it.esFavorito() && letraInicialIndice(it.tituloParaIndice(), incluirEnie) == letra }
-    if (exactoNoFav >= 0) return exactoNoFav
-
-    // Coincidencia directa si solo está en favoritos
-    val exactoFav = items.indexOfFirst { letraInicialIndice(it.tituloParaIndice(), incluirEnie) == letra }
-    if (exactoFav >= 0) return exactoFav
-
-    // 2. Si no existe, buscar la siguiente letra disponible en el orden alfabético
-    val pos = listaLetras.indexOf(letra)
-    if (pos >= 0) {
-        for (i in (pos + 1)..listaLetras.lastIndex) {
-            val sigLetra = listaLetras[i]
-            val siguienteNoFav = items.indexOfFirst { !it.esFavorito() && letraInicialIndice(it.tituloParaIndice(), incluirEnie) == sigLetra }
-            if (siguienteNoFav >= 0) return siguienteNoFav
-            val siguienteFav = items.indexOfFirst { letraInicialIndice(it.tituloParaIndice(), incluirEnie) == sigLetra }
-            if (siguienteFav >= 0) return siguienteFav
-        }
-    }
-    return items.lastIndex
-}
 
 /**
  * Índice alfabético lateral estilo Niagara Launcher:
@@ -179,7 +78,6 @@ fun IndiceAlfabetico(
     var touchY by remember { mutableFloatStateOf(0f) }
     var alturaTotalPx by remember { mutableFloatStateOf(1f) }
 
-    val densidad = LocalDensity.current
     val letras = remember(incluirEnie) { obtenerLetrasIndice(incluirEnie) }
 
     // Amplitud de la ola con física de resorte (spring) para entrada y retorno orgánico
@@ -297,7 +195,6 @@ fun IndiceAlfabetico(
                         translationX = -factor * desplazoMaxPx
 
                         // Escalado continuo: las letras van subiendo a la ola haciéndose más grandes
-                        // hasta llegar a la cima con su tamaño máximo, y decrecen al descender.
                         val factorEscala = (escalaMaximaLetras - 1f).coerceAtLeast(0f)
                         val escala = 1f + factorEscala * factor
                         scaleX = escala
@@ -308,46 +205,17 @@ fun IndiceAlfabetico(
             }
         }
 
-        // Círculo aumentado en la cresta de la ola (sin borde, gran formato, proyectado casi a media pantalla)
+        // Círculo aumentado en la cresta de la ola
         if (mostrarCirculo) {
-            AnimatedVisibility(
-                visible = arrastrando && letraActual != null,
-                enter = fadeIn(animationSpec = tween(90)) + scaleIn(initialScale = 0.5f, animationSpec = tween(90)),
-                exit = fadeOut(animationSpec = tween(140)) + scaleOut(targetScale = 0.5f, animationSpec = tween(140)),
-                modifier = Modifier
-                    .align(Alignment.TopEnd)
-                    .wrapContentSize(align = Alignment.TopEnd, unbounded = true)
-                    .offset {
-                        val diametroPx = with(densidad) { tamanoCirculoDp.dp.toPx() }
-                        val xPx = with(densidad) { (-offsetCirculoDp).dp.toPx() + diametroPx / 2f }.roundToInt()
-                        val yPx = (touchY - diametroPx / 2f).coerceIn(0f, (alturaTotalPx - diametroPx).coerceAtLeast(0f)).roundToInt()
-                        IntOffset(xPx, yPx)
-                    }
-            ) {
-                Box(
-                    modifier = Modifier
-                        .requiredSize(tamanoCirculoDp.dp)
-                        .shadow(elevation = 14.dp, shape = CircleShape)
-                        .clip(CircleShape)
-                        .background(DegradadoAcento),
-                    contentAlignment = Alignment.Center
-                ) {
-                    @Suppress("DEPRECATION")
-                    Text(
-                        text = (letraActual ?: ' ').toString(),
-                        color = ColorSobreAcento,
-                        textAlign = TextAlign.Center,
-                        style = MaterialTheme.typography.headlineLarge.copy(
-                            fontWeight = FontWeight.Black,
-                            fontSize = (tamanoCirculoDp * 0.48f).sp,
-                            lineHeight = (tamanoCirculoDp * 0.48f).sp,
-                            platformStyle = PlatformTextStyle(
-                                includeFontPadding = false
-                            )
-                        )
-                    )
-                }
-            }
+            GloboLetraFlotanteIndice(
+                visible = arrastrando,
+                letra = letraActual,
+                touchY = touchY,
+                alturaTotalPx = alturaTotalPx,
+                tamanoCirculoDp = tamanoCirculoDp,
+                offsetCirculoDp = offsetCirculoDp,
+                modifier = Modifier.align(Alignment.TopEnd)
+            )
         }
     }
 }
