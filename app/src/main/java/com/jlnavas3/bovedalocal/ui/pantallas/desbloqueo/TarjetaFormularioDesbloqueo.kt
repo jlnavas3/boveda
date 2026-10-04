@@ -76,14 +76,10 @@ fun TarjetaFormularioDesbloqueo(
         )
 
         if (biometriaUsable) {
-            ComponenteSeparador(sangriaInicio = 60.dp)
-            ComponenteBotonFila(
-                titulo = etiquetaBotonBiometria,
-                alPulsar = { alLanzarBiometria() },
-                icono = Icons.Filled.Fingerprint,
-                colorIcono = Color(0xFF1E88E5),
-                colorTinteIcono = Color.White,
-                habilitado = !abriendo
+            BotonDesbloqueoBiometrico(
+                etiqueta = etiquetaBotonBiometria,
+                habilitado = !abriendo,
+                alPulsar = alLanzarBiometria
             )
         }
     }

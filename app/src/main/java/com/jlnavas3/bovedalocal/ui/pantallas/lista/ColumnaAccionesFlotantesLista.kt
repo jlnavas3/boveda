@@ -1,0 +1,83 @@
+package com.jlnavas3.bovedalocal.ui.pantallas.lista
+
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.SmallFloatingActionButton
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorTarjetaAjustes
+import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
+import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
+import com.jlnavas3.bovedalocal.ui.theme.ColorSobreAcento
+import com.jlnavas3.bovedalocal.ui.theme.CurvaturaEsquinas
+import com.jlnavas3.bovedalocal.ui.theme.EstiloBorde
+import com.jlnavas3.bovedalocal.ui.theme.GrosorBorde
+
+/**
+ * Columna vertical de botones flotantes (FAB) para la pantalla principal:
+ * 1. Bloquear bóveda (Candado superior).
+ * 2. Crear nueva entrada (+ inferior).
+ */
+@Composable
+fun ColumnaAccionesFlotantesLista(
+    alBloquear: () -> Unit,
+    alNuevaEntrada: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val formaFab = RoundedCornerShape(CurvaturaEsquinas)
+
+    Column(
+        modifier = modifier.padding(20.dp),
+        horizontalAlignment = Alignment.End,
+        verticalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        // FAB superior: Bloquear app (Candado)
+        SmallFloatingActionButton(
+            onClick = alBloquear,
+            containerColor = ColorTarjetaAjustes,
+            contentColor = ColorAcento,
+            shape = formaFab,
+            modifier = Modifier.then(
+                if (GrosorBorde > 0.dp && EstiloBorde != "ninguno") {
+                    Modifier.border(GrosorBorde, ColorBordeActual, formaFab)
+                } else Modifier
+            )
+        ) {
+            Icon(
+                imageVector = Icons.Filled.Lock,
+                contentDescription = "Bloquear bóveda",
+                modifier = Modifier.size(22.dp)
+            )
+        }
+
+        // FAB inferior: Nueva entrada (+)
+        FloatingActionButton(
+            onClick = alNuevaEntrada,
+            containerColor = ColorAcento,
+            contentColor = ColorSobreAcento,
+            shape = formaFab,
+            modifier = Modifier.then(
+                if (GrosorBorde > 0.dp && EstiloBorde != "ninguno") {
+                    Modifier.border(GrosorBorde, ColorBordeActual, formaFab)
+                } else Modifier
+            )
+        ) {
+            Icon(
+                imageVector = Icons.Filled.Add,
+                contentDescription = "Nueva entrada",
+                modifier = Modifier.size(24.dp)
+            )
+        }
+    }
+}

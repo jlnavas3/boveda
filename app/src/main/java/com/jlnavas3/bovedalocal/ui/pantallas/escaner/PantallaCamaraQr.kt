@@ -307,245 +307,67 @@ fun PantallaCamaraQr(
             }
         }
 
-        // 3. Fila superior de navegación y acciones rápidas (Luz, Imagen, Manual)
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .statusBarsPadding()
-                .padding(horizontal = 16.dp, vertical = 8.dp)
-        ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                // Botón Volver
-                IconButton(
-                    onClick = {
-                        motorCameraX?.alternarFlash(false)
-                        vm.volverAtras()
-                    },
-                    modifier = Modifier
-                        .size(42.dp)
-                        .clip(CircleShape)
-                        .background(Color.Black.copy(alpha = 0.5f))
-                ) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = "Volver",
-                        tint = Color.White
-                    )
+        // 3. Fila superior de navegación y acciones rápidas (Luz, Imagen, Manual, Ajustes)
+        BarraSuperiorCamaraQr(
+            flashEncendido = flashEncendido,
+            alAlternarFlash = {
+                val nuevoEstado = !flashEncendido
+                flashEncendido = nuevoEstado
+                motorCameraX?.alternarFlash(nuevoEstado)
+                if (ajustes.hapticaApp) haptica.tic()
+            },
+            alEscanearImagen = {
+                BovedaApp.salidaPendiente(contexto)
+                try {
+                    elegirImagen.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+                } catch (_: Exception) {
+                    BovedaApp.salidaTerminada(contexto)
+                    mensajeEstado = "No se pudo abrir la galería."
+                    esErrorMensaje = true
                 }
-
-                // Acciones rápidas flotantes: Luz, Escanear imagen, Manual
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(16.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    // Luz / Flash
-                    BotonAccionSuperior(
-                        icono = if (flashEncendido) Icons.Filled.FlashlightOn else Icons.Filled.FlashlightOff,
-                        etiqueta = "Luz",
-                        activo = flashEncendido,
-                        alPulsar = {
-                            val nuevoEstado = !flashEncendido
-                            flashEncendido = nuevoEstado
-                            motorCameraX?.alternarFlash(nuevoEstado)
-                            if (ajustes.hapticaApp) haptica.tic()
-                        }
-                    )
-
-                    // Escanear Imagen
-                    BotonAccionSuperior(
-                        icono = Icons.Filled.Image,
-                        etiqueta = "Escanear imag…",
-                        activo = false,
-                        alPulsar = {
-                            BovedaApp.salidaPendiente(contexto)
-                            try {
-                                elegirImagen.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
-                            } catch (_: Exception) {
-                                BovedaApp.salidaTerminada(contexto)
-                                mensajeEstado = "No se pudo abrir la galería."
-                                esErrorMensaje = true
-                            }
-                        }
-                    )
-
-                    // Entrada Manual
-                    BotonAccionSuperior(
-                        icono = Icons.Filled.Keyboard,
-                        etiqueta = "Manual",
-                        activo = false,
-                        alPulsar = {
-                            motorCameraX?.alternarFlash(false)
-                            vm.ir(Pantalla.Escaner(entradaDestino, soloManual = true))
-                        }
-                    )
-
-                    // Ajustes de Cámara
-                    BotonAccionSuperior(
-                        icono = Icons.Filled.Tune,
-                        etiqueta = "Ajustes",
-                        activo = false,
-                        alPulsar = {
-                            motorCameraX?.alternarFlash(false)
-                            vm.ir(Pantalla.AjustesCamara("04-HER-CAM"))
-                        }
-                    )
-                }
-            }
-        }
+            },
+            alEntradaManual = {
+                motorCameraX?.alternarFlash(false)
+                vm.ir(Pantalla.Escaner(entradaDestino, soloManual = true))
+            },
+            alAbrirAjustes = {
+                motorCameraX?.alternarFlash(false)
+                vm.ir(Pantalla.AjustesCamara("04-HER-CAM"))
+            },
+            alVolver = {
+                motorCameraX?.alternarFlash(false)
+                vm.volverAtras()
+            },
+            modifier = Modifier.align(Alignment.TopCenter)
+        )
 
         // 4. Mensaje flotante de estado / error
-        AnimatedVisibility(
-            visible = mensajeEstado != null,
-            enter = fadeIn(),
-            exit = fadeOut(),
-            modifier = Modifier
-                .align(Alignment.TopCenter)
-                .statusBarsPadding()
-                .padding(top = 80.dp)
-        ) {
-            mensajeEstado?.let { texto ->
-                Box(
-                    modifier = Modifier
-                        .padding(horizontal = 24.dp)
-                        .clip(FormaPequena)
-                        .background(Color.Black.copy(alpha = 0.85f))
-                        .padding(horizontal = 16.dp, vertical = 10.dp)
-                ) {
-                    Text(
-                        text = texto,
-                        color = if (esErrorMensaje) Peligro else Menta,
-                        style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Medium),
-                        textAlign = TextAlign.Center
-                    )
-                }
-            }
-        }
+        MensajeFlotanteQr(
+            mensaje = mensajeEstado,
+            esError = esErrorMensaje,
+            modifier = Modifier.align(Alignment.TopCenter)
+        )
 
         // 5. Controles inferiores de Zoom y feedback
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .align(Alignment.BottomCenter)
-                .navigationBarsPadding()
-                .padding(bottom = 24.dp, start = 20.dp, end = 20.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            // Slider de Zoom
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(FormaPequena)
-                    .background(Color.Black.copy(alpha = 0.5f))
-                    .padding(horizontal = 14.dp, vertical = 6.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                // Zoom (-)
-                IconButton(
-                    onClick = {
-                        val nuevoZoom = (zoomRatio - 0.15f).coerceAtLeast(0f)
-                        zoomRatio = nuevoZoom
-                        motorCameraX?.ajustarZoom(nuevoZoom)
-                        if (ajustes.hapticaApp) haptica.tic()
-                    },
-                    modifier = Modifier.size(36.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Filled.ZoomOut,
-                        contentDescription = "Reducir zoom",
-                        tint = Color.White.copy(alpha = 0.85f),
-                        modifier = Modifier.size(22.dp)
-                    )
-                }
-
-                // Slider continuo
-                Slider(
-                    value = zoomRatio,
-                    onValueChange = { valor ->
-                        zoomRatio = valor
-                        motorCameraX?.ajustarZoom(valor)
-                    },
-                    valueRange = 0f..1f,
-                    colors = SliderDefaults.colors(
-                        thumbColor = ColorAcento,
-                        activeTrackColor = ColorAcento,
-                        inactiveTrackColor = Color.White.copy(alpha = 0.25f)
-                    ),
-                    modifier = Modifier.weight(1f)
-                )
-
-                // Zoom (+)
-                IconButton(
-                    onClick = {
-                        val nuevoZoom = (zoomRatio + 0.15f).coerceAtMost(1f)
-                        zoomRatio = nuevoZoom
-                        motorCameraX?.ajustarZoom(nuevoZoom)
-                        if (ajustes.hapticaApp) haptica.tic()
-                    },
-                    modifier = Modifier.size(36.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Filled.ZoomIn,
-                        contentDescription = "Aumentar zoom",
-                        tint = Color.White.copy(alpha = 0.85f),
-                        modifier = Modifier.size(22.dp)
-                    )
-                }
-            }
-
-            Spacer(Modifier.height(10.dp))
-
-            Text(
-                text = "Apunta al código QR para escanearlo automáticamente",
-                color = Color.White.copy(alpha = 0.70f),
-                style = MaterialTheme.typography.labelSmall.copy(fontSize = 11.sp),
-                textAlign = TextAlign.Center
-            )
-        }
-    }
-}
-
-/**
- * Botón con icono y etiqueta vertical estilo la app de referencia.
- */
-@Composable
-private fun BotonAccionSuperior(
-    icono: ImageVector,
-    etiqueta: String,
-    activo: Boolean,
-    alPulsar: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = modifier
-            .clip(FormaPequena)
-            .clickable(onClick = alPulsar)
-            .padding(horizontal = 8.dp, vertical = 4.dp)
-    ) {
-        Box(
-            modifier = Modifier
-                .size(36.dp)
-                .clip(CircleShape)
-                .background(if (activo) ColorAcento.copy(alpha = 0.25f) else Color.Black.copy(alpha = 0.45f)),
-            contentAlignment = Alignment.Center
-        ) {
-            Icon(
-                imageVector = icono,
-                contentDescription = etiqueta,
-                tint = if (activo) ColorAcento else Color.White,
-                modifier = Modifier.size(20.dp)
-            )
-        }
-        Spacer(Modifier.height(3.dp))
-        Text(
-            text = etiqueta,
-            color = if (activo) ColorAcento else Color.White,
-            style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.5.sp, fontWeight = FontWeight.Medium),
-            maxLines = 1
+        ControlZoomCamaraQr(
+            zoomRatio = zoomRatio,
+            alCambiarZoom = { valor ->
+                zoomRatio = valor
+                motorCameraX?.ajustarZoom(valor)
+            },
+            alAumentarZoom = {
+                val nuevoZoom = (zoomRatio + 0.15f).coerceAtMost(1f)
+                zoomRatio = nuevoZoom
+                motorCameraX?.ajustarZoom(nuevoZoom)
+                if (ajustes.hapticaApp) haptica.tic()
+            },
+            alReducirZoom = {
+                val nuevoZoom = (zoomRatio - 0.15f).coerceAtLeast(0f)
+                zoomRatio = nuevoZoom
+                motorCameraX?.ajustarZoom(nuevoZoom)
+                if (ajustes.hapticaApp) haptica.tic()
+            },
+            modifier = Modifier.align(Alignment.BottomCenter)
         )
     }
 }

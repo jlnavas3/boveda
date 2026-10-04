@@ -62,15 +62,11 @@ import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteCampoTexto
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.TipoCampoTexto
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjustesFondo
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.GrupoAjustes
-import com.jlnavas3.bovedalocal.ui.pantallas.edicion.FormularioEdicionCuentaBancaria
-import com.jlnavas3.bovedalocal.ui.pantallas.edicion.FormularioEdicionIdentidad
-import com.jlnavas3.bovedalocal.ui.pantallas.edicion.FormularioEdicionServidor
-import com.jlnavas3.bovedalocal.ui.pantallas.edicion.FormularioEdicionTarjeta
-import com.jlnavas3.bovedalocal.ui.pantallas.edicion.FormularioEdicionWallet
-import com.jlnavas3.bovedalocal.ui.pantallas.edicion.FormularioEdicionWifi
+import com.jlnavas3.bovedalocal.ui.pantallas.edicion.BotonGuardarEdicion
 import com.jlnavas3.bovedalocal.ui.pantallas.edicion.GestorCamposBase
 import com.jlnavas3.bovedalocal.ui.pantallas.edicion.SeccionCamposPersonalizados
-import com.jlnavas3.bovedalocal.ui.pantallas.edicion.SeccionCredencialesEdicion
+import com.jlnavas3.bovedalocal.ui.pantallas.edicion.SeccionDatosPrincipalesEdicion
+import com.jlnavas3.bovedalocal.ui.pantallas.edicion.SeccionNotasEdicion
 import com.jlnavas3.bovedalocal.ui.pantallas.edicion.SeccionOrganizacionEdicion
 import com.jlnavas3.bovedalocal.ui.pantallas.edicion.SeccionSitiosYAppsEdicion
 import com.jlnavas3.bovedalocal.ui.pantallas.edicion.SelectorTipoEntrada
@@ -209,132 +205,25 @@ fun PantallaEdicion(vm: VaultViewModel, id: String?, contrasenaInicial: String) 
             }
 
             // Grupo: Datos principales
-            GrupoAjustes(etiqueta = "Datos principales") {
-                Column(modifier = Modifier.padding(14.dp)) {
-                    ComponenteCampoTexto(
-                        valor = titulo,
-                        etiqueta = "Título",
-                        alCambiar = { titulo = it },
-                        colorBordeIzquierdo = ColorAcento,
-                        botonLimpiar = true
-                    )
-
-                    val urlsParaResolver = remember(listaEnlaces.toList(), original) {
-                        val reconstruidas = listaEnlaces.map { LanzadorEnlaces.reconstruirDesdeEdicion(it) }.filter { it.isNotBlank() }
-                        if (reconstruidas.isEmpty() && original != null) original.urls else reconstruidas
-                    }
-                    val entradaParaResolver = remember(urlsParaResolver, original, titulo) {
-                        Entrada(
-                            id = original?.id ?: "",
-                            titulo = titulo,
-                            usuario = usuario,
-                            contrasena = contrasena,
-                            urls = urlsParaResolver,
-                            passkey = original?.passkey
-                        )
-                    }
-                    val paqueteDetectado = remember(entradaParaResolver, contexto) {
-                        GestorAppsInstaladas.resolverPaqueteApp(contexto, entradaParaResolver)
-                    }
-                    val nombreAppDetectada = remember(paqueteDetectado, contexto) {
-                        if (paqueteDetectado != null && LanzadorEnlaces.estaInstalada(contexto, paqueteDetectado)) {
-                            LanzadorEnlaces.obtenerNombreApp(contexto, paqueteDetectado)
-                        } else null
-                    }
-                    if (nombreAppDetectada != null && !titulo.trim().equals(nombreAppDetectada, ignoreCase = true)) {
-                        Spacer(Modifier.height(6.dp))
-                        Row(
-                            modifier = Modifier
-                                .clip(RoundedCornerShape(8.dp))
-                                .background(ColorAcento.copy(alpha = 0.12f))
-                                .clickable {
-                                    titulo = nombreAppDetectada
-                                    haptica.tic()
-                                }
-                                .padding(horizontal = 10.dp, vertical = 5.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Icon(
-                                imageVector = Icons.Filled.AutoFixHigh,
-                                contentDescription = null,
-                                tint = ColorAcento,
-                                modifier = Modifier.size(15.dp)
-                            )
-                            Spacer(Modifier.width(6.dp))
-                            Text(
-                                text = "Usar \"$nombreAppDetectada\"",
-                                style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.SemiBold),
-                                color = ColorAcento,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis
-                            )
-                        }
-                    }
-
-                    when (tipo) {
-                        TipoEntrada.LOGIN, TipoEntrada.PASSKEY -> {
-                            SeccionCredencialesEdicion(
-                                passkey = original?.passkey,
-                                usuario = usuario,
-                                alCambiarUsuario = { usuario = it },
-                                contrasena = contrasena,
-                                alCambiarContrasena = { contrasena = it },
-                                mostrarContrasena = mostrarContrasena,
-                                alAlternarMostrarContrasena = { mostrarContrasena = !mostrarContrasena },
-                                opcionesGenerador = opcionesGenerador,
-                                alCambiarOpcionesGenerador = { opcionesGenerador = it },
-                                haptica = haptica
-                            )
-                        }
-                        TipoEntrada.TARJETA -> {
-                            Spacer(Modifier.height(12.dp))
-                            FormularioEdicionTarjeta(
-                                campos = camposPersonalizados,
-                                alCambiarCampos = { camposPersonalizados = it }
-                            )
-                        }
-                        TipoEntrada.WIFI -> {
-                            Spacer(Modifier.height(12.dp))
-                            FormularioEdicionWifi(
-                                campos = camposPersonalizados,
-                                alCambiarCampos = { camposPersonalizados = it }
-                            )
-                        }
-                        TipoEntrada.CUENTA_BANCARIA -> {
-                            Spacer(Modifier.height(12.dp))
-                            FormularioEdicionCuentaBancaria(
-                                campos = camposPersonalizados,
-                                alCambiarCampos = { camposPersonalizados = it }
-                            )
-                        }
-                        TipoEntrada.IDENTIDAD -> {
-                            Spacer(Modifier.height(12.dp))
-                            FormularioEdicionIdentidad(
-                                campos = camposPersonalizados,
-                                alCambiarCampos = { camposPersonalizados = it },
-                                ajustes = ajustes
-                            )
-                        }
-                        TipoEntrada.SERVIDOR -> {
-                            Spacer(Modifier.height(12.dp))
-                            FormularioEdicionServidor(
-                                campos = camposPersonalizados,
-                                alCambiarCampos = { camposPersonalizados = it }
-                            )
-                        }
-                        TipoEntrada.WALLET -> {
-                            Spacer(Modifier.height(12.dp))
-                            FormularioEdicionWallet(
-                                campos = camposPersonalizados,
-                                alCambiarCampos = { camposPersonalizados = it }
-                            )
-                        }
-                        TipoEntrada.NOTA -> {
-                            // Para nota, el campo principal es la nota
-                        }
-                    }
-                }
-            }
+            SeccionDatosPrincipalesEdicion(
+                titulo = titulo,
+                alCambiarTitulo = { titulo = it },
+                tipo = tipo,
+                original = original,
+                usuario = usuario,
+                alCambiarUsuario = { usuario = it },
+                contrasena = contrasena,
+                alCambiarContrasena = { contrasena = it },
+                mostrarContrasena = mostrarContrasena,
+                alAlternarMostrarContrasena = { mostrarContrasena = !mostrarContrasena },
+                opcionesGenerador = opcionesGenerador,
+                alCambiarOpcionesGenerador = { opcionesGenerador = it },
+                camposPersonalizados = camposPersonalizados,
+                alCambiarCamposPersonalizados = { camposPersonalizados = it },
+                listaEnlaces = listaEnlaces,
+                ajustes = ajustes,
+                haptica = haptica
+            )
 
             // Grupo: Sitios o aplicaciones
             if (tipo == TipoEntrada.LOGIN || tipo == TipoEntrada.PASSKEY) {
@@ -362,17 +251,10 @@ fun PantallaEdicion(vm: VaultViewModel, id: String?, contrasenaInicial: String) 
 
             // Grupo: Notas
             Spacer(Modifier.height(16.dp))
-            GrupoAjustes(etiqueta = "Notas") {
-                Column(modifier = Modifier.padding(14.dp)) {
-                    ComponenteCampoTexto(
-                        valor = notas,
-                        etiqueta = "Notas y detalles",
-                        alCambiar = { notas = it },
-                        tipo = TipoCampoTexto.MULTILINEA,
-                        colorBordeIzquierdo = ColorAcento
-                    )
-                }
-            }
+            SeccionNotasEdicion(
+                notas = notas,
+                alCambiarNotas = { notas = it }
+            )
 
             // Grupo: Campos adicionales
             Spacer(Modifier.height(16.dp))
@@ -409,10 +291,8 @@ fun PantallaEdicion(vm: VaultViewModel, id: String?, contrasenaInicial: String) 
         }
     }
 
-    val formaFab = RoundedCornerShape(CurvaturaEsquinas)
-
-    FloatingActionButton(
-        onClick = {
+    BotonGuardarEdicion(
+        alGuardar = {
             if (puedeGuardar) {
                 guardarEntrada()
             } else {
@@ -420,26 +300,8 @@ fun PantallaEdicion(vm: VaultViewModel, id: String?, contrasenaInicial: String) 
                 vm.avisar("Introduce un título para guardar")
             }
         },
-        containerColor = ColorAcento,
-        contentColor = ColorSobreAcento,
-        shape = formaFab,
-        modifier = Modifier
-            .align(Alignment.BottomEnd)
-            .navigationBarsPadding()
-            .imePadding()
-            .padding(20.dp)
-            .then(
-                if (GrosorBorde > 0.dp && EstiloBorde != "ninguno") {
-                    Modifier.border(GrosorBorde, ColorBordeActual, formaFab)
-                } else Modifier
-            )
-    ) {
-        Icon(
-            imageVector = Icons.Filled.Check,
-            contentDescription = "Guardar",
-            modifier = Modifier.size(24.dp)
-        )
-    }
+        modifier = Modifier.align(Alignment.BottomEnd)
+    )
 }
 
     if (mostrarSelectorApp) {

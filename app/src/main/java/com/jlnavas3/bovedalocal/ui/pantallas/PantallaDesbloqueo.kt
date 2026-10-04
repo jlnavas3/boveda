@@ -146,18 +146,7 @@ fun PantallaDesbloqueo(vm: VaultViewModel, actividad: FragmentActivity) {
 
     LaunchedEffect(fallos) {
         if (fallos > 0) {
-            sacudida.animateTo(
-                targetValue = 0f,
-                animationSpec = keyframes {
-                    durationMillis = 260
-                    0f at 0
-                    -14f at 40
-                    12f at 90
-                    -8f at 140
-                    5f at 190
-                    0f at 260
-                }
-            )
+            com.jlnavas3.bovedalocal.ui.componentes.dispararSacudidaHorizontal(sacudida)
         }
     }
 }

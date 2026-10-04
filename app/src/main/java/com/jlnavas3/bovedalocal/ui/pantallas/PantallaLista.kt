@@ -80,23 +80,18 @@ import com.jlnavas3.bovedalocal.ui.componentes.seleccion.BarraSuperiorSeleccion
 import com.jlnavas3.bovedalocal.ui.pantallas.lista.BarraSuperiorLista
 import com.jlnavas3.bovedalocal.ui.pantallas.lista.ChipFiltro
 import com.jlnavas3.bovedalocal.ui.pantallas.lista.ChipFiltroActivo
+import com.jlnavas3.bovedalocal.ui.pantallas.lista.ColumnaAccionesFlotantesLista
+import com.jlnavas3.bovedalocal.ui.pantallas.lista.ComponenteGrupoLista
 import com.jlnavas3.bovedalocal.ui.pantallas.lista.CuerpoListaEntradas
 import com.jlnavas3.bovedalocal.ui.pantallas.lista.DialogoBorrarSeleccion
 import com.jlnavas3.bovedalocal.ui.pantallas.lista.DialogoFiltrosLista
 import com.jlnavas3.bovedalocal.ui.pantallas.lista.DialogoOrdenacionLista
 import com.jlnavas3.bovedalocal.ui.pantallas.lista.DialogoRenombrarSeleccion
-import com.jlnavas3.bovedalocal.ui.pantallas.lista.EstadoVacioLista
-import com.jlnavas3.bovedalocal.ui.pantallas.lista.MenuLateral
-import com.jlnavas3.bovedalocal.ui.pantallas.lista.ChipFiltro
-import com.jlnavas3.bovedalocal.ui.pantallas.lista.ChipFiltroActivo
-import com.jlnavas3.bovedalocal.ui.pantallas.lista.ComponenteGrupoLista
-import com.jlnavas3.bovedalocal.ui.pantallas.lista.DialogoBorrarSeleccion
-import com.jlnavas3.bovedalocal.ui.pantallas.lista.DialogoFiltrosLista
-import com.jlnavas3.bovedalocal.ui.pantallas.lista.DialogoOrdenacionLista
-import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorTarjetaAjustes
-import com.jlnavas3.bovedalocal.ui.pantallas.lista.DialogoRenombrarSeleccion
+import com.jlnavas3.bovedalocal.ui.pantallas.lista.DialogosSeleccionAcciones
 import com.jlnavas3.bovedalocal.ui.pantallas.lista.EstadoVacioLista
 import com.jlnavas3.bovedalocal.ui.pantallas.lista.FilaEntrada
+import com.jlnavas3.bovedalocal.ui.pantallas.lista.MenuLateral
+import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorTarjetaAjustes
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
 import com.jlnavas3.bovedalocal.ui.theme.ColorSobreAcento
@@ -489,28 +484,6 @@ fun PantallaLista(vm: VaultViewModel, estado: EstadoBoveda) {
                     }
                 }
 
-                if (mostrarDialogoFiltros) {
-                    DialogoFiltrosLista(
-                        filtroActual = filtro,
-                        alSeleccionarTipo = { tipo ->
-                            haptica.tic()
-                            vm.filtrarPorTipo(tipo)
-                        },
-                        alCerrar = { mostrarDialogoFiltros = false }
-                    )
-                }
-
-                if (mostrarDialogoOrdenacion) {
-                    DialogoOrdenacionLista(
-                        criterioActual = criterioOrdenacion,
-                        alSeleccionarCriterio = { crit ->
-                            haptica.tic()
-                            vm.cambiarCriterioOrdenacion(crit)
-                        },
-                        alCerrar = { mostrarDialogoOrdenacion = false }
-                    )
-                }
-
                 Spacer(Modifier.height((EspaciadoComponentes * 0.8f).coerceAtLeast(6.dp)))
 
                 if (visibles.isEmpty()) {
@@ -582,51 +555,17 @@ fun PantallaLista(vm: VaultViewModel, estado: EstadoBoveda) {
             }
 
             if (!modoSeleccion) {
-                val formaFab = RoundedCornerShape(CurvaturaEsquinas)
-                Column(
-                    modifier = Modifier
-                        .align(Alignment.BottomEnd)
-                        .padding(20.dp),
-                    horizontalAlignment = Alignment.End,
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    // FAB superior: Bloquear app (Candado)
-                    SmallFloatingActionButton(
-                        onClick = {
-                            haptica.toque()
-                            vm.bloquear()
-                        },
-                        containerColor = ColorTarjetaAjustes,
-                        contentColor = ColorAcento,
-                        shape = formaFab,
-                        modifier = Modifier.then(
-                            if (GrosorBorde > 0.dp && EstiloBorde != "ninguno") {
-                                Modifier.border(GrosorBorde, ColorBordeActual, formaFab)
-                            } else Modifier
-                        )
-                    ) {
-                        Icon(
-                            imageVector = Icons.Filled.Lock,
-                            contentDescription = "Bloquear bóveda",
-                            modifier = Modifier.size(22.dp)
-                        )
-                    }
-
-                    // FAB inferior: Nueva entrada (+)
-                    FloatingActionButton(
-                        onClick = { haptica.toque(); vm.ir(Pantalla.Editar(null)) },
-                        containerColor = ColorAcento,
-                        contentColor = ColorSobreAcento,
-                        shape = formaFab,
-                        modifier = Modifier.then(
-                            if (GrosorBorde > 0.dp && EstiloBorde != "ninguno") {
-                                Modifier.border(GrosorBorde, ColorBordeActual, formaFab)
-                            } else Modifier
-                        )
-                    ) {
-                        Icon(Icons.Filled.Add, contentDescription = "Nueva entrada", modifier = Modifier.size(24.dp))
-                    }
-                }
+                ColumnaAccionesFlotantesLista(
+                    alBloquear = {
+                        haptica.toque()
+                        vm.bloquear()
+                    },
+                    alNuevaEntrada = {
+                        haptica.toque()
+                        vm.ir(Pantalla.Editar(null))
+                    },
+                    modifier = Modifier.align(Alignment.BottomEnd)
+                )
             } else {
                 val itemsSeleccionados = remember(entradas, seleccionados) {
                     entradas.filter { seleccionados.contains(it.id) }
@@ -683,109 +622,85 @@ fun PantallaLista(vm: VaultViewModel, estado: EstadoBoveda) {
         }
     }
 
-    if (dialogoBorrarSeleccion) {
-        DialogoBorrarSeleccion(
-            cantidad = seleccionados.size,
-            alConfirmar = {
-                dialogoBorrarSeleccion = false
-                val idsABorrar = seleccionados
+    DialogosSeleccionAcciones(
+        mostrarDialogoFiltros = mostrarDialogoFiltros,
+        filtroActual = filtro,
+        alSeleccionarTipoFiltro = { tipo ->
+            haptica.tic()
+            vm.filtrarPorTipo(tipo)
+        },
+        alDescartarFiltros = { mostrarDialogoFiltros = false },
+        mostrarDialogoOrdenacion = mostrarDialogoOrdenacion,
+        criterioActual = criterioOrdenacion,
+        alSeleccionarCriterioOrdenacion = { crit ->
+            haptica.tic()
+            vm.cambiarCriterioOrdenacion(crit)
+        },
+        alDescartarOrdenacion = { mostrarDialogoOrdenacion = false },
+        dialogoBorrarSeleccion = dialogoBorrarSeleccion,
+        cantidadSeleccionados = seleccionados.size,
+        alConfirmarBorrarSeleccion = {
+            dialogoBorrarSeleccion = false
+            val idsABorrar = seleccionados
+            salirDeSeleccion()
+            vm.eliminarVarias(idsABorrar)
+        },
+        alDescartarBorrarSeleccion = { dialogoBorrarSeleccion = false },
+        dialogoRenombrarSeleccion = dialogoRenombrarSeleccion,
+        textoNuevoTitulo = textoNuevoTitulo,
+        alCambiarTextoRenombrar = { textoNuevoTitulo = it },
+        alConfirmarRenombrarSeleccion = {
+            val nuevo = textoNuevoTitulo.trim()
+            if (nuevo.isNotBlank()) {
+                dialogoRenombrarSeleccion = false
+                val idsARenombrar = seleccionados
                 salirDeSeleccion()
-                vm.eliminarVarias(idsABorrar)
-            },
-            alDescartar = { dialogoBorrarSeleccion = false }
-        )
-    }
-
-    if (dialogoRenombrarSeleccion) {
-        DialogoRenombrarSeleccion(
-            cantidad = seleccionados.size,
-            textoNuevoTitulo = textoNuevoTitulo,
-            alCambiarTexto = { textoNuevoTitulo = it },
-            alConfirmar = {
-                val nuevo = textoNuevoTitulo.trim()
-                if (nuevo.isNotBlank()) {
-                    dialogoRenombrarSeleccion = false
-                    val idsARenombrar = seleccionados
-                    salirDeSeleccion()
-                    vm.renombrarVarias(idsARenombrar, nuevo)
-                    haptica.exito()
-                }
-            },
-            alDescartar = { dialogoRenombrarSeleccion = false }
-        )
-    }
-
-    entradasParaTransferirCxf?.let { entradasSeleccionadas ->
-        com.jlnavas3.bovedalocal.ui.pantallas.cxf.DialogoExportacionDirectaCxf(
-            entradas = entradasSeleccionadas,
-            esSeleccionPersonalizada = true,
-            alCerrar = { entradasParaTransferirCxf = null }
-        )
-    }
-
-    if (mostrarDialogoExportarCxf && estado is EstadoBoveda.Desbloqueada) {
-        com.jlnavas3.bovedalocal.ui.pantallas.cxf.DialogoExportacionDirectaCxf(
-            entradas = estado.entradas,
-            esSeleccionPersonalizada = false,
-            alCerrar = { mostrarDialogoExportarCxf = false }
-        )
-    }
-
-    if (mostrarDialogoAsignarColecciones) {
-        val seleccionadosLista = remember(seleccionados, entradas) {
-            entradas.filter { seleccionados.contains(it.id) }
-        }
-        DialogoAsignarColecciones(
-            entradasSeleccionadas = seleccionadosLista,
-            coleccionesDisponibles = colecciones,
-            alCrearNuevaColeccion = {
-                mostrarDialogoCrearColeccion = true
-            },
-            alGuardar = { idsAgregar, idsQuitar ->
-                vm.asignarColeccionesAEntradas(seleccionados, idsAgregar, idsQuitar)
-                mostrarDialogoAsignarColecciones = false
-                salirDeSeleccion()
+                vm.renombrarVarias(idsARenombrar, nuevo)
                 haptica.exito()
-            },
-            alDescartar = { mostrarDialogoAsignarColecciones = false }
-        )
-    }
-
-    if (mostrarDialogoCrearColeccion || coleccionParaEditar != null) {
-        DialogoCrearEditarColeccion(
-            coleccionAEditar = coleccionParaEditar,
-            alGuardar = { nombre, icono, colorHex ->
-                val colEdit = coleccionParaEditar
-                if (colEdit != null) {
-                    vm.actualizarColeccion(colEdit.id, nombre, icono, colorHex)
-                } else {
-                    vm.crearColeccion(nombre, icono, colorHex)
-                }
-                mostrarDialogoCrearColeccion = false
-                coleccionParaEditar = null
-                haptica.exito()
-            },
-            alDescartar = {
-                mostrarDialogoCrearColeccion = false
-                coleccionParaEditar = null
             }
-        )
-    }
-
-    coleccionParaEliminar?.let { col ->
-        DialogoConfirmacionBoveda(
-            titulo = "¿Eliminar colección?",
-            mensaje = "Se eliminará la colección '${col.nombre}'. Las credenciales asociadas no se borrarán.",
-            textoConfirmar = "Eliminar",
-            tipoConfirmacion = TipoBotonTexto.PELIGRO,
-            iconoHeader = androidx.compose.material.icons.Icons.Filled.Delete,
-            alConfirmar = {
-                val id = col.id
-                coleccionParaEliminar = null
-                vm.eliminarColeccion(id)
-                haptica.exito()
-            },
-            alDescartar = { coleccionParaEliminar = null }
-        )
-    }
+        },
+        alDescartarRenombrarSeleccion = { dialogoRenombrarSeleccion = false },
+        entradasParaTransferirCxf = entradasParaTransferirCxf,
+        alDescartarTransferirCxf = { entradasParaTransferirCxf = null },
+        mostrarDialogoExportarCxf = mostrarDialogoExportarCxf,
+        estado = estado,
+        alDescartarExportarCxf = { mostrarDialogoExportarCxf = false },
+        mostrarDialogoAsignarColecciones = mostrarDialogoAsignarColecciones,
+        seleccionados = seleccionados,
+        entradas = entradas,
+        colecciones = colecciones,
+        alCrearNuevaColeccion = { mostrarDialogoCrearColeccion = true },
+        alGuardarAsignarColecciones = { idsAgregar, idsQuitar ->
+            vm.asignarColeccionesAEntradas(seleccionados, idsAgregar, idsQuitar)
+            mostrarDialogoAsignarColecciones = false
+            salirDeSeleccion()
+            haptica.exito()
+        },
+        alDescartarAsignarColecciones = { mostrarDialogoAsignarColecciones = false },
+        mostrarDialogoCrearColeccion = mostrarDialogoCrearColeccion,
+        coleccionParaEditar = coleccionParaEditar,
+        alGuardarColeccion = { nombre, icono, colorHex ->
+            val colEdit = coleccionParaEditar
+            if (colEdit != null) {
+                vm.actualizarColeccion(colEdit.id, nombre, icono, colorHex)
+            } else {
+                vm.crearColeccion(nombre, icono, colorHex)
+            }
+            mostrarDialogoCrearColeccion = false
+            coleccionParaEditar = null
+            haptica.exito()
+        },
+        alDescartarEditarCrearColeccion = {
+            mostrarDialogoCrearColeccion = false
+            coleccionParaEditar = null
+        },
+        coleccionParaEliminar = coleccionParaEliminar,
+        alConfirmarEliminarColeccion = { col ->
+            val id = col.id
+            coleccionParaEliminar = null
+            vm.eliminarColeccion(id)
+            haptica.exito()
+        },
+        alDescartarEliminarColeccion = { coleccionParaEliminar = null }
+    )
 }

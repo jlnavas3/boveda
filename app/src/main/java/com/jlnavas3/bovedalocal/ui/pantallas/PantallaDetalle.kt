@@ -43,6 +43,9 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.jlnavas3.bovedalocal.data.AjustesApp
 import com.jlnavas3.bovedalocal.data.Entrada
+import com.jlnavas3.bovedalocal.ui.pantallas.detalle.ColumnaAccionesFlotantesDetalle
+import com.jlnavas3.bovedalocal.ui.pantallas.detalle.ContenidoEntradaDetalle
+import com.jlnavas3.bovedalocal.ui.pantallas.detalle.DialogosDetalle
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
 import com.jlnavas3.bovedalocal.ui.theme.ColorSobreAcento
@@ -213,305 +216,46 @@ fun PantallaDetalle(
             }
         }
 
-        val formaFab = RoundedCornerShape(CurvaturaEsquinas)
-        Column(
+        ColumnaAccionesFlotantesDetalle(
+            esFavorito = entradaActual?.favorito == true,
+            alEliminar = {
+                haptica.tic()
+                confirmarBorrado = true
+            },
+            alCompartirQr = {
+                haptica.tic()
+                mostrarDialogoQr = true
+            },
+            alAlternarFavorito = {
+                haptica.tic()
+                entradaActual?.let { vm.alternarFavorito(it.id) }
+            },
+            alEditar = {
+                entradaActual?.let {
+                    haptica.toque()
+                    vm.ir(Pantalla.Editar(it.id))
+                }
+            },
             modifier = Modifier
                 .align(Alignment.BottomEnd)
                 .navigationBarsPadding()
-                .padding(20.dp),
-            horizontalAlignment = Alignment.End,
-            verticalArrangement = Arrangement.spacedBy(10.dp)
-        ) {
-            // 1. Eliminar / Mover a papelera
-            SmallFloatingActionButton(
-                onClick = {
-                    haptica.tic()
-                    confirmarBorrado = true
-                },
-                containerColor = ColorTarjetaAjustes,
-                contentColor = Peligro,
-                shape = formaFab,
-                modifier = Modifier.then(
-                    if (GrosorBorde > 0.dp && EstiloBorde != "ninguno") {
-                        Modifier.border(GrosorBorde, ColorBordeActual, formaFab)
-                    } else Modifier
-                )
-            ) {
-                Icon(
-                    imageVector = Icons.Filled.Delete,
-                    contentDescription = "Mover a papelera",
-                    tint = Peligro,
-                    modifier = Modifier.size(20.dp)
-                )
-            }
-
-            // 2. Compartir por código QR
-            SmallFloatingActionButton(
-                onClick = {
-                    haptica.tic()
-                    mostrarDialogoQr = true
-                },
-                containerColor = ColorTarjetaAjustes,
-                contentColor = ColorAcento,
-                shape = formaFab,
-                modifier = Modifier.then(
-                    if (GrosorBorde > 0.dp && EstiloBorde != "ninguno") {
-                        Modifier.border(GrosorBorde, ColorBordeActual, formaFab)
-                    } else Modifier
-                )
-            ) {
-                Icon(
-                    imageVector = Icons.Filled.QrCode,
-                    contentDescription = "Compartir por código QR",
-                    tint = ColorAcento,
-                    modifier = Modifier.size(20.dp)
-                )
-            }
-
-            // 3. Alternar Favorito
-            val esFavorito = entradaActual?.favorito == true
-            SmallFloatingActionButton(
-                onClick = {
-                    haptica.tic()
-                    entradaActual?.let { vm.alternarFavorito(it.id) }
-                },
-                containerColor = ColorTarjetaAjustes,
-                contentColor = if (esFavorito) ColorAcento else TextoSecundario,
-                shape = formaFab,
-                modifier = Modifier.then(
-                    if (GrosorBorde > 0.dp && EstiloBorde != "ninguno") {
-                        Modifier.border(GrosorBorde, ColorBordeActual, formaFab)
-                    } else Modifier
-                )
-            ) {
-                Icon(
-                    imageVector = Icons.Filled.Star,
-                    contentDescription = if (esFavorito) "Quitar de favoritos" else "Marcar como favorito",
-                    tint = if (esFavorito) ColorAcento else TextoSecundario.copy(alpha = 0.5f),
-                    modifier = Modifier.size(20.dp)
-                )
-            }
-
-            // 4. Botón flotante principal: Editar
-            FloatingActionButton(
-                onClick = {
-                    entradaActual?.let {
-                        haptica.toque()
-                        vm.ir(Pantalla.Editar(it.id))
-                    }
-                },
-                containerColor = ColorAcento,
-                contentColor = ColorSobreAcento,
-                shape = formaFab,
-                modifier = Modifier.then(
-                    if (GrosorBorde > 0.dp && EstiloBorde != "ninguno") {
-                        Modifier.border(GrosorBorde, ColorBordeActual, formaFab)
-                    } else Modifier
-                )
-            ) {
-                Icon(
-                    imageVector = Icons.Filled.Edit,
-                    contentDescription = "Editar entrada",
-                    modifier = Modifier.size(24.dp)
-                )
-            }
-        }
-    }
-
-    if (confirmarBorrado && entradaActual != null) {
-        DialogoConfirmacionBoveda(
-            titulo = "¿Mover a la papelera?",
-            mensaje = "Se puede restaurar desde Ajustes > Papelera durante 30 días; pasado ese tiempo se borra permanentemente.",
-            textoConfirmar = "Mover a la papelera",
-            tipoConfirmacion = TipoBotonTexto.PELIGRO,
-            iconoHeader = Icons.Filled.Delete,
-            alConfirmar = {
-                confirmarBorrado = false
-                haptica.error()
-                val idABorrar = entradaActual.id
-                vm.eliminar(idABorrar)
-                if (listaIds.size <= 1) {
-                    vm.volverAtras()
-                }
-            },
-            alDescartar = { confirmarBorrado = false }
         )
     }
 
-    if (mostrarDialogoQr && entradaActual != null) {
-        DialogoCompartirQr(
-            entrada = entradaActual,
-            alCerrar = { mostrarDialogoQr = false }
-        )
-    }
-}
-
-@Composable
-private fun ContenidoEntradaDetalle(
-    entrada: Entrada,
-    ajustes: AjustesApp,
-    vm: VaultViewModel,
-    haptica: Haptica,
-    alMostrarQr: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    var revelada by remember(entrada.id) { mutableStateOf(false) }
-    var ultimaCopia by remember(entrada.id) { mutableStateOf<String?>(null) }
-    val scrollState = rememberScrollState()
-
-    LaunchedEffect(revelada) {
-        if (revelada) {
-            val tipoDesc = entrada.tipo.etiqueta.lowercase()
-            Diagnostico.apuntar("seguridad", "Contraseña revelada en pantalla ($tipoDesc)")
-        }
-    }
-
-    LaunchedEffect(ultimaCopia) {
-        if (ultimaCopia != null) {
-            delay(1500)
-            ultimaCopia = null
-        }
-    }
-
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .reboteElastico()
-            .verticalScroll(scrollState)
-            .padding(horizontal = 16.dp, vertical = 8.dp)
-    ) {
-        // Cabecera Hero de identidad
-        CabeceraHeroDetalle(
-            entrada = entrada,
-            alMostrarQr = alMostrarQr,
-            alActualizarTitulo = { nuevoTitulo ->
-                haptica.exito()
-                vm.guardar(entrada.copy(titulo = nuevoTitulo, modificadaEn = System.currentTimeMillis()))
+    DialogosDetalle(
+        confirmarBorrado = confirmarBorrado,
+        entradaActual = entradaActual,
+        alConfirmarBorrado = {
+            confirmarBorrado = false
+            haptica.error()
+            val idABorrar = entradaActual?.id ?: return@DialogosDetalle
+            vm.eliminar(idABorrar)
+            if (listaIds.size <= 1) {
+                vm.volverAtras()
             }
-        )
-
-        Spacer(Modifier.height(14.dp))
-
-        // Grupo 1: Credenciales principales
-        TarjetaCredencialesDetalle(
-            entrada = entrada,
-            revelada = revelada,
-            ultimaCopia = ultimaCopia,
-            alAlternarRevelada = {
-                haptica.toque()
-                revelada = !revelada
-            },
-            alCopiarUsuario = {
-                haptica.toque()
-                vm.copiar("Usuario", entrada.usuario, sensible = false)
-                vm.registrarUsoEntrada(entrada.id)
-                ultimaCopia = "usuario"
-            },
-            alCopiarContrasena = {
-                haptica.exito()
-                vm.copiar("Contraseña", entrada.contrasena, sensible = true)
-                vm.registrarUsoEntrada(entrada.id)
-                ultimaCopia = "contrasena"
-            },
-            ajustes = ajustes
-        )
-        if (entrada.usuario.isNotBlank() || entrada.contrasena.isNotBlank()) {
-            Spacer(Modifier.height(16.dp))
-        }
-
-        // Grupo 2: 2FA / TOTP modular
-        TarjetaTotpDetalle(
-            entrada = entrada,
-            ajustes = ajustes,
-            haptica = haptica,
-            alCopiarTotp = { codigo ->
-                vm.copiar("Código TOTP", codigo, sensible = true)
-                vm.registrarUsoEntrada(entrada.id)
-            }
-        )
-        if (!entrada.secretoTotp.isNullOrBlank()) {
-            Spacer(Modifier.height(16.dp))
-        }
-
-        // Grupo 3: Sitios y apps asociados (si existen)
-        TarjetaSitiosYAppsDetalle(
-            urls = entrada.urls,
-            alCopiarUrl = { url ->
-                vm.copiar("Enlace", url, sensible = false)
-            },
-            alAvisar = { vm.avisar(it) },
-            alAbrirUrl = { vm.registrarUsoEntrada(entrada.id) }
-        )
-        if (entrada.urls.any { it.isNotBlank() }) {
-            Spacer(Modifier.height(16.dp))
-        }
-
-        // Grupo 4: Campos personalizados
-        TarjetaCamposDetalle(
-            campos = entrada.camposPersonalizados,
-            vm = vm,
-            ajustes = ajustes,
-            haptica = haptica,
-            ultimaCopia = ultimaCopia,
-            alCopiarCampo = { idCampo -> ultimaCopia = idCampo }
-        )
-        if (entrada.camposPersonalizados.isNotEmpty()) {
-            Spacer(Modifier.height(16.dp))
-        }
-
-        // Grupo 5: Notas
-        TarjetaNotasDetalle(
-            notas = entrada.notas,
-            ultimaCopia = ultimaCopia,
-            alCopiarNotas = {
-                haptica.toque()
-                vm.copiar("Notas", entrada.notas, sensible = false)
-                ultimaCopia = "notas"
-            },
-            ajustes = ajustes
-        )
-        if (entrada.notas.isNotBlank()) {
-            Spacer(Modifier.height(16.dp))
-        }
-
-        // Grupo 6: Etiquetas
-        TarjetaEtiquetasDetalle(
-            etiquetas = entrada.etiquetas,
-            alFiltrarPorEtiqueta = { etiqueta ->
-                vm.filtrarPorEtiqueta(etiqueta)
-                vm.volverALista()
-            }
-        )
-        if (entrada.etiquetas.isNotEmpty()) {
-            Spacer(Modifier.height(16.dp))
-        }
-
-        // Grupo 7: Passkey
-        entrada.passkey?.let { passkey ->
-            TarjetaPasskeyDetalle(passkey = passkey, usuarioEntrada = entrada.usuario)
-            Spacer(Modifier.height(16.dp))
-        }
-
-        // Grupo 8: Historial de contraseñas anteriores
-        TarjetaHistorialDetalle(
-            entrada = entrada,
-            vm = vm,
-            haptica = haptica
-        )
-        if (entrada.historialContrasenas.isNotEmpty()) {
-            Spacer(Modifier.height(16.dp))
-        }
-
-        // Metadatos: Fechas de creación, edición y último uso
-        PieMetadatosDetalle(
-            creadaEn = entrada.creadaEn,
-            modificadaEn = entrada.modificadaEn,
-            ultimoUsoEn = entrada.ultimoUsoEn
-        )
-        if (entrada.creadaEn > 0L || entrada.modificadaEn > 0L || entrada.ultimoUsoEn > 0L) {
-            Spacer(Modifier.height(16.dp))
-        }
-
-        Spacer(Modifier.height(130.dp))
-    }
+        },
+        alDescartarBorrado = { confirmarBorrado = false },
+        mostrarDialogoQr = mostrarDialogoQr,
+        alDescartarQr = { mostrarDialogoQr = false }
+    )
 }
