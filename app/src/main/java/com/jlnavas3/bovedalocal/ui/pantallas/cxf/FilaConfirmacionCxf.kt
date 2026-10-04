@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -133,19 +132,4 @@ fun FilaConfirmacionCxf(
             }
         }
     }
-}
-
-@Composable
-fun MiniChipCxf(texto: String, color: Color) {
-    val colorLegible = colorLegibleParaTema(color)
-    val fondo = fondoBadgeParaTema(color)
-    Text(
-        text = texto,
-        style = MaterialTheme.typography.labelSmall.copy(fontSize = 9.5.sp, fontWeight = FontWeight.SemiBold),
-        color = colorLegible,
-        modifier = Modifier
-            .clip(RoundedCornerShape(4.dp))
-            .background(fondo)
-            .padding(horizontal = 5.dp, vertical = 2.dp)
-    )
 }

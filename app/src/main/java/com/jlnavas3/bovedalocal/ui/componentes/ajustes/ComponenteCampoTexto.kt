@@ -96,7 +96,7 @@ fun ComponenteCampoTexto(
         mostrarIcono || icono != null -> {
             val iconoEfectivo = icono ?: IconosCampoTexto.resolverIconoPorDefecto(tipo)
             val res: @Composable () -> Unit = {
-                IconosCampoTexto.IconoInicio(
+                IconoInicioCampoTexto(
                     icono = iconoEfectivo,
                     colorIcono = colorIcono,
                     esOscuro = esOscuro
@@ -111,7 +111,7 @@ fun ComponenteCampoTexto(
         trailingIcon != null -> trailingIcon
         esContrasena -> {
             {
-                IconosCampoTexto.IconoAlternarContrasena(
+                IconoAlternarContrasena(
                     esVisible = esVisible,
                     onToggle = {
                         if (alAlternarMostrarContrasena != null) {
@@ -125,7 +125,7 @@ fun ComponenteCampoTexto(
         }
         botonLimpiar && valor.isNotEmpty() && !readOnly -> {
             {
-                IconosCampoTexto.BotonLimpiarTexto(onLimpiar = { alCambiar("") })
+                BotonLimpiarTexto(onLimpiar = { alCambiar("") })
             }
         }
         else -> null

@@ -1,10 +1,6 @@
 package com.jlnavas3.bovedalocal.ui.pantallas.cxf
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
@@ -12,40 +8,23 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.QrCode
 import androidx.compose.material.icons.filled.VpnKey
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.jlnavas3.bovedalocal.cxf.ResultadoConversionCxf
-import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorTarjetaAjustes
 import com.jlnavas3.bovedalocal.ui.theme.Color2FA
-import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
-import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
 import com.jlnavas3.bovedalocal.ui.theme.ColorPasskeys
-import com.jlnavas3.bovedalocal.ui.theme.ColorSobreAcento
 import com.jlnavas3.bovedalocal.ui.theme.ColorTitulos
-import com.jlnavas3.bovedalocal.ui.theme.DegradadoAcento
-import com.jlnavas3.bovedalocal.ui.theme.EstiloBorde
-import com.jlnavas3.bovedalocal.ui.theme.FormaPequena
-import com.jlnavas3.bovedalocal.ui.theme.GrosorBorde
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
-import com.jlnavas3.bovedalocal.ui.theme.colorLegibleParaTema
-import com.jlnavas3.bovedalocal.ui.theme.fondoBadgeParaTema
 
 /**
  * Microcomponente de resumen para la transferencia entrante CXF:
@@ -132,72 +111,5 @@ fun TarjetaResumenTransferenciaCxf(
                 alPulsar = alSeleccionarNinguna
             )
         }
-    }
-}
-
-@Composable
-fun InsigniaResumenCxf(
-    icono: ImageVector,
-    texto: String,
-    color: Color
-) {
-    val colorLegible = colorLegibleParaTema(color)
-    val fondo = fondoBadgeParaTema(color)
-    Row(
-        modifier = Modifier
-            .clip(RoundedCornerShape(8.dp))
-            .background(fondo)
-            .then(
-                if (GrosorBorde > 0.dp && EstiloBorde != "ninguno" && ColorBordeActual != Color.Transparent) {
-                    Modifier.border(GrosorBorde, colorLegible.copy(alpha = 0.25f), RoundedCornerShape(8.dp))
-                } else Modifier
-            )
-            .padding(horizontal = 8.dp, vertical = 4.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(5.dp)
-    ) {
-        Icon(
-            imageVector = icono,
-            contentDescription = null,
-            tint = colorLegible,
-            modifier = Modifier.size(15.dp)
-        )
-        Text(
-            text = texto,
-            style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.SemiBold),
-            color = colorLegible
-        )
-    }
-}
-
-@Composable
-fun BotonSeleccionRapida(
-    texto: String,
-    activo: Boolean,
-    alPulsar: () -> Unit
-) {
-    val forma = FormaPequena
-    Box(
-        modifier = Modifier
-            .clip(forma)
-            .background(
-                if (activo) DegradadoAcento else Brush.horizontalGradient(listOf(ColorTarjetaAjustes, ColorTarjetaAjustes))
-            )
-            .then(
-                if (GrosorBorde > 0.dp && EstiloBorde != "ninguno" && ColorBordeActual != Color.Transparent) {
-                    Modifier.border(GrosorBorde, if (activo) ColorAcento else ColorBordeActual, forma)
-                } else Modifier
-            )
-            .clickable(onClick = alPulsar)
-            .padding(horizontal = 12.dp, vertical = 7.dp),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(
-            text = texto,
-            style = MaterialTheme.typography.labelMedium.copy(
-                fontWeight = if (activo) FontWeight.Bold else FontWeight.Medium
-            ),
-            color = if (activo) ColorSobreAcento else TextoSecundario
-        )
     }
 }

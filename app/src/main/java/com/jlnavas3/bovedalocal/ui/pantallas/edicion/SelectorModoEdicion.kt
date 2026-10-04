@@ -4,7 +4,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -12,7 +11,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.MenuBook
 import androidx.compose.material.icons.filled.Check
@@ -32,7 +30,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -41,31 +38,13 @@ import com.jlnavas3.bovedalocal.crypto.OpcionesGenerador
 import com.jlnavas3.bovedalocal.ui.componentes.MenuDesplegableBoveda
 import com.jlnavas3.bovedalocal.ui.componentes.SeparadorOpcionMenu
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorCampoAjustes
-import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.SwitchBoveda
 import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
 import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
-import com.jlnavas3.bovedalocal.ui.theme.ColorTitulos
 import com.jlnavas3.bovedalocal.ui.theme.EstiloBorde
 import com.jlnavas3.bovedalocal.ui.theme.FormaCampo
 import com.jlnavas3.bovedalocal.ui.theme.GrosorBorde
 import com.jlnavas3.bovedalocal.ui.theme.TextoPrincipal
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
-import com.jlnavas3.bovedalocal.ui.theme.esOscuroActivo
-
-@Composable
-fun OpcionGeneradorCompacta(
-    texto: String,
-    activo: Boolean,
-    alCambiar: (Boolean) -> Unit
-) {
-    Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.width(78.dp)) {
-        Text(texto, color = TextoSecundario, style = MaterialTheme.typography.labelSmall, maxLines = 1)
-        SwitchBoveda(
-            checked = activo,
-            onCheckedChange = alCambiar
-        )
-    }
-}
 
 @Composable
 fun SelectorModoEdicion(
@@ -150,25 +129,16 @@ fun SelectorModoEdicion(
                             modifier = Modifier.size(20.dp)
                         )
                     },
+                    trailingIcon = if (seleccionado) {
+                        { Icon(Icons.Filled.Check, contentDescription = null, tint = ColorIconosInternos, modifier = Modifier.size(18.dp)) }
+                    } else null,
                     text = {
                         Text(
                             text = nombre,
-                            color = if (seleccionado) ColorTitulos else TextoPrincipal,
-                            style = MaterialTheme.typography.bodyMedium.copy(
-                                fontWeight = if (seleccionado) FontWeight.Bold else FontWeight.Normal
-                            )
+                            color = if (seleccionado) ColorIconosInternos else TextoPrincipal,
+                            fontWeight = if (seleccionado) FontWeight.Bold else FontWeight.Normal
                         )
                     },
-                    trailingIcon = if (seleccionado) {
-                        {
-                            Icon(
-                                imageVector = Icons.Filled.Check,
-                                contentDescription = null,
-                                tint = ColorIconosInternos,
-                                modifier = Modifier.size(18.dp)
-                            )
-                        }
-                    } else null,
                     onClick = {
                         alCambiarOpciones(fnCambio())
                         abierto = false

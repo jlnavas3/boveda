@@ -149,7 +149,7 @@ fun ZonaCamara(
 }
 
 @Composable
-fun Aviso(texto: String, modifier: Modifier) {
+private fun Aviso(texto: String, modifier: Modifier) {
     Box(
         modifier = modifier
             .padding(12.dp)

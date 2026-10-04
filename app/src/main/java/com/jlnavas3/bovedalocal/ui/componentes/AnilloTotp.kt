@@ -24,11 +24,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.jlnavas3.bovedalocal.crypto.Totp
@@ -40,59 +38,6 @@ import com.jlnavas3.bovedalocal.ui.theme.Peligro
 import com.jlnavas3.bovedalocal.ui.theme.TextoPrincipal
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
 
-/**
- * Indicador de cuenta atrás circular estilo Google Authenticator:
- * Un círculo relleno tipo "tarta" que se va vaciando de forma continua según transcurren los segundos.
- */
-@Composable
-fun IndicadorTotpTarta(
-    segundosRestantes: Long,
-    periodo: Long = Totp.PERIODO_SEGUNDOS,
-    tamano: Dp = 14.dp,
-    colorPersonalizado: Color? = null,
-    modifier: Modifier = Modifier
-) {
-    val periodoValido = periodo.coerceAtLeast(1L)
-    val objetivo = (segundosRestantes.toFloat() / periodoValido).coerceIn(0f, 1f)
-    val animada = remember { Animatable(objetivo) }
-    LaunchedEffect(objetivo) {
-        if (objetivo > animada.value) {
-            animada.snapTo(objetivo)
-        } else {
-            animada.animateTo(objetivo, tween(durationMillis = 1000, easing = LinearEasing))
-        }
-    }
-    val fraccion = animada.value
-    val colorBase = colorPersonalizado ?: ColorAcento
-    val color by animateColorAsState(
-        targetValue = if (colorPersonalizado != null) {
-            colorPersonalizado
-        } else {
-            when {
-                segundosRestantes <= 5 -> Peligro
-                segundosRestantes <= 10 -> ColorAcentoFuerte
-                else -> colorBase
-            }
-        },
-        animationSpec = spring(dampingRatio = 0.7f),
-        label = "colorTartaTotp"
-    )
-
-    Canvas(modifier = modifier.size(tamano)) {
-        val radio = size.minDimension / 2f
-        drawCircle(
-            color = color.copy(alpha = 0.22f),
-            radius = radio
-        )
-        drawArc(
-            color = color,
-            startAngle = -90f,
-            sweepAngle = 360f * fraccion,
-            useCenter = true
-        )
-    }
-}
-
 @Composable
 fun AnilloTotp(
     codigo: String,
@@ -101,9 +46,6 @@ fun AnilloTotp(
     periodo: Long = Totp.PERIODO_SEGUNDOS
 ) {
     val objetivo = (segundosRestantes.toFloat() / periodo).coerceIn(0f, 1f)
-    // El vaciado va continuo, no a saltos de un segundo. Cuando el ciclo se reinicia
-    // (la fraccion sube) el anillo salta al maximo de golpe: rellenarse despacio
-    // se veria al reves de lo que pasa.
     val animada = remember { Animatable(objetivo) }
     LaunchedEffect(objetivo) {
         if (objetivo > animada.value) {
@@ -124,7 +66,6 @@ fun AnilloTotp(
     )
     Box(modifier = Modifier.size(tamano.dp), contentAlignment = Alignment.Center) {
         Canvas(modifier = Modifier.size(tamano.dp)) {
-            // Grosor proporcional: en 26dp un trazo de 7dp se come el círculo.
             val grosor = (tamano * 0.09f).coerceIn(2.5f, 7f).dp.toPx()
             drawArc(
                 color = Borde,
@@ -146,8 +87,6 @@ fun AnilloTotp(
             )
         }
         if (codigo.isBlank()) {
-            // Anillo suelto (la lista): dentro va la cuenta atrás, que es lo único
-            // que hay que leer. El texto se escala al círculo para que quepa.
             Text(
                 text = segundosRestantes.toString(),
                 fontSize = (tamano * 0.42f).sp,
@@ -175,30 +114,3 @@ fun AnilloTotp(
         }
     }
 }
-
-// -------------------------------------------------------------------------------------------------
-// Previews
-// -------------------------------------------------------------------------------------------------
-
-@com.jlnavas3.bovedalocal.ui.preview.BovedaPreview
-@Composable
-private fun TotpComponentesPreview() {
-    com.jlnavas3.bovedalocal.ui.preview.PreviewTemaBoveda {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(16.dp)
-        ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(12.dp)
-            ) {
-                IndicadorTotpTarta(segundosRestantes = 25)
-                IndicadorTotpTarta(segundosRestantes = 8)
-                IndicadorTotpTarta(segundosRestantes = 3)
-            }
-
-            AnilloTotp(codigo = "482 910", segundosRestantes = 18, tamano = 92)
-        }
-    }
-}
-

@@ -20,9 +20,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.jlnavas3.bovedalocal.data.AjustesApp
 import com.jlnavas3.bovedalocal.data.Entrada
 import com.jlnavas3.bovedalocal.ui.componentes.contrasenaColoreada
@@ -31,15 +29,8 @@ import com.jlnavas3.bovedalocal.ui.componentes.seguridad.TextoSeguroVisual
 import com.jlnavas3.bovedalocal.ui.theme.ColorDatosContrasena
 import com.jlnavas3.bovedalocal.ui.theme.ColorDatosUsuario
 import com.jlnavas3.bovedalocal.ui.theme.EstiloMono
-import com.jlnavas3.bovedalocal.ui.theme.EstiloMonoGrande
 import com.jlnavas3.bovedalocal.ui.theme.TextoPrincipal
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
-
-@Deprecated("Usar BotonCopiarDetalle", ReplaceWith("BotonCopiarDetalle(copiado, alPulsar)"))
-@Composable
-fun BotonCopiar(copiado: Boolean, alPulsar: () -> Unit) {
-    BotonCopiarDetalle(copiado = copiado, alPulsar = alPulsar)
-}
 
 @Composable
 fun TarjetaCredencialesDetalle(
@@ -150,12 +141,9 @@ fun TarjetaCredencialesDetalle(
                             TextoSeguroVisual(
                                 texto = entrada.contrasena,
                                 oculto = true,
-                                estilo = if (seguridadVisualActiva) estiloOcultamiento else "puntos_reales",
-                                estiloTexto = EstiloMonoGrande.copy(letterSpacing = 2.sp),
-                                colorTexto = TextoSecundario,
-                                maxLines = 1,
-                                overflow = TextOverflow.Clip,
-                                modifier = Modifier.fillMaxWidth()
+                                estilo = estiloOcultamiento,
+                                estiloTexto = EstiloMono,
+                                colorTexto = TextoPrincipal
                             )
                         }
                     }
@@ -172,33 +160,3 @@ fun TarjetaCredencialesDetalle(
         }
     }
 }
-
-// -------------------------------------------------------------------------------------------------
-// Previews
-// -------------------------------------------------------------------------------------------------
-
-@com.jlnavas3.bovedalocal.ui.preview.BovedaPreview
-@Composable
-private fun TarjetaCredencialesDetallePreview() {
-    com.jlnavas3.bovedalocal.ui.preview.PreviewTemaBoveda {
-        Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-            TarjetaCredencialesDetalle(
-                entrada = com.jlnavas3.bovedalocal.ui.preview.PreviewMocks.entradaEjemplo,
-                revelada = false,
-                ultimaCopia = null,
-                alAlternarRevelada = {},
-                alCopiarUsuario = {},
-                alCopiarContrasena = {}
-            )
-            TarjetaCredencialesDetalle(
-                entrada = com.jlnavas3.bovedalocal.ui.preview.PreviewMocks.entradaEjemplo,
-                revelada = true,
-                ultimaCopia = "contrasena",
-                alAlternarRevelada = {},
-                alCopiarUsuario = {},
-                alCopiarContrasena = {}
-            )
-        }
-    }
-}
-
