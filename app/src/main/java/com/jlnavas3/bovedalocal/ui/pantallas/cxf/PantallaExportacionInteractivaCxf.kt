@@ -179,12 +179,8 @@ fun PantallaExportacionInteractivaCxf(
                             modifier = Modifier.size(20.dp)
                         )
                         Spacer(Modifier.height(2.dp))
-                        Text(
-                            text = "$seleccionadasCountTotal",
-                            fontWeight = FontWeight.Bold,
-                            style = MaterialTheme.typography.labelSmall.copy(
-                                fontSize = (11 * EscalaTexto).sp
-                            ),
+                        com.jlnavas3.bovedalocal.ui.componentes.TextoPiePagina(
+                            texto = "$seleccionadasCountTotal",
                             color = ColorSobreAcento
                         )
                     }
@@ -241,28 +237,6 @@ fun PantallaExportacionInteractivaCxf(
                 Spacer(modifier = Modifier.height(84.dp))
             }
         }
-    }
-}
-
-// -------------------------------------------------------------------------------------------------
-// Previews
-// -------------------------------------------------------------------------------------------------
-
-@com.jlnavas3.bovedalocal.ui.preview.BovedaPantallaPreview
-@Composable
-private fun PantallaExportacionInteractivaCxfPreview() {
-    com.jlnavas3.bovedalocal.ui.preview.PreviewTemaBoveda(padding = 0.dp) {
-        PantallaExportacionInteractivaCxf(
-            gestorReceptor = "Google Credential Manager",
-            entradasDisponibles = listOf(
-                com.jlnavas3.bovedalocal.ui.preview.PreviewMocks.entradaEjemplo,
-                com.jlnavas3.bovedalocal.ui.preview.PreviewMocks.entradaBancaria
-            ),
-            idsIniciales = setOf("mock-1"),
-            alConfirmar = {},
-            alCancelar = {},
-            mostrarIdAjustes = true
-        )
     }
 }
 

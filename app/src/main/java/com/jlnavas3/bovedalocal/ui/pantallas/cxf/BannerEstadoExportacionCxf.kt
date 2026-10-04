@@ -57,10 +57,10 @@ fun BannerEstadoExportacionCxf(
                 tint = colorLegibleParaTema(colorFondo),
                 modifier = Modifier.size(20.dp)
             )
-            Text(
-                text = mensaje,
+            com.jlnavas3.bovedalocal.ui.componentes.TextoCuerpo(
+                texto = mensaje,
                 color = colorLegibleParaTema(colorFondo),
-                style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Medium)
+                tamano = com.jlnavas3.bovedalocal.ui.componentes.TamanoCuerpo.PEQUENO
             )
         }
     }

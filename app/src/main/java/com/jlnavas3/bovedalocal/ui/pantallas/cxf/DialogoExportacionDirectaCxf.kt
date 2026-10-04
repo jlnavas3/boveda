@@ -77,42 +77,30 @@ fun DialogoExportacionDirectaCxf(
     DialogoBoveda(
         onDismissRequest = alCerrar,
         icon = {
-            Box(
-                modifier = Modifier
-                    .size(52.dp)
-                    .clip(CircleShape)
-                    .background(ColorAcento.copy(alpha = 0.15f)),
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(
-                    imageVector = Icons.Filled.VpnKey,
-                    contentDescription = null,
-                    tint = ColorAcento,
-                    modifier = Modifier.size(28.dp)
-                )
-            }
+            com.jlnavas3.bovedalocal.ui.componentes.ContenedorIconoInsignia(
+                icono = Icons.Filled.VpnKey,
+                color = ColorAcento,
+                tamano = com.jlnavas3.bovedalocal.ui.componentes.TamanoInsignia.HERO
+            )
         },
         title = {
-            Text(
-                text = if (esSeleccionPersonalizada) {
+            com.jlnavas3.bovedalocal.ui.componentes.TextoTitulo(
+                texto = if (esSeleccionPersonalizada) {
                     "Transferir selección (${activas.size})"
                 } else {
                     "Transferencia directa de credenciales"
                 },
-                color = TextoPrincipal,
-                style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold)
+                estilo = com.jlnavas3.bovedalocal.ui.componentes.EstiloTitulo.MEDIANO
             )
         },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                Text(
-                    text = if (esSeleccionPersonalizada) {
+                com.jlnavas3.bovedalocal.ui.componentes.TextoSubtitulo(
+                    texto = if (esSeleccionPersonalizada) {
                         "Transfiere únicamente las credenciales seleccionadas directamente a otro gestor o dispositivo Android de forma local, cifrada y sin usar internet."
                     } else {
                         "Transfiere tus llaves de paso, contraseñas y códigos de verificación directamente a otro gestor o dispositivo Android de forma local, cifrada y sin usar internet."
-                    },
-                    color = TextoSecundario,
-                    style = MaterialTheme.typography.bodyMedium
+                    }
                 )
 
                 // Resumen de credenciales
@@ -228,23 +216,5 @@ fun DialogoExportacionDirectaCxf(
             )
         }
     )
-}
-
-// -------------------------------------------------------------------------------------------------
-// Previews
-// -------------------------------------------------------------------------------------------------
-
-@com.jlnavas3.bovedalocal.ui.preview.BovedaPreview
-@Composable
-private fun DialogoExportacionDirectaCxfPreview() {
-    com.jlnavas3.bovedalocal.ui.preview.PreviewTemaBoveda {
-        DialogoExportacionDirectaCxf(
-            entradas = listOf(
-                com.jlnavas3.bovedalocal.ui.preview.PreviewMocks.entradaEjemplo,
-                com.jlnavas3.bovedalocal.ui.preview.PreviewMocks.entradaBancaria
-            ),
-            alCerrar = {}
-        )
-    }
 }
 

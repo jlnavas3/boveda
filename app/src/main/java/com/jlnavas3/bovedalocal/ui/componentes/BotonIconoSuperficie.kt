@@ -31,18 +31,20 @@ fun BotonIconoSuperficie(
     modifier: Modifier = Modifier,
     colorIcono: Color = ColorIconosInternos,
     colorFondo: Color = ColorAcento.copy(alpha = 0.12f),
+    fondo: Color? = null,
     tamano: Dp = 36.dp,
     tamanoIcono: Dp = 20.dp,
     descripcion: String? = null
 ) {
     val contexto = LocalContext.current
     val haptica = remember { Haptica(contexto) }
+    val fondoFinal = fondo ?: colorFondo
 
     Box(
         modifier = modifier
             .size(tamano)
             .clip(FormaPequena)
-            .background(colorFondo)
+            .background(fondoFinal)
             .clickable {
                 haptica.toque()
                 alPulsar()

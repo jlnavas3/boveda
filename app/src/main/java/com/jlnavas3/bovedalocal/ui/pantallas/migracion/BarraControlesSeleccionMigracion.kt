@@ -1,35 +1,28 @@
 package com.jlnavas3.bovedalocal.ui.pantallas.migracion
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.Deselect
 import androidx.compose.material.icons.filled.SelectAll
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import com.jlnavas3.bovedalocal.ui.componentes.BotonIconoSuperficie
+import com.jlnavas3.bovedalocal.ui.componentes.TextoSubtitulo
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
-import com.jlnavas3.bovedalocal.ui.theme.FormaPequena
 import com.jlnavas3.bovedalocal.ui.theme.TextoPrincipal
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
 import com.jlnavas3.bovedalocal.ui.theme.esOscuroActivo
 
+/**
+ * Barra superior de controles de selección para la pantalla de migración 2FA.
+ * Permite seleccionar solo nuevas cuentas, todas o ninguna mediante botones táctiles de superficie.
+ */
 @Composable
 fun BarraControlesSeleccionMigracion(
     cuantasSeleccionadas: Int,
@@ -46,71 +39,46 @@ fun BarraControlesSeleccionMigracion(
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(
-            text = "$cuantasSeleccionadas de $totalCuentas seleccionadas",
-            style = MaterialTheme.typography.bodySmall.copy(
-                fontWeight = FontWeight.SemiBold,
-                fontSize = 13.sp
-            ),
+        TextoSubtitulo(
+            texto = "$cuantasSeleccionadas de $totalCuentas seleccionadas",
             color = ColorAcento,
-            maxLines = 1,
-            softWrap = false,
-            overflow = TextOverflow.Ellipsis
+            maxLineas = 1,
+            modifier = Modifier.weight(1f, fill = false)
         )
 
         Row(
             horizontalArrangement = Arrangement.spacedBy(6.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            BotonIconoAccionMigracion(
+            BotonIconoSuperficie(
                 icono = Icons.Filled.AutoAwesome,
                 descripcion = "Solo nuevas",
                 colorIcono = ColorAcento,
                 fondo = ColorAcento.copy(alpha = 0.16f),
+                tamano = 34.dp,
+                tamanoIcono = 19.dp,
                 alPulsar = alSeleccionarSoloNuevas
             )
 
-            BotonIconoAccionMigracion(
+            BotonIconoSuperficie(
                 icono = Icons.Filled.SelectAll,
                 descripcion = "Seleccionar todas",
                 colorIcono = TextoPrincipal,
                 fondo = fondoBotonNeutro,
+                tamano = 34.dp,
+                tamanoIcono = 19.dp,
                 alPulsar = alSeleccionarTodas
             )
 
-            BotonIconoAccionMigracion(
+            BotonIconoSuperficie(
                 icono = Icons.Filled.Deselect,
                 descripcion = "Deseleccionar todas",
                 colorIcono = TextoSecundario,
                 fondo = fondoBotonNeutro,
+                tamano = 34.dp,
+                tamanoIcono = 19.dp,
                 alPulsar = alSeleccionarNinguna
             )
         }
     }
 }
-
-@Composable
-private fun BotonIconoAccionMigracion(
-    icono: ImageVector,
-    descripcion: String,
-    colorIcono: Color,
-    fondo: Color,
-    alPulsar: () -> Unit
-) {
-    Box(
-        modifier = Modifier
-            .size(34.dp)
-            .clip(FormaPequena)
-            .background(fondo)
-            .clickable(onClick = alPulsar),
-        contentAlignment = Alignment.Center
-    ) {
-        Icon(
-            imageVector = icono,
-            contentDescription = descripcion,
-            tint = colorIcono,
-            modifier = Modifier.size(19.dp)
-        )
-    }
-}
-

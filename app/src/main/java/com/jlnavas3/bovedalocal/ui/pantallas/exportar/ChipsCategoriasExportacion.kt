@@ -95,15 +95,12 @@ fun ChipsCategoriasExportacion(
                         } else colorPropio,
                         modifier = Modifier.size(15.dp)
                     )
-                    Text(
-                        text = "${cat.etiqueta} ($cantCat)",
+                    com.jlnavas3.bovedalocal.ui.componentes.TextoCuerpo(
+                        texto = "${cat.etiqueta} ($cantCat)",
                         color = if (seleccionada) {
                             if (colorPropio == ColorAcento) ColorSobreAcento else Color.White
                         } else TextoPrincipal,
-                        style = MaterialTheme.typography.bodySmall.copy(
-                            fontWeight = if (seleccionada) FontWeight.Bold else FontWeight.Medium,
-                            fontSize = 12.sp
-                        )
+                        tamano = com.jlnavas3.bovedalocal.ui.componentes.TamanoCuerpo.PEQUENO
                     )
                 }
             }

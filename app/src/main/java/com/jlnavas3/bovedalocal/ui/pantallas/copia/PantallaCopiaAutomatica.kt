@@ -230,10 +230,8 @@ fun PantallaCopiaAutomatica(
 
                         Spacer(Modifier.height(6.dp))
 
-                        Text(
-                            text = "Usa {99} para número secuencial y {FECHA} para fecha/hora. Se guarda como .bvda en Descargas/BovedaLocal/Backups/",
-                            color = TextoSecundario,
-                            style = MaterialTheme.typography.bodySmall
+                        com.jlnavas3.bovedalocal.ui.componentes.TextoSubtitulo(
+                            texto = "Usa {99} para número secuencial y {FECHA} para fecha/hora. Se guarda como .bvda en Descargas/BovedaLocal/Backups/"
                         )
 
                         Spacer(Modifier.height(12.dp))
@@ -249,10 +247,8 @@ fun PantallaCopiaAutomatica(
                         } else {
                             "Rotación máxima: ${ajustes.backupAutoMaxCopias} copias"
                         }
-                        Text(
-                            text = "$textoUltima ($textoRotacion)",
-                            color = TextoSecundario,
-                            style = MaterialTheme.typography.bodySmall
+                        com.jlnavas3.bovedalocal.ui.componentes.TextoPiePagina(
+                            texto = "$textoUltima ($textoRotacion)"
                         )
                     }
                 }

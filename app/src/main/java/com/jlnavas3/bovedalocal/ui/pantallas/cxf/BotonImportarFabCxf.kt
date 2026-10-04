@@ -65,12 +65,8 @@ fun BotonImportarFabCxf(
                 modifier = Modifier.size(24.dp)
             )
             Spacer(Modifier.height(1.dp))
-            Text(
-                text = "$cuantasSeleccionadas",
-                style = MaterialTheme.typography.labelSmall.copy(
-                    fontSize = 11.sp,
-                    fontWeight = FontWeight.Bold
-                ),
+            com.jlnavas3.bovedalocal.ui.componentes.TextoPiePagina(
+                texto = "$cuantasSeleccionadas",
                 color = if (cuantasSeleccionadas > 0) ColorSobreAcento else TextoSecundario
             )
         }

@@ -51,9 +51,8 @@ fun InsigniaResumenCxf(
             tint = colorLegible,
             modifier = Modifier.size(15.dp)
         )
-        Text(
-            text = texto,
-            style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.SemiBold),
+        com.jlnavas3.bovedalocal.ui.componentes.TextoPiePagina(
+            texto = texto,
             color = colorLegible
         )
     }

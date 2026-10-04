@@ -8,21 +8,7 @@ import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.contentOrNull
 import kotlinx.serialization.json.jsonPrimitive
-import java.math.BigInteger
-import java.security.AlgorithmParameters
-import java.security.KeyFactory
-import java.security.spec.ECGenParameterSpec
-import java.security.spec.ECParameterSpec
-import java.security.spec.ECPrivateKeySpec
 import java.util.UUID
-
-data class ResultadoConversionCxf(
-    val entradas: List<Entrada>,
-    val totalPasskeys: Int,
-    val totalContrasenas: Int,
-    val totalTotp: Int,
-    val exportador: String? = null
-)
 
 /**
  * Conversor y analizador de documentos FIDO CXF (Credential Exchange Format).
@@ -390,26 +376,6 @@ object CxfConvertidor {
         return null
     }
 
-    /**
-     * Asegura que los bytes representen una clave privada en formato PKCS#8.
-     * Si los bytes recibidos son de 32 bytes (el escalar `d` de P-256), los envuelve
-     * en la estructura estándar PKCS#8 para secp256r1.
-     */
-    fun asegurarPkcs8(bytes: ByteArray): ByteArray {
-        if (bytes.size == 32) {
-            return try {
-                val kf = KeyFactory.getInstance("EC")
-                val params = AlgorithmParameters.getInstance("EC").apply {
-                    init(ECGenParameterSpec("secp256r1"))
-                }.getParameterSpec(ECParameterSpec::class.java)
-                val spec = ECPrivateKeySpec(BigInteger(1, bytes), params)
-                kf.generatePrivate(spec).encoded
-            } catch (_: Exception) {
-                bytes
-            }
-        }
-        return bytes
-    }
 
     private fun extraerUrls(item: ItemCxf): List<String> {
         val lista = mutableListOf<String>()

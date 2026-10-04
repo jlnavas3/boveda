@@ -44,16 +44,13 @@ fun TarjetaResumenTransferenciaCxf(
     alSeleccionarNinguna: () -> Unit
 ) {
     Column(modifier = Modifier.fillMaxWidth()) {
-        Text(
-            text = "Transferencia directa desde $exportadorNombre",
-            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-            color = ColorTitulos
+        com.jlnavas3.bovedalocal.ui.componentes.TextoTitulo(
+            texto = "Transferencia directa desde $exportadorNombre",
+            estilo = com.jlnavas3.bovedalocal.ui.componentes.EstiloTitulo.MEDIANO
         )
         Spacer(Modifier.height(4.dp))
-        Text(
-            text = "Se encontraron $totalItems credenciales listas para incorporar a tu bóveda:",
-            style = MaterialTheme.typography.bodyMedium,
-            color = TextoSecundario
+        com.jlnavas3.bovedalocal.ui.componentes.TextoSubtitulo(
+            texto = "Se encontraron $totalItems credenciales listas para incorporar a tu bóveda:"
         )
 
         Spacer(Modifier.height(10.dp))

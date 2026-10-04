@@ -47,11 +47,9 @@ fun BotonSeleccionRapida(
             .padding(horizontal = 12.dp, vertical = 7.dp),
         contentAlignment = Alignment.Center
     ) {
-        Text(
-            text = texto,
-            style = MaterialTheme.typography.labelMedium.copy(
-                fontWeight = if (activo) FontWeight.Bold else FontWeight.Medium
-            ),
+        com.jlnavas3.bovedalocal.ui.componentes.TextoCuerpo(
+            texto = texto,
+            tamano = com.jlnavas3.bovedalocal.ui.componentes.TamanoCuerpo.PEQUENO,
             color = if (activo) ColorSobreAcento else TextoSecundario
         )
     }

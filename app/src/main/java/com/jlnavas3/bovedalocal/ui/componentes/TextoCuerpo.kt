@@ -6,6 +6,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.sp
 import com.jlnavas3.bovedalocal.ui.theme.TextoPrincipal
 
@@ -33,6 +34,7 @@ fun TextoCuerpo(
         color = color,
         textAlign = alineacion,
         maxLines = maxLineas,
+        overflow = if (maxLineas < Int.MAX_VALUE) TextOverflow.Ellipsis else TextOverflow.Clip,
         modifier = modifier
     )
 }

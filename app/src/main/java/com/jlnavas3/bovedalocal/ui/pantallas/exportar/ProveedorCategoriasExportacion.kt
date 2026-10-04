@@ -12,21 +12,11 @@ import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Shield
 import androidx.compose.material.icons.filled.Wifi
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
-import com.jlnavas3.bovedalocal.data.Entrada
 import com.jlnavas3.bovedalocal.data.TipoEntrada
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.ColorDatos2FA
 import com.jlnavas3.bovedalocal.ui.theme.ColorDatosPasskey
 import com.jlnavas3.bovedalocal.ui.theme.ColorDatosUsuario
-
-data class CategoriaExportacion(
-    val id: String,
-    val etiqueta: String,
-    val icono: ImageVector,
-    val color: Color,
-    val filtro: (Entrada) -> Boolean
-)
 
 object ProveedorCategoriasExportacion {
     fun obtenerTodas(): List<CategoriaExportacion> = listOf(

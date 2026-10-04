@@ -7,6 +7,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import com.jlnavas3.bovedalocal.ui.theme.ColorTitulos
 
 /**
@@ -18,7 +19,8 @@ fun TextoTitulo(
     modifier: Modifier = Modifier,
     estilo: EstiloTitulo = EstiloTitulo.MEDIANO,
     color: Color = ColorTitulos,
-    alineacion: TextAlign = TextAlign.Start
+    alineacion: TextAlign = TextAlign.Start,
+    maxLineas: Int = Int.MAX_VALUE
 ) {
     val estiloTexto = when (estilo) {
         EstiloTitulo.HERO -> MaterialTheme.typography.headlineLarge.copy(fontWeight = FontWeight.Bold)
@@ -32,6 +34,8 @@ fun TextoTitulo(
         style = estiloTexto,
         color = color,
         textAlign = alineacion,
+        maxLines = maxLineas,
+        overflow = if (maxLineas < Int.MAX_VALUE) TextOverflow.Ellipsis else TextOverflow.Clip,
         modifier = modifier
     )
 }

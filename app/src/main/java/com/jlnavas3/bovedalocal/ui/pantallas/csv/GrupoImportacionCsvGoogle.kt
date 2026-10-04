@@ -32,10 +32,8 @@ fun GrupoImportacionCsvGoogle(
         modifier = modifier
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
-            Text(
-                text = "Puedes exportar tu archivo CSV 'Google Passwords.csv' desde el administrador de contraseñas de Google (https://passwords.google.com/) e importarlo directamente aquí.",
-                color = TextoSecundario,
-                style = MaterialTheme.typography.bodyMedium
+            com.jlnavas3.bovedalocal.ui.componentes.TextoSubtitulo(
+                texto = "Puedes exportar tu archivo CSV 'Google Passwords.csv' desde el administrador de contraseñas de Google (https://passwords.google.com/) e importarlo directamente aquí."
             )
         }
         SeparadorFilaSimple()

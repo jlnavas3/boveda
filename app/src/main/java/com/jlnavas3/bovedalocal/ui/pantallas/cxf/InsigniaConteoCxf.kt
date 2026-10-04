@@ -51,13 +51,9 @@ fun InsigniaConteoCxf(
                 tint = ColorAcento,
                 modifier = Modifier.size(14.dp)
             )
-            Text(
-                text = texto,
-                color = TextoPrincipal,
-                style = MaterialTheme.typography.labelSmall.copy(
-                    fontWeight = FontWeight.SemiBold,
-                    fontSize = 11.sp
-                )
+            com.jlnavas3.bovedalocal.ui.componentes.TextoPiePagina(
+                texto = texto,
+                color = TextoPrincipal
             )
         }
     }

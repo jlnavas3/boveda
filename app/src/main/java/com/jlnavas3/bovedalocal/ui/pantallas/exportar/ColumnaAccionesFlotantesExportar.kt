@@ -117,12 +117,8 @@ fun ColumnaAccionesFlotantesExportar(
                     modifier = Modifier.size(22.dp)
                 )
                 Spacer(Modifier.height(2.dp))
-                Text(
-                    text = "$idsSeleccionadosCount",
-                    style = MaterialTheme.typography.labelSmall.copy(
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 11.sp
-                    )
+                com.jlnavas3.bovedalocal.ui.componentes.TextoPiePagina(
+                    texto = "$idsSeleccionadosCount"
                 )
             }
         }

@@ -105,55 +105,37 @@ fun FilaSeleccionCredencialCxf(
 
                 // Información central: Título, Usuario, Contraseña (puntos), Enlaces
                 Column(modifier = Modifier.weight(1f)) {
-                    Text(
-                        text = entrada.titulo.ifBlank { "Sin título" },
-                        style = MaterialTheme.typography.titleSmall.copy(
-                            fontWeight = FontWeight.SemiBold,
-                            fontSize = (12.5f * EscalaTexto).sp
-                        ),
-                        color = ColorTitulos,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
+                    com.jlnavas3.bovedalocal.ui.componentes.TextoTitulo(
+                        texto = entrada.titulo.ifBlank { "Sin título" },
+                        estilo = com.jlnavas3.bovedalocal.ui.componentes.EstiloTitulo.PEQUENO,
+                        maxLineas = 1
                     )
 
                     if (entrada.usuario.isNotBlank()) {
                         Spacer(Modifier.height(1.5.dp))
-                        Text(
-                            text = entrada.usuario,
-                            style = MaterialTheme.typography.bodySmall.copy(
-                                fontSize = (11f * EscalaTexto).sp
-                            ),
-                            color = TextoSecundario,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
+                        com.jlnavas3.bovedalocal.ui.componentes.TextoSubtitulo(
+                            texto = entrada.usuario,
+                            maxLineas = 1
                         )
                     }
 
                     if (tieneContrasena) {
                         Spacer(Modifier.height(1.5.dp))
                         val textoClave = "•".repeat(entrada.contrasena.length.coerceIn(8, 16))
-                        Text(
-                            text = textoClave,
-                            style = MaterialTheme.typography.bodySmall.copy(
-                                fontSize = (11f * EscalaTexto).sp
-                            ),
+                        com.jlnavas3.bovedalocal.ui.componentes.TextoCuerpo(
+                            texto = textoClave,
+                            tamano = com.jlnavas3.bovedalocal.ui.componentes.TamanoCuerpo.PEQUENO,
                             color = TextoSecundario.copy(alpha = 0.85f),
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
+                            maxLineas = 1
                         )
                     }
 
                     if (urlsLimpias.isNotEmpty()) {
                         Spacer(Modifier.height(1.5.dp))
                         urlsLimpias.forEach { url ->
-                            Text(
-                                text = url,
-                                style = MaterialTheme.typography.bodySmall.copy(
-                                    fontSize = (10f * EscalaTexto).sp
-                                ),
-                                color = TextoSecundario.copy(alpha = 0.7f),
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis
+                            com.jlnavas3.bovedalocal.ui.componentes.TextoPiePagina(
+                                texto = url,
+                                maxLineas = 1
                             )
                         }
                     }

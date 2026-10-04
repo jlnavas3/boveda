@@ -40,10 +40,9 @@ fun ListaEntradasExportarSelectivo(
                 .padding(horizontal = 20.dp),
             contentAlignment = Alignment.Center
         ) {
-            Text(
-                text = "No hay entradas registradas en esta categoría.",
-                color = TextoSecundario,
-                style = MaterialTheme.typography.bodyMedium
+            com.jlnavas3.bovedalocal.ui.componentes.TextoSubtitulo(
+                texto = "No hay entradas registradas en esta categoría.",
+                alineacion = androidx.compose.ui.text.style.TextAlign.Center
             )
         }
     } else {

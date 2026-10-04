@@ -32,10 +32,12 @@ fun ContenedorTarjeta(
     colorBorde: Color = ColorBordeActual,
     radioEsquinas: Dp = CurvaturaEsquinas,
     grosorBorde: Dp = GrosorBorde,
-    paddingInterno: Dp = 16.dp,
+    paddingInterno: Dp = 0.dp,
     alPulsar: (() -> Unit)? = null,
+    onClick: (() -> Unit)? = null,
     contenido: @Composable ColumnScope.() -> Unit
 ) {
+    val accionClick = alPulsar ?: onClick
     val forma = RoundedCornerShape(radioEsquinas)
     Box(
         modifier = modifier
@@ -49,8 +51,8 @@ fun ContenedorTarjeta(
                     Modifier
                 }
             )
-            .then(if (alPulsar != null) Modifier.clickable { alPulsar() } else Modifier)
-            .padding(paddingInterno)
+            .then(if (accionClick != null) Modifier.clickable { accionClick() } else Modifier)
+            .then(if (paddingInterno > 0.dp) Modifier.padding(paddingInterno) else Modifier)
     ) {
         Column(
             modifier = Modifier.fillMaxWidth(),

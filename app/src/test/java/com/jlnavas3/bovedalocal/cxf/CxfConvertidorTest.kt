@@ -38,7 +38,7 @@ class CxfConvertidorTest {
         // Extraer el escalar d (o generar uno de prueba de 32 bytes)
         val dBytes = ByteArray(32) { (it + 1).toByte() }
 
-        val pkcs8 = CxfConvertidor.asegurarPkcs8(dBytes)
+        val pkcs8 = asegurarPkcs8(dBytes)
         assertTrue("PKCS#8 debe tener más de 32 bytes", pkcs8.size > 32)
 
         // Verificar que Java KeyFactory puede cargar la clave privada PKCS#8 generada

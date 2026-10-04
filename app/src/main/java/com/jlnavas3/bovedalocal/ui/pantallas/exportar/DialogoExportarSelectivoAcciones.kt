@@ -33,7 +33,7 @@ fun DialogoExportarSelectivoAcciones(
             alDescartar()
             alEstablecerPasswordAUsar(clavePass)
             if (directoAuto) {
-                GuardadorBackupSelectivo.ejecutarExportacionAuto(
+                ejecutarExportacionAuto(
                     contexto = contexto,
                     vm = vm,
                     ids = idsSeleccionados,

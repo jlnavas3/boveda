@@ -32,9 +32,11 @@ fun ContenedorIconoInsignia(
     tamano: TamanoInsignia = TamanoInsignia.MEDIANO,
     colorFondo: Color = ColorTarjetaAjustes,
     colorIcono: Color = ColorAcento,
+    color: Color? = null,
     conBorde: Boolean = false,
     descripcion: String? = null
 ) {
+    val tinteIcono = color ?: colorIcono
     val forma = when (tamano) {
         TamanoInsignia.PEQUENO -> FormaPequena
         TamanoInsignia.MEDIANO -> FormaPequena
@@ -59,7 +61,7 @@ fun ContenedorIconoInsignia(
         Icon(
             imageVector = icono,
             contentDescription = descripcion,
-            tint = colorIcono,
+            tint = tinteIcono,
             modifier = Modifier.size(tamano.tamanoIcono)
         )
     }
