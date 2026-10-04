@@ -185,78 +185,21 @@ fun FilaEntrada(
                 Spacer(Modifier.width(12.dp))
 
                 // Columna central: Título con TOTP y Subtítulo
-                Column(
-                    modifier = Modifier.weight(1f),
-                    verticalArrangement = Arrangement.Center
-                ) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = tituloMostrar,
-                            style = if (compacta) {
-                                MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold)
-                            } else {
-                                MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold, fontSize = 15.sp)
-                            },
-                            color = if (resaltado) ColorAcento else TextoPrincipal,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
-                            modifier = Modifier.weight(1f, fill = false)
-                        )
-
-                        if (entrada.ignoradaEnSalud) {
-                            Spacer(Modifier.width(4.dp))
-                            Icon(
-                                imageVector = Icons.Filled.VisibilityOff,
-                                contentDescription = "Ignorada en salud",
-                                tint = TextoSecundario.copy(alpha = 0.55f),
-                                modifier = Modifier.size(13.dp)
-                            )
-                        }
-
-                        if (tieneTotp) {
-                            ContenidoTotpEnFila(
-                                secreto = secreto,
-                                segundosUnix = segundosUnix,
-                                periodo = entrada.totpPeriodo.toLong().coerceAtLeast(10L),
-                                digitos = entrada.totpDigitos,
-                                algoritmo = entrada.totpAlgoritmo,
-                                separarDigitosTotp = separarDigitosTotp,
-                                compacta = compacta,
-                                alCopiarCodigo = alCopiarCodigo,
-                                ocultarTotp = ocultarTotp,
-                                estiloOcultamiento = estiloOcultamiento
-                            )
-                        }
-                    }
-
-                    Spacer(Modifier.height(2.dp))
-
-                    val textoSubtitulo = when (entrada.tipo) {
-                        TipoEntrada.PASSKEY -> "Passkey · ${entrada.passkey?.rpId ?: ""}"
-                        TipoEntrada.NOTA -> "Nota segura"
-                        TipoEntrada.LOGIN -> entrada.usuario.ifBlank { entrada.urls.firstOrNull() ?: "Sin usuario" }
-                        else -> entrada.usuario.ifBlank {
-                            entrada.camposPersonalizados.firstOrNull { it.valor.isNotBlank() }?.let { "${it.etiqueta}: ${if (it.esSensibleEfectivo) "••••" else it.valor}" }
-                                ?: entrada.tipo.etiqueta
-                        }
-                    }
-                    val esDatoUsuario = entrada.usuario.isNotBlank() && (entrada.tipo == TipoEntrada.LOGIN || entrada.tipo == TipoEntrada.PASSKEY || entrada.tipo !in listOf(TipoEntrada.NOTA, TipoEntrada.WIFI))
-                    val debeOcultarSubtitulo = ocultarUsuario && esDatoUsuario
-
-                    TextoSeguroVisual(
-                        texto = textoSubtitulo,
-                        oculto = debeOcultarSubtitulo,
-                        estilo = estiloOcultamiento,
-                        estiloTexto = if (compacta) MaterialTheme.typography.labelSmall else MaterialTheme.typography.bodySmall.copy(fontSize = 12.5.sp),
-                        colorTexto = TextoSecundario,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                }
+                ColumnaDetallesFilaEntrada(
+                    entrada = entrada,
+                    tituloMostrar = tituloMostrar,
+                    resaltado = resaltado,
+                    compacta = compacta,
+                    tieneTotp = tieneTotp,
+                    secreto = secreto,
+                    segundosUnix = segundosUnix,
+                    separarDigitosTotp = separarDigitosTotp,
+                    alCopiarCodigo = alCopiarCodigo,
+                    ocultarUsuario = ocultarUsuario,
+                    ocultarTotp = ocultarTotp,
+                    estiloOcultamiento = estiloOcultamiento,
+                    modifier = Modifier.weight(1f)
+                )
 
                 // Bloque derecho: solo botón de favorito cuando la entrada es favorita (si no está en selección)
                 if (!seleccionActiva && entrada.favorito) {

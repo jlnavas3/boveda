@@ -205,117 +205,14 @@ fun SeccionAcentoEsencialLab(
                 // Panel expandible para controles personalizados con sliders y transparencias
                 if (mostrarAjustePersonalizado || esPersonalizadoActivo) {
                     Spacer(Modifier.height(16.dp))
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clip(RoundedCornerShape(CurvaturaEsquinas - 4.dp))
-                            .background(colorCampo)
-                            .border(1.dp, colorBorde, RoundedCornerShape(CurvaturaEsquinas - 4.dp))
-                            .padding(14.dp)
-                    ) {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Box(
-                                modifier = Modifier
-                                    .size(22.dp)
-                                    .clip(CircleShape)
-                                    .background(colorAcentoActual)
-                                    .border(1.dp, colorBorde, CircleShape)
-                            )
-                            Spacer(Modifier.width(8.dp))
-                            Text(
-                                text = "Acento Personalizado",
-                                style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
-                                color = colorTextoPrincipal,
-                                modifier = Modifier.weight(1f)
-                            )
-                            Text(
-                                text = colorAcentoActual.aHexConAlfa(),
-                                style = EstiloMono.copy(fontWeight = FontWeight.Bold, fontSize = 12.sp),
-                                color = colorTextoPrincipal
-                            )
-                        }
-
-                        Spacer(Modifier.height(12.dp))
-
-                        // Control 1: Tono / Color
-                        Text(
-                            text = "Tono: ${huePersonalizado.toInt()}°",
-                            style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Medium),
-                            color = colorTextoSecundario
-                        )
-                        SliderBoveda(
-                            value = huePersonalizado,
-                            onValueChange = {
-                                huePersonalizado = it
-                                esPersonalizadoActivo = true
-                                colorAcentoActual = Color.hsv(huePersonalizado, satPersonalizado, valPersonalizado, alfaPersonalizado)
-                                marcarModificado()
-                            },
-                            valueRange = 0f..360f
-                        )
-
-                        Spacer(Modifier.height(8.dp))
-
-                        // Control 2: Saturación (0% es Gris puro)
-                        Text(
-                            text = "Saturación: ${(satPersonalizado * 100).toInt()}% ${if (satPersonalizado < 0.05f) "(Gris Puro)" else ""}",
-                            style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Medium),
-                            color = colorTextoSecundario
-                        )
-                        SliderBoveda(
-                            value = satPersonalizado,
-                            onValueChange = {
-                                satPersonalizado = it
-                                esPersonalizadoActivo = true
-                                colorAcentoActual = Color.hsv(huePersonalizado, satPersonalizado, valPersonalizado, alfaPersonalizado)
-                                marcarModificado()
-                            },
-                            valueRange = 0f..1f
-                        )
-
-                        Spacer(Modifier.height(8.dp))
-
-                        // Control 3: Brillo / Luminosidad
-                        Text(
-                            text = "Brillo: ${(valPersonalizado * 100).toInt()}%",
-                            style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Medium),
-                            color = colorTextoSecundario
-                        )
-                        SliderBoveda(
-                            value = valPersonalizado,
-                            onValueChange = {
-                                valPersonalizado = it
-                                esPersonalizadoActivo = true
-                                colorAcentoActual = Color.hsv(huePersonalizado, satPersonalizado, valPersonalizado, alfaPersonalizado)
-                                marcarModificado()
-                            },
-                            valueRange = 0.10f..1f
-                        )
-
-                        Spacer(Modifier.height(8.dp))
-
-                        // Control 4: Transparencia / Opacidad (Alfa)
-                        Text(
-                            text = "Transparencia / Opacidad: ${(alfaPersonalizado * 100).toInt()}%",
-                            style = MaterialTheme.typography.bodySmall.copy(
-                                fontWeight = FontWeight.Bold,
-                                color = if (alfaPersonalizado < 1.0f) colorAcentoActual else colorTextoSecundario
-                            )
-                        )
-                        SliderBoveda(
-                            value = alfaPersonalizado,
-                            onValueChange = {
-                                alfaPersonalizado = it
-                                esPersonalizadoActivo = true
-                                colorAcentoActual = Color.hsv(huePersonalizado, satPersonalizado, valPersonalizado, alfaPersonalizado)
-                                marcarModificado()
-                            },
-                            valueRange = 0.10f..1f
-                        )
-                    }
+                    ControlesSlidersAcentoLab(
+                        estadoLab = estadoLab,
+                        colorCampo = colorCampo,
+                        colorBorde = colorBorde,
+                        colorTextoPrincipal = colorTextoPrincipal,
+                        colorTextoSecundario = colorTextoSecundario,
+                        marcarModificado = marcarModificado
+                    )
                 }
             }
         }
