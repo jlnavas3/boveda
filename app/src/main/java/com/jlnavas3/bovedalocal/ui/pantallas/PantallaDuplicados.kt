@@ -6,36 +6,18 @@ import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AutoFixHigh
-import androidx.compose.material.icons.filled.Backup
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.HealthAndSafety
-import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -44,9 +26,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.jlnavas3.bovedalocal.data.AnalizadorDuplicados
@@ -54,30 +34,22 @@ import com.jlnavas3.bovedalocal.data.EstadoBoveda
 import com.jlnavas3.bovedalocal.data.TipoDuplicado
 import com.jlnavas3.bovedalocal.ui.Pantalla
 import com.jlnavas3.bovedalocal.ui.VaultViewModel
-import com.jlnavas3.bovedalocal.ui.componentes.BarraSuperiorPantalla
-import com.jlnavas3.bovedalocal.ui.componentes.BotonIconoCabecera
-import com.jlnavas3.bovedalocal.ui.componentes.DialogoConfirmacionBoveda
-import com.jlnavas3.bovedalocal.ui.componentes.TipoBotonTexto
-import com.jlnavas3.bovedalocal.ui.componentes.seleccion.BarraInferiorSeleccion
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjustesFondo
+import com.jlnavas3.bovedalocal.ui.pantallas.duplicados.BarraAccionesSeleccionDuplicados
 import com.jlnavas3.bovedalocal.ui.pantallas.duplicados.BarraChipsFiltroDuplicados
+import com.jlnavas3.bovedalocal.ui.pantallas.duplicados.BarraSuperiorDuplicados
+import com.jlnavas3.bovedalocal.ui.pantallas.duplicados.BotonLimpiezaMasivaFab
+import com.jlnavas3.bovedalocal.ui.pantallas.duplicados.ContenidoListaDuplicados
+import com.jlnavas3.bovedalocal.ui.pantallas.duplicados.DialogosDuplicados
 import com.jlnavas3.bovedalocal.ui.pantallas.duplicados.FiltroDuplicados
 import com.jlnavas3.bovedalocal.ui.pantallas.duplicados.IlustracionSinDuplicados
-import com.jlnavas3.bovedalocal.ui.pantallas.duplicados.TarjetaGrupoDuplicado
 import com.jlnavas3.bovedalocal.ui.pantallas.lista.BarraBusquedaAnimada
-import androidx.compose.foundation.border
-import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
-import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
-import com.jlnavas3.bovedalocal.ui.theme.ColorSobreAcento
-import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
-import com.jlnavas3.bovedalocal.ui.theme.CurvaturaEsquinas
-import com.jlnavas3.bovedalocal.ui.theme.EstiloBorde
-import com.jlnavas3.bovedalocal.ui.theme.GrosorBorde
-import com.jlnavas3.bovedalocal.ui.theme.Menta
-import com.jlnavas3.bovedalocal.ui.theme.colorContraste
-import com.jlnavas3.bovedalocal.ui.theme.colorLegibleParaTema
+import com.jlnavas3.bovedalocal.ui.theme.calcularEspaciadoFilas
 import com.jlnavas3.bovedalocal.util.Haptica
 
+/**
+ * Pantalla de análisis y gestión de credenciales duplicadas, variantes de usuario y cuentas repetidas.
+ */
 @Composable
 fun PantallaDuplicados(
     vm: VaultViewModel,
@@ -89,7 +61,6 @@ fun PantallaDuplicados(
 
     val gruposIdenticos = remember(grupos) { grupos.filter { it.tipo == TipoDuplicado.IDENTICO } }
     val totalSobrantesIdenticas = remember(gruposIdenticos) { gruposIdenticos.sumOf { it.entradasSecundarias.size } }
-    val totalDuplicadasSobrantes = remember(grupos) { grupos.sumOf { it.entradasSecundarias.size } }
 
     val cantAppsAndroid = remember(grupos) { grupos.count { it.esAppAndroid } }
     val cantWeb = remember(grupos) { grupos.count { !it.esAppAndroid } }
@@ -122,7 +93,7 @@ fun PantallaDuplicados(
 
     val ajustes by vm.ajustes.collectAsStateWithLifecycle()
     val espaciadoFilas = remember(ajustes.densidadLista) {
-        com.jlnavas3.bovedalocal.ui.theme.calcularEspaciadoFilas(ajustes.densidadLista)
+        calcularEspaciadoFilas(ajustes.densidadLista)
     }
     var gruposExpandidos by rememberSaveable { mutableStateOf(emptySet<String>()) }
 
@@ -156,72 +127,22 @@ fun PantallaDuplicados(
             .fillMaxSize()
             .background(ColorAjustesFondo)
     ) {
-        BarraSuperiorPantalla(
-            titulo = "Duplicados",
-            idEtiqueta = "03-LST-DUP",
+        BarraSuperiorDuplicados(
             mostrarId = ajustes.mostrarIdsAjustes,
+            busquedaVisible = busquedaVisible,
+            textoBusqueda = textoBusqueda,
+            totalSobrantesIdenticas = totalSobrantesIdenticas,
+            haptica = haptica,
             alVolver = { vm.volverAtras() },
-            colorFondo = ColorAjustesFondo,
-            acciones = {
-                BotonIconoCabecera(
-                    onClick = {
-                        haptica.toque()
-                        busquedaVisible = !busquedaVisible
-                        if (!busquedaVisible) textoBusqueda = ""
-                    },
-                    icono = Icons.Filled.Search,
-                    descripcion = "Buscar",
-                    tint = if (busquedaVisible || textoBusqueda.isNotBlank()) ColorAcento else ColorIconosInternos
-                )
-                if (totalSobrantesIdenticas > 0) {
-                    BotonIconoCabecera(
-                        onClick = {
-                            haptica.toque()
-                            confirmarLimpiezaMasiva = true
-                        },
-                        icono = Icons.Filled.AutoFixHigh,
-                        descripcion = "Limpieza rápida masiva",
-                        tint = ColorAcento
-                    )
-                }
-                var menuAbiertoDup by remember { mutableStateOf(false) }
-                Box {
-                    BotonIconoCabecera(
-                        onClick = { menuAbiertoDup = true },
-                        icono = Icons.Filled.MoreVert,
-                        descripcion = "Más opciones"
-                    )
-
-                    com.jlnavas3.bovedalocal.ui.componentes.MenuDesplegableBoveda(
-                        expanded = menuAbiertoDup,
-                        onDismissRequest = { menuAbiertoDup = false },
-                        modifier = Modifier.widthIn(min = 220.dp, max = 280.dp)
-                    ) {
-                        com.jlnavas3.bovedalocal.ui.componentes.ElementoMenuCompacto(
-                            texto = "Salud...",
-                            icono = Icons.Filled.HealthAndSafety,
-                            colorIcono = ColorAcento,
-                            onClick = {
-                                menuAbiertoDup = false
-                                vm.ir(Pantalla.SaludBoveda())
-                            }
-                        )
-                        com.jlnavas3.bovedalocal.ui.componentes.SeparadorOpcionMenu()
-                        com.jlnavas3.bovedalocal.ui.componentes.ElementoMenuCompacto(
-                            texto = "Copia preventiva...",
-                            icono = Icons.Filled.Backup,
-                            colorIcono = ColorAcento,
-                            onClick = {
-                                menuAbiertoDup = false
-                                vm.ir(Pantalla.CopiaSeguridad("05-COP-SEG"))
-                            }
-                        )
-                    }
-                }
-            }
+            alAlternarBusqueda = {
+                busquedaVisible = !busquedaVisible
+                if (!busquedaVisible) textoBusqueda = ""
+            },
+            alPedirLimpiezaMasiva = { confirmarLimpiezaMasiva = true },
+            alIrSalud = { vm.ir(Pantalla.SaludBoveda()) },
+            alIrCopia = { vm.ir(Pantalla.CopiaSeguridad("05-COP-SEG")) }
         )
 
-        // Buscador animado desplegable
         AnimatedVisibility(
             visible = busquedaVisible || textoBusqueda.isNotBlank(),
             enter = fadeIn() + expandVertically(),
@@ -258,7 +179,6 @@ fun PantallaDuplicados(
                     IlustracionSinDuplicados()
                 }
             } else {
-                // Selector de filtros con chips compacto
                 BarraChipsFiltroDuplicados(
                     filtroActivo = filtroActivo,
                     totalGrupos = grupos.size,
@@ -274,195 +194,96 @@ fun PantallaDuplicados(
 
                 Spacer(Modifier.height(8.dp))
 
-                // Contenedor de lista a pantalla completa con botón flotante
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
                         .weight(1f)
                 ) {
-                    LazyColumn(
-                        modifier = Modifier.fillMaxSize(),
-                        verticalArrangement = Arrangement.spacedBy(espaciadoFilas),
-                        contentPadding = PaddingValues(bottom = if (modoSeleccion) 96.dp else if (totalSobrantesIdenticas > 0) 88.dp else 16.dp)
-                    ) {
-                        if (!ajustes.agruparPorSitio) {
-                            val todasEntradas = gruposFiltrados.flatMap { grupo ->
-                                grupo.entradas.map { entrada ->
-                                    Triple(entrada, entrada.id == grupo.sugeridaPrincipal.id, grupo)
-                                }
+                    ContenidoListaDuplicados(
+                        gruposFiltrados = gruposFiltrados,
+                        agruparPorSitio = ajustes.agruparPorSitio,
+                        espaciadoFilas = espaciadoFilas,
+                        modoSeleccion = modoSeleccion,
+                        totalSobrantesIdenticas = totalSobrantesIdenticas,
+                        ajustes = ajustes,
+                        gruposExpandidos = gruposExpandidos,
+                        seleccionados = seleccionados,
+                        haptica = haptica,
+                        alAlternarGrupo = { idGrupo ->
+                            gruposExpandidos = if (gruposExpandidos.contains(idGrupo)) {
+                                gruposExpandidos - idGrupo
+                            } else {
+                                gruposExpandidos + idGrupo
                             }
-                            items(todasEntradas, key = { it.first.id }) { (entrada, esSugerida, grupo) ->
-                                com.jlnavas3.bovedalocal.ui.pantallas.duplicados.FilaEntradaDuplicada(
-                                    entrada = entrada,
-                                    esSugerida = esSugerida,
-                                    alConservar = {
-                                        val secundarias = grupo.entradas.filterNot { it.id == entrada.id }
-                                        vm.eliminarVarias(secundarias.map { it.id }.toSet())
-                                        vm.avisar("Copia seleccionada conservada")
-                                    },
-                                    alVerDetalle = { vm.ir(Pantalla.Detalle(entrada.id, idsContexto = grupo.entradas.map { it.id })) },
-                                    ajustes = ajustes,
-                                    mostrarIndicadores = ajustes.mostrarIndicadoresContenido,
-                                    enGrupo = false,
-                                    seleccionActiva = modoSeleccion,
-                                    seleccionado = seleccionados.contains(entrada.id),
-                                    alAlternarSeleccion = {
-                                        seleccionados = if (seleccionados.contains(entrada.id)) {
-                                            seleccionados - entrada.id
-                                        } else {
-                                            seleccionados + entrada.id
-                                        }
-                                    },
-                                    alPulsarLargo = {
-                                        haptica.toque()
-                                        seleccionados = seleccionados + entrada.id
-                                    }
-                                )
-                            }
-                        } else {
-                            items(gruposFiltrados, key = { it.idGrupo }) { grupo ->
-                                TarjetaGrupoDuplicado(
-                                    grupo = grupo,
-                                    expandido = gruposExpandidos.contains(grupo.idGrupo),
-                                    alAlternar = {
-                                        gruposExpandidos = if (gruposExpandidos.contains(grupo.idGrupo)) {
-                                            gruposExpandidos - grupo.idGrupo
-                                        } else {
-                                            gruposExpandidos + grupo.idGrupo
-                                        }
-                                    },
-                                    alConservar = { elegida ->
-                                        val secundarias = grupo.entradas.filterNot { it.id == elegida.id }
-                                        vm.eliminarVarias(secundarias.map { it.id }.toSet())
-                                        vm.avisar("Copia seleccionada conservada")
-                                    },
-                                    alVerDetalle = { id ->
-                                        vm.ir(Pantalla.Detalle(id, idsContexto = grupo.entradas.map { it.id }))
-                                    },
-                                    ajustes = ajustes,
-                                    mostrarIndicadores = ajustes.mostrarIndicadoresContenido,
-                                    seleccionActiva = modoSeleccion,
-                                    seleccionados = seleccionados,
-                                    alAlternarSeleccion = { id ->
-                                        seleccionados = if (seleccionados.contains(id)) {
-                                            seleccionados - id
-                                        } else {
-                                            seleccionados + id
-                                        }
-                                    },
-                                    alPulsarLargo = { id ->
-                                        haptica.toque()
-                                        seleccionados = seleccionados + id
-                                    }
-                                )
-                            }
+                        },
+                        alConservarCopia = { elegida, grupo ->
+                            val secundarias = grupo.entradas.filterNot { it.id == elegida.id }
+                            vm.eliminarVarias(secundarias.map { it.id }.toSet())
+                            vm.avisar("Copia seleccionada conservada")
+                        },
+                        alVerDetalle = { id, idsContexto ->
+                            vm.ir(Pantalla.Detalle(id, idsContexto = idsContexto))
+                        },
+                        alAlternarSeleccion = { id ->
+                            seleccionados = if (seleccionados.contains(id)) seleccionados - id else seleccionados + id
+                        },
+                        alPulsarLargo = { id ->
+                            seleccionados = seleccionados + id
                         }
-                    }
+                    )
 
                     if (modoSeleccion) {
-                        val itemsSeleccionados = remember(entradas, seleccionados) {
-                            entradas.filter { seleccionados.contains(it.id) }
-                        }
-                        val todosSonFavoritos = remember(itemsSeleccionados) {
-                            itemsSeleccionados.isNotEmpty() && itemsSeleccionados.all { it.favorito }
-                        }
-
-                        BarraInferiorSeleccion(
-                            cantidad = seleccionados.size,
-                            todosSonFavoritos = todosSonFavoritos,
-                            alAlternarFavoritos = {
-                                haptica.exito()
-                                vm.alternarFavoritosVarias(seleccionados)
+                        BarraAccionesSeleccionDuplicados(
+                            seleccionados = seleccionados,
+                            entradas = entradas,
+                            haptica = haptica,
+                            alAlternarFavoritos = { ids ->
+                                vm.alternarFavoritosVarias(ids)
                                 seleccionados = emptySet()
                             },
-                            alComparar = {
-                                haptica.toque()
-                                val primera = seleccionados.first()
+                            alComparar = { primera, todos ->
                                 vm.ir(
                                     Pantalla.Detalle(
                                         id = primera,
-                                        idsContexto = seleccionados.toList(),
+                                        idsContexto = todos,
                                         modoComparacion = true
                                     )
                                 )
                             },
-                            alBorrar = {
-                                haptica.error()
-                                confirmarBorradoSeleccion = true
-                            },
+                            alAbrirBorrado = { confirmarBorradoSeleccion = true },
                             modifier = Modifier.align(Alignment.BottomCenter)
                         )
                     } else {
-                        // Botón Flotante cuadrado para Limpieza Masiva en 1 toque
-                        androidx.compose.animation.AnimatedVisibility(
+                        BotonLimpiezaMasivaFab(
                             visible = totalSobrantesIdenticas > 0,
-                            enter = fadeIn() + slideInVertically { it / 2 },
-                            exit = fadeOut() + slideOutVertically { it / 2 },
-                            modifier = Modifier
-                                .align(Alignment.BottomEnd)
-                                .padding(end = 16.dp, bottom = 16.dp)
-                        ) {
-                            val formaFab = RoundedCornerShape(CurvaturaEsquinas)
-                            Box(
-                                modifier = Modifier
-                                    .size(56.dp)
-                                    .clip(formaFab)
-                                    .background(ColorAcento)
-                                    .then(
-                                        if (GrosorBorde > 0.dp && EstiloBorde != "ninguno") {
-                                            Modifier.border(GrosorBorde, ColorBordeActual, formaFab)
-                                        } else Modifier
-                                    )
-                                    .clickable {
-                                        haptica.toque()
-                                        confirmarLimpiezaMasiva = true
-                                    },
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Filled.AutoFixHigh,
-                                    contentDescription = "Limpiar $totalSobrantesIdenticas copias idénticas",
-                                    tint = ColorSobreAcento,
-                                    modifier = Modifier.size(26.dp)
-                                )
-                            }
-                        }
+                            totalSobrantesIdenticas = totalSobrantesIdenticas,
+                            haptica = haptica,
+                            alPulsar = { confirmarLimpiezaMasiva = true },
+                            modifier = Modifier.align(Alignment.BottomEnd)
+                        )
                     }
                 }
             }
         }
     }
 
-    if (confirmarLimpiezaMasiva) {
-        DialogoConfirmacionBoveda(
-            titulo = "Limpiar $totalSobrantesIdenticas copias idénticas",
-            mensaje = "Se enviarán $totalSobrantesIdenticas entradas duplicadas a la papelera, conservando automáticamente la copia más completa y reciente de cada servicio. Podrás recuperarlas de la papelera en los próximos 30 días si lo necesitas.",
-            textoConfirmar = "Limpiar ahora",
-            tipoConfirmacion = TipoBotonTexto.PRIMARIO,
-            iconoHeader = Icons.Filled.Delete,
-            alConfirmar = {
-                confirmarLimpiezaMasiva = false
-                vm.eliminarDuplicadasExactasMasivo(gruposIdenticos)
-            },
-            alDescartar = { confirmarLimpiezaMasiva = false }
-        )
-    }
-
-    if (confirmarBorradoSeleccion) {
-        DialogoConfirmacionBoveda(
-            titulo = "¿Eliminar ${seleccionados.size} entrada${if (seleccionados.size > 1) "s" else ""}?",
-            mensaje = "Las entradas seleccionadas se enviarán a la papelera. Podrás recuperarlas en los próximos 30 días si lo necesitas.",
-            textoConfirmar = "Eliminar",
-            tipoConfirmacion = TipoBotonTexto.PELIGRO,
-            iconoHeader = Icons.Filled.Delete,
-            alConfirmar = {
-                confirmarBorradoSeleccion = false
-                val cant = seleccionados.size
-                vm.eliminarVarias(seleccionados)
-                vm.avisar("$cant entrada${if (cant > 1) "s enviadas" else " enviada"} a la papelera")
-                seleccionados = emptySet()
-            },
-            alDescartar = { confirmarBorradoSeleccion = false }
-        )
-    }
+    DialogosDuplicados(
+        confirmarLimpiezaMasiva = confirmarLimpiezaMasiva,
+        totalSobrantesIdenticas = totalSobrantesIdenticas,
+        alConfirmarLimpiezaMasiva = {
+            confirmarLimpiezaMasiva = false
+            vm.eliminarDuplicadasExactasMasivo(gruposIdenticos)
+        },
+        alDescartarLimpiezaMasiva = { confirmarLimpiezaMasiva = false },
+        confirmarBorradoSeleccion = confirmarBorradoSeleccion,
+        cantidadSeleccionados = seleccionados.size,
+        alConfirmarBorradoSeleccion = {
+            confirmarBorradoSeleccion = false
+            val cant = seleccionados.size
+            vm.eliminarVarias(seleccionados)
+            vm.avisar("$cant entrada${if (cant > 1) "s enviadas" else " enviada"} a la papelera")
+            seleccionados = emptySet()
+        },
+        alDescartarBorradoSeleccion = { confirmarBorradoSeleccion = false }
+    )
 }

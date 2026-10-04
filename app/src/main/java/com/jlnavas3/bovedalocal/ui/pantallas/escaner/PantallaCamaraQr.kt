@@ -6,41 +6,12 @@ import android.os.Looper
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.FlashlightOff
-import androidx.compose.material.icons.filled.FlashlightOn
-import androidx.compose.material.icons.filled.Image
-import androidx.compose.material.icons.filled.Keyboard
-import androidx.compose.material.icons.filled.Tune
-import androidx.compose.material.icons.filled.ZoomIn
-import androidx.compose.material.icons.filled.ZoomOut
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Slider
-import androidx.compose.material3.SliderDefaults
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -48,25 +19,17 @@ import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.key
-import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.jlnavas3.bovedalocal.BovedaApp
-import com.jlnavas3.bovedalocal.camara.EstadoCamara
 import com.jlnavas3.bovedalocal.camara.LectorImagenes
 import com.jlnavas3.bovedalocal.camara.LectorQr
 import com.jlnavas3.bovedalocal.camara.MotorCamara
@@ -74,14 +37,7 @@ import com.jlnavas3.bovedalocal.camara.MotorCameraX
 import com.jlnavas3.bovedalocal.camara.PermisoCamara
 import com.jlnavas3.bovedalocal.ui.Pantalla
 import com.jlnavas3.bovedalocal.ui.VaultViewModel
-import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
-import com.jlnavas3.bovedalocal.ui.theme.FormaPequena
-import com.jlnavas3.bovedalocal.ui.theme.Menta
-import com.jlnavas3.bovedalocal.ui.theme.Peligro
-import com.jlnavas3.bovedalocal.ui.theme.TextoPrincipal
-import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
 import com.jlnavas3.bovedalocal.util.Diagnostico
-import com.jlnavas3.bovedalocal.util.GoogleAuthMigration
 import com.jlnavas3.bovedalocal.util.Haptica
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -90,17 +46,7 @@ import java.util.concurrent.atomic.AtomicBoolean
 
 /**
  * Pantalla completa e inmersiva de escaneo QR.
- *
- * Incluye:
- * - Visor a pantalla completa con máscara oscura y 4 esquinas angulares de enfoque.
- * - Captura en todo el frame de la cámara (identifica el QR aunque esté bajo la máscara).
- * - Respeta la configuración háptica de la app.
- * - Linterna (flash) integrada con botón de encendido/apagado.
- * - Selector de imágenes de la galería para leer QR desde capturas.
- * - Slider continuo de zoom con botones de aumento y disminución.
- * - Acceso directo a entrada manual.
  */
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PantallaCamaraQr(
     vm: VaultViewModel,
@@ -131,7 +77,6 @@ fun PantallaCamaraQr(
     val yaLeido = remember { AtomicBoolean(false) }
     val principal = remember { Handler(Looper.getMainLooper()) }
 
-    // Sincronizar estado háptico con la configuración de la app
     LaunchedEffect(ajustes) {
         Haptica.sincronizar(ajustes)
     }
@@ -164,50 +109,21 @@ fun PantallaCamaraQr(
         onPauseOrDispose { }
     }
 
-    fun procesarTexto(texto: String, origen: String): Boolean {
-        if (GoogleAuthMigration.esEnlaceMigracion(texto)) {
-            Diagnostico.apuntar("2fa", "Escaneo inmersivo detectó migración de Google Authenticator")
-            vm.ir(Pantalla.ConfirmarMigracion(texto))
-            return true
-        }
-        if (LectorQr.esQrDePasskey(texto)) {
-            Diagnostico.apuntar("2fa", "Escaneo detectó un QR de Passkey en lugar de TOTP")
-            mensajeEstado = "Este QR es una Passkey, no un código 2FA."
-            esErrorMensaje = true
-            return false
-        }
-        if (!vm.altaTotp(texto, entradaDestino)) {
-            Diagnostico.apuntar("2fa", "Formato de clave 2FA no reconocido ($origen)")
-            mensajeEstado = "El código QR no contiene un doble factor válido."
-            esErrorMensaje = true
-            return false
-        }
-        val detalle = if (origen == "la cámara") "cámara inmersiva" else origen
-        Diagnostico.apuntar("2fa", "Doble factor añadido exitosamente ($detalle)")
-        vm.avisar("Doble factor añadido")
-        vm.volverAtras()
-        return true
-    }
-
     val alFrame: (ByteArray, Int, Int) -> Unit = { datos, ancho, alto ->
         if (!yaLeido.get() && !procesandoLectura) {
-            // Decodifica sobre el frame completo: detecta el QR sin importar si está bajo la máscara
             val texto = LectorQr.decodificarLuminancia(datos, ancho, alto, probarInvertido = true)
             if (texto != null && yaLeido.compareAndSet(false, true)) {
                 principal.post {
                     procesandoLectura = true
                     codigoDetectado = true
+                    if (ajustes.hapticaApp) haptica.exito()
 
-                    // Vibración háptica respetando ajustes de la app
-                    if (ajustes.hapticaApp) {
-                        haptica.exito()
-                    }
-
-                    // Pequeña pausa de 250ms para apreciar el destello verde de las esquinas
                     principal.postDelayed({
-                        val valido = procesarTexto(texto, "la cámara")
-                        if (!valido) {
+                        val res = procesarLecturaQr(texto, "la cámara", entradaDestino, vm)
+                        if (res is ResultadoProcesoQr.Error) {
                             if (ajustes.hapticaApp) haptica.error()
+                            mensajeEstado = res.mensaje
+                            esErrorMensaje = true
                             principal.postDelayed({
                                 codigoDetectado = false
                                 procesandoLectura = false
@@ -234,13 +150,15 @@ fun PantallaCamaraQr(
                     mensajeEstado = "No se encontró ningún QR en esa imagen."
                     esErrorMensaje = true
                 }
-                procesarTexto(texto, "una imagen") -> {
-                    if (ajustes.hapticaApp) haptica.exito()
-                }
                 else -> {
-                    if (ajustes.hapticaApp) haptica.error()
-                    mensajeEstado = "La imagen tiene un QR, pero no es de doble factor."
-                    esErrorMensaje = true
+                    val res = procesarLecturaQr(texto, "una imagen", entradaDestino, vm)
+                    if (res is ResultadoProcesoQr.Exito) {
+                        if (ajustes.hapticaApp) haptica.exito()
+                    } else if (res is ResultadoProcesoQr.Error) {
+                        if (ajustes.hapticaApp) haptica.error()
+                        mensajeEstado = res.mensaje
+                        esErrorMensaje = true
+                    }
                 }
             }
         }
@@ -252,46 +170,20 @@ fun PantallaCamaraQr(
             .background(Color.Black)
     ) {
         if (permiso) {
-            // 1. Vista de cámara previa de fondo con conmutación automática si falla CameraX
-            key(motorActual) {
-                if (motorActual == MotorCamara.COMPATIBLE) {
-                    VistaLegado(
-                        alFrame = alFrame,
-                        alEstado = { estado ->
-                            if (estado is EstadoCamara.Fallo) {
-                                mensajeEstado = estado.motivo
-                                esErrorMensaje = true
-                            }
-                        },
-                        modifier = Modifier.fillMaxSize()
-                    )
-                } else {
-                    VistaCameraX(
-                        alFrame = alFrame,
-                        alEstado = { estado ->
-                            if (estado is EstadoCamara.Fallo && motorActual == MotorCamara.CAMERAX && motorPreferido == MotorCamara.AUTOMATICO) {
-                                Diagnostico.apuntar("camara", "PantallaCamaraQr: CameraX falló; conmutando al motor compatible")
-                                motorActual = MotorCamara.COMPATIBLE
-                            } else if (estado is EstadoCamara.Fallo) {
-                                mensajeEstado = estado.motivo
-                                esErrorMensaje = true
-                            }
-                        },
-                        alMotorListo = { motor ->
-                            motorCameraX = motor
-                        },
-                        modifier = Modifier.fillMaxSize()
-                    )
-                }
-            }
-
-            // 2. Máscara oscura con las 4 esquinas angulares de enfoque
-            VisorMascaraQr(
+            VisorCamaraEnfoque(
+                motorActual = motorActual,
+                motorPreferido = motorPreferido,
                 codigoDetectado = codigoDetectado,
+                alFrame = alFrame,
+                alConmutarMotorCompatible = { motorActual = MotorCamara.COMPATIBLE },
+                alErrorCamara = { motivo ->
+                    mensajeEstado = motivo
+                    esErrorMensaje = true
+                },
+                alMotorListo = { motorCameraX = it },
                 modifier = Modifier.fillMaxSize()
             )
         } else {
-            // Estado cuando el permiso no está otorgado
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -307,7 +199,6 @@ fun PantallaCamaraQr(
             }
         }
 
-        // 3. Fila superior de navegación y acciones rápidas (Luz, Imagen, Manual, Ajustes)
         BarraSuperiorCamaraQr(
             flashEncendido = flashEncendido,
             alAlternarFlash = {
@@ -341,14 +232,12 @@ fun PantallaCamaraQr(
             modifier = Modifier.align(Alignment.TopCenter)
         )
 
-        // 4. Mensaje flotante de estado / error
         MensajeFlotanteQr(
             mensaje = mensajeEstado,
             esError = esErrorMensaje,
             modifier = Modifier.align(Alignment.TopCenter)
         )
 
-        // 5. Controles inferiores de Zoom y feedback
         ControlZoomCamaraQr(
             zoomRatio = zoomRatio,
             alCambiarZoom = { valor ->

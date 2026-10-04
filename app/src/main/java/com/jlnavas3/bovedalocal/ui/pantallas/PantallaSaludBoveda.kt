@@ -7,7 +7,6 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -16,18 +15,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.widthIn
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Analytics
-import androidx.compose.material.icons.filled.AutoFixHigh
-import androidx.compose.material.icons.filled.ContentCopy
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Key
-import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.Security
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -46,33 +33,29 @@ import com.jlnavas3.bovedalocal.data.EstadoBoveda
 import com.jlnavas3.bovedalocal.data.TipoEntrada
 import com.jlnavas3.bovedalocal.ui.Pantalla
 import com.jlnavas3.bovedalocal.ui.VaultViewModel
-import com.jlnavas3.bovedalocal.ui.componentes.BarraSuperiorPantalla
-import com.jlnavas3.bovedalocal.ui.componentes.BotonIconoCabecera
-import com.jlnavas3.bovedalocal.ui.componentes.DialogoConfirmacionBoveda
-import com.jlnavas3.bovedalocal.ui.componentes.ModalInferiorBoveda
-import com.jlnavas3.bovedalocal.ui.componentes.TipoBotonTexto
-import com.jlnavas3.bovedalocal.ui.componentes.seleccion.BarraInferiorSeleccion
 import com.jlnavas3.bovedalocal.ui.componentes.seleccion.BarraSuperiorSeleccion
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjustesFondo
-import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.FilaAjusteMenu
-import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.GrupoAjustes
 import com.jlnavas3.bovedalocal.ui.pantallas.lista.BarraBusquedaAnimada
+import com.jlnavas3.bovedalocal.ui.pantallas.salud.BarraAccionesSeleccionSalud
+import com.jlnavas3.bovedalocal.ui.pantallas.salud.BarraSuperiorSalud
 import com.jlnavas3.bovedalocal.ui.pantallas.salud.ContenidoPestanaSalud
-import com.jlnavas3.bovedalocal.ui.pantallas.salud.DIAS_AVISO_ANTIGUEDAD
+import com.jlnavas3.bovedalocal.ui.pantallas.salud.DialogoBorradoSalud
 import com.jlnavas3.bovedalocal.ui.pantallas.salud.DialogoCambioRapidoClave
+import com.jlnavas3.bovedalocal.ui.pantallas.salud.ModalAuditoriaSalud
 import com.jlnavas3.bovedalocal.ui.pantallas.salud.PestanaSalud
-import com.jlnavas3.bovedalocal.ui.pantallas.salud.ResumenAuditoriaSalud
 import com.jlnavas3.bovedalocal.ui.pantallas.salud.SelectorPestanasSalud
 import com.jlnavas3.bovedalocal.ui.pantallas.salud.coincideBusquedaSalud
 import com.jlnavas3.bovedalocal.ui.pantallas.salud.diasDesde
-import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
-import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
-import com.jlnavas3.bovedalocal.ui.theme.ColorSalud
+import com.jlnavas3.bovedalocal.ui.theme.calcularEspaciadoFilas
 import com.jlnavas3.bovedalocal.util.ContrasenasComunes
 import com.jlnavas3.bovedalocal.util.Diagnostico
 import com.jlnavas3.bovedalocal.util.Haptica
 import com.jlnavas3.bovedalocal.util.MedidorFuerza
 
+/**
+ * Pantalla de auditoría de salud de la bóveda:
+ * Identifica contraseñas repetidas, débiles, comunes, antiguas e ignoradas.
+ */
 @Composable
 fun PantallaSaludBoveda(
     vm: VaultViewModel,
@@ -82,36 +65,21 @@ fun PantallaSaludBoveda(
     val contexto = LocalContext.current
     val ajustes by vm.ajustes.collectAsStateWithLifecycle()
     val entradas = (estado as? EstadoBoveda.Desbloqueada)?.entradas ?: emptyList()
-    val claves = remember(entradas) {
-        entradas.filter { it.tipo == TipoEntrada.LOGIN && it.contrasena.isNotBlank() && !it.ignoradaEnSalud }
-    }
-    val ignoradas = remember(entradas) {
-        entradas.filter { it.ignoradaEnSalud }
-    }
-
-    val duplicadas = remember(claves) {
-        claves.groupBy { it.contrasena }.values.filter { it.size > 1 }
-    }
-    val debiles = remember(claves) {
-        claves.filter { MedidorFuerza.medir(it.contrasena).puntuacion <= 1 }
-            .sortedBy { MedidorFuerza.medir(it.contrasena).puntuacion }
-    }
-    val muyComunes = remember(claves) {
-        claves.filter { ContrasenasComunes.esComun(contexto, it.contrasena) }
-    }
     val ahora = remember { System.currentTimeMillis() }
-    val umbralDias = ajustes.umbralAntiguedadDias
-    val antiguas = remember(claves, umbralDias) {
-        if (umbralDias <= 0) emptyList()
-        else {
-            claves.filter { it.modificadaEn > 0 && diasDesde(it.modificadaEn, ahora) >= umbralDias.toLong() }
-                .sortedBy { it.modificadaEn }
-        }
-    }
-
-    // Análisis de duplicados para alertar de copias de CSV
-    val gruposDuplicados = remember(entradas) { AnalizadorDuplicados.analizar(entradas) }
-    val totalSobrantesDuplicadas = remember(gruposDuplicados) { gruposDuplicados.sumOf { it.entradasSecundarias.size } }
+    val datosSalud = com.jlnavas3.bovedalocal.ui.pantallas.salud.rememberDatosSaludBoveda(
+        entradas = entradas,
+        umbralDias = ajustes.umbralAntiguedadDias,
+        ahora = ahora,
+        contexto = contexto
+    )
+    val claves = datosSalud.claves
+    val ignoradas = datosSalud.ignoradas
+    val duplicadas = datosSalud.duplicadas
+    val debiles = datosSalud.debiles
+    val muyComunes = datosSalud.muyComunes
+    val antiguas = datosSalud.antiguas
+    val totalSobrantesDuplicadas = datosSalud.totalSobrantesDuplicadas
+    val pestanasConDatos = datosSalud.pestanasConDatos
 
     var pestanaActiva by remember { mutableStateOf(PestanaSalud.REPETIDAS) }
     var textoBusqueda by remember { mutableStateOf("") }
@@ -125,16 +93,6 @@ fun PantallaSaludBoveda(
 
     BackHandler(enabled = modoSeleccion) {
         seleccionados = emptySet()
-    }
-
-    val pestanasConDatos = remember(duplicadas.size, muyComunes.size, debiles.size, antiguas.size, ignoradas.size) {
-        buildList {
-            if (duplicadas.isNotEmpty()) add(PestanaSalud.REPETIDAS)
-            if (muyComunes.isNotEmpty()) add(PestanaSalud.COMUNES)
-            if (debiles.isNotEmpty()) add(PestanaSalud.DEBILES)
-            if (antiguas.isNotEmpty()) add(PestanaSalud.ANTIGUAS)
-            if (ignoradas.isNotEmpty()) add(PestanaSalud.IGNORADAS)
-        }
     }
 
     LaunchedEffect(pestanasConDatos) {
@@ -180,81 +138,23 @@ fun PantallaSaludBoveda(
                     alDeseleccionarTodo = { seleccionados = emptySet() }
                 )
             } else {
-                BarraSuperiorPantalla(
-                    titulo = "Salud",
-                    idEtiqueta = "03-LST-SLD",
+                BarraSuperiorSalud(
                     mostrarId = ajustes.mostrarIdsAjustes,
+                    busquedaVisible = busquedaVisible,
+                    textoBusqueda = textoBusqueda,
+                    haptica = haptica,
                     alVolver = { vm.volverAtras() },
-                    colorFondo = ColorAjustesFondo,
-                    acciones = {
-                        BotonIconoCabecera(
-                            onClick = {
-                                haptica.toque()
-                                busquedaVisible = !busquedaVisible
-                                if (!busquedaVisible) textoBusqueda = ""
-                            },
-                            icono = Icons.Filled.Search,
-                            descripcion = "Buscar",
-                            tint = if (busquedaVisible || textoBusqueda.isNotBlank()) ColorAcento else ColorIconosInternos
-                        )
-                        BotonIconoCabecera(
-                            onClick = {
-                                haptica.toque()
-                                mostrarModalAuditoria = true
-                            },
-                            icono = Icons.Filled.Analytics,
-                            descripcion = "Resumen de auditoría",
-                            tint = ColorAcento
-                        )
-                        var menuAbiertoSalud by remember { mutableStateOf(false) }
-                        Box {
-                            BotonIconoCabecera(
-                                onClick = { menuAbiertoSalud = true },
-                                icono = androidx.compose.material.icons.Icons.Filled.MoreVert,
-                                descripcion = "Más opciones"
-                            )
-
-                            com.jlnavas3.bovedalocal.ui.componentes.MenuDesplegableBoveda(
-                                expanded = menuAbiertoSalud,
-                                onDismissRequest = { menuAbiertoSalud = false },
-                                modifier = Modifier.widthIn(min = 220.dp, max = 280.dp)
-                            ) {
-                                com.jlnavas3.bovedalocal.ui.componentes.ElementoMenuCompacto(
-                                    texto = "Duplicados...",
-                                    icono = androidx.compose.material.icons.Icons.Filled.ContentCopy,
-                                    colorIcono = ColorAcento,
-                                    onClick = {
-                                        menuAbiertoSalud = false
-                                        vm.ir(Pantalla.Duplicados())
-                                    }
-                                )
-                                com.jlnavas3.bovedalocal.ui.componentes.SeparadorOpcionMenu()
-                                com.jlnavas3.bovedalocal.ui.componentes.ElementoMenuCompacto(
-                                    texto = "Ajustes de seguridad...",
-                                    icono = androidx.compose.material.icons.Icons.Filled.Security,
-                                    colorIcono = ColorAcento,
-                                    onClick = {
-                                        menuAbiertoSalud = false
-                                        vm.ir(Pantalla.Seguridad("01-SEG"))
-                                    }
-                                )
-                                com.jlnavas3.bovedalocal.ui.componentes.SeparadorOpcionMenu()
-                                com.jlnavas3.bovedalocal.ui.componentes.ElementoMenuCompacto(
-                                    texto = "Generador de contraseñas...",
-                                    icono = androidx.compose.material.icons.Icons.Filled.Key,
-                                    colorIcono = ColorAcento,
-                                    onClick = {
-                                        menuAbiertoSalud = false
-                                        vm.ir(Pantalla.Generador)
-                                    }
-                                )
-                            }
-                        }
-                    }
+                    alAlternarBusqueda = {
+                        busquedaVisible = !busquedaVisible
+                        if (!busquedaVisible) textoBusqueda = ""
+                    },
+                    alAbrirAuditoria = { mostrarModalAuditoria = true },
+                    alIrDuplicados = { vm.ir(Pantalla.Duplicados) },
+                    alIrSeguridad = { vm.ir(Pantalla.Seguridad("01-SEG")) },
+                    alIrGenerador = { vm.ir(Pantalla.Generador) }
                 )
             }
 
-            // Buscador animado desplegable
             AnimatedVisibility(
                 visible = !modoSeleccion && (busquedaVisible || textoBusqueda.isNotBlank()),
                 enter = fadeIn() + expandVertically(),
@@ -281,63 +181,23 @@ fun PantallaSaludBoveda(
                     .fillMaxSize()
                     .padding(horizontal = 16.dp, vertical = 4.dp)
             ) {
-                // Selector de Pestañas (solo se muestra si hay al menos una pestaña con elementos)
                 if (pestanasConDatos.isNotEmpty()) {
-                    val gruposDuplicadosFiltrados = remember(duplicadas, textoBusqueda) {
-                        val q = textoBusqueda.trim()
-                        if (q.isEmpty()) duplicadas.size
-                        else duplicadas.count { grupo -> grupo.any { coincideBusquedaSalud(it, q) } }
-                    }
-                    val totalDuplicadasFiltradas = remember(duplicadas, textoBusqueda) {
-                        val q = textoBusqueda.trim()
-                        if (q.isEmpty()) duplicadas.sumOf { it.size }
-                        else duplicadas.sumOf { grupo -> grupo.count { coincideBusquedaSalud(it, q) } }
-                    }
-                    val muyComunesFiltrados = remember(muyComunes, textoBusqueda) {
-                        val q = textoBusqueda.trim()
-                        if (q.isEmpty()) muyComunes.size
-                        else muyComunes.count { coincideBusquedaSalud(it, q) }
-                    }
-                    val debilesFiltrados = remember(debiles, textoBusqueda) {
-                        val q = textoBusqueda.trim()
-                        if (q.isEmpty()) debiles.size
-                        else debiles.count { coincideBusquedaSalud(it, q) }
-                    }
-                    val antiguasFiltradas = remember(antiguas, textoBusqueda) {
-                        val q = textoBusqueda.trim()
-                        if (q.isEmpty()) antiguas.size
-                        else antiguas.count { coincideBusquedaSalud(it, q) }
-                    }
-                    val ignoradasFiltradas = remember(ignoradas, textoBusqueda) {
-                        val q = textoBusqueda.trim()
-                        if (q.isEmpty()) ignoradas.size
-                        else ignoradas.count { coincideBusquedaSalud(it, q) }
-                    }
-
                     SelectorPestanasSalud(
                         pestanaActiva = pestanaActiva,
                         alSeleccionarPestana = {
                             pestanaActiva = it
                             seleccionados = emptySet()
                         },
-                        gruposDuplicadosCount = duplicadas.size,
-                        totalDuplicadasCount = duplicadas.sumOf { it.size },
-                        muyComunesCount = muyComunes.size,
-                        debilesCount = debiles.size,
-                        antiguasCount = antiguas.size,
-                        ignoradasCount = ignoradas.size,
-                        textoBusqueda = textoBusqueda,
-                        gruposDuplicadosFiltrados = gruposDuplicadosFiltrados,
-                        totalDuplicadasFiltradas = totalDuplicadasFiltradas,
-                        muyComunesFiltrados = muyComunesFiltrados,
-                        debilesFiltrados = debilesFiltrados,
-                        antiguasFiltradas = antiguasFiltradas,
-                        ignoradasFiltradas = ignoradasFiltradas
+                        duplicadas = duplicadas,
+                        muyComunes = muyComunes,
+                        debiles = debiles,
+                        antiguas = antiguas,
+                        ignoradas = ignoradas,
+                        textoBusqueda = textoBusqueda
                     )
                     Spacer(Modifier.height(8.dp))
                 }
 
-                // Contenido dinámico por pestaña que ocupa toda la pantalla disponible
                 ContenidoPestanaSalud(
                     pestanaActiva = pestanaActiva,
                     duplicadas = duplicadas,
@@ -356,7 +216,7 @@ fun PantallaSaludBoveda(
                     ajustes = ajustes,
                     agruparPorSitio = ajustes.agruparPorSitio,
                     mostrarIndicadores = ajustes.mostrarIndicadoresContenido,
-                    espaciadoFilas = com.jlnavas3.bovedalocal.ui.theme.calcularEspaciadoFilas(ajustes.densidadLista),
+                    espaciadoFilas = calcularEspaciadoFilas(ajustes.densidadLista),
                     seleccionActiva = modoSeleccion,
                     seleccionados = seleccionados,
                     alAlternarSeleccion = { id ->
@@ -371,105 +231,56 @@ fun PantallaSaludBoveda(
         }
 
         if (modoSeleccion) {
-            val itemsSeleccionados = remember(entradas, seleccionados) {
-                entradas.filter { seleccionados.contains(it.id) }
-            }
-            val todosSonFavoritos = remember(itemsSeleccionados) {
-                itemsSeleccionados.isNotEmpty() && itemsSeleccionados.all { it.favorito }
-            }
-
-            BarraInferiorSeleccion(
-                cantidad = seleccionados.size,
-                todosSonFavoritos = todosSonFavoritos,
-                alAlternarFavoritos = {
-                    haptica.exito()
-                    vm.alternarFavoritosVarias(seleccionados)
+            BarraAccionesSeleccionSalud(
+                seleccionados = seleccionados,
+                entradas = entradas,
+                haptica = haptica,
+                alAlternarFavoritos = { ids ->
+                    vm.alternarFavoritosVarias(ids)
                     seleccionados = emptySet()
                 },
-                alComparar = {
-                    haptica.toque()
-                    val primera = seleccionados.first()
+                alComparar = { primera, todos ->
                     vm.ir(
                         Pantalla.Detalle(
                             id = primera,
-                            idsContexto = seleccionados.toList(),
+                            idsContexto = todos,
                             modoComparacion = true
                         )
                     )
                 },
-                alBorrar = {
-                    haptica.error()
-                    confirmarBorradoSeleccion = true
-                },
+                alAbrirBorrado = { confirmarBorradoSeleccion = true },
                 modifier = Modifier.align(Alignment.BottomCenter)
             )
         }
     }
 
-    if (confirmarBorradoSeleccion) {
-        DialogoConfirmacionBoveda(
-            titulo = "¿Eliminar ${seleccionados.size} entrada${if (seleccionados.size > 1) "s" else ""}?",
-            mensaje = "Las entradas seleccionadas se enviarán a la papelera. Podrás recuperarlas en los próximos 30 días si lo necesitas.",
-            textoConfirmar = "Eliminar",
-            tipoConfirmacion = TipoBotonTexto.PELIGRO,
-            iconoHeader = Icons.Filled.Delete,
-            alConfirmar = {
-                confirmarBorradoSeleccion = false
-                val cant = seleccionados.size
-                vm.eliminarVarias(seleccionados)
-                vm.avisar("$cant entrada${if (cant > 1) "s enviadas" else " enviada"} a la papelera")
-                seleccionados = emptySet()
-            },
-            alDescartar = { confirmarBorradoSeleccion = false }
-        )
-    }
+    DialogoBorradoSalud(
+        visible = confirmarBorradoSeleccion,
+        cantidad = seleccionados.size,
+        alConfirmar = {
+            confirmarBorradoSeleccion = false
+            val cant = seleccionados.size
+            vm.eliminarVarias(seleccionados)
+            vm.avisar("$cant entrada${if (cant > 1) "s enviadas" else " enviada"} a la papelera")
+            seleccionados = emptySet()
+        },
+        alDescartar = { confirmarBorradoSeleccion = false }
+    )
 
-    // Modal de Auditoría de Salud
-    ModalInferiorBoveda(
+    ModalAuditoriaSalud(
         abierto = mostrarModalAuditoria,
         alCerrar = { mostrarModalAuditoria = false },
-        titulo = "Auditoría de Salud",
-        descripcion = "${claves.size} contraseñas analizadas",
-        icono = Icons.Filled.Analytics,
-        colorIcono = ColorAcento
-    ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .verticalScroll(rememberScrollState())
-                    .padding(vertical = 8.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                if (totalSobrantesDuplicadas > 0) {
-                    GrupoAjustes(etiqueta = "Duplicados detectados") {
-                        FilaAjusteMenu(
-                            titulo = "Detectadas $totalSobrantesDuplicadas copias repetidas",
-                            subtitulo = "Entradas idénticas de importación. Pulsa para limpiar con 1 toque",
-                            icono = Icons.Filled.AutoFixHigh,
-                            colorIcono = ColorAcento,
-                            alPulsar = {
-                                mostrarModalAuditoria = false
-                                vm.ir(Pantalla.Duplicados)
-                            }
-                        )
-                    }
-                }
+        clavesCount = claves.size,
+        totalSobrantesDuplicadas = totalSobrantesDuplicadas,
+        repetidasCount = duplicadas.sumOf { it.size },
+        muyComunesCount = muyComunes.size,
+        debilesCount = debiles.size,
+        antiguasCount = antiguas.size,
+        ignoradasCount = ignoradas.size,
+        umbralDias = ajustes.umbralAntiguedadDias,
+        alIrDuplicados = { vm.ir(Pantalla.Duplicados) }
+    )
 
-                ResumenAuditoriaSalud(
-                    clavesCount = claves.size,
-                    repetidasCount = duplicadas.sumOf { it.size },
-                    muyComunesCount = muyComunes.size,
-                    debilesCount = debiles.size,
-                    antiguasCount = antiguas.size,
-                    expandido = true,
-                    alAlternarExpandido = {},
-                    umbralAntiguedadDias = umbralDias,
-                    ignoradasCount = ignoradas.size
-                )
-            }
-        }
-
-    // Modal de Cambio Rápido de Contraseña con Generador
     entradaParaCambioRapido?.let { entrada ->
         DialogoCambioRapidoClave(
             entrada = entrada,

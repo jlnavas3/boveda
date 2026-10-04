@@ -12,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.jlnavas3.bovedalocal.data.Entrada
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorCampoAjustes
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorSeparadorAjustes
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorTarjetaAjustes
@@ -135,3 +136,62 @@ fun SelectorPestanasSalud(
         }
     }
 }
+
+@Composable
+fun SelectorPestanasSalud(
+    pestanaActiva: PestanaSalud,
+    alSeleccionarPestana: (PestanaSalud) -> Unit,
+    duplicadas: List<List<Entrada>>,
+    muyComunes: List<Entrada>,
+    debiles: List<Entrada>,
+    antiguas: List<Entrada>,
+    ignoradas: List<Entrada>,
+    textoBusqueda: String,
+    modifier: Modifier = Modifier
+) {
+    val q = textoBusqueda.trim()
+    val gruposDuplicadosFiltrados = remember(duplicadas, q) {
+        if (q.isEmpty()) duplicadas.size
+        else duplicadas.count { grupo -> grupo.any { coincideBusquedaSalud(it, q) } }
+    }
+    val totalDuplicadasFiltradas = remember(duplicadas, q) {
+        if (q.isEmpty()) duplicadas.sumOf { it.size }
+        else duplicadas.sumOf { grupo -> grupo.count { coincideBusquedaSalud(it, q) } }
+    }
+    val muyComunesFiltrados = remember(muyComunes, q) {
+        if (q.isEmpty()) muyComunes.size
+        else muyComunes.count { coincideBusquedaSalud(it, q) }
+    }
+    val debilesFiltrados = remember(debiles, q) {
+        if (q.isEmpty()) debiles.size
+        else debiles.count { coincideBusquedaSalud(it, q) }
+    }
+    val antiguasFiltradas = remember(antiguas, q) {
+        if (q.isEmpty()) antiguas.size
+        else antiguas.count { coincideBusquedaSalud(it, q) }
+    }
+    val ignoradasFiltradas = remember(ignoradas, q) {
+        if (q.isEmpty()) ignoradas.size
+        else ignoradas.count { coincideBusquedaSalud(it, q) }
+    }
+
+    SelectorPestanasSalud(
+        pestanaActiva = pestanaActiva,
+        alSeleccionarPestana = alSeleccionarPestana,
+        gruposDuplicadosCount = duplicadas.size,
+        totalDuplicadasCount = duplicadas.sumOf { it.size },
+        muyComunesCount = muyComunes.size,
+        debilesCount = debiles.size,
+        antiguasCount = antiguas.size,
+        ignoradasCount = ignoradas.size,
+        textoBusqueda = textoBusqueda,
+        gruposDuplicadosFiltrados = gruposDuplicadosFiltrados,
+        totalDuplicadasFiltradas = totalDuplicadasFiltradas,
+        muyComunesFiltrados = muyComunesFiltrados,
+        debilesFiltrados = debilesFiltrados,
+        antiguasFiltradas = antiguasFiltradas,
+        ignoradasFiltradas = ignoradasFiltradas,
+        modifier = modifier
+    )
+}
+

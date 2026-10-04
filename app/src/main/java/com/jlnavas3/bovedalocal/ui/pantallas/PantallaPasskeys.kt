@@ -26,17 +26,13 @@ import com.jlnavas3.bovedalocal.ui.CriterioOrdenacion
 import com.jlnavas3.bovedalocal.ui.Pantalla
 import com.jlnavas3.bovedalocal.ui.VaultViewModel
 import com.jlnavas3.bovedalocal.ui.componentes.DescripcionPantalla
-import com.jlnavas3.bovedalocal.ui.componentes.seleccion.BarraInferiorSeleccion
 import com.jlnavas3.bovedalocal.ui.componentes.seleccion.BarraSuperiorSeleccion
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjustesFondo
-import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.GrupoAjustes
-import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.SeparadorFilaSimple
-import com.jlnavas3.bovedalocal.ui.pantallas.lista.DialogoBorrarSeleccion
-import com.jlnavas3.bovedalocal.ui.pantallas.lista.DialogoOrdenacionLista
-import com.jlnavas3.bovedalocal.ui.pantallas.lista.DialogoRenombrarSeleccion
+import com.jlnavas3.bovedalocal.ui.pantallas.passkeys.BarraAccionesSeleccionPasskeys
 import com.jlnavas3.bovedalocal.ui.pantallas.passkeys.BarraSuperiorPasskeys
-import com.jlnavas3.bovedalocal.ui.pantallas.passkeys.EstadoVacioPasskeys
-import com.jlnavas3.bovedalocal.ui.pantallas.passkeys.FilaPasskey
+import com.jlnavas3.bovedalocal.ui.pantallas.passkeys.ContenidoListaPasskeys
+import com.jlnavas3.bovedalocal.ui.pantallas.passkeys.DialogosPasskeys
+import com.jlnavas3.bovedalocal.ui.pantallas.passkeys.filtrarYOrdenarPasskeys
 import com.jlnavas3.bovedalocal.ui.theme.calcularEspaciadoFilas
 import com.jlnavas3.bovedalocal.util.Haptica
 import java.text.SimpleDateFormat
@@ -108,35 +104,7 @@ fun PantallaPasskeys(vm: VaultViewModel) {
     }
 
     val passkeysFiltradas = remember(todasLasPasskeys, textoBusqueda, soloFavoritos, criterioOrdenacion) {
-        val q = textoBusqueda.trim().lowercase()
-        todasLasPasskeys
-            .filter { entrada ->
-                val datos = entrada.passkey ?: return@filter false
-                val coincideTexto = if (q.isBlank()) true else {
-                    entrada.titulo.lowercase().contains(q) ||
-                    datos.rpName.lowercase().contains(q) ||
-                    datos.rpId.lowercase().contains(q) ||
-                    datos.usuario.lowercase().contains(q) ||
-                    entrada.usuario.lowercase().contains(q)
-                }
-                val coincideFavorito = if (soloFavoritos) entrada.favorito else true
-                coincideTexto && coincideFavorito
-            }
-            .sortedWith { a, b ->
-                val datosA = a.passkey
-                val datosB = b.passkey
-                val nombreA = datosA?.rpName?.ifBlank { datosA.rpId } ?: a.titulo
-                val nombreB = datosB?.rpName?.ifBlank { datosB.rpId } ?: b.titulo
-                when (criterioOrdenacion) {
-                    CriterioOrdenacion.NOMBRE_AZ -> nombreA.compareTo(nombreB, ignoreCase = true)
-                    CriterioOrdenacion.NOMBRE_ZA -> nombreB.compareTo(nombreA, ignoreCase = true)
-                    CriterioOrdenacion.MODIFICACION_RECIENTE -> b.modificadaEn.compareTo(a.modificadaEn)
-                    CriterioOrdenacion.ANTIGUEDAD -> a.creadaEn.compareTo(b.creadaEn)
-                    CriterioOrdenacion.CREACION_RECIENTE -> b.creadaEn.compareTo(a.creadaEn)
-                    CriterioOrdenacion.USO_RECIENTE -> b.ultimoUsoEn.compareTo(a.ultimoUsoEn)
-                    CriterioOrdenacion.IGNORADAS -> b.ignoradaEnSalud.compareTo(a.ignoradaEnSalud)
-                }
-            }
+        filtrarYOrdenarPasskeys(todasLasPasskeys, textoBusqueda, soloFavoritos, criterioOrdenacion)
     }
 
     Column(
@@ -216,168 +184,95 @@ fun PantallaPasskeys(vm: VaultViewModel) {
             )
         }
 
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f)
-                .verticalScroll(scrollState)
-                .padding(horizontal = 16.dp, vertical = 12.dp)
-        ) {
-            DescripcionPantalla(
-                subtitulo = if (passkeysFiltradas.isEmpty()) "Sin llaves registradas" else "${passkeysFiltradas.size} llave${if (passkeysFiltradas.size == 1) "" else "s"} de paso almacenada${if (passkeysFiltradas.size == 1) "" else "s"}"
-            )
-
-            Spacer(Modifier.height(10.dp))
-
-            if (passkeysFiltradas.isEmpty()) {
-                EstadoVacioPasskeys(
-                    sinPasskeysEnTotal = todasLasPasskeys.isEmpty(),
-                    alImportarPasskeys = dispararImportacionPasskeys
-                )
-            } else {
-                Column(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalArrangement = Arrangement.spacedBy(espaciadoFilas)
-                ) {
-                    passkeysFiltradas.forEach { entrada ->
-                        FilaPasskey(
-                            entrada = entrada,
-                            formato = formato,
-                            haptica = haptica,
-                            seleccionActiva = modoSeleccion,
-                            seleccionado = seleccionados.contains(entrada.id),
-                            alPulsarLargo = {
-                                haptica.toque()
-                                seleccionados = seleccionados + entrada.id
-                            },
-                            alAlternarSeleccion = {
-                                seleccionados = if (seleccionados.contains(entrada.id)) {
-                                    seleccionados - entrada.id
-                                } else {
-                                    seleccionados + entrada.id
-                                }
-                            },
-                            alPulsar = { vm.ir(Pantalla.Detalle(entrada.id, idsContexto = passkeysFiltradas.map { it.id })) },
-                            alAlternarFavorito = {
-                                haptica.tic()
-                                vm.alternarFavorito(entrada.id)
-                            },
-                            ajustes = ajustes,
-                            mostrarIndicadores = ajustes.mostrarIndicadoresContenido
-                        )
-                    }
-                }
+        ContenidoListaPasskeys(
+            modifier = Modifier.weight(1f),
+            scrollState = scrollState,
+            passkeysFiltradas = passkeysFiltradas,
+            todasLasPasskeys = todasLasPasskeys,
+            espaciadoFilas = espaciadoFilas,
+            formato = formato,
+            haptica = haptica,
+            modoSeleccion = modoSeleccion,
+            seleccionados = seleccionados,
+            ajustes = ajustes,
+            alImportarPasskeys = dispararImportacionPasskeys,
+            alPulsarLargo = { id ->
+                haptica.toque()
+                seleccionados = seleccionados + id
+            },
+            alAlternarSeleccion = { id ->
+                seleccionados = if (seleccionados.contains(id)) seleccionados - id else seleccionados + id
+            },
+            alPulsarEntrada = { entrada ->
+                vm.ir(Pantalla.Detalle(entrada.id, idsContexto = passkeysFiltradas.map { it.id }))
+            },
+            alAlternarFavorito = { id ->
+                haptica.tic()
+                vm.alternarFavorito(id)
             }
-
-            Spacer(Modifier.height(24.dp))
-        }
+        )
 
         if (modoSeleccion) {
-            val itemsSeleccionados = remember(todasLasPasskeys, seleccionados) {
-                todasLasPasskeys.filter { seleccionados.contains(it.id) }
-            }
-            val todosSonFavoritos = remember(itemsSeleccionados) {
-                itemsSeleccionados.isNotEmpty() && itemsSeleccionados.all { it.favorito }
-            }
-
-            BarraInferiorSeleccion(
-                cantidad = seleccionados.size,
-                todosSonFavoritos = todosSonFavoritos,
-                alAlternarFavoritos = {
-                    haptica.exito()
-                    vm.alternarFavoritosVarias(seleccionados)
+            BarraAccionesSeleccionPasskeys(
+                seleccionados = seleccionados,
+                todasLasPasskeys = todasLasPasskeys,
+                haptica = haptica,
+                alAlternarFavoritos = { ids ->
+                    vm.alternarFavoritosVarias(ids)
                     seleccionados = emptySet()
                 },
-                alComparar = {
-                    haptica.toque()
-                    val primera = seleccionados.first()
-                    vm.ir(
-                        Pantalla.Detalle(
-                            id = primera,
-                            idsContexto = seleccionados.toList(),
-                            modoComparacion = true
-                        )
-                    )
+                alComparar = { primera, todos ->
+                    vm.ir(Pantalla.Detalle(id = primera, idsContexto = todos, modoComparacion = true))
                 },
-                alRespaldar = {
-                    haptica.tic()
-                    val idsParam = seleccionados.joinToString(",")
+                alRespaldar = { idsParam ->
                     seleccionados = emptySet()
                     vm.ir(Pantalla.ExportarSelectivo("ids:$idsParam"))
                 },
-                alTransferirCxf = {
-                    haptica.tic()
-                    val copia = itemsSeleccionados.toList()
+                alTransferirCxf = { copia ->
                     seleccionados = emptySet()
                     entradasParaTransferirCxf = copia
                 },
-                alRenombrar = {
-                    haptica.tic()
-                    val primerSeleccionado = todasLasPasskeys.find { it.id == seleccionados.firstOrNull() }
-                    nuevoTituloRenombrar = primerSeleccionado?.titulo ?: ""
+                alAbrirRenombrar = { titulo ->
+                    nuevoTituloRenombrar = titulo
                     dialogoRenombrarSeleccion = true
                 },
-                alBorrar = {
-                    haptica.error()
+                alAbrirBorrado = {
                     dialogoBorrarSeleccion = true
                 }
             )
         }
     }
 
-    if (mostrarDialogoOrdenacion) {
-        DialogoOrdenacionLista(
-            criterioActual = criterioOrdenacion,
-            alSeleccionarCriterio = { criterio ->
-                haptica.tic()
-                criterioOrdenacion = criterio
-                mostrarDialogoOrdenacion = false
-            },
-            alCerrar = { mostrarDialogoOrdenacion = false }
-        )
-    }
-
-    if (dialogoBorrarSeleccion) {
-        DialogoBorrarSeleccion(
-            cantidad = seleccionados.size,
-            alConfirmar = {
-                haptica.exito()
-                vm.eliminarVarias(seleccionados)
-                seleccionados = emptySet()
-                dialogoBorrarSeleccion = false
-            },
-            alDescartar = { dialogoBorrarSeleccion = false }
-        )
-    }
-
-    if (dialogoRenombrarSeleccion) {
-        DialogoRenombrarSeleccion(
-            cantidad = seleccionados.size,
-            textoNuevoTitulo = nuevoTituloRenombrar,
-            alCambiarTexto = { nuevoTituloRenombrar = it },
-            alConfirmar = {
-                haptica.exito()
-                vm.renombrarVarias(seleccionados, nuevoTituloRenombrar)
-                seleccionados = emptySet()
-                dialogoRenombrarSeleccion = false
-            },
-            alDescartar = { dialogoRenombrarSeleccion = false }
-        )
-    }
-
-    entradasParaTransferirCxf?.let { passkeysSeleccionadas ->
-        com.jlnavas3.bovedalocal.ui.pantallas.cxf.DialogoExportacionDirectaCxf(
-            entradas = passkeysSeleccionadas,
-            esSeleccionPersonalizada = true,
-            alCerrar = { entradasParaTransferirCxf = null }
-        )
-    }
-
-    if (mostrarDialogoExportarCxf) {
-        com.jlnavas3.bovedalocal.ui.pantallas.cxf.DialogoExportacionDirectaCxf(
-            entradas = todasLasPasskeys,
-            esSeleccionPersonalizada = false,
-            alCerrar = { mostrarDialogoExportarCxf = false }
-        )
-    }
+    DialogosPasskeys(
+        mostrarDialogoOrdenacion = mostrarDialogoOrdenacion,
+        criterioOrdenacion = criterioOrdenacion,
+        alSeleccionarCriterio = { criterio ->
+            criterioOrdenacion = criterio
+            mostrarDialogoOrdenacion = false
+        },
+        alCerrarOrdenacion = { mostrarDialogoOrdenacion = false },
+        dialogoBorrarSeleccion = dialogoBorrarSeleccion,
+        cantidadSeleccionados = seleccionados.size,
+        alConfirmarBorrado = {
+            vm.eliminarVarias(seleccionados)
+            seleccionados = emptySet()
+            dialogoBorrarSeleccion = false
+        },
+        alDescartarBorrado = { dialogoBorrarSeleccion = false },
+        dialogoRenombrarSeleccion = dialogoRenombrarSeleccion,
+        textoNuevoTitulo = nuevoTituloRenombrar,
+        alCambiarTextoRenombrar = { nuevoTituloRenombrar = it },
+        alConfirmarRenombrado = {
+            vm.renombrarVarias(seleccionados, nuevoTituloRenombrar)
+            seleccionados = emptySet()
+            dialogoRenombrarSeleccion = false
+        },
+        alDescartarRenombrado = { dialogoRenombrarSeleccion = false },
+        entradasParaTransferirCxf = entradasParaTransferirCxf,
+        alCerrarTransferirCxf = { entradasParaTransferirCxf = null },
+        mostrarDialogoExportarCxf = mostrarDialogoExportarCxf,
+        todasLasPasskeys = todasLasPasskeys,
+        alCerrarExportarCxf = { mostrarDialogoExportarCxf = false },
+        haptica = haptica
+    )
 }

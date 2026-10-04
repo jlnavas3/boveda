@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -28,14 +27,11 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.jlnavas3.bovedalocal.crypto.Base32
 import com.jlnavas3.bovedalocal.crypto.Totp
 import com.jlnavas3.bovedalocal.data.Entrada
-import com.jlnavas3.bovedalocal.ui.componentes.IndicadorTotpTarta
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.ColorDatos2FA
-import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
 import com.jlnavas3.bovedalocal.ui.theme.ColorTitulos
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.border
@@ -44,17 +40,12 @@ import androidx.compose.material.icons.filled.Check
 import com.jlnavas3.bovedalocal.ui.pantallas.lista.IndicadorContenidoTarjeta
 import com.jlnavas3.bovedalocal.ui.theme.Borde
 import com.jlnavas3.bovedalocal.ui.theme.ColorSobreAcento
-import com.jlnavas3.bovedalocal.ui.theme.EstiloMonoGrande
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
 import com.jlnavas3.bovedalocal.util.Haptica
-
 import androidx.compose.foundation.shape.RoundedCornerShape
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorTarjetaAjustes
 import com.jlnavas3.bovedalocal.ui.theme.CurvaturaEsquinas
 import com.jlnavas3.bovedalocal.ui.theme.GrosorBorde
-import androidx.compose.material.icons.filled.Visibility
-import androidx.compose.material.icons.filled.VisibilityOff
-import androidx.compose.material3.IconButton
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -63,7 +54,6 @@ import com.jlnavas3.bovedalocal.data.AjustesApp
 import com.jlnavas3.bovedalocal.ui.componentes.seguridad.TemporizadorAutoOcultar
 import com.jlnavas3.bovedalocal.ui.componentes.seguridad.TextoSeguroVisual
 import com.jlnavas3.bovedalocal.ui.theme.EstiloBorde
-import com.jlnavas3.bovedalocal.ui.theme.FormaPequena
 import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -227,56 +217,20 @@ fun TarjetaCuentaTotp(
                     }
                 }
                 Spacer(Modifier.height(6.dp))
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(10.dp),
-                        modifier = Modifier
-                            .clip(FormaPequena)
-                            .clickable {
-                                if (seleccionActiva) {
-                                    haptica.tic()
-                                    alAlternarSeleccion?.invoke()
-                                } else {
-                                    haptica.exito()
-                                    alCopiarCodigo(codigo)
-                                }
-                            }
-                            .padding(vertical = 2.dp)
-                    ) {
-                        TextoSeguroVisual(
-                            texto = codigoVisible,
-                            oculto = if (ocultarTotp) !codigoRevelado else false,
-                            estilo = estiloOcultamiento,
-                            estiloTexto = EstiloMonoGrande.copy(fontWeight = FontWeight.Bold, fontSize = 24.sp),
-                            colorTexto = ColorTitulos
-                        )
-                        IndicadorTotpTarta(
-                            segundosRestantes = segundosRestantes,
-                            periodo = periodo,
-                            tamano = 18.dp
-                        )
-                    }
-                    if (ocultarTotp) {
-                        IconButton(
-                            onClick = {
-                                haptica.toque()
-                                codigoRevelado = !codigoRevelado
-                            },
-                            modifier = Modifier.size(28.dp)
-                        ) {
-                            Icon(
-                                imageVector = if (codigoRevelado) Icons.Filled.VisibilityOff else Icons.Filled.Visibility,
-                                contentDescription = if (codigoRevelado) "Ocultar código" else "Mostrar código",
-                                tint = TextoSecundario,
-                                modifier = Modifier.size(18.dp)
-                            )
-                        }
-                    }
-                }
+                VisualizadorCodigoTotp(
+                    codigo = codigo,
+                    codigoVisible = codigoVisible,
+                    segundosRestantes = segundosRestantes,
+                    periodo = periodo,
+                    ocultarTotp = ocultarTotp,
+                    codigoRevelado = codigoRevelado,
+                    estiloOcultamiento = estiloOcultamiento,
+                    seleccionActiva = seleccionActiva,
+                    haptica = haptica,
+                    alCopiarCodigo = alCopiarCodigo,
+                    alAlternarSeleccion = alAlternarSeleccion,
+                    alAlternarRevelado = { codigoRevelado = !codigoRevelado }
+                )
                 Spacer(Modifier.height(3.dp))
                 Text(
                     text = if (seleccionActiva) "$segundosRestantes s restantes" else "Toca el código para copiar · $segundosRestantes s",

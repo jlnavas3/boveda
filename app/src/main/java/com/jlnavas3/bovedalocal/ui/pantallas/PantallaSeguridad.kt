@@ -2,13 +2,8 @@ package com.jlnavas3.bovedalocal.ui.pantallas
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -16,7 +11,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -25,18 +19,12 @@ import com.jlnavas3.bovedalocal.data.modoBiometriaActivo
 import com.jlnavas3.bovedalocal.ui.FlujoBiometria
 import com.jlnavas3.bovedalocal.ui.VaultViewModel
 import com.jlnavas3.bovedalocal.ui.componentes.BarraSuperiorPantalla
-import com.jlnavas3.bovedalocal.ui.componentes.DescripcionPantalla
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.AccionSaltoGrupo
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.BotonMenuOpcionesPantalla
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ProveedorResaltadoAjustes
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjustesFondo
-import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.DialogoModoCompatible
-import com.jlnavas3.bovedalocal.ui.pantallas.seguridad.DialogoDesactivarSecure
-import com.jlnavas3.bovedalocal.ui.pantallas.seguridad.GrupoBiometria
-import com.jlnavas3.bovedalocal.ui.pantallas.seguridad.GrupoBloqueoApp
-import com.jlnavas3.bovedalocal.ui.pantallas.seguridad.GrupoSeguridadVisual
-import com.jlnavas3.bovedalocal.ui.pantallas.seguridad.GrupoPortapapeles
-import com.jlnavas3.bovedalocal.ui.pantallas.seguridad.GrupoAntiguedadSalud
+import com.jlnavas3.bovedalocal.ui.pantallas.seguridad.ContenidoGruposSeguridad
+import com.jlnavas3.bovedalocal.ui.pantallas.seguridad.DialogosSeguridad
 import com.jlnavas3.bovedalocal.util.AjustesSistema
 import com.jlnavas3.bovedalocal.util.Biometria
 import com.jlnavas3.bovedalocal.util.Haptica
@@ -120,182 +108,56 @@ fun PantallaSeguridad(
                 }
             )
 
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f)
-                    .verticalScroll(scrollState)
-                    .padding(horizontal = 16.dp, vertical = 12.dp)
-            ) {
-                DescripcionPantalla(subtitulo = "Autenticación, bloqueo automático y portapapeles")
-                Spacer(Modifier.height(10.dp))
-
-                // Grupo 1: Biometría
-                GrupoBiometria(
-                    esSenuelo = esSenuelo,
-                    biometriaActiva = ajustes.biometriaActiva,
-                    nivel = nivel,
-                    capacidad = capacidad,
-                    modoActivo = modoActivo,
-                    mostrarIdsAjustes = ajustes.mostrarIdsAjustes,
-                    alCambiarBiometria = { activar ->
-                        if (activar) {
-                            when (nivel) {
-                                Biometria.Nivel.FUERTE -> activarFuerte()
-                                Biometria.Nivel.COMPATIBLE -> ofrecerCompatible(Biometria.explicarFaltaDeFuerte(capacidad))
-                                Biometria.Nivel.NINGUNO -> vm.avisar("Este móvil no ofrece huella ni PIN utilizables ahora mismo")
-                            }
-                        } else {
-                            flujo.desactivar()
-                            haptica.tic()
-                            vm.avisar("Huella desactivada")
+            ContenidoGruposSeguridad(
+                scrollState = scrollState,
+                ajustes = ajustes,
+                esSenuelo = esSenuelo,
+                nivel = nivel,
+                capacidad = capacidad,
+                modoActivo = modoActivo,
+                vm = vm,
+                haptica = haptica,
+                alCambiarBiometria = { activar ->
+                    if (activar) {
+                        when (nivel) {
+                            Biometria.Nivel.FUERTE -> activarFuerte()
+                            Biometria.Nivel.COMPATIBLE -> ofrecerCompatible(Biometria.explicarFaltaDeFuerte(capacidad))
+                            Biometria.Nivel.NINGUNO -> vm.avisar("Este móvil no ofrece huella ni PIN utilizables ahora mismo")
                         }
-                    },
-                    alRegistrarHuellaAndroid = {
-                        if (!AjustesSistema.abrirRegistroHuella(contexto)) vm.avisar("No se puede abrir los ajustes de huella de este móvil")
-                    },
-                    alOfrecerCompatible = {
-                        ofrecerCompatible("Si la huella falla en este dispositivo aunque Android la acepte, el modo compatible suele funcionar.")
-                    },
-                    alActivarFuerte = { activarFuerte() }
-                )
-
-                Spacer(Modifier.height(18.dp))
-
-                // Grupo 2: Bloqueo de aplicación
-                GrupoBloqueoApp(
-                    autoBloqueoSegundos = ajustes.autoBloqueoSegundos,
-                    proteccionPantalla = ajustes.proteccionPantalla,
-                    mostrarIdsAjustes = ajustes.mostrarIdsAjustes,
-                    alAjustarAutoBloqueo = { valor ->
+                    } else {
+                        flujo.desactivar()
                         haptica.tic()
-                        vm.ajustarAutoBloqueo(valor)
-                    },
-                    alCambiarProteccionPantalla = { activar ->
-                        if (activar) {
-                            vm.ajustarProteccionPantalla(true)
-                            haptica.tic()
-                        } else {
-                            confirmarDesactivarSecure = true
-                        }
-                    },
-                    alRestablecer = {
-                        haptica.tic()
-                        vm.restablecerBloqueoApp()
-                        vm.avisar("Valores de bloqueo restablecidos")
+                        vm.avisar("Huella desactivada")
                     }
-                )
-
-                Spacer(Modifier.height(18.dp))
-
-                // Grupo: Seguridad visual (Privacidad de pantalla)
-                GrupoSeguridadVisual(
-                    seguridadVisualActiva = ajustes.seguridadVisualActiva,
-                    estiloOcultamientoVisual = ajustes.estiloOcultamientoVisual,
-                    tiempoAutoOcultarSegundos = ajustes.tiempoAutoOcultarSegundos,
-                    ocultarUsuario = ajustes.ocultarUsuario,
-                    ocultarContrasena = ajustes.ocultarContrasena,
-                    ocultarTotp = ajustes.ocultarTotp,
-                    ocultarNotas = ajustes.ocultarNotas,
-                    ocultarCampos = ajustes.ocultarCampos,
-                    mostrarIdsAjustes = ajustes.mostrarIdsAjustes,
-                    alCambiarSeguridadVisualActiva = { activar ->
-                        haptica.tic()
-                        vm.ajustarSeguridadVisualActiva(activar)
-                    },
-                    alCambiarEstiloOcultamiento = { estilo ->
-                        haptica.tic()
-                        vm.ajustarEstiloOcultamientoVisual(estilo)
-                    },
-                    alCambiarTiempoAutoOcultar = { segundos ->
-                        haptica.tic()
-                        vm.ajustarTiempoAutoOcultar(segundos)
-                    },
-                    alCambiarOcultarUsuario = { activar ->
-                        haptica.tic()
-                        vm.ajustarOcultarUsuario(activar)
-                    },
-                    alCambiarOcultarContrasena = { activar ->
-                        haptica.tic()
-                        vm.ajustarOcultarContrasena(activar)
-                    },
-                    alCambiarOcultarTotp = { activar ->
-                        haptica.tic()
-                        vm.ajustarOcultarTotp(activar)
-                    },
-                    alCambiarOcultarNotas = { activar ->
-                        haptica.tic()
-                        vm.ajustarOcultarNotas(activar)
-                    },
-                    alCambiarOcultarCampos = { activar ->
-                        haptica.tic()
-                        vm.ajustarOcultarCampos(activar)
-                    },
-                    alRestablecer = {
-                        haptica.tic()
-                        vm.restablecerSeguridadVisual()
-                        vm.avisar("Valores de seguridad visual restablecidos")
+                },
+                alRegistrarHuellaAndroid = {
+                    if (!AjustesSistema.abrirRegistroHuella(contexto)) {
+                        vm.avisar("No se puede abrir los ajustes de huella de este móvil")
                     }
-                )
-
-                Spacer(Modifier.height(18.dp))
-
-                // Grupo 3: Portapapeles
-                GrupoPortapapeles(
-                    portapapelesSegundos = ajustes.portapapelesSegundos,
-                    mostrarIdsAjustes = ajustes.mostrarIdsAjustes,
-                    alAjustarPortapapeles = { valor ->
-                        haptica.tic()
-                        vm.ajustarPortapapeles(valor)
-                    },
-                    alRestablecer = {
-                        haptica.tic()
-                        vm.restablecerPortapapeles()
-                        vm.avisar("Tiempo de portapapeles restablecido")
-                    }
-                )
-
-                Spacer(Modifier.height(18.dp))
-
-                // Grupo 4: Auditoría de contraseñas (Salud)
-                GrupoAntiguedadSalud(
-                    umbralAntiguedadDias = ajustes.umbralAntiguedadDias,
-                    mostrarIdsAjustes = ajustes.mostrarIdsAjustes,
-                    alAjustarUmbral = { valor ->
-                        haptica.tic()
-                        vm.ajustarUmbralAntiguedad(valor)
-                    },
-                    alRestablecer = {
-                        haptica.tic()
-                        vm.restablecerUmbralAntiguedad()
-                        vm.avisar("Umbral de antigüedad restablecido")
-                    }
-                )
-
-                Spacer(Modifier.height(32.dp))
-            }
+                },
+                alOfrecerCompatible = {
+                    ofrecerCompatible("Si la huella falla en este dispositivo aunque Android la acepte, el modo compatible suele funcionar.")
+                },
+                alActivarFuerte = { activarFuerte() },
+                alPedirDesactivarSecure = { confirmarDesactivarSecure = true },
+                modifier = Modifier.weight(1f)
+            )
         }
     }
 
-    dialogoCompatible?.let { motivo ->
-        DialogoModoCompatible(
-            motivo = motivo,
-            alDescartar = { dialogoCompatible = null },
-            alConfirmar = {
-                dialogoCompatible = null
-                flujo.activar(BiometricKeyStore.Modo.COMPATIBLE, ::tratarActivacion)
-            }
-        )
-    }
-
-    if (confirmarDesactivarSecure) {
-        DialogoDesactivarSecure(
-            alConfirmar = {
-                confirmarDesactivarSecure = false
-                vm.ajustarProteccionPantalla(false)
-                haptica.tic()
-            },
-            alDescartar = { confirmarDesactivarSecure = false }
-        )
-    }
+    DialogosSeguridad(
+        dialogoCompatible = dialogoCompatible,
+        confirmarDesactivarSecure = confirmarDesactivarSecure,
+        alDescartarCompatible = { dialogoCompatible = null },
+        alConfirmarCompatible = {
+            dialogoCompatible = null
+            flujo.activar(BiometricKeyStore.Modo.COMPATIBLE, ::tratarActivacion)
+        },
+        alConfirmarDesactivarSecure = {
+            confirmarDesactivarSecure = false
+            vm.ajustarProteccionPantalla(false)
+            haptica.tic()
+        },
+        alDescartarDesactivarSecure = { confirmarDesactivarSecure = false }
+    )
 }

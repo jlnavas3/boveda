@@ -1,8 +1,7 @@
 package com.jlnavas3.bovedalocal.ui.pantallas
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -10,16 +9,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.QrCodeScanner
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.Icon
-import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -32,33 +23,26 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.activity.compose.BackHandler
 import com.jlnavas3.bovedalocal.data.EstadoBoveda
 import com.jlnavas3.bovedalocal.ui.CriterioOrdenacion
 import com.jlnavas3.bovedalocal.ui.Pantalla
 import com.jlnavas3.bovedalocal.ui.VaultViewModel
 import com.jlnavas3.bovedalocal.ui.componentes.DescripcionPantalla
-import com.jlnavas3.bovedalocal.ui.componentes.seleccion.BarraInferiorSeleccion
 import com.jlnavas3.bovedalocal.ui.componentes.seleccion.BarraSuperiorSeleccion
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjustesFondo
-import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorTarjetaAjustes
+import com.jlnavas3.bovedalocal.ui.pantallas.autenticador.BarraAccionesSeleccionAutenticador
 import com.jlnavas3.bovedalocal.ui.pantallas.autenticador.BarraSuperiorAutenticador
-import com.jlnavas3.bovedalocal.ui.pantallas.autenticador.DialogoComoFuncionaTotp
+import com.jlnavas3.bovedalocal.ui.pantallas.autenticador.ColumnaAccionesFlotantesAutenticador
+import com.jlnavas3.bovedalocal.ui.pantallas.autenticador.DialogosAutenticador
 import com.jlnavas3.bovedalocal.ui.pantallas.autenticador.ListaCuentasTotp
 import com.jlnavas3.bovedalocal.ui.pantallas.autenticador.SeccionBusquedaYFiltrosAutenticador
-import com.jlnavas3.bovedalocal.ui.pantallas.lista.DialogoBorrarSeleccion
-import com.jlnavas3.bovedalocal.ui.pantallas.lista.DialogoOrdenacionLista
-import com.jlnavas3.bovedalocal.ui.pantallas.lista.DialogoRenombrarSeleccion
-import com.jlnavas3.bovedalocal.ui.theme.Color2FA
-import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
-import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
-import com.jlnavas3.bovedalocal.ui.theme.ColorSobreAcento
-import com.jlnavas3.bovedalocal.ui.theme.CurvaturaEsquinas
-import com.jlnavas3.bovedalocal.ui.theme.EstiloBorde
-import com.jlnavas3.bovedalocal.ui.theme.GrosorBorde
+import com.jlnavas3.bovedalocal.ui.theme.calcularEspaciadoFilas
 import com.jlnavas3.bovedalocal.util.Haptica
 import kotlinx.coroutines.delay
 
+/**
+ * Pantalla del autenticador TOTP (códigos temporales de 2 pasos).
+ */
 @Composable
 fun PantallaAutenticador(vm: VaultViewModel, estado: EstadoBoveda) {
     val contexto = LocalContext.current
@@ -121,8 +105,6 @@ fun PantallaAutenticador(vm: VaultViewModel, estado: EstadoBoveda) {
             }
     }
 
-    val formaFab = RoundedCornerShape(CurvaturaEsquinas)
-
     Box(modifier = Modifier.fillMaxSize()) {
         Column(
             modifier = Modifier
@@ -147,7 +129,6 @@ fun PantallaAutenticador(vm: VaultViewModel, estado: EstadoBoveda) {
                     }
                 )
             } else {
-                // Cabecera modular
                 BarraSuperiorAutenticador(
                     busquedaVisible = busquedaVisible,
                     textoBusqueda = textoBusqueda,
@@ -177,7 +158,6 @@ fun PantallaAutenticador(vm: VaultViewModel, estado: EstadoBoveda) {
                     }
                 )
 
-                // Barra de búsqueda animada y chip de favoritos
                 SeccionBusquedaYFiltrosAutenticador(
                     busquedaVisible = busquedaVisible,
                     textoBusqueda = textoBusqueda,
@@ -191,7 +171,6 @@ fun PantallaAutenticador(vm: VaultViewModel, estado: EstadoBoveda) {
                 )
             }
 
-            // Contenido scrolleable
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -202,7 +181,6 @@ fun PantallaAutenticador(vm: VaultViewModel, estado: EstadoBoveda) {
                 DescripcionPantalla(subtitulo = "Códigos de verificación en dos pasos calculados en el dispositivo")
                 Spacer(Modifier.height(12.dp))
 
-                // Lista de cuentas o estado vacío
                 ListaCuentasTotp(
                     totpFiltrados = totpFiltrados,
                     totalTotp = conTotp.size,
@@ -230,7 +208,7 @@ fun PantallaAutenticador(vm: VaultViewModel, estado: EstadoBoveda) {
                         vm.alternarFavorito(id)
                     },
                     mostrarIndicadores = ajustes.mostrarIndicadoresContenido,
-                    espaciadoFilas = com.jlnavas3.bovedalocal.ui.theme.calcularEspaciadoFilas(ajustes.densidadLista),
+                    espaciadoFilas = calcularEspaciadoFilas(ajustes.densidadLista),
                     alVerDetalle = { id ->
                         vm.ir(Pantalla.Detalle(id, idsContexto = totpFiltrados.map { it.id }))
                     }
@@ -241,150 +219,70 @@ fun PantallaAutenticador(vm: VaultViewModel, estado: EstadoBoveda) {
         }
 
         if (modoSeleccion) {
-            val itemsSeleccionados = remember(conTotp, seleccionados) {
-                conTotp.filter { seleccionados.contains(it.id) }
-            }
-            val todosSonFavoritos = remember(itemsSeleccionados) {
-                itemsSeleccionados.isNotEmpty() && itemsSeleccionados.all { it.favorito }
-            }
-
-            BarraInferiorSeleccion(
-                cantidad = seleccionados.size,
-                todosSonFavoritos = todosSonFavoritos,
-                alAlternarFavoritos = {
-                    haptica.exito()
-                    vm.alternarFavoritosVarias(seleccionados)
+            BarraAccionesSeleccionAutenticador(
+                seleccionados = seleccionados,
+                conTotp = conTotp,
+                haptica = haptica,
+                alAlternarFavoritos = { ids ->
+                    vm.alternarFavoritosVarias(ids)
                     seleccionados = emptySet()
                 },
-                alComparar = {
-                    haptica.toque()
-                    val primera = seleccionados.first()
+                alComparar = { primera, todos ->
                     vm.ir(
                         Pantalla.Detalle(
                             id = primera,
-                            idsContexto = seleccionados.toList(),
+                            idsContexto = todos,
                             modoComparacion = true
                         )
                     )
                 },
-                alRespaldar = {
-                    haptica.tic()
-                    val idsParam = seleccionados.joinToString(",")
+                alRespaldar = { idsParam ->
                     seleccionados = emptySet()
                     vm.ir(Pantalla.ExportarSelectivo("ids:$idsParam"))
                 },
-                alRenombrar = {
-                    haptica.tic()
-                    val primerSeleccionado = conTotp.find { it.id == seleccionados.firstOrNull() }
-                    nuevoTituloRenombrar = primerSeleccionado?.titulo ?: ""
+                alRenombrar = { titulo ->
+                    nuevoTituloRenombrar = titulo
                     dialogoRenombrarSeleccion = true
                 },
-                alBorrar = {
-                    haptica.error()
-                    dialogoBorrarSeleccion = true
-                },
+                alBorrar = { dialogoBorrarSeleccion = true },
                 modifier = Modifier.align(Alignment.BottomCenter)
             )
         } else {
-            // Botones de acción flotantes (FABs) en la esquina inferior derecha
-            Column(
-                modifier = Modifier
-                    .align(Alignment.BottomEnd)
-                    .padding(20.dp),
-                horizontalAlignment = Alignment.End,
-                verticalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                // FAB superior: Ingresar clave manual (+)
-                SmallFloatingActionButton(
-                    onClick = {
-                        haptica.toque()
-                        vm.ir(Pantalla.Escaner(soloManual = true))
-                    },
-                    containerColor = ColorTarjetaAjustes,
-                    contentColor = Color2FA,
-                    shape = formaFab,
-                    modifier = Modifier.then(
-                        if (GrosorBorde > 0.dp && EstiloBorde != "ninguno") {
-                            Modifier.border(GrosorBorde, ColorBordeActual, formaFab)
-                        } else Modifier
-                    )
-                ) {
-                    Icon(
-                        imageVector = Icons.Filled.Add,
-                        contentDescription = "Escribir clave manualmente",
-                        modifier = Modifier.size(22.dp)
-                    )
-                }
-
-                // FAB inferior: Escanear código QR
-                FloatingActionButton(
-                    onClick = {
-                        haptica.toque()
-                        vm.ir(Pantalla.CamaraQr())
-                    },
-                    containerColor = ColorAcento,
-                    contentColor = ColorSobreAcento,
-                    shape = formaFab,
-                    modifier = Modifier.then(
-                        if (GrosorBorde > 0.dp && EstiloBorde != "ninguno") {
-                            Modifier.border(GrosorBorde, ColorBordeActual, formaFab)
-                        } else Modifier
-                    )
-                ) {
-                    Icon(
-                        imageVector = Icons.Filled.QrCodeScanner,
-                        contentDescription = "Escanear código QR",
-                        modifier = Modifier.size(24.dp)
-                    )
-                }
-            }
+            ColumnaAccionesFlotantesAutenticador(
+                haptica = haptica,
+                alIngresarManual = { vm.ir(Pantalla.Escaner(soloManual = true)) },
+                alEscanearQr = { vm.ir(Pantalla.CamaraQr()) },
+                modifier = Modifier.align(Alignment.BottomEnd)
+            )
         }
     }
 
-    // Diálogo de ordenación
-    if (mostrarDialogoOrdenacion) {
-        DialogoOrdenacionLista(
-            criterioActual = criterioOrdenacion,
-            alSeleccionarCriterio = { crit ->
-                haptica.tic()
-                criterioOrdenacion = crit
-            },
-            alCerrar = { mostrarDialogoOrdenacion = false }
-        )
-    }
-
-    // Modal informativo: ¿Cómo funciona el 2FA?
-    if (dialogoComoFunciona) {
-        DialogoComoFuncionaTotp(
-            alDescartar = { dialogoComoFunciona = false }
-        )
-    }
-
-    if (dialogoBorrarSeleccion) {
-        DialogoBorrarSeleccion(
-            cantidad = seleccionados.size,
-            alConfirmar = {
-                haptica.exito()
-                vm.eliminarVarias(seleccionados)
-                seleccionados = emptySet()
-                dialogoBorrarSeleccion = false
-            },
-            alDescartar = { dialogoBorrarSeleccion = false }
-        )
-    }
-
-    if (dialogoRenombrarSeleccion) {
-        DialogoRenombrarSeleccion(
-            cantidad = seleccionados.size,
-            textoNuevoTitulo = nuevoTituloRenombrar,
-            alCambiarTexto = { nuevoTituloRenombrar = it },
-            alConfirmar = {
-                haptica.exito()
-                vm.renombrarVarias(seleccionados, nuevoTituloRenombrar)
-                seleccionados = emptySet()
-                dialogoRenombrarSeleccion = false
-            },
-            alDescartar = { dialogoRenombrarSeleccion = false }
-        )
-    }
+    DialogosAutenticador(
+        mostrarDialogoOrdenacion = mostrarDialogoOrdenacion,
+        criterioOrdenacion = criterioOrdenacion,
+        alSeleccionarCriterio = { crit ->
+            criterioOrdenacion = crit
+        },
+        alCerrarOrdenacion = { mostrarDialogoOrdenacion = false },
+        dialogoComoFunciona = dialogoComoFunciona,
+        alDescartarComoFunciona = { dialogoComoFunciona = false },
+        dialogoBorrarSeleccion = dialogoBorrarSeleccion,
+        cantidadSeleccionados = seleccionados.size,
+        alConfirmarBorrado = {
+            vm.eliminarVarias(seleccionados)
+            seleccionados = emptySet()
+            dialogoBorrarSeleccion = false
+        },
+        alDescartarBorrado = { dialogoBorrarSeleccion = false },
+        dialogoRenombrarSeleccion = dialogoRenombrarSeleccion,
+        textoNuevoTitulo = nuevoTituloRenombrar,
+        alCambiarTextoRenombrar = { nuevoTituloRenombrar = it },
+        alConfirmarRenombrado = {
+            vm.renombrarVarias(seleccionados, nuevoTituloRenombrar)
+            seleccionados = emptySet()
+            dialogoRenombrarSeleccion = false
+        },
+        alDescartarRenombrado = { dialogoRenombrarSeleccion = false },
+        haptica = haptica
+    )
 }

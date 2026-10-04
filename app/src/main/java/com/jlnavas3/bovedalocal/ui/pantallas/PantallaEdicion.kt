@@ -1,34 +1,11 @@
 package com.jlnavas3.bovedalocal.ui.pantallas
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.imePadding
-import androidx.compose.foundation.layout.navigationBarsPadding
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AutoFixHigh
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
@@ -37,16 +14,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
-import com.jlnavas3.bovedalocal.ui.theme.ColorSobreAcento
-import com.jlnavas3.bovedalocal.ui.theme.CurvaturaEsquinas
-import com.jlnavas3.bovedalocal.ui.theme.EstiloBorde
-import com.jlnavas3.bovedalocal.ui.theme.GrosorBorde
-import com.jlnavas3.bovedalocal.ui.theme.esOscuroActivo
 import com.jlnavas3.bovedalocal.crypto.Base32
 import com.jlnavas3.bovedalocal.crypto.OpcionesGenerador
 import com.jlnavas3.bovedalocal.data.Entrada
@@ -55,26 +24,10 @@ import com.jlnavas3.bovedalocal.data.TipoEntrada
 import com.jlnavas3.bovedalocal.data.normalizarEtiqueta
 import com.jlnavas3.bovedalocal.ui.VaultViewModel
 import com.jlnavas3.bovedalocal.ui.componentes.BarraSuperiorPantalla
-import com.jlnavas3.bovedalocal.ui.componentes.BotonIconoCabecera
-import com.jlnavas3.bovedalocal.ui.componentes.DescripcionPantalla
-import com.jlnavas3.bovedalocal.ui.componentes.reboteElastico
-import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteCampoTexto
-import com.jlnavas3.bovedalocal.ui.componentes.ajustes.TipoCampoTexto
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjustesFondo
-import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.GrupoAjustes
 import com.jlnavas3.bovedalocal.ui.pantallas.edicion.BotonGuardarEdicion
-import com.jlnavas3.bovedalocal.ui.pantallas.edicion.GestorCamposBase
-import com.jlnavas3.bovedalocal.ui.pantallas.edicion.SeccionCamposPersonalizados
-import com.jlnavas3.bovedalocal.ui.pantallas.edicion.SeccionDatosPrincipalesEdicion
-import com.jlnavas3.bovedalocal.ui.pantallas.edicion.SeccionNotasEdicion
-import com.jlnavas3.bovedalocal.ui.pantallas.edicion.SeccionOrganizacionEdicion
-import com.jlnavas3.bovedalocal.ui.pantallas.edicion.SeccionSitiosYAppsEdicion
-import com.jlnavas3.bovedalocal.ui.pantallas.edicion.SelectorTipoEntrada
-import com.jlnavas3.bovedalocal.ui.pantallas.colecciones.DialogoCrearEditarColeccion
-import com.jlnavas3.bovedalocal.ui.pantallas.edicion.SeccionTotpEdicion
-import com.jlnavas3.bovedalocal.ui.pantallas.edicion.SelectorAppModal
-import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
-import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
+import com.jlnavas3.bovedalocal.ui.pantallas.edicion.FormularioEdicionEntrada
+import com.jlnavas3.bovedalocal.ui.pantallas.edicion.ModalesEdicion
 import com.jlnavas3.bovedalocal.util.AppInstalada
 import com.jlnavas3.bovedalocal.util.EnlaceEditable
 import com.jlnavas3.bovedalocal.util.GestorAppsInstaladas
@@ -169,7 +122,6 @@ fun PantallaEdicion(vm: VaultViewModel, id: String?, contrasenaInicial: String) 
         Column(
             modifier = Modifier.fillMaxSize()
         ) {
-            // Cabecera plana nativa
             BarraSuperiorPantalla(
                 titulo = if (original == null) "Nueva entrada" else "Editar entrada",
                 alVolver = { vm.volverAtras() },
@@ -178,38 +130,13 @@ fun PantallaEdicion(vm: VaultViewModel, id: String?, contrasenaInicial: String) 
                 acciones = {}
             )
 
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f)
-                    .reboteElastico()
-                    .verticalScroll(scrollState)
-                    .padding(horizontal = 16.dp, vertical = 12.dp)
-            ) {
-            DescripcionPantalla(
-                subtitulo = if (original == null) "Crea y cifra un registro seguro en la bóveda" else "Modifica los datos del registro"
-            )
-            Spacer(Modifier.height(12.dp))
-
-            // Selector de tipo (solo para nuevas entradas)
-            if (original == null) {
-                GrupoAjustes(etiqueta = "Tipo de registro") {
-                    Column(modifier = Modifier.padding(14.dp)) {
-                        SelectorTipoEntrada(
-                            tipoActual = tipo,
-                            alSeleccionarTipo = { tipo = it; haptica.tic() }
-                        )
-                    }
-                }
-                Spacer(Modifier.height(16.dp))
-            }
-
-            // Grupo: Datos principales
-            SeccionDatosPrincipalesEdicion(
+            FormularioEdicionEntrada(
+                scrollState = scrollState,
+                original = original,
+                tipo = tipo,
+                alCambiarTipo = { tipo = it },
                 titulo = titulo,
                 alCambiarTitulo = { titulo = it },
-                tipo = tipo,
-                original = original,
                 usuario = usuario,
                 alCambiarUsuario = { usuario = it },
                 contrasena = contrasena,
@@ -221,61 +148,22 @@ fun PantallaEdicion(vm: VaultViewModel, id: String?, contrasenaInicial: String) 
                 camposPersonalizados = camposPersonalizados,
                 alCambiarCamposPersonalizados = { camposPersonalizados = it },
                 listaEnlaces = listaEnlaces,
-                ajustes = ajustes,
-                haptica = haptica
-            )
-
-            // Grupo: Sitios o aplicaciones
-            if (tipo == TipoEntrada.LOGIN || tipo == TipoEntrada.PASSKEY) {
-                Spacer(Modifier.height(16.dp))
-                SeccionSitiosYAppsEdicion(
-                    listaEnlaces = listaEnlaces,
-                    alSolicitarExplorarApp = { idx ->
-                        indiceEnlaceSeleccionado = idx
-                        mostrarSelectorApp = true
-                    }
-                )
-
-                Spacer(Modifier.height(16.dp))
-                SeccionTotpEdicion(
-                    totp = totp,
-                    alCambiarTotp = { totp = it },
-                    mostrarSecretoTotp = mostrarSecretoTotp,
-                    alAlternarMostrarSecreto = {
-                        haptica.tic()
-                        mostrarSecretoTotp = !mostrarSecretoTotp
-                    },
-                    totpValido = totpValido
-                )
-            }
-
-            // Grupo: Notas
-            Spacer(Modifier.height(16.dp))
-            SeccionNotasEdicion(
+                alSolicitarExplorarApp = { idx ->
+                    indiceEnlaceSeleccionado = idx
+                    mostrarSelectorApp = true
+                },
+                totp = totp,
+                alCambiarTotp = { totp = it },
+                mostrarSecretoTotp = mostrarSecretoTotp,
+                alAlternarMostrarSecretoTotp = {
+                    haptica.tic()
+                    mostrarSecretoTotp = !mostrarSecretoTotp
+                },
+                totpValido = totpValido,
                 notas = notas,
-                alCambiarNotas = { notas = it }
-            )
-
-            // Grupo: Campos adicionales
-            Spacer(Modifier.height(16.dp))
-            val etiquetasBase = remember(tipo) { GestorCamposBase.etiquetasBaseParaTipo(tipo) }
-            GrupoAjustes(etiqueta = if (etiquetasBase.isEmpty()) "Campos personalizados" else "Campos adicionales") {
-                Column(modifier = Modifier.padding(14.dp)) {
-                    SeccionCamposPersonalizados(
-                        camposPersonalizados = camposPersonalizados,
-                        alCambiarCampos = { camposPersonalizados = it },
-                        etiquetasBase = etiquetasBase,
-                        ajustes = ajustes,
-                        haptica = haptica
-                    )
-                }
-            }
-
-            // Grupo: Organización
-            Spacer(Modifier.height(16.dp))
-            SeccionOrganizacionEdicion(
+                alCambiarNotas = { notas = it },
                 coleccionesDisponibles = coleccionesDisponibles,
-                coleccionesSeleccionadas = colecciones,
+                colecciones = colecciones,
                 alCambiarColecciones = { colecciones = it },
                 alCrearNuevaColeccion = { mostrarDialogoNuevaColeccion = true },
                 etiquetas = etiquetas,
@@ -284,60 +172,55 @@ fun PantallaEdicion(vm: VaultViewModel, id: String?, contrasenaInicial: String) 
                 favorito = favorito,
                 alAlternarFavorito = { favorito = it; haptica.tic() },
                 ignoradaEnSalud = ignoradaEnSalud,
-                alAlternarIgnoradaEnSalud = { ignoradaEnSalud = it; haptica.tic() }
+                alAlternarIgnoradaEnSalud = { ignoradaEnSalud = it; haptica.tic() },
+                ajustes = ajustes,
+                haptica = haptica,
+                modifier = Modifier.weight(1f)
             )
-
-            Spacer(Modifier.height(80.dp))
         }
-    }
 
-    BotonGuardarEdicion(
-        alGuardar = {
-            if (puedeGuardar) {
-                guardarEntrada()
-            } else {
-                haptica.error()
-                vm.avisar("Introduce un título para guardar")
-            }
-        },
-        modifier = Modifier.align(Alignment.BottomEnd)
-    )
-}
-
-    if (mostrarSelectorApp) {
-        SelectorAppModal(
-            alDescartar = { mostrarSelectorApp = false },
-            alSeleccionarApp = { paquete ->
-                val nombreApp = LanzadorEnlaces.obtenerNombreApp(contexto, paquete)
-                if (titulo.isBlank() || titulo.trim() == "Nueva entrada") {
-                    if (!nombreApp.isNullOrBlank()) {
-                        titulo = nombreApp
-                    }
-                }
-                val urlApp = if (paquete.startsWith("android://")) paquete else "android://$paquete"
-                val idx = indiceEnlaceSeleccionado
-                if (idx != null && idx in listaEnlaces.indices) {
-                    listaEnlaces[idx] = listaEnlaces[idx].copy(valor = urlApp)
+        BotonGuardarEdicion(
+            alGuardar = {
+                if (puedeGuardar) {
+                    guardarEntrada()
                 } else {
-                    if (listaEnlaces.size == 1 && listaEnlaces[0].valor.isBlank()) {
-                        listaEnlaces[0] = EnlaceEditable(valor = urlApp)
-                    } else {
-                        listaEnlaces.add(EnlaceEditable(valor = urlApp))
-                    }
+                    haptica.error()
+                    vm.avisar("Introduce un título para guardar")
                 }
-                mostrarSelectorApp = false
-            }
+            },
+            modifier = Modifier.align(Alignment.BottomEnd)
         )
     }
 
-    if (mostrarDialogoNuevaColeccion) {
-        DialogoCrearEditarColeccion(
-            alGuardar = { nombreCol, iconoCol, colorHexCol ->
-                val nueva = vm.crearColeccion(nombreCol, iconoCol, colorHexCol)
-                colecciones = colecciones + nueva.id
-                mostrarDialogoNuevaColeccion = false
-            },
-            alDescartar = { mostrarDialogoNuevaColeccion = false }
-        )
-    }
+    ModalesEdicion(
+        mostrarSelectorApp = mostrarSelectorApp,
+        mostrarDialogoNuevaColeccion = mostrarDialogoNuevaColeccion,
+        alDescartarSelectorApp = { mostrarSelectorApp = false },
+        alSeleccionarApp = { paquete ->
+            val nombreApp = LanzadorEnlaces.obtenerNombreApp(contexto, paquete)
+            if (titulo.isBlank() || titulo.trim() == "Nueva entrada") {
+                if (!nombreApp.isNullOrBlank()) {
+                    titulo = nombreApp
+                }
+            }
+            val urlApp = if (paquete.startsWith("android://")) paquete else "android://$paquete"
+            val idx = indiceEnlaceSeleccionado
+            if (idx != null && idx in listaEnlaces.indices) {
+                listaEnlaces[idx] = listaEnlaces[idx].copy(valor = urlApp)
+            } else {
+                if (listaEnlaces.size == 1 && listaEnlaces[0].valor.isBlank()) {
+                    listaEnlaces[0] = EnlaceEditable(valor = urlApp)
+                } else {
+                    listaEnlaces.add(EnlaceEditable(valor = urlApp))
+                }
+            }
+            mostrarSelectorApp = false
+        },
+        alDescartarNuevaColeccion = { mostrarDialogoNuevaColeccion = false },
+        alGuardarNuevaColeccion = { nombreCol, iconoCol, colorHexCol ->
+            val nueva = vm.crearColeccion(nombreCol, iconoCol, colorHexCol)
+            colecciones = colecciones + nueva.id
+            mostrarDialogoNuevaColeccion = false
+        }
+    )
 }
