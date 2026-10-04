@@ -3,195 +3,229 @@ package com.jlnavas3.bovedalocal.ui.pantallas.exportar
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Clear
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.DoneAll
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.jlnavas3.bovedalocal.data.Entrada
-import com.jlnavas3.bovedalocal.ui.componentes.BotonBorde
-import com.jlnavas3.bovedalocal.ui.componentes.BotonIconoCabecera
-import com.jlnavas3.bovedalocal.ui.componentes.BotonPrimario
-import com.jlnavas3.bovedalocal.ui.componentes.CheckboxBoveda
-import com.jlnavas3.bovedalocal.ui.componentes.Monograma
+import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorSeparadorAjustes
+import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorTarjetaAjustes
+import com.jlnavas3.bovedalocal.ui.pantallas.lista.IconoTipoEntrada
+import com.jlnavas3.bovedalocal.ui.theme.Borde
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
-import com.jlnavas3.bovedalocal.ui.theme.ColorDatos2FA
-import com.jlnavas3.bovedalocal.ui.theme.ColorDatosApp
-import com.jlnavas3.bovedalocal.ui.theme.ColorDatosContrasena
-import com.jlnavas3.bovedalocal.ui.theme.ColorDatosPasskey
-import com.jlnavas3.bovedalocal.ui.theme.ColorDatosUsuario
-import com.jlnavas3.bovedalocal.ui.theme.ColorDatosWeb
-import com.jlnavas3.bovedalocal.ui.theme.FormaTarjeta
+import com.jlnavas3.bovedalocal.ui.theme.ColorSobreAcento
+import com.jlnavas3.bovedalocal.ui.theme.CurvaturaEsquinas
+import com.jlnavas3.bovedalocal.ui.theme.EstiloBorde
 import com.jlnavas3.bovedalocal.ui.theme.GrosorBorde
-import com.jlnavas3.bovedalocal.ui.theme.Superficie
 import com.jlnavas3.bovedalocal.ui.theme.TextoPrincipal
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
 
+/**
+ * Barra horizontal deslizable de chips de categorías con el modelo visual y dimensiones
+ * de las colecciones (RoundedCornerShape(12.dp), icono representativo de 15.dp, colores propios y bordes configurables).
+ */
 @Composable
 fun ChipsCategoriasExportacion(
     categorias: List<CategoriaExportacion>,
     categoriaActivaId: String,
     alSeleccionarCategoria: (String) -> Unit,
     totalPorCategoria: (CategoriaExportacion) -> Int,
-    onTic: () -> Unit
+    onTic: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     if (categorias.size <= 1) return
 
-    LazyRow(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
+    val formaChip = RoundedCornerShape(12.dp)
+
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .horizontalScroll(rememberScrollState())
+            .padding(horizontal = 20.dp, vertical = 4.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        items(categorias, key = { it.id }) { cat ->
+        categorias.forEach { cat ->
             val seleccionada = cat.id == categoriaActivaId
             val cantCat = totalPorCategoria(cat)
+            val colorPropio = cat.color
+            val icono = cat.icono
 
             Box(
-                modifier = (if (!seleccionada && GrosorBorde > 0.dp && ColorBordeActual != Color.Transparent)
-                    Modifier.border(width = GrosorBorde, color = ColorBordeActual, shape = FormaTarjeta as Shape)
-                else
-                    Modifier)
-                    .clip(FormaTarjeta)
-                    .background(if (seleccionada) ColorAcento else Superficie)
+                modifier = Modifier
+                    .clip(formaChip)
+                    .background(if (seleccionada) colorPropio else ColorTarjetaAjustes)
+                    .then(
+                        if (seleccionada) {
+                            Modifier.border(0.8.dp, colorPropio, formaChip)
+                        } else if (GrosorBorde > 0.dp && EstiloBorde != "ninguno") {
+                            Modifier.border(GrosorBorde, ColorBordeActual, formaChip)
+                        } else {
+                            Modifier.border(0.8.dp, ColorSeparadorAjustes, formaChip)
+                        }
+                    )
                     .clickable {
                         onTic()
                         alSeleccionarCategoria(cat.id)
                     }
-                    .padding(horizontal = 14.dp, vertical = 8.dp)
+                    .padding(horizontal = 10.dp, vertical = 6.dp),
+                contentAlignment = Alignment.Center
             ) {
-                Text(
-                    text = "${cat.etiqueta} ($cantCat)",
-                    style = MaterialTheme.typography.bodySmall.copy(fontWeight = if (seleccionada) FontWeight.Bold else FontWeight.Medium),
-                    color = if (seleccionada) Color.Black else TextoPrincipal
-                )
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(6.dp)
+                ) {
+                    Icon(
+                        imageVector = icono,
+                        contentDescription = null,
+                        tint = if (seleccionada) {
+                            if (colorPropio == ColorAcento) ColorSobreAcento else Color.White
+                        } else colorPropio,
+                        modifier = Modifier.size(15.dp)
+                    )
+                    Text(
+                        text = "${cat.etiqueta} ($cantCat)",
+                        color = if (seleccionada) {
+                            if (colorPropio == ColorAcento) ColorSobreAcento else Color.White
+                        } else TextoPrincipal,
+                        style = MaterialTheme.typography.bodySmall.copy(
+                            fontWeight = if (seleccionada) FontWeight.Bold else FontWeight.Medium,
+                            fontSize = 12.sp
+                        )
+                    )
+                }
             }
         }
     }
 }
 
+/**
+ * Indicador de cantidad de elementos seleccionados.
+ */
 @Composable
 fun BarraControlesSeleccionExportar(
     seleccionadas: Int,
     total: Int,
-    alMarcarVisibles: () -> Unit,
-    alDeseleccionarTodas: () -> Unit
+    modifier: Modifier = Modifier
 ) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = 20.dp, vertical = 4.dp)
     ) {
         Text(
             text = "$seleccionadas de $total seleccionadas",
-            style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.SemiBold),
+            style = MaterialTheme.typography.bodySmall.copy(
+                fontWeight = FontWeight.SemiBold,
+                fontSize = 13.sp
+            ),
             color = ColorAcento
         )
-
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(6.dp)
-        ) {
-            BotonIconoCabecera(
-                onClick = alMarcarVisibles,
-                icono = Icons.Filled.DoneAll,
-                descripcion = "Marcar visibles",
-                tint = ColorAcento
-            )
-
-            BotonIconoCabecera(
-                onClick = alDeseleccionarTodas,
-                icono = Icons.Filled.Clear,
-                descripcion = "Deseleccionar todas",
-                tint = TextoSecundario
-            )
-        }
     }
 }
 
+/**
+ * Fila visual de cada credencial con las mismas dimensiones, avatar e indicador de selección circular
+ * que en la pantalla principal.
+ */
 @Composable
 fun FilaEntradaExportarSelectivo(
     entrada: Entrada,
     marcada: Boolean,
-    alAlternarMarcado: (Boolean) -> Unit
+    alAlternarMarcado: (Boolean) -> Unit,
+    alturaFila: Dp = 74.dp,
+    tamanoMonograma: Int = 46,
+    modifier: Modifier = Modifier
 ) {
-    val colorTipoEntrada = remember(entrada) {
-        when {
-            entrada.passkey != null -> ColorDatosPasskey
-            !entrada.secretoTotp.isNullOrBlank() -> ColorDatos2FA
-            entrada.contrasena.isNotBlank() -> ColorDatosContrasena
-            entrada.usuario.isNotBlank() -> ColorDatosUsuario
-            entrada.urls.any { it.startsWith("androidapp://", ignoreCase = true) || it.startsWith("androidapp:", ignoreCase = true) } -> ColorDatosApp
-            entrada.urls.isNotEmpty() -> ColorDatosWeb
-            else -> ColorAcento
-        }
-    }
+    val compacta = alturaFila.value <= 48f
+    val forma = RoundedCornerShape(CurvaturaEsquinas)
+    val tamanoIcono = if (compacta) 32 else if (alturaFila.value <= 64f) 36 else 40
 
     Box(
-        modifier = (if (GrosorBorde > 0.dp && ColorBordeActual != Color.Transparent)
-            Modifier.border(width = GrosorBorde, color = ColorBordeActual, shape = FormaTarjeta as Shape)
-        else
-            Modifier)
+        modifier = modifier
             .fillMaxWidth()
-            .clip(FormaTarjeta)
-            .background(Superficie)
+            .height(alturaFila)
+            .clip(forma)
+            .background(ColorTarjetaAjustes)
+            .then(
+                if (GrosorBorde > 0.dp && EstiloBorde != "ninguno") {
+                    Modifier.border(GrosorBorde, ColorBordeActual, forma)
+                } else Modifier
+            )
             .clickable { alAlternarMarcado(!marcada) }
-            .padding(horizontal = 12.dp, vertical = 10.dp)
+            .padding(horizontal = 14.dp, vertical = 6.dp),
+        contentAlignment = Alignment.CenterStart
     ) {
-        Box(
-            modifier = Modifier
-                .width(4.dp)
-                .fillMaxHeight()
-                .align(Alignment.CenterStart)
-                .background(colorTipoEntrada)
-        )
         Row(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            CheckboxBoveda(
-                checked = marcada,
-                onCheckedChange = alAlternarMarcado
-            )
+            // Indicador circular de selección estilo PantallaLista
+            Box(
+                modifier = Modifier
+                    .size(24.dp)
+                    .clip(CircleShape)
+                    .background(if (marcada) ColorAcento else Borde),
+                contentAlignment = Alignment.Center
+            ) {
+                if (marcada) {
+                    Icon(
+                        imageVector = Icons.Filled.Check,
+                        contentDescription = null,
+                        tint = ColorSobreAcento,
+                        modifier = Modifier.size(15.dp)
+                    )
+                }
+            }
 
-            Spacer(Modifier.width(6.dp))
+            Spacer(Modifier.width(10.dp))
 
-            Monograma(
-                titulo = entrada.titulo,
-                semilla = entrada.urls.firstOrNull() ?: entrada.usuario,
-                tamano = 36
+            // Icono representativo / Avatar
+            IconoTipoEntrada(
+                entrada = entrada,
+                tamanoIcono = tamanoIcono
             )
 
             Spacer(Modifier.width(12.dp))
 
-            Column(modifier = Modifier.weight(1f)) {
+            // Información de la entrada
+            Column(
+                modifier = Modifier.weight(1f),
+                verticalArrangement = Arrangement.Center
+            ) {
                 Text(
-                    text = entrada.titulo,
-                    style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
+                    text = entrada.titulo.ifBlank { "Sin título" },
+                    style = if (compacta) {
+                        MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold)
+                    } else {
+                        MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold, fontSize = 15.sp)
+                    },
                     color = TextoPrincipal,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
@@ -207,35 +241,5 @@ fun FilaEntradaExportarSelectivo(
                 }
             }
         }
-    }
-}
-
-@Composable
-fun BotonesAccionInferioresExportar(
-    cantidadSeleccionada: Int,
-    alExportar: () -> Unit,
-    alCancelar: () -> Unit
-) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        BotonPrimario(
-            texto = if (cantidadSeleccionada > 0)
-                "Exportar ($cantidadSeleccionada)"
-            else
-                "Selecciona",
-            icono = Icons.Filled.Check,
-            activo = cantidadSeleccionada > 0,
-            modifier = Modifier.weight(1f),
-            alPulsar = alExportar
-        )
-
-        BotonBorde(
-            texto = "Cancelar",
-            icono = Icons.Filled.Close,
-            modifier = Modifier.weight(1f),
-            alPulsar = alCancelar
-        )
     }
 }
