@@ -25,8 +25,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.jlnavas3.bovedalocal.data.AjustesApp
 import com.jlnavas3.bovedalocal.data.Entrada
 import com.jlnavas3.bovedalocal.ui.componentes.Monograma
+import com.jlnavas3.bovedalocal.ui.componentes.seguridad.TextoSeguroVisual
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.util.IconoAppCircular
 import com.jlnavas3.bovedalocal.util.rememberIconoAppInstalada
@@ -62,6 +64,7 @@ fun FilaPasskey(
     alPulsar: () -> Unit,
     alAlternarFavorito: () -> Unit,
     modifier: Modifier = Modifier,
+    ajustes: AjustesApp? = null,
     seleccionActiva: Boolean = false,
     seleccionado: Boolean = false,
     alPulsarLargo: (() -> Unit)? = null,
@@ -167,13 +170,31 @@ fun FilaPasskey(
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
-                Text(
-                    datos.usuario.ifBlank { entrada.usuario.ifBlank { datos.rpId } },
-                    color = TextoSecundario,
-                    style = MaterialTheme.typography.bodyMedium,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
+                val textoUsuario = datos.usuario.ifBlank { entrada.usuario.ifBlank { datos.rpId } }
+                val tieneUsuarioReal = datos.usuario.isNotBlank() || entrada.usuario.isNotBlank()
+                val seguridadVisualActiva = ajustes?.seguridadVisualActiva == true
+                val ocultarUsuario = seguridadVisualActiva && (ajustes?.ocultarUsuario == true)
+                val estiloOcultamiento = ajustes?.estiloOcultamientoVisual ?: "desenfoque"
+
+                if (tieneUsuarioReal && ocultarUsuario) {
+                    TextoSeguroVisual(
+                        texto = textoUsuario,
+                        oculto = true,
+                        estilo = estiloOcultamiento,
+                        estiloTexto = MaterialTheme.typography.bodyMedium,
+                        colorTexto = TextoSecundario,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                } else {
+                    Text(
+                        textoUsuario,
+                        color = TextoSecundario,
+                        style = MaterialTheme.typography.bodyMedium,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
                 Text(
                     "Creada el ${formato.format(Date(entrada.creadaEn))}",
                     color = Menta,

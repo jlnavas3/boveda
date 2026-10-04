@@ -262,6 +262,7 @@ fun PantallaPasskeys(vm: VaultViewModel) {
                                 haptica.tic()
                                 vm.alternarFavorito(entrada.id)
                             },
+                            ajustes = ajustes,
                             mostrarIndicadores = ajustes.mostrarIndicadoresContenido
                         )
                     }

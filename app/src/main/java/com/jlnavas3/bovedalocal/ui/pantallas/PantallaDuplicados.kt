@@ -301,6 +301,7 @@ fun PantallaDuplicados(
                                         vm.avisar("Copia seleccionada conservada")
                                     },
                                     alVerDetalle = { vm.ir(Pantalla.Detalle(entrada.id, idsContexto = grupo.entradas.map { it.id })) },
+                                    ajustes = ajustes,
                                     mostrarIndicadores = ajustes.mostrarIndicadoresContenido,
                                     enGrupo = false,
                                     seleccionActiva = modoSeleccion,
@@ -338,6 +339,7 @@ fun PantallaDuplicados(
                                     alVerDetalle = { id ->
                                         vm.ir(Pantalla.Detalle(id, idsContexto = grupo.entradas.map { it.id }))
                                     },
+                                    ajustes = ajustes,
                                     mostrarIndicadores = ajustes.mostrarIndicadoresContenido,
                                     seleccionActiva = modoSeleccion,
                                     seleccionados = seleccionados,

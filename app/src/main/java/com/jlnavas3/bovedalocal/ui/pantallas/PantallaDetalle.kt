@@ -345,7 +345,8 @@ private fun ContenidoEntradaDetalle(
                 vm.copiar("Contraseña", entrada.contrasena, sensible = true)
                 vm.registrarUsoEntrada(entrada.id)
                 ultimaCopia = "contrasena"
-            }
+            },
+            ajustes = ajustes
         )
         if (entrada.usuario.isNotBlank() || entrada.contrasena.isNotBlank()) {
             Spacer(Modifier.height(16.dp))
@@ -382,6 +383,7 @@ private fun ContenidoEntradaDetalle(
         TarjetaCamposDetalle(
             campos = entrada.camposPersonalizados,
             vm = vm,
+            ajustes = ajustes,
             haptica = haptica,
             ultimaCopia = ultimaCopia,
             alCopiarCampo = { idCampo -> ultimaCopia = idCampo }
@@ -398,7 +400,8 @@ private fun ContenidoEntradaDetalle(
                 haptica.toque()
                 vm.copiar("Notas", entrada.notas, sensible = false)
                 ultimaCopia = "notas"
-            }
+            },
+            ajustes = ajustes
         )
         if (entrada.notas.isNotBlank()) {
             Spacer(Modifier.height(16.dp))

@@ -40,8 +40,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.jlnavas3.bovedalocal.data.AjustesApp
 import com.jlnavas3.bovedalocal.data.Entrada
 import com.jlnavas3.bovedalocal.data.TipoEntrada
+import com.jlnavas3.bovedalocal.ui.componentes.seguridad.TemporizadorAutoOcultar
+import com.jlnavas3.bovedalocal.ui.componentes.seguridad.TextoSeguroVisual
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjusteGris
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorCampoAjustes
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorSeparadorAjustes
@@ -169,6 +172,7 @@ fun FilaProblemaAgil(
     alCambiarRapido: () -> Unit,
     alVerDetalle: () -> Unit,
     modifier: Modifier = Modifier,
+    ajustes: AjustesApp? = null,
     alIgnorar: () -> Unit = {},
     mostrarIndicadores: Boolean = false,
     enGrupo: Boolean = true,
@@ -191,7 +195,20 @@ fun FilaProblemaAgil(
     val colorLegible = colorLegibleParaTema(colorTipo)
     val forma = if (enGrupo) RectangleShape else RoundedCornerShape(CurvaturaEsquinas)
     val fondo = if (seleccionado) ColorAcento.copy(alpha = 0.22f) else if (enGrupo) androidx.compose.ui.graphics.Color.Transparent else ColorTarjetaAjustes
+    
+    val seguridadVisualActiva = ajustes?.seguridadVisualActiva == true
+    val ocultarUsuario = seguridadVisualActiva && (ajustes?.ocultarUsuario == true)
+    val estiloOcultamiento = ajustes?.estiloOcultamientoVisual ?: "desenfoque"
+    val tiempoAutoOcultar = ajustes?.tiempoAutoOcultarSegundos ?: 10
+
     var mostrarContrasena by rememberSaveable { mutableStateOf(false) }
+
+    TemporizadorAutoOcultar(
+        revelado = mostrarContrasena,
+        tiempoSegundos = if (seguridadVisualActiva) tiempoAutoOcultar else 0
+    ) {
+        mostrarContrasena = false
+    }
 
     ContenedorDeslizamientoBoveda(
         idItem = entrada.id,
@@ -333,13 +350,25 @@ fun FilaProblemaAgil(
 
                     // Fila 2: Usuario / Correo
                     val usuarioTexto = entrada.usuario.ifBlank { "Sin usuario" }
-                    Text(
-                        text = usuarioTexto,
-                        color = if (entrada.usuario.isNotBlank()) ColorTextoAjustes.copy(alpha = 0.85f) else ColorAjusteGris,
-                        style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.5.sp),
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
+                    if (entrada.usuario.isNotBlank() && ocultarUsuario) {
+                        TextoSeguroVisual(
+                            texto = entrada.usuario,
+                            oculto = true,
+                            estilo = estiloOcultamiento,
+                            estiloTexto = MaterialTheme.typography.bodySmall.copy(fontSize = 11.5.sp),
+                            colorTexto = ColorTextoAjustes.copy(alpha = 0.85f),
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    } else {
+                        Text(
+                            text = usuarioTexto,
+                            color = if (entrada.usuario.isNotBlank()) ColorTextoAjustes.copy(alpha = 0.85f) else ColorAjusteGris,
+                            style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.5.sp),
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    }
 
                     Spacer(Modifier.height(2.dp))
 
@@ -349,28 +378,34 @@ fun FilaProblemaAgil(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        val textoClave = if (entrada.contrasena.isBlank()) {
-                            "Sin contraseña"
-                        } else if (mostrarContrasena) {
-                            entrada.contrasena
+                        if (entrada.contrasena.isBlank()) {
+                            Text(
+                                text = "Sin contraseña",
+                                color = ColorAjusteGris,
+                                style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.5.sp),
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
+                                modifier = Modifier.weight(1f, fill = false)
+                            )
                         } else {
-                            "•".repeat(entrada.contrasena.length.coerceIn(8, 16))
+                            TextoSeguroVisual(
+                                texto = entrada.contrasena,
+                                oculto = !mostrarContrasena,
+                                estilo = if (seguridadVisualActiva) estiloOcultamiento else "puntos_reales",
+                                estiloTexto = if (mostrarContrasena) {
+                                    MaterialTheme.typography.bodySmall.copy(
+                                        fontFamily = FontFamily.Monospace,
+                                        fontSize = 11.sp
+                                    )
+                                } else {
+                                    MaterialTheme.typography.bodySmall.copy(fontSize = 11.5.sp)
+                                },
+                                colorTexto = ColorTextoAjustes.copy(alpha = 0.9f),
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
+                                modifier = Modifier.weight(1f, fill = false)
+                            )
                         }
-                        Text(
-                            text = textoClave,
-                            color = if (entrada.contrasena.isBlank()) ColorAjusteGris else ColorTextoAjustes.copy(alpha = 0.9f),
-                            style = if (mostrarContrasena && entrada.contrasena.isNotBlank()) {
-                                MaterialTheme.typography.bodySmall.copy(
-                                    fontFamily = FontFamily.Monospace,
-                                    fontSize = 11.sp
-                                )
-                            } else {
-                                MaterialTheme.typography.bodySmall.copy(fontSize = 11.5.sp)
-                            },
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
-                            modifier = Modifier.weight(1f, fill = false)
-                        )
                         if (entrada.contrasena.isNotBlank()) {
                             IconButton(
                                 onClick = { mostrarContrasena = !mostrarContrasena },
@@ -412,6 +447,7 @@ fun TarjetaGrupoRepetido(
     totalEnGrupo: Int = grupo.size,
     alCambiarClave: (Entrada) -> Unit,
     alVerDetalle: (String) -> Unit,
+    ajustes: AjustesApp? = null,
     mostrarIndicadores: Boolean = false,
     colapsable: Boolean = true,
     expandido: Boolean = false,
@@ -435,6 +471,7 @@ fun TarjetaGrupoRepetido(
                 colorDetalle = Peligro,
                 alCambiarRapido = { alCambiarClave(entrada) },
                 alVerDetalle = { alVerDetalle(entrada.id) },
+                ajustes = ajustes,
                 alIgnorar = { alIgnorar(entrada) },
                 mostrarIndicadores = mostrarIndicadores,
                 enGrupo = true,

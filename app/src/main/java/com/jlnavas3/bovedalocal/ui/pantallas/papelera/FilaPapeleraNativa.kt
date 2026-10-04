@@ -38,8 +38,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.jlnavas3.bovedalocal.data.AjustesApp
 import com.jlnavas3.bovedalocal.data.Entrada
 import com.jlnavas3.bovedalocal.data.TipoEntrada
+import com.jlnavas3.bovedalocal.ui.componentes.seguridad.TextoSeguroVisual
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjusteGris
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorCampoAjustes
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorSeparadorAjustes
@@ -80,6 +82,7 @@ fun FilaPapeleraNativa(
     alRestaurar: () -> Unit,
     alBorrarDefinitivo: () -> Unit,
     modifier: Modifier = Modifier,
+    ajustes: AjustesApp? = null,
     mostrarIndicadores: Boolean = false,
     enGrupo: Boolean = true
 ) {
@@ -190,13 +193,29 @@ fun FilaPapeleraNativa(
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
-                Text(
-                    text = subtitulo,
-                    color = ColorAjusteGris,
-                    style = MaterialTheme.typography.bodySmall,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
+                val seguridadVisualActiva = ajustes?.seguridadVisualActiva == true
+                val ocultarUsuario = seguridadVisualActiva && (ajustes?.ocultarUsuario == true)
+                val estiloOcultamiento = ajustes?.estiloOcultamientoVisual ?: "desenfoque"
+
+                if (entrada.usuario.isNotBlank() && ocultarUsuario) {
+                    TextoSeguroVisual(
+                        texto = subtitulo,
+                        oculto = true,
+                        estilo = estiloOcultamiento,
+                        estiloTexto = MaterialTheme.typography.bodySmall,
+                        colorTexto = ColorAjusteGris,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                } else {
+                    Text(
+                        text = subtitulo,
+                        color = ColorAjusteGris,
+                        style = MaterialTheme.typography.bodySmall,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
                 Spacer(Modifier.height(2.dp))
                 Row(
                     verticalAlignment = Alignment.CenterVertically,

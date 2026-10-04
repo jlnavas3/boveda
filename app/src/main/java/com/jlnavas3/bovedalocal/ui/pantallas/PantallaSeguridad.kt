@@ -34,6 +34,7 @@ import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.DialogoModoCompatible
 import com.jlnavas3.bovedalocal.ui.pantallas.seguridad.DialogoDesactivarSecure
 import com.jlnavas3.bovedalocal.ui.pantallas.seguridad.GrupoBiometria
 import com.jlnavas3.bovedalocal.ui.pantallas.seguridad.GrupoBloqueoApp
+import com.jlnavas3.bovedalocal.ui.pantallas.seguridad.GrupoSeguridadVisual
 import com.jlnavas3.bovedalocal.ui.pantallas.seguridad.GrupoPortapapeles
 import com.jlnavas3.bovedalocal.ui.pantallas.seguridad.GrupoAntiguedadSalud
 import com.jlnavas3.bovedalocal.util.AjustesSistema
@@ -182,6 +183,58 @@ fun PantallaSeguridad(
                         haptica.tic()
                         vm.restablecerBloqueoApp()
                         vm.avisar("Valores de bloqueo restablecidos")
+                    }
+                )
+
+                Spacer(Modifier.height(18.dp))
+
+                // Grupo: Seguridad visual (Privacidad de pantalla)
+                GrupoSeguridadVisual(
+                    seguridadVisualActiva = ajustes.seguridadVisualActiva,
+                    estiloOcultamientoVisual = ajustes.estiloOcultamientoVisual,
+                    tiempoAutoOcultarSegundos = ajustes.tiempoAutoOcultarSegundos,
+                    ocultarUsuario = ajustes.ocultarUsuario,
+                    ocultarContrasena = ajustes.ocultarContrasena,
+                    ocultarTotp = ajustes.ocultarTotp,
+                    ocultarNotas = ajustes.ocultarNotas,
+                    ocultarCampos = ajustes.ocultarCampos,
+                    mostrarIdsAjustes = ajustes.mostrarIdsAjustes,
+                    alCambiarSeguridadVisualActiva = { activar ->
+                        haptica.tic()
+                        vm.ajustarSeguridadVisualActiva(activar)
+                    },
+                    alCambiarEstiloOcultamiento = { estilo ->
+                        haptica.tic()
+                        vm.ajustarEstiloOcultamientoVisual(estilo)
+                    },
+                    alCambiarTiempoAutoOcultar = { segundos ->
+                        haptica.tic()
+                        vm.ajustarTiempoAutoOcultar(segundos)
+                    },
+                    alCambiarOcultarUsuario = { activar ->
+                        haptica.tic()
+                        vm.ajustarOcultarUsuario(activar)
+                    },
+                    alCambiarOcultarContrasena = { activar ->
+                        haptica.tic()
+                        vm.ajustarOcultarContrasena(activar)
+                    },
+                    alCambiarOcultarTotp = { activar ->
+                        haptica.tic()
+                        vm.ajustarOcultarTotp(activar)
+                    },
+                    alCambiarOcultarNotas = { activar ->
+                        haptica.tic()
+                        vm.ajustarOcultarNotas(activar)
+                    },
+                    alCambiarOcultarCampos = { activar ->
+                        haptica.tic()
+                        vm.ajustarOcultarCampos(activar)
+                    },
+                    alRestablecer = {
+                        haptica.tic()
+                        vm.restablecerSeguridadVisual()
+                        vm.avisar("Valores de seguridad visual restablecidos")
                     }
                 )
 

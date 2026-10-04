@@ -49,6 +49,7 @@ import com.jlnavas3.bovedalocal.ui.theme.CurvaturaEsquinas
 import com.jlnavas3.bovedalocal.util.Dominios
 import com.jlnavas3.bovedalocal.util.GestorAppsInstaladas
 import com.jlnavas3.bovedalocal.util.LanzadorEnlaces
+import com.jlnavas3.bovedalocal.ui.componentes.seguridad.TextoSeguroVisual
 import com.jlnavas3.bovedalocal.ui.theme.EstiloBorde
 import com.jlnavas3.bovedalocal.ui.theme.GrosorBorde
 import com.jlnavas3.bovedalocal.ui.theme.TextoPrincipal
@@ -77,7 +78,10 @@ fun FilaEntrada(
     separarDigitosTotp: Boolean = false,
     mostrarIndicadores: Boolean = true,
     enGrupo: Boolean = false,
-    esUltimoEnGrupo: Boolean = false
+    esUltimoEnGrupo: Boolean = false,
+    ocultarUsuario: Boolean = false,
+    ocultarTotp: Boolean = false,
+    estiloOcultamiento: String = "desenfoque"
 ) {
     val compacta = alturaFila.value <= 48f
     val forma = if (enGrupo) {
@@ -221,25 +225,33 @@ fun FilaEntrada(
                                 algoritmo = entrada.totpAlgoritmo,
                                 separarDigitosTotp = separarDigitosTotp,
                                 compacta = compacta,
-                                alCopiarCodigo = alCopiarCodigo
+                                alCopiarCodigo = alCopiarCodigo,
+                                ocultarTotp = ocultarTotp,
+                                estiloOcultamiento = estiloOcultamiento
                             )
                         }
                     }
 
                     Spacer(Modifier.height(2.dp))
 
-                    Text(
-                        text = when (entrada.tipo) {
-                            TipoEntrada.PASSKEY -> "Passkey · ${entrada.passkey?.rpId ?: ""}"
-                            TipoEntrada.NOTA -> "Nota segura"
-                            TipoEntrada.LOGIN -> entrada.usuario.ifBlank { entrada.urls.firstOrNull() ?: "Sin usuario" }
-                            else -> entrada.usuario.ifBlank {
-                                entrada.camposPersonalizados.firstOrNull { it.valor.isNotBlank() }?.let { "${it.etiqueta}: ${if (it.esSensibleEfectivo) "••••" else it.valor}" }
-                                    ?: entrada.tipo.etiqueta
-                            }
-                        },
-                        style = if (compacta) MaterialTheme.typography.labelSmall else MaterialTheme.typography.bodySmall.copy(fontSize = 12.5.sp),
-                        color = TextoSecundario,
+                    val textoSubtitulo = when (entrada.tipo) {
+                        TipoEntrada.PASSKEY -> "Passkey · ${entrada.passkey?.rpId ?: ""}"
+                        TipoEntrada.NOTA -> "Nota segura"
+                        TipoEntrada.LOGIN -> entrada.usuario.ifBlank { entrada.urls.firstOrNull() ?: "Sin usuario" }
+                        else -> entrada.usuario.ifBlank {
+                            entrada.camposPersonalizados.firstOrNull { it.valor.isNotBlank() }?.let { "${it.etiqueta}: ${if (it.esSensibleEfectivo) "••••" else it.valor}" }
+                                ?: entrada.tipo.etiqueta
+                        }
+                    }
+                    val esDatoUsuario = entrada.usuario.isNotBlank() && (entrada.tipo == TipoEntrada.LOGIN || entrada.tipo == TipoEntrada.PASSKEY || entrada.tipo !in listOf(TipoEntrada.NOTA, TipoEntrada.WIFI))
+                    val debeOcultarSubtitulo = ocultarUsuario && esDatoUsuario
+
+                    TextoSeguroVisual(
+                        texto = textoSubtitulo,
+                        oculto = debeOcultarSubtitulo,
+                        estilo = estiloOcultamiento,
+                        estiloTexto = if (compacta) MaterialTheme.typography.labelSmall else MaterialTheme.typography.bodySmall.copy(fontSize = 12.5.sp),
+                        colorTexto = TextoSecundario,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                         modifier = Modifier.fillMaxWidth()

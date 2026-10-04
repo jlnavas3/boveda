@@ -87,6 +87,9 @@ import com.jlnavas3.bovedalocal.ui.theme.ColorSobreAcento
 
 import com.jlnavas3.bovedalocal.crypto.Base32
 import com.jlnavas3.bovedalocal.crypto.Totp
+import com.jlnavas3.bovedalocal.data.AjustesApp
+import com.jlnavas3.bovedalocal.ui.componentes.seguridad.TemporizadorAutoOcultar
+import com.jlnavas3.bovedalocal.ui.componentes.seguridad.TextoSeguroVisual
 
 private fun obtenerPrimerGrupoPasskey(credId: String): String {
     val limpio = credId.trim()
@@ -106,6 +109,7 @@ fun TarjetaGrupoDuplicado(
     alAlternar: () -> Unit,
     alConservar: (Entrada) -> Unit,
     alVerDetalle: (String) -> Unit,
+    ajustes: AjustesApp? = null,
     mostrarIndicadores: Boolean = false,
     seleccionActiva: Boolean = false,
     seleccionados: Set<String> = emptySet(),
@@ -125,6 +129,7 @@ fun TarjetaGrupoDuplicado(
                 esSugerida = entrada.id == grupo.sugeridaPrincipal.id,
                 alConservar = { alConservar(entrada) },
                 alVerDetalle = { alVerDetalle(entrada.id) },
+                ajustes = ajustes,
                 mostrarIndicadores = mostrarIndicadores,
                 enGrupo = true,
                 seleccionActiva = seleccionActiva,
@@ -144,6 +149,7 @@ fun FilaEntradaDuplicada(
     alConservar: () -> Unit,
     alVerDetalle: () -> Unit,
     modifier: Modifier = Modifier,
+    ajustes: AjustesApp? = null,
     mostrarIndicadores: Boolean = false,
     enGrupo: Boolean = false,
     seleccionActiva: Boolean = false,
@@ -166,8 +172,27 @@ fun FilaEntradaDuplicada(
         TipoEntrada.WALLET -> Icons.Filled.AccountBalanceWallet to ColorAcento
     }
     val colorLegible = colorLegibleParaTema(colorTipo)
+    val seguridadVisualActiva = ajustes?.seguridadVisualActiva == true
+    val ocultarUsuario = seguridadVisualActiva && (ajustes?.ocultarUsuario == true)
+    val estiloOcultamiento = ajustes?.estiloOcultamientoVisual ?: "desenfoque"
+    val tiempoAutoOcultar = ajustes?.tiempoAutoOcultarSegundos ?: 10
+
     var mostrarContrasena by rememberSaveable { mutableStateOf(false) }
     var mostrarTotp by rememberSaveable { mutableStateOf(false) }
+
+    TemporizadorAutoOcultar(
+        revelado = mostrarContrasena,
+        tiempoSegundos = if (seguridadVisualActiva) tiempoAutoOcultar else 0
+    ) {
+        mostrarContrasena = false
+    }
+
+    TemporizadorAutoOcultar(
+        revelado = mostrarTotp,
+        tiempoSegundos = if (seguridadVisualActiva) tiempoAutoOcultar else 0
+    ) {
+        mostrarTotp = false
+    }
 
     ContenedorDeslizamientoBoveda(
         idItem = entrada.id,
@@ -315,13 +340,25 @@ fun FilaEntradaDuplicada(
 
                     // Usuario (sin prefijo "Usuario: ")
                     val usuarioTexto = entrada.usuario.ifBlank { "Sin usuario" }
-                    Text(
-                        text = usuarioTexto,
-                        color = if (entrada.usuario.isNotBlank()) ColorTextoAjustes.copy(alpha = 0.85f) else ColorAjusteGris,
-                        style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.5.sp),
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
+                    if (entrada.usuario.isNotBlank() && ocultarUsuario) {
+                        TextoSeguroVisual(
+                            texto = entrada.usuario,
+                            oculto = true,
+                            estilo = estiloOcultamiento,
+                            estiloTexto = MaterialTheme.typography.bodySmall.copy(fontSize = 11.5.sp),
+                            colorTexto = ColorTextoAjustes.copy(alpha = 0.85f),
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    } else {
+                        Text(
+                            text = usuarioTexto,
+                            color = if (entrada.usuario.isNotBlank()) ColorTextoAjustes.copy(alpha = 0.85f) else ColorAjusteGris,
+                            style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.5.sp),
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    }
 
                     Spacer(Modifier.height(2.dp))
 
@@ -331,28 +368,34 @@ fun FilaEntradaDuplicada(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        val textoClave = if (entrada.contrasena.isBlank()) {
-                            "Sin contraseña"
-                        } else if (mostrarContrasena) {
-                            entrada.contrasena
+                        if (entrada.contrasena.isBlank()) {
+                            Text(
+                                text = "Sin contraseña",
+                                color = ColorAjusteGris,
+                                style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.5.sp),
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
+                                modifier = Modifier.weight(1f, fill = false)
+                            )
                         } else {
-                            "•".repeat(entrada.contrasena.length.coerceIn(8, 16))
+                            TextoSeguroVisual(
+                                texto = entrada.contrasena,
+                                oculto = !mostrarContrasena,
+                                estilo = if (seguridadVisualActiva) estiloOcultamiento else "puntos_reales",
+                                estiloTexto = if (mostrarContrasena) {
+                                    MaterialTheme.typography.bodySmall.copy(
+                                        fontFamily = FontFamily.Monospace,
+                                        fontSize = 11.sp
+                                    )
+                                } else {
+                                    MaterialTheme.typography.bodySmall.copy(fontSize = 11.5.sp)
+                                },
+                                colorTexto = ColorTextoAjustes.copy(alpha = 0.9f),
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
+                                modifier = Modifier.weight(1f, fill = false)
+                            )
                         }
-                        Text(
-                            text = textoClave,
-                            color = if (entrada.contrasena.isBlank()) ColorAjusteGris else ColorTextoAjustes.copy(alpha = 0.9f),
-                            style = if (mostrarContrasena && entrada.contrasena.isNotBlank()) {
-                                MaterialTheme.typography.bodySmall.copy(
-                                    fontFamily = FontFamily.Monospace,
-                                    fontSize = 11.sp
-                                )
-                            } else {
-                                MaterialTheme.typography.bodySmall.copy(fontSize = 11.5.sp)
-                            },
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
-                            modifier = Modifier.weight(1f, fill = false)
-                        )
                         if (entrada.contrasena.isNotBlank()) {
                             IconButton(
                                 onClick = { mostrarContrasena = !mostrarContrasena },
@@ -423,11 +466,7 @@ fun FilaEntradaDuplicada(
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.SpaceBetween
                         ) {
-                            val textoTotp = if (mostrarTotp) {
-                                if (codigoTotp.length == 6) "${codigoTotp.take(3)} ${codigoTotp.drop(3)}" else codigoTotp
-                            } else {
-                                "•".repeat(entrada.totpDigitos.coerceIn(6, 8))
-                            }
+                            val textoTotp = if (codigoTotp.length == 6) "${codigoTotp.take(3)} ${codigoTotp.drop(3)}" else codigoTotp
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,
                                 horizontalArrangement = Arrangement.spacedBy(5.dp),
@@ -438,10 +477,11 @@ fun FilaEntradaDuplicada(
                                     color = ColorAjusteGris,
                                     style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.sp)
                                 )
-                                Text(
-                                    text = textoTotp,
-                                    color = ColorTextoAjustes.copy(alpha = 0.9f),
-                                    style = if (mostrarTotp) {
+                                TextoSeguroVisual(
+                                    texto = textoTotp,
+                                    oculto = !mostrarTotp,
+                                    estilo = if (seguridadVisualActiva) estiloOcultamiento else "puntos_fijos",
+                                    estiloTexto = if (mostrarTotp) {
                                         MaterialTheme.typography.bodySmall.copy(
                                             fontFamily = FontFamily.Monospace,
                                             fontWeight = FontWeight.SemiBold,
@@ -450,6 +490,7 @@ fun FilaEntradaDuplicada(
                                     } else {
                                         MaterialTheme.typography.bodySmall.copy(fontSize = 11.5.sp)
                                     },
+                                    colorTexto = ColorTextoAjustes.copy(alpha = 0.9f),
                                     maxLines = 1,
                                     overflow = TextOverflow.Ellipsis
                                 )

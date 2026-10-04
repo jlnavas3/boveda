@@ -30,9 +30,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.jlnavas3.bovedalocal.data.AjustesApp
 import com.jlnavas3.bovedalocal.data.CampoPersonalizado
 import com.jlnavas3.bovedalocal.data.TipoCampo
 import com.jlnavas3.bovedalocal.ui.VaultViewModel
+import com.jlnavas3.bovedalocal.ui.componentes.seguridad.TemporizadorAutoOcultar
+import com.jlnavas3.bovedalocal.ui.componentes.seguridad.TextoSeguroVisual
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
 import com.jlnavas3.bovedalocal.ui.theme.EstiloMono
@@ -47,6 +50,7 @@ import com.jlnavas3.bovedalocal.util.Haptica
 fun TarjetaCamposDetalle(
     campos: List<CampoPersonalizado>,
     vm: VaultViewModel? = null,
+    ajustes: AjustesApp? = null,
     haptica: Haptica,
     ultimaCopia: String?,
     alCopiarCampo: (String) -> Unit,
@@ -64,6 +68,7 @@ fun TarjetaCamposDetalle(
             FilaCampoPersonalizadoDetalle(
                 campo = campo,
                 vm = vm,
+                ajustes = ajustes,
                 haptica = haptica,
                 copiado = ultimaCopia == "campo_${campo.id}",
                 alCopiar = { alCopiarCampo("campo_${campo.id}") },
@@ -77,6 +82,7 @@ fun TarjetaCamposDetalle(
 private fun FilaCampoPersonalizadoDetalle(
     campo: CampoPersonalizado,
     vm: VaultViewModel?,
+    ajustes: AjustesApp? = null,
     haptica: Haptica,
     copiado: Boolean,
     alCopiar: () -> Unit,
@@ -84,6 +90,18 @@ private fun FilaCampoPersonalizadoDetalle(
 ) {
     var revelado by remember { mutableStateOf(false) }
     val esSensible = campo.esSensibleEfectivo
+    val seguridadVisualActiva = ajustes?.seguridadVisualActiva == true && ajustes.ocultarCampos
+    val estiloOcultamiento = ajustes?.estiloOcultamientoVisual ?: "desenfoque"
+    val tiempoAutoOcultar = ajustes?.tiempoAutoOcultarSegundos ?: 10
+
+    if (esSensible) {
+        TemporizadorAutoOcultar(
+            revelado = revelado,
+            tiempoSegundos = if (seguridadVisualActiva) tiempoAutoOcultar else 0
+        ) {
+            revelado = false
+        }
+    }
 
     TarjetaDatoDetalle(colorBorde = ColorAcento) {
         Column(
@@ -149,20 +167,25 @@ private fun FilaCampoPersonalizadoDetalle(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(
-                    text = when {
-                        !esSensible -> campo.valor
-                        revelado -> campo.valor
-                        campo.tipo == TipoCampo.PIN -> "• ".repeat(campo.valor.length).trim()
-                        else -> "•".repeat(campo.valor.length.coerceIn(8, 20))
-                    },
-                    style = if (esSensible && !revelado) EstiloMonoGrande.copy(letterSpacing = 2.sp) else if (esSensible) EstiloMono else MaterialTheme.typography.bodyLarge,
-                    color = if (esSensible && !revelado) TextoSecundario else TextoPrincipal,
-                    maxLines = if (esSensible && !revelado) 1 else Int.MAX_VALUE,
-                    softWrap = !esSensible || revelado,
-                    overflow = TextOverflow.Clip,
-                    modifier = Modifier.weight(1f)
-                )
+                if (esSensible) {
+                    TextoSeguroVisual(
+                        texto = campo.valor,
+                        oculto = !revelado,
+                        estilo = if (seguridadVisualActiva) estiloOcultamiento else "puntos_reales",
+                        estiloTexto = if (!revelado) EstiloMonoGrande.copy(letterSpacing = 2.sp) else EstiloMono,
+                        colorTexto = if (!revelado) TextoSecundario else TextoPrincipal,
+                        maxLines = if (!revelado) 1 else Int.MAX_VALUE,
+                        overflow = TextOverflow.Clip,
+                        modifier = Modifier.weight(1f)
+                    )
+                } else {
+                    Text(
+                        text = campo.valor,
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = TextoPrincipal,
+                        modifier = Modifier.weight(1f)
+                    )
+                }
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     if (esSensible) {
                         BotonIconoDetalle(

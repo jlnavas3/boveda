@@ -19,6 +19,18 @@ object AjustesDefaults {
         const val UMBRAL_ANTIGUEDAD_DIAS = 180
     }
 
+    // 1b. Seguridad Visual y Privacidad de Pantalla
+    object SeguridadVisual {
+        const val ACTIVA = false
+        const val ESTILO = "desenfoque"
+        const val AUTO_OCULTAR_SEGUNDOS = 10
+        const val OCULTAR_USUARIO = true
+        const val OCULTAR_CONTRASENA = true
+        const val OCULTAR_TOTP = false
+        const val OCULTAR_NOTAS = true
+        const val OCULTAR_CAMPOS = true
+    }
+
     // 2. Apariencia y Tema General
     object Tema {
         const val NOMBRE_PERSONALIZADO = ""

@@ -16,6 +16,7 @@ import androidx.compose.ui.unit.sp
 import com.jlnavas3.bovedalocal.crypto.Base32
 import com.jlnavas3.bovedalocal.crypto.Totp
 import com.jlnavas3.bovedalocal.ui.componentes.IndicadorTotpTarta
+import com.jlnavas3.bovedalocal.ui.componentes.seguridad.TextoSeguroVisual
 import com.jlnavas3.bovedalocal.ui.theme.ColorTitulos
 import com.jlnavas3.bovedalocal.ui.theme.EstiloMono
 
@@ -28,7 +29,9 @@ fun ContenidoTotpEnFila(
     algoritmo: String,
     separarDigitosTotp: Boolean,
     compacta: Boolean,
-    alCopiarCodigo: (String) -> Unit
+    alCopiarCodigo: (String) -> Unit,
+    ocultarTotp: Boolean = false,
+    estiloOcultamiento: String = "desenfoque"
 ) {
     val codigo = remember(segundosUnix / periodo, secreto, digitos, algoritmo) {
         if (secreto.isBlank()) ""
@@ -58,14 +61,16 @@ fun ContenidoTotpEnFila(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.clickable { alCopiarCodigo(codigo) }
         ) {
-            Text(
-                text = codigoVisible,
-                style = if (compacta) {
+            TextoSeguroVisual(
+                texto = codigoVisible,
+                oculto = ocultarTotp,
+                estilo = estiloOcultamiento,
+                estiloTexto = if (compacta) {
                     EstiloMono.copy(fontWeight = FontWeight.Bold, fontSize = 13.sp)
                 } else {
                     EstiloMono.copy(fontWeight = FontWeight.Bold, fontSize = 14.sp)
                 },
-                color = ColorTitulos
+                colorTexto = ColorTitulos
             )
             Spacer(Modifier.width(5.dp))
             IndicadorTotpTarta(

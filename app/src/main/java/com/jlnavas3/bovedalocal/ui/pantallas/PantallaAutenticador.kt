@@ -209,6 +209,7 @@ fun PantallaAutenticador(vm: VaultViewModel, estado: EstadoBoveda) {
                     ahora = ahora,
                     separarDigitos = ajustes.totpSepararDigitos,
                     haptica = haptica,
+                    ajustes = ajustes,
                     seleccionActiva = modoSeleccion,
                     seleccionados = seleccionados,
                     alPulsarLargo = { id ->

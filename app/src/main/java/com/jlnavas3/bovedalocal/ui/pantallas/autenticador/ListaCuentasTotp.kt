@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
+import com.jlnavas3.bovedalocal.data.AjustesApp
 import com.jlnavas3.bovedalocal.data.Entrada
 import com.jlnavas3.bovedalocal.ui.theme.calcularEspaciadoFilas
 import com.jlnavas3.bovedalocal.util.Haptica
@@ -20,6 +21,7 @@ fun ListaCuentasTotp(
     alCopiarCodigo: (String) -> Unit,
     alAlternarFavorito: (String) -> Unit,
     modifier: Modifier = Modifier,
+    ajustes: AjustesApp? = null,
     seleccionActiva: Boolean = false,
     seleccionados: Set<String> = emptySet(),
     alPulsarLargo: (String) -> Unit = {},
@@ -43,6 +45,7 @@ fun ListaCuentasTotp(
                     haptica = haptica,
                     alCopiarCodigo = alCopiarCodigo,
                     alAlternarFavorito = { alAlternarFavorito(entrada.id) },
+                    ajustes = ajustes,
                     seleccionActiva = seleccionActiva,
                     seleccionado = seleccionados.contains(entrada.id),
                     alPulsarLargo = { alPulsarLargo(entrada.id) },

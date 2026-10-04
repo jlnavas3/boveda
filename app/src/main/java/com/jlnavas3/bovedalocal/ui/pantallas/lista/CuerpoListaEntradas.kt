@@ -192,7 +192,10 @@ fun CuerpoListaEntradas(
                                 separarDigitosTotp = ajustes.totpSepararDigitos,
                                 mostrarIndicadores = ajustes.mostrarIndicadoresContenido,
                                 enGrupo = true,
-                                esUltimoEnGrupo = indiceHijo == totalHijos - 1
+                                esUltimoEnGrupo = indiceHijo == totalHijos - 1,
+                                ocultarUsuario = ajustes.seguridadVisualActiva && ajustes.ocultarUsuario,
+                                ocultarTotp = ajustes.seguridadVisualActiva && ajustes.ocultarTotp,
+                                estiloOcultamiento = ajustes.estiloOcultamientoVisual
                             )
                         }
                     )
@@ -213,7 +216,10 @@ fun CuerpoListaEntradas(
                         resaltado = coincideLetra,
                         separarDigitosTotp = ajustes.totpSepararDigitos,
                         mostrarIndicadores = ajustes.mostrarIndicadoresContenido,
-                        enGrupo = false
+                        enGrupo = false,
+                        ocultarUsuario = ajustes.seguridadVisualActiva && ajustes.ocultarUsuario,
+                        ocultarTotp = ajustes.seguridadVisualActiva && ajustes.ocultarTotp,
+                        estiloOcultamiento = ajustes.estiloOcultamientoVisual
                     )
                     is ItemAgrupado.Hijo -> Unit
                 }

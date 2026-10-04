@@ -39,6 +39,19 @@ interface VaultAjustesDelegate {
         Diagnostico.apuntar("seguridad", "Umbral de contraseñas antiguas configurado en $desc")
     }
 
+    fun ajustarSeguridadVisualActiva(activa: Boolean) {
+        repositorio.ajustes.actualizar { it.copy(seguridadVisualActiva = activa) }
+        Diagnostico.apuntar("seguridad", "Seguridad visual ${if (activa) "activada" else "desactivada"}")
+    }
+
+    fun ajustarEstiloOcultamientoVisual(estilo: String) = repositorio.ajustes.actualizar { it.copy(estiloOcultamientoVisual = estilo) }
+    fun ajustarTiempoAutoOcultar(segundos: Int) = repositorio.ajustes.actualizar { it.copy(tiempoAutoOcultarSegundos = segundos) }
+    fun ajustarOcultarUsuario(ocultar: Boolean) = repositorio.ajustes.actualizar { it.copy(ocultarUsuario = ocultar) }
+    fun ajustarOcultarContrasena(ocultar: Boolean) = repositorio.ajustes.actualizar { it.copy(ocultarContrasena = ocultar) }
+    fun ajustarOcultarTotp(ocultar: Boolean) = repositorio.ajustes.actualizar { it.copy(ocultarTotp = ocultar) }
+    fun ajustarOcultarNotas(ocultar: Boolean) = repositorio.ajustes.actualizar { it.copy(ocultarNotas = ocultar) }
+    fun ajustarOcultarCampos(ocultar: Boolean) = repositorio.ajustes.actualizar { it.copy(ocultarCampos = ocultar) }
+
     fun ajustarTileModo(modo: String) = repositorio.ajustes.actualizar { it.copy(tileModo = modo) }
 
     fun ajustarTileLongitud(longitud: Int) = repositorio.ajustes.actualizar { it.copy(tileLongitud = longitud) }
@@ -1167,6 +1180,20 @@ interface VaultAjustesDelegate {
     }
     fun restablecerPortapapeles() = ajustarPortapapeles(AjustesDefaults.Seguridad.PORTAPAPELES_SEGUNDOS)
     fun restablecerUmbralAntiguedad() = ajustarUmbralAntiguedad(AjustesDefaults.Seguridad.UMBRAL_ANTIGUEDAD_DIAS)
+    fun restablecerSeguridadVisual() {
+        repositorio.ajustes.actualizar {
+            it.copy(
+                seguridadVisualActiva = AjustesDefaults.SeguridadVisual.ACTIVA,
+                estiloOcultamientoVisual = AjustesDefaults.SeguridadVisual.ESTILO,
+                tiempoAutoOcultarSegundos = AjustesDefaults.SeguridadVisual.AUTO_OCULTAR_SEGUNDOS,
+                ocultarUsuario = AjustesDefaults.SeguridadVisual.OCULTAR_USUARIO,
+                ocultarContrasena = AjustesDefaults.SeguridadVisual.OCULTAR_CONTRASENA,
+                ocultarTotp = AjustesDefaults.SeguridadVisual.OCULTAR_TOTP,
+                ocultarNotas = AjustesDefaults.SeguridadVisual.OCULTAR_NOTAS,
+                ocultarCampos = AjustesDefaults.SeguridadVisual.OCULTAR_CAMPOS
+            )
+        }
+    }
     fun restablecerCamara() = ajustarMotorCamara(AjustesDefaults.Seguridad.MOTOR_CAMARA)
     fun restablecerArgon2() = repositorio.ajustes.actualizar { it.copy(perfilArgon2 = AjustesDefaults.Seguridad.PERFIL_ARGON2) }
     fun restablecerIconoLauncher() = ajustarIconoLauncher(AjustesDefaults.Tema.ICONO_LAUNCHER)

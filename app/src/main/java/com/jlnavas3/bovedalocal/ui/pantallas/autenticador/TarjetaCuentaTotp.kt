@@ -52,6 +52,16 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorTarjetaAjustes
 import com.jlnavas3.bovedalocal.ui.theme.CurvaturaEsquinas
 import com.jlnavas3.bovedalocal.ui.theme.GrosorBorde
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.material3.IconButton
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import com.jlnavas3.bovedalocal.data.AjustesApp
+import com.jlnavas3.bovedalocal.ui.componentes.seguridad.TemporizadorAutoOcultar
+import com.jlnavas3.bovedalocal.ui.componentes.seguridad.TextoSeguroVisual
 import com.jlnavas3.bovedalocal.ui.theme.EstiloBorde
 import com.jlnavas3.bovedalocal.ui.theme.FormaPequena
 import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
@@ -65,6 +75,8 @@ fun TarjetaCuentaTotp(
     haptica: Haptica,
     alCopiarCodigo: (String) -> Unit,
     alAlternarFavorito: () -> Unit,
+    modifier: Modifier = Modifier,
+    ajustes: AjustesApp? = null,
     seleccionActiva: Boolean = false,
     seleccionado: Boolean = false,
     alPulsarLargo: (() -> Unit)? = null,
@@ -91,6 +103,23 @@ fun TarjetaCuentaTotp(
         "${codigo.take(3)} ${codigo.drop(3)}"
     } else {
         codigo
+    }
+
+    val seguridadVisualActiva = ajustes?.seguridadVisualActiva == true
+    val ocultarUsuario = seguridadVisualActiva && (ajustes?.ocultarUsuario == true)
+    val ocultarTotp = seguridadVisualActiva && (ajustes?.ocultarTotp == true)
+    val estiloOcultamiento = ajustes?.estiloOcultamientoVisual ?: "desenfoque"
+    val tiempoAutoOcultar = ajustes?.tiempoAutoOcultarSegundos ?: 10
+
+    var codigoRevelado by rememberSaveable { mutableStateOf(false) }
+
+    if (ocultarTotp) {
+        TemporizadorAutoOcultar(
+            revelado = codigoRevelado,
+            tiempoSegundos = if (seguridadVisualActiva) tiempoAutoOcultar else 0
+        ) {
+            codigoRevelado = false
+        }
     }
 
     val forma = RoundedCornerShape(CurvaturaEsquinas)
@@ -177,41 +206,76 @@ fun TarjetaCuentaTotp(
                     overflow = TextOverflow.Ellipsis
                 )
                 if (entrada.usuario.isNotBlank()) {
-                    Text(
-                        text = entrada.usuario,
-                        color = TextoSecundario,
-                        style = MaterialTheme.typography.bodySmall,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
+                    if (ocultarUsuario) {
+                        TextoSeguroVisual(
+                            texto = entrada.usuario,
+                            oculto = true,
+                            estilo = estiloOcultamiento,
+                            estiloTexto = MaterialTheme.typography.bodySmall,
+                            colorTexto = TextoSecundario,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    } else {
+                        Text(
+                            text = entrada.usuario,
+                            color = TextoSecundario,
+                            style = MaterialTheme.typography.bodySmall,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    }
                 }
                 Spacer(Modifier.height(6.dp))
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(10.dp),
-                    modifier = Modifier
-                        .clip(FormaPequena)
-                        .clickable {
-                            if (seleccionActiva) {
-                                haptica.tic()
-                                alAlternarSeleccion?.invoke()
-                            } else {
-                                haptica.exito()
-                                alCopiarCodigo(codigo)
-                            }
-                        }
-                        .padding(vertical = 2.dp)
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    Text(
-                        text = codigoVisible,
-                        color = ColorTitulos,
-                        style = EstiloMonoGrande.copy(fontWeight = FontWeight.Bold, fontSize = 24.sp)
-                    )
-                    IndicadorTotpTarta(
-                        segundosRestantes = segundosRestantes,
-                        periodo = periodo,
-                        tamano = 18.dp
-                    )
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(10.dp),
+                        modifier = Modifier
+                            .clip(FormaPequena)
+                            .clickable {
+                                if (seleccionActiva) {
+                                    haptica.tic()
+                                    alAlternarSeleccion?.invoke()
+                                } else {
+                                    haptica.exito()
+                                    alCopiarCodigo(codigo)
+                                }
+                            }
+                            .padding(vertical = 2.dp)
+                    ) {
+                        TextoSeguroVisual(
+                            texto = codigoVisible,
+                            oculto = if (ocultarTotp) !codigoRevelado else false,
+                            estilo = estiloOcultamiento,
+                            estiloTexto = EstiloMonoGrande.copy(fontWeight = FontWeight.Bold, fontSize = 24.sp),
+                            colorTexto = ColorTitulos
+                        )
+                        IndicadorTotpTarta(
+                            segundosRestantes = segundosRestantes,
+                            periodo = periodo,
+                            tamano = 18.dp
+                        )
+                    }
+                    if (ocultarTotp) {
+                        IconButton(
+                            onClick = {
+                                haptica.toque()
+                                codigoRevelado = !codigoRevelado
+                            },
+                            modifier = Modifier.size(28.dp)
+                        ) {
+                            Icon(
+                                imageVector = if (codigoRevelado) Icons.Filled.VisibilityOff else Icons.Filled.Visibility,
+                                contentDescription = if (codigoRevelado) "Ocultar código" else "Mostrar código",
+                                tint = TextoSecundario,
+                                modifier = Modifier.size(18.dp)
+                            )
+                        }
+                    }
                 }
                 Spacer(Modifier.height(3.dp))
                 Text(

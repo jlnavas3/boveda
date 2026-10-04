@@ -167,6 +167,15 @@ data class AjustesApp(
     val proteccionPantalla: Boolean = AjustesDefaults.Seguridad.PROTECCION_PANTALLA,
     /** Umbral en días para advertir sobre contraseñas antiguas en Salud (0 = desactivado). */
     val umbralAntiguedadDias: Int = AjustesDefaults.Seguridad.UMBRAL_ANTIGUEDAD_DIAS,
+    // Seguridad visual (Privacidad de pantalla)
+    val seguridadVisualActiva: Boolean = AjustesDefaults.SeguridadVisual.ACTIVA,
+    val estiloOcultamientoVisual: String = AjustesDefaults.SeguridadVisual.ESTILO,
+    val tiempoAutoOcultarSegundos: Int = AjustesDefaults.SeguridadVisual.AUTO_OCULTAR_SEGUNDOS,
+    val ocultarUsuario: Boolean = AjustesDefaults.SeguridadVisual.OCULTAR_USUARIO,
+    val ocultarContrasena: Boolean = AjustesDefaults.SeguridadVisual.OCULTAR_CONTRASENA,
+    val ocultarTotp: Boolean = AjustesDefaults.SeguridadVisual.OCULTAR_TOTP,
+    val ocultarNotas: Boolean = AjustesDefaults.SeguridadVisual.OCULTAR_NOTAS,
+    val ocultarCampos: Boolean = AjustesDefaults.SeguridadVisual.OCULTAR_CAMPOS,
     // Historial temporal de contraseñas generadas
     val historialClavesMax: Int = AjustesDefaults.HistorialCopias.HISTORIAL_MAX,
     val historialClavesVaciadoAuto: Boolean = AjustesDefaults.HistorialCopias.HISTORIAL_VACIADO_AUTO,
@@ -423,6 +432,14 @@ class AlmacenAjustes(contexto: Context) {
             perfilArgon2 = prefs.getString("perfil_argon2", AjustesDefaults.Seguridad.PERFIL_ARGON2) ?: AjustesDefaults.Seguridad.PERFIL_ARGON2,
             proteccionPantalla = prefs.getBoolean("proteccion_pantalla", AjustesDefaults.Seguridad.PROTECCION_PANTALLA),
             umbralAntiguedadDias = prefs.getInt("umbral_antiguedad_dias", AjustesDefaults.Seguridad.UMBRAL_ANTIGUEDAD_DIAS),
+            seguridadVisualActiva = prefs.getBoolean("seguridad_visual_activa", AjustesDefaults.SeguridadVisual.ACTIVA),
+            estiloOcultamientoVisual = prefs.getString("estilo_ocultamiento_visual", AjustesDefaults.SeguridadVisual.ESTILO) ?: AjustesDefaults.SeguridadVisual.ESTILO,
+            tiempoAutoOcultarSegundos = prefs.getInt("tiempo_auto_ocultar_segundos", AjustesDefaults.SeguridadVisual.AUTO_OCULTAR_SEGUNDOS),
+            ocultarUsuario = prefs.getBoolean("ocultar_usuario", AjustesDefaults.SeguridadVisual.OCULTAR_USUARIO),
+            ocultarContrasena = prefs.getBoolean("ocultar_contrasena", AjustesDefaults.SeguridadVisual.OCULTAR_CONTRASENA),
+            ocultarTotp = prefs.getBoolean("ocultar_totp", AjustesDefaults.SeguridadVisual.OCULTAR_TOTP),
+            ocultarNotas = prefs.getBoolean("ocultar_notas", AjustesDefaults.SeguridadVisual.OCULTAR_NOTAS),
+            ocultarCampos = prefs.getBoolean("ocultar_campos", AjustesDefaults.SeguridadVisual.OCULTAR_CAMPOS),
             historialClavesMax = prefs.getInt("historial_claves_max", AjustesDefaults.HistorialCopias.HISTORIAL_MAX),
             historialClavesVaciadoAuto = prefs.getBoolean("historial_claves_vaciado_auto", AjustesDefaults.HistorialCopias.HISTORIAL_VACIADO_AUTO),
             historialClavesTiempoAutoDestruccion = prefs.getLong("historial_claves_tiempo_autodestruccion", AjustesDefaults.HistorialCopias.HISTORIAL_TIEMPO_AUTO_DESTRUCCION_MS),
@@ -606,6 +623,14 @@ class AlmacenAjustes(contexto: Context) {
             .putString("perfil_argon2", nuevo.perfilArgon2)
             .putBoolean("proteccion_pantalla", nuevo.proteccionPantalla)
             .putInt("umbral_antiguedad_dias", nuevo.umbralAntiguedadDias)
+            .putBoolean("seguridad_visual_activa", nuevo.seguridadVisualActiva)
+            .putString("estilo_ocultamiento_visual", nuevo.estiloOcultamientoVisual)
+            .putInt("tiempo_auto_ocultar_segundos", nuevo.tiempoAutoOcultarSegundos)
+            .putBoolean("ocultar_usuario", nuevo.ocultarUsuario)
+            .putBoolean("ocultar_contrasena", nuevo.ocultarContrasena)
+            .putBoolean("ocultar_totp", nuevo.ocultarTotp)
+            .putBoolean("ocultar_notas", nuevo.ocultarNotas)
+            .putBoolean("ocultar_campos", nuevo.ocultarCampos)
             .putInt("historial_claves_max", nuevo.historialClavesMax)
             .putBoolean("historial_claves_vaciado_auto", nuevo.historialClavesVaciadoAuto)
             .putLong("historial_claves_tiempo_autodestruccion", nuevo.historialClavesTiempoAutoDestruccion)
@@ -700,6 +725,18 @@ class AlmacenAjustes(contexto: Context) {
             365 to "12 meses",
             455 to "15 meses",
             545 to "18 meses"
+        )
+        val OPCIONES_ESTILO_OCULTAMIENTO = listOf(
+            "desenfoque" to "Desenfoque (Efecto cristal)",
+            "puntos_fijos" to "Puntos de seguridad (Longitud fija)",
+            "puntos_reales" to "Puntos tradicionales (Longitud real)"
+        )
+        val OPCIONES_TIEMPO_AUTO_OCULTAR = listOf(
+            5 to "5 segundos",
+            10 to "10 segundos (Recomendado)",
+            15 to "15 segundos",
+            30 to "30 segundos",
+            0 to "Manual (hasta volver a tocar)"
         )
         val OPCIONES_TEMA = listOf(
             "sistema" to "Sistema",

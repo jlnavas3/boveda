@@ -353,6 +353,7 @@ fun PantallaSaludBoveda(
                     modifier = Modifier
                         .fillMaxWidth()
                         .weight(1f),
+                    ajustes = ajustes,
                     agruparPorSitio = ajustes.agruparPorSitio,
                     mostrarIndicadores = ajustes.mostrarIndicadoresContenido,
                     espaciadoFilas = com.jlnavas3.bovedalocal.ui.theme.calcularEspaciadoFilas(ajustes.densidadLista),

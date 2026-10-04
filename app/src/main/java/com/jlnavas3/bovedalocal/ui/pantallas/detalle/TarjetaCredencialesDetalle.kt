@@ -13,14 +13,21 @@ import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.jlnavas3.bovedalocal.data.AjustesApp
 import com.jlnavas3.bovedalocal.data.Entrada
 import com.jlnavas3.bovedalocal.ui.componentes.contrasenaColoreada
+import com.jlnavas3.bovedalocal.ui.componentes.seguridad.TemporizadorAutoOcultar
+import com.jlnavas3.bovedalocal.ui.componentes.seguridad.TextoSeguroVisual
 import com.jlnavas3.bovedalocal.ui.theme.ColorDatosContrasena
 import com.jlnavas3.bovedalocal.ui.theme.ColorDatosUsuario
 import com.jlnavas3.bovedalocal.ui.theme.EstiloMono
@@ -41,10 +48,32 @@ fun TarjetaCredencialesDetalle(
     ultimaCopia: String?,
     alAlternarRevelada: () -> Unit,
     alCopiarUsuario: () -> Unit,
-    alCopiarContrasena: () -> Unit
+    alCopiarContrasena: () -> Unit,
+    ajustes: AjustesApp? = null
 ) {
     val tieneCredenciales = entrada.usuario.isNotBlank() || entrada.contrasena.isNotBlank()
     if (!tieneCredenciales) return
+
+    val seguridadVisualActiva = ajustes?.seguridadVisualActiva == true
+    val estiloOcultamiento = ajustes?.estiloOcultamientoVisual ?: "desenfoque"
+    val tiempoAutoOcultar = if (seguridadVisualActiva) (ajustes?.tiempoAutoOcultarSegundos ?: 10) else 0
+
+    // Estado y temporizador para usuario
+    val protegerUsuario = seguridadVisualActiva && (ajustes?.ocultarUsuario == true)
+    var usuarioRevelado by remember(entrada.id, protegerUsuario) { mutableStateOf(!protegerUsuario) }
+
+    TemporizadorAutoOcultar(
+        revelado = usuarioRevelado && protegerUsuario,
+        tiempoSegundos = tiempoAutoOcultar,
+        alAutoOcultar = { usuarioRevelado = false }
+    )
+
+    // Temporizador para contraseña
+    TemporizadorAutoOcultar(
+        revelado = revelada && seguridadVisualActiva,
+        tiempoSegundos = tiempoAutoOcultar,
+        alAutoOcultar = { if (revelada) alAlternarRevelada() }
+    )
 
     Column(modifier = Modifier.fillMaxWidth()) {
         EtiquetaSeccionDetalle(texto = "Credenciales")
@@ -67,13 +96,24 @@ fun TarjetaCredencialesDetalle(
                             color = TextoSecundario
                         )
                         Spacer(Modifier.height(4.dp))
-                        Text(
-                            text = entrada.usuario,
-                            style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Medium),
-                            color = TextoPrincipal
+                        TextoSeguroVisual(
+                            texto = entrada.usuario,
+                            oculto = protegerUsuario && !usuarioRevelado,
+                            estilo = estiloOcultamiento,
+                            estiloTexto = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Medium),
+                            colorTexto = TextoPrincipal
                         )
                     }
-                    BotonCopiarDetalle(copiado = ultimaCopia == "usuario", alPulsar = alCopiarUsuario)
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        if (protegerUsuario) {
+                            BotonIconoDetalle(
+                                icono = if (usuarioRevelado) Icons.Filled.VisibilityOff else Icons.Filled.Visibility,
+                                descripcion = if (usuarioRevelado) "Ocultar usuario" else "Mostrar usuario",
+                                alPulsar = { usuarioRevelado = !usuarioRevelado }
+                            )
+                        }
+                        BotonCopiarDetalle(copiado = ultimaCopia == "usuario", alPulsar = alCopiarUsuario)
+                    }
                 }
             }
         }
@@ -107,12 +147,13 @@ fun TarjetaCredencialesDetalle(
                                 modifier = Modifier.fillMaxWidth()
                             )
                         } else {
-                            Text(
-                                text = "•".repeat(entrada.contrasena.length.coerceIn(8, 24)),
-                                style = EstiloMonoGrande.copy(letterSpacing = 2.sp),
-                                color = TextoSecundario,
+                            TextoSeguroVisual(
+                                texto = entrada.contrasena,
+                                oculto = true,
+                                estilo = if (seguridadVisualActiva) estiloOcultamiento else "puntos_reales",
+                                estiloTexto = EstiloMonoGrande.copy(letterSpacing = 2.sp),
+                                colorTexto = TextoSecundario,
                                 maxLines = 1,
-                                softWrap = false,
                                 overflow = TextOverflow.Clip,
                                 modifier = Modifier.fillMaxWidth()
                             )

@@ -19,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.jlnavas3.bovedalocal.data.AjustesApp
 import com.jlnavas3.bovedalocal.data.Entrada
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjusteGris
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.GrupoAjustes
@@ -63,6 +64,7 @@ fun ContenidoPestanaSalud(
     alVerDetalle: (String) -> Unit,
     alIgnorar: (Entrada) -> Unit = {},
     modifier: Modifier = Modifier,
+    ajustes: AjustesApp? = null,
     agruparPorSitio: Boolean = false,
     mostrarIndicadores: Boolean = false,
     espaciadoFilas: Dp = calcularEspaciadoFilas(),
@@ -119,6 +121,7 @@ fun ContenidoPestanaSalud(
                                     colorDetalle = Peligro,
                                     alCambiarRapido = { alCambiarClave(entrada) },
                                     alVerDetalle = { alVerDetalle(entrada.id) },
+                                    ajustes = ajustes,
                                     alIgnorar = { alIgnorar(entrada) },
                                     mostrarIndicadores = mostrarIndicadores,
                                     enGrupo = false,
@@ -139,6 +142,7 @@ fun ContenidoPestanaSalud(
                                     totalEnGrupo = grupoOriginal.size,
                                     alCambiarClave = { alCambiarClave(it) },
                                     alVerDetalle = { alVerDetalle(it) },
+                                    ajustes = ajustes,
                                     alIgnorar = alIgnorar,
                                     mostrarIndicadores = mostrarIndicadores,
                                     colapsable = true,
@@ -189,6 +193,7 @@ fun ContenidoPestanaSalud(
                         mostrarIndicadores = mostrarIndicadores,
                         gruposExpandidos = gruposExpandidos,
                         espaciadoFilas = espaciadoFilas,
+                        ajustes = ajustes,
                         alAlternarGrupo = { clave ->
                             gruposExpandidos = if (gruposExpandidos.contains(clave)) {
                                 gruposExpandidos - clave
@@ -236,6 +241,7 @@ fun ContenidoPestanaSalud(
                         mostrarIndicadores = mostrarIndicadores,
                         gruposExpandidos = gruposExpandidos,
                         espaciadoFilas = espaciadoFilas,
+                        ajustes = ajustes,
                         alAlternarGrupo = { clave ->
                             gruposExpandidos = if (gruposExpandidos.contains(clave)) {
                                 gruposExpandidos - clave
@@ -286,6 +292,7 @@ fun ContenidoPestanaSalud(
                         mostrarIndicadores = mostrarIndicadores,
                         gruposExpandidos = gruposExpandidos,
                         espaciadoFilas = espaciadoFilas,
+                        ajustes = ajustes,
                         alAlternarGrupo = { clave ->
                             gruposExpandidos = if (gruposExpandidos.contains(clave)) {
                                 gruposExpandidos - clave
@@ -336,6 +343,7 @@ fun ContenidoPestanaSalud(
                         mostrarIndicadores = mostrarIndicadores,
                         gruposExpandidos = gruposExpandidos,
                         espaciadoFilas = espaciadoFilas,
+                        ajustes = ajustes,
                         alAlternarGrupo = { clave ->
                             gruposExpandidos = if (gruposExpandidos.contains(clave)) {
                                 gruposExpandidos - clave
@@ -365,6 +373,7 @@ private fun ListaProblemasSalud(
     mostrarIndicadores: Boolean,
     gruposExpandidos: Set<String>,
     espaciadoFilas: Dp,
+    ajustes: AjustesApp? = null,
     alAlternarGrupo: (String) -> Unit,
     alCambiarClave: (Entrada) -> Unit,
     alVerDetalle: (String) -> Unit,
@@ -391,6 +400,7 @@ private fun ListaProblemasSalud(
                     colorDetalle = color,
                     alCambiarRapido = { alCambiarClave(entrada) },
                     alVerDetalle = { alVerDetalle(entrada.id) },
+                    ajustes = ajustes,
                     alIgnorar = { alIgnorar(entrada) },
                     mostrarIndicadores = mostrarIndicadores,
                     enGrupo = false,
@@ -436,6 +446,7 @@ private fun ListaProblemasSalud(
                                     colorDetalle = color,
                                     alCambiarRapido = { alCambiarClave(entradaHija) },
                                     alVerDetalle = { alVerDetalle(entradaHija.id) },
+                                    ajustes = ajustes,
                                     alIgnorar = { alIgnorar(entradaHija) },
                                     mostrarIndicadores = mostrarIndicadores,
                                     enGrupo = true,
@@ -455,6 +466,7 @@ private fun ListaProblemasSalud(
                             colorDetalle = color,
                             alCambiarRapido = { alCambiarClave(item.entrada) },
                             alVerDetalle = { alVerDetalle(item.entrada.id) },
+                            ajustes = ajustes,
                             alIgnorar = { alIgnorar(item.entrada) },
                             mostrarIndicadores = mostrarIndicadores,
                             enGrupo = false,

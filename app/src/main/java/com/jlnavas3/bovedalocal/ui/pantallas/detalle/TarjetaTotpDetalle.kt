@@ -7,6 +7,9 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -26,6 +29,8 @@ import com.jlnavas3.bovedalocal.crypto.Totp
 import com.jlnavas3.bovedalocal.data.AjustesApp
 import com.jlnavas3.bovedalocal.data.Entrada
 import com.jlnavas3.bovedalocal.ui.componentes.IndicadorTotpTarta
+import com.jlnavas3.bovedalocal.ui.componentes.seguridad.TemporizadorAutoOcultar
+import com.jlnavas3.bovedalocal.ui.componentes.seguridad.TextoSeguroVisual
 import com.jlnavas3.bovedalocal.ui.theme.Color2FA
 import com.jlnavas3.bovedalocal.ui.theme.ColorDatos2FA
 import com.jlnavas3.bovedalocal.ui.theme.ColorTitulos
@@ -73,6 +78,15 @@ fun TarjetaTotpDetalle(
         codigo
     }
 
+    val protegerTotp = ajustes.seguridadVisualActiva && ajustes.ocultarTotp
+    var totpRevelado by remember(entrada.id, protegerTotp) { mutableStateOf(!protegerTotp) }
+
+    TemporizadorAutoOcultar(
+        revelado = totpRevelado && protegerTotp,
+        tiempoSegundos = ajustes.tiempoAutoOcultarSegundos,
+        alAutoOcultar = { totpRevelado = false }
+    )
+
     var copiado by remember { mutableStateOf(false) }
     LaunchedEffect(copiado) {
         if (copiado) {
@@ -110,10 +124,12 @@ fun TarjetaTotpDetalle(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(10.dp)
                     ) {
-                        Text(
-                            text = codigoVisible,
-                            style = EstiloMonoGrande.copy(fontWeight = FontWeight.Bold, fontSize = 26.sp),
-                            color = ColorTitulos
+                        TextoSeguroVisual(
+                            texto = codigoVisible,
+                            oculto = protegerTotp && !totpRevelado,
+                            estilo = ajustes.estiloOcultamientoVisual,
+                            estiloTexto = EstiloMonoGrande.copy(fontWeight = FontWeight.Bold, fontSize = 26.sp),
+                            colorTexto = ColorTitulos
                         )
                         IndicadorTotpTarta(
                             segundosRestantes = segundosRestantes,
@@ -128,14 +144,23 @@ fun TarjetaTotpDetalle(
                         color = TextoSecundario
                     )
                 }
-                BotonCopiarDetalle(
-                    copiado = copiado,
-                    alPulsar = {
-                        haptica.exito()
-                        copiado = true
-                        alCopiarTotp(codigo)
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    if (protegerTotp) {
+                        BotonIconoDetalle(
+                            icono = if (totpRevelado) Icons.Filled.VisibilityOff else Icons.Filled.Visibility,
+                            descripcion = if (totpRevelado) "Ocultar código" else "Mostrar código",
+                            alPulsar = { totpRevelado = !totpRevelado }
+                        )
                     }
-                )
+                    BotonCopiarDetalle(
+                        copiado = copiado,
+                        alPulsar = {
+                            haptica.exito()
+                            copiado = true
+                            alCopiarTotp(codigo)
+                        }
+                    )
+                }
             }
         }
     }

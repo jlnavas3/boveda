@@ -188,6 +188,7 @@ fun PantallaPapelera(
                                 diasRestantes = diasRestantes,
                                 alRestaurar = { alRestaurarEntrada(entrada) },
                                 alBorrarDefinitivo = { aBorrarDefinitivo = entrada },
+                                ajustes = ajustes,
                                 mostrarIndicadores = ajustes.mostrarIndicadoresContenido,
                                 enGrupo = false
                             )
@@ -220,6 +221,7 @@ fun PantallaPapelera(
                                                 diasRestantes = diasRestantes,
                                                 alRestaurar = { alRestaurarEntrada(entradaHija) },
                                                 alBorrarDefinitivo = { aBorrarDefinitivo = entradaHija },
+                                                ajustes = ajustes,
                                                 mostrarIndicadores = ajustes.mostrarIndicadoresContenido,
                                                 enGrupo = true
                                             )
@@ -233,6 +235,7 @@ fun PantallaPapelera(
                                         diasRestantes = diasRestantes,
                                         alRestaurar = { alRestaurarEntrada(item.entrada) },
                                         alBorrarDefinitivo = { aBorrarDefinitivo = item.entrada },
+                                        ajustes = ajustes,
                                         mostrarIndicadores = ajustes.mostrarIndicadoresContenido,
                                         enGrupo = false
                                     )
