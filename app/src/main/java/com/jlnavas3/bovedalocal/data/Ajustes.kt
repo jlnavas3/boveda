@@ -56,6 +56,8 @@ data class AjustesApp(
     val agruparPorSitio: Boolean = AjustesDefaults.ListaFormatos.AGRUPAR_POR_SITIO,
     /** Modo de visualización de identidades: "chips", "secciones" o "desactivado". */
     val modoIdentidades: String = AjustesDefaults.ListaFormatos.MODO_IDENTIDADES,
+    /** Relación jerárquica entre Identidades y Colecciones: "identidad_sobre_coleccion" o "coleccion_sobre_identidad". */
+    val jerarquiaOrganizacion: String = AjustesDefaults.ListaFormatos.JERARQUIA_ORGANIZACION,
     // Preferencias del generador manual de 2FA
     val totpManualDigitos: Int = AjustesDefaults.TotpManual.DIGITOS,
     val totpManualPeriodo: Int = AjustesDefaults.TotpManual.PERIODO,
@@ -243,6 +245,9 @@ data class AjustesApp(
 ) {
     val modoVisualizacionIdentidades: ModoVisualizacionIdentidades
         get() = ModoVisualizacionIdentidades.desde(modoIdentidades)
+
+    val jerarquiaOrganizacionEfectiva: JerarquiaOrganizacion
+        get() = JerarquiaOrganizacion.desdeClave(jerarquiaOrganizacion)
 }
 
 
@@ -338,6 +343,7 @@ class AlmacenAjustes(contexto: Context) {
                 prefs.getBoolean("agrupar_por_sitio", AjustesDefaults.ListaFormatos.AGRUPAR_POR_SITIO)
             },
             modoIdentidades = prefs.getString("modo_identidades", AjustesDefaults.ListaFormatos.MODO_IDENTIDADES) ?: AjustesDefaults.ListaFormatos.MODO_IDENTIDADES,
+            jerarquiaOrganizacion = prefs.getString("jerarquia_organizacion", AjustesDefaults.ListaFormatos.JERARQUIA_ORGANIZACION) ?: AjustesDefaults.ListaFormatos.JERARQUIA_ORGANIZACION,
             totpManualDigitos = prefs.getInt("totp_manual_digitos", AjustesDefaults.TotpManual.DIGITOS),
             totpManualPeriodo = prefs.getInt("totp_manual_periodo", AjustesDefaults.TotpManual.PERIODO),
             totpManualAlgoritmo = prefs.getString("totp_manual_algoritmo", AjustesDefaults.TotpManual.ALGORITMO) ?: AjustesDefaults.TotpManual.ALGORITMO,
@@ -530,6 +536,7 @@ class AlmacenAjustes(contexto: Context) {
             .putString("criterio_ordenacion", nuevo.criterioOrdenacion)
             .putBoolean("agrupar_por_sitio", nuevo.agruparPorSitio)
             .putString("modo_identidades", nuevo.modoIdentidades)
+            .putString("jerarquia_organizacion", nuevo.jerarquiaOrganizacion)
             .putInt("totp_manual_digitos", nuevo.totpManualDigitos)
             .putInt("totp_manual_periodo", nuevo.totpManualPeriodo)
             .putString("totp_manual_algoritmo", nuevo.totpManualAlgoritmo)

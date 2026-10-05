@@ -19,6 +19,9 @@ interface VaultAjustesOrganizacionDelegate {
     fun ajustarAgruparPorSitio(activo: Boolean) =
         repositorio.ajustes.actualizar { it.copy(agruparPorSitio = activo) }
 
+    fun ajustarJerarquiaOrganizacion(jerarquia: com.jlnavas3.bovedalocal.data.JerarquiaOrganizacion) =
+        repositorio.ajustes.actualizar { it.copy(jerarquiaOrganizacion = jerarquia.clave) }
+
     fun restablecerOrganizacionLista() {
         repositorio.ajustes.actualizar {
             it.copy(

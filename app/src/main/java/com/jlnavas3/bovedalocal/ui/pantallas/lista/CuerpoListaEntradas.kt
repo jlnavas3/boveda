@@ -57,19 +57,37 @@ fun CuerpoListaEntradas(
     alAlternarGrupo: (String) -> Unit,
     alEntrarEnSeleccionLote: ((Set<String>) -> Unit)? = null,
     alAlternarSeleccionLote: ((Set<String>) -> Unit)? = null,
-    identidades: List<com.jlnavas3.bovedalocal.data.Identidad> = emptyList()
+    identidades: List<com.jlnavas3.bovedalocal.data.Identidad> = emptyList(),
+    colecciones: List<com.jlnavas3.bovedalocal.data.Coleccion> = emptyList()
 ) {
     val ambitoCorutina = rememberCoroutineScope()
     val densidad = LocalDensity.current
     val expandidoEnLista: (String) -> Boolean = { clave ->
         busqueda.isNotBlank() || gruposExpandidos.contains(clave)
     }
-    val esModoSeccionesIdentidad = ajustes.modoVisualizacionIdentidades == com.jlnavas3.bovedalocal.data.ModoVisualizacionIdentidades.SECCIONES && identidades.isNotEmpty()
+
+    val esModoSecciones = ajustes.modoVisualizacionIdentidades == com.jlnavas3.bovedalocal.data.ModoVisualizacionIdentidades.SECCIONES
+    val jerarquia = ajustes.jerarquiaOrganizacionEfectiva
+
+    val esModoSeccionesIdentidad = esModoSecciones &&
+        identidades.isNotEmpty() &&
+        jerarquia == com.jlnavas3.bovedalocal.data.JerarquiaOrganizacion.IDENTIDAD_SOBRE_COLECCION
+
+    val esModoSeccionesColeccion = esModoSecciones &&
+        colecciones.isNotEmpty() &&
+        jerarquia == com.jlnavas3.bovedalocal.data.JerarquiaOrganizacion.COLECCION_SOBRE_IDENTIDAD
 
     val itemsIdentidades = remember(visibles, identidades, gruposExpandidos, busqueda, esModoSeccionesIdentidad) {
         if (!esModoSeccionesIdentidad) emptyList()
         else com.jlnavas3.bovedalocal.util.construirItemsAgrupadosPorIdentidad(visibles, identidades) { clave ->
             busqueda.isNotBlank() || gruposExpandidos.contains("identidad-$clave")
+        }
+    }
+
+    val itemsColecciones = remember(visibles, colecciones, gruposExpandidos, busqueda, esModoSeccionesColeccion) {
+        if (!esModoSeccionesColeccion) emptyList()
+        else com.jlnavas3.bovedalocal.util.construirItemsAgrupadosPorColeccion(visibles, colecciones) { clave ->
+            busqueda.isNotBlank() || gruposExpandidos.contains("coleccion-$clave")
         }
     }
 
@@ -190,6 +208,94 @@ fun CuerpoListaEntradas(
                                 estiloOcultamiento = ajustes.estiloOcultamientoVisual,
                                 identidadAsociada = item.identidad,
                                 ocultarEmailIdentidad = item.identidad != null
+                            )
+                        }
+                    }
+                }
+            }
+        }
+        return
+    }
+
+    if (esModoSeccionesColeccion) {
+        Box(modifier = Modifier.fillMaxSize()) {
+            LazyColumn(
+                state = estadoLista,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .reboteElastico(),
+                contentPadding = PaddingValues(
+                    start = 20.dp,
+                    end = 20.dp,
+                    bottom = 110.dp
+                ),
+                verticalArrangement = Arrangement.spacedBy(espaciadoFilas)
+            ) {
+                items(
+                    itemsColecciones,
+                    key = { item ->
+                        when (item) {
+                            is com.jlnavas3.bovedalocal.util.ItemAgrupadoColeccion.CabeceraColeccion -> "cab-col-${item.coleccion.id}"
+                            is com.jlnavas3.bovedalocal.util.ItemAgrupadoColeccion.CabeceraSinColeccion -> "cab-sin-col"
+                            is com.jlnavas3.bovedalocal.util.ItemAgrupadoColeccion.EntradaHija -> "ent-col-${item.entrada.id}"
+                        }
+                    }
+                ) { item ->
+                    when (item) {
+                        is com.jlnavas3.bovedalocal.util.ItemAgrupadoColeccion.CabeceraColeccion -> {
+                            val claveGrupo = "coleccion-${item.coleccion.id}"
+                            val expandido = busqueda.isNotBlank() || gruposExpandidos.contains(claveGrupo)
+                            val colorBase = com.jlnavas3.bovedalocal.ui.theme.parsearColorO(item.coleccion.colorHex ?: "", com.jlnavas3.bovedalocal.ui.theme.ColorAcento)
+                            val iconoVector = com.jlnavas3.bovedalocal.ui.pantallas.colecciones.IconosColecciones.obtenerIcono(item.coleccion.icono)
+                            SeccionGrupoColeccion(
+                                nombre = item.coleccion.nombre,
+                                subtitulo = "Colección temática",
+                                cantidad = item.totalEntradas,
+                                expandido = expandido,
+                                colorBase = colorBase,
+                                icono = iconoVector,
+                                alAlternar = { alAlternarGrupo(claveGrupo) }
+                            )
+                        }
+                        is com.jlnavas3.bovedalocal.util.ItemAgrupadoColeccion.CabeceraSinColeccion -> {
+                            val claveGrupo = "coleccion-__SIN_COLECCION__"
+                            val expandido = busqueda.isNotBlank() || gruposExpandidos.contains(claveGrupo)
+                            SeccionGrupoColeccion(
+                                nombre = "Sin colección",
+                                subtitulo = "Elementos sin carpeta asignada",
+                                cantidad = item.totalEntradas,
+                                expandido = expandido,
+                                colorBase = com.jlnavas3.bovedalocal.ui.theme.TextoSecundario,
+                                icono = androidx.compose.material.icons.Icons.Filled.Security,
+                                alAlternar = { alAlternarGrupo(claveGrupo) }
+                            )
+                        }
+                        is com.jlnavas3.bovedalocal.util.ItemAgrupadoColeccion.EntradaHija -> {
+                            val iden = com.jlnavas3.bovedalocal.util.resolverIdentidadParaEntrada(item.entrada, identidades)
+                            FilaEntrada(
+                                entrada = item.entrada,
+                                seleccionActiva = modoSeleccion,
+                                seleccionado = seleccionados.contains(item.entrada.id),
+                                alAbrir = { alAbrirEntrada(item.entrada.id) },
+                                alCopiarUsuario = { alCopiarUsuario(item.entrada.id, item.entrada.usuario) },
+                                alCopiarContrasena = { alCopiarContrasena(item.entrada.id, item.entrada.contrasena) },
+                                alFavorito = { alAlternarFavorito(item.entrada.id) },
+                                alCopiarCodigo = { alCopiarCodigoTotp(item.entrada.id, it) },
+                                alPulsarLargo = { alEntrarEnSeleccion(item.entrada.id) },
+                                alAlternarSeleccion = { alAlternarSeleccion(item.entrada.id) },
+                                segundosUnix = segundosUnix,
+                                alturaFila = densidadAltura,
+                                tamanoMonograma = densidadMonograma,
+                                resaltado = false,
+                                separarDigitosTotp = ajustes.totpSepararDigitos,
+                                mostrarIndicadores = ajustes.mostrarIndicadoresContenido,
+                                enGrupo = true,
+                                esUltimoEnGrupo = item.esUltimaEnSeccion,
+                                ocultarUsuario = ajustes.seguridadVisualActiva && ajustes.ocultarUsuario,
+                                ocultarTotp = ajustes.seguridadVisualActiva && ajustes.ocultarTotp,
+                                estiloOcultamiento = ajustes.estiloOcultamientoVisual,
+                                identidadAsociada = iden,
+                                ocultarEmailIdentidad = iden != null
                             )
                         }
                     }

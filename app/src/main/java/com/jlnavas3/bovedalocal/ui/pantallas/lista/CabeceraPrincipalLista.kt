@@ -7,12 +7,17 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.jlnavas3.bovedalocal.data.Coleccion
+import com.jlnavas3.bovedalocal.data.Identidad
+import com.jlnavas3.bovedalocal.data.JerarquiaOrganizacion
+import com.jlnavas3.bovedalocal.data.ModoVisualizacionIdentidades
 import com.jlnavas3.bovedalocal.data.TipoEntrada
 import com.jlnavas3.bovedalocal.ui.CriterioOrdenacion
 import com.jlnavas3.bovedalocal.ui.componentes.seleccion.BarraSuperiorSeleccion
@@ -20,7 +25,8 @@ import com.jlnavas3.bovedalocal.ui.pantallas.colecciones.BarraColeccionesLista
 
 /**
  * Cabecera superior de PantallaLista:
- * Alterna entre la barra de selección múltiple y la barra superior estándar con buscador animado y colecciones.
+ * Alterna entre la barra de seleccion multiple y la barra superior estandar con buscador animado,
+ * identidades y colecciones organizadas jerarquicamente.
  */
 @Composable
 fun CabeceraPrincipalLista(
@@ -63,6 +69,13 @@ fun CabeceraPrincipalLista(
     alCrearColeccion: () -> Unit,
     alEditarColeccion: (Coleccion) -> Unit,
     alEliminarColeccion: (Coleccion) -> Unit,
+    jerarquiaOrganizacion: JerarquiaOrganizacion = JerarquiaOrganizacion.IDENTIDAD_SOBRE_COLECCION,
+    modoVisualizacionIdentidades: ModoVisualizacionIdentidades = ModoVisualizacionIdentidades.CHIPS,
+    identidades: List<Identidad> = emptyList(),
+    identidadSeleccionadaId: String? = null,
+    conteoPorIdentidad: Map<String, Int> = emptyMap(),
+    conteoSinIdentidad: Int = 0,
+    alSeleccionarIdentidad: (String?) -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier.fillMaxWidth()) {
@@ -119,16 +132,59 @@ fun CabeceraPrincipalLista(
                 }
             }
 
-            BarraColeccionesLista(
-                colecciones = colecciones,
-                coleccionSeleccionadaId = coleccionSeleccionadaId,
-                totalEntradas = totalEntradas,
-                conteoPorColeccion = conteoPorColeccion,
-                alSeleccionarColeccion = alSeleccionarColeccion,
-                alCrearColeccion = alCrearColeccion,
-                alEditarColeccion = alEditarColeccion,
-                alEliminarColeccion = alEliminarColeccion
-            )
+            val mostrarChipsIdentidad = modoVisualizacionIdentidades == ModoVisualizacionIdentidades.CHIPS && identidades.isNotEmpty()
+
+            if (jerarquiaOrganizacion == JerarquiaOrganizacion.IDENTIDAD_SOBRE_COLECCION) {
+                // Nivel 1: Identidades
+                if (mostrarChipsIdentidad) {
+                    ChipsFiltroIdentidades(
+                        identidades = identidades,
+                        identidadSeleccionadaId = identidadSeleccionadaId,
+                        conteoPorIdentidad = conteoPorIdentidad,
+                        totalEntradas = totalEntradas,
+                        conteoSinIdentidad = conteoSinIdentidad,
+                        alSeleccionarIdentidad = alSeleccionarIdentidad
+                    )
+                    Spacer(Modifier.height(2.dp))
+                }
+
+                // Nivel 2 (Subordinado): Colecciones
+                BarraColeccionesLista(
+                    colecciones = colecciones,
+                    coleccionSeleccionadaId = coleccionSeleccionadaId,
+                    totalEntradas = totalEntradas,
+                    conteoPorColeccion = conteoPorColeccion,
+                    alSeleccionarColeccion = alSeleccionarColeccion,
+                    alCrearColeccion = alCrearColeccion,
+                    alEditarColeccion = alEditarColeccion,
+                    alEliminarColeccion = alEliminarColeccion
+                )
+            } else {
+                // Nivel 1: Colecciones
+                BarraColeccionesLista(
+                    colecciones = colecciones,
+                    coleccionSeleccionadaId = coleccionSeleccionadaId,
+                    totalEntradas = totalEntradas,
+                    conteoPorColeccion = conteoPorColeccion,
+                    alSeleccionarColeccion = alSeleccionarColeccion,
+                    alCrearColeccion = alCrearColeccion,
+                    alEditarColeccion = alEditarColeccion,
+                    alEliminarColeccion = alEliminarColeccion
+                )
+
+                // Nivel 2 (Subordinado): Identidades
+                if (mostrarChipsIdentidad) {
+                    Spacer(Modifier.height(2.dp))
+                    ChipsFiltroIdentidades(
+                        identidades = identidades,
+                        identidadSeleccionadaId = identidadSeleccionadaId,
+                        conteoPorIdentidad = conteoPorIdentidad,
+                        totalEntradas = totalEntradas,
+                        conteoSinIdentidad = conteoSinIdentidad,
+                        alSeleccionarIdentidad = alSeleccionarIdentidad
+                    )
+                }
+            }
         }
     }
 }

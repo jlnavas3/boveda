@@ -66,19 +66,55 @@ fun PantallaLista(vm: VaultViewModel, estado: EstadoBoveda) {
     val coleccionSeleccionadaId by vm.filtroColeccion.collectAsStateWithLifecycle()
     val identidadSeleccionadaId by vm.identidadSeleccionadaId.collectAsStateWithLifecycle()
 
-    val conteoPorColeccion = remember(entradas, colecciones) {
-        colecciones.associate { col -> col.id to entradas.count { it.colecciones.contains(col.id) } }
-    }
-    val conteoPorIdentidad = remember(entradas, identidades) {
-        identidades.associate { iden ->
-            iden.id to entradas.count { entrada ->
-                com.jlnavas3.bovedalocal.util.resolverIdentidadParaEntrada(entrada, identidades)?.id == iden.id
-            }
+    val jerarquia = ajustes.jerarquiaOrganizacionEfectiva
+
+    val (coleccionesEfectivas, conteoPorColeccion) = remember(
+        entradas, colecciones, identidades, identidadSeleccionadaId, jerarquia
+    ) {
+        if (jerarquia == com.jlnavas3.bovedalocal.data.JerarquiaOrganizacion.IDENTIDAD_SOBRE_COLECCION) {
+            com.jlnavas3.bovedalocal.util.filtrarColeccionesPorIdentidad(colecciones, entradas, identidades, identidadSeleccionadaId)
+        } else {
+            val conteos = colecciones.associate { col -> col.id to entradas.count { it.colecciones.contains(col.id) } }
+            Pair(colecciones, conteos)
         }
     }
-    val conteoSinIdentidad = remember(entradas, identidades) {
-        entradas.count { entrada ->
-            com.jlnavas3.bovedalocal.util.resolverIdentidadParaEntrada(entrada, identidades) == null
+
+    val (identidadesEfectivas, conteoPorIdentidad, conteoSinIdentidad) = remember(
+        entradas, identidades, coleccionSeleccionadaId, jerarquia
+    ) {
+        if (jerarquia == com.jlnavas3.bovedalocal.data.JerarquiaOrganizacion.COLECCION_SOBRE_IDENTIDAD) {
+            com.jlnavas3.bovedalocal.util.filtrarIdentidadesPorColeccion(identidades, entradas, coleccionSeleccionadaId)
+        } else {
+            val conteos = identidades.associate { iden ->
+                iden.id to entradas.count { entrada ->
+                    com.jlnavas3.bovedalocal.util.resolverIdentidadParaEntrada(entrada, identidades)?.id == iden.id
+                }
+            }
+            val sinIden = entradas.count { entrada ->
+                com.jlnavas3.bovedalocal.util.resolverIdentidadParaEntrada(entrada, identidades) == null
+            }
+            Triple(identidades, conteos, sinIden)
+        }
+    }
+
+    // Si la coleccion seleccionada ya no tiene elementos bajo la identidad activa, deseleccionar
+    LaunchedEffect(coleccionesEfectivas, coleccionSeleccionadaId, jerarquia) {
+        if (jerarquia == com.jlnavas3.bovedalocal.data.JerarquiaOrganizacion.IDENTIDAD_SOBRE_COLECCION &&
+            coleccionSeleccionadaId != null &&
+            coleccionesEfectivas.none { it.id == coleccionSeleccionadaId }
+        ) {
+            vm.seleccionarColeccion(null)
+        }
+    }
+
+    // Si la identidad seleccionada ya no tiene elementos bajo la coleccion activa, deseleccionar
+    LaunchedEffect(identidadesEfectivas, identidadSeleccionadaId, jerarquia) {
+        if (jerarquia == com.jlnavas3.bovedalocal.data.JerarquiaOrganizacion.COLECCION_SOBRE_IDENTIDAD &&
+            identidadSeleccionadaId != null &&
+            identidadSeleccionadaId != "__SIN_IDENTIDAD__" &&
+            identidadesEfectivas.none { it.id == identidadSeleccionadaId }
+        ) {
+            vm.seleccionarIdentidad(null)
         }
     }
 
@@ -193,7 +229,7 @@ fun PantallaLista(vm: VaultViewModel, estado: EstadoBoveda) {
                     criterioOrdenacion = criterioOrdenacion,
                     agruparPorSitio = ajustes.agruparPorSitio,
                     mostrarIndicadoresContenido = ajustes.mostrarIndicadoresContenido,
-                    colecciones = colecciones,
+                    colecciones = coleccionesEfectivas,
                     coleccionSeleccionadaId = coleccionSeleccionadaId,
                     conteoPorColeccion = conteoPorColeccion,
                     alAbrirMenu = { abrirMenu() },
@@ -230,50 +266,53 @@ fun PantallaLista(vm: VaultViewModel, estado: EstadoBoveda) {
                     },
                     alCrearColeccion = { dialogos.crearColeccion = true },
                     alEditarColeccion = { col -> dialogos.coleccionParaEditar = col },
-                    alEliminarColeccion = { col -> dialogos.coleccionParaEliminar = col }
-                )
-
-                ContenidoPrincipalLista(
-                    visibles = visibles,
-                    entradas = entradas,
-                    ajustes = ajustes,
-                    criterioOrdenacion = criterioOrdenacion,
-                    busqueda = busqueda,
-                    filtro = filtro,
-                    soloFavoritos = soloFavoritos,
-                    filtroEtiqueta = filtroEtiqueta,
-                    etiquetasDisponibles = etiquetasDisponibles,
-                    modoSeleccion = estadoSeleccion.modoSeleccion,
-                    seleccionados = estadoSeleccion.seleccionados,
-                    gruposExpandidos = gruposExpandidos,
-                    densidadAltura = densidadAltura,
-                    densidadMonograma = densidadMonograma,
-                    espaciadoFilas = espaciadoFilas,
-                    vm = vm,
-                    haptica = haptica,
-                    alImportarDirectoCxf = dispararImportacionDirectoCxf,
-                    alEntrarEnSeleccion = { estadoSeleccion.entrarEnSeleccion(it) },
-                    alAlternarSeleccion = { estadoSeleccion.alternarSeleccion(it) },
-                    alEntrarEnSeleccionLote = { estadoSeleccion.entrarEnSeleccionLote(it) },
-                    alAlternarSeleccionLote = { estadoSeleccion.alternarSeleccionLote(it) },
-                    alAlternarGrupo = { clave ->
-                        haptica.tic()
-                        gruposExpandidos = if (gruposExpandidos.contains(clave)) {
-                            gruposExpandidos - clave
-                        } else {
-                            gruposExpandidos + clave
-                        }
-                    },
-                    identidades = identidades,
+                    alEliminarColeccion = { col -> dialogos.coleccionParaEliminar = col },
+                    jerarquiaOrganizacion = jerarquia,
+                    modoVisualizacionIdentidades = ajustes.modoVisualizacionIdentidades,
+                    identidades = identidadesEfectivas,
                     identidadSeleccionadaId = identidadSeleccionadaId,
                     conteoPorIdentidad = conteoPorIdentidad,
-                    totalEntradas = entradas.size,
                     conteoSinIdentidad = conteoSinIdentidad,
                     alSeleccionarIdentidad = { id ->
                         haptica.tic()
                         vm.seleccionarIdentidad(id)
                     }
                 )
+
+                    ContenidoPrincipalLista(
+                        visibles = visibles,
+                        entradas = entradas,
+                        ajustes = ajustes,
+                        criterioOrdenacion = criterioOrdenacion,
+                        busqueda = busqueda,
+                        filtro = filtro,
+                        soloFavoritos = soloFavoritos,
+                        filtroEtiqueta = filtroEtiqueta,
+                        etiquetasDisponibles = etiquetasDisponibles,
+                        modoSeleccion = estadoSeleccion.modoSeleccion,
+                        seleccionados = estadoSeleccion.seleccionados,
+                        gruposExpandidos = gruposExpandidos,
+                        densidadAltura = densidadAltura,
+                        densidadMonograma = densidadMonograma,
+                        espaciadoFilas = espaciadoFilas,
+                        vm = vm,
+                        haptica = haptica,
+                        alImportarDirectoCxf = dispararImportacionDirectoCxf,
+                        alEntrarEnSeleccion = { estadoSeleccion.entrarEnSeleccion(it) },
+                        alAlternarSeleccion = { estadoSeleccion.alternarSeleccion(it) },
+                        alEntrarEnSeleccionLote = { estadoSeleccion.entrarEnSeleccionLote(it) },
+                        alAlternarSeleccionLote = { estadoSeleccion.alternarSeleccionLote(it) },
+                        alAlternarGrupo = { clave ->
+                            haptica.tic()
+                            gruposExpandidos = if (gruposExpandidos.contains(clave)) {
+                                gruposExpandidos - clave
+                            } else {
+                                gruposExpandidos + clave
+                            }
+                        },
+                        identidades = identidades,
+                        colecciones = colecciones
+                    )
             }
 
             CapaInferiorAccionesLista(

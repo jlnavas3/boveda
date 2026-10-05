@@ -118,6 +118,18 @@ fun PantallaOrganizacionLista(
 
                 Spacer(Modifier.height(14.dp))
 
+                // 1c. Jerarquía de organización (Identidades vs Colecciones)
+                com.jlnavas3.bovedalocal.ui.pantallas.organizacion.GrupoJerarquiaOrganizacionAjustes(
+                    jerarquiaActual = ajustes.jerarquiaOrganizacionEfectiva,
+                    mostrarId = ajustes.mostrarIdsAjustes,
+                    alSeleccionarJerarquia = { jerarquia ->
+                        haptica.tic()
+                        vm.ajustarJerarquiaOrganizacion(jerarquia)
+                    }
+                )
+
+                Spacer(Modifier.height(14.dp))
+
                 // 2. Densidad de lista
                 GrupoDensidadFilas(
                     mostrarId = ajustes.mostrarIdsAjustes,

@@ -1,7 +1,6 @@
 package com.jlnavas3.bovedalocal.ui.pantallas.lista
 
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
@@ -12,7 +11,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.jlnavas3.bovedalocal.data.AjustesApp
+import com.jlnavas3.bovedalocal.data.Coleccion
 import com.jlnavas3.bovedalocal.data.Entrada
+import com.jlnavas3.bovedalocal.data.Identidad
 import com.jlnavas3.bovedalocal.data.TipoEntrada
 import com.jlnavas3.bovedalocal.ui.CriterioOrdenacion
 import com.jlnavas3.bovedalocal.ui.Pantalla
@@ -21,7 +22,7 @@ import com.jlnavas3.bovedalocal.ui.theme.EspaciadoComponentes
 import com.jlnavas3.bovedalocal.util.Haptica
 
 /**
- * Contenedor del cuerpo de PantallaLista: recordatorio de exportación, barra de filtros y lista/vacío.
+ * Contenedor del cuerpo de PantallaLista: recordatorio de exportacion, barra de filtros y lista/vacio.
  */
 @Composable
 fun ColumnScope.ContenidoPrincipalLista(
@@ -48,12 +49,8 @@ fun ColumnScope.ContenidoPrincipalLista(
     alEntrarEnSeleccionLote: (Set<String>) -> Unit,
     alAlternarSeleccionLote: (Set<String>) -> Unit,
     alAlternarGrupo: (String) -> Unit,
-    identidades: List<com.jlnavas3.bovedalocal.data.Identidad> = emptyList(),
-    identidadSeleccionadaId: String? = null,
-    conteoPorIdentidad: Map<String, Int> = emptyMap(),
-    totalEntradas: Int = entradas.size,
-    conteoSinIdentidad: Int = 0,
-    alSeleccionarIdentidad: (String?) -> Unit = {}
+    identidades: List<Identidad> = emptyList(),
+    colecciones: List<Coleccion> = emptyList()
 ) {
     val recordatorio = remember(ajustes, entradas) { vm.recordatorioExportacionInfo() }
     if (recordatorio != null) {
@@ -64,18 +61,6 @@ fun ColumnScope.ContenidoPrincipalLista(
                 alIr = { vm.ir(Pantalla.CopiaSeguridad("05-COP-MAN")) }
             )
         }
-    }
-
-    if (ajustes.modoVisualizacionIdentidades == com.jlnavas3.bovedalocal.data.ModoVisualizacionIdentidades.CHIPS && identidades.isNotEmpty()) {
-        ChipsFiltroIdentidades(
-            identidades = identidades,
-            identidadSeleccionadaId = identidadSeleccionadaId,
-            conteoPorIdentidad = conteoPorIdentidad,
-            totalEntradas = totalEntradas,
-            conteoSinIdentidad = conteoSinIdentidad,
-            alSeleccionarIdentidad = alSeleccionarIdentidad
-        )
-        Spacer(Modifier.height(4.dp))
     }
 
     FilaFiltrosYEtiquetasLista(
@@ -121,6 +106,7 @@ fun ColumnScope.ContenidoPrincipalLista(
             densidadMonograma = densidadMonograma,
             espaciadoFilas = espaciadoFilas,
             identidades = identidades,
+            colecciones = colecciones,
             alAbrirEntrada = { id ->
                 val listaIdsVisibles = visibles.map { it.id }
                 vm.ir(Pantalla.Detalle(id, idsContexto = listaIdsVisibles))
