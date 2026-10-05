@@ -10,22 +10,17 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Badge
+import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Check
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -38,36 +33,22 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.jlnavas3.bovedalocal.data.Identidad
+import com.jlnavas3.bovedalocal.ui.componentes.BotonTextoBoveda
+import com.jlnavas3.bovedalocal.ui.componentes.ContenedorIconoInsignia
+import com.jlnavas3.bovedalocal.ui.componentes.DialogoBoveda
+import com.jlnavas3.bovedalocal.ui.componentes.EstiloTitulo
+import com.jlnavas3.bovedalocal.ui.componentes.TamanoInsignia
+import com.jlnavas3.bovedalocal.ui.componentes.TipoBotonTexto
+import com.jlnavas3.bovedalocal.ui.componentes.TextoSubtitulo
+import com.jlnavas3.bovedalocal.ui.componentes.TextoTitulo
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorCampoAjustes
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorSeparadorAjustes
-import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorTarjetaAjustes
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
-import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
-import com.jlnavas3.bovedalocal.ui.theme.CurvaturaEsquinas
-import com.jlnavas3.bovedalocal.ui.theme.EstiloBorde
 import com.jlnavas3.bovedalocal.ui.theme.FormaPequena
-import com.jlnavas3.bovedalocal.ui.theme.GrosorBorde
 import com.jlnavas3.bovedalocal.ui.theme.TextoPrincipal
-import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
 import com.jlnavas3.bovedalocal.ui.theme.parsearColorO
-
-private val PALETA_COLORES_IDENTIDAD = listOf(
-    "#0284C7", // Azul cielo
-    "#2563EB", // Azul real
-    "#7C3AED", // Violeta
-    "#9333EA", // Púrpura
-    "#DB2777", // Rosa
-    "#DC2626", // Rojo
-    "#EA580C", // Naranja
-    "#D97706", // Ámbar
-    "#059669", // Verde esmeralda
-    "#0D9488", // Teal
-    "#4B5563"  // Grafito
-)
 
 /**
  * Diálogo modal para la creación y edición de perfiles de [Identidad].
@@ -85,7 +66,7 @@ fun DialogoEditarIdentidad(
         mutableStateOf(identidadAEditar?.correosSecundarios?.joinToString(", ") ?: "")
     }
     var colorSeleccionadoHex by remember {
-        mutableStateOf(identidadAEditar?.colorHex ?: PALETA_COLORES_IDENTIDAD.first())
+        mutableStateOf(identidadAEditar?.colorHex ?: PaletaColoresIdentidad.first())
     }
 
     val focusRequester = remember { FocusRequester() }
@@ -95,43 +76,25 @@ fun DialogoEditarIdentidad(
         }
     }
 
-    val forma = RoundedCornerShape(CurvaturaEsquinas)
     val colorAcentoFinal = parsearColorO(colorSeleccionadoHex ?: "", ColorAcento)
-
     val camposValidos = nombre.isNotBlank() && correoPrincipal.isNotBlank() && correoPrincipal.contains("@")
 
-    AlertDialog(
+    DialogoBoveda(
         onDismissRequest = alDescartar,
-        shape = forma,
-        containerColor = ColorTarjetaAjustes,
-        modifier = Modifier.then(
-            if (GrosorBorde > 0.dp && EstiloBorde != "ninguno") {
-                Modifier.border(GrosorBorde, ColorBordeActual, forma)
-            } else Modifier
-        ),
         title = {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(10.dp)
             ) {
-                Box(
-                    modifier = Modifier
-                        .size(36.dp)
-                        .clip(FormaPequena)
-                        .background(colorAcentoFinal.copy(alpha = 0.15f)),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        imageVector = Icons.Filled.Badge,
-                        contentDescription = null,
-                        tint = colorAcentoFinal,
-                        modifier = Modifier.size(20.dp)
-                    )
-                }
-                Text(
-                    text = if (esEdicion) "Editar identidad" else "Nueva identidad",
-                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                    color = TextoPrincipal
+                ContenedorIconoInsignia(
+                    icono = Icons.Filled.AccountCircle,
+                    tamano = TamanoInsignia.PEQUENO,
+                    colorFondo = colorAcentoFinal.copy(alpha = 0.16f),
+                    colorIcono = colorAcentoFinal
+                )
+                TextoTitulo(
+                    texto = if (esEdicion) "Editar identidad" else "Nueva identidad",
+                    estilo = EstiloTitulo.PEQUENO
                 )
             }
         },
@@ -197,10 +160,8 @@ fun DialogoEditarIdentidad(
                 )
 
                 Column {
-                    Text(
-                        text = "Color identificador",
-                        style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.SemiBold),
-                        color = TextoPrincipal,
+                    TextoSubtitulo(
+                        texto = "Color identificador",
                         modifier = Modifier.padding(bottom = 6.dp)
                     )
                     Row(
@@ -209,7 +170,7 @@ fun DialogoEditarIdentidad(
                             .horizontalScroll(rememberScrollState()),
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        PALETA_COLORES_IDENTIDAD.forEach { hex ->
+                        PaletaColoresIdentidad.forEach { hex ->
                             val colorActual = parsearColorO(hex, ColorAcento)
                             val seleccionado = (colorSeleccionadoHex?.equals(hex, ignoreCase = true) == true)
                             Box(
@@ -240,8 +201,12 @@ fun DialogoEditarIdentidad(
             }
         },
         confirmButton = {
-            TextButton(
-                onClick = {
+            BotonTextoBoveda(
+                texto = if (esEdicion) "Guardar" else "Crear",
+                tipo = TipoBotonTexto.PRIMARIO,
+                colorPersonalizado = colorAcentoFinal,
+                habilitado = camposValidos,
+                alPulsar = {
                     if (camposValidos) {
                         val secundarios = correosSecundariosTexto
                             .split(",", "\n", ";")
@@ -255,20 +220,15 @@ fun DialogoEditarIdentidad(
                             "person"
                         )
                     }
-                },
-                enabled = camposValidos
-            ) {
-                Text(
-                    text = if (esEdicion) "Guardar" else "Crear",
-                    fontWeight = FontWeight.Bold,
-                    color = if (camposValidos) colorAcentoFinal else TextoSecundario
-                )
-            }
+                }
+            )
         },
         dismissButton = {
-            TextButton(onClick = alDescartar) {
-                Text("Cancelar", color = TextoSecundario)
-            }
+            BotonTextoBoveda(
+                texto = "Cancelar",
+                tipo = TipoBotonTexto.SECUNDARIO,
+                alPulsar = alDescartar
+            )
         }
     )
 }

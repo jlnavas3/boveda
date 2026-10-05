@@ -1,7 +1,7 @@
 package com.jlnavas3.bovedalocal.ui.pantallas.organizacion
 
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Badge
+import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -27,7 +27,7 @@ fun GrupoModoIdentidadesAjustes(
 ) {
     ComponenteGrupo(
         etiqueta = "Identidades en lista principal",
-        icono = Icons.Filled.Badge,
+        icono = Icons.Filled.AccountCircle,
         colorIcono = Color(0xFF0284C7),
         idGrupo = "03-LST-DES-GID",
         mostrarId = mostrarId,

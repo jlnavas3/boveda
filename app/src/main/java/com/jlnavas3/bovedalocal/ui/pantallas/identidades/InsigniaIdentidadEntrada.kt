@@ -10,17 +10,14 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.jlnavas3.bovedalocal.data.Identidad
+import com.jlnavas3.bovedalocal.ui.componentes.TamanoCuerpo
+import com.jlnavas3.bovedalocal.ui.componentes.TextoCuerpo
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.parsearColorO
 
@@ -51,15 +48,11 @@ fun InsigniaIdentidadEntrada(
                 .background(colorBase)
         )
         Spacer(Modifier.width(5.dp))
-        Text(
-            text = identidad.nombre,
-            style = MaterialTheme.typography.labelSmall.copy(
-                fontSize = 11.sp,
-                fontWeight = FontWeight.Medium
-            ),
+        TextoCuerpo(
+            texto = identidad.nombre,
+            tamano = TamanoCuerpo.MINI,
             color = colorBase,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis
+            maxLineas = 1
         )
     }
 }
