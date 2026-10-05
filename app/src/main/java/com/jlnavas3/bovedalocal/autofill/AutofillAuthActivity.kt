@@ -238,7 +238,7 @@ class AutofillAuthActivity : FragmentActivity() {
 
         AutofillUtiles.entradasCompatibles(repositorio.entradas(), paquete, dominio).forEachIndexed { indice, entrada ->
             val spec = specs.getOrElse(indice) { specs.lastOrNull() }
-            AutofillUtiles.dataset(this, entrada, campos, spec)?.let {
+            AutofillUtiles.dataset(this, entrada, campos, spec, paquete)?.let {
                 respuesta.addDataset(it)
                 alguno = true
             }

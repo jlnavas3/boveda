@@ -42,3 +42,7 @@
 # seria regalar la estructura del codigo, que es justo lo que se quiere esconder.
 -keepattributes SourceFile,LineNumberTable
 -renamesourcefileattribute SourceFile
+
+# AndroidX Autofill Inline Suggestions UI
+-keep class androidx.autofill.inline.** { *; }
+

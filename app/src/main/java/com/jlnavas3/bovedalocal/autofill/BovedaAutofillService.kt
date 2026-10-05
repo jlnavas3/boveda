@@ -88,8 +88,10 @@ class BovedaAutofillService : AutofillService() {
         val ids: Array<AutofillId> = listOfNotNull(campos.usuario, campos.contrasena, campos.otp).toTypedArray()
 
         val ajustes = repositorio.ajustes.ajustes.value
+        val inlineReq = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) request.inlineSuggestionsRequest else null
+        android.util.Log.i("BovedaAutofill", "onFillRequest: paquete=$paquete, inlineReq=$inlineReq, specsCount=${inlineReq?.inlinePresentationSpecs?.size}, switchActivo=${ajustes.autofillSugerenciasTeclado}")
         val specs: List<InlinePresentationSpec> = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && ajustes.autofillSugerenciasTeclado) {
-            request.inlineSuggestionsRequest?.inlinePresentationSpecs.orEmpty()
+            inlineReq?.inlinePresentationSpecs.orEmpty()
         } else {
             emptyList()
         }
@@ -136,9 +138,9 @@ class BovedaAutofillService : AutofillService() {
             val compatibles = AutofillUtiles.entradasCompatibles(repositorio.entradas(), paquete, campos.dominioWeb)
             compatibles.forEachIndexed { indice, entrada ->
                 val spec = specs.getOrElse(indice) { specs.lastOrNull() }
-                AutofillUtiles.dataset(this, entrada, campos, spec)?.let { respuesta.addDataset(it) }
+                AutofillUtiles.dataset(this, entrada, campos, spec, paquete)?.let { respuesta.addDataset(it) }
                 if (campos.otp != null && !entrada.secretoTotp.isNullOrBlank()) {
-                    AutofillOtpUtiles.datasetTotp(this, entrada, campos.otp, spec)?.let { respuesta.addDataset(it) }
+                    AutofillOtpUtiles.datasetTotp(this, entrada, campos.otp, spec, paquete)?.let { respuesta.addDataset(it) }
                 }
             }
         }

@@ -47,14 +47,27 @@ object CreadorInlineSuggestion {
             val icono = if (iconoBitmap != null) {
                 Icon.createWithBitmap(iconoBitmap)
             } else {
-                Icon.createWithResource(contexto, R.drawable.ic_candado_boveda)
+                Icon.createWithBitmap(obtenerBitmapVector(contexto, R.drawable.ic_candado_boveda))
             }
             contentBuilder.setStartIcon(icono)
 
             val slice = contentBuilder.build().slice
-            InlinePresentation(slice, spec, fijado)
-        } catch (_: Exception) {
+            val pres = InlinePresentation(slice, spec, fijado)
+            android.util.Log.i("BovedaAutofill", "CreadorInlineSuggestion OK: titulo=$titulo, pres=$pres")
+            pres
+        } catch (e: Exception) {
+            android.util.Log.e("BovedaAutofill", "Error creando inline suggestion: ${e.javaClass.simpleName} - ${e.message}", e)
             null
         }
+    }
+
+    private fun obtenerBitmapVector(contexto: Context, resId: Int, tamanoPx: Int = 72): Bitmap {
+        val drawable = androidx.core.content.ContextCompat.getDrawable(contexto, resId)
+            ?: return Bitmap.createBitmap(tamanoPx, tamanoPx, Bitmap.Config.ARGB_8888)
+        val bitmap = Bitmap.createBitmap(tamanoPx, tamanoPx, Bitmap.Config.ARGB_8888)
+        val canvas = android.graphics.Canvas(bitmap)
+        drawable.setBounds(0, 0, tamanoPx, tamanoPx)
+        drawable.draw(canvas)
+        return bitmap
     }
 }

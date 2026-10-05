@@ -186,12 +186,14 @@ object AutofillUtiles {
         contexto: Context,
         entrada: Entrada,
         campos: CamposDetectados,
-        inlineSpec: android.widget.inline.InlinePresentationSpec? = null
+        inlineSpec: android.widget.inline.InlinePresentationSpec? = null,
+        paqueteSolicitante: String? = null
     ): Dataset? {
         if (!campos.hayAlgo) return null
 
         val paquete = entrada.urls.firstNotNullOfOrNull { LanzadorEnlaces.extraerPaquete(it) }
             ?: entrada.passkey?.rpId?.let { LanzadorEnlaces.extraerPaquete(it) }
+            ?: if (!paqueteSolicitante.isNullOrBlank() && LanzadorEnlaces.estaInstalada(contexto, paqueteSolicitante)) paqueteSolicitante else null
 
         val nombreApp = if (paquete != null && LanzadorEnlaces.estaInstalada(contexto, paquete)) {
             LanzadorEnlaces.obtenerNombreApp(contexto, paquete)
@@ -226,16 +228,25 @@ object AutofillUtiles {
             subtitulo = subtituloMostrar,
             iconoBitmap = iconoBitmap
         )
+
+        val inlineTitulo = if (entrada.usuario.isNotBlank()) entrada.usuario else tituloMostrar
+        val inlineSubtitulo = if (entrada.usuario.isNotBlank()) {
+            if (!nombreApp.isNullOrBlank()) nombreApp else (entrada.titulo.takeIf { it.isNotBlank() } ?: subtituloMostrar)
+        } else {
+            subtituloMostrar
+        }
+
         val inlinePres = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R && inlineSpec != null) {
             CreadorInlineSuggestion.crear(
                 contexto = contexto,
                 spec = inlineSpec,
-                titulo = tituloMostrar,
-                subtitulo = subtituloMostrar,
+                titulo = inlineTitulo,
+                subtitulo = inlineSubtitulo,
                 iconoBitmap = iconoBitmap
             )
         } else null
 
+        android.util.Log.i("BovedaAutofill", "Dataset para ${entrada.titulo}: inlinePres=$inlinePres, inlineSpec=$inlineSpec")
         val constructor = Dataset.Builder(vista)
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R && inlinePres != null) {
             constructor.setInlinePresentation(inlinePres)

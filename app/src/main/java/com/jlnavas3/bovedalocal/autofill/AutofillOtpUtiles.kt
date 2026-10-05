@@ -72,11 +72,13 @@ object AutofillOtpUtiles {
         contexto: Context,
         entrada: Entrada,
         idCampoOtp: AutofillId,
-        inlineSpec: android.widget.inline.InlinePresentationSpec? = null
+        inlineSpec: android.widget.inline.InlinePresentationSpec? = null,
+        paqueteSolicitante: String? = null
     ): Dataset? {
         val codigo = obtenerCodigoTotp(entrada) ?: return null
         val paquete = entrada.urls.firstNotNullOfOrNull { LanzadorEnlaces.extraerPaquete(it) }
             ?: entrada.passkey?.rpId?.let { LanzadorEnlaces.extraerPaquete(it) }
+            ?: if (!paqueteSolicitante.isNullOrBlank() && LanzadorEnlaces.estaInstalada(contexto, paqueteSolicitante)) paqueteSolicitante else null
         val iconoBitmap = if (paquete != null && LanzadorEnlaces.estaInstalada(contexto, paquete)) {
             AutofillUtiles.obtenerBitmapIconoCircular(contexto, paquete)
         } else null
