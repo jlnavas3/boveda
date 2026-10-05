@@ -57,17 +57,15 @@ object GestorAppsInstaladas {
         val paqLimpio = paquete.trim().lowercase()
         if (paqLimpio.isBlank()) return false
         val cache = cachePaquetesInstalados
-        if (cache != null) {
-            return cache.contains(paqLimpio)
+        if (cache != null && cache.contains(paqLimpio)) {
+            return true
         }
-        return try {
-            val pm = contexto.packageManager
-            val paquetes = pm.getInstalledApplications(0).map { it.packageName.lowercase() }.toSet()
-            cachePaquetesInstalados = paquetes
-            paquetes.contains(paqLimpio)
-        } catch (e: Exception) {
-            LanzadorEnlaces.estaInstaladaDirecta(contexto, paquete)
+        val instalada = LanzadorEnlaces.estaInstaladaDirecta(contexto, paqLimpio)
+        if (instalada) {
+            val actual = cachePaquetesInstalados ?: emptySet()
+            cachePaquetesInstalados = actual + paqLimpio
         }
+        return instalada
     }
 
     /**
