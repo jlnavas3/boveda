@@ -45,6 +45,8 @@ fun ColumnaDetallesFilaEntrada(
     ocultarUsuario: Boolean,
     ocultarTotp: Boolean,
     estiloOcultamiento: String,
+    identidadAsociada: com.jlnavas3.bovedalocal.data.Identidad? = null,
+    ocultarEmailIdentidad: Boolean = false,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -99,7 +101,13 @@ fun ColumnaDetallesFilaEntrada(
         val textoSubtitulo = when (entrada.tipo) {
             TipoEntrada.PASSKEY -> "Passkey · ${entrada.passkey?.rpId ?: ""}"
             TipoEntrada.NOTA -> "Nota segura"
-            TipoEntrada.LOGIN -> entrada.usuario.ifBlank { entrada.urls.firstOrNull() ?: "Sin usuario" }
+            TipoEntrada.LOGIN -> {
+                if (ocultarEmailIdentidad && identidadAsociada != null) {
+                    entrada.urls.firstOrNull() ?: entrada.notas.take(25).ifBlank { "Cuenta vinculada" }
+                } else {
+                    entrada.usuario.ifBlank { entrada.urls.firstOrNull() ?: "Sin usuario" }
+                }
+            }
             else -> entrada.usuario.ifBlank {
                 entrada.camposPersonalizados.firstOrNull { it.valor.isNotBlank() }?.let {
                     "${it.etiqueta}: ${if (it.esSensibleEfectivo) "••••" else it.valor}"
@@ -113,15 +121,27 @@ fun ColumnaDetallesFilaEntrada(
         )
         val debeOcultarSubtitulo = ocultarUsuario && esDatoUsuario
 
-        TextoSeguroVisual(
-            texto = textoSubtitulo,
-            oculto = debeOcultarSubtitulo,
-            estilo = estiloOcultamiento,
-            estiloTexto = if (compacta) MaterialTheme.typography.labelSmall else MaterialTheme.typography.bodySmall.copy(fontSize = 12.5.sp),
-            colorTexto = TextoSecundario,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-            modifier = Modifier.fillMaxWidth()
-        )
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            TextoSeguroVisual(
+                texto = textoSubtitulo,
+                oculto = debeOcultarSubtitulo,
+                estilo = estiloOcultamiento,
+                estiloTexto = if (compacta) MaterialTheme.typography.labelSmall else MaterialTheme.typography.bodySmall.copy(fontSize = 12.5.sp),
+                colorTexto = TextoSecundario,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier.weight(1f, fill = false)
+            )
+
+            if (identidadAsociada != null) {
+                Spacer(Modifier.width(6.dp))
+                com.jlnavas3.bovedalocal.ui.pantallas.identidades.InsigniaIdentidadEntrada(
+                    identidad = identidadAsociada
+                )
+            }
+        }
     }
 }

@@ -6,8 +6,11 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Security
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -53,13 +56,23 @@ fun CuerpoListaEntradas(
     alAlternarSeleccion: (String) -> Unit,
     alAlternarGrupo: (String) -> Unit,
     alEntrarEnSeleccionLote: ((Set<String>) -> Unit)? = null,
-    alAlternarSeleccionLote: ((Set<String>) -> Unit)? = null
+    alAlternarSeleccionLote: ((Set<String>) -> Unit)? = null,
+    identidades: List<com.jlnavas3.bovedalocal.data.Identidad> = emptyList()
 ) {
     val ambitoCorutina = rememberCoroutineScope()
     val densidad = LocalDensity.current
     val expandidoEnLista: (String) -> Boolean = { clave ->
         busqueda.isNotBlank() || gruposExpandidos.contains(clave)
     }
+    val esModoSeccionesIdentidad = ajustes.modoVisualizacionIdentidades == com.jlnavas3.bovedalocal.data.ModoVisualizacionIdentidades.SECCIONES && identidades.isNotEmpty()
+
+    val itemsIdentidades = remember(visibles, identidades, gruposExpandidos, busqueda, esModoSeccionesIdentidad) {
+        if (!esModoSeccionesIdentidad) emptyList()
+        else com.jlnavas3.bovedalocal.util.construirItemsAgrupadosPorIdentidad(visibles, identidades) { clave ->
+            busqueda.isNotBlank() || gruposExpandidos.contains("identidad-$clave")
+        }
+    }
+
     val itemsAMostrar = remember(visibles, modoSeleccion, criterioOrdenacion, ajustes.agruparPorSitio) {
         construirItemsAgrupadosPorSitio(
             entradas = visibles,
@@ -99,6 +112,91 @@ fun CuerpoListaEntradas(
             segundosUnix = System.currentTimeMillis() / 1000
             delay(1000)
         }
+    }
+
+    if (esModoSeccionesIdentidad) {
+        Box(modifier = Modifier.fillMaxSize()) {
+            LazyColumn(
+                state = estadoLista,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .reboteElastico(),
+                contentPadding = PaddingValues(
+                    start = 20.dp,
+                    end = 20.dp,
+                    bottom = 110.dp
+                ),
+                verticalArrangement = Arrangement.spacedBy(espaciadoFilas)
+            ) {
+                items(
+                    itemsIdentidades,
+                    key = { item ->
+                        when (item) {
+                            is com.jlnavas3.bovedalocal.util.ItemAgrupadoIdentidad.CabeceraIdentidad -> "cab-iden-${item.identidad.id}"
+                            is com.jlnavas3.bovedalocal.util.ItemAgrupadoIdentidad.CabeceraSinIdentidad -> "cab-sin-iden"
+                            is com.jlnavas3.bovedalocal.util.ItemAgrupadoIdentidad.EntradaHija -> "ent-iden-${item.entrada.id}"
+                        }
+                    }
+                ) { item ->
+                    when (item) {
+                        is com.jlnavas3.bovedalocal.util.ItemAgrupadoIdentidad.CabeceraIdentidad -> {
+                            val claveGrupo = "identidad-${item.identidad.id}"
+                            val expandido = busqueda.isNotBlank() || gruposExpandidos.contains(claveGrupo)
+                            val colorBase = com.jlnavas3.bovedalocal.ui.theme.parsearColorO(item.identidad.colorHex ?: "", com.jlnavas3.bovedalocal.ui.theme.ColorAcento)
+                            SeccionGrupoIdentidad(
+                                nombre = item.identidad.nombre,
+                                subtitulo = item.identidad.correoPrincipal,
+                                cantidad = item.totalEntradas,
+                                expandido = expandido,
+                                colorBase = colorBase,
+                                alAlternar = { alAlternarGrupo(claveGrupo) }
+                            )
+                        }
+                        is com.jlnavas3.bovedalocal.util.ItemAgrupadoIdentidad.CabeceraSinIdentidad -> {
+                            val claveGrupo = "identidad-__SIN_IDENTIDAD__"
+                            val expandido = busqueda.isNotBlank() || gruposExpandidos.contains(claveGrupo)
+                            SeccionGrupoIdentidad(
+                                nombre = "Sin identidad asignada",
+                                subtitulo = "Wi-Fi, routers y credenciales varias",
+                                cantidad = item.totalEntradas,
+                                expandido = expandido,
+                                colorBase = com.jlnavas3.bovedalocal.ui.theme.TextoSecundario,
+                                icono = Icons.Filled.Security,
+                                alAlternar = { alAlternarGrupo(claveGrupo) }
+                            )
+                        }
+                        is com.jlnavas3.bovedalocal.util.ItemAgrupadoIdentidad.EntradaHija -> {
+                            FilaEntrada(
+                                entrada = item.entrada,
+                                seleccionActiva = modoSeleccion,
+                                seleccionado = seleccionados.contains(item.entrada.id),
+                                alAbrir = { alAbrirEntrada(item.entrada.id) },
+                                alCopiarUsuario = { alCopiarUsuario(item.entrada.id, item.entrada.usuario) },
+                                alCopiarContrasena = { alCopiarContrasena(item.entrada.id, item.entrada.contrasena) },
+                                alFavorito = { alAlternarFavorito(item.entrada.id) },
+                                alCopiarCodigo = { alCopiarCodigoTotp(item.entrada.id, it) },
+                                alPulsarLargo = { alEntrarEnSeleccion(item.entrada.id) },
+                                alAlternarSeleccion = { alAlternarSeleccion(item.entrada.id) },
+                                segundosUnix = segundosUnix,
+                                alturaFila = densidadAltura,
+                                tamanoMonograma = densidadMonograma,
+                                resaltado = false,
+                                separarDigitosTotp = ajustes.totpSepararDigitos,
+                                mostrarIndicadores = ajustes.mostrarIndicadoresContenido,
+                                enGrupo = true,
+                                esUltimoEnGrupo = item.esUltimaEnSeccion,
+                                ocultarUsuario = ajustes.seguridadVisualActiva && ajustes.ocultarUsuario,
+                                ocultarTotp = ajustes.seguridadVisualActiva && ajustes.ocultarTotp,
+                                estiloOcultamiento = ajustes.estiloOcultamientoVisual,
+                                identidadAsociada = item.identidad,
+                                ocultarEmailIdentidad = item.identidad != null
+                            )
+                        }
+                    }
+                }
+            }
+        }
+        return
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
@@ -219,7 +317,8 @@ fun CuerpoListaEntradas(
                                 esUltimoEnGrupo = indiceHijo == totalHijos - 1,
                                 ocultarUsuario = ajustes.seguridadVisualActiva && ajustes.ocultarUsuario,
                                 ocultarTotp = ajustes.seguridadVisualActiva && ajustes.ocultarTotp,
-                                estiloOcultamiento = ajustes.estiloOcultamientoVisual
+                                estiloOcultamiento = ajustes.estiloOcultamientoVisual,
+                                identidadAsociada = com.jlnavas3.bovedalocal.util.resolverIdentidadParaEntrada(entradaHija, identidades)
                             )
                         }
                     )
@@ -244,7 +343,8 @@ fun CuerpoListaEntradas(
                         enGrupo = false,
                         ocultarUsuario = ajustes.seguridadVisualActiva && ajustes.ocultarUsuario,
                         ocultarTotp = ajustes.seguridadVisualActiva && ajustes.ocultarTotp,
-                        estiloOcultamiento = ajustes.estiloOcultamientoVisual
+                        estiloOcultamiento = ajustes.estiloOcultamientoVisual,
+                        identidadAsociada = com.jlnavas3.bovedalocal.util.resolverIdentidadParaEntrada(item.entrada, identidades)
                     )
                     is ItemAgrupado.Hijo -> Unit
                 }

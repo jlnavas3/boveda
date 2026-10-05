@@ -47,7 +47,13 @@ fun ColumnScope.ContenidoPrincipalLista(
     alAlternarSeleccion: (String) -> Unit,
     alEntrarEnSeleccionLote: (Set<String>) -> Unit,
     alAlternarSeleccionLote: (Set<String>) -> Unit,
-    alAlternarGrupo: (String) -> Unit
+    alAlternarGrupo: (String) -> Unit,
+    identidades: List<com.jlnavas3.bovedalocal.data.Identidad> = emptyList(),
+    identidadSeleccionadaId: String? = null,
+    conteoPorIdentidad: Map<String, Int> = emptyMap(),
+    totalEntradas: Int = entradas.size,
+    conteoSinIdentidad: Int = 0,
+    alSeleccionarIdentidad: (String?) -> Unit = {}
 ) {
     val recordatorio = remember(ajustes, entradas) { vm.recordatorioExportacionInfo() }
     if (recordatorio != null) {
@@ -58,6 +64,18 @@ fun ColumnScope.ContenidoPrincipalLista(
                 alIr = { vm.ir(Pantalla.CopiaSeguridad("05-COP-MAN")) }
             )
         }
+    }
+
+    if (ajustes.modoVisualizacionIdentidades == com.jlnavas3.bovedalocal.data.ModoVisualizacionIdentidades.CHIPS && identidades.isNotEmpty()) {
+        ChipsFiltroIdentidades(
+            identidades = identidades,
+            identidadSeleccionadaId = identidadSeleccionadaId,
+            conteoPorIdentidad = conteoPorIdentidad,
+            totalEntradas = totalEntradas,
+            conteoSinIdentidad = conteoSinIdentidad,
+            alSeleccionarIdentidad = alSeleccionarIdentidad
+        )
+        Spacer(Modifier.height(4.dp))
     }
 
     FilaFiltrosYEtiquetasLista(
@@ -102,6 +120,7 @@ fun ColumnScope.ContenidoPrincipalLista(
             densidadAltura = densidadAltura,
             densidadMonograma = densidadMonograma,
             espaciadoFilas = espaciadoFilas,
+            identidades = identidades,
             alAbrirEntrada = { id ->
                 val listaIdsVisibles = visibles.map { it.id }
                 vm.ir(Pantalla.Detalle(id, idsContexto = listaIdsVisibles))

@@ -22,6 +22,7 @@ interface VaultEntradasDelegate : VaultDuplicadosPapeleraDelegate {
     val soloFavoritosInterno: MutableStateFlow<Boolean>
     val filtroEtiquetaInterno: MutableStateFlow<String?>
     val filtroColeccionInterno: MutableStateFlow<String?>
+    val filtroIdentidadInterno: MutableStateFlow<String?>
     val criterioOrdenacionInterno: MutableStateFlow<CriterioOrdenacion>
     override fun ejecutar(bloque: suspend () -> Unit)
     fun ir(pantalla: Pantalla)
@@ -33,7 +34,10 @@ interface VaultEntradasDelegate : VaultDuplicadosPapeleraDelegate {
 
     // ---------------------------------------------------------------- entradas
 
-    fun entradasVisibles(entradas: List<Entrada>): List<Entrada> =
+    fun entradasVisibles(
+        entradas: List<Entrada>,
+        identidades: List<com.jlnavas3.bovedalocal.data.Identidad> = emptyList()
+    ): List<Entrada> =
         FiltradorEntradas.filtrarYOrdenar(
             entradas = entradas,
             busqueda = busquedaInterna.value,
@@ -41,7 +45,9 @@ interface VaultEntradasDelegate : VaultDuplicadosPapeleraDelegate {
             soloFavoritos = soloFavoritosInterno.value,
             filtroEtiqueta = filtroEtiquetaInterno.value,
             filtroColeccion = filtroColeccionInterno.value,
-            criterioOrdenacion = criterioOrdenacionInterno.value
+            criterioOrdenacion = criterioOrdenacionInterno.value,
+            filtroIdentidad = filtroIdentidadInterno.value,
+            identidades = identidades
         )
 
     fun cambiarCriterioOrdenacion(criterio: CriterioOrdenacion) {

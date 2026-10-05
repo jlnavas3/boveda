@@ -525,6 +525,81 @@ class VaultRepository private constructor(contexto: Context) {
         }
     }
 
+    // ------------------------------------------------------------ identidades
+
+    fun identidades(): List<Identidad> = synchronized(candado) { contenido.identidades }
+
+    fun crearIdentidad(
+        nombre: String,
+        correoPrincipal: String,
+        correosSecundarios: List<String> = emptyList(),
+        colorHex: String? = null,
+        icono: String = "person"
+    ): Identidad {
+        val nueva = Identidad(
+            nombre = nombre.trim(),
+            correoPrincipal = correoPrincipal.trim().lowercase(),
+            correosSecundarios = correosSecundarios.map { it.trim().lowercase() }.filter { it.isNotBlank() },
+            colorHex = colorHex,
+            icono = icono
+        )
+        synchronized(candado) {
+            contenido = contenido.copy(
+                identidades = contenido.identidades + nueva
+            )
+            persistir()
+            publicar()
+        }
+        return nueva
+    }
+
+    fun actualizarIdentidad(
+        id: String,
+        nombre: String,
+        correoPrincipal: String,
+        correosSecundarios: List<String> = emptyList(),
+        colorHex: String? = null,
+        icono: String = "person"
+    ) {
+        synchronized(candado) {
+            val lista = contenido.identidades.toMutableList()
+            val indice = lista.indexOfFirst { it.id == id }
+            if (indice >= 0) {
+                lista[indice] = lista[indice].copy(
+                    nombre = nombre.trim(),
+                    correoPrincipal = correoPrincipal.trim().lowercase(),
+                    correosSecundarios = correosSecundarios.map { it.trim().lowercase() }.filter { it.isNotBlank() },
+                    colorHex = colorHex,
+                    icono = icono,
+                    modificadaEn = System.currentTimeMillis()
+                )
+                contenido = contenido.copy(identidades = lista)
+                persistir()
+                publicar()
+            }
+        }
+    }
+
+    fun eliminarIdentidad(id: String) {
+        synchronized(candado) {
+            val nuevasIdentidades = contenido.identidades.filterNot { it.id == id }
+            val nuevasEntradas = contenido.entradas.map { entrada ->
+                if (entrada.identidadId == id) {
+                    entrada.copy(
+                        identidadId = null,
+                        modificadaEn = System.currentTimeMillis()
+                    )
+                } else entrada
+            }
+            contenido = contenido.copy(
+                identidades = nuevasIdentidades,
+                entradas = nuevasEntradas
+            )
+            persistir()
+            publicar()
+        }
+    }
+
     fun asignarColeccionesAEntradas(
         idsEntradas: Set<String>,
         idsAgregar: Set<String>,
@@ -580,7 +655,7 @@ class VaultRepository private constructor(contexto: Context) {
      */
     private fun publicar() {
         _estado.value = when {
-            claveMaestra != null -> EstadoBoveda.Desbloqueada(contenido.entradas, contenido.papelera, contenido.colecciones)
+            claveMaestra != null -> EstadoBoveda.Desbloqueada(contenido.entradas, contenido.papelera, contenido.colecciones, contenido.identidades)
             archivoBoveda.exists() -> EstadoBoveda.Bloqueada
             else -> EstadoBoveda.SinCrear
         }
@@ -611,7 +686,8 @@ class VaultRepository private constructor(contexto: Context) {
             ContenidoBoveda(
                 version = contenido.version,
                 entradas = entradasFiltradas,
-                colecciones = contenido.colecciones
+                colecciones = contenido.colecciones,
+                identidades = contenido.identidades
             )
         }
         val saltExport = VaultCrypto.nuevoSalt()
@@ -657,16 +733,26 @@ class VaultRepository private constructor(contexto: Context) {
                     porIdCol[col.id] = col
                 }
             }
+            val porIdIden = contenido.identidades.associateBy { it.id }.toMutableMap()
+            var identidadesImportadas = 0
+            importado.identidades.forEach { iden ->
+                val previa = porIdIden[iden.id]
+                if (previa == null || iden.modificadaEn >= previa.modificadaEn) {
+                    if (previa == null) identidadesImportadas++
+                    porIdIden[iden.id] = iden
+                }
+            }
             contenido = contenido.copy(
                 entradas = porId.values.sortedBy { it.titulo.lowercase() },
                 papelera = contenido.papelera.filterNot { idsImportados.contains(it.id) },
-                colecciones = porIdCol.values.toList()
+                colecciones = porIdCol.values.toList(),
+                identidades = porIdIden.values.toList()
             )
             persistir()
             publicar()
             com.jlnavas3.bovedalocal.util.Diagnostico.apuntar(
                 "bóveda",
-                "Importación completada: $nuevas entradas nuevas/actualizadas, $coleccionesImportadas colecciones añadidas (${importado.colecciones.size} en archivo)"
+                "Importación completada: $nuevas entradas nuevas/actualizadas, $coleccionesImportadas colecciones, $identidadesImportadas identidades añadidas"
             )
         }
         return nuevas

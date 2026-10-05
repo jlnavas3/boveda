@@ -102,6 +102,22 @@ fun PantallaOrganizacionLista(
 
                 Spacer(Modifier.height(14.dp))
 
+                // 1b. Modo de visualización de identidades
+                com.jlnavas3.bovedalocal.ui.pantallas.organizacion.GrupoModoIdentidadesAjustes(
+                    modoActual = ajustes.modoVisualizacionIdentidades,
+                    mostrarId = ajustes.mostrarIdsAjustes,
+                    alSeleccionarModo = { modo ->
+                        haptica.tic()
+                        vm.cambiarModoVisualizacionIdentidades(modo)
+                    },
+                    alGestionarIdentidades = {
+                        haptica.tic()
+                        vm.ir(Pantalla.Identidades("03-LST-DES-GID"))
+                    }
+                )
+
+                Spacer(Modifier.height(14.dp))
+
                 // 2. Densidad de lista
                 GrupoDensidadFilas(
                     mostrarId = ajustes.mostrarIdsAjustes,

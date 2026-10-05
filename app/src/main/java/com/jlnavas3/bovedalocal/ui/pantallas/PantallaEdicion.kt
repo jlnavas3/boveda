@@ -68,6 +68,25 @@ fun PantallaEdicion(vm: VaultViewModel, id: String?, contrasenaInicial: String) 
     val coleccionesDisponibles = remember(estadoBoveda) {
         (estadoBoveda as? EstadoBoveda.Desbloqueada)?.colecciones ?: emptyList()
     }
+    val identidadesDisponibles = remember(estadoBoveda) {
+        (estadoBoveda as? EstadoBoveda.Desbloqueada)?.identidades ?: emptyList()
+    }
+    val identidadFiltroId by vm.identidadSeleccionadaId.collectAsStateWithLifecycle()
+    var identidadId by remember {
+        mutableStateOf(
+            original?.identidadId ?: identidadFiltroId?.takeIf { it != "__SIN_IDENTIDAD__" }
+        )
+    }
+
+    LaunchedEffect(identidadId) {
+        if (original == null && usuario.isBlank() && identidadId != null) {
+            val iden = identidadesDisponibles.firstOrNull { it.id == identidadId }
+            if (iden != null) {
+                usuario = iden.correoPrincipal
+            }
+        }
+    }
+
     var colecciones by remember { mutableStateOf(original?.colecciones ?: emptyList()) }
     var mostrarDialogoNuevaColeccion by remember { mutableStateOf(false) }
 
@@ -108,7 +127,8 @@ fun PantallaEdicion(vm: VaultViewModel, id: String?, contrasenaInicial: String) 
             passkey = original?.passkey,
             camposPersonalizados = camposPersonalizados.filter { it.etiqueta.isNotBlank() || it.valor.isNotBlank() },
             ignoradaEnSalud = ignoradaEnSalud,
-            colecciones = colecciones
+            colecciones = colecciones,
+            identidadId = identidadId
         )
         vm.guardar(entrada)
         vm.volverAtras()
@@ -166,6 +186,14 @@ fun PantallaEdicion(vm: VaultViewModel, id: String?, contrasenaInicial: String) 
                 colecciones = colecciones,
                 alCambiarColecciones = { colecciones = it },
                 alCrearNuevaColeccion = { mostrarDialogoNuevaColeccion = true },
+                identidadesDisponibles = identidadesDisponibles,
+                identidadSeleccionadaId = identidadId,
+                alSeleccionarIdentidad = { iden ->
+                    identidadId = iden?.id
+                    if (iden != null && usuario.isBlank()) {
+                        usuario = iden.correoPrincipal
+                    }
+                },
                 etiquetas = etiquetas,
                 alCambiarEtiquetas = { etiquetas = it },
                 etiquetasSugeridas = etiquetasSugeridas,

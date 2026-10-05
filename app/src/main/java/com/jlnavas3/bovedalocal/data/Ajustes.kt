@@ -54,6 +54,8 @@ data class AjustesApp(
     val criterioOrdenacion: String = AjustesDefaults.ListaFormatos.CRITERIO_ORDENACION,
     /** Si es true, las entradas con el mismo dominio/sitio se agrupan en un acordeón desplegable. */
     val agruparPorSitio: Boolean = AjustesDefaults.ListaFormatos.AGRUPAR_POR_SITIO,
+    /** Modo de visualización de identidades: "chips", "secciones" o "desactivado". */
+    val modoIdentidades: String = AjustesDefaults.ListaFormatos.MODO_IDENTIDADES,
     // Preferencias del generador manual de 2FA
     val totpManualDigitos: Int = AjustesDefaults.TotpManual.DIGITOS,
     val totpManualPeriodo: Int = AjustesDefaults.TotpManual.PERIODO,
@@ -238,7 +240,10 @@ data class AjustesApp(
     val colorIdHerramientas: String = AjustesDefaults.ColoresIds.HERRAMIENTAS,
     val colorIdCopias: String = AjustesDefaults.ColoresIds.COPIAS,
     val colorIdSistema: String = AjustesDefaults.ColoresIds.SISTEMA
-)
+) {
+    val modoVisualizacionIdentidades: ModoVisualizacionIdentidades
+        get() = ModoVisualizacionIdentidades.desde(modoIdentidades)
+}
 
 
 class AlmacenAjustes(contexto: Context) {
@@ -332,6 +337,7 @@ class AlmacenAjustes(contexto: Context) {
             } else {
                 prefs.getBoolean("agrupar_por_sitio", AjustesDefaults.ListaFormatos.AGRUPAR_POR_SITIO)
             },
+            modoIdentidades = prefs.getString("modo_identidades", AjustesDefaults.ListaFormatos.MODO_IDENTIDADES) ?: AjustesDefaults.ListaFormatos.MODO_IDENTIDADES,
             totpManualDigitos = prefs.getInt("totp_manual_digitos", AjustesDefaults.TotpManual.DIGITOS),
             totpManualPeriodo = prefs.getInt("totp_manual_periodo", AjustesDefaults.TotpManual.PERIODO),
             totpManualAlgoritmo = prefs.getString("totp_manual_algoritmo", AjustesDefaults.TotpManual.ALGORITMO) ?: AjustesDefaults.TotpManual.ALGORITMO,
@@ -523,6 +529,7 @@ class AlmacenAjustes(contexto: Context) {
             .putString("densidad_lista", nuevo.densidadLista)
             .putString("criterio_ordenacion", nuevo.criterioOrdenacion)
             .putBoolean("agrupar_por_sitio", nuevo.agruparPorSitio)
+            .putString("modo_identidades", nuevo.modoIdentidades)
             .putInt("totp_manual_digitos", nuevo.totpManualDigitos)
             .putInt("totp_manual_periodo", nuevo.totpManualPeriodo)
             .putString("totp_manual_algoritmo", nuevo.totpManualAlgoritmo)

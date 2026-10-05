@@ -81,7 +81,9 @@ fun FilaEntrada(
     esUltimoEnGrupo: Boolean = false,
     ocultarUsuario: Boolean = false,
     ocultarTotp: Boolean = false,
-    estiloOcultamiento: String = "desenfoque"
+    estiloOcultamiento: String = "desenfoque",
+    identidadAsociada: com.jlnavas3.bovedalocal.data.Identidad? = null,
+    ocultarEmailIdentidad: Boolean = false
 ) {
     val compacta = alturaFila.value <= 48f
     val forma = if (enGrupo) {
@@ -198,6 +200,8 @@ fun FilaEntrada(
                     ocultarUsuario = ocultarUsuario,
                     ocultarTotp = ocultarTotp,
                     estiloOcultamiento = estiloOcultamiento,
+                    identidadAsociada = identidadAsociada,
+                    ocultarEmailIdentidad = ocultarEmailIdentidad,
                     modifier = Modifier.weight(1f)
                 )
 

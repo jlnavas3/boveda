@@ -62,12 +62,28 @@ fun PantallaLista(vm: VaultViewModel, estado: EstadoBoveda) {
     val espaciadoFilas = calcularEspaciadoFilas(densidad)
     val entradas = (estado as? EstadoBoveda.Desbloqueada)?.entradas ?: emptyList()
     val colecciones = remember(estado) { (estado as? EstadoBoveda.Desbloqueada)?.colecciones ?: emptyList() }
+    val identidades = remember(estado) { (estado as? EstadoBoveda.Desbloqueada)?.identidades ?: emptyList() }
     val coleccionSeleccionadaId by vm.filtroColeccion.collectAsStateWithLifecycle()
+    val identidadSeleccionadaId by vm.identidadSeleccionadaId.collectAsStateWithLifecycle()
+
     val conteoPorColeccion = remember(entradas, colecciones) {
         colecciones.associate { col -> col.id to entradas.count { it.colecciones.contains(col.id) } }
     }
-    val visibles = remember(entradas, busqueda, filtro, soloFavoritos, filtroEtiqueta, coleccionSeleccionadaId, criterioOrdenacion) {
-        vm.entradasVisibles(entradas)
+    val conteoPorIdentidad = remember(entradas, identidades) {
+        identidades.associate { iden ->
+            iden.id to entradas.count { entrada ->
+                com.jlnavas3.bovedalocal.util.resolverIdentidadParaEntrada(entrada, identidades)?.id == iden.id
+            }
+        }
+    }
+    val conteoSinIdentidad = remember(entradas, identidades) {
+        entradas.count { entrada ->
+            com.jlnavas3.bovedalocal.util.resolverIdentidadParaEntrada(entrada, identidades) == null
+        }
+    }
+
+    val visibles = remember(entradas, busqueda, filtro, soloFavoritos, filtroEtiqueta, coleccionSeleccionadaId, identidadSeleccionadaId, criterioOrdenacion, identidades) {
+        vm.entradasVisibles(entradas, identidades)
     }
     val etiquetasDisponibles = remember(entradas) { vm.etiquetasUsadas() }
 
@@ -247,6 +263,15 @@ fun PantallaLista(vm: VaultViewModel, estado: EstadoBoveda) {
                         } else {
                             gruposExpandidos + clave
                         }
+                    },
+                    identidades = identidades,
+                    identidadSeleccionadaId = identidadSeleccionadaId,
+                    conteoPorIdentidad = conteoPorIdentidad,
+                    totalEntradas = entradas.size,
+                    conteoSinIdentidad = conteoSinIdentidad,
+                    alSeleccionarIdentidad = { id ->
+                        haptica.tic()
+                        vm.seleccionarIdentidad(id)
                     }
                 )
             }

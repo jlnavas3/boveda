@@ -213,6 +213,7 @@ object AjustesDefaults {
         const val DENSIDAD_LISTA = "predeterminada"
         const val CRITERIO_ORDENACION = "NOMBRE_AZ"
         const val AGRUPAR_POR_SITIO = true
+        const val MODO_IDENTIDADES = "chips"
         const val FORMATO_FECHA = "DD/MM/AAAA"
         const val FORMATO_HORA = "24h"
         const val FORMATO_TELEFONO = "### ### ####"

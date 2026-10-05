@@ -27,6 +27,9 @@ fun SeccionOrganizacionEdicion(
     coleccionesSeleccionadas: List<String> = emptyList(),
     alCambiarColecciones: (List<String>) -> Unit = {},
     alCrearNuevaColeccion: () -> Unit = {},
+    identidadesDisponibles: List<com.jlnavas3.bovedalocal.data.Identidad> = emptyList(),
+    identidadSeleccionadaId: String? = null,
+    alSeleccionarIdentidad: (com.jlnavas3.bovedalocal.data.Identidad?) -> Unit = {},
     etiquetas: List<String>,
     alCambiarEtiquetas: (List<String>) -> Unit,
     etiquetasSugeridas: List<String>,
@@ -37,6 +40,17 @@ fun SeccionOrganizacionEdicion(
 ) {
     GrupoAjustes(etiqueta = "Organización") {
         Column(modifier = Modifier.padding(14.dp)) {
+            if (identidadesDisponibles.isNotEmpty()) {
+                com.jlnavas3.bovedalocal.ui.pantallas.identidades.SeccionIdentidadEdicion(
+                    identidadesDisponibles = identidadesDisponibles,
+                    identidadSeleccionadaId = identidadSeleccionadaId,
+                    alSeleccionarIdentidad = alSeleccionarIdentidad
+                )
+                Spacer(Modifier.height(14.dp))
+                SeparadorFilaSimple()
+                Spacer(Modifier.height(10.dp))
+            }
+
             SeccionColeccionesEdicion(
                 coleccionesDisponibles = coleccionesDisponibles,
                 coleccionesSeleccionadas = coleccionesSeleccionadas,

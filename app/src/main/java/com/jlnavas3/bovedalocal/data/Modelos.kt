@@ -136,7 +136,9 @@ data class Entrada(
     /** Si es true, esta entrada se ignora en el cálculo y avisos de auditoría de salud. */
     val ignoradaEnSalud: Boolean = false,
     /** Lista de IDs de colecciones a las que pertenece esta entrada. */
-    val colecciones: List<String> = emptyList()
+    val colecciones: List<String> = emptyList(),
+    /** ID de la identidad vinculada explícitamente (si es null, se usa vinculación inteligente por correo). */
+    val identidadId: String? = null
 )
 
 @Serializable
@@ -155,7 +157,8 @@ data class ContenidoBoveda(
     val entradas: List<Entrada> = emptyList(),
     /** Entradas borradas pero aún recuperables; se vacían solas pasado un tiempo. */
     val papelera: List<Entrada> = emptyList(),
-    val colecciones: List<Coleccion> = emptyList()
+    val colecciones: List<Coleccion> = emptyList(),
+    val identidades: List<Identidad> = emptyList()
 )
 
 sealed interface EstadoBoveda {
@@ -164,6 +167,7 @@ sealed interface EstadoBoveda {
     data class Desbloqueada(
         val entradas: List<Entrada>,
         val papelera: List<Entrada> = emptyList(),
-        val colecciones: List<Coleccion> = emptyList()
+        val colecciones: List<Coleccion> = emptyList(),
+        val identidades: List<Identidad> = emptyList()
     ) : EstadoBoveda
 }

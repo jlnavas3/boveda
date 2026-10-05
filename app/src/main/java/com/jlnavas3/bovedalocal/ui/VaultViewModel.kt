@@ -27,6 +27,7 @@ class VaultViewModel(app: Application) : AndroidViewModel(app),
     VaultNavegacionDelegate,
     VaultEntradasDelegate,
     VaultColeccionesDelegate,
+    VaultIdentidadesDelegate,
     VaultCicloBovedaDelegate {
 
     init {
@@ -82,6 +83,10 @@ class VaultViewModel(app: Application) : AndroidViewModel(app),
     private val _filtroColeccion = MutableStateFlow<String?>(null)
     val filtroColeccion: StateFlow<String?> = _filtroColeccion
     override val filtroColeccionInterno: MutableStateFlow<String?> get() = _filtroColeccion
+
+    private val _filtroIdentidad = MutableStateFlow<String?>(null)
+    val filtroIdentidad: StateFlow<String?> = _filtroIdentidad
+    override val filtroIdentidadInterno: MutableStateFlow<String?> get() = _filtroIdentidad
 
     private val _criterioOrdenacion = MutableStateFlow(
         CriterioOrdenacion.entries.firstOrNull { it.name == repositorio.ajustes.actual.criterioOrdenacion }

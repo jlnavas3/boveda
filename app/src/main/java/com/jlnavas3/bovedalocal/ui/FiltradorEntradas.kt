@@ -10,16 +10,24 @@ object FiltradorEntradas {
 
     fun filtrarYOrdenar(
         entradas: List<Entrada>,
-        busqueda: String,
-        filtroTipo: TipoEntrada?,
-        soloFavoritos: Boolean,
-        filtroEtiqueta: String?,
-        filtroColeccion: String?,
-        criterioOrdenacion: CriterioOrdenacion
+        busqueda: String = "",
+        filtroTipo: TipoEntrada? = null,
+        soloFavoritos: Boolean = false,
+        filtroEtiqueta: String? = null,
+        filtroColeccion: String? = null,
+        criterioOrdenacion: CriterioOrdenacion = CriterioOrdenacion.NOMBRE_AZ,
+        filtroIdentidad: String? = null,
+        identidades: List<com.jlnavas3.bovedalocal.data.Identidad> = emptyList()
     ): List<Entrada> {
         val texto = busqueda.trim().lowercase()
         val filtradas = entradas.filter { entrada ->
-            (filtroTipo == null || entrada.tipo == filtroTipo) &&
+            val coincideIdentidad = when (filtroIdentidad) {
+                null -> true
+                "__SIN_IDENTIDAD__" -> com.jlnavas3.bovedalocal.util.resolverIdentidadParaEntrada(entrada, identidades) == null
+                else -> com.jlnavas3.bovedalocal.util.resolverIdentidadParaEntrada(entrada, identidades)?.id == filtroIdentidad
+            }
+            coincideIdentidad &&
+                (filtroTipo == null || entrada.tipo == filtroTipo) &&
                 (!soloFavoritos || entrada.favorito) &&
                 (filtroEtiqueta == null || entrada.etiquetas.contains(filtroEtiqueta)) &&
                 (filtroColeccion == null || entrada.colecciones.contains(filtroColeccion)) &&

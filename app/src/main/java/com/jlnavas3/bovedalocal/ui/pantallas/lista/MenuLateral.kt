@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.Delete
@@ -173,6 +174,17 @@ fun MenuLateral(
                     mostrarId = mostrarIds,
                     ajustes = ajustes
                 ) { alIr(Pantalla.Papelera) }
+
+                SeparadorItemMenu()
+
+                ItemMenu(
+                    texto = "Identidades",
+                    icono = Icons.Filled.AccountCircle,
+                    colorIcono = Color(0xFF0284C7),
+                    idEtiqueta = "03-LST-IDE",
+                    mostrarId = mostrarIds,
+                    ajustes = ajustes
+                ) { alIr(Pantalla.Identidades()) }
             }
 
             // Grupo 3: Sistema

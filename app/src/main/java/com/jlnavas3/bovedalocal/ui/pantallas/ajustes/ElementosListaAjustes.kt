@@ -3,6 +3,7 @@ package com.jlnavas3.bovedalocal.ui.pantallas.ajustes
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.FormatListBulleted
 import androidx.compose.material.icons.automirrored.filled.Sort
+import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Layers
 import androidx.compose.ui.graphics.Color
 import com.jlnavas3.bovedalocal.data.AjustesApp
@@ -26,6 +27,16 @@ fun crearElementosListaAjustes(
         palabrasClave = "agrupar agrupamiento lista densidad compacta comoda cuentas sitio dominio carpetas orden",
         valorTexto = if (ajustes.agruparPorSitio) "Agrupada" else "Individual",
         alPulsar = { vm.ir(Pantalla.OrganizacionLista(null)) }
+    ),
+    ElementoMenuAjustes(
+        titulo = "Identidades",
+        subtitulo = "Perfiles de correo y vinculación inteligente",
+        icono = Icons.Filled.AccountCircle,
+        colorIcono = Color(0xFF0284C7),
+        idEtiqueta = "03-LST-IDE",
+        grupo = "Lista de cuentas",
+        palabrasClave = "identidades cuentas perfiles correo email alias inteligente vincular personas",
+        alPulsar = { vm.ir(Pantalla.Identidades("03-LST-IDE")) }
     ),
     ElementoMenuAjustes(
         titulo = "Índice A-Z",
