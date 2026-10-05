@@ -142,40 +142,18 @@ fun DialogoNuevoCampo(
             ) {
                 tiposDisponibles.forEach { tipo ->
                     val seleccionado = tipo == tipoSeleccionado
-                    val colorFondo = if (seleccionado) ColorAcento else ColorCampoAjustes
-                    val colorTexto = if (seleccionado) com.jlnavas3.bovedalocal.ui.theme.ColorSobreAcento else TextoPrincipal
-
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier
-                            .clip(FormaPequena)
-                            .background(colorFondo)
-                            .clickable {
-                                tipoSeleccionado = tipo
-                                if (tipo == TipoCampo.PIN) {
-                                    esSensible = true
-                                }
+                    com.jlnavas3.bovedalocal.ui.componentes.ChipBoveda(
+                        texto = tipo.etiqueta,
+                        seleccionado = seleccionado,
+                        mostrarCheck = true,
+                        colorFondoPersonalizado = if (seleccionado) ColorAcento else ColorCampoAjustes,
+                        alPulsar = {
+                            tipoSeleccionado = tipo
+                            if (tipo == TipoCampo.PIN) {
+                                esSensible = true
                             }
-                            .padding(horizontal = 10.dp, vertical = 6.dp)
-                    ) {
-                        if (seleccionado) {
-                            Icon(
-                                imageVector = Icons.Filled.Check,
-                                contentDescription = null,
-                                tint = colorTexto,
-                                modifier = Modifier.size(13.dp)
-                            )
-                            Spacer(Modifier.width(4.dp))
                         }
-                        Text(
-                            text = tipo.etiqueta,
-                            color = colorTexto,
-                            style = MaterialTheme.typography.labelSmall.copy(
-                                fontSize = 12.sp,
-                                fontWeight = if (seleccionado) FontWeight.Bold else FontWeight.Medium
-                            )
-                        )
-                    }
+                    )
                 }
             }
 
