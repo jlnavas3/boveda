@@ -1,4 +1,4 @@
-package com.jlnavas3.bovedalocal.ui.pantallas.colecciones
+package com.jlnavas3.bovedalocal.ui.pantallas.categorias
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -39,7 +39,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.jlnavas3.bovedalocal.data.Coleccion
+import com.jlnavas3.bovedalocal.data.Categoria
 import com.jlnavas3.bovedalocal.ui.componentes.ElementoMenuCompacto
 import com.jlnavas3.bovedalocal.ui.componentes.MenuDesplegableBoveda
 import com.jlnavas3.bovedalocal.ui.componentes.SeparadorOpcionMenu
@@ -60,20 +60,20 @@ import com.jlnavas3.bovedalocal.util.Haptica
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun BarraColeccionesLista(
-    colecciones: List<Coleccion>,
-    coleccionSeleccionadaId: String?,
+fun BarraCategoriasLista(
+    categorias: List<Categoria>,
+    categoriaSeleccionadaId: String?,
     totalEntradas: Int,
-    conteoPorColeccion: Map<String, Int>,
-    alSeleccionarColeccion: (String?) -> Unit,
-    alCrearColeccion: () -> Unit,
-    alEditarColeccion: (Coleccion) -> Unit,
-    alEliminarColeccion: (Coleccion) -> Unit,
+    conteoPorCategoria: Map<String, Int>,
+    alSeleccionarCategoria: (String?) -> Unit,
+    alCrearCategoria: () -> Unit,
+    alEditarCategoria: (Categoria) -> Unit,
+    alEliminarCategoria: (Categoria) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val contexto = LocalContext.current
     val haptica = remember { Haptica(contexto) }
-    var menuColeccionAbierto by remember { mutableStateOf<Coleccion?>(null) }
+    var menuCategoriaAbierto by remember { mutableStateOf<Categoria?>(null) }
 
     Row(
         modifier = modifier
@@ -84,7 +84,7 @@ fun BarraColeccionesLista(
         verticalAlignment = Alignment.CenterVertically
     ) {
         // Chip "Todas"
-        val esTodas = coleccionSeleccionadaId == null
+        val esTodas = categoriaSeleccionadaId == null
         val formaChip = RoundedCornerShape(12.dp)
         Box(
             modifier = Modifier
@@ -101,12 +101,11 @@ fun BarraColeccionesLista(
                 )
                 .combinedClickable(
                     onClick = {
-                        haptica.toque()
-                        alSeleccionarColeccion(null)
+                        haptica.tic()
+                        alSeleccionarCategoria(null)
                     }
                 )
-                .padding(horizontal = 10.dp, vertical = 6.dp),
-            contentAlignment = Alignment.Center
+                .padding(horizontal = 12.dp, vertical = 6.dp)
         ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
@@ -115,34 +114,37 @@ fun BarraColeccionesLista(
                 Icon(
                     imageVector = Icons.Filled.Layers,
                     contentDescription = null,
-                    tint = if (esTodas) ColorSobreAcento else ColorAcento,
-                    modifier = Modifier.size(15.dp)
+                    modifier = Modifier.size(15.dp),
+                    tint = if (esTodas) ColorSobreAcento else TextoSecundario
                 )
                 Text(
-                    text = "Todas ($totalEntradas)",
+                    text = "Todas",
                     color = if (esTodas) ColorSobreAcento else TextoPrincipal,
-                    style = MaterialTheme.typography.bodySmall.copy(
-                        fontWeight = if (esTodas) FontWeight.Bold else FontWeight.Medium,
-                        fontSize = 12.sp
-                    )
+                    fontSize = 13.sp,
+                    fontWeight = if (esTodas) FontWeight.Bold else FontWeight.Medium
+                )
+                Text(
+                    text = "$totalEntradas",
+                    color = if (esTodas) ColorSobreAcento.copy(alpha = 0.8f) else TextoSecundario,
+                    fontSize = 11.sp,
+                    fontWeight = FontWeight.SemiBold
                 )
             }
         }
 
-        // Chips por cada colección
-        colecciones.forEach { col ->
-            val estaSeleccionada = coleccionSeleccionadaId == col.id
-            val colorPropio = IconosColecciones.parsearColorHex(col.colorHex) ?: ColorAcento
-            val icono = IconosColecciones.obtenerIcono(col.icono)
-            val cantidad = conteoPorColeccion[col.id] ?: 0
+        // Chips de cada categoría
+        categorias.forEach { cat ->
+            val seleccionada = categoriaSeleccionadaId == cat.id
+            val colorCat = IconosCategorias.parsearColorHex(cat.colorHex) ?: ColorAcento
+            val conteo = conteoPorCategoria[cat.id] ?: 0
 
             Box(
                 modifier = Modifier
                     .clip(formaChip)
-                    .background(if (estaSeleccionada) colorPropio else ColorTarjetaAjustes)
+                    .background(if (seleccionada) colorCat else ColorTarjetaAjustes)
                     .then(
-                        if (estaSeleccionada) {
-                            Modifier.border(0.8.dp, colorPropio, formaChip)
+                        if (seleccionada) {
+                            Modifier.border(0.8.dp, colorCat, formaChip)
                         } else if (GrosorBorde > 0.dp && EstiloBorde != "ninguno") {
                             Modifier.border(GrosorBorde, ColorBordeActual, formaChip)
                         } else {
@@ -151,82 +153,87 @@ fun BarraColeccionesLista(
                     )
                     .combinedClickable(
                         onClick = {
-                            haptica.toque()
-                            if (estaSeleccionada) {
-                                alSeleccionarColeccion(null)
-                            } else {
-                                alSeleccionarColeccion(col.id)
-                            }
+                            haptica.tic()
+                            alSeleccionarCategoria(if (seleccionada) null else cat.id)
                         },
                         onLongClick = {
-                            haptica.toque()
-                            menuColeccionAbierto = col
+                            haptica.tic()
+                            menuCategoriaAbierto = cat
                         }
                     )
-                    .padding(horizontal = 10.dp, vertical = 6.dp),
-                contentAlignment = Alignment.Center
+                    .padding(horizontal = 12.dp, vertical = 6.dp)
             ) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(6.dp)
                 ) {
                     Icon(
-                        imageVector = icono,
+                        imageVector = IconosCategorias.obtenerIcono(cat.icono),
                         contentDescription = null,
-                        tint = if (estaSeleccionada) Color.White else colorPropio,
-                        modifier = Modifier.size(15.dp)
+                        modifier = Modifier.size(15.dp),
+                        tint = if (seleccionada) ColorSobreAcento else colorCat
                     )
                     Text(
-                        text = "${col.nombre} ($cantidad)",
-                        color = if (estaSeleccionada) Color.White else TextoPrincipal,
-                        style = MaterialTheme.typography.bodySmall.copy(
-                            fontWeight = if (estaSeleccionada) FontWeight.Bold else FontWeight.Medium,
-                            fontSize = 12.sp
-                        )
+                        text = cat.nombre,
+                        color = if (seleccionada) ColorSobreAcento else TextoPrincipal,
+                        fontSize = 13.sp,
+                        fontWeight = if (seleccionada) FontWeight.Bold else FontWeight.Medium
+                    )
+                    Text(
+                        text = "$conteo",
+                        color = if (seleccionada) ColorSobreAcento.copy(alpha = 0.8f) else TextoSecundario,
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.SemiBold
                     )
                 }
 
-                // Menú contextual para la colección al pulsar prolongado
-                if (menuColeccionAbierto?.id == col.id) {
-                    MenuDesplegableBoveda(
-                        expanded = true,
-                        onDismissRequest = { menuColeccionAbierto = null },
-                        modifier = Modifier.widthIn(min = 180.dp)
-                    ) {
-                        ElementoMenuCompacto(
-                            texto = "Editar colección",
-                            icono = Icons.Filled.Edit,
-                            colorIcono = colorPropio,
-                            onClick = {
-                                menuColeccionAbierto = null
-                                alEditarColeccion(col)
-                            }
-                        )
-                        SeparadorOpcionMenu()
-                        ElementoMenuCompacto(
-                            texto = "Eliminar colección",
-                            icono = Icons.Filled.Delete,
-                            colorIcono = Peligro,
-                            onClick = {
-                                menuColeccionAbierto = null
-                                alEliminarColeccion(col)
-                            }
-                        )
-                    }
+                // Menú contextual en pulsación prolongada
+                MenuDesplegableBoveda(
+                    expanded = menuCategoriaAbierto == cat,
+                    onDismissRequest = { menuCategoriaAbierto = null },
+                    modifier = Modifier.widthIn(min = 180.dp)
+                ) {
+                    ElementoMenuCompacto(
+                        texto = "Editar categoría",
+                        icono = Icons.Filled.Edit,
+                        colorTexto = TextoPrincipal,
+                        colorIcono = ColorAcento,
+                        onClick = {
+                            menuCategoriaAbierto = null
+                            alEditarCategoria(cat)
+                        }
+                    )
+                    SeparadorOpcionMenu()
+                    ElementoMenuCompacto(
+                        texto = "Eliminar",
+                        icono = Icons.Filled.Delete,
+                        colorTexto = Peligro,
+                        colorIcono = Peligro,
+                        onClick = {
+                            menuCategoriaAbierto = null
+                            alEliminarCategoria(cat)
+                        }
+                    )
                 }
             }
         }
 
-        // Chip "+" para crear nueva colección
+        // Botón añadir categoría
         Box(
             modifier = Modifier
                 .clip(formaChip)
-                .background(ColorCampoAjustes)
-                .border(0.8.dp, ColorSeparadorAjustes, formaChip)
+                .background(ColorTarjetaAjustes)
+                .then(
+                    if (GrosorBorde > 0.dp && EstiloBorde != "ninguno") {
+                        Modifier.border(GrosorBorde, ColorBordeActual, formaChip)
+                    } else {
+                        Modifier.border(0.8.dp, ColorSeparadorAjustes, formaChip)
+                    }
+                )
                 .combinedClickable(
                     onClick = {
-                        haptica.toque()
-                        alCrearColeccion()
+                        haptica.tic()
+                        alCrearCategoria()
                     }
                 )
                 .padding(horizontal = 10.dp, vertical = 6.dp),
@@ -238,17 +245,15 @@ fun BarraColeccionesLista(
             ) {
                 Icon(
                     imageVector = Icons.Filled.Add,
-                    contentDescription = "Nueva colección",
-                    tint = ColorAcento,
-                    modifier = Modifier.size(15.dp)
+                    contentDescription = "Nueva categoría",
+                    modifier = Modifier.size(15.dp),
+                    tint = ColorAcento
                 )
                 Text(
                     text = "Nueva",
                     color = ColorAcento,
-                    style = MaterialTheme.typography.bodySmall.copy(
-                        fontWeight = FontWeight.SemiBold,
-                        fontSize = 12.sp
-                    )
+                    fontSize = 13.sp,
+                    fontWeight = FontWeight.Medium
                 )
             }
         }

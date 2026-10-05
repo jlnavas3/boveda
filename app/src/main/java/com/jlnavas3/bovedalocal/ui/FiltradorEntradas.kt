@@ -14,12 +14,14 @@ object FiltradorEntradas {
         filtroTipo: TipoEntrada? = null,
         soloFavoritos: Boolean = false,
         filtroEtiqueta: String? = null,
+        filtroCategoria: String? = null,
         filtroColeccion: String? = null,
         criterioOrdenacion: CriterioOrdenacion = CriterioOrdenacion.NOMBRE_AZ,
         filtroIdentidad: String? = null,
         identidades: List<com.jlnavas3.bovedalocal.data.Identidad> = emptyList()
     ): List<Entrada> {
         val texto = busqueda.trim().lowercase()
+        val catEfectiva = filtroCategoria ?: filtroColeccion
         val filtradas = entradas.filter { entrada ->
             val coincideIdentidad = when (filtroIdentidad) {
                 null -> true
@@ -30,7 +32,7 @@ object FiltradorEntradas {
                 (filtroTipo == null || entrada.tipo == filtroTipo) &&
                 (!soloFavoritos || entrada.favorito) &&
                 (filtroEtiqueta == null || entrada.etiquetas.contains(filtroEtiqueta)) &&
-                (filtroColeccion == null || entrada.colecciones.contains(filtroColeccion)) &&
+                (catEfectiva == null || entrada.categorias.contains(catEfectiva)) &&
                 (texto.isEmpty() ||
                     entrada.titulo.lowercase().contains(texto) ||
                     entrada.usuario.lowercase().contains(texto) ||

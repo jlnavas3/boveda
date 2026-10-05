@@ -467,29 +467,32 @@ class VaultRepository private constructor(contexto: Context) {
     fun etiquetasUsadas(): List<String> =
         contenido.entradas.flatMap { it.etiquetas }.distinct().sortedBy { it.lowercase() }
 
-    // ------------------------------------------------------------ colecciones
+    // ------------------------------------------------------------ categorias
 
-    fun colecciones(): List<Coleccion> = synchronized(candado) { contenido.colecciones }
+    fun categorias(): List<Categoria> = synchronized(candado) { contenido.categorias }
+    fun colecciones(): List<Coleccion> = categorias()
 
-    fun crearColeccion(nombre: String, icono: String = "carpeta", colorHex: String? = null): Coleccion {
-        val nueva = Coleccion(
+    fun crearCategoria(nombre: String, icono: String = "carpeta", colorHex: String? = null): Categoria {
+        val nueva = Categoria(
             nombre = nombre.trim(),
             icono = icono,
             colorHex = colorHex
         )
         synchronized(candado) {
             contenido = contenido.copy(
-                colecciones = contenido.colecciones + nueva
+                categorias = contenido.categorias + nueva
             )
             persistir()
             publicar()
         }
         return nueva
     }
+    fun crearColeccion(nombre: String, icono: String = "carpeta", colorHex: String? = null): Coleccion =
+        crearCategoria(nombre, icono, colorHex)
 
-    fun actualizarColeccion(id: String, nombre: String, icono: String, colorHex: String?) {
+    fun actualizarCategoria(id: String, nombre: String, icono: String, colorHex: String?) {
         synchronized(candado) {
-            val lista = contenido.colecciones.toMutableList()
+            val lista = contenido.categorias.toMutableList()
             val indice = lista.indexOfFirst { it.id == id }
             if (indice >= 0) {
                 lista[indice] = lista[indice].copy(
@@ -498,32 +501,35 @@ class VaultRepository private constructor(contexto: Context) {
                     colorHex = colorHex,
                     modificadaEn = System.currentTimeMillis()
                 )
-                contenido = contenido.copy(colecciones = lista)
+                contenido = contenido.copy(categorias = lista)
                 persistir()
                 publicar()
             }
         }
     }
+    fun actualizarColeccion(id: String, nombre: String, icono: String, colorHex: String?) =
+        actualizarCategoria(id, nombre, icono, colorHex)
 
-    fun eliminarColeccion(id: String) {
+    fun eliminarCategoria(id: String) {
         synchronized(candado) {
-            val nuevasColecciones = contenido.colecciones.filterNot { it.id == id }
+            val nuevasCategorias = contenido.categorias.filterNot { it.id == id }
             val nuevasEntradas = contenido.entradas.map { entrada ->
-                if (entrada.colecciones.contains(id)) {
+                if (entrada.categorias.contains(id)) {
                     entrada.copy(
-                        colecciones = entrada.colecciones.filterNot { it == id },
+                        categorias = entrada.categorias.filterNot { it == id },
                         modificadaEn = System.currentTimeMillis()
                     )
                 } else entrada
             }
             contenido = contenido.copy(
-                colecciones = nuevasColecciones,
+                categorias = nuevasCategorias,
                 entradas = nuevasEntradas
             )
             persistir()
             publicar()
         }
     }
+    fun eliminarColeccion(id: String) = eliminarCategoria(id)
 
     // ------------------------------------------------------------ identidades
 
@@ -600,7 +606,7 @@ class VaultRepository private constructor(contexto: Context) {
         }
     }
 
-    fun asignarColeccionesAEntradas(
+    fun asignarCategoriasAEntradas(
         idsEntradas: Set<String>,
         idsAgregar: Set<String>,
         idsQuitar: Set<String>
@@ -610,11 +616,11 @@ class VaultRepository private constructor(contexto: Context) {
             val ahora = System.currentTimeMillis()
             val nuevasEntradas = contenido.entradas.map { entrada ->
                 if (entrada.id in idsEntradas) {
-                    val coleccionesActuales = entrada.colecciones.toMutableSet()
-                    coleccionesActuales.addAll(idsAgregar)
-                    coleccionesActuales.removeAll(idsQuitar)
+                    val categoriasActuales = entrada.categorias.toMutableSet()
+                    categoriasActuales.addAll(idsAgregar)
+                    categoriasActuales.removeAll(idsQuitar)
                     entrada.copy(
-                        colecciones = coleccionesActuales.toList(),
+                        categorias = categoriasActuales.toList(),
                         modificadaEn = ahora
                     )
                 } else entrada
@@ -624,6 +630,12 @@ class VaultRepository private constructor(contexto: Context) {
             publicar()
         }
     }
+
+    fun asignarColeccionesAEntradas(
+        idsEntradas: Set<String>,
+        idsAgregar: Set<String>,
+        idsQuitar: Set<String>
+    ) = asignarCategoriasAEntradas(idsEntradas, idsAgregar, idsQuitar)
 
     // ------------------------------------------------------------ persistencia
 
@@ -655,7 +667,7 @@ class VaultRepository private constructor(contexto: Context) {
      */
     private fun publicar() {
         _estado.value = when {
-            claveMaestra != null -> EstadoBoveda.Desbloqueada(contenido.entradas, contenido.papelera, contenido.colecciones, contenido.identidades)
+            claveMaestra != null -> EstadoBoveda.Desbloqueada(contenido.entradas, contenido.papelera, contenido.categorias, contenido.identidades)
             archivoBoveda.exists() -> EstadoBoveda.Bloqueada
             else -> EstadoBoveda.SinCrear
         }
@@ -686,7 +698,7 @@ class VaultRepository private constructor(contexto: Context) {
             ContenidoBoveda(
                 version = contenido.version,
                 entradas = entradasFiltradas,
-                colecciones = contenido.colecciones,
+                categorias = contenido.categorias,
                 identidades = contenido.identidades
             )
         }
@@ -724,13 +736,13 @@ class VaultRepository private constructor(contexto: Context) {
                 }
             }
             val idsImportados = importado.entradas.map { it.id }.toSet()
-            val porIdCol = contenido.colecciones.associateBy { it.id }.toMutableMap()
-            var coleccionesImportadas = 0
-            importado.colecciones.forEach { col ->
-                val previa = porIdCol[col.id]
-                if (previa == null || col.modificadaEn >= previa.modificadaEn) {
-                    if (previa == null) coleccionesImportadas++
-                    porIdCol[col.id] = col
+            val porIdCat = contenido.categorias.associateBy { it.id }.toMutableMap()
+            var categoriasImportadas = 0
+            importado.categorias.forEach { cat ->
+                val previa = porIdCat[cat.id]
+                if (previa == null || cat.modificadaEn >= previa.modificadaEn) {
+                    if (previa == null) categoriasImportadas++
+                    porIdCat[cat.id] = cat
                 }
             }
             val porIdIden = contenido.identidades.associateBy { it.id }.toMutableMap()
@@ -745,14 +757,14 @@ class VaultRepository private constructor(contexto: Context) {
             contenido = contenido.copy(
                 entradas = porId.values.sortedBy { it.titulo.lowercase() },
                 papelera = contenido.papelera.filterNot { idsImportados.contains(it.id) },
-                colecciones = porIdCol.values.toList(),
+                categorias = porIdCat.values.toList(),
                 identidades = porIdIden.values.toList()
             )
             persistir()
             publicar()
             com.jlnavas3.bovedalocal.util.Diagnostico.apuntar(
                 "bóveda",
-                "Importación completada: $nuevas entradas nuevas/actualizadas, $coleccionesImportadas colecciones, $identidadesImportadas identidades añadidas"
+                "Importación completada: $nuevas entradas nuevas/actualizadas, $categoriasImportadas categorías, $identidadesImportadas identidades añadidas"
             )
         }
         return nuevas

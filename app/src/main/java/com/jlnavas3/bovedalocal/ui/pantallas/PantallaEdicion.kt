@@ -65,8 +65,8 @@ fun PantallaEdicion(vm: VaultViewModel, id: String?, contrasenaInicial: String) 
     var favorito by remember { mutableStateOf(original?.favorito ?: false) }
     var ignoradaEnSalud by remember { mutableStateOf(original?.ignoradaEnSalud ?: false) }
     val estadoBoveda by vm.estado.collectAsStateWithLifecycle()
-    val coleccionesDisponibles = remember(estadoBoveda) {
-        (estadoBoveda as? EstadoBoveda.Desbloqueada)?.colecciones ?: emptyList()
+    val categoriasDisponibles = remember(estadoBoveda) {
+        (estadoBoveda as? EstadoBoveda.Desbloqueada)?.categorias ?: emptyList()
     }
     val identidadesDisponibles = remember(estadoBoveda) {
         (estadoBoveda as? EstadoBoveda.Desbloqueada)?.identidades ?: emptyList()
@@ -87,8 +87,8 @@ fun PantallaEdicion(vm: VaultViewModel, id: String?, contrasenaInicial: String) 
         }
     }
 
-    var colecciones by remember { mutableStateOf(original?.colecciones ?: emptyList()) }
-    var mostrarDialogoNuevaColeccion by remember { mutableStateOf(false) }
+    var categorias by remember { mutableStateOf(original?.categorias ?: emptyList()) }
+    var mostrarDialogoNuevaCategoria by remember { mutableStateOf(false) }
 
     var etiquetas by remember { mutableStateOf(original?.etiquetas ?: emptyList()) }
     var camposPersonalizados by remember { mutableStateOf(original?.camposPersonalizados ?: emptyList()) }
@@ -127,7 +127,7 @@ fun PantallaEdicion(vm: VaultViewModel, id: String?, contrasenaInicial: String) 
             passkey = original?.passkey,
             camposPersonalizados = camposPersonalizados.filter { it.etiqueta.isNotBlank() || it.valor.isNotBlank() },
             ignoradaEnSalud = ignoradaEnSalud,
-            colecciones = colecciones,
+            categorias = categorias,
             identidadId = identidadId
         )
         vm.guardar(entrada)
@@ -182,10 +182,10 @@ fun PantallaEdicion(vm: VaultViewModel, id: String?, contrasenaInicial: String) 
                 totpValido = totpValido,
                 notas = notas,
                 alCambiarNotas = { notas = it },
-                coleccionesDisponibles = coleccionesDisponibles,
-                colecciones = colecciones,
-                alCambiarColecciones = { colecciones = it },
-                alCrearNuevaColeccion = { mostrarDialogoNuevaColeccion = true },
+                categoriasDisponibles = categoriasDisponibles,
+                categorias = categorias,
+                alCambiarCategorias = { categorias = it },
+                alCrearNuevaCategoria = { mostrarDialogoNuevaCategoria = true },
                 identidadesDisponibles = identidadesDisponibles,
                 identidadSeleccionadaId = identidadId,
                 alSeleccionarIdentidad = { iden ->
@@ -222,7 +222,7 @@ fun PantallaEdicion(vm: VaultViewModel, id: String?, contrasenaInicial: String) 
 
     ModalesEdicion(
         mostrarSelectorApp = mostrarSelectorApp,
-        mostrarDialogoNuevaColeccion = mostrarDialogoNuevaColeccion,
+        mostrarDialogoNuevaCategoria = mostrarDialogoNuevaCategoria,
         alDescartarSelectorApp = { mostrarSelectorApp = false },
         alSeleccionarApp = { paquete ->
             val nombreApp = LanzadorEnlaces.obtenerNombreApp(contexto, paquete)
@@ -244,11 +244,11 @@ fun PantallaEdicion(vm: VaultViewModel, id: String?, contrasenaInicial: String) 
             }
             mostrarSelectorApp = false
         },
-        alDescartarNuevaColeccion = { mostrarDialogoNuevaColeccion = false },
-        alGuardarNuevaColeccion = { nombreCol, iconoCol, colorHexCol ->
-            val nueva = vm.crearColeccion(nombreCol, iconoCol, colorHexCol)
-            colecciones = colecciones + nueva.id
-            mostrarDialogoNuevaColeccion = false
+        alDescartarNuevaCategoria = { mostrarDialogoNuevaCategoria = false },
+        alGuardarNuevaCategoria = { nombreCat, iconoCat, colorHexCat ->
+            val nueva = vm.crearCategoria(nombreCat, iconoCat, colorHexCat)
+            categorias = categorias + nueva.id
+            mostrarDialogoNuevaCategoria = false
         }
     )
 }

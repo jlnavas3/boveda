@@ -14,19 +14,19 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.jlnavas3.bovedalocal.data.Coleccion
+import com.jlnavas3.bovedalocal.data.Categoria
 import com.jlnavas3.bovedalocal.data.Identidad
 import com.jlnavas3.bovedalocal.data.JerarquiaOrganizacion
 import com.jlnavas3.bovedalocal.data.ModoVisualizacionIdentidades
 import com.jlnavas3.bovedalocal.data.TipoEntrada
 import com.jlnavas3.bovedalocal.ui.CriterioOrdenacion
 import com.jlnavas3.bovedalocal.ui.componentes.seleccion.BarraSuperiorSeleccion
-import com.jlnavas3.bovedalocal.ui.pantallas.colecciones.BarraColeccionesLista
+import com.jlnavas3.bovedalocal.ui.pantallas.categorias.BarraCategoriasLista
 
 /**
  * Cabecera superior de PantallaLista:
- * Alterna entre la barra de seleccion multiple y la barra superior estandar con buscador animado,
- * identidades y colecciones organizadas jerarquicamente.
+ * Alterna entre la barra de selección múltiple y la barra superior estándar con buscador animado,
+ * identidades y categorías organizadas jerárquicamente.
  */
 @Composable
 fun CabeceraPrincipalLista(
@@ -46,9 +46,9 @@ fun CabeceraPrincipalLista(
     criterioOrdenacion: CriterioOrdenacion,
     agruparPorSitio: Boolean,
     mostrarIndicadoresContenido: Boolean,
-    colecciones: List<Coleccion>,
-    coleccionSeleccionadaId: String?,
-    conteoPorColeccion: Map<String, Int>,
+    categorias: List<Categoria>,
+    categoriaSeleccionadaId: String?,
+    conteoPorCategoria: Map<String, Int>,
     alAbrirMenu: () -> Unit,
     alAlternarBusqueda: () -> Unit,
     alCambiarBusqueda: (String) -> Unit,
@@ -65,11 +65,11 @@ fun CabeceraPrincipalLista(
     alImportarDirectoCxf: () -> Unit,
     alExportarDirectoCxf: () -> Unit,
     alRestablecerFiltros: () -> Unit,
-    alSeleccionarColeccion: (String?) -> Unit,
-    alCrearColeccion: () -> Unit,
-    alEditarColeccion: (Coleccion) -> Unit,
-    alEliminarColeccion: (Coleccion) -> Unit,
-    jerarquiaOrganizacion: JerarquiaOrganizacion = JerarquiaOrganizacion.IDENTIDAD_SOBRE_COLECCION,
+    alSeleccionarCategoria: (String?) -> Unit,
+    alCrearCategoria: () -> Unit,
+    alEditarCategoria: (Categoria) -> Unit,
+    alEliminarCategoria: (Categoria) -> Unit,
+    jerarquiaOrganizacion: JerarquiaOrganizacion = JerarquiaOrganizacion.IDENTIDAD_SOBRE_CATEGORIA,
     modoVisualizacionIdentidades: ModoVisualizacionIdentidades = ModoVisualizacionIdentidades.CHIPS,
     identidades: List<Identidad> = emptyList(),
     identidadSeleccionadaId: String? = null,
@@ -134,7 +134,7 @@ fun CabeceraPrincipalLista(
 
             val mostrarChipsIdentidad = modoVisualizacionIdentidades == ModoVisualizacionIdentidades.CHIPS && identidades.isNotEmpty()
 
-            if (jerarquiaOrganizacion == JerarquiaOrganizacion.IDENTIDAD_SOBRE_COLECCION) {
+            if (jerarquiaOrganizacion == JerarquiaOrganizacion.IDENTIDAD_SOBRE_CATEGORIA) {
                 // Nivel 1: Identidades
                 if (mostrarChipsIdentidad) {
                     ChipsFiltroIdentidades(
@@ -148,28 +148,28 @@ fun CabeceraPrincipalLista(
                     Spacer(Modifier.height(2.dp))
                 }
 
-                // Nivel 2 (Subordinado): Colecciones
-                BarraColeccionesLista(
-                    colecciones = colecciones,
-                    coleccionSeleccionadaId = coleccionSeleccionadaId,
+                // Nivel 2 (Subordinado): Categorías
+                BarraCategoriasLista(
+                    categorias = categorias,
+                    categoriaSeleccionadaId = categoriaSeleccionadaId,
                     totalEntradas = totalEntradas,
-                    conteoPorColeccion = conteoPorColeccion,
-                    alSeleccionarColeccion = alSeleccionarColeccion,
-                    alCrearColeccion = alCrearColeccion,
-                    alEditarColeccion = alEditarColeccion,
-                    alEliminarColeccion = alEliminarColeccion
+                    conteoPorCategoria = conteoPorCategoria,
+                    alSeleccionarCategoria = alSeleccionarCategoria,
+                    alCrearCategoria = alCrearCategoria,
+                    alEditarCategoria = alEditarCategoria,
+                    alEliminarCategoria = alEliminarCategoria
                 )
             } else {
-                // Nivel 1: Colecciones
-                BarraColeccionesLista(
-                    colecciones = colecciones,
-                    coleccionSeleccionadaId = coleccionSeleccionadaId,
+                // Nivel 1: Categorías
+                BarraCategoriasLista(
+                    categorias = categorias,
+                    categoriaSeleccionadaId = categoriaSeleccionadaId,
                     totalEntradas = totalEntradas,
-                    conteoPorColeccion = conteoPorColeccion,
-                    alSeleccionarColeccion = alSeleccionarColeccion,
-                    alCrearColeccion = alCrearColeccion,
-                    alEditarColeccion = alEditarColeccion,
-                    alEliminarColeccion = alEliminarColeccion
+                    conteoPorCategoria = conteoPorCategoria,
+                    alSeleccionarCategoria = alSeleccionarCategoria,
+                    alCrearCategoria = alCrearCategoria,
+                    alEditarCategoria = alEditarCategoria,
+                    alEliminarCategoria = alEliminarCategoria
                 )
 
                 // Nivel 2 (Subordinado): Identidades

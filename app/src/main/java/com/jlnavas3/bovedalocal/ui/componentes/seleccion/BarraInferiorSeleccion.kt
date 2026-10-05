@@ -50,6 +50,7 @@ fun BarraInferiorSeleccion(
     alRespaldar: (() -> Unit)? = null,
     alTransferirCxf: (() -> Unit)? = null,
     alRenombrar: (() -> Unit)? = null,
+    alAsignarCategoria: (() -> Unit)? = null,
     alAsignarColeccion: (() -> Unit)? = null,
     alBorrar: (() -> Unit)? = null,
     modifier: Modifier = Modifier
@@ -57,9 +58,10 @@ fun BarraInferiorSeleccion(
     val contexto = LocalContext.current
     val haptica = Haptica(contexto)
     val habilitado = cantidad > 0
+    val accionCategoria = alAsignarCategoria ?: alAsignarColeccion
 
     // Si existen acciones avanzadas de respaldo/transferencia junto con borrado, agrupamos en menú "Más"
-    val hayMenuOverflow = (alRespaldar != null || alTransferirCxf != null) && (alRenombrar != null || alAsignarColeccion != null)
+    val hayMenuOverflow = (alRespaldar != null || alTransferirCxf != null) && (alRenombrar != null || accionCategoria != null)
 
     Box(
         modifier = modifier
@@ -125,16 +127,16 @@ fun BarraInferiorSeleccion(
                 )
             }
 
-            // 4. Colección
-            if (alAsignarColeccion != null) {
+            // 4. Categoría
+            if (accionCategoria != null) {
                 ItemAccionSeleccion(
                     icono = Icons.Filled.Folder,
-                    texto = "Colección",
+                    texto = "Categoría",
                     habilitado = habilitado,
                     colorIcono = ColorAcento,
                     alPulsar = {
                         haptica.tic()
-                        alAsignarColeccion()
+                        accionCategoria()
                     }
                 )
             }

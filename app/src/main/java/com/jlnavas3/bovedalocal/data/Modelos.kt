@@ -1,5 +1,6 @@
 package com.jlnavas3.bovedalocal.data
 
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 fun normalizarEtiqueta(valor: String): String = valor
@@ -135,21 +136,18 @@ data class Entrada(
     val camposPersonalizados: List<CampoPersonalizado> = emptyList(),
     /** Si es true, esta entrada se ignora en el cálculo y avisos de auditoría de salud. */
     val ignoradaEnSalud: Boolean = false,
-    /** Lista de IDs de colecciones a las que pertenece esta entrada. */
-    val colecciones: List<String> = emptyList(),
+    /** Lista de IDs de categorías a las que pertenece esta entrada (mantiene clave 'colecciones' en JSON para retrocompatibilidad). */
+    @SerialName("colecciones")
+    val categorias: List<String> = emptyList(),
     /** ID de la identidad vinculada explícitamente (si es null, se usa vinculación inteligente por correo). */
     val identidadId: String? = null
-)
+) {
+    /** Alias de compatibilidad hacia atrás durante la migración */
+    val colecciones: List<String> get() = categorias
+}
 
-@Serializable
-data class Coleccion(
-    val id: String = java.util.UUID.randomUUID().toString(),
-    val nombre: String,
-    val icono: String = "carpeta",
-    val colorHex: String? = null,
-    val creadaEn: Long = System.currentTimeMillis(),
-    val modificadaEn: Long = System.currentTimeMillis()
-)
+/** Typealias para compatibilidad hacia atrás durante la transición */
+typealias Coleccion = Categoria
 
 @Serializable
 data class ContenidoBoveda(
@@ -157,9 +155,13 @@ data class ContenidoBoveda(
     val entradas: List<Entrada> = emptyList(),
     /** Entradas borradas pero aún recuperables; se vacían solas pasado un tiempo. */
     val papelera: List<Entrada> = emptyList(),
-    val colecciones: List<Coleccion> = emptyList(),
+    @SerialName("colecciones")
+    val categorias: List<Categoria> = emptyList(),
     val identidades: List<Identidad> = emptyList()
-)
+) {
+    /** Alias de compatibilidad hacia atrás */
+    val colecciones: List<Categoria> get() = categorias
+}
 
 sealed interface EstadoBoveda {
     object SinCrear : EstadoBoveda
@@ -167,7 +169,10 @@ sealed interface EstadoBoveda {
     data class Desbloqueada(
         val entradas: List<Entrada>,
         val papelera: List<Entrada> = emptyList(),
-        val colecciones: List<Coleccion> = emptyList(),
+        val categorias: List<Categoria> = emptyList(),
         val identidades: List<Identidad> = emptyList()
-    ) : EstadoBoveda
+    ) : EstadoBoveda {
+        /** Alias de compatibilidad hacia atrás */
+        val colecciones: List<Categoria> get() = categorias
+    }
 }

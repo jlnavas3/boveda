@@ -419,6 +419,7 @@ fun RaizBoveda(vm: VaultViewModel, actividad: FragmentActivity) {
                     is Pantalla.Duplicados -> PantallaDuplicados(vm, estado, destino.seccionId)
                     is Pantalla.Papelera -> PantallaPapelera(vm, estado, destino.seccionId)
                     is Pantalla.Identidades -> com.jlnavas3.bovedalocal.ui.pantallas.identidades.PantallaGestionIdentidades(vm, destino.seccionId)
+                    is Pantalla.Categorias -> com.jlnavas3.bovedalocal.ui.pantallas.categorias.PantallaGestionCategorias(vm, destino.seccionId)
                     is Pantalla.KitEmergencia -> com.jlnavas3.bovedalocal.ui.pantallas.PantallaKitEmergencia(vm, actividad, destino.seccionId)
                     is Pantalla.AjustesCopiaAutomatica -> com.jlnavas3.bovedalocal.ui.pantallas.copia.PantallaCopiaAutomatica(vm, destino.seccionId)
                     is Pantalla.AjustesSenuelo -> com.jlnavas3.bovedalocal.ui.pantallas.PantallaAjustesSenuelo(vm, destino.seccionId)

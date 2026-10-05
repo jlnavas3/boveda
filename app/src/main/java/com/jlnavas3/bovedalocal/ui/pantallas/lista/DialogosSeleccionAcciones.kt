@@ -4,15 +4,15 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
-import com.jlnavas3.bovedalocal.data.Coleccion
+import com.jlnavas3.bovedalocal.data.Categoria
 import com.jlnavas3.bovedalocal.data.Entrada
 import com.jlnavas3.bovedalocal.data.EstadoBoveda
 import com.jlnavas3.bovedalocal.data.TipoEntrada
 import com.jlnavas3.bovedalocal.ui.CriterioOrdenacion
 import com.jlnavas3.bovedalocal.ui.componentes.DialogoConfirmacionBoveda
 import com.jlnavas3.bovedalocal.ui.componentes.TipoBotonTexto
-import com.jlnavas3.bovedalocal.ui.pantallas.colecciones.DialogoAsignarColecciones
-import com.jlnavas3.bovedalocal.ui.pantallas.colecciones.DialogoCrearEditarColeccion
+import com.jlnavas3.bovedalocal.ui.pantallas.categorias.DialogoAsignarCategorias
+import com.jlnavas3.bovedalocal.ui.pantallas.categorias.DialogoEditarCategoria
 import com.jlnavas3.bovedalocal.ui.pantallas.cxf.DialogoExportacionDirectaCxf
 
 /**
@@ -42,20 +42,20 @@ fun DialogosSeleccionAcciones(
     mostrarDialogoExportarCxf: Boolean,
     estado: EstadoBoveda,
     alDescartarExportarCxf: () -> Unit,
-    mostrarDialogoAsignarColecciones: Boolean,
+    mostrarDialogoAsignarCategorias: Boolean,
     seleccionados: Set<String>,
     entradas: List<Entrada>,
-    colecciones: List<Coleccion>,
-    alCrearNuevaColeccion: () -> Unit,
-    alGuardarAsignarColecciones: (Set<String>, Set<String>) -> Unit,
-    alDescartarAsignarColecciones: () -> Unit,
-    mostrarDialogoCrearColeccion: Boolean,
-    coleccionParaEditar: Coleccion?,
-    alGuardarColeccion: (String, String, String?) -> Unit,
-    alDescartarEditarCrearColeccion: () -> Unit,
-    coleccionParaEliminar: Coleccion?,
-    alConfirmarEliminarColeccion: (Coleccion) -> Unit,
-    alDescartarEliminarColeccion: () -> Unit
+    categorias: List<Categoria>,
+    alCrearNuevaCategoria: () -> Unit,
+    alGuardarAsignarCategorias: (Set<String>, Set<String>) -> Unit,
+    alDescartarAsignarCategorias: () -> Unit,
+    mostrarDialogoCrearCategoria: Boolean,
+    categoriaParaEditar: Categoria?,
+    alGuardarCategoria: (String, String, String?) -> Unit,
+    alDescartarEditarCrearCategoria: () -> Unit,
+    categoriaParaEliminar: Categoria?,
+    alConfirmarEliminarCategoria: (Categoria) -> Unit,
+    alDescartarEliminarCategoria: () -> Unit
 ) {
     if (mostrarDialogoFiltros) {
         DialogoFiltrosLista(
@@ -107,36 +107,36 @@ fun DialogosSeleccionAcciones(
         )
     }
 
-    if (mostrarDialogoAsignarColecciones) {
+    if (mostrarDialogoAsignarCategorias) {
         val seleccionadosLista = remember(seleccionados, entradas) {
             entradas.filter { seleccionados.contains(it.id) }
         }
-        DialogoAsignarColecciones(
+        DialogoAsignarCategorias(
             entradasSeleccionadas = seleccionadosLista,
-            coleccionesDisponibles = colecciones,
-            alCrearNuevaColeccion = alCrearNuevaColeccion,
-            alGuardar = alGuardarAsignarColecciones,
-            alDescartar = alDescartarAsignarColecciones
+            categoriasDisponibles = categorias,
+            alCrearNuevaCategoria = alCrearNuevaCategoria,
+            alGuardar = alGuardarAsignarCategorias,
+            alDescartar = alDescartarAsignarCategorias
         )
     }
 
-    if (mostrarDialogoCrearColeccion || coleccionParaEditar != null) {
-        DialogoCrearEditarColeccion(
-            coleccionAEditar = coleccionParaEditar,
-            alGuardar = alGuardarColeccion,
-            alDescartar = alDescartarEditarCrearColeccion
+    if (mostrarDialogoCrearCategoria || categoriaParaEditar != null) {
+        DialogoEditarCategoria(
+            categoriaAEditar = categoriaParaEditar,
+            alGuardar = alGuardarCategoria,
+            alDescartar = alDescartarEditarCrearCategoria
         )
     }
 
-    coleccionParaEliminar?.let { col ->
+    categoriaParaEliminar?.let { cat ->
         DialogoConfirmacionBoveda(
-            titulo = "¿Eliminar colección?",
-            mensaje = "Se eliminará la colección '${col.nombre}'. Las credenciales asociadas no se borrarán.",
+            titulo = "¿Eliminar categoría?",
+            mensaje = "Se eliminará la categoría '${cat.nombre}'. Las credenciales asociadas no se borrarán.",
             textoConfirmar = "Eliminar",
             tipoConfirmacion = TipoBotonTexto.PELIGRO,
             iconoHeader = Icons.Filled.Delete,
-            alConfirmar = { alConfirmarEliminarColeccion(col) },
-            alDescartar = alDescartarEliminarColeccion
+            alConfirmar = { alConfirmarEliminarCategoria(cat) },
+            alDescartar = alDescartarEliminarCategoria
         )
     }
 }

@@ -1,9 +1,8 @@
-package com.jlnavas3.bovedalocal.ui.pantallas.colecciones
+package com.jlnavas3.bovedalocal.ui.pantallas.categorias
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -15,65 +14,39 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import com.jlnavas3.bovedalocal.data.Coleccion
+import com.jlnavas3.bovedalocal.data.Categoria
+import com.jlnavas3.bovedalocal.ui.componentes.TextoCuerpo
+import com.jlnavas3.bovedalocal.ui.componentes.TextoSubtitulo
+import com.jlnavas3.bovedalocal.ui.componentes.TextoTitulo
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorCampoAjustes
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorSeparadorAjustes
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorTarjetaAjustes
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
-import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
-import com.jlnavas3.bovedalocal.ui.theme.ColorSobreAcento
-import com.jlnavas3.bovedalocal.ui.theme.CurvaturaEsquinas
-import com.jlnavas3.bovedalocal.ui.theme.EstiloBorde
-import com.jlnavas3.bovedalocal.ui.theme.FormaPequena
-import com.jlnavas3.bovedalocal.ui.theme.GrosorBorde
 import com.jlnavas3.bovedalocal.ui.theme.TextoPrincipal
-import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun SeccionColeccionesEdicion(
-    coleccionesDisponibles: List<Coleccion>,
-    coleccionesSeleccionadas: List<String>,
-    alCambiarColecciones: (List<String>) -> Unit,
-    alCrearNuevaColeccion: () -> Unit,
+fun SeccionCategoriasEdicion(
+    categoriasDisponibles: List<Categoria>,
+    categoriasSeleccionadas: List<String>,
+    alCambiarCategorias: (List<String>) -> Unit,
+    alCrearNuevaCategoria: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier.fillMaxWidth()) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = "Colecciones",
-                    color = TextoPrincipal,
-                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold)
-                )
-                Text(
-                    text = "Organiza esta entrada en colecciones personalizadas",
-                    color = TextoSecundario,
-                    style = MaterialTheme.typography.bodySmall
-                )
-            }
-        }
+        TextoTitulo(texto = "Categorías")
+        TextoSubtitulo(texto = "Organiza esta entrada en categorías personalizadas")
 
         Spacer(Modifier.height(8.dp))
 
@@ -84,10 +57,10 @@ fun SeccionColeccionesEdicion(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            coleccionesDisponibles.forEach { col ->
-                val estaSeleccionada = coleccionesSeleccionadas.contains(col.id)
-                val colorPropio = IconosColecciones.parsearColorHex(col.colorHex) ?: ColorAcento
-                val icono = IconosColecciones.obtenerIcono(col.icono)
+            categoriasDisponibles.forEach { cat ->
+                val estaSeleccionada = categoriasSeleccionadas.contains(cat.id)
+                val colorPropio = IconosCategorias.parsearColorHex(cat.colorHex) ?: ColorAcento
+                val icono = IconosCategorias.obtenerIcono(cat.icono)
 
                 Box(
                     modifier = Modifier
@@ -100,11 +73,11 @@ fun SeccionColeccionesEdicion(
                         )
                         .clickable {
                             val nuevaLista = if (estaSeleccionada) {
-                                coleccionesSeleccionadas - col.id
+                                categoriasSeleccionadas - cat.id
                             } else {
-                                coleccionesSeleccionadas + col.id
+                                categoriasSeleccionadas + cat.id
                             }
-                            alCambiarColecciones(nuevaLista)
+                            alCambiarCategorias(nuevaLista)
                         }
                         .padding(horizontal = 10.dp, vertical = 6.dp),
                     contentAlignment = Alignment.Center
@@ -119,25 +92,21 @@ fun SeccionColeccionesEdicion(
                             tint = if (estaSeleccionada) Color.White else colorPropio,
                             modifier = Modifier.size(15.dp)
                         )
-                        Text(
-                            text = col.nombre,
-                            color = if (estaSeleccionada) Color.White else TextoPrincipal,
-                            style = MaterialTheme.typography.bodySmall.copy(
-                                fontWeight = if (estaSeleccionada) FontWeight.Bold else FontWeight.Medium,
-                                fontSize = 12.sp
-                            )
+                        TextoCuerpo(
+                            texto = cat.nombre,
+                            color = if (estaSeleccionada) Color.White else TextoPrincipal
                         )
                     }
                 }
             }
 
-            // Chip para crear nueva colección directamente
+            // Chip para crear nueva categoría directamente
             Box(
                 modifier = Modifier
                     .clip(formaChip)
                     .background(ColorTarjetaAjustes)
                     .border(0.8.dp, ColorSeparadorAjustes, formaChip)
-                    .clickable { alCrearNuevaColeccion() }
+                    .clickable { alCrearNuevaCategoria() }
                     .padding(horizontal = 10.dp, vertical = 6.dp),
                 contentAlignment = Alignment.Center
             ) {
@@ -151,13 +120,9 @@ fun SeccionColeccionesEdicion(
                         tint = ColorAcento,
                         modifier = Modifier.size(15.dp)
                     )
-                    Text(
-                        text = "Nueva",
-                        color = ColorAcento,
-                        style = MaterialTheme.typography.bodySmall.copy(
-                            fontWeight = FontWeight.SemiBold,
-                            fontSize = 12.sp
-                        )
+                    TextoCuerpo(
+                        texto = "Nueva",
+                        color = ColorAcento
                     )
                 }
             }

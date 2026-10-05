@@ -15,7 +15,7 @@ import androidx.compose.ui.unit.dp
 import com.jlnavas3.bovedalocal.crypto.OpcionesGenerador
 import com.jlnavas3.bovedalocal.data.AjustesApp
 import com.jlnavas3.bovedalocal.data.CampoPersonalizado
-import com.jlnavas3.bovedalocal.data.Coleccion
+import com.jlnavas3.bovedalocal.data.Categoria
 import com.jlnavas3.bovedalocal.data.Entrada
 import com.jlnavas3.bovedalocal.data.TipoEntrada
 import com.jlnavas3.bovedalocal.ui.componentes.DescripcionPantalla
@@ -54,10 +54,10 @@ fun FormularioEdicionEntrada(
     totpValido: Boolean,
     notas: String,
     alCambiarNotas: (String) -> Unit,
-    coleccionesDisponibles: List<Coleccion>,
-    colecciones: List<String>,
-    alCambiarColecciones: (List<String>) -> Unit,
-    alCrearNuevaColeccion: () -> Unit,
+    categoriasDisponibles: List<Categoria>,
+    categorias: List<String>,
+    alCambiarCategorias: (List<String>) -> Unit,
+    alCrearNuevaCategoria: () -> Unit,
     identidadesDisponibles: List<com.jlnavas3.bovedalocal.data.Identidad> = emptyList(),
     identidadSeleccionadaId: String? = null,
     alSeleccionarIdentidad: (com.jlnavas3.bovedalocal.data.Identidad?) -> Unit = {},
@@ -161,10 +161,10 @@ fun FormularioEdicionEntrada(
         // Grupo: Organización
         Spacer(Modifier.height(16.dp))
         SeccionOrganizacionEdicion(
-            coleccionesDisponibles = coleccionesDisponibles,
-            coleccionesSeleccionadas = colecciones,
-            alCambiarColecciones = alCambiarColecciones,
-            alCrearNuevaColeccion = alCrearNuevaColeccion,
+            categoriasDisponibles = categoriasDisponibles,
+            categoriasSeleccionadas = categorias,
+            alCambiarCategorias = alCambiarCategorias,
+            alCrearNuevaCategoria = alCrearNuevaCategoria,
             identidadesDisponibles = identidadesDisponibles,
             identidadSeleccionadaId = identidadSeleccionadaId,
             alSeleccionarIdentidad = alSeleccionarIdentidad,

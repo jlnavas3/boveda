@@ -6,7 +6,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import com.jlnavas3.bovedalocal.data.Coleccion
+import com.jlnavas3.bovedalocal.data.Categoria
 import com.jlnavas3.bovedalocal.data.Entrada
 
 /**
@@ -21,10 +21,10 @@ class EstadoDialogosLista {
     var entradasParaTransferirCxf by mutableStateOf<List<Entrada>?>(null)
     var renombrarSeleccion by mutableStateOf(false)
     var textoNuevoTitulo by mutableStateOf("")
-    var asignarColecciones by mutableStateOf(false)
-    var crearColeccion by mutableStateOf(false)
-    var coleccionParaEditar by mutableStateOf<Coleccion?>(null)
-    var coleccionParaEliminar by mutableStateOf<Coleccion?>(null)
+    var asignarCategorias by mutableStateOf(false)
+    var crearCategoria by mutableStateOf(false)
+    var categoriaParaEditar by mutableStateOf<Categoria?>(null)
+    var categoriaParaEliminar by mutableStateOf<Categoria?>(null)
 
     fun iniciarRenombrar(tituloActual: String) {
         textoNuevoTitulo = tituloActual

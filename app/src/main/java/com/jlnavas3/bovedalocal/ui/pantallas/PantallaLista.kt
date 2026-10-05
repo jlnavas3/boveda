@@ -61,29 +61,29 @@ fun PantallaLista(vm: VaultViewModel, estado: EstadoBoveda) {
     }
     val espaciadoFilas = calcularEspaciadoFilas(densidad)
     val entradas = (estado as? EstadoBoveda.Desbloqueada)?.entradas ?: emptyList()
-    val colecciones = remember(estado) { (estado as? EstadoBoveda.Desbloqueada)?.colecciones ?: emptyList() }
+    val categorias = remember(estado) { (estado as? EstadoBoveda.Desbloqueada)?.categorias ?: emptyList() }
     val identidades = remember(estado) { (estado as? EstadoBoveda.Desbloqueada)?.identidades ?: emptyList() }
-    val coleccionSeleccionadaId by vm.filtroColeccion.collectAsStateWithLifecycle()
+    val categoriaSeleccionadaId by vm.filtroCategoria.collectAsStateWithLifecycle()
     val identidadSeleccionadaId by vm.identidadSeleccionadaId.collectAsStateWithLifecycle()
 
     val jerarquia = ajustes.jerarquiaOrganizacionEfectiva
 
-    val (coleccionesEfectivas, conteoPorColeccion) = remember(
-        entradas, colecciones, identidades, identidadSeleccionadaId, jerarquia
+    val (categoriasEfectivas, conteoPorCategoria) = remember(
+        entradas, categorias, identidades, identidadSeleccionadaId, jerarquia
     ) {
-        if (jerarquia == com.jlnavas3.bovedalocal.data.JerarquiaOrganizacion.IDENTIDAD_SOBRE_COLECCION) {
-            com.jlnavas3.bovedalocal.util.filtrarColeccionesPorIdentidad(colecciones, entradas, identidades, identidadSeleccionadaId)
+        if (jerarquia == com.jlnavas3.bovedalocal.data.JerarquiaOrganizacion.IDENTIDAD_SOBRE_CATEGORIA) {
+            com.jlnavas3.bovedalocal.util.filtrarCategoriasPorIdentidad(categorias, entradas, identidades, identidadSeleccionadaId)
         } else {
-            val conteos = colecciones.associate { col -> col.id to entradas.count { it.colecciones.contains(col.id) } }
-            Pair(colecciones, conteos)
+            val conteos = categorias.associate { cat -> cat.id to entradas.count { it.categorias.contains(cat.id) } }
+            Pair(categorias, conteos)
         }
     }
 
     val (identidadesEfectivas, conteoPorIdentidad, conteoSinIdentidad) = remember(
-        entradas, identidades, coleccionSeleccionadaId, jerarquia
+        entradas, identidades, categoriaSeleccionadaId, jerarquia
     ) {
-        if (jerarquia == com.jlnavas3.bovedalocal.data.JerarquiaOrganizacion.COLECCION_SOBRE_IDENTIDAD) {
-            com.jlnavas3.bovedalocal.util.filtrarIdentidadesPorColeccion(identidades, entradas, coleccionSeleccionadaId)
+        if (jerarquia == com.jlnavas3.bovedalocal.data.JerarquiaOrganizacion.CATEGORIA_SOBRE_IDENTIDAD) {
+            com.jlnavas3.bovedalocal.util.filtrarIdentidadesPorCategoria(identidades, entradas, categoriaSeleccionadaId)
         } else {
             val conteos = identidades.associate { iden ->
                 iden.id to entradas.count { entrada ->
@@ -97,19 +97,19 @@ fun PantallaLista(vm: VaultViewModel, estado: EstadoBoveda) {
         }
     }
 
-    // Si la coleccion seleccionada ya no tiene elementos bajo la identidad activa, deseleccionar
-    LaunchedEffect(coleccionesEfectivas, coleccionSeleccionadaId, jerarquia) {
-        if (jerarquia == com.jlnavas3.bovedalocal.data.JerarquiaOrganizacion.IDENTIDAD_SOBRE_COLECCION &&
-            coleccionSeleccionadaId != null &&
-            coleccionesEfectivas.none { it.id == coleccionSeleccionadaId }
+    // Si la categoría seleccionada ya no tiene elementos bajo la identidad activa, deseleccionar
+    LaunchedEffect(categoriasEfectivas, categoriaSeleccionadaId, jerarquia) {
+        if (jerarquia == com.jlnavas3.bovedalocal.data.JerarquiaOrganizacion.IDENTIDAD_SOBRE_CATEGORIA &&
+            categoriaSeleccionadaId != null &&
+            categoriasEfectivas.none { it.id == categoriaSeleccionadaId }
         ) {
-            vm.seleccionarColeccion(null)
+            vm.seleccionarCategoria(null)
         }
     }
 
-    // Si la identidad seleccionada ya no tiene elementos bajo la coleccion activa, deseleccionar
+    // Si la identidad seleccionada ya no tiene elementos bajo la categoría activa, deseleccionar
     LaunchedEffect(identidadesEfectivas, identidadSeleccionadaId, jerarquia) {
-        if (jerarquia == com.jlnavas3.bovedalocal.data.JerarquiaOrganizacion.COLECCION_SOBRE_IDENTIDAD &&
+        if (jerarquia == com.jlnavas3.bovedalocal.data.JerarquiaOrganizacion.CATEGORIA_SOBRE_IDENTIDAD &&
             identidadSeleccionadaId != null &&
             identidadSeleccionadaId != "__SIN_IDENTIDAD__" &&
             identidadesEfectivas.none { it.id == identidadSeleccionadaId }
@@ -118,7 +118,7 @@ fun PantallaLista(vm: VaultViewModel, estado: EstadoBoveda) {
         }
     }
 
-    val visibles = remember(entradas, busqueda, filtro, soloFavoritos, filtroEtiqueta, coleccionSeleccionadaId, identidadSeleccionadaId, criterioOrdenacion, identidades) {
+    val visibles = remember(entradas, busqueda, filtro, soloFavoritos, filtroEtiqueta, categoriaSeleccionadaId, identidadSeleccionadaId, criterioOrdenacion, identidades) {
         vm.entradasVisibles(entradas, identidades)
     }
     val etiquetasDisponibles = remember(entradas) { vm.etiquetasUsadas() }
@@ -229,9 +229,9 @@ fun PantallaLista(vm: VaultViewModel, estado: EstadoBoveda) {
                     criterioOrdenacion = criterioOrdenacion,
                     agruparPorSitio = ajustes.agruparPorSitio,
                     mostrarIndicadoresContenido = ajustes.mostrarIndicadoresContenido,
-                    colecciones = coleccionesEfectivas,
-                    coleccionSeleccionadaId = coleccionSeleccionadaId,
-                    conteoPorColeccion = conteoPorColeccion,
+                    categorias = categoriasEfectivas,
+                    categoriaSeleccionadaId = categoriaSeleccionadaId,
+                    conteoPorCategoria = conteoPorCategoria,
                     alAbrirMenu = { abrirMenu() },
                     alAlternarBusqueda = {
                         busquedaVisible = !busquedaVisible
@@ -260,13 +260,13 @@ fun PantallaLista(vm: VaultViewModel, estado: EstadoBoveda) {
                         if (soloFavoritos) vm.alternarSoloFavoritos()
                         vm.filtrarPorEtiqueta(null)
                     },
-                    alSeleccionarColeccion = { id ->
+                    alSeleccionarCategoria = { id ->
                         haptica.tic()
-                        vm.seleccionarColeccion(id)
+                        vm.seleccionarCategoria(id)
                     },
-                    alCrearColeccion = { dialogos.crearColeccion = true },
-                    alEditarColeccion = { col -> dialogos.coleccionParaEditar = col },
-                    alEliminarColeccion = { col -> dialogos.coleccionParaEliminar = col },
+                    alCrearCategoria = { dialogos.crearCategoria = true },
+                    alEditarCategoria = { cat -> dialogos.categoriaParaEditar = cat },
+                    alEliminarCategoria = { cat -> dialogos.categoriaParaEliminar = cat },
                     jerarquiaOrganizacion = jerarquia,
                     modoVisualizacionIdentidades = ajustes.modoVisualizacionIdentidades,
                     identidades = identidadesEfectivas,
@@ -311,7 +311,7 @@ fun PantallaLista(vm: VaultViewModel, estado: EstadoBoveda) {
                             }
                         },
                         identidades = identidades,
-                        colecciones = colecciones
+                        categorias = categorias
                     )
             }
 
@@ -322,7 +322,7 @@ fun PantallaLista(vm: VaultViewModel, estado: EstadoBoveda) {
                 haptica = haptica,
                 alTransferirCxf = { copia -> dialogos.prepararTransferirCxf(copia) },
                 alRenombrar = { titulo -> dialogos.iniciarRenombrar(titulo) },
-                alAsignarColeccion = { dialogos.asignarColecciones = true },
+                alAsignarCategoria = { dialogos.asignarCategorias = true },
                 alBorrar = { dialogos.borrarSeleccion = true }
             )
         }
@@ -336,7 +336,7 @@ fun PantallaLista(vm: VaultViewModel, estado: EstadoBoveda) {
         criterioActual = criterioOrdenacion,
         estadoSeleccion = estadoSeleccion,
         entradas = entradas,
-        colecciones = colecciones,
+        categorias = categorias,
         haptica = haptica
     )
 }

@@ -13,20 +13,20 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.jlnavas3.bovedalocal.data.Coleccion
+import com.jlnavas3.bovedalocal.data.Categoria
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.GrupoAjustes
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.SeparadorFilaSimple
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.SwitchBoveda
-import com.jlnavas3.bovedalocal.ui.pantallas.colecciones.SeccionColeccionesEdicion
+import com.jlnavas3.bovedalocal.ui.pantallas.categorias.SeccionCategoriasEdicion
 import com.jlnavas3.bovedalocal.ui.theme.TextoPrincipal
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
 
 @Composable
 fun SeccionOrganizacionEdicion(
-    coleccionesDisponibles: List<Coleccion> = emptyList(),
-    coleccionesSeleccionadas: List<String> = emptyList(),
-    alCambiarColecciones: (List<String>) -> Unit = {},
-    alCrearNuevaColeccion: () -> Unit = {},
+    categoriasDisponibles: List<Categoria> = emptyList(),
+    categoriasSeleccionadas: List<String> = emptyList(),
+    alCambiarCategorias: (List<String>) -> Unit = {},
+    alCrearNuevaCategoria: () -> Unit = {},
     identidadesDisponibles: List<com.jlnavas3.bovedalocal.data.Identidad> = emptyList(),
     identidadSeleccionadaId: String? = null,
     alSeleccionarIdentidad: (com.jlnavas3.bovedalocal.data.Identidad?) -> Unit = {},
@@ -51,11 +51,11 @@ fun SeccionOrganizacionEdicion(
                 Spacer(Modifier.height(10.dp))
             }
 
-            SeccionColeccionesEdicion(
-                coleccionesDisponibles = coleccionesDisponibles,
-                coleccionesSeleccionadas = coleccionesSeleccionadas,
-                alCambiarColecciones = alCambiarColecciones,
-                alCrearNuevaColeccion = alCrearNuevaColeccion
+            SeccionCategoriasEdicion(
+                categoriasDisponibles = categoriasDisponibles,
+                categoriasSeleccionadas = categoriasSeleccionadas,
+                alCambiarCategorias = alCambiarCategorias,
+                alCrearNuevaCategoria = alCrearNuevaCategoria
             )
 
             Spacer(Modifier.height(14.dp))

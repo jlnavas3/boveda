@@ -3,25 +3,31 @@ package com.jlnavas3.bovedalocal.data
 import kotlinx.serialization.Serializable
 
 /**
- * Define la jerarquia y relacion de anidacion entre Identidades y Colecciones en la lista principal:
- * - [IDENTIDAD_SOBRE_COLECCION]: La Identidad es el nivel superior (perfil personal). Las colecciones se subordinan a la identidad activa.
- * - [COLECCION_SOBRE_IDENTIDAD]: La Coleccion es el nivel superior (carpeta/proyecto tematico). Las identidades se subordinan a la coleccion activa.
+ * Define la jerarquia y relacion de anidacion entre Identidades y Categorias en la lista principal:
+ * - [IDENTIDAD_SOBRE_CATEGORIA]: La Identidad es el nivel superior (perfil personal). Las categorias se subordinan a la identidad activa.
+ * - [CATEGORIA_SOBRE_IDENTIDAD]: La Categoria es el nivel superior (carpeta/proyecto tematico). Las identidades se subordinan a la categoria activa.
  */
 @Serializable
 enum class JerarquiaOrganizacion(val clave: String, val etiqueta: String, val descripcion: String) {
-    IDENTIDAD_SOBRE_COLECCION(
-        clave = "identidad_sobre_coleccion",
-        etiqueta = "Identidades sobre Colecciones (Recomendado)",
-        descripcion = "La Identidad define el contexto superior de perfil. Las colecciones se subordinan o filtran según la identidad activa."
+    IDENTIDAD_SOBRE_CATEGORIA(
+        clave = "identidad_sobre_categoria",
+        etiqueta = "Identidades sobre Categorías (Recomendado)",
+        descripcion = "La Identidad define el contexto superior de perfil. Las categorías se subordinan o filtran según la identidad activa."
     ),
-    COLECCION_SOBRE_IDENTIDAD(
-        clave = "coleccion_sobre_identidad",
-        etiqueta = "Colecciones sobre Identidades",
-        descripcion = "La Colección define el contexto superior temático. Las identidades se subordinan o filtran según la colección activa."
+    CATEGORIA_SOBRE_IDENTIDAD(
+        clave = "categoria_sobre_identidad",
+        etiqueta = "Categorías sobre Identidades",
+        descripcion = "La Categoría define el contexto superior temático. Las identidades se subordinan o filtran según la categoría activa."
     );
 
     companion object {
-        fun desdeClave(clave: String?): JerarquiaOrganizacion =
-            entries.firstOrNull { it.clave == clave } ?: IDENTIDAD_SOBRE_COLECCION
+        // Alias retrocompatibles
+        val IDENTIDAD_SOBRE_COLECCION get() = IDENTIDAD_SOBRE_CATEGORIA
+        val COLECCION_SOBRE_IDENTIDAD get() = CATEGORIA_SOBRE_IDENTIDAD
+
+        fun desdeClave(clave: String?): JerarquiaOrganizacion = when (clave) {
+            "categoria_sobre_identidad", "coleccion_sobre_identidad" -> CATEGORIA_SOBRE_IDENTIDAD
+            else -> IDENTIDAD_SOBRE_CATEGORIA
+        }
     }
 }

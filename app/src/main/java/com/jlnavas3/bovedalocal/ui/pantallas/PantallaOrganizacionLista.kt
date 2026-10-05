@@ -118,13 +118,17 @@ fun PantallaOrganizacionLista(
 
                 Spacer(Modifier.height(14.dp))
 
-                // 1c. Jerarquía de organización (Identidades vs Colecciones)
+                // 1c. Jerarquía de organización (Identidades vs Categorías)
                 com.jlnavas3.bovedalocal.ui.pantallas.organizacion.GrupoJerarquiaOrganizacionAjustes(
                     jerarquiaActual = ajustes.jerarquiaOrganizacionEfectiva,
                     mostrarId = ajustes.mostrarIdsAjustes,
                     alSeleccionarJerarquia = { jerarquia ->
                         haptica.tic()
                         vm.ajustarJerarquiaOrganizacion(jerarquia)
+                    },
+                    alGestionarCategorias = {
+                        haptica.tic()
+                        vm.ir(Pantalla.Categorias("03-LST-CAT"))
                     }
                 )
 

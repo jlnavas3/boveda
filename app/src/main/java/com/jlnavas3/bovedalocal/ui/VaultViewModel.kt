@@ -26,7 +26,7 @@ class VaultViewModel(app: Application) : AndroidViewModel(app),
     VaultBackupDelegate,
     VaultNavegacionDelegate,
     VaultEntradasDelegate,
-    VaultColeccionesDelegate,
+    VaultCategoriasDelegate,
     VaultIdentidadesDelegate,
     VaultCicloBovedaDelegate {
 
@@ -80,9 +80,11 @@ class VaultViewModel(app: Application) : AndroidViewModel(app),
     val filtroEtiqueta: StateFlow<String?> = _filtroEtiqueta
     override val filtroEtiquetaInterno: MutableStateFlow<String?> get() = _filtroEtiqueta
 
-    private val _filtroColeccion = MutableStateFlow<String?>(null)
-    val filtroColeccion: StateFlow<String?> = _filtroColeccion
-    override val filtroColeccionInterno: MutableStateFlow<String?> get() = _filtroColeccion
+    private val _filtroCategoria = MutableStateFlow<String?>(null)
+    val filtroCategoria: StateFlow<String?> = _filtroCategoria
+    override val filtroCategoriaInterno: MutableStateFlow<String?> get() = _filtroCategoria
+    val filtroColeccion: StateFlow<String?> get() = _filtroCategoria
+    override val filtroColeccionInterno: MutableStateFlow<String?> get() = _filtroCategoria
 
     private val _filtroIdentidad = MutableStateFlow<String?>(null)
     val filtroIdentidad: StateFlow<String?> = _filtroIdentidad

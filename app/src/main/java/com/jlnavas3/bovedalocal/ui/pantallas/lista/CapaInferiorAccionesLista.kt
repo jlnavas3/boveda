@@ -24,7 +24,7 @@ fun BoxScope.CapaInferiorAccionesLista(
     haptica: Haptica,
     alTransferirCxf: (List<Entrada>) -> Unit,
     alRenombrar: (String) -> Unit,
-    alAsignarColeccion: () -> Unit,
+    alAsignarCategoria: () -> Unit,
     alBorrar: () -> Unit
 ) {
     if (!estadoSeleccion.modoSeleccion) {
@@ -82,7 +82,7 @@ fun BoxScope.CapaInferiorAccionesLista(
                 val primera = entradas.firstOrNull { estadoSeleccion.seleccionados.contains(it.id) }
                 alRenombrar(primera?.titulo ?: "")
             },
-            alAsignarColeccion = alAsignarColeccion,
+            alAsignarCategoria = alAsignarCategoria,
             alBorrar = alBorrar,
             modifier = Modifier.align(Alignment.BottomCenter)
         )

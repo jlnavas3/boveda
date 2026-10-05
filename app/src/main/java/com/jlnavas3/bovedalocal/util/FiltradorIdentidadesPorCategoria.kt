@@ -1,20 +1,20 @@
 package com.jlnavas3.bovedalocal.util
 
-import com.jlnavas3.bovedalocal.data.Coleccion
+import com.jlnavas3.bovedalocal.data.Categoria
 import com.jlnavas3.bovedalocal.data.Entrada
 import com.jlnavas3.bovedalocal.data.Identidad
 
 /**
- * Calcula las identidades disponibles y sus conteos cuando las Colecciones
- * actuan como nivel superior (Coleccion -> Identidades).
+ * Calcula las identidades disponibles y sus conteos cuando las Categorias
+ * actuan como nivel superior (Categoria -> Identidades).
  */
-fun filtrarIdentidadesPorColeccion(
+fun filtrarIdentidadesPorCategoria(
     identidades: List<Identidad>,
     entradas: List<Entrada>,
-    coleccionSeleccionadaId: String?
+    categoriaSeleccionadaId: String?
 ): Triple<List<Identidad>, Map<String, Int>, Int> {
-    // Si no hay filtro de coleccion seleccionado ("Todas"), conteos sobre todas las entradas
-    if (coleccionSeleccionadaId == null) {
+    // Si no hay filtro de categoria seleccionado ("Todas"), conteos sobre todas las entradas
+    if (categoriaSeleccionadaId == null) {
         val conteos = identidades.associate { iden ->
             iden.id to entradas.count { entrada ->
                 resolverIdentidadParaEntrada(entrada, identidades)?.id == iden.id
@@ -26,19 +26,19 @@ fun filtrarIdentidadesPorColeccion(
         return Triple(identidades, conteos, sinIdentidad)
     }
 
-    // Filtrar entradas que pertenecen a la coleccion seleccionada
-    val entradasColeccion = entradas.filter { it.colecciones.contains(coleccionSeleccionadaId) }
+    // Filtrar entradas que pertenecen a la categoria seleccionada
+    val entradasCategoria = entradas.filter { it.categorias.contains(categoriaSeleccionadaId) }
 
     val conteos = identidades.associate { iden ->
-        iden.id to entradasColeccion.count { entrada ->
+        iden.id to entradasCategoria.count { entrada ->
             resolverIdentidadParaEntrada(entrada, identidades)?.id == iden.id
         }
     }
-    val sinIdentidad = entradasColeccion.count { entrada ->
+    val sinIdentidad = entradasCategoria.count { entrada ->
         resolverIdentidadParaEntrada(entrada, identidades) == null
     }
 
-    // Filtrar para mostrar solo identidades que tienen entradas dentro de esta coleccion
+    // Filtrar para mostrar solo identidades que tienen entradas dentro de esta categoria
     val identidadesFiltradas = identidades.filter { iden ->
         (conteos[iden.id] ?: 0) > 0
     }

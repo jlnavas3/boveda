@@ -11,7 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.jlnavas3.bovedalocal.data.AjustesApp
-import com.jlnavas3.bovedalocal.data.Coleccion
+import com.jlnavas3.bovedalocal.data.Categoria
 import com.jlnavas3.bovedalocal.data.Entrada
 import com.jlnavas3.bovedalocal.data.Identidad
 import com.jlnavas3.bovedalocal.data.TipoEntrada
@@ -50,7 +50,7 @@ fun ColumnScope.ContenidoPrincipalLista(
     alAlternarSeleccionLote: (Set<String>) -> Unit,
     alAlternarGrupo: (String) -> Unit,
     identidades: List<Identidad> = emptyList(),
-    colecciones: List<Coleccion> = emptyList()
+    categorias: List<Categoria> = emptyList()
 ) {
     val recordatorio = remember(ajustes, entradas) { vm.recordatorioExportacionInfo() }
     if (recordatorio != null) {
@@ -106,7 +106,7 @@ fun ColumnScope.ContenidoPrincipalLista(
             densidadMonograma = densidadMonograma,
             espaciadoFilas = espaciadoFilas,
             identidades = identidades,
-            colecciones = colecciones,
+            categorias = categorias,
             alAbrirEntrada = { id ->
                 val listaIdsVisibles = visibles.map { it.id }
                 vm.ir(Pantalla.Detalle(id, idsContexto = listaIdsVisibles))

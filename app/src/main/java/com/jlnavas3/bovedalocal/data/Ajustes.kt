@@ -56,7 +56,7 @@ data class AjustesApp(
     val agruparPorSitio: Boolean = AjustesDefaults.ListaFormatos.AGRUPAR_POR_SITIO,
     /** Modo de visualización de identidades: "chips", "secciones" o "desactivado". */
     val modoIdentidades: String = AjustesDefaults.ListaFormatos.MODO_IDENTIDADES,
-    /** Relación jerárquica entre Identidades y Colecciones: "identidad_sobre_coleccion" o "coleccion_sobre_identidad". */
+    /** Relación jerárquica entre Identidades y Categorías: "identidad_sobre_categoria" o "categoria_sobre_identidad". */
     val jerarquiaOrganizacion: String = AjustesDefaults.ListaFormatos.JERARQUIA_ORGANIZACION,
     // Preferencias del generador manual de 2FA
     val totpManualDigitos: Int = AjustesDefaults.TotpManual.DIGITOS,

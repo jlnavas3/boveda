@@ -19,6 +19,7 @@ import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Fingerprint
+import androidx.compose.material.icons.filled.Folder
 import androidx.compose.material.icons.filled.HealthAndSafety
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Security
@@ -185,6 +186,17 @@ fun MenuLateral(
                     mostrarId = mostrarIds,
                     ajustes = ajustes
                 ) { alIr(Pantalla.Identidades()) }
+
+                SeparadorItemMenu()
+
+                ItemMenu(
+                    texto = "Categorías",
+                    icono = Icons.Filled.Folder,
+                    colorIcono = Color(0xFF10B981),
+                    idEtiqueta = "03-LST-CAT",
+                    mostrarId = mostrarIds,
+                    ajustes = ajustes
+                ) { alIr(Pantalla.Categorias()) }
             }
 
             // Grupo 3: Sistema

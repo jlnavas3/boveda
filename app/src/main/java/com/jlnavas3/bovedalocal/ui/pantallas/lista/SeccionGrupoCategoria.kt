@@ -35,11 +35,11 @@ import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorTarjetaAjustes
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
 
 /**
- * Cabecera plegable para un bloque o seccion de Coleccion en la lista principal
- * cuando la jerarquia de organizacion es Coleccion sobre Identidad.
+ * Cabecera plegable para un bloque o seccion de Categoria en la lista principal
+ * cuando la jerarquia de organizacion es Categoria sobre Identidad.
  */
 @Composable
-fun SeccionGrupoColeccion(
+fun SeccionGrupoCategoria(
     nombre: String,
     subtitulo: String,
     cantidad: Int,

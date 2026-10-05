@@ -58,7 +58,7 @@ fun CuerpoListaEntradas(
     alEntrarEnSeleccionLote: ((Set<String>) -> Unit)? = null,
     alAlternarSeleccionLote: ((Set<String>) -> Unit)? = null,
     identidades: List<com.jlnavas3.bovedalocal.data.Identidad> = emptyList(),
-    colecciones: List<com.jlnavas3.bovedalocal.data.Coleccion> = emptyList()
+    categorias: List<com.jlnavas3.bovedalocal.data.Categoria> = emptyList()
 ) {
     val ambitoCorutina = rememberCoroutineScope()
     val densidad = LocalDensity.current
@@ -71,11 +71,11 @@ fun CuerpoListaEntradas(
 
     val esModoSeccionesIdentidad = esModoSecciones &&
         identidades.isNotEmpty() &&
-        jerarquia == com.jlnavas3.bovedalocal.data.JerarquiaOrganizacion.IDENTIDAD_SOBRE_COLECCION
+        jerarquia == com.jlnavas3.bovedalocal.data.JerarquiaOrganizacion.IDENTIDAD_SOBRE_CATEGORIA
 
-    val esModoSeccionesColeccion = esModoSecciones &&
-        colecciones.isNotEmpty() &&
-        jerarquia == com.jlnavas3.bovedalocal.data.JerarquiaOrganizacion.COLECCION_SOBRE_IDENTIDAD
+    val esModoSeccionesCategoria = esModoSecciones &&
+        categorias.isNotEmpty() &&
+        jerarquia == com.jlnavas3.bovedalocal.data.JerarquiaOrganizacion.CATEGORIA_SOBRE_IDENTIDAD
 
     val itemsIdentidades = remember(visibles, identidades, gruposExpandidos, busqueda, esModoSeccionesIdentidad) {
         if (!esModoSeccionesIdentidad) emptyList()
@@ -84,10 +84,10 @@ fun CuerpoListaEntradas(
         }
     }
 
-    val itemsColecciones = remember(visibles, colecciones, gruposExpandidos, busqueda, esModoSeccionesColeccion) {
-        if (!esModoSeccionesColeccion) emptyList()
-        else com.jlnavas3.bovedalocal.util.construirItemsAgrupadosPorColeccion(visibles, colecciones) { clave ->
-            busqueda.isNotBlank() || gruposExpandidos.contains("coleccion-$clave")
+    val itemsCategorias = remember(visibles, categorias, gruposExpandidos, busqueda, esModoSeccionesCategoria) {
+        if (!esModoSeccionesCategoria) emptyList()
+        else com.jlnavas3.bovedalocal.util.construirItemsAgrupadosPorCategoria(visibles, categorias) { clave ->
+            busqueda.isNotBlank() || gruposExpandidos.contains("categoria-$clave")
         }
     }
 
@@ -217,7 +217,7 @@ fun CuerpoListaEntradas(
         return
     }
 
-    if (esModoSeccionesColeccion) {
+    if (esModoSeccionesCategoria) {
         Box(modifier = Modifier.fillMaxSize()) {
             LazyColumn(
                 state = estadoLista,
@@ -232,24 +232,24 @@ fun CuerpoListaEntradas(
                 verticalArrangement = Arrangement.spacedBy(espaciadoFilas)
             ) {
                 items(
-                    itemsColecciones,
+                    itemsCategorias,
                     key = { item ->
                         when (item) {
-                            is com.jlnavas3.bovedalocal.util.ItemAgrupadoColeccion.CabeceraColeccion -> "cab-col-${item.coleccion.id}"
-                            is com.jlnavas3.bovedalocal.util.ItemAgrupadoColeccion.CabeceraSinColeccion -> "cab-sin-col"
-                            is com.jlnavas3.bovedalocal.util.ItemAgrupadoColeccion.EntradaHija -> "ent-col-${item.entrada.id}"
+                            is com.jlnavas3.bovedalocal.util.ItemAgrupadoCategoria.CabeceraCategoria -> "cab-cat-${item.categoria.id}"
+                            is com.jlnavas3.bovedalocal.util.ItemAgrupadoCategoria.CabeceraSinCategoria -> "cab-sin-cat"
+                            is com.jlnavas3.bovedalocal.util.ItemAgrupadoCategoria.EntradaHija -> "ent-cat-${item.entrada.id}"
                         }
                     }
                 ) { item ->
                     when (item) {
-                        is com.jlnavas3.bovedalocal.util.ItemAgrupadoColeccion.CabeceraColeccion -> {
-                            val claveGrupo = "coleccion-${item.coleccion.id}"
+                        is com.jlnavas3.bovedalocal.util.ItemAgrupadoCategoria.CabeceraCategoria -> {
+                            val claveGrupo = "categoria-${item.categoria.id}"
                             val expandido = busqueda.isNotBlank() || gruposExpandidos.contains(claveGrupo)
-                            val colorBase = com.jlnavas3.bovedalocal.ui.theme.parsearColorO(item.coleccion.colorHex ?: "", com.jlnavas3.bovedalocal.ui.theme.ColorAcento)
-                            val iconoVector = com.jlnavas3.bovedalocal.ui.pantallas.colecciones.IconosColecciones.obtenerIcono(item.coleccion.icono)
-                            SeccionGrupoColeccion(
-                                nombre = item.coleccion.nombre,
-                                subtitulo = "Colección temática",
+                            val colorBase = com.jlnavas3.bovedalocal.ui.theme.parsearColorO(item.categoria.colorHex ?: "", com.jlnavas3.bovedalocal.ui.theme.ColorAcento)
+                            val iconoVector = com.jlnavas3.bovedalocal.ui.pantallas.categorias.IconosCategorias.obtenerIcono(item.categoria.icono)
+                            SeccionGrupoCategoria(
+                                nombre = item.categoria.nombre,
+                                subtitulo = "Categoría temática",
                                 cantidad = item.totalEntradas,
                                 expandido = expandido,
                                 colorBase = colorBase,
@@ -257,11 +257,11 @@ fun CuerpoListaEntradas(
                                 alAlternar = { alAlternarGrupo(claveGrupo) }
                             )
                         }
-                        is com.jlnavas3.bovedalocal.util.ItemAgrupadoColeccion.CabeceraSinColeccion -> {
-                            val claveGrupo = "coleccion-__SIN_COLECCION__"
+                        is com.jlnavas3.bovedalocal.util.ItemAgrupadoCategoria.CabeceraSinCategoria -> {
+                            val claveGrupo = "categoria-__SIN_CATEGORIA__"
                             val expandido = busqueda.isNotBlank() || gruposExpandidos.contains(claveGrupo)
-                            SeccionGrupoColeccion(
-                                nombre = "Sin colección",
+                            SeccionGrupoCategoria(
+                                nombre = "Sin categoría",
                                 subtitulo = "Elementos sin carpeta asignada",
                                 cantidad = item.totalEntradas,
                                 expandido = expandido,
@@ -270,7 +270,7 @@ fun CuerpoListaEntradas(
                                 alAlternar = { alAlternarGrupo(claveGrupo) }
                             )
                         }
-                        is com.jlnavas3.bovedalocal.util.ItemAgrupadoColeccion.EntradaHija -> {
+                        is com.jlnavas3.bovedalocal.util.ItemAgrupadoCategoria.EntradaHija -> {
                             val iden = com.jlnavas3.bovedalocal.util.resolverIdentidadParaEntrada(item.entrada, identidades)
                             FilaEntrada(
                                 entrada = item.entrada,

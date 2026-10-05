@@ -1,20 +1,19 @@
 package com.jlnavas3.bovedalocal.ui.pantallas.edicion
 
 import androidx.compose.runtime.Composable
-import com.jlnavas3.bovedalocal.data.Coleccion
-import com.jlnavas3.bovedalocal.ui.pantallas.colecciones.DialogoCrearEditarColeccion
+import com.jlnavas3.bovedalocal.ui.pantallas.categorias.DialogoEditarCategoria
 
 /**
- * Diálogos y modales de la pantalla de edición: selector de aplicaciones instaladas y creador de colecciones.
+ * Diálogos y modales de la pantalla de edición: selector de aplicaciones instaladas y creador de categorías.
  */
 @Composable
 fun ModalesEdicion(
     mostrarSelectorApp: Boolean,
-    mostrarDialogoNuevaColeccion: Boolean,
+    mostrarDialogoNuevaCategoria: Boolean,
     alDescartarSelectorApp: () -> Unit,
     alSeleccionarApp: (String) -> Unit,
-    alDescartarNuevaColeccion: () -> Unit,
-    alGuardarNuevaColeccion: (String, String, String?) -> Unit
+    alDescartarNuevaCategoria: () -> Unit,
+    alGuardarNuevaCategoria: (String, String, String?) -> Unit
 ) {
     if (mostrarSelectorApp) {
         SelectorAppModal(
@@ -23,10 +22,11 @@ fun ModalesEdicion(
         )
     }
 
-    if (mostrarDialogoNuevaColeccion) {
-        DialogoCrearEditarColeccion(
-            alGuardar = alGuardarNuevaColeccion,
-            alDescartar = alDescartarNuevaColeccion
+    if (mostrarDialogoNuevaCategoria) {
+        DialogoEditarCategoria(
+            categoriaAEditar = null,
+            alGuardar = alGuardarNuevaCategoria,
+            alDescartar = alDescartarNuevaCategoria
         )
     }
 }

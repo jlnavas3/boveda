@@ -1,7 +1,7 @@
 package com.jlnavas3.bovedalocal.ui.pantallas.lista
 
 import androidx.compose.runtime.Composable
-import com.jlnavas3.bovedalocal.data.Coleccion
+import com.jlnavas3.bovedalocal.data.Categoria
 import com.jlnavas3.bovedalocal.data.Entrada
 import com.jlnavas3.bovedalocal.data.EstadoBoveda
 import com.jlnavas3.bovedalocal.data.TipoEntrada
@@ -21,7 +21,7 @@ fun DialogosPantallaLista(
     criterioActual: CriterioOrdenacion,
     estadoSeleccion: EstadoSeleccionLista,
     entradas: List<Entrada>,
-    colecciones: List<Coleccion>,
+    categorias: List<Categoria>,
     haptica: Haptica
 ) {
     DialogosSeleccionAcciones(
@@ -67,42 +67,42 @@ fun DialogosPantallaLista(
         mostrarDialogoExportarCxf = dialogos.exportarCxf,
         estado = estado,
         alDescartarExportarCxf = { dialogos.exportarCxf = false },
-        mostrarDialogoAsignarColecciones = dialogos.asignarColecciones,
+        mostrarDialogoAsignarCategorias = dialogos.asignarCategorias,
         seleccionados = estadoSeleccion.seleccionados,
         entradas = entradas,
-        colecciones = colecciones,
-        alCrearNuevaColeccion = { dialogos.crearColeccion = true },
-        alGuardarAsignarColecciones = { idsAgregar, idsQuitar ->
-            vm.asignarColeccionesAEntradas(estadoSeleccion.seleccionados, idsAgregar, idsQuitar)
-            dialogos.asignarColecciones = false
+        categorias = categorias,
+        alCrearNuevaCategoria = { dialogos.crearCategoria = true },
+        alGuardarAsignarCategorias = { idsAgregar, idsQuitar ->
+            vm.asignarCategoriasAEntradas(estadoSeleccion.seleccionados, idsAgregar, idsQuitar)
+            dialogos.asignarCategorias = false
             estadoSeleccion.salirDeSeleccion()
             haptica.exito()
         },
-        alDescartarAsignarColecciones = { dialogos.asignarColecciones = false },
-        mostrarDialogoCrearColeccion = dialogos.crearColeccion,
-        coleccionParaEditar = dialogos.coleccionParaEditar,
-        alGuardarColeccion = { nombre, icono, colorHex ->
-            val colEdit = dialogos.coleccionParaEditar
-            if (colEdit != null) {
-                vm.actualizarColeccion(colEdit.id, nombre, icono, colorHex)
+        alDescartarAsignarCategorias = { dialogos.asignarCategorias = false },
+        mostrarDialogoCrearCategoria = dialogos.crearCategoria,
+        categoriaParaEditar = dialogos.categoriaParaEditar,
+        alGuardarCategoria = { nombre, icono, colorHex ->
+            val catEdit = dialogos.categoriaParaEditar
+            if (catEdit != null) {
+                vm.actualizarCategoria(catEdit.id, nombre, icono, colorHex)
             } else {
-                vm.crearColeccion(nombre, icono, colorHex)
+                vm.crearCategoria(nombre, icono, colorHex)
             }
-            dialogos.crearColeccion = false
-            dialogos.coleccionParaEditar = null
+            dialogos.crearCategoria = false
+            dialogos.categoriaParaEditar = null
             haptica.exito()
         },
-        alDescartarEditarCrearColeccion = {
-            dialogos.crearColeccion = false
-            dialogos.coleccionParaEditar = null
+        alDescartarEditarCrearCategoria = {
+            dialogos.crearCategoria = false
+            dialogos.categoriaParaEditar = null
         },
-        coleccionParaEliminar = dialogos.coleccionParaEliminar,
-        alConfirmarEliminarColeccion = { col ->
-            val id = col.id
-            dialogos.coleccionParaEliminar = null
-            vm.eliminarColeccion(id)
+        categoriaParaEliminar = dialogos.categoriaParaEliminar,
+        alConfirmarEliminarCategoria = { cat ->
+            val id = cat.id
+            dialogos.categoriaParaEliminar = null
+            vm.eliminarCategoria(id)
             haptica.exito()
         },
-        alDescartarEliminarColeccion = { dialogos.coleccionParaEliminar = null }
+        alDescartarEliminarCategoria = { dialogos.categoriaParaEliminar = null }
     )
 }

@@ -21,7 +21,8 @@ interface VaultEntradasDelegate : VaultDuplicadosPapeleraDelegate {
     val filtroTipoInterno: MutableStateFlow<TipoEntrada?>
     val soloFavoritosInterno: MutableStateFlow<Boolean>
     val filtroEtiquetaInterno: MutableStateFlow<String?>
-    val filtroColeccionInterno: MutableStateFlow<String?>
+    val filtroCategoriaInterno: MutableStateFlow<String?>
+    val filtroColeccionInterno: MutableStateFlow<String?> get() = filtroCategoriaInterno
     val filtroIdentidadInterno: MutableStateFlow<String?>
     val criterioOrdenacionInterno: MutableStateFlow<CriterioOrdenacion>
     override fun ejecutar(bloque: suspend () -> Unit)
@@ -44,7 +45,7 @@ interface VaultEntradasDelegate : VaultDuplicadosPapeleraDelegate {
             filtroTipo = filtroTipoInterno.value,
             soloFavoritos = soloFavoritosInterno.value,
             filtroEtiqueta = filtroEtiquetaInterno.value,
-            filtroColeccion = filtroColeccionInterno.value,
+            filtroCategoria = filtroCategoriaInterno.value,
             criterioOrdenacion = criterioOrdenacionInterno.value,
             filtroIdentidad = filtroIdentidadInterno.value,
             identidades = identidades
