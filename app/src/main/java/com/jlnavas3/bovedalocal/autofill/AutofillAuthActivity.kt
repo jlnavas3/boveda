@@ -236,7 +236,23 @@ class AutofillAuthActivity : FragmentActivity() {
             inlineRequest?.inlinePresentationSpecs.orEmpty()
         } else emptyList()
 
-        AutofillUtiles.entradasCompatibles(repositorio.entradas(), paquete, dominio).forEachIndexed { indice, entrada ->
+        val compatibles = AutofillUtiles.entradasCompatibles(repositorio.entradas(), paquete, dominio)
+        if (compatibles.isEmpty()) {
+            val datosSugeridos = DetectorDatosSugeridosAutofill.detectar(this, paquete, dominio)
+            val intentNueva = Intent(this, com.jlnavas3.bovedalocal.ui.MainActivity::class.java).apply {
+                action = Intent.ACTION_VIEW
+                putExtra("accion_shortcut", "nueva_entrada")
+                putExtra("titulo_inicial", datosSugeridos.titulo)
+                putExtra("url_inicial", datosSugeridos.url)
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+            }
+            startActivity(intentNueva)
+            setResult(Activity.RESULT_OK)
+            finish()
+            return
+        }
+
+        compatibles.forEachIndexed { indice, entrada ->
             val spec = specs.getOrElse(indice) { specs.lastOrNull() }
             AutofillUtiles.dataset(this, entrada, campos, spec, paquete)?.let {
                 respuesta.addDataset(it)

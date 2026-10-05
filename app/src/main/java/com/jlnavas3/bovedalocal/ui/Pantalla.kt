@@ -9,7 +9,12 @@ sealed interface Pantalla {
         val idsContexto: List<String> = emptyList(),
         val modoComparacion: Boolean = false
     ) : Pantalla
-    data class Editar(val id: String?, val contrasenaInicial: String = "") : Pantalla
+    data class Editar(
+        val id: String?,
+        val contrasenaInicial: String = "",
+        val tituloInicial: String = "",
+        val urlInicial: String = ""
+    ) : Pantalla
     object Generador : Pantalla
     object Passkeys : Pantalla
     object Autenticador : Pantalla

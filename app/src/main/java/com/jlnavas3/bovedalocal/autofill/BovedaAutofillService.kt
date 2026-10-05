@@ -136,11 +136,23 @@ class BovedaAutofillService : AutofillService() {
             }
         } else {
             val compatibles = AutofillUtiles.entradasCompatibles(repositorio.entradas(), paquete, campos.dominioWeb)
-            compatibles.forEachIndexed { indice, entrada ->
-                val spec = specs.getOrElse(indice) { specs.lastOrNull() }
-                AutofillUtiles.dataset(this, entrada, campos, spec, paquete)?.let { respuesta.addDataset(it) }
-                if (campos.otp != null && !entrada.secretoTotp.isNullOrBlank()) {
-                    AutofillOtpUtiles.datasetTotp(this, entrada, campos.otp, spec, paquete)?.let { respuesta.addDataset(it) }
+            if (compatibles.isEmpty()) {
+                val datosSugeridos = DetectorDatosSugeridosAutofill.detectar(this, paquete, campos.dominioWeb)
+                val inlineSpec = specs.firstOrNull()
+                CreadorAccionNuevaEntradaAutofill.aplicar(
+                    contexto = this,
+                    respuesta = respuesta,
+                    ids = ids,
+                    datosSugeridos = datosSugeridos,
+                    inlineSpec = inlineSpec
+                )
+            } else {
+                compatibles.forEachIndexed { indice, entrada ->
+                    val spec = specs.getOrElse(indice) { specs.lastOrNull() }
+                    AutofillUtiles.dataset(this, entrada, campos, spec, paquete)?.let { respuesta.addDataset(it) }
+                    if (campos.otp != null && !entrada.secretoTotp.isNullOrBlank()) {
+                        AutofillOtpUtiles.datasetTotp(this, entrada, campos.otp, spec, paquete)?.let { respuesta.addDataset(it) }
+                    }
                 }
             }
         }

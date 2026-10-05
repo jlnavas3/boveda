@@ -214,11 +214,15 @@ class MainActivity : FragmentActivity() {
 
     private fun manejarAccionShortcut(intent: Intent?) {
         val accion = intent?.getStringExtra("accion_shortcut") ?: return
+        val tituloInicial = intent.getStringExtra("titulo_inicial") ?: ""
+        val urlInicial = intent.getStringExtra("url_inicial") ?: ""
         intent.removeExtra("accion_shortcut")
+        intent.removeExtra("titulo_inicial")
+        intent.removeExtra("url_inicial")
         if (accion == "generador_rapido") {
             GeneradorRapidoHelper.generar(this, "App Shortcut")
         } else {
-            vm.solicitarAccionShortcut(accion)
+            vm.solicitarAccionShortcut(accion, tituloInicial, urlInicial)
         }
     }
 
@@ -379,7 +383,13 @@ fun RaizBoveda(vm: VaultViewModel, actividad: FragmentActivity) {
                     Pantalla.Desbloqueo -> PantallaDesbloqueo(vm, actividad)
                     Pantalla.Lista -> PantallaLista(vm, estado)
                     is Pantalla.Detalle -> PantallaDetalle(vm, destino.id, destino.idsContexto, destino.modoComparacion)
-                    is Pantalla.Editar -> PantallaEdicion(vm, destino.id, destino.contrasenaInicial)
+                    is Pantalla.Editar -> PantallaEdicion(
+                        vm,
+                        destino.id,
+                        destino.contrasenaInicial,
+                        destino.tituloInicial,
+                        destino.urlInicial
+                    )
                     Pantalla.Generador -> PantallaGenerador(vm)
                     Pantalla.Passkeys -> PantallaPasskeys(vm)
                     Pantalla.Autenticador -> PantallaAutenticador(vm, estado)

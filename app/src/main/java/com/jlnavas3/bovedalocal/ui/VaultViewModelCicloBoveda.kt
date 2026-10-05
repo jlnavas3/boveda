@@ -26,7 +26,7 @@ interface VaultCicloBovedaDelegate {
     val avisoInterno: MutableStateFlow<String?>
     val errorInterno: MutableStateFlow<String?>
     val ofrecerBiometriaInterno: MutableStateFlow<Boolean>
-    var accionShortcutPendiente: String?
+    var accionShortcutPendiente: AccionShortcutPendiente?
 
     fun registrarInteraccion()
     fun ejecutar(bloque: suspend () -> Unit)
@@ -164,23 +164,23 @@ interface VaultCicloBovedaDelegate {
         }
     }
 
-    fun solicitarAccionShortcut(accion: String) {
+    fun solicitarAccionShortcut(accion: String, tituloInicial: String = "", urlInicial: String = "") {
         if (repositorio.estaDesbloqueada) {
-            ejecutarAccionShortcut(accion)
+            ejecutarAccionShortcut(accion, tituloInicial, urlInicial)
         } else {
-            accionShortcutPendiente = accion
+            accionShortcutPendiente = AccionShortcutPendiente(accion, tituloInicial, urlInicial)
         }
     }
 
     fun procesarShortcutPendiente() {
         val pendiente = accionShortcutPendiente ?: return
         accionShortcutPendiente = null
-        ejecutarAccionShortcut(pendiente)
+        ejecutarAccionShortcut(pendiente.accion, pendiente.tituloInicial, pendiente.urlInicial)
     }
 
-    fun ejecutarAccionShortcut(accion: String) {
+    fun ejecutarAccionShortcut(accion: String, tituloInicial: String = "", urlInicial: String = "") {
         when (accion) {
-            "nueva_entrada" -> ir(Pantalla.Editar(id = null))
+            "nueva_entrada" -> ir(Pantalla.Editar(id = null, tituloInicial = tituloInicial, urlInicial = urlInicial))
             "buscar" -> irRaiz(Pantalla.Lista)
             "escanear_qr" -> ir(Pantalla.Escaner())
         }

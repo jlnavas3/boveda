@@ -35,19 +35,26 @@ import com.jlnavas3.bovedalocal.util.Haptica
 import com.jlnavas3.bovedalocal.util.LanzadorEnlaces
 
 @Composable
-fun PantallaEdicion(vm: VaultViewModel, id: String?, contrasenaInicial: String) {
+fun PantallaEdicion(
+    vm: VaultViewModel,
+    id: String?,
+    contrasenaInicial: String = "",
+    tituloInicial: String = "",
+    urlInicial: String = ""
+) {
     val contexto = LocalContext.current
     val haptica = remember { Haptica(contexto) }
     val ajustes by vm.ajustes.collectAsStateWithLifecycle()
     val original = remember(id) { id?.let { vm.entrada(it) } }
 
     var tipo by remember { mutableStateOf(original?.tipo ?: TipoEntrada.LOGIN) }
-    var titulo by remember { mutableStateOf(original?.titulo ?: "") }
+    var titulo by remember { mutableStateOf(original?.titulo ?: tituloInicial) }
     var usuario by remember { mutableStateOf(original?.usuario ?: "") }
     var contrasena by remember { mutableStateOf(original?.contrasena ?: contrasenaInicial) }
     var mostrarContrasena by remember { mutableStateOf(false) }
     val listaEnlaces = remember(original) {
-        val items = original?.urls?.map { LanzadorEnlaces.desglosarParaEdicion(it) } ?: emptyList()
+        val items = original?.urls?.map { LanzadorEnlaces.desglosarParaEdicion(it) }
+            ?: if (urlInicial.isNotBlank()) listOf(LanzadorEnlaces.desglosarParaEdicion(urlInicial)) else emptyList()
         mutableStateListOf<EnlaceEditable>().apply {
             if (items.isNotEmpty()) addAll(items)
         }

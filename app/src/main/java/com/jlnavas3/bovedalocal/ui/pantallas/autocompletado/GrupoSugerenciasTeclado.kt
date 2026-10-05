@@ -40,7 +40,7 @@ fun GrupoSugerenciasTeclado(
             mostrarId = mostrarIdsAjustes
         )
         Text(
-            text = "Muestra sugerencias de contraseñas y llaves como chips interactivos en la barra superior del teclado (Android 11+). Si se desactiva, se usará el menú desplegable clásico.",
+            text = "Muestra sugerencias de contraseñas y llaves como chips interactivos en la barra superior del teclado (Android 11+). Si se desactiva, se usará únicamente el menú desplegable flotante clásico sobre los campos (el teclado en pantalla no se mostrará automáticamente).",
             style = MaterialTheme.typography.bodySmall,
             color = TextoSecundario,
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)

@@ -113,7 +113,7 @@ class VaultViewModel(app: Application) : AndroidViewModel(app),
     private val _navegandoAtras = MutableStateFlow(false)
     val navegandoAtras: StateFlow<Boolean> = _navegandoAtras
 
-    override var accionShortcutPendiente: String? = null
+    override var accionShortcutPendiente: AccionShortcutPendiente? = null
 
     // ------------------------------------- bloqueo por inactividad en pantalla
 
