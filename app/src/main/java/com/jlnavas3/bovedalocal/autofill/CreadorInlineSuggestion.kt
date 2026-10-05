@@ -52,12 +52,42 @@ object CreadorInlineSuggestion {
             contentBuilder.setStartIcon(icono)
 
             val slice = contentBuilder.build().slice
-            val pres = InlinePresentation(slice, spec, fijado)
+            val specFinal = if (iconoBitmap != null) {
+                removerTinteIcono(spec)
+            } else {
+                spec
+            }
+            val pres = InlinePresentation(slice, specFinal, fijado)
             android.util.Log.i("BovedaAutofill", "CreadorInlineSuggestion OK: titulo=$titulo, pres=$pres")
             pres
         } catch (e: Exception) {
             android.util.Log.e("BovedaAutofill", "Error creando inline suggestion: ${e.javaClass.simpleName} - ${e.message}", e)
             null
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.R)
+    private fun removerTinteIcono(spec: InlinePresentationSpec): InlinePresentationSpec {
+        val estilo = spec.style
+        if (estilo.isEmpty) return spec
+        return try {
+            val clon = android.os.Bundle(estilo)
+            val v1 = clon.getBundle("androidx.autofill.inline.ui.version:v1")
+            if (v1 != null) {
+                val v1Clon = android.os.Bundle(v1)
+                val startIconStyle = v1Clon.getBundle("start_icon_style")
+                if (startIconStyle != null && startIconStyle.containsKey("image_tint_list")) {
+                    val iconStyleClon = android.os.Bundle(startIconStyle)
+                    iconStyleClon.remove("image_tint_list")
+                    v1Clon.putBundle("start_icon_style", iconStyleClon)
+                    clon.putBundle("androidx.autofill.inline.ui.version:v1", v1Clon)
+                    InlinePresentationSpec.Builder(spec.minSize, spec.maxSize)
+                        .setStyle(clon)
+                        .build()
+                } else spec
+            } else spec
+        } catch (_: Exception) {
+            spec
         }
     }
 

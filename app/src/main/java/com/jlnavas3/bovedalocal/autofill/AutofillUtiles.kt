@@ -15,6 +15,7 @@ import com.jlnavas3.bovedalocal.R
 import com.jlnavas3.bovedalocal.data.Entrada
 import com.jlnavas3.bovedalocal.util.Dominios
 import com.jlnavas3.bovedalocal.util.LanzadorEnlaces
+import com.jlnavas3.bovedalocal.util.MapeadorPaquetesPopulares
 
 data class CamposDetectados(
     val usuario: AutofillId? = null,
@@ -191,9 +192,14 @@ object AutofillUtiles {
     ): Dataset? {
         if (!campos.hayAlgo) return null
 
+        val dom = campos.dominioWeb ?: entrada.urls.firstNotNullOfOrNull { Dominios.raiz(it) }
+        val paqueteDeDominio = dom?.let { MapeadorPaquetesPopulares.obtenerPaquete(it) }
+
         val paquete = entrada.urls.firstNotNullOfOrNull { LanzadorEnlaces.extraerPaquete(it) }
             ?: entrada.passkey?.rpId?.let { LanzadorEnlaces.extraerPaquete(it) }
-            ?: if (!paqueteSolicitante.isNullOrBlank() && LanzadorEnlaces.estaInstalada(contexto, paqueteSolicitante)) paqueteSolicitante else null
+            ?: if (paqueteDeDominio != null && LanzadorEnlaces.estaInstalada(contexto, paqueteDeDominio)) paqueteDeDominio
+            else if (campos.dominioWeb.isNullOrBlank() && !paqueteSolicitante.isNullOrBlank() && LanzadorEnlaces.estaInstalada(contexto, paqueteSolicitante)) paqueteSolicitante
+            else null
 
         val nombreApp = if (paquete != null && LanzadorEnlaces.estaInstalada(contexto, paquete)) {
             LanzadorEnlaces.obtenerNombreApp(contexto, paquete)

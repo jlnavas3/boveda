@@ -7,7 +7,9 @@ import android.view.autofill.AutofillValue
 import com.jlnavas3.bovedalocal.crypto.Base32
 import com.jlnavas3.bovedalocal.crypto.Totp
 import com.jlnavas3.bovedalocal.data.Entrada
+import com.jlnavas3.bovedalocal.util.Dominios
 import com.jlnavas3.bovedalocal.util.LanzadorEnlaces
+import com.jlnavas3.bovedalocal.util.MapeadorPaquetesPopulares
 
 object AutofillOtpUtiles {
 
@@ -76,9 +78,13 @@ object AutofillOtpUtiles {
         paqueteSolicitante: String? = null
     ): Dataset? {
         val codigo = obtenerCodigoTotp(entrada) ?: return null
+        val dom = entrada.urls.firstNotNullOfOrNull { Dominios.raiz(it) }
+        val paqueteDeDominio = dom?.let { MapeadorPaquetesPopulares.obtenerPaquete(it) }
         val paquete = entrada.urls.firstNotNullOfOrNull { LanzadorEnlaces.extraerPaquete(it) }
             ?: entrada.passkey?.rpId?.let { LanzadorEnlaces.extraerPaquete(it) }
-            ?: if (!paqueteSolicitante.isNullOrBlank() && LanzadorEnlaces.estaInstalada(contexto, paqueteSolicitante)) paqueteSolicitante else null
+            ?: if (paqueteDeDominio != null && LanzadorEnlaces.estaInstalada(contexto, paqueteDeDominio)) paqueteDeDominio
+            else if (!paqueteSolicitante.isNullOrBlank() && LanzadorEnlaces.estaInstalada(contexto, paqueteSolicitante)) paqueteSolicitante
+            else null
         val iconoBitmap = if (paquete != null && LanzadorEnlaces.estaInstalada(contexto, paquete)) {
             AutofillUtiles.obtenerBitmapIconoCircular(contexto, paquete)
         } else null

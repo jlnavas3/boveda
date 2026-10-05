@@ -77,4 +77,12 @@ object MapeadorPaquetesPopulares {
         val clave = paquete.trim().lowercase()
         return PAQUETES_A_DOMINIO[clave]
     }
+
+    /**
+     * Obtiene el paquete de app Android asociado a un dominio si existe en el catálogo.
+     */
+    fun obtenerPaquete(dominio: String): String? {
+        val clave = dominio.trim().lowercase()
+        return PAQUETES_A_DOMINIO.entries.firstOrNull { it.value == clave }?.key
+    }
 }
