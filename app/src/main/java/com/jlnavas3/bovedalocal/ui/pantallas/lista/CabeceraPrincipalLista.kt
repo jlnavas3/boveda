@@ -132,57 +132,60 @@ fun CabeceraPrincipalLista(
                 }
             }
 
+            val esModoSecciones = modoVisualizacionIdentidades == ModoVisualizacionIdentidades.SECCIONES
             val mostrarChipsIdentidad = modoVisualizacionIdentidades == ModoVisualizacionIdentidades.CHIPS && identidades.isNotEmpty()
 
-            if (jerarquiaOrganizacion == JerarquiaOrganizacion.IDENTIDAD_SOBRE_CATEGORIA) {
-                // Nivel 1: Identidades
-                if (mostrarChipsIdentidad) {
-                    ChipsFiltroIdentidades(
-                        identidades = identidades,
-                        identidadSeleccionadaId = identidadSeleccionadaId,
-                        conteoPorIdentidad = conteoPorIdentidad,
-                        totalEntradas = totalEntradas,
-                        conteoSinIdentidad = conteoSinIdentidad,
-                        alSeleccionarIdentidad = alSeleccionarIdentidad
-                    )
-                    Spacer(Modifier.height(2.dp))
-                }
+            if (!esModoSecciones) {
+                if (jerarquiaOrganizacion == JerarquiaOrganizacion.IDENTIDAD_SOBRE_CATEGORIA) {
+                    // Nivel 1: Identidades
+                    if (mostrarChipsIdentidad) {
+                        ChipsFiltroIdentidades(
+                            identidades = identidades,
+                            identidadSeleccionadaId = identidadSeleccionadaId,
+                            conteoPorIdentidad = conteoPorIdentidad,
+                            totalEntradas = totalEntradas,
+                            conteoSinIdentidad = conteoSinIdentidad,
+                            alSeleccionarIdentidad = alSeleccionarIdentidad
+                        )
+                        Spacer(Modifier.height(2.dp))
+                    }
 
-                // Nivel 2 (Subordinado): Categorías
-                BarraCategoriasLista(
-                    categorias = categorias,
-                    categoriaSeleccionadaId = categoriaSeleccionadaId,
-                    totalEntradas = totalEntradas,
-                    conteoPorCategoria = conteoPorCategoria,
-                    alSeleccionarCategoria = alSeleccionarCategoria,
-                    alCrearCategoria = alCrearCategoria,
-                    alEditarCategoria = alEditarCategoria,
-                    alEliminarCategoria = alEliminarCategoria
-                )
-            } else {
-                // Nivel 1: Categorías
-                BarraCategoriasLista(
-                    categorias = categorias,
-                    categoriaSeleccionadaId = categoriaSeleccionadaId,
-                    totalEntradas = totalEntradas,
-                    conteoPorCategoria = conteoPorCategoria,
-                    alSeleccionarCategoria = alSeleccionarCategoria,
-                    alCrearCategoria = alCrearCategoria,
-                    alEditarCategoria = alEditarCategoria,
-                    alEliminarCategoria = alEliminarCategoria
-                )
-
-                // Nivel 2 (Subordinado): Identidades
-                if (mostrarChipsIdentidad) {
-                    Spacer(Modifier.height(2.dp))
-                    ChipsFiltroIdentidades(
-                        identidades = identidades,
-                        identidadSeleccionadaId = identidadSeleccionadaId,
-                        conteoPorIdentidad = conteoPorIdentidad,
+                    // Nivel 2 (Subordinado): Categorías
+                    BarraCategoriasLista(
+                        categorias = categorias,
+                        categoriaSeleccionadaId = categoriaSeleccionadaId,
                         totalEntradas = totalEntradas,
-                        conteoSinIdentidad = conteoSinIdentidad,
-                        alSeleccionarIdentidad = alSeleccionarIdentidad
+                        conteoPorCategoria = conteoPorCategoria,
+                        alSeleccionarCategoria = alSeleccionarCategoria,
+                        alCrearCategoria = alCrearCategoria,
+                        alEditarCategoria = alEditarCategoria,
+                        alEliminarCategoria = alEliminarCategoria
                     )
+                } else {
+                    // Nivel 1: Categorías
+                    BarraCategoriasLista(
+                        categorias = categorias,
+                        categoriaSeleccionadaId = categoriaSeleccionadaId,
+                        totalEntradas = totalEntradas,
+                        conteoPorCategoria = conteoPorCategoria,
+                        alSeleccionarCategoria = alSeleccionarCategoria,
+                        alCrearCategoria = alCrearCategoria,
+                        alEditarCategoria = alEditarCategoria,
+                        alEliminarCategoria = alEliminarCategoria
+                    )
+
+                    // Nivel 2 (Subordinado): Identidades
+                    if (mostrarChipsIdentidad) {
+                        Spacer(Modifier.height(2.dp))
+                        ChipsFiltroIdentidades(
+                            identidades = identidades,
+                            identidadSeleccionadaId = identidadSeleccionadaId,
+                            conteoPorIdentidad = conteoPorIdentidad,
+                            totalEntradas = totalEntradas,
+                            conteoSinIdentidad = conteoSinIdentidad,
+                            alSeleccionarIdentidad = alSeleccionarIdentidad
+                        )
+                    }
                 }
             }
         }

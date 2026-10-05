@@ -47,6 +47,7 @@ fun ColumnaDetallesFilaEntrada(
     estiloOcultamiento: String,
     identidadAsociada: com.jlnavas3.bovedalocal.data.Identidad? = null,
     ocultarEmailIdentidad: Boolean = false,
+    mostrarChipIdentidad: Boolean = true,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -131,7 +132,7 @@ fun ColumnaDetallesFilaEntrada(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            if (coincideConCorreoIdentidad) {
+            if (coincideConCorreoIdentidad && mostrarChipIdentidad) {
                 com.jlnavas3.bovedalocal.ui.pantallas.identidades.InsigniaIdentidadEntrada(
                     identidad = identidadAsociada!!
                 )
@@ -147,7 +148,7 @@ fun ColumnaDetallesFilaEntrada(
                     modifier = Modifier.weight(1f, fill = false)
                 )
 
-                if (identidadAsociada != null) {
+                if (identidadAsociada != null && mostrarChipIdentidad) {
                     Spacer(Modifier.width(6.dp))
                     com.jlnavas3.bovedalocal.ui.pantallas.identidades.InsigniaIdentidadEntrada(
                         identidad = identidadAsociada

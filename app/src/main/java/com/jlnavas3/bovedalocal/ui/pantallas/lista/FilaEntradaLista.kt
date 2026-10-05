@@ -83,7 +83,8 @@ fun FilaEntrada(
     ocultarTotp: Boolean = false,
     estiloOcultamiento: String = "desenfoque",
     identidadAsociada: com.jlnavas3.bovedalocal.data.Identidad? = null,
-    ocultarEmailIdentidad: Boolean = false
+    ocultarEmailIdentidad: Boolean = false,
+    mostrarChipIdentidad: Boolean = true
 ) {
     val compacta = alturaFila.value <= 48f
     val forma = if (enGrupo) {
@@ -141,8 +142,7 @@ fun FilaEntrada(
                 .clip(forma)
                 .background(fondoFila)
                 .then(
-                    if (seleccionado) Modifier.border(1.dp, ColorAcento.copy(alpha = 0.5f), forma)
-                    else if (GrosorBorde > 0.dp && EstiloBorde != "ninguno" && !enGrupo) Modifier.border(GrosorBorde, ColorBordeActual, forma)
+                    if (GrosorBorde > 0.dp && EstiloBorde != "ninguno" && !enGrupo) Modifier.border(GrosorBorde, ColorBordeActual, forma)
                     else Modifier
                 )
                 .combinedClickable(
@@ -202,6 +202,7 @@ fun FilaEntrada(
                     estiloOcultamiento = estiloOcultamiento,
                     identidadAsociada = identidadAsociada,
                     ocultarEmailIdentidad = ocultarEmailIdentidad,
+                    mostrarChipIdentidad = mostrarChipIdentidad,
                     modifier = Modifier.weight(1f)
                 )
 

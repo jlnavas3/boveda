@@ -11,9 +11,11 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -30,6 +32,9 @@ import com.jlnavas3.bovedalocal.ui.componentes.TamanoInsignia
 import com.jlnavas3.bovedalocal.ui.componentes.TextoCuerpo
 import com.jlnavas3.bovedalocal.ui.componentes.TextoTitulo
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorTarjetaAjustes
+import com.jlnavas3.bovedalocal.ui.theme.Borde
+import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
+import com.jlnavas3.bovedalocal.ui.theme.ColorSobreAcento
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
 
 /**
@@ -45,11 +50,14 @@ fun SeccionGrupoIdentidad(
     modifier: Modifier = Modifier,
     subtitulo: String = "",
     icono: ImageVector = Icons.Filled.Person,
-    alPulsarLargo: (() -> Unit)? = null
+    alPulsarLargo: (() -> Unit)? = null,
+    seleccionActiva: Boolean = false,
+    seleccionado: Boolean = false,
+    parcialmenteSeleccionado: Boolean = false
 ) {
     ContenedorTarjeta(
         modifier = modifier,
-        colorFondo = ColorTarjetaAjustes,
+        colorFondo = if (seleccionado) ColorAcento.copy(alpha = 0.16f) else ColorTarjetaAjustes,
         paddingInterno = 12.dp,
         alPulsar = alAlternar,
         alPulsarProlongado = alPulsarLargo
@@ -58,6 +66,32 @@ fun SeccionGrupoIdentidad(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
+            if (seleccionActiva) {
+                Box(
+                    modifier = Modifier
+                        .size(24.dp)
+                        .clip(CircleShape)
+                        .background(if (seleccionado || parcialmenteSeleccionado) ColorAcento else Borde),
+                    contentAlignment = Alignment.Center
+                ) {
+                    if (seleccionado) {
+                        Icon(
+                            imageVector = Icons.Filled.Check,
+                            contentDescription = "Seleccionado",
+                            tint = ColorSobreAcento,
+                            modifier = Modifier.size(15.dp)
+                        )
+                    } else if (parcialmenteSeleccionado) {
+                        Icon(
+                            imageVector = Icons.Filled.Remove,
+                            contentDescription = "Parcialmente seleccionado",
+                            tint = ColorSobreAcento,
+                            modifier = Modifier.size(15.dp)
+                        )
+                    }
+                }
+                Spacer(Modifier.width(10.dp))
+            }
             // Avatar del grupo usando el componente estándar de insignias
             ContenedorIconoInsignia(
                 icono = icono,

@@ -182,6 +182,23 @@ fun CuerpoListaEntradas(
                 ) { item ->
                     when (item) {
                         is com.jlnavas3.bovedalocal.util.ItemAgrupadoJerarquico.CabeceraPrincipal -> {
+                            val todosSeleccionados = item.idsEntradas.isNotEmpty() && item.idsEntradas.all { seleccionados.contains(it) }
+                            val algunoSeleccionado = !todosSeleccionados && item.idsEntradas.any { seleccionados.contains(it) }
+                            val accionAlternar = {
+                                if (modoSeleccion) {
+                                    if (alAlternarSeleccionLote != null) {
+                                        alAlternarSeleccionLote(item.idsEntradas)
+                                    } else {
+                                        if (todosSeleccionados) {
+                                            item.idsEntradas.forEach { if (seleccionados.contains(it)) alAlternarSeleccion(it) }
+                                        } else {
+                                            item.idsEntradas.forEach { if (!seleccionados.contains(it)) alAlternarSeleccion(it) }
+                                        }
+                                    }
+                                } else {
+                                    alAlternarGrupo(item.claveGrupo)
+                                }
+                            }
                             if (item.claveGrupo.startsWith("identidad-")) {
                                 SeccionGrupoIdentidad(
                                     nombre = item.titulo,
@@ -189,8 +206,11 @@ fun CuerpoListaEntradas(
                                     expandido = item.expandido,
                                     colorBase = item.color,
                                     icono = item.icono,
-                                    alAlternar = { alAlternarGrupo(item.claveGrupo) },
-                                    alPulsarLargo = { alPulsarLargoLote(item.idsEntradas) }
+                                    alAlternar = accionAlternar,
+                                    alPulsarLargo = { alPulsarLargoLote(item.idsEntradas) },
+                                    seleccionActiva = modoSeleccion,
+                                    seleccionado = todosSeleccionados,
+                                    parcialmenteSeleccionado = algunoSeleccionado
                                 )
                             } else {
                                 SeccionGrupoCategoria(
@@ -199,20 +219,43 @@ fun CuerpoListaEntradas(
                                     expandido = item.expandido,
                                     colorBase = item.color,
                                     icono = item.icono,
-                                    alAlternar = { alAlternarGrupo(item.claveGrupo) },
-                                    alPulsarLargo = { alPulsarLargoLote(item.idsEntradas) }
+                                    alAlternar = accionAlternar,
+                                    alPulsarLargo = { alPulsarLargoLote(item.idsEntradas) },
+                                    seleccionActiva = modoSeleccion,
+                                    seleccionado = todosSeleccionados,
+                                    parcialmenteSeleccionado = algunoSeleccionado
                                 )
                             }
                         }
                         is com.jlnavas3.bovedalocal.util.ItemAgrupadoJerarquico.Subcabecera -> {
+                            val todosSubSeleccionados = item.idsEntradas.isNotEmpty() && item.idsEntradas.all { seleccionados.contains(it) }
+                            val algunoSubSeleccionado = !todosSubSeleccionados && item.idsEntradas.any { seleccionados.contains(it) }
+                            val accionSubAlternar = {
+                                if (modoSeleccion) {
+                                    if (alAlternarSeleccionLote != null) {
+                                        alAlternarSeleccionLote(item.idsEntradas)
+                                    } else {
+                                        if (todosSubSeleccionados) {
+                                            item.idsEntradas.forEach { if (seleccionados.contains(it)) alAlternarSeleccion(it) }
+                                        } else {
+                                            item.idsEntradas.forEach { if (!seleccionados.contains(it)) alAlternarSeleccion(it) }
+                                        }
+                                    }
+                                } else {
+                                    alAlternarGrupo(item.claveGrupo)
+                                }
+                            }
                             SubseccionGrupoLista(
                                 titulo = item.titulo,
                                 cantidad = item.totalEntradas,
                                 expandido = item.expandido,
                                 colorBase = item.color,
                                 icono = item.icono,
-                                alAlternar = { alAlternarGrupo(item.claveGrupo) },
-                                alPulsarLargo = { alPulsarLargoLote(item.idsEntradas) }
+                                alAlternar = accionSubAlternar,
+                                alPulsarLargo = { alPulsarLargoLote(item.idsEntradas) },
+                                seleccionActiva = modoSeleccion,
+                                seleccionado = todosSubSeleccionados,
+                                parcialmenteSeleccionado = algunoSubSeleccionado
                             )
                         }
                         is com.jlnavas3.bovedalocal.util.ItemAgrupadoJerarquico.EntradaHoja -> {
@@ -240,13 +283,14 @@ fun CuerpoListaEntradas(
                                     resaltado = false,
                                     separarDigitosTotp = ajustes.totpSepararDigitos,
                                     mostrarIndicadores = ajustes.mostrarIndicadoresContenido,
-                                    enGrupo = true,
-                                    esUltimoEnGrupo = item.esUltimaEnSubseccion,
+                                    enGrupo = false,
+                                    esUltimoEnGrupo = false,
                                     ocultarUsuario = ajustes.seguridadVisualActiva && ajustes.ocultarUsuario,
                                     ocultarTotp = ajustes.seguridadVisualActiva && ajustes.ocultarTotp,
                                     estiloOcultamiento = ajustes.estiloOcultamientoVisual,
                                     identidadAsociada = iden,
-                                    ocultarEmailIdentidad = true
+                                    ocultarEmailIdentidad = true,
+                                    mostrarChipIdentidad = false
                                 )
                             }
                         }

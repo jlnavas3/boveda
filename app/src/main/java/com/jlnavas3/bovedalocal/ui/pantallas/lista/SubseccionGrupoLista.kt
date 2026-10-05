@@ -15,8 +15,10 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
+import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -33,7 +35,10 @@ import com.jlnavas3.bovedalocal.ui.componentes.TextoCuerpo
 import com.jlnavas3.bovedalocal.ui.componentes.TextoTitulo
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorCampoAjustes
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorSeparadorAjustes
+import com.jlnavas3.bovedalocal.ui.theme.Borde
+import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
+import com.jlnavas3.bovedalocal.ui.theme.ColorSobreAcento
 import com.jlnavas3.bovedalocal.ui.theme.EstiloBorde
 import com.jlnavas3.bovedalocal.ui.theme.FormaPequena
 import com.jlnavas3.bovedalocal.ui.theme.GrosorBorde
@@ -53,7 +58,10 @@ fun SubseccionGrupoLista(
     icono: ImageVector,
     alAlternar: () -> Unit,
     modifier: Modifier = Modifier,
-    alPulsarLargo: (() -> Unit)? = null
+    alPulsarLargo: (() -> Unit)? = null,
+    seleccionActiva: Boolean = false,
+    seleccionado: Boolean = false,
+    parcialmenteSeleccionado: Boolean = false
 ) {
     val forma = FormaPequena
     val borde = if (GrosorBorde > 0.dp && EstiloBorde != "ninguno") ColorBordeActual else ColorSeparadorAjustes
@@ -73,7 +81,7 @@ fun SubseccionGrupoLista(
             .fillMaxWidth()
             .padding(start = 14.dp)
             .clip(forma)
-            .background(ColorCampoAjustes)
+            .background(if (seleccionado) ColorAcento.copy(alpha = 0.16f) else ColorCampoAjustes)
             .border(grosor, borde, forma)
             .then(modificadorInteraccion)
             .padding(horizontal = 10.dp, vertical = 8.dp)
@@ -82,6 +90,32 @@ fun SubseccionGrupoLista(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
+            if (seleccionActiva) {
+                Box(
+                    modifier = Modifier
+                        .size(24.dp)
+                        .clip(CircleShape)
+                        .background(if (seleccionado || parcialmenteSeleccionado) ColorAcento else Borde),
+                    contentAlignment = Alignment.Center
+                ) {
+                    if (seleccionado) {
+                        Icon(
+                            imageVector = Icons.Filled.Check,
+                            contentDescription = "Seleccionado",
+                            tint = ColorSobreAcento,
+                            modifier = Modifier.size(15.dp)
+                        )
+                    } else if (parcialmenteSeleccionado) {
+                        Icon(
+                            imageVector = Icons.Filled.Remove,
+                            contentDescription = "Parcialmente seleccionado",
+                            tint = ColorSobreAcento,
+                            modifier = Modifier.size(15.dp)
+                        )
+                    }
+                }
+                Spacer(Modifier.width(10.dp))
+            }
             ContenedorIconoInsignia(
                 icono = icono,
                 tamano = TamanoInsignia.PEQUENO,
