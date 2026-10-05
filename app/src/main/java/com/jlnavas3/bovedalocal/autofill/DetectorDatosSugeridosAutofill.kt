@@ -25,7 +25,7 @@ object DetectorDatosSugeridosAutofill {
 
     fun detectar(contexto: Context, paquete: String, dominioWeb: String?): DatosSugeridosAutofill {
         val dom = dominioWeb?.takeIf { it.isNotBlank() }?.let { Dominios.raiz(it) }
-        val paqueteDeDominio = dom?.let { MapeadorPaquetesPopulares.obtenerPaquete(it) }
+        val paqueteDeDominio = dom?.let { com.jlnavas3.bovedalocal.util.ResolverIconoAppDominio.resolverPaquete(contexto, it) }
         val esNavegador = paquete in PAQUETES_NAVEGADORES || !dominioWeb.isNullOrBlank()
 
         val paqueteEfectivo = when {

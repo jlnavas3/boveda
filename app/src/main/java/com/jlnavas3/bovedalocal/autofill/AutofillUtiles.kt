@@ -194,7 +194,7 @@ object AutofillUtiles {
         if (!campos.hayAlgo) return null
 
         val dom = (campos.dominioWeb ?: entrada.urls.firstNotNullOfOrNull { Dominios.host(it) })?.let { Dominios.raiz(it) }
-        val paqueteDeDominio = dom?.let { MapeadorPaquetesPopulares.obtenerPaquete(it) }
+        val paqueteDeDominio = dom?.let { com.jlnavas3.bovedalocal.util.ResolverIconoAppDominio.resolverPaquete(contexto, it) }
 
         val paqueteDirecto = entrada.urls.firstNotNullOfOrNull { LanzadorEnlaces.extraerPaquete(it) }
             ?: entrada.passkey?.rpId?.let { LanzadorEnlaces.extraerPaquete(it) }

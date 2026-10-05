@@ -1,15 +1,17 @@
 package com.jlnavas3.bovedalocal.autofill
 
 import android.app.PendingIntent
+import android.app.slice.Slice
+import android.app.slice.SliceSpec
 import android.content.Context
+import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.drawable.Icon
+import android.net.Uri
 import android.os.Build
 import android.service.autofill.InlinePresentation
 import android.widget.inline.InlinePresentationSpec
 import androidx.annotation.RequiresApi
-import androidx.autofill.inline.v1.InlineSuggestionUi
-import android.content.Intent
 import com.jlnavas3.bovedalocal.R
 import com.jlnavas3.bovedalocal.ui.MainActivity
 
@@ -19,6 +21,7 @@ import com.jlnavas3.bovedalocal.ui.MainActivity
  */
 object CreadorInlineSuggestion {
 
+    @Suppress("DEPRECATION")
     @RequiresApi(Build.VERSION_CODES.R)
     fun crear(
         contexto: Context,
@@ -36,61 +39,43 @@ object CreadorInlineSuggestion {
                 Intent(contexto, MainActivity::class.java),
                 PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
             )
-            val contentBuilder = InlineSuggestionUi.newContentBuilder(intentAtribucion)
-                .setTitle(titulo)
-                .setContentDescription(titulo)
 
-            if (!subtitulo.isNullOrBlank()) {
-                contentBuilder.setSubtitle(subtitulo)
-            }
-
-            val (icono, specFinal) = if (iconoBitmap != null) {
-                val iconoTransparente = Icon.createWithBitmap(
-                    Bitmap.createBitmap(iconoBitmap.width, iconoBitmap.height, Bitmap.Config.ARGB_8888)
-                )
-                val specConFondo = inyectarIconoComoFondo(spec, iconoBitmap)
-                iconoTransparente to specConFondo
+            val icono = if (iconoBitmap != null) {
+                Icon.createWithBitmap(iconoBitmap)
             } else {
-                val iconoCandado = Icon.createWithBitmap(obtenerBitmapVector(contexto, R.drawable.ic_candado_boveda))
-                iconoCandado to spec
+                Icon.createWithBitmap(obtenerBitmapVector(contexto, R.drawable.ic_candado_boveda))
             }
-            contentBuilder.setStartIcon(icono)
 
-            val slice = contentBuilder.build().slice
-            val pres = InlinePresentation(slice, specFinal, fijado)
-            android.util.Log.i("BovedaAutofill", "CreadorInlineSuggestion OK: titulo=$titulo, pres=$pres")
+            val iconHints = if (iconoBitmap != null) {
+                listOf("inline_start_icon", Slice.HINT_NO_TINT)
+            } else {
+                listOf("inline_start_icon")
+            }
+
+            val sliceBuilder = Slice.Builder(
+                Uri.EMPTY,
+                SliceSpec("androidx.autofill.inline.ui.version:v1", 1)
+            )
+
+            sliceBuilder.addIcon(icono, null, iconHints)
+            sliceBuilder.addText(titulo, null, listOf("inline_title"))
+            if (!subtitulo.isNullOrBlank()) {
+                sliceBuilder.addText(subtitulo, null, listOf("inline_subtitle"))
+            }
+
+            val actionSlice = Slice.Builder(sliceBuilder)
+                .addHints(listOf("inline_attribution"))
+                .build()
+            sliceBuilder.addAction(intentAtribucion, actionSlice, null)
+            sliceBuilder.addText(titulo, null, listOf("inline_content_description"))
+
+            val slice = sliceBuilder.build()
+            val pres = InlinePresentation(slice, spec, fijado)
+            android.util.Log.i("BovedaAutofill", "CreadorInlineSuggestion OK: titulo=$titulo, tieneIconoBitmap=${iconoBitmap != null}")
             pres
         } catch (e: Exception) {
             android.util.Log.e("BovedaAutofill", "Error creando inline suggestion: ${e.javaClass.simpleName} - ${e.message}", e)
             null
-        }
-    }
-
-    @RequiresApi(Build.VERSION_CODES.R)
-    private fun inyectarIconoComoFondo(spec: InlinePresentationSpec, iconoBitmap: Bitmap): InlinePresentationSpec {
-        val estilo = spec.style
-        if (estilo.isEmpty) return spec
-        return try {
-            val clon = android.os.Bundle(estilo)
-            val v1 = clon.getBundle("androidx.autofill.inline.ui.version:v1")
-            if (v1 != null) {
-                val v1Clon = android.os.Bundle(v1)
-                val startIconStyle = v1Clon.getBundle("start_icon_style")
-                val iconStyleClon = if (startIconStyle != null) {
-                    android.os.Bundle(startIconStyle)
-                } else {
-                    android.os.Bundle()
-                }
-                iconStyleClon.putBoolean("image_view_style", true)
-                iconStyleClon.putParcelable("background", Icon.createWithBitmap(iconoBitmap))
-                v1Clon.putBundle("start_icon_style", iconStyleClon)
-                clon.putBundle("androidx.autofill.inline.ui.version:v1", v1Clon)
-                InlinePresentationSpec.Builder(spec.minSize, spec.maxSize)
-                    .setStyle(clon)
-                    .build()
-            } else spec
-        } catch (_: Exception) {
-            spec
         }
     }
 
