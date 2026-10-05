@@ -11,12 +11,26 @@ import com.jlnavas3.bovedalocal.util.MapeadorPaquetesPopulares
  */
 object DetectorDatosSugeridosAutofill {
 
+    private val PAQUETES_NAVEGADORES = setOf(
+        "com.brave.browser",
+        "com.android.chrome",
+        "org.mozilla.firefox",
+        "com.microsoft.emmx",
+        "com.opera.browser",
+        "com.opera.mini.native",
+        "com.duckduckgo.mobile.android",
+        "com.sec.android.app.sbrowser",
+        "com.vivaldi.browser"
+    )
+
     fun detectar(contexto: Context, paquete: String, dominioWeb: String?): DatosSugeridosAutofill {
         val dom = dominioWeb?.takeIf { it.isNotBlank() }?.let { Dominios.raiz(it) }
         val paqueteDeDominio = dom?.let { MapeadorPaquetesPopulares.obtenerPaquete(it) }
+        val esNavegador = paquete in PAQUETES_NAVEGADORES || !dominioWeb.isNullOrBlank()
+
         val paqueteEfectivo = when {
-            paquete.isNotBlank() && paquete != "android" && paquete != contexto.packageName -> paquete
             paqueteDeDominio != null && LanzadorEnlaces.estaInstalada(contexto, paqueteDeDominio) -> paqueteDeDominio
+            !esNavegador && paquete.isNotBlank() && paquete != "android" && paquete != contexto.packageName -> paquete
             else -> null
         }
 
@@ -26,14 +40,18 @@ object DetectorDatosSugeridosAutofill {
 
         val titulo = when {
             !nombreApp.isNullOrBlank() -> nombreApp
-            !dom.isNullOrBlank() -> dom
+            dom != null && dom.isNotBlank() -> dom.replaceFirstChar { it.uppercase() }
             paqueteEfectivo != null -> Dominios.dominioDePaquete(paqueteEfectivo)
+            !esNavegador && paquete.isNotBlank() && LanzadorEnlaces.estaInstalada(contexto, paquete) -> {
+                LanzadorEnlaces.obtenerNombreApp(contexto, paquete)?.ifBlank { null } ?: "Nueva entrada"
+            }
             else -> "Nueva entrada"
         }
 
         val url = when {
             !dominioWeb.isNullOrBlank() -> "https://$dominioWeb"
             paqueteEfectivo != null -> "android://$paqueteEfectivo"
+            !esNavegador && paquete.isNotBlank() -> "android://$paquete"
             else -> ""
         }
 

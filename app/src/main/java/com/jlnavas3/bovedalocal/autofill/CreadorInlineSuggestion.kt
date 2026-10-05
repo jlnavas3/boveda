@@ -44,19 +44,19 @@ object CreadorInlineSuggestion {
                 contentBuilder.setSubtitle(subtitulo)
             }
 
-            val icono = if (iconoBitmap != null) {
-                Icon.createWithBitmap(iconoBitmap)
+            val (icono, specFinal) = if (iconoBitmap != null) {
+                val iconoTransparente = Icon.createWithBitmap(
+                    Bitmap.createBitmap(iconoBitmap.width, iconoBitmap.height, Bitmap.Config.ARGB_8888)
+                )
+                val specConFondo = inyectarIconoComoFondo(spec, iconoBitmap)
+                iconoTransparente to specConFondo
             } else {
-                Icon.createWithBitmap(obtenerBitmapVector(contexto, R.drawable.ic_candado_boveda))
+                val iconoCandado = Icon.createWithBitmap(obtenerBitmapVector(contexto, R.drawable.ic_candado_boveda))
+                iconoCandado to spec
             }
             contentBuilder.setStartIcon(icono)
 
             val slice = contentBuilder.build().slice
-            val specFinal = if (iconoBitmap != null) {
-                removerTinteIcono(spec)
-            } else {
-                spec
-            }
             val pres = InlinePresentation(slice, specFinal, fijado)
             android.util.Log.i("BovedaAutofill", "CreadorInlineSuggestion OK: titulo=$titulo, pres=$pres")
             pres
@@ -67,7 +67,7 @@ object CreadorInlineSuggestion {
     }
 
     @RequiresApi(Build.VERSION_CODES.R)
-    private fun removerTinteIcono(spec: InlinePresentationSpec): InlinePresentationSpec {
+    private fun inyectarIconoComoFondo(spec: InlinePresentationSpec, iconoBitmap: Bitmap): InlinePresentationSpec {
         val estilo = spec.style
         if (estilo.isEmpty) return spec
         return try {
@@ -76,15 +76,18 @@ object CreadorInlineSuggestion {
             if (v1 != null) {
                 val v1Clon = android.os.Bundle(v1)
                 val startIconStyle = v1Clon.getBundle("start_icon_style")
-                if (startIconStyle != null && startIconStyle.containsKey("image_tint_list")) {
-                    val iconStyleClon = android.os.Bundle(startIconStyle)
-                    iconStyleClon.remove("image_tint_list")
-                    v1Clon.putBundle("start_icon_style", iconStyleClon)
-                    clon.putBundle("androidx.autofill.inline.ui.version:v1", v1Clon)
-                    InlinePresentationSpec.Builder(spec.minSize, spec.maxSize)
-                        .setStyle(clon)
-                        .build()
-                } else spec
+                val iconStyleClon = if (startIconStyle != null) {
+                    android.os.Bundle(startIconStyle)
+                } else {
+                    android.os.Bundle()
+                }
+                iconStyleClon.putBoolean("image_view_style", true)
+                iconStyleClon.putParcelable("background", Icon.createWithBitmap(iconoBitmap))
+                v1Clon.putBundle("start_icon_style", iconStyleClon)
+                clon.putBundle("androidx.autofill.inline.ui.version:v1", v1Clon)
+                InlinePresentationSpec.Builder(spec.minSize, spec.maxSize)
+                    .setStyle(clon)
+                    .build()
             } else spec
         } catch (_: Exception) {
             spec

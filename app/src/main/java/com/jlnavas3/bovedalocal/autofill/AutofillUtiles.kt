@@ -196,11 +196,17 @@ object AutofillUtiles {
         val dom = (campos.dominioWeb ?: entrada.urls.firstNotNullOfOrNull { Dominios.host(it) })?.let { Dominios.raiz(it) }
         val paqueteDeDominio = dom?.let { MapeadorPaquetesPopulares.obtenerPaquete(it) }
 
-        val paquete = entrada.urls.firstNotNullOfOrNull { LanzadorEnlaces.extraerPaquete(it) }
+        val paqueteDirecto = entrada.urls.firstNotNullOfOrNull { LanzadorEnlaces.extraerPaquete(it) }
             ?: entrada.passkey?.rpId?.let { LanzadorEnlaces.extraerPaquete(it) }
-            ?: (if (paqueteDeDominio != null && LanzadorEnlaces.estaInstalada(contexto, paqueteDeDominio)) paqueteDeDominio else null)
-            ?: GestorAppsInstaladas.resolverPaqueteApp(contexto, entrada)
-            ?: (if (campos.dominioWeb.isNullOrBlank() && !paqueteSolicitante.isNullOrBlank() && LanzadorEnlaces.estaInstalada(contexto, paqueteSolicitante)) paqueteSolicitante else null)
+
+        val paquete = if (paqueteDirecto != null && LanzadorEnlaces.estaInstalada(contexto, paqueteDirecto)) {
+            paqueteDirecto
+        } else if (paqueteDeDominio != null && LanzadorEnlaces.estaInstalada(contexto, paqueteDeDominio)) {
+            paqueteDeDominio
+        } else {
+            GestorAppsInstaladas.resolverPaqueteApp(contexto, entrada)
+                ?: (if (campos.dominioWeb.isNullOrBlank() && !paqueteSolicitante.isNullOrBlank() && LanzadorEnlaces.estaInstalada(contexto, paqueteSolicitante)) paqueteSolicitante else paqueteDirecto)
+        }
 
         val nombreApp = if (paquete != null && LanzadorEnlaces.estaInstalada(contexto, paquete)) {
             LanzadorEnlaces.obtenerNombreApp(contexto, paquete)
