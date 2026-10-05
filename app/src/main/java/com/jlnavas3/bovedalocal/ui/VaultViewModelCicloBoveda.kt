@@ -6,6 +6,7 @@ import com.jlnavas3.bovedalocal.crypto.Zeroizar
 import com.jlnavas3.bovedalocal.data.BovedaSenuelo
 import com.jlnavas3.bovedalocal.data.FrenoIntentos
 import com.jlnavas3.bovedalocal.data.GestorBackupAutomatico
+import com.jlnavas3.bovedalocal.data.Identidad
 import com.jlnavas3.bovedalocal.data.PinAutodestruccion
 import com.jlnavas3.bovedalocal.data.VaultRepository
 import com.jlnavas3.bovedalocal.util.Diagnostico
@@ -49,12 +50,13 @@ interface VaultCicloBovedaDelegate {
 
     // ----------------------------------------------------------- bóveda: ciclo
 
-    fun crearBoveda(password: String, alTerminar: () -> Unit = {}) {
+    fun crearBoveda(password: String, identidadInicial: Identidad? = null, alTerminar: () -> Unit = {}) {
         ejecutar {
             val chars = password.toCharArray()
             try {
-                withContext(Dispatchers.Default) { repositorio.crear(chars) }
-                Diagnostico.apuntar("bóveda", "Bóveda creada y desbloqueada")
+                val identidades = if (identidadInicial != null) listOf(identidadInicial) else emptyList()
+                withContext(Dispatchers.Default) { repositorio.crear(chars, identidades) }
+                Diagnostico.apuntar("bóveda", "Bóveda creada y desbloqueada${if (identidadInicial != null) " con identidad '${identidadInicial.nombre}'" else ""}")
                 registrarInteraccion()
                 irRaiz(Pantalla.Lista)
                 ofrecerBiometriaInterno.value = true

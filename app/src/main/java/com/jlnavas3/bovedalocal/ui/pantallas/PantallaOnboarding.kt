@@ -17,9 +17,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.fragment.app.FragmentActivity
 import com.jlnavas3.bovedalocal.crypto.PerfilArgon2
+import com.jlnavas3.bovedalocal.data.Identidad
 import com.jlnavas3.bovedalocal.ui.VaultViewModel
 import com.jlnavas3.bovedalocal.ui.pantallas.acercade.PantallaAcercaDeApp
 import com.jlnavas3.bovedalocal.ui.pantallas.onboarding.PasoBienvenida
+import com.jlnavas3.bovedalocal.ui.pantallas.onboarding.PasoConfigurarIdentidadInicial
 import com.jlnavas3.bovedalocal.ui.pantallas.onboarding.PasoCrearContrasena
 import com.jlnavas3.bovedalocal.ui.pantallas.onboarding.PasoForjando
 import com.jlnavas3.bovedalocal.util.Haptica
@@ -29,7 +31,8 @@ import com.jlnavas3.bovedalocal.util.Haptica
  * Gestiona la transición entre pasos:
  * - Paso 0: Bienvenida y pilares de seguridad ([PasoBienvenida]).
  * - Paso 1: Creación de contraseña maestra y perfil KDF ([PasoCrearContrasena]).
- * - Paso 2: Animación de forjado criptográfico ([PasoForjando]).
+ * - Paso 2: Configuración opcional de la primera identidad ([PasoConfigurarIdentidadInicial]).
+ * - Paso 3: Animación de forjado criptográfico ([PasoForjando]).
  * - Vista superpuesta: Acerca de la aplicación ([PantallaAcercaDeApp]).
  */
 @Composable
@@ -42,10 +45,15 @@ fun PantallaOnboarding(vm: VaultViewModel, actividad: FragmentActivity) {
     }
     var paso by remember { mutableIntStateOf(0) }
     var contrasenaMaestra by remember { mutableStateOf("") }
+    var identidadInicial by remember { mutableStateOf<Identidad?>(null) }
     var mostrandoAcercaDe by remember { mutableStateOf(false) }
 
     BackHandler(enabled = mostrandoAcercaDe) {
         mostrandoAcercaDe = false
+    }
+
+    BackHandler(enabled = !mostrandoAcercaDe && paso == 2) {
+        paso = 1
     }
 
     BackHandler(enabled = !mostrandoAcercaDe && paso == 1) {
@@ -107,11 +115,23 @@ fun PantallaOnboarding(vm: VaultViewModel, actividad: FragmentActivity) {
                 }
             )
 
+            2 -> PasoConfigurarIdentidadInicial(
+                alConfirmarIdentidad = { iden ->
+                    haptica.toque()
+                    identidadInicial = iden
+                    paso = 3
+                },
+                alVolver = {
+                    haptica.toque()
+                    paso = 1
+                }
+            )
+
             else -> PasoForjando(
                 perfil = perfilSeleccionado,
                 ajustes = ajustes,
                 alIniciarForja = {
-                    vm.crearBoveda(contrasenaMaestra) { haptica.exito() }
+                    vm.crearBoveda(contrasenaMaestra, identidadInicial) { haptica.exito() }
                 }
             )
         }

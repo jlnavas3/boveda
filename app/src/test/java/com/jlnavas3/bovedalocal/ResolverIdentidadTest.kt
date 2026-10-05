@@ -118,4 +118,24 @@ class ResolverIdentidadTest {
         assertEquals("Trabajo", recuperada.identidades[1].nombre)
         assertEquals("id-trab", recuperada.entradas[0].identidadId)
     }
+
+    @Test
+    fun `boveda creada con identidad inicial la incluye en su contenido`() {
+        val identidadInicial = Identidad(
+            id = "id-init",
+            nombre = "Personal",
+            correoPrincipal = "jolunavi@gmail.com",
+            colorHex = "#0284C7"
+        )
+        val boveda = ContenidoBoveda(
+            entradas = emptyList(),
+            identidades = listOf(identidadInicial)
+        )
+        val jsonStr = json.encodeToString(boveda)
+        val recuperada = json.decodeFromString<ContenidoBoveda>(jsonStr)
+
+        assertEquals(1, recuperada.identidades.size)
+        assertEquals("Personal", recuperada.identidades[0].nombre)
+        assertEquals("jolunavi@gmail.com", recuperada.identidades[0].correoPrincipal)
+    }
 }

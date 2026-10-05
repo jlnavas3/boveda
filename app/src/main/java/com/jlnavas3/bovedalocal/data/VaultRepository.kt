@@ -72,7 +72,7 @@ class VaultRepository private constructor(contexto: Context) {
 
     // ---------------------------------------------------------------- creación
 
-    fun crear(password: CharArray) {
+    fun crear(password: CharArray, identidadesIniciales: List<Identidad> = emptyList()) {
         // Argon2 fuera del candado.
         val kdfParams = PerfilArgon2.desde(ajustes.actual.perfilArgon2).aKdfParams()
         val nuevoSalt = VaultCrypto.nuevoSalt()
@@ -87,7 +87,7 @@ class VaultRepository private constructor(contexto: Context) {
             salt = nuevoSalt
             params = kdfParams
             claveMaestra = clave
-            contenido = ContenidoBoveda()
+            contenido = ContenidoBoveda(identidades = identidadesIniciales)
             persistir()
             publicar()
         }

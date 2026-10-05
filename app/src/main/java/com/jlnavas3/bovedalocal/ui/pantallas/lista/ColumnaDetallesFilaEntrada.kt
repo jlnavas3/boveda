@@ -121,26 +121,38 @@ fun ColumnaDetallesFilaEntrada(
         )
         val debeOcultarSubtitulo = ocultarUsuario && esDatoUsuario
 
+        val usuarioNormalizado = entrada.usuario.trim()
+        val coincideConCorreoIdentidad = identidadAsociada != null && usuarioNormalizado.isNotBlank() && (
+            usuarioNormalizado.equals(identidadAsociada.correoPrincipal.trim(), ignoreCase = true) ||
+            identidadAsociada.correosSecundarios.any { it.trim().equals(usuarioNormalizado, ignoreCase = true) }
+        )
+
         Row(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            TextoSeguroVisual(
-                texto = textoSubtitulo,
-                oculto = debeOcultarSubtitulo,
-                estilo = estiloOcultamiento,
-                estiloTexto = if (compacta) MaterialTheme.typography.labelSmall else MaterialTheme.typography.bodySmall.copy(fontSize = 12.5.sp),
-                colorTexto = TextoSecundario,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                modifier = Modifier.weight(1f, fill = false)
-            )
-
-            if (identidadAsociada != null) {
-                Spacer(Modifier.width(6.dp))
+            if (coincideConCorreoIdentidad) {
                 com.jlnavas3.bovedalocal.ui.pantallas.identidades.InsigniaIdentidadEntrada(
-                    identidad = identidadAsociada
+                    identidad = identidadAsociada!!
                 )
+            } else {
+                TextoSeguroVisual(
+                    texto = textoSubtitulo,
+                    oculto = debeOcultarSubtitulo,
+                    estilo = estiloOcultamiento,
+                    estiloTexto = if (compacta) MaterialTheme.typography.labelSmall else MaterialTheme.typography.bodySmall.copy(fontSize = 12.5.sp),
+                    colorTexto = TextoSecundario,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.weight(1f, fill = false)
+                )
+
+                if (identidadAsociada != null) {
+                    Spacer(Modifier.width(6.dp))
+                    com.jlnavas3.bovedalocal.ui.pantallas.identidades.InsigniaIdentidadEntrada(
+                        identidad = identidadAsociada
+                    )
+                }
             }
         }
     }
