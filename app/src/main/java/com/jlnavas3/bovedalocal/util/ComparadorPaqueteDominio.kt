@@ -7,6 +7,14 @@ package com.jlnavas3.bovedalocal.util
  */
 object ComparadorPaqueteDominio {
 
+    private val tokensGenericos = setOf(
+        "com", "org", "net", "edu", "gov", "mil", "io", "co", "app", "apps", "dev", "ai", "me",
+        "android", "google", "mobile", "client", "tablet", "phone", "wear", "tv",
+        "lite", "free", "pro", "plus", "beta", "debug", "release", "official", "main",
+        "service", "services", "auth", "login", "account", "accounts", "core", "ui",
+        "http", "https", "www", "mail", "api", "local", "localhost"
+    )
+
     fun coincide(guardado: String, solicitado: String): Boolean {
         if (guardado.isBlank() || solicitado.isBlank()) return false
         val g = guardado.trim().lowercase()
@@ -48,24 +56,37 @@ object ComparadorPaqueteDominio {
         // 5. Coincidencia clásica por dominio raíz registrable
         val raizG = Dominios.raiz(g)
         val raizS = Dominios.raiz(s)
-        if (raizG.isNotEmpty() && raizG == raizS) return true
+        if (paqG == null && paqS == null && !esPaqueteDirecto(g) && !esPaqueteDirecto(s)) {
+            if (raizG.isNotEmpty() && raizG == raizS) return true
+        }
 
         // 6. Heurística de marca para apps Android sin mapeo estático
-        // Aplica únicamente cuando uno es paquete nativo y el otro es URL/dominio web
-        if (paqueteObjetivo != null && esPaqueteDirecto(paqueteObjetivo) && !esPaqueteDirecto(g) && raizG.isNotEmpty()) {
-            val marcaWeb = Dominios.marca(g)
-            if (marcaWeb.length >= 4) {
-                val segmentos = paqueteObjetivo.split('.')
-                if (segmentos.any { it.equals(marcaWeb, ignoreCase = true) }) {
-                    return true
-                }
-            }
-            val candidatoDominio = Dominios.dominioDePaquete(paqueteObjetivo)
-            if (Dominios.raiz(candidatoDominio) == raizG) {
+        val algunoEsAppAndroid = paqueteObjetivo != null || paqueteGuardado != null ||
+            g.startsWith("android://") || s.startsWith("android://") ||
+            g.contains(".android.com") || s.contains(".android.com")
+
+        if (algunoEsAppAndroid) {
+            val tokensG = extraerTokensSignificativos(g)
+            val tokensS = extraerTokensSignificativos(s)
+            val interseccion = tokensG.intersect(tokensS)
+            if (interseccion.isNotEmpty()) {
                 return true
             }
         }
 
         return false
+    }
+
+    private fun extraerTokensSignificativos(texto: String): Set<String> {
+        val limpio = if (texto.startsWith("android://")) {
+            LanzadorEnlaces.extraerPaquete(texto) ?: texto.removePrefix("android://")
+        } else {
+            texto
+        }
+        return limpio
+            .split('.', '/', ':', '@', '-', '_', '?')
+            .map { it.trim().lowercase() }
+            .filter { it.length >= 4 && it !in tokensGenericos }
+            .toSet()
     }
 }

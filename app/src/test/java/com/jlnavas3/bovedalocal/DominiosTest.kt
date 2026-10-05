@@ -76,5 +76,9 @@ class DominiosTest {
         assertTrue(Dominios.coincide("https://spotify.com", "com.spotify.music"))
         assertTrue(Dominios.coincide("https://tiktok.com", "com.zhiliaoapp.musically"))
         assertFalse(Dominios.coincide("https://google.com", "com.facebook.katana"))
+        assertFalse(Dominios.coincide("aldiko.android.com", "com.instagram.android"))
+        assertFalse(Dominios.coincide("https://aldiko.android.com", "com.instagram.android"))
+        assertTrue(Dominios.coincide("aldiko.android.com", "com.aldiko.android"))
+        assertTrue(Dominios.coincide("android.instagram.com", "com.instagram.android"))
     }
 }
