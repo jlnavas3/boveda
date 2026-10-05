@@ -95,6 +95,11 @@ object AjustesDefaults {
         const val FAMILIA_FUENTE = "sans"
     }
 
+    // 8. Autocompletado e Inline Suggestions
+    object Autocompletado {
+        const val SUGERENCIAS_TECLADO = true
+    }
+
     // 8. Índice Alfabético Lateral (Ola Niagara)
     object Indice {
         const val MOSTRAR = true

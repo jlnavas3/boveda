@@ -65,4 +65,16 @@ class DominiosTest {
         assertEquals("ejemplo.com", Dominios.dominioDePaquete("com.ejemplo.android"))
         assertEquals("banco.es", Dominios.dominioDePaquete("es.banco"))
     }
+
+    @Test
+    fun `coincide entre paquetes populares de apps y dominios web`() {
+        assertTrue(Dominios.coincide("https://facebook.com", "com.facebook.katana"))
+        assertTrue(Dominios.coincide("facebook.com", "com.facebook.katana"))
+        assertTrue(Dominios.coincide("com.facebook.katana", "https://facebook.com"))
+        assertTrue(Dominios.coincide("https://instagram.com", "com.instagram.android"))
+        assertTrue(Dominios.coincide("https://x.com", "com.twitter.android"))
+        assertTrue(Dominios.coincide("https://spotify.com", "com.spotify.music"))
+        assertTrue(Dominios.coincide("https://tiktok.com", "com.zhiliaoapp.musically"))
+        assertFalse(Dominios.coincide("https://google.com", "com.facebook.katana"))
+    }
 }

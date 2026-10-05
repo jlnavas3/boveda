@@ -182,7 +182,12 @@ object AutofillUtiles {
         }
 
     @Suppress("DEPRECATION")
-    fun dataset(contexto: Context, entrada: Entrada, campos: CamposDetectados): Dataset? {
+    fun dataset(
+        contexto: Context,
+        entrada: Entrada,
+        campos: CamposDetectados,
+        inlineSpec: android.widget.inline.InlinePresentationSpec? = null
+    ): Dataset? {
         if (!campos.hayAlgo) return null
 
         val paquete = entrada.urls.firstNotNullOfOrNull { LanzadorEnlaces.extraerPaquete(it) }
@@ -227,6 +232,18 @@ object AutofillUtiles {
         campos.otp?.let { idOtp ->
             AutofillOtpUtiles.obtenerCodigoTotp(entrada)?.let { codigo ->
                 constructor.setValue(idOtp, AutofillValue.forText(codigo))
+            }
+        }
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R && inlineSpec != null) {
+            val inlinePres = CreadorInlineSuggestion.crear(
+                contexto = contexto,
+                spec = inlineSpec,
+                titulo = tituloMostrar,
+                subtitulo = subtituloMostrar,
+                iconoBitmap = iconoBitmap
+            )
+            if (inlinePres != null) {
+                constructor.setInlinePresentation(inlinePres)
             }
         }
         return try {

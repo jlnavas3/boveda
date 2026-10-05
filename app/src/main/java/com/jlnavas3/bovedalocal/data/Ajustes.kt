@@ -241,7 +241,9 @@ data class AjustesApp(
     val colorIdLista: String = AjustesDefaults.ColoresIds.LISTA,
     val colorIdHerramientas: String = AjustesDefaults.ColoresIds.HERRAMIENTAS,
     val colorIdCopias: String = AjustesDefaults.ColoresIds.COPIAS,
-    val colorIdSistema: String = AjustesDefaults.ColoresIds.SISTEMA
+    val colorIdSistema: String = AjustesDefaults.ColoresIds.SISTEMA,
+    // Autocompletado de Android e Inline Suggestions
+    val autofillSugerenciasTeclado: Boolean = AjustesDefaults.Autocompletado.SUGERENCIAS_TECLADO
 ) {
     val modoVisualizacionIdentidades: ModoVisualizacionIdentidades
         get() = ModoVisualizacionIdentidades.desde(modoIdentidades)
@@ -510,7 +512,8 @@ class AlmacenAjustes(contexto: Context) {
             colorIdLista = prefs.getString("color_id_lista", AjustesDefaults.ColoresIds.LISTA) ?: AjustesDefaults.ColoresIds.LISTA,
             colorIdHerramientas = prefs.getString("color_id_herramientas", AjustesDefaults.ColoresIds.HERRAMIENTAS) ?: AjustesDefaults.ColoresIds.HERRAMIENTAS,
             colorIdCopias = prefs.getString("color_id_copias", AjustesDefaults.ColoresIds.COPIAS) ?: AjustesDefaults.ColoresIds.COPIAS,
-            colorIdSistema = prefs.getString("color_id_sistema", AjustesDefaults.ColoresIds.SISTEMA) ?: AjustesDefaults.ColoresIds.SISTEMA
+            colorIdSistema = prefs.getString("color_id_sistema", AjustesDefaults.ColoresIds.SISTEMA) ?: AjustesDefaults.ColoresIds.SISTEMA,
+            autofillSugerenciasTeclado = prefs.getBoolean("autofill_sugerencias_teclado", AjustesDefaults.Autocompletado.SUGERENCIAS_TECLADO)
         )
     }
 
@@ -697,6 +700,7 @@ class AlmacenAjustes(contexto: Context) {
             .putString("color_id_herramientas", nuevo.colorIdHerramientas)
             .putString("color_id_copias", nuevo.colorIdCopias)
             .putString("color_id_sistema", nuevo.colorIdSistema)
+            .putBoolean("autofill_sugerencias_teclado", nuevo.autofillSugerenciasTeclado)
             .apply()
         _ajustes.value = nuevo
         com.jlnavas3.bovedalocal.util.Haptica.sincronizar(nuevo)

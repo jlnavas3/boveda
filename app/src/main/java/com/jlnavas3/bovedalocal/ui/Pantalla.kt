@@ -285,6 +285,11 @@ sealed interface Pantalla {
         override fun equals(other: Any?): Boolean = other is AjustesCamara && other.seccionId == seccionId
         override fun hashCode(): Int = seccionId?.hashCode() ?: 0
     }
+    open class AjustesAutocompletado(val seccionId: String? = null) : Pantalla {
+        companion object : AjustesAutocompletado(null)
+        override fun equals(other: Any?): Boolean = other is AjustesAutocompletado && other.seccionId == seccionId
+        override fun hashCode(): Int = seccionId?.hashCode() ?: 0
+    }
     open class TileRapido(val seccionId: String? = null) : Pantalla {
         companion object : TileRapido(null)
         override fun equals(other: Any?): Boolean = other is TileRapido && other.seccionId == seccionId

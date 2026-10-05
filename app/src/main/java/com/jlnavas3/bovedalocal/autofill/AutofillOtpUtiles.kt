@@ -71,7 +71,8 @@ object AutofillOtpUtiles {
     fun datasetTotp(
         contexto: Context,
         entrada: Entrada,
-        idCampoOtp: AutofillId
+        idCampoOtp: AutofillId,
+        inlineSpec: android.widget.inline.InlinePresentationSpec? = null
     ): Dataset? {
         val codigo = obtenerCodigoTotp(entrada) ?: return null
         val paquete = entrada.urls.firstNotNullOfOrNull { LanzadorEnlaces.extraerPaquete(it) }
@@ -97,6 +98,18 @@ object AutofillOtpUtiles {
         )
         val constructor = Dataset.Builder(vista)
         constructor.setValue(idCampoOtp, AutofillValue.forText(codigo))
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R && inlineSpec != null) {
+            val inlinePres = CreadorInlineSuggestion.crear(
+                contexto = contexto,
+                spec = inlineSpec,
+                titulo = "$tituloBase: $codigo",
+                subtitulo = "Código de verificación",
+                iconoBitmap = iconoBitmap
+            )
+            if (inlinePres != null) {
+                constructor.setInlinePresentation(inlinePres)
+            }
+        }
         return try {
             constructor.build()
         } catch (_: IllegalArgumentException) {

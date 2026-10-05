@@ -18,6 +18,15 @@ import com.jlnavas3.bovedalocal.util.Diagnostico
 import com.jlnavas3.bovedalocal.util.Dominios
 import com.jlnavas3.bovedalocal.util.LanzadorEnlaces
 
+import android.os.Build
+import android.widget.inline.InlinePresentationSpec
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
+
 class BovedaAutofillService : AutofillService() {
 
     companion object {
@@ -27,11 +36,34 @@ class BovedaAutofillService : AutofillService() {
         const val EXTRA_DOMINIO = "boveda.dominio"
     }
 
+    private val servicioScope = CoroutineScope(Dispatchers.Default + SupervisorJob())
+
+    override fun onDestroy() {
+        super.onDestroy()
+        servicioScope.cancel()
+    }
+
     override fun onFillRequest(
         request: FillRequest,
         cancellationSignal: CancellationSignal,
         callback: FillCallback
     ) {
+        val job = servicioScope.launch {
+            try {
+                procesarFillRequest(request, callback)
+            } catch (e: Exception) {
+                if (e !is CancellationException) {
+                    Diagnostico.apuntar("autofill", "Error procesando solicitud: ${e.message}")
+                    callback.onFailure("Error al autocompletar")
+                }
+            }
+        }
+        cancellationSignal.setOnCancelListener {
+            job.cancel()
+        }
+    }
+
+    private fun procesarFillRequest(request: FillRequest, callback: FillCallback) {
         val contexto = request.fillContexts.lastOrNull()
         if (contexto == null) {
             callback.onSuccess(null)
@@ -54,6 +86,13 @@ class BovedaAutofillService : AutofillService() {
         val respuesta = FillResponse.Builder()
         val ids: Array<AutofillId> = listOfNotNull(campos.usuario, campos.contrasena, campos.otp).toTypedArray()
 
+        val ajustes = repositorio.ajustes.ajustes.value
+        val specs: List<InlinePresentationSpec> = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && ajustes.autofillSugerenciasTeclado) {
+            request.inlineSuggestionsRequest?.inlinePresentationSpecs.orEmpty()
+        } else {
+            emptyList()
+        }
+
         if (!repositorio.estaDesbloqueada) {
             val intent = Intent(this, AutofillAuthActivity::class.java).apply {
                 putExtra(EXTRA_USUARIO_ID, campos.usuario)
@@ -67,18 +106,35 @@ class BovedaAutofillService : AutofillService() {
                 intent,
                 PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_MUTABLE
             )
-            @Suppress("DEPRECATION")
-            respuesta.setAuthentication(
-                ids,
-                pendiente.intentSender,
-                AutofillUtiles.presentacion(this, "Bóveda local está cerrada", "Toca para desbloquearla")
-            )
+            val presentacion = AutofillUtiles.presentacion(this, "Bóveda local está cerrada", "Toca para desbloquearla")
+            val inlineSpec = specs.firstOrNull()
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && inlineSpec != null) {
+                val inlineAuth = CreadorInlineSuggestion.crear(
+                    contexto = this,
+                    spec = inlineSpec,
+                    titulo = "Desbloquear Bóveda",
+                    subtitulo = "Toca para abrir",
+                    intencionPendiente = pendiente,
+                    fijado = true
+                )
+                if (inlineAuth != null) {
+                    @Suppress("DEPRECATION")
+                    respuesta.setAuthentication(ids, pendiente.intentSender, presentacion, inlineAuth)
+                } else {
+                    @Suppress("DEPRECATION")
+                    respuesta.setAuthentication(ids, pendiente.intentSender, presentacion)
+                }
+            } else {
+                @Suppress("DEPRECATION")
+                respuesta.setAuthentication(ids, pendiente.intentSender, presentacion)
+            }
         } else {
             val compatibles = AutofillUtiles.entradasCompatibles(repositorio.entradas(), paquete, campos.dominioWeb)
-            compatibles.forEach { entrada ->
-                AutofillUtiles.dataset(this, entrada, campos)?.let { respuesta.addDataset(it) }
+            compatibles.forEachIndexed { indice, entrada ->
+                val spec = specs.getOrElse(indice) { specs.lastOrNull() }
+                AutofillUtiles.dataset(this, entrada, campos, spec)?.let { respuesta.addDataset(it) }
                 if (campos.otp != null && !entrada.secretoTotp.isNullOrBlank()) {
-                    AutofillOtpUtiles.datasetTotp(this, entrada, campos.otp)?.let { respuesta.addDataset(it) }
+                    AutofillOtpUtiles.datasetTotp(this, entrada, campos.otp, spec)?.let { respuesta.addDataset(it) }
                 }
             }
         }

@@ -69,13 +69,13 @@ fun crearElementosHerramientasAjustes(
         alPulsar = { vm.ir(Pantalla.TileRapido("04-HER-MSK")) }
     ),
     ElementoMenuAjustes(
-        titulo = "Llaves de paso",
-        subtitulo = "Proveedor de llaves de paso en Android",
+        titulo = "Autocompletado y llaves",
+        subtitulo = "Sugerencias en teclado y proveedor de credenciales",
         icono = Icons.Filled.Key,
         colorIcono = Color(0xFF8B5CF6),
         idEtiqueta = "04-HER-PSK",
         grupo = "Herramientas",
-        palabrasClave = "passkey passkeys proveedor credenciales llaves paso acceso android servicio activar",
-        alPulsar = alAbrirProveedorPasskeys
+        palabrasClave = "autofill autocompletado teclado sugerencias passkey passkeys proveedor credenciales llaves paso acceso android servicio activar",
+        alPulsar = { vm.ir(Pantalla.AjustesAutocompletado("04-HER-PSK")) }
     )
 )

@@ -79,6 +79,7 @@ object MapeoJerarquiaPantallas {
         is Pantalla.AjustesHistorial -> Pantalla.Ajustes("04-HER-HST")
         is Pantalla.HistorialClaves -> if (!pantalla.seccionId.isNullOrBlank()) Pantalla.Ajustes(pantalla.seccionId) else Pantalla.Lista
         is Pantalla.AjustesCamara -> Pantalla.Ajustes("04-HER-CAM")
+        is Pantalla.AjustesAutocompletado -> Pantalla.Ajustes("04-HER-PSK")
         is Pantalla.TileRapido -> Pantalla.Ajustes("04-HER-MSK")
 
         // Nivel 2: Sistema -> Ajustes (Nivel 1)

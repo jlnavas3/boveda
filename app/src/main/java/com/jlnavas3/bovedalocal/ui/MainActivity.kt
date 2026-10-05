@@ -437,6 +437,7 @@ fun RaizBoveda(vm: VaultViewModel, actividad: FragmentActivity) {
                     is Pantalla.Argon2id -> com.jlnavas3.bovedalocal.ui.pantallas.PantallaArgon2id(vm, destino.seccionId)
                     is Pantalla.AjustesAutenticador -> com.jlnavas3.bovedalocal.ui.pantallas.PantallaAjustesAutenticador(vm, destino.seccionId)
                     is Pantalla.AjustesCamara -> com.jlnavas3.bovedalocal.ui.pantallas.PantallaAjustesCamara(vm, destino.seccionId)
+                    is Pantalla.AjustesAutocompletado -> com.jlnavas3.bovedalocal.ui.pantallas.autocompletado.PantallaAjustesAutocompletado(vm, actividad, destino.seccionId)
                     is Pantalla.TileRapido -> com.jlnavas3.bovedalocal.ui.pantallas.PantallaTileRapido(vm, destino.seccionId)
                     is Pantalla.Avanzada -> com.jlnavas3.bovedalocal.ui.pantallas.PantallaAvanzada(vm, destino.seccionId)
                 }

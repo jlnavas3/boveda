@@ -31,6 +31,10 @@ interface VaultAjustesInteraccionDelegate {
         repositorio.ajustes.actualizar { it.copy(mostrarIdsAjustes = mostrar) }
     }
 
+    fun ajustarAutofillSugerenciasTeclado(activado: Boolean) {
+        repositorio.ajustes.actualizar { it.copy(autofillSugerenciasTeclado = activado) }
+    }
+
     fun ajustarAlumbradoActivo(activo: Boolean) {
         repositorio.ajustes.actualizar { it.copy(alumbradoActivo = activo) }
         AlumbradoActivo = activo

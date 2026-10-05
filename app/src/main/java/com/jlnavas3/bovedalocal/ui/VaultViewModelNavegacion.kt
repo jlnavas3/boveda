@@ -32,7 +32,7 @@ interface VaultNavegacionDelegate {
                 pantallaInterna.value is Pantalla.Ajustes -> {
                     val idHijo = when (pantalla) {
                         is Pantalla.Generador -> "04-HER-GEN"
-                        is Pantalla.Passkeys -> "04-HER-PSK"
+                        is Pantalla.AjustesAutocompletado -> "04-HER-PSK"
                         is Pantalla.Autenticador -> "04-HER-2FA"
                         else -> null
                     }
@@ -109,7 +109,7 @@ interface VaultNavegacionDelegate {
             limpio.startsWith("04-HER-WGT-1X1") || limpio.startsWith("04.4.5") -> Pantalla.CalibracionWidget1x1(limpio)
             limpio.startsWith("04-HER-WGT") || limpio.startsWith("04.4") || limpio.startsWith("09.4") -> Pantalla.AjustesWidget(limpio)
             limpio.startsWith("04-HER-MSK") || limpio.startsWith("04.5") -> Pantalla.TileRapido(limpio)
-            limpio.startsWith("04-HER-PSK") || limpio.startsWith("04.6") -> Pantalla.Passkeys
+            limpio.startsWith("04-HER-PSK") || limpio.startsWith("04.6") -> Pantalla.AjustesAutocompletado(limpio)
 
             limpio.startsWith("05-COP-ATM") || limpio.startsWith("05.1.4") -> Pantalla.AjustesCopiaAutomatica(limpio)
             limpio.startsWith("05-COP-EXP") || limpio.startsWith("05.1.2") -> Pantalla.ExportarSelectivo(limpio)

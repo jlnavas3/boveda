@@ -163,6 +163,7 @@ dependencies {
     debugImplementation("androidx.compose.ui:ui-tooling")
 
     implementation("androidx.biometric:biometric:1.1.0")
+    implementation("androidx.autofill:autofill:1.1.0")
     implementation("androidx.credentials:credentials:1.5.0")
     implementation("androidx.credentials.providerevents:providerevents:1.0.0-beta01")
     implementation("androidx.credentials.providerevents:providerevents-play-services:1.0.0-beta01")

@@ -55,23 +55,9 @@ object Dominios {
         }.getOrDefault(h)
     }
 
-    /** Coincidencia conservadora: mismo dominio raíz o mismo paquete de aplicación. */
-    fun coincide(guardado: String, solicitado: String): Boolean {
-        if (guardado.isBlank() || solicitado.isBlank()) return false
-        val g = guardado.trim().lowercase()
-        val s = solicitado.trim().lowercase()
-        if (g == s) return true
-
-        val paqG = LanzadorEnlaces.extraerPaquete(g)
-        val paqS = LanzadorEnlaces.extraerPaquete(s)
-        if (paqG != null && paqS != null && paqG.equals(paqS, ignoreCase = true)) return true
-
-        val esPaquete = { valor: String -> !valor.contains('/') && valor.count { it == '.' } >= 1 && !valor.contains(' ') }
-        if (esPaquete(g) && esPaquete(s) && g == s) return true
-        val raizGuardado = raiz(g)
-        val raizSolicitado = raiz(s)
-        return raizGuardado.isNotEmpty() && raizGuardado == raizSolicitado
-    }
+    /** Coincidencia inteligente: mismo dominio raíz, mismo paquete de aplicación o equivalencia de catálogo/marca. */
+    fun coincide(guardado: String, solicitado: String): Boolean =
+        ComparadorPaqueteDominio.coincide(guardado, solicitado)
 
     /** Deriva un dominio candidato desde un nombre de paquete (com.ejemplo.app -> ejemplo.com). */
     fun dominioDePaquete(paquete: String): String {
