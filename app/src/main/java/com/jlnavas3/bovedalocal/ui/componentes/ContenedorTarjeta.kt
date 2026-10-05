@@ -1,8 +1,10 @@
 package com.jlnavas3.bovedalocal.ui.componentes
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -25,6 +27,7 @@ import com.jlnavas3.bovedalocal.ui.theme.GrosorBorde
  * Contenedor tipo tarjeta (equivalente a card container en UI).
  * Aplica el color configurable de tarjetas, bordes configurables y curvatura de esquinas.
  */
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ContenedorTarjeta(
     modifier: Modifier = Modifier,
@@ -35,10 +38,27 @@ fun ContenedorTarjeta(
     paddingInterno: Dp = 0.dp,
     alPulsar: (() -> Unit)? = null,
     onClick: (() -> Unit)? = null,
+    alPulsarProlongado: (() -> Unit)? = null,
     contenido: @Composable ColumnScope.() -> Unit
 ) {
     val accionClick = alPulsar ?: onClick
     val forma = RoundedCornerShape(radioEsquinas)
+    val modificadorClick = if (accionClick != null && alPulsarProlongado != null) {
+        Modifier.combinedClickable(
+            onClick = accionClick,
+            onLongClick = alPulsarProlongado
+        )
+    } else if (accionClick != null) {
+        Modifier.clickable { accionClick() }
+    } else if (alPulsarProlongado != null) {
+        Modifier.combinedClickable(
+            onClick = {},
+            onLongClick = alPulsarProlongado
+        )
+    } else {
+        Modifier
+    }
+
     Box(
         modifier = modifier
             .fillMaxWidth()
@@ -51,7 +71,7 @@ fun ContenedorTarjeta(
                     Modifier
                 }
             )
-            .then(if (accionClick != null) Modifier.clickable { accionClick() } else Modifier)
+            .then(modificadorClick)
             .then(if (paddingInterno > 0.dp) Modifier.padding(paddingInterno) else Modifier)
     ) {
         Column(

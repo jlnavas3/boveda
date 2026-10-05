@@ -122,6 +122,7 @@ fun PantallaOrganizacionLista(
                 com.jlnavas3.bovedalocal.ui.pantallas.organizacion.GrupoJerarquiaOrganizacionAjustes(
                     jerarquiaActual = ajustes.jerarquiaOrganizacionEfectiva,
                     mostrarId = ajustes.mostrarIdsAjustes,
+                    habilitado = ajustes.modoVisualizacionIdentidades != com.jlnavas3.bovedalocal.data.ModoVisualizacionIdentidades.DESACTIVADO,
                     alSeleccionarJerarquia = { jerarquia ->
                         haptica.tic()
                         vm.ajustarJerarquiaOrganizacion(jerarquia)

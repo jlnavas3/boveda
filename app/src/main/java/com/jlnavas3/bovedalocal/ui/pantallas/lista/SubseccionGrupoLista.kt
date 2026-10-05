@@ -1,6 +1,10 @@
 package com.jlnavas3.bovedalocal.ui.pantallas.lista
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -13,7 +17,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
-import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -23,42 +26,62 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import com.jlnavas3.bovedalocal.ui.componentes.ContenedorIconoInsignia
-import com.jlnavas3.bovedalocal.ui.componentes.ContenedorTarjeta
 import com.jlnavas3.bovedalocal.ui.componentes.EstiloTitulo
 import com.jlnavas3.bovedalocal.ui.componentes.TamanoCuerpo
 import com.jlnavas3.bovedalocal.ui.componentes.TamanoInsignia
 import com.jlnavas3.bovedalocal.ui.componentes.TextoCuerpo
 import com.jlnavas3.bovedalocal.ui.componentes.TextoTitulo
-import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorTarjetaAjustes
+import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorCampoAjustes
+import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorSeparadorAjustes
+import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
+import com.jlnavas3.bovedalocal.ui.theme.EstiloBorde
+import com.jlnavas3.bovedalocal.ui.theme.FormaPequena
+import com.jlnavas3.bovedalocal.ui.theme.GrosorBorde
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
 
 /**
- * Cabecera plegable para un bloque o sección de Identidad en la lista principal.
+ * Cabecera para subsecciones subordinadas (Nivel 2) en listas agrupadas jerárquicamente.
+ * Presenta una sangría indentada y escala compacta que expresa subordinación visual clara.
  */
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun SeccionGrupoIdentidad(
-    nombre: String,
+fun SubseccionGrupoLista(
+    titulo: String,
     cantidad: Int,
     expandido: Boolean,
     colorBase: Color,
+    icono: ImageVector,
     alAlternar: () -> Unit,
     modifier: Modifier = Modifier,
-    subtitulo: String = "",
-    icono: ImageVector = Icons.Filled.Person,
     alPulsarLargo: (() -> Unit)? = null
 ) {
-    ContenedorTarjeta(
-        modifier = modifier,
-        colorFondo = ColorTarjetaAjustes,
-        paddingInterno = 12.dp,
-        alPulsar = alAlternar,
-        alPulsarProlongado = alPulsarLargo
+    val forma = FormaPequena
+    val borde = if (GrosorBorde > 0.dp && EstiloBorde != "ninguno") ColorBordeActual else ColorSeparadorAjustes
+    val grosor = if (GrosorBorde > 0.dp && EstiloBorde != "ninguno") GrosorBorde else 0.8.dp
+
+    val modificadorInteraccion = if (alPulsarLargo != null) {
+        Modifier.combinedClickable(
+            onClick = alAlternar,
+            onLongClick = alPulsarLargo
+        )
+    } else {
+        Modifier.clickable(onClick = alAlternar)
+    }
+
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(start = 14.dp)
+            .clip(forma)
+            .background(ColorCampoAjustes)
+            .border(grosor, borde, forma)
+            .then(modificadorInteraccion)
+            .padding(horizontal = 10.dp, vertical = 8.dp)
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Avatar del grupo usando el componente estándar de insignias
             ContenedorIconoInsignia(
                 icono = icono,
                 tamano = TamanoInsignia.PEQUENO,
@@ -67,16 +90,15 @@ fun SeccionGrupoIdentidad(
                 conBorde = true
             )
 
-            Spacer(Modifier.width(12.dp))
+            Spacer(Modifier.width(10.dp))
 
-            // Textos del grupo (sin exponer correo electrónico)
             Row(
                 modifier = Modifier.weight(1f),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 TextoTitulo(
-                    texto = nombre,
+                    texto = titulo,
                     estilo = EstiloTitulo.PEQUENO,
                     maxLineas = 1
                 )
@@ -85,7 +107,7 @@ fun SeccionGrupoIdentidad(
                     modifier = Modifier
                         .clip(CircleShape)
                         .background(colorBase.copy(alpha = 0.12f))
-                        .padding(horizontal = 7.dp, vertical = 2.dp)
+                        .padding(horizontal = 6.dp, vertical = 2.dp)
                 ) {
                     TextoCuerpo(
                         texto = "$cantidad",
@@ -96,12 +118,11 @@ fun SeccionGrupoIdentidad(
                 }
             }
 
-            // Chevron expandir/plegar
             Icon(
                 imageVector = if (expandido) Icons.Filled.ExpandLess else Icons.Filled.ExpandMore,
-                contentDescription = if (expandido) "Plegar grupo" else "Desplegar grupo",
+                contentDescription = if (expandido) "Plegar subsección" else "Desplegar subsección",
                 tint = TextoSecundario,
-                modifier = Modifier.size(22.dp)
+                modifier = Modifier.size(20.dp)
             )
         }
     }

@@ -41,19 +41,21 @@ import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
 @Composable
 fun SeccionGrupoCategoria(
     nombre: String,
-    subtitulo: String,
     cantidad: Int,
     expandido: Boolean,
     colorBase: Color,
     alAlternar: () -> Unit,
     modifier: Modifier = Modifier,
-    icono: ImageVector = Icons.Filled.Folder
+    subtitulo: String = "",
+    icono: ImageVector = Icons.Filled.Folder,
+    alPulsarLargo: (() -> Unit)? = null
 ) {
     ContenedorTarjeta(
         modifier = modifier,
         colorFondo = ColorTarjetaAjustes,
         paddingInterno = 12.dp,
-        alPulsar = alAlternar
+        alPulsar = alAlternar,
+        alPulsarProlongado = alPulsarLargo
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),

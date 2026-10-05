@@ -68,27 +68,27 @@ fun CuerpoListaEntradas(
 
     val esModoSecciones = ajustes.modoVisualizacionIdentidades == com.jlnavas3.bovedalocal.data.ModoVisualizacionIdentidades.SECCIONES
     val jerarquia = ajustes.jerarquiaOrganizacionEfectiva
+    val identidadesActivas = ajustes.modoVisualizacionIdentidades != com.jlnavas3.bovedalocal.data.ModoVisualizacionIdentidades.DESACTIVADO
 
-    val esModoSeccionesIdentidad = esModoSecciones &&
-        identidades.isNotEmpty() &&
-        jerarquia == com.jlnavas3.bovedalocal.data.JerarquiaOrganizacion.IDENTIDAD_SOBRE_CATEGORIA
-
-    val esModoSeccionesCategoria = esModoSecciones &&
-        categorias.isNotEmpty() &&
-        jerarquia == com.jlnavas3.bovedalocal.data.JerarquiaOrganizacion.CATEGORIA_SOBRE_IDENTIDAD
-
-    val itemsIdentidades = remember(visibles, identidades, gruposExpandidos, busqueda, esModoSeccionesIdentidad) {
-        if (!esModoSeccionesIdentidad) emptyList()
-        else com.jlnavas3.bovedalocal.util.construirItemsAgrupadosPorIdentidad(visibles, identidades) { clave ->
-            busqueda.isNotBlank() || gruposExpandidos.contains("identidad-$clave")
-        }
-    }
-
-    val itemsCategorias = remember(visibles, categorias, gruposExpandidos, busqueda, esModoSeccionesCategoria) {
-        if (!esModoSeccionesCategoria) emptyList()
-        else com.jlnavas3.bovedalocal.util.construirItemsAgrupadosPorCategoria(visibles, categorias) { clave ->
-            busqueda.isNotBlank() || gruposExpandidos.contains("categoria-$clave")
-        }
+    val itemsJerarquicos = remember(
+        visibles,
+        identidades,
+        categorias,
+        gruposExpandidos,
+        busqueda,
+        esModoSecciones,
+        jerarquia,
+        identidadesActivas
+    ) {
+        if (!esModoSecciones) emptyList()
+        else com.jlnavas3.bovedalocal.util.construirItemsAgrupadosJerarquicos(
+            entradas = visibles,
+            identidades = identidades,
+            categorias = categorias,
+            jerarquia = jerarquia,
+            identidadesActivas = identidadesActivas,
+            estaExpandido = { clave -> busqueda.isNotBlank() || gruposExpandidos.contains(clave) }
+        )
     }
 
     val itemsAMostrar = remember(visibles, modoSeleccion, criterioOrdenacion, ajustes.agruparPorSitio) {
@@ -132,92 +132,28 @@ fun CuerpoListaEntradas(
         }
     }
 
-    if (esModoSeccionesIdentidad) {
-        Box(modifier = Modifier.fillMaxSize()) {
-            LazyColumn(
-                state = estadoLista,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .reboteElastico(),
-                contentPadding = PaddingValues(
-                    start = 20.dp,
-                    end = 20.dp,
-                    bottom = 110.dp
-                ),
-                verticalArrangement = Arrangement.spacedBy(espaciadoFilas)
-            ) {
-                items(
-                    itemsIdentidades,
-                    key = { item ->
-                        when (item) {
-                            is com.jlnavas3.bovedalocal.util.ItemAgrupadoIdentidad.CabeceraIdentidad -> "cab-iden-${item.identidad.id}"
-                            is com.jlnavas3.bovedalocal.util.ItemAgrupadoIdentidad.CabeceraSinIdentidad -> "cab-sin-iden"
-                            is com.jlnavas3.bovedalocal.util.ItemAgrupadoIdentidad.EntradaHija -> "ent-iden-${item.entrada.id}"
-                        }
-                    }
-                ) { item ->
-                    when (item) {
-                        is com.jlnavas3.bovedalocal.util.ItemAgrupadoIdentidad.CabeceraIdentidad -> {
-                            val claveGrupo = "identidad-${item.identidad.id}"
-                            val expandido = busqueda.isNotBlank() || gruposExpandidos.contains(claveGrupo)
-                            val colorBase = com.jlnavas3.bovedalocal.ui.theme.parsearColorO(item.identidad.colorHex ?: "", com.jlnavas3.bovedalocal.ui.theme.ColorAcento)
-                            SeccionGrupoIdentidad(
-                                nombre = item.identidad.nombre,
-                                subtitulo = item.identidad.correoPrincipal,
-                                cantidad = item.totalEntradas,
-                                expandido = expandido,
-                                colorBase = colorBase,
-                                alAlternar = { alAlternarGrupo(claveGrupo) }
-                            )
-                        }
-                        is com.jlnavas3.bovedalocal.util.ItemAgrupadoIdentidad.CabeceraSinIdentidad -> {
-                            val claveGrupo = "identidad-__SIN_IDENTIDAD__"
-                            val expandido = busqueda.isNotBlank() || gruposExpandidos.contains(claveGrupo)
-                            SeccionGrupoIdentidad(
-                                nombre = "Sin identidad asignada",
-                                subtitulo = "Wi-Fi, routers y credenciales varias",
-                                cantidad = item.totalEntradas,
-                                expandido = expandido,
-                                colorBase = com.jlnavas3.bovedalocal.ui.theme.TextoSecundario,
-                                icono = Icons.Filled.Security,
-                                alAlternar = { alAlternarGrupo(claveGrupo) }
-                            )
-                        }
-                        is com.jlnavas3.bovedalocal.util.ItemAgrupadoIdentidad.EntradaHija -> {
-                            FilaEntrada(
-                                entrada = item.entrada,
-                                seleccionActiva = modoSeleccion,
-                                seleccionado = seleccionados.contains(item.entrada.id),
-                                alAbrir = { alAbrirEntrada(item.entrada.id) },
-                                alCopiarUsuario = { alCopiarUsuario(item.entrada.id, item.entrada.usuario) },
-                                alCopiarContrasena = { alCopiarContrasena(item.entrada.id, item.entrada.contrasena) },
-                                alFavorito = { alAlternarFavorito(item.entrada.id) },
-                                alCopiarCodigo = { alCopiarCodigoTotp(item.entrada.id, it) },
-                                alPulsarLargo = { alEntrarEnSeleccion(item.entrada.id) },
-                                alAlternarSeleccion = { alAlternarSeleccion(item.entrada.id) },
-                                segundosUnix = segundosUnix,
-                                alturaFila = densidadAltura,
-                                tamanoMonograma = densidadMonograma,
-                                resaltado = false,
-                                separarDigitosTotp = ajustes.totpSepararDigitos,
-                                mostrarIndicadores = ajustes.mostrarIndicadoresContenido,
-                                enGrupo = true,
-                                esUltimoEnGrupo = item.esUltimaEnSeccion,
-                                ocultarUsuario = ajustes.seguridadVisualActiva && ajustes.ocultarUsuario,
-                                ocultarTotp = ajustes.seguridadVisualActiva && ajustes.ocultarTotp,
-                                estiloOcultamiento = ajustes.estiloOcultamientoVisual,
-                                identidadAsociada = item.identidad,
-                                ocultarEmailIdentidad = item.identidad != null
-                            )
-                        }
+    if (esModoSecciones) {
+        val alPulsarLargoLote: (Set<String>) -> Unit = { ids ->
+            if (!modoSeleccion) {
+                if (alEntrarEnSeleccionLote != null) {
+                    alEntrarEnSeleccionLote(ids)
+                } else {
+                    ids.firstOrNull()?.let { alEntrarEnSeleccion(it) }
+                }
+            } else {
+                if (alAlternarSeleccionLote != null) {
+                    alAlternarSeleccionLote(ids)
+                } else {
+                    val todosSeleccionados = ids.all { seleccionados.contains(it) }
+                    if (todosSeleccionados) {
+                        ids.forEach { if (seleccionados.contains(it)) alAlternarSeleccion(it) }
+                    } else {
+                        ids.forEach { if (!seleccionados.contains(it)) alAlternarSeleccion(it) }
                     }
                 }
             }
         }
-        return
-    }
 
-    if (esModoSeccionesCategoria) {
         Box(modifier = Modifier.fillMaxSize()) {
             LazyColumn(
                 state = estadoLista,
@@ -232,71 +168,87 @@ fun CuerpoListaEntradas(
                 verticalArrangement = Arrangement.spacedBy(espaciadoFilas)
             ) {
                 items(
-                    itemsCategorias,
+                    itemsJerarquicos,
                     key = { item ->
                         when (item) {
-                            is com.jlnavas3.bovedalocal.util.ItemAgrupadoCategoria.CabeceraCategoria -> "cab-cat-${item.categoria.id}"
-                            is com.jlnavas3.bovedalocal.util.ItemAgrupadoCategoria.CabeceraSinCategoria -> "cab-sin-cat"
-                            is com.jlnavas3.bovedalocal.util.ItemAgrupadoCategoria.EntradaHija -> "ent-cat-${item.entrada.id}"
+                            is com.jlnavas3.bovedalocal.util.ItemAgrupadoJerarquico.CabeceraPrincipal ->
+                                "cab-princ-${item.claveGrupo}"
+                            is com.jlnavas3.bovedalocal.util.ItemAgrupadoJerarquico.Subcabecera ->
+                                "subcab-${item.claveGrupo}"
+                            is com.jlnavas3.bovedalocal.util.ItemAgrupadoJerarquico.EntradaHoja ->
+                                "ent-hoja-${item.clavePadre}-${item.entrada.id}"
                         }
                     }
                 ) { item ->
                     when (item) {
-                        is com.jlnavas3.bovedalocal.util.ItemAgrupadoCategoria.CabeceraCategoria -> {
-                            val claveGrupo = "categoria-${item.categoria.id}"
-                            val expandido = busqueda.isNotBlank() || gruposExpandidos.contains(claveGrupo)
-                            val colorBase = com.jlnavas3.bovedalocal.ui.theme.parsearColorO(item.categoria.colorHex ?: "", com.jlnavas3.bovedalocal.ui.theme.ColorAcento)
-                            val iconoVector = com.jlnavas3.bovedalocal.ui.pantallas.categorias.IconosCategorias.obtenerIcono(item.categoria.icono)
-                            SeccionGrupoCategoria(
-                                nombre = item.categoria.nombre,
-                                subtitulo = "Categoría temática",
+                        is com.jlnavas3.bovedalocal.util.ItemAgrupadoJerarquico.CabeceraPrincipal -> {
+                            if (item.claveGrupo.startsWith("identidad-")) {
+                                SeccionGrupoIdentidad(
+                                    nombre = item.titulo,
+                                    cantidad = item.totalEntradas,
+                                    expandido = item.expandido,
+                                    colorBase = item.color,
+                                    icono = item.icono,
+                                    alAlternar = { alAlternarGrupo(item.claveGrupo) },
+                                    alPulsarLargo = { alPulsarLargoLote(item.idsEntradas) }
+                                )
+                            } else {
+                                SeccionGrupoCategoria(
+                                    nombre = item.titulo,
+                                    cantidad = item.totalEntradas,
+                                    expandido = item.expandido,
+                                    colorBase = item.color,
+                                    icono = item.icono,
+                                    alAlternar = { alAlternarGrupo(item.claveGrupo) },
+                                    alPulsarLargo = { alPulsarLargoLote(item.idsEntradas) }
+                                )
+                            }
+                        }
+                        is com.jlnavas3.bovedalocal.util.ItemAgrupadoJerarquico.Subcabecera -> {
+                            SubseccionGrupoLista(
+                                titulo = item.titulo,
                                 cantidad = item.totalEntradas,
-                                expandido = expandido,
-                                colorBase = colorBase,
-                                icono = iconoVector,
-                                alAlternar = { alAlternarGrupo(claveGrupo) }
+                                expandido = item.expandido,
+                                colorBase = item.color,
+                                icono = item.icono,
+                                alAlternar = { alAlternarGrupo(item.claveGrupo) },
+                                alPulsarLargo = { alPulsarLargoLote(item.idsEntradas) }
                             )
                         }
-                        is com.jlnavas3.bovedalocal.util.ItemAgrupadoCategoria.CabeceraSinCategoria -> {
-                            val claveGrupo = "categoria-__SIN_CATEGORIA__"
-                            val expandido = busqueda.isNotBlank() || gruposExpandidos.contains(claveGrupo)
-                            SeccionGrupoCategoria(
-                                nombre = "Sin categoría",
-                                subtitulo = "Elementos sin carpeta asignada",
-                                cantidad = item.totalEntradas,
-                                expandido = expandido,
-                                colorBase = com.jlnavas3.bovedalocal.ui.theme.TextoSecundario,
-                                icono = androidx.compose.material.icons.Icons.Filled.Security,
-                                alAlternar = { alAlternarGrupo(claveGrupo) }
-                            )
-                        }
-                        is com.jlnavas3.bovedalocal.util.ItemAgrupadoCategoria.EntradaHija -> {
+                        is com.jlnavas3.bovedalocal.util.ItemAgrupadoJerarquico.EntradaHoja -> {
                             val iden = com.jlnavas3.bovedalocal.util.resolverIdentidadParaEntrada(item.entrada, identidades)
-                            FilaEntrada(
-                                entrada = item.entrada,
-                                seleccionActiva = modoSeleccion,
-                                seleccionado = seleccionados.contains(item.entrada.id),
-                                alAbrir = { alAbrirEntrada(item.entrada.id) },
-                                alCopiarUsuario = { alCopiarUsuario(item.entrada.id, item.entrada.usuario) },
-                                alCopiarContrasena = { alCopiarContrasena(item.entrada.id, item.entrada.contrasena) },
-                                alFavorito = { alAlternarFavorito(item.entrada.id) },
-                                alCopiarCodigo = { alCopiarCodigoTotp(item.entrada.id, it) },
-                                alPulsarLargo = { alEntrarEnSeleccion(item.entrada.id) },
-                                alAlternarSeleccion = { alAlternarSeleccion(item.entrada.id) },
-                                segundosUnix = segundosUnix,
-                                alturaFila = densidadAltura,
-                                tamanoMonograma = densidadMonograma,
-                                resaltado = false,
-                                separarDigitosTotp = ajustes.totpSepararDigitos,
-                                mostrarIndicadores = ajustes.mostrarIndicadoresContenido,
-                                enGrupo = true,
-                                esUltimoEnGrupo = item.esUltimaEnSeccion,
-                                ocultarUsuario = ajustes.seguridadVisualActiva && ajustes.ocultarUsuario,
-                                ocultarTotp = ajustes.seguridadVisualActiva && ajustes.ocultarTotp,
-                                estiloOcultamiento = ajustes.estiloOcultamientoVisual,
-                                identidadAsociada = iden,
-                                ocultarEmailIdentidad = iden != null
-                            )
+                            val modifierHoja = if (item.clavePadre.startsWith("sub")) {
+                                Modifier.padding(start = 14.dp)
+                            } else {
+                                Modifier
+                            }
+                            Box(modifier = modifierHoja) {
+                                FilaEntrada(
+                                    entrada = item.entrada,
+                                    seleccionActiva = modoSeleccion,
+                                    seleccionado = seleccionados.contains(item.entrada.id),
+                                    alAbrir = { alAbrirEntrada(item.entrada.id) },
+                                    alCopiarUsuario = { alCopiarUsuario(item.entrada.id, item.entrada.usuario) },
+                                    alCopiarContrasena = { alCopiarContrasena(item.entrada.id, item.entrada.contrasena) },
+                                    alFavorito = { alAlternarFavorito(item.entrada.id) },
+                                    alCopiarCodigo = { alCopiarCodigoTotp(item.entrada.id, it) },
+                                    alPulsarLargo = { alEntrarEnSeleccion(item.entrada.id) },
+                                    alAlternarSeleccion = { alAlternarSeleccion(item.entrada.id) },
+                                    segundosUnix = segundosUnix,
+                                    alturaFila = densidadAltura,
+                                    tamanoMonograma = densidadMonograma,
+                                    resaltado = false,
+                                    separarDigitosTotp = ajustes.totpSepararDigitos,
+                                    mostrarIndicadores = ajustes.mostrarIndicadoresContenido,
+                                    enGrupo = true,
+                                    esUltimoEnGrupo = item.esUltimaEnSubseccion,
+                                    ocultarUsuario = ajustes.seguridadVisualActiva && ajustes.ocultarUsuario,
+                                    ocultarTotp = ajustes.seguridadVisualActiva && ajustes.ocultarTotp,
+                                    estiloOcultamiento = ajustes.estiloOcultamientoVisual,
+                                    identidadAsociada = iden,
+                                    ocultarEmailIdentidad = true
+                                )
+                            }
                         }
                     }
                 }
