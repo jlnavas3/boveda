@@ -3,6 +3,7 @@ package com.jlnavas3.bovedalocal.ui.pantallas.lista
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import com.jlnavas3.bovedalocal.ui.componentes.ChipBoveda
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 
@@ -16,6 +17,7 @@ fun ChipFiltroIdentidad(
     conteo: Int,
     seleccionado: Boolean,
     colorBase: Color = ColorAcento,
+    icono: ImageVector? = null,
     mostrarPunto: Boolean = false,
     alPulsar: () -> Unit,
     modifier: Modifier = Modifier
@@ -25,6 +27,7 @@ fun ChipFiltroIdentidad(
         conteo = conteo,
         seleccionado = seleccionado,
         colorBase = colorBase,
+        icono = icono,
         mostrarPunto = mostrarPunto,
         alPulsar = alPulsar,
         modifier = modifier

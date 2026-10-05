@@ -73,8 +73,9 @@ val ColorEncabezadoTarjeta: Color get() {
 
 val FormaTarjeta: RoundedCornerShape get() = RoundedCornerShape(CurvaturaEsquinas)
 val FormaBoton: RoundedCornerShape get() = RoundedCornerShape(CurvaturaEsquinas)
-val FormaCampo: RoundedCornerShape get() = RoundedCornerShape((CurvaturaEsquinas * 0.9f).coerceAtLeast(4.dp))
-val FormaPequena: RoundedCornerShape get() = RoundedCornerShape((CurvaturaEsquinas * 0.6f).coerceAtLeast(3.dp))
+val FormaChip: RoundedCornerShape get() = RoundedCornerShape(CurvaturaEsquinas)
+val FormaCampo: RoundedCornerShape get() = if (CurvaturaEsquinas == 0.dp) RoundedCornerShape(0.dp) else RoundedCornerShape((CurvaturaEsquinas * 0.9f).coerceAtLeast(2.dp))
+val FormaPequena: RoundedCornerShape get() = if (CurvaturaEsquinas == 0.dp) RoundedCornerShape(0.dp) else RoundedCornerShape((CurvaturaEsquinas * 0.6f).coerceAtLeast(2.dp))
 
 val FormasDinamicas: Shapes
     get() = Shapes(
@@ -82,6 +83,7 @@ val FormasDinamicas: Shapes
         small = FormaPequena,
         medium = FormaCampo,
         large = FormaTarjeta,
-        extraLarge = RoundedCornerShape((CurvaturaEsquinas * 1.35f).coerceAtLeast(8.dp))
+        extraLarge = if (CurvaturaEsquinas == 0.dp) RoundedCornerShape(0.dp) else RoundedCornerShape((CurvaturaEsquinas * 1.35f).coerceAtLeast(4.dp))
     )
+
 

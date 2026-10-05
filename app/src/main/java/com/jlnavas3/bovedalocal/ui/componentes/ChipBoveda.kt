@@ -32,14 +32,15 @@ import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
 import com.jlnavas3.bovedalocal.ui.theme.ColorSobreAcento
 import com.jlnavas3.bovedalocal.ui.theme.EstiloBorde
+import com.jlnavas3.bovedalocal.ui.theme.FormaChip
 import com.jlnavas3.bovedalocal.ui.theme.GrosorBorde
 import com.jlnavas3.bovedalocal.ui.theme.TextoPrincipal
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
 
 /**
  * Componente molecular estandarizado para Chips en toda la aplicación.
- * Conserva la altura compacta y esquinas suaves de las identidades, incorporando
- * soporte para iconos temáticos, puntos de estado, checks, contadores y botón de remover.
+ * Conserva la altura compacta respetando la configuración activa de 'Formas y bordes',
+ * incorporando soporte para iconos temáticos, puntos de estado, checks, contadores y botón de remover.
  */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -59,9 +60,15 @@ fun ChipBoveda(
     colorFondoPersonalizado: Color? = null,
     colorTextoPersonalizado: Color? = null,
     colorBordePersonalizado: Color? = null,
-    forma: Shape = RoundedCornerShape(16.dp)
+    forma: Shape = FormaChip
 ) {
     val fondo = colorFondoPersonalizado ?: if (seleccionado) colorBase else ColorTarjetaAjustes
+
+    val grosorBorde = if (GrosorBorde > 0.dp && EstiloBorde != "ninguno") {
+        GrosorBorde
+    } else {
+        0.8.dp
+    }
 
     val borde = colorBordePersonalizado ?: if (seleccionado) {
         colorBase
@@ -71,14 +78,6 @@ fun ChipBoveda(
         colorBase.copy(alpha = 0.45f)
     } else {
         ColorSeparadorAjustes
-    }
-
-    val grosorBorde = if (seleccionado) {
-        0.8.dp
-    } else if (GrosorBorde > 0.dp && EstiloBorde != "ninguno") {
-        GrosorBorde
-    } else {
-        0.8.dp
     }
 
     val modificadorInteraccion = if (alPulsar != null && alPulsarProlongado != null) {

@@ -8,6 +8,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Layers
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.jlnavas3.bovedalocal.data.Identidad
@@ -45,7 +48,7 @@ fun ChipsFiltroIdentidades(
             conteo = totalEntradas,
             seleccionado = todasSeleccionado,
             colorBase = ColorAcento,
-            mostrarPunto = false,
+            icono = Icons.Filled.Layers,
             alPulsar = { alSeleccionarIdentidad(null) }
         )
 
@@ -60,7 +63,7 @@ fun ChipsFiltroIdentidades(
                 conteo = conteo,
                 seleccionado = seleccionado,
                 colorBase = colorBase,
-                mostrarPunto = true,
+                icono = Icons.Filled.Person,
                 alPulsar = {
                     if (seleccionado) alSeleccionarIdentidad(null) else alSeleccionarIdentidad(iden.id)
                 }
@@ -75,7 +78,7 @@ fun ChipsFiltroIdentidades(
                 conteo = conteoSinIdentidad,
                 seleccionado = sinIdentidadSeleccionado,
                 colorBase = TextoSecundario,
-                mostrarPunto = false,
+                icono = Icons.Filled.Person,
                 alPulsar = {
                     if (sinIdentidadSeleccionado) alSeleccionarIdentidad(null) else alSeleccionarIdentidad("__SIN_IDENTIDAD__")
                 }
