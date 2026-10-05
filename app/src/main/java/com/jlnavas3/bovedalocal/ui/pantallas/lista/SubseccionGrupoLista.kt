@@ -20,6 +20,7 @@ import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -61,7 +62,8 @@ fun SubseccionGrupoLista(
     alPulsarLargo: (() -> Unit)? = null,
     seleccionActiva: Boolean = false,
     seleccionado: Boolean = false,
-    parcialmenteSeleccionado: Boolean = false
+    parcialmenteSeleccionado: Boolean = false,
+    alAlternarExpansion: (() -> Unit)? = null
 ) {
     val forma = FormaPequena
     val borde = if (GrosorBorde > 0.dp && EstiloBorde != "ninguno") ColorBordeActual else ColorSeparadorAjustes
@@ -152,12 +154,19 @@ fun SubseccionGrupoLista(
                 }
             }
 
-            Icon(
-                imageVector = if (expandido) Icons.Filled.ExpandLess else Icons.Filled.ExpandMore,
-                contentDescription = if (expandido) "Plegar subsección" else "Desplegar subsección",
-                tint = TextoSecundario,
-                modifier = Modifier.size(20.dp)
-            )
+            IconButton(
+                onClick = {
+                    if (alAlternarExpansion != null) alAlternarExpansion() else alAlternar()
+                },
+                modifier = Modifier.size(32.dp)
+            ) {
+                Icon(
+                    imageVector = if (expandido) Icons.Filled.ExpandLess else Icons.Filled.ExpandMore,
+                    contentDescription = if (expandido) "Plegar subsección" else "Desplegar subsección",
+                    tint = TextoSecundario,
+                    modifier = Modifier.size(20.dp)
+                )
+            }
         }
     }
 }

@@ -210,7 +210,8 @@ fun CuerpoListaEntradas(
                                     alPulsarLargo = { alPulsarLargoLote(item.idsEntradas) },
                                     seleccionActiva = modoSeleccion,
                                     seleccionado = todosSeleccionados,
-                                    parcialmenteSeleccionado = algunoSeleccionado
+                                    parcialmenteSeleccionado = algunoSeleccionado,
+                                    alAlternarExpansion = { alAlternarGrupo(item.claveGrupo) }
                                 )
                             } else {
                                 SeccionGrupoCategoria(
@@ -223,7 +224,8 @@ fun CuerpoListaEntradas(
                                     alPulsarLargo = { alPulsarLargoLote(item.idsEntradas) },
                                     seleccionActiva = modoSeleccion,
                                     seleccionado = todosSeleccionados,
-                                    parcialmenteSeleccionado = algunoSeleccionado
+                                    parcialmenteSeleccionado = algunoSeleccionado,
+                                    alAlternarExpansion = { alAlternarGrupo(item.claveGrupo) }
                                 )
                             }
                         }
@@ -255,7 +257,8 @@ fun CuerpoListaEntradas(
                                 alPulsarLargo = { alPulsarLargoLote(item.idsEntradas) },
                                 seleccionActiva = modoSeleccion,
                                 seleccionado = todosSubSeleccionados,
-                                parcialmenteSeleccionado = algunoSubSeleccionado
+                                parcialmenteSeleccionado = algunoSubSeleccionado,
+                                alAlternarExpansion = { alAlternarGrupo(item.claveGrupo) }
                             )
                         }
                         is com.jlnavas3.bovedalocal.util.ItemAgrupadoJerarquico.EntradaHoja -> {

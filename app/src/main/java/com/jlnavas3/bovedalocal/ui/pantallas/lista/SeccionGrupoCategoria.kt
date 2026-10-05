@@ -18,6 +18,7 @@ import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.Folder
 import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -56,7 +57,8 @@ fun SeccionGrupoCategoria(
     alPulsarLargo: (() -> Unit)? = null,
     seleccionActiva: Boolean = false,
     seleccionado: Boolean = false,
-    parcialmenteSeleccionado: Boolean = false
+    parcialmenteSeleccionado: Boolean = false,
+    alAlternarExpansion: (() -> Unit)? = null
 ) {
     ContenedorTarjeta(
         modifier = modifier,
@@ -143,12 +145,19 @@ fun SeccionGrupoCategoria(
                 }
             }
 
-            Icon(
-                imageVector = if (expandido) Icons.Filled.ExpandLess else Icons.Filled.ExpandMore,
-                contentDescription = if (expandido) "Plegar grupo" else "Desplegar grupo",
-                tint = TextoSecundario,
-                modifier = Modifier.size(24.dp)
-            )
+            IconButton(
+                onClick = {
+                    if (alAlternarExpansion != null) alAlternarExpansion() else alAlternar()
+                },
+                modifier = Modifier.size(36.dp)
+            ) {
+                Icon(
+                    imageVector = if (expandido) Icons.Filled.ExpandLess else Icons.Filled.ExpandMore,
+                    contentDescription = if (expandido) "Plegar grupo" else "Desplegar grupo",
+                    tint = TextoSecundario,
+                    modifier = Modifier.size(24.dp)
+                )
+            }
         }
     }
 }
