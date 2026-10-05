@@ -128,6 +128,11 @@ sealed interface Pantalla {
         override fun equals(other: Any?): Boolean = other is FormasCurvatura && other.seccionId == seccionId
         override fun hashCode(): Int = seccionId?.hashCode() ?: 0
     }
+    open class FormasBorde(val seccionId: String? = null) : Pantalla {
+        companion object : FormasBorde(null)
+        override fun equals(other: Any?): Boolean = other is FormasBorde && other.seccionId == seccionId
+        override fun hashCode(): Int = seccionId?.hashCode() ?: 0
+    }
     open class FormasGrosor(val seccionId: String? = null) : Pantalla {
         companion object : FormasGrosor(null)
         override fun equals(other: Any?): Boolean = other is FormasGrosor && other.seccionId == seccionId

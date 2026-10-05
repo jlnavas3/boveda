@@ -79,8 +79,7 @@ interface VaultNavegacionDelegate {
 
             limpio.startsWith("02-APA-GEO-PRE") -> Pantalla.FormasPresets(limpio)
             limpio.startsWith("02-APA-GEO-CRV") -> Pantalla.FormasCurvatura(limpio)
-            limpio.startsWith("02-APA-GEO-GRO") -> Pantalla.FormasGrosor(limpio)
-            limpio.startsWith("02-APA-GEO-EST") -> Pantalla.FormasEstilo(limpio)
+            limpio.startsWith("02-APA-GEO-BOR") || limpio.startsWith("02-APA-GEO-GRO") || limpio.startsWith("02-APA-GEO-EST") -> Pantalla.FormasBorde(limpio)
             limpio.startsWith("02-APA-GEO-ESP") -> Pantalla.FormasEspaciado(limpio)
             limpio.startsWith("02-APA-GEO") || limpio.startsWith("02.2") -> Pantalla.Formas(limpio)
 

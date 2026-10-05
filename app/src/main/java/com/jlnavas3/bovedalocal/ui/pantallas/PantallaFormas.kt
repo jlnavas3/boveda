@@ -36,8 +36,14 @@ fun PantallaFormas(
     val haptica = remember { Haptica(contexto) }
     val ajustes by vm.ajustes.collectAsStateWithLifecycle()
 
-    val estiloEtiqueta = AlmacenAjustes.OPCIONES_ESTILO_BORDE.firstOrNull { it.first == ajustes.estiloBorde }?.second ?: "Personalizado"
-    val grosorTexto = if (ajustes.grosorBordeDp == 0f) "Sin borde" else "${String.format(Locale.US, "%.1f", ajustes.grosorBordeDp)} dp"
+    val bordeTexto = when {
+        ajustes.estiloBorde == "ninguno" || ajustes.grosorBordeDp <= 0f -> "Sin borde"
+        else -> {
+            val estiloNombre = AlmacenAjustes.OPCIONES_ESTILO_BORDE.firstOrNull { it.first == ajustes.estiloBorde }?.second ?: "Personalizado"
+            val grosor = String.format(Locale.US, "%.1f", ajustes.grosorBordeDp)
+            "$estiloNombre · $grosor dp"
+        }
+    }
 
     ContenedorPrincipal(
         titulo = "Formas y bordes",
@@ -91,17 +97,10 @@ fun PantallaFormas(
             )
             ComponenteSeparador()
             ComponenteNavegacion(
-                titulo = "Grosor del borde",
-                valorTexto = grosorTexto,
+                titulo = "Borde",
+                valorTexto = bordeTexto,
                 icono = null,
-                alPulsar = { vm.ir(Pantalla.FormasGrosor()) }
-            )
-            ComponenteSeparador()
-            ComponenteNavegacion(
-                titulo = "Tono y estilo del borde",
-                valorTexto = estiloEtiqueta,
-                icono = null,
-                alPulsar = { vm.ir(Pantalla.FormasEstilo()) }
+                alPulsar = { vm.ir(Pantalla.FormasBorde()) }
             )
             ComponenteSeparador()
             ComponenteNavegacion(

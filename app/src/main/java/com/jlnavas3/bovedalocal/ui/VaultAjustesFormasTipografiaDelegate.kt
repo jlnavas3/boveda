@@ -18,12 +18,36 @@ interface VaultAjustesFormasTipografiaDelegate {
     }
 
     fun ajustarGrosorBorde(valor: Float) {
-        repositorio.ajustes.actualizar { it.copy(grosorBordeDp = valor) }
+        repositorio.ajustes.actualizar { actual ->
+            val nuevoEstilo = when {
+                valor <= 0f -> "ninguno"
+                actual.estiloBorde == "ninguno" -> "sutil"
+                else -> actual.estiloBorde
+            }
+            actual.copy(grosorBordeDp = valor, estiloBorde = nuevoEstilo)
+        }
         aplicarPersonalizacionFormas(repositorio.ajustes.actual)
     }
 
     fun ajustarEstiloBorde(estilo: String) {
-        repositorio.ajustes.actualizar { it.copy(estiloBorde = estilo) }
+        repositorio.ajustes.actualizar { actual ->
+            val nuevoGrosor = when {
+                estilo == "ninguno" -> 0f
+                actual.grosorBordeDp <= 0f -> 1.0f
+                else -> actual.grosorBordeDp
+            }
+            actual.copy(estiloBorde = estilo, grosorBordeDp = nuevoGrosor)
+        }
+        aplicarPersonalizacionFormas(repositorio.ajustes.actual)
+    }
+
+    fun restablecerBorde() {
+        repositorio.ajustes.actualizar {
+            it.copy(
+                grosorBordeDp = AjustesDefaults.Formas.GROSOR_BORDE_DP,
+                estiloBorde = AjustesDefaults.Formas.ESTILO_BORDE
+            )
+        }
         aplicarPersonalizacionFormas(repositorio.ajustes.actual)
     }
 
