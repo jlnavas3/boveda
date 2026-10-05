@@ -34,6 +34,7 @@ class BovedaAutofillService : AutofillService() {
         const val EXTRA_CONTRASENA_ID = "boveda.contrasena.id"
         const val EXTRA_PAQUETE = "boveda.paquete"
         const val EXTRA_DOMINIO = "boveda.dominio"
+        const val EXTRA_INLINE_REQUEST = "boveda.inline_request"
     }
 
     private val servicioScope = CoroutineScope(Dispatchers.Default + SupervisorJob())
@@ -99,6 +100,9 @@ class BovedaAutofillService : AutofillService() {
                 putExtra(EXTRA_CONTRASENA_ID, campos.contrasena)
                 putExtra(EXTRA_PAQUETE, paquete)
                 putExtra(EXTRA_DOMINIO, campos.dominioWeb)
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && request.inlineSuggestionsRequest != null) {
+                    putExtra(EXTRA_INLINE_REQUEST, request.inlineSuggestionsRequest)
+                }
             }
             val pendiente = PendingIntent.getActivity(
                 this,

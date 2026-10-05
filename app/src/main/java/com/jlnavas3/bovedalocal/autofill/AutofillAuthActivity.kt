@@ -62,6 +62,7 @@ class AutofillAuthActivity : FragmentActivity() {
     private var contrasenaId: AutofillId? = null
     private var paquete: String = ""
     private var dominio: String? = null
+    private var inlineRequest: android.view.inputmethod.InlineSuggestionsRequest? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -72,6 +73,14 @@ class AutofillAuthActivity : FragmentActivity() {
         contrasenaId = leerId(BovedaAutofillService.EXTRA_CONTRASENA_ID)
         paquete = intent.getStringExtra(BovedaAutofillService.EXTRA_PAQUETE) ?: ""
         dominio = intent.getStringExtra(BovedaAutofillService.EXTRA_DOMINIO)
+        inlineRequest = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                intent.getParcelableExtra(BovedaAutofillService.EXTRA_INLINE_REQUEST, android.view.inputmethod.InlineSuggestionsRequest::class.java)
+            } else {
+                @Suppress("DEPRECATION")
+                intent.getParcelableExtra(BovedaAutofillService.EXTRA_INLINE_REQUEST)
+            }
+        } else null
 
         if (repositorio.estaDesbloqueada) {
             responder()
@@ -222,8 +231,14 @@ class AutofillAuthActivity : FragmentActivity() {
         val campos = CamposDetectados(usuarioId, contrasenaId, dominio)
         val respuesta = FillResponse.Builder()
         var alguno = false
-        AutofillUtiles.entradasCompatibles(repositorio.entradas(), paquete, dominio).forEach { entrada ->
-            AutofillUtiles.dataset(this, entrada, campos)?.let {
+        val ajustes = repositorio.ajustes.ajustes.value
+        val specs = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && ajustes.autofillSugerenciasTeclado) {
+            inlineRequest?.inlinePresentationSpecs.orEmpty()
+        } else emptyList()
+
+        AutofillUtiles.entradasCompatibles(repositorio.entradas(), paquete, dominio).forEachIndexed { indice, entrada ->
+            val spec = specs.getOrElse(indice) { specs.lastOrNull() }
+            AutofillUtiles.dataset(this, entrada, campos, spec)?.let {
                 respuesta.addDataset(it)
                 alguno = true
             }

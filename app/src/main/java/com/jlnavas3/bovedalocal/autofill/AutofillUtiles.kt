@@ -226,24 +226,40 @@ object AutofillUtiles {
             subtitulo = subtituloMostrar,
             iconoBitmap = iconoBitmap
         )
-        val constructor = Dataset.Builder(vista)
-        campos.usuario?.let { constructor.setValue(it, AutofillValue.forText(entrada.usuario)) }
-        campos.contrasena?.let { constructor.setValue(it, AutofillValue.forText(entrada.contrasena)) }
-        campos.otp?.let { idOtp ->
-            AutofillOtpUtiles.obtenerCodigoTotp(entrada)?.let { codigo ->
-                constructor.setValue(idOtp, AutofillValue.forText(codigo))
-            }
-        }
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R && inlineSpec != null) {
-            val inlinePres = CreadorInlineSuggestion.crear(
+        val inlinePres = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R && inlineSpec != null) {
+            CreadorInlineSuggestion.crear(
                 contexto = contexto,
                 spec = inlineSpec,
                 titulo = tituloMostrar,
                 subtitulo = subtituloMostrar,
                 iconoBitmap = iconoBitmap
             )
-            if (inlinePres != null) {
-                constructor.setInlinePresentation(inlinePres)
+        } else null
+
+        val constructor = Dataset.Builder(vista)
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R && inlinePres != null) {
+            constructor.setInlinePresentation(inlinePres)
+            campos.usuario?.let {
+                @Suppress("DEPRECATION")
+                constructor.setValue(it, AutofillValue.forText(entrada.usuario), vista, inlinePres)
+            }
+            campos.contrasena?.let {
+                @Suppress("DEPRECATION")
+                constructor.setValue(it, AutofillValue.forText(entrada.contrasena), vista, inlinePres)
+            }
+            campos.otp?.let { idOtp ->
+                AutofillOtpUtiles.obtenerCodigoTotp(entrada)?.let { codigo ->
+                    @Suppress("DEPRECATION")
+                    constructor.setValue(idOtp, AutofillValue.forText(codigo), vista, inlinePres)
+                }
+            }
+        } else {
+            campos.usuario?.let { constructor.setValue(it, AutofillValue.forText(entrada.usuario)) }
+            campos.contrasena?.let { constructor.setValue(it, AutofillValue.forText(entrada.contrasena)) }
+            campos.otp?.let { idOtp ->
+                AutofillOtpUtiles.obtenerCodigoTotp(entrada)?.let { codigo ->
+                    constructor.setValue(idOtp, AutofillValue.forText(codigo))
+                }
             }
         }
         return try {

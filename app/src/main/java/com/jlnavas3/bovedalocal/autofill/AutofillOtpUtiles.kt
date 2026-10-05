@@ -96,19 +96,23 @@ object AutofillOtpUtiles {
             subtitulo = "Código actual: $codigo",
             iconoBitmap = iconoBitmap
         )
-        val constructor = Dataset.Builder(vista)
-        constructor.setValue(idCampoOtp, AutofillValue.forText(codigo))
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R && inlineSpec != null) {
-            val inlinePres = CreadorInlineSuggestion.crear(
+        val inlinePres = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R && inlineSpec != null) {
+            CreadorInlineSuggestion.crear(
                 contexto = contexto,
                 spec = inlineSpec,
                 titulo = "$tituloBase: $codigo",
                 subtitulo = "Código de verificación",
                 iconoBitmap = iconoBitmap
             )
-            if (inlinePres != null) {
-                constructor.setInlinePresentation(inlinePres)
-            }
+        } else null
+
+        val constructor = Dataset.Builder(vista)
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R && inlinePres != null) {
+            constructor.setInlinePresentation(inlinePres)
+            @Suppress("DEPRECATION")
+            constructor.setValue(idCampoOtp, AutofillValue.forText(codigo), vista, inlinePres)
+        } else {
+            constructor.setValue(idCampoOtp, AutofillValue.forText(codigo))
         }
         return try {
             constructor.build()
