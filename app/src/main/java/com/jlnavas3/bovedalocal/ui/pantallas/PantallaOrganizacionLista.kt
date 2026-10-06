@@ -97,6 +97,10 @@ fun PantallaOrganizacionLista(
                     alIrAColoresDatos = {
                         haptica.tic()
                         vm.ir(Pantalla.ColoresDatos())
+                    },
+                    alIrANormalizadorTitulos = {
+                        haptica.tic()
+                        vm.ir(Pantalla.NormalizadorTitulos())
                     }
                 )
 

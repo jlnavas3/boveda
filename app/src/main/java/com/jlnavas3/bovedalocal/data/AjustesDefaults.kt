@@ -262,4 +262,17 @@ object AjustesDefaults {
         const val HAPTICA_APP_INTENSIDAD = 0.10f
         const val MOSTRAR_IDS_AJUSTES = false
     }
+
+    // 16. Normalización de Títulos y Redes Locales
+    object NormalizacionTitulos {
+        val PREFIJOS_SUBDOMINIOS = listOf(
+            "account", "accounts", "access", "login", "signin", "auth", "sso",
+            "myaccount", "identity", "id", "passport", "portal", "webmail",
+            "clientes", "servicios", "online", "banca", "app", "mobile", "m", "www"
+        )
+        const val PLANTILLA_ROUTER_IP = "Router ({ip})"
+        const val PLANTILLA_SERVIDOR_IP = "Servidor ({ip})"
+        const val FORMATO_COLISION_TITULOS = "EXPLICITO_PARENTESIS"
+        const val RESPETAR_TITULOS_PERSONALIZADOS = true
+    }
 }

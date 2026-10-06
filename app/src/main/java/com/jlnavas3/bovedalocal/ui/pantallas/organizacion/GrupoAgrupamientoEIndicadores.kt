@@ -20,6 +20,7 @@ fun GrupoAgrupamientoEIndicadores(
     alCambiarAgruparPorSitio: (Boolean) -> Unit,
     alCambiarMostrarIndicadores: (Boolean) -> Unit,
     alIrAColoresDatos: () -> Unit,
+    alIrANormalizadorTitulos: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     ComponenteGrupo(
@@ -57,5 +58,14 @@ fun GrupoAgrupamientoEIndicadores(
                 alPulsar = alIrAColoresDatos
             )
         }
+        ComponenteSeparador(sangriaInicio = 16.dp)
+        ComponenteNavegacion(
+            titulo = "Asistente de títulos de sitios web",
+            subtitulo = "Limpiar nombres técnicos de Google / URLs",
+            icono = null,
+            idFila = "03-LST-DES-TIT",
+            mostrarId = mostrarId,
+            alPulsar = alIrANormalizadorTitulos
+        )
     }
 }

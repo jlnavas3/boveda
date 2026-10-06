@@ -17,6 +17,13 @@ private fun deserializarHistorial(raw: String): List<RegistroClaveGenerada> = tr
     emptyList()
 }
 
+private fun deserializarPrefijosSubdominios(raw: String): List<String> = try {
+    if (raw.isBlank()) AjustesDefaults.NormalizacionTitulos.PREFIJOS_SUBDOMINIOS
+    else jsonAjustes.decodeFromString(raw)
+} catch (_: Exception) {
+    AjustesDefaults.NormalizacionTitulos.PREFIJOS_SUBDOMINIOS
+}
+
 /** El modo de huella en uso, o null si está apagada. Única lectura de [AjustesApp.biometriaModo]. */
 val AjustesApp.modoBiometriaActivo: BiometricKeyStore.Modo?
     get() = if (biometriaActiva) BiometricKeyStore.Modo.desde(biometriaModo) else null
@@ -243,7 +250,13 @@ data class AjustesApp(
     val colorIdCopias: String = AjustesDefaults.ColoresIds.COPIAS,
     val colorIdSistema: String = AjustesDefaults.ColoresIds.SISTEMA,
     // Autocompletado de Android e Inline Suggestions
-    val autofillSugerenciasTeclado: Boolean = AjustesDefaults.Autocompletado.SUGERENCIAS_TECLADO
+    val autofillSugerenciasTeclado: Boolean = AjustesDefaults.Autocompletado.SUGERENCIAS_TECLADO,
+    // Normalización de títulos y redes locales
+    val prefijosSubdominios: List<String> = AjustesDefaults.NormalizacionTitulos.PREFIJOS_SUBDOMINIOS,
+    val plantillaRouterIp: String = AjustesDefaults.NormalizacionTitulos.PLANTILLA_ROUTER_IP,
+    val plantillaServidorIp: String = AjustesDefaults.NormalizacionTitulos.PLANTILLA_SERVIDOR_IP,
+    val formatoColisionTitulos: String = AjustesDefaults.NormalizacionTitulos.FORMATO_COLISION_TITULOS,
+    val respetarTitulosPersonalizados: Boolean = AjustesDefaults.NormalizacionTitulos.RESPETAR_TITULOS_PERSONALIZADOS
 ) {
     val modoVisualizacionIdentidades: ModoVisualizacionIdentidades
         get() = ModoVisualizacionIdentidades.desde(modoIdentidades)
@@ -513,7 +526,12 @@ class AlmacenAjustes(contexto: Context) {
             colorIdHerramientas = prefs.getString("color_id_herramientas", AjustesDefaults.ColoresIds.HERRAMIENTAS) ?: AjustesDefaults.ColoresIds.HERRAMIENTAS,
             colorIdCopias = prefs.getString("color_id_copias", AjustesDefaults.ColoresIds.COPIAS) ?: AjustesDefaults.ColoresIds.COPIAS,
             colorIdSistema = prefs.getString("color_id_sistema", AjustesDefaults.ColoresIds.SISTEMA) ?: AjustesDefaults.ColoresIds.SISTEMA,
-            autofillSugerenciasTeclado = prefs.getBoolean("autofill_sugerencias_teclado", AjustesDefaults.Autocompletado.SUGERENCIAS_TECLADO)
+            autofillSugerenciasTeclado = prefs.getBoolean("autofill_sugerencias_teclado", AjustesDefaults.Autocompletado.SUGERENCIAS_TECLADO),
+            prefijosSubdominios = deserializarPrefijosSubdominios(prefs.getString("prefijos_subdominios_json", "") ?: ""),
+            plantillaRouterIp = prefs.getString("plantilla_router_ip", AjustesDefaults.NormalizacionTitulos.PLANTILLA_ROUTER_IP) ?: AjustesDefaults.NormalizacionTitulos.PLANTILLA_ROUTER_IP,
+            plantillaServidorIp = prefs.getString("plantilla_servidor_ip", AjustesDefaults.NormalizacionTitulos.PLANTILLA_SERVIDOR_IP) ?: AjustesDefaults.NormalizacionTitulos.PLANTILLA_SERVIDOR_IP,
+            formatoColisionTitulos = prefs.getString("formato_colision_titulos", AjustesDefaults.NormalizacionTitulos.FORMATO_COLISION_TITULOS) ?: AjustesDefaults.NormalizacionTitulos.FORMATO_COLISION_TITULOS,
+            respetarTitulosPersonalizados = prefs.getBoolean("respetar_titulos_personalizados", AjustesDefaults.NormalizacionTitulos.RESPETAR_TITULOS_PERSONALIZADOS)
         )
     }
 
@@ -701,6 +719,11 @@ class AlmacenAjustes(contexto: Context) {
             .putString("color_id_copias", nuevo.colorIdCopias)
             .putString("color_id_sistema", nuevo.colorIdSistema)
             .putBoolean("autofill_sugerencias_teclado", nuevo.autofillSugerenciasTeclado)
+            .putString("prefijos_subdominios_json", jsonAjustes.encodeToString(nuevo.prefijosSubdominios))
+            .putString("plantilla_router_ip", nuevo.plantillaRouterIp)
+            .putString("plantilla_servidor_ip", nuevo.plantillaServidorIp)
+            .putString("formato_colision_titulos", nuevo.formatoColisionTitulos)
+            .putBoolean("respetar_titulos_personalizados", nuevo.respetarTitulosPersonalizados)
             .apply()
         _ajustes.value = nuevo
         com.jlnavas3.bovedalocal.util.Haptica.sincronizar(nuevo)

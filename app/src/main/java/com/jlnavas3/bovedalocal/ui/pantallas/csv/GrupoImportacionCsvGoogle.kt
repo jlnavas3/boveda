@@ -3,6 +3,7 @@ package com.jlnavas3.bovedalocal.ui.pantallas.csv
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AutoFixHigh
 import androidx.compose.material.icons.filled.FileDownload
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -12,6 +13,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteBotonFila
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteGrupo
+import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteNavegacion
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.SeparadorFilaSimple
 import com.jlnavas3.bovedalocal.ui.theme.ColorExportacion
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
@@ -20,6 +22,7 @@ import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
 fun GrupoImportacionCsvGoogle(
     mostrarId: Boolean,
     alIniciarImportacion: () -> Unit,
+    alAbrirNormalizador: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     ComponenteGrupo(
@@ -44,6 +47,15 @@ fun GrupoImportacionCsvGoogle(
             idFila = "05-COP-CSV-IMP",
             mostrarId = mostrarId,
             alPulsar = alIniciarImportacion
+        )
+        SeparadorFilaSimple()
+        ComponenteNavegacion(
+            titulo = "Asistente de títulos de sitios web",
+            subtitulo = "Normalizar nombres técnicos y resolver cuentas múltiples",
+            icono = Icons.Filled.AutoFixHigh,
+            idFila = "05-COP-CSV-TIT",
+            mostrarId = mostrarId,
+            alPulsar = alAbrirNormalizador
         )
     }
 }

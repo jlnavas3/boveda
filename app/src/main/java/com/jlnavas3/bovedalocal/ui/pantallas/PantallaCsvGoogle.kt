@@ -22,6 +22,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.jlnavas3.bovedalocal.BovedaApp
+import com.jlnavas3.bovedalocal.ui.Pantalla
 import com.jlnavas3.bovedalocal.ui.VaultViewModel
 import com.jlnavas3.bovedalocal.ui.componentes.BarraSuperiorPantalla
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.AccionSaltoGrupo
@@ -73,6 +74,7 @@ fun PantallaCsvGoogle(
                         uri = uri.toString(),
                         cuentas = nuevas
                     )
+                    vm.ir(Pantalla.NormalizadorTitulos(esPostImportacion = true))
                 }
             }
         }
@@ -115,7 +117,8 @@ fun PantallaCsvGoogle(
                 // Grupo 1: Importación de CSV
                 GrupoImportacionCsvGoogle(
                     mostrarId = ajustes.mostrarIdsAjustes,
-                    alIniciarImportacion = { dialogoImportarCsv = true }
+                    alIniciarImportacion = { dialogoImportarCsv = true },
+                    alAbrirNormalizador = { vm.ir(Pantalla.NormalizadorTitulos()) }
                 )
 
                 if (ajustes.csvGoogleRuta.isNotBlank()) {

@@ -8,6 +8,8 @@ import com.jlnavas3.bovedalocal.data.AjustesApp
 import com.jlnavas3.bovedalocal.data.Entrada
 import com.jlnavas3.bovedalocal.data.EstadoBoveda
 import com.jlnavas3.bovedalocal.data.FrenoIntentos
+import com.jlnavas3.bovedalocal.data.GrupoTitulosSitio
+import com.jlnavas3.bovedalocal.data.ModoFormatoTitulos
 import com.jlnavas3.bovedalocal.data.TipoEntrada
 import com.jlnavas3.bovedalocal.data.VaultRepository
 import com.jlnavas3.bovedalocal.util.Diagnostico
@@ -28,7 +30,8 @@ class VaultViewModel(app: Application) : AndroidViewModel(app),
     VaultEntradasDelegate,
     VaultCategoriasDelegate,
     VaultIdentidadesDelegate,
-    VaultCicloBovedaDelegate {
+    VaultCicloBovedaDelegate,
+    VaultTitulosDelegate {
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
@@ -96,6 +99,18 @@ class VaultViewModel(app: Application) : AndroidViewModel(app),
     )
     val criterioOrdenacion: StateFlow<CriterioOrdenacion> = _criterioOrdenacion
     override val criterioOrdenacionInterno: MutableStateFlow<CriterioOrdenacion> get() = _criterioOrdenacion
+
+    private val _gruposTitulos = MutableStateFlow<List<GrupoTitulosSitio>>(emptyList())
+    val gruposTitulos: StateFlow<List<GrupoTitulosSitio>> = _gruposTitulos
+    override val gruposTitulosInterno: MutableStateFlow<List<GrupoTitulosSitio>> get() = _gruposTitulos
+
+    private val _modoFormatoTitulos = MutableStateFlow(ModoFormatoTitulos.EXPLICITO_PARENTESIS)
+    val modoFormatoTitulos: StateFlow<ModoFormatoTitulos> = _modoFormatoTitulos
+    override val modoFormatoTitulosInterno: MutableStateFlow<ModoFormatoTitulos> get() = _modoFormatoTitulos
+
+    private val _respetarTitulosManuales = MutableStateFlow(true)
+    val respetarTitulosManuales: StateFlow<Boolean> = _respetarTitulosManuales
+    override val respetarTitulosManualesInterno: MutableStateFlow<Boolean> get() = _respetarTitulosManuales
 
     private var trabajoPortapapeles: Job? = null
 

@@ -305,5 +305,11 @@ sealed interface Pantalla {
         override fun equals(other: Any?): Boolean = other is Avanzada && other.seccionId == seccionId
         override fun hashCode(): Int = seccionId?.hashCode() ?: 0
     }
+    open class NormalizadorTitulos(val esPostImportacion: Boolean = false) : Pantalla {
+        companion object : NormalizadorTitulos(false)
+        override fun equals(other: Any?): Boolean = other is NormalizadorTitulos && other.esPostImportacion == esPostImportacion
+        override fun hashCode(): Int = esPostImportacion.hashCode()
+    }
+    object ReglasNormalizacion : Pantalla
 }
 

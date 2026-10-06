@@ -17,6 +17,7 @@ fun ComponenteSwitch(
     activo: Boolean,
     alCambiar: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
+    subtitulo: String? = null,
     icono: ImageVector? = null,
     colorIcono: Color? = null,
     colorTinteIcono: Color = Color.White,
@@ -27,6 +28,7 @@ fun ComponenteSwitch(
 ) {
     ComponenteFila(
         titulo = titulo,
+        subtitulo = subtitulo,
         modifier = modifier,
         icono = icono,
         colorIcono = colorIcono,
