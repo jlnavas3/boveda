@@ -4,6 +4,7 @@ import android.app.PendingIntent
 import android.content.Intent
 import android.os.CancellationSignal
 import android.service.autofill.AutofillService
+import android.service.autofill.Dataset
 import android.service.autofill.FillCallback
 import android.service.autofill.FillRequest
 import android.service.autofill.FillResponse
@@ -11,6 +12,7 @@ import android.service.autofill.SaveCallback
 import android.service.autofill.SaveInfo
 import android.service.autofill.SaveRequest
 import android.view.autofill.AutofillId
+import android.view.autofill.AutofillValue
 import com.jlnavas3.bovedalocal.data.Entrada
 import com.jlnavas3.bovedalocal.data.TipoEntrada
 import com.jlnavas3.bovedalocal.data.VaultRepository
@@ -114,22 +116,25 @@ class BovedaAutofillService : AutofillService() {
             )
             val presentacion = AutofillUtiles.presentacion(this, "Bóveda local está cerrada", "Toca para desbloquearla")
             val inlineSpec = specs.firstOrNull()
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && inlineSpec != null) {
-                val inlineAuth = CreadorInlineSuggestion.crear(
+            val inlineAuth = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && inlineSpec != null) {
+                CreadorInlineSuggestion.crear(
                     contexto = this,
                     spec = inlineSpec,
                     titulo = "Desbloquear Bóveda",
-                    subtitulo = "Toca para abrir",
                     intencionPendiente = pendiente,
-                    fijado = true
+                    fijado = false
                 )
-                if (inlineAuth != null) {
-                    @Suppress("DEPRECATION")
-                    respuesta.setAuthentication(ids, pendiente.intentSender, presentacion, inlineAuth)
-                } else {
-                    @Suppress("DEPRECATION")
-                    respuesta.setAuthentication(ids, pendiente.intentSender, presentacion)
+            } else null
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                val presBuilder = android.service.autofill.Presentations.Builder().apply {
+                    setMenuPresentation(presentacion)
+                    inlineAuth?.let { setInlinePresentation(it) }
                 }
+                respuesta.setAuthentication(ids, pendiente.intentSender, presBuilder.build())
+            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && inlineAuth != null) {
+                @Suppress("DEPRECATION")
+                respuesta.setAuthentication(ids, pendiente.intentSender, presentacion, inlineAuth)
             } else {
                 @Suppress("DEPRECATION")
                 respuesta.setAuthentication(ids, pendiente.intentSender, presentacion)

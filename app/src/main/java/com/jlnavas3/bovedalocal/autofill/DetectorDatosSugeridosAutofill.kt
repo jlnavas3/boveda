@@ -2,8 +2,9 @@ package com.jlnavas3.bovedalocal.autofill
 
 import android.content.Context
 import com.jlnavas3.bovedalocal.util.Dominios
+import com.jlnavas3.bovedalocal.util.FiltroNavegadoresWeb
 import com.jlnavas3.bovedalocal.util.LanzadorEnlaces
-import com.jlnavas3.bovedalocal.util.MapeadorPaquetesPopulares
+import com.jlnavas3.bovedalocal.util.ResolverIconoAppDominio
 
 /**
  * Detecta y estructura los datos sugeridos (título, URL e icono) a partir del formulario
@@ -11,22 +12,10 @@ import com.jlnavas3.bovedalocal.util.MapeadorPaquetesPopulares
  */
 object DetectorDatosSugeridosAutofill {
 
-    private val PAQUETES_NAVEGADORES = setOf(
-        "com.brave.browser",
-        "com.android.chrome",
-        "org.mozilla.firefox",
-        "com.microsoft.emmx",
-        "com.opera.browser",
-        "com.opera.mini.native",
-        "com.duckduckgo.mobile.android",
-        "com.sec.android.app.sbrowser",
-        "com.vivaldi.browser"
-    )
-
     fun detectar(contexto: Context, paquete: String, dominioWeb: String?): DatosSugeridosAutofill {
         val dom = dominioWeb?.takeIf { it.isNotBlank() }?.let { Dominios.raiz(it) }
-        val paqueteDeDominio = dom?.let { com.jlnavas3.bovedalocal.util.ResolverIconoAppDominio.resolverPaquete(contexto, it) }
-        val esNavegador = paquete in PAQUETES_NAVEGADORES || !dominioWeb.isNullOrBlank()
+        val paqueteDeDominio = dom?.let { ResolverIconoAppDominio.resolverPaquete(contexto, it) }
+        val esNavegador = FiltroNavegadoresWeb.esNavegador(contexto, paquete) || !dominioWeb.isNullOrBlank()
 
         val paqueteEfectivo = when {
             paqueteDeDominio != null && LanzadorEnlaces.estaInstalada(contexto, paqueteDeDominio) -> paqueteDeDominio
@@ -55,9 +44,13 @@ object DetectorDatosSugeridosAutofill {
             else -> ""
         }
 
-        val icono = if (paqueteEfectivo != null && LanzadorEnlaces.estaInstalada(contexto, paqueteEfectivo)) {
-            AutofillUtiles.obtenerBitmapIconoCircular(contexto, paqueteEfectivo)
-        } else null
+        val icono = ResolverIconoGlifoTeclado.resolver(
+            contexto = contexto,
+            titulo = titulo,
+            urls = if (url.isNotBlank()) listOf(url) else emptyList(),
+            paquete = paqueteEfectivo,
+            dominioWeb = dominioWeb
+        )
 
         return DatosSugeridosAutofill(
             titulo = titulo,

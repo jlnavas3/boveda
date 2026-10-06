@@ -5,68 +5,84 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.net.Uri
+import android.util.LruCache
 import com.jlnavas3.bovedalocal.autofill.AutofillUtiles
 
 /**
  * Resuelve el paquete y el icono de la aplicación nativa instalada que maneja un dominio web,
- * consultando los Android App Links registrados en el sistema.
+ * consultando los Android App Links registrados en el sistema de manera jerárquica con caché LRU.
  */
 object ResolverIconoAppDominio {
 
-    private val PAQUETES_NAVEGADORES = setOf(
-        "com.brave.browser",
-        "com.android.chrome",
-        "org.mozilla.firefox",
-        "com.microsoft.emmx",
-        "com.opera.browser",
-        "com.opera.mini.native",
-        "com.duckduckgo.mobile.android",
-        "com.sec.android.app.sbrowser",
-        "com.vivaldi.browser"
-    )
+    private val cachePaquetes = LruCache<String, String>(50)
+    private val cacheBitmaps = LruCache<String, Bitmap>(50)
 
     fun resolverPaquete(contexto: Context, dominio: String): String? {
-        val domLimpio = Dominios.raiz(dominio)
-        val url = if (domLimpio.startsWith("http")) domLimpio else "https://$domLimpio"
-        return try {
-            val pm = contexto.packageManager
-            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url)).apply {
-                addCategory(Intent.CATEGORY_BROWSABLE)
-            }
-            val resoluciones = pm.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY)
-            val paqueteEncontrado = resoluciones.firstOrNull { res ->
-                val pkg = res.activityInfo?.packageName ?: ""
-                pkg.isNotBlank() && pkg !in PAQUETES_NAVEGADORES && !esNavegadorPredeterminado(pm, pkg)
-            }?.activityInfo?.packageName
+        val clave = dominio.trim().lowercase()
+        if (clave.isBlank()) return null
 
-            if (paqueteEncontrado != null && LanzadorEnlaces.estaInstalada(contexto, paqueteEncontrado)) {
-                paqueteEncontrado
-            } else {
-                val paquetePopular = MapeadorPaquetesPopulares.obtenerPaquete(domLimpio)
-                if (paquetePopular != null && LanzadorEnlaces.estaInstalada(contexto, paquetePopular)) {
-                    paquetePopular
-                } else null
-            }
-        } catch (_: Exception) {
-            val paquetePopular = MapeadorPaquetesPopulares.obtenerPaquete(domLimpio)
-            if (paquetePopular != null && LanzadorEnlaces.estaInstalada(contexto, paquetePopular)) {
-                paquetePopular
-            } else null
+        synchronized(cachePaquetes) {
+            cachePaquetes.get(clave)?.let { return it }
         }
+
+        val normalizado = NormalizadorDominioWeb.normalizar(clave)
+        val candidatos = normalizado?.hostsCandidatos ?: listOf(clave)
+        val navegadores = FiltroNavegadoresWeb.obtenerNavegadores(contexto)
+        val pm = contexto.packageManager
+        val flags = PackageManager.MATCH_ALL
+
+        var paqueteEncontrado: String? = null
+
+        for (host in candidatos) {
+            try {
+                val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://$host")).apply {
+                    addCategory(Intent.CATEGORY_BROWSABLE)
+                }
+                val resoluciones = pm.queryIntentActivities(intent, flags)
+                val appInfo = resoluciones.firstOrNull { res ->
+                    val pkg = res.activityInfo?.packageName ?: ""
+                    pkg.isNotBlank() && pkg !in navegadores && pkg != contexto.packageName
+                }?.activityInfo?.packageName
+
+                if (appInfo != null && LanzadorEnlaces.estaInstalada(contexto, appInfo)) {
+                    paqueteEncontrado = appInfo
+                    break
+                }
+            } catch (_: Exception) {}
+        }
+
+        if (paqueteEncontrado == null) {
+            val domRaiz = normalizado?.dominioRaiz ?: Dominios.raiz(clave)
+            val paquetePopular = MapeadorPaquetesPopulares.obtenerPaquete(domRaiz)
+            if (paquetePopular != null && LanzadorEnlaces.estaInstalada(contexto, paquetePopular)) {
+                paqueteEncontrado = paquetePopular
+            }
+        }
+
+        if (paqueteEncontrado != null) {
+            synchronized(cachePaquetes) {
+                cachePaquetes.put(clave, paqueteEncontrado)
+            }
+        }
+
+        return paqueteEncontrado
     }
 
     fun resolverBitmapIcono(contexto: Context, dominio: String): Bitmap? {
-        val paquete = resolverPaquete(contexto, dominio) ?: return null
-        return AutofillUtiles.obtenerBitmapIconoCircular(contexto, paquete)
-    }
+        val clave = dominio.trim().lowercase()
+        if (clave.isBlank()) return null
 
-    private fun esNavegadorPredeterminado(pm: PackageManager, packageName: String): Boolean {
-        return try {
-            val intentGenerico = Intent(Intent.ACTION_VIEW, Uri.parse("https://example.com"))
-            val res = pm.resolveActivity(intentGenerico, PackageManager.MATCH_DEFAULT_ONLY)
-            res?.activityInfo?.packageName == packageName
-        } catch (_: Exception) {
-            false
+        synchronized(cacheBitmaps) {
+            cacheBitmaps.get(clave)?.let { return it }
         }
+
+        val paquete = resolverPaquete(contexto, clave) ?: return null
+        val bitmap = AutofillUtiles.obtenerBitmapIcono(contexto, paquete)
+        if (bitmap != null) {
+            synchronized(cacheBitmaps) {
+                cacheBitmaps.put(clave, bitmap)
+            }
+        }
+        return bitmap
     }
 }

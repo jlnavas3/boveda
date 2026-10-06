@@ -1,17 +1,16 @@
 package com.jlnavas3.bovedalocal.autofill
 
 import android.app.PendingIntent
-import android.app.slice.Slice
-import android.app.slice.SliceSpec
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.drawable.Icon
-import android.net.Uri
 import android.os.Build
+import android.os.Bundle
 import android.service.autofill.InlinePresentation
 import android.widget.inline.InlinePresentationSpec
 import androidx.annotation.RequiresApi
+import androidx.core.graphics.drawable.toBitmap
 import com.jlnavas3.bovedalocal.R
 import com.jlnavas3.bovedalocal.ui.MainActivity
 
@@ -46,31 +45,18 @@ object CreadorInlineSuggestion {
                 Icon.createWithBitmap(obtenerBitmapVector(contexto, R.drawable.ic_candado_boveda))
             }
 
-            val iconHints = if (iconoBitmap != null) {
-                listOf("inline_start_icon", Slice.HINT_NO_TINT)
-            } else {
-                listOf("inline_start_icon")
-            }
+            val contentBuilder = androidx.autofill.inline.v1.InlineSuggestionUi.newContentBuilder(intentAtribucion)
+                .setTitle(titulo)
+                .setStartIcon(icono)
+                .setContentDescription(titulo)
 
-            val sliceBuilder = Slice.Builder(
-                Uri.EMPTY,
-                SliceSpec("androidx.autofill.inline.ui.version:v1", 1)
-            )
-
-            sliceBuilder.addIcon(icono, null, iconHints)
-            sliceBuilder.addText(titulo, null, listOf("inline_title"))
             if (!subtitulo.isNullOrBlank()) {
-                sliceBuilder.addText(subtitulo, null, listOf("inline_subtitle"))
+                contentBuilder.setSubtitle(subtitulo)
             }
 
-            val actionSlice = Slice.Builder(sliceBuilder)
-                .addHints(listOf("inline_attribution"))
-                .build()
-            sliceBuilder.addAction(intentAtribucion, actionSlice, null)
-            sliceBuilder.addText(titulo, null, listOf("inline_content_description"))
-
-            val slice = sliceBuilder.build()
-            val pres = InlinePresentation(slice, spec, fijado)
+            val slice = contentBuilder.build().slice
+            val specEfectiva = removerTinteDeSpec(contexto, spec)
+            val pres = InlinePresentation(slice, specEfectiva, fijado)
             android.util.Log.i("BovedaAutofill", "CreadorInlineSuggestion OK: titulo=$titulo, tieneIconoBitmap=${iconoBitmap != null}")
             pres
         } catch (e: Exception) {
@@ -79,13 +65,51 @@ object CreadorInlineSuggestion {
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.R)
+    private fun removerTinteDeSpec(contexto: Context, spec: InlinePresentationSpec): InlinePresentationSpec {
+        return try {
+            val estiloOriginal = spec.style
+            estiloOriginal.classLoader = contexto.classLoader
+            val estiloSanitizado = sanitizarEstiloSinTinte(estiloOriginal, contexto.classLoader)
+            InlinePresentationSpec.Builder(spec.minSize, spec.maxSize)
+                .setStyle(estiloSanitizado)
+                .build()
+        } catch (_: Exception) {
+            spec
+        }
+    }
+
+    @Suppress("DEPRECATION")
+    private fun sanitizarEstiloSinTinte(bundle: Bundle, classLoader: ClassLoader): Bundle {
+        bundle.classLoader = classLoader
+        val copia = Bundle(bundle)
+        copia.classLoader = classLoader
+        val clavesTinte = listOf(
+            "image_tint_list",
+            "tint_list",
+            "tint",
+            "tint_mode",
+            "image_tint_mode"
+        )
+        for (clave in clavesTinte) {
+            copia.remove(clave)
+        }
+        for (clave in bundle.keySet()) {
+            val valor = bundle.get(clave)
+            if (valor is Bundle) {
+                copia.putBundle(clave, sanitizarEstiloSinTinte(valor, classLoader))
+            }
+        }
+        return copia
+    }
+
     private fun obtenerBitmapVector(contexto: Context, resId: Int, tamanoPx: Int = 72): Bitmap {
         val drawable = androidx.core.content.ContextCompat.getDrawable(contexto, resId)
             ?: return Bitmap.createBitmap(tamanoPx, tamanoPx, Bitmap.Config.ARGB_8888)
-        val bitmap = Bitmap.createBitmap(tamanoPx, tamanoPx, Bitmap.Config.ARGB_8888)
-        val canvas = android.graphics.Canvas(bitmap)
-        drawable.setBounds(0, 0, tamanoPx, tamanoPx)
-        drawable.draw(canvas)
-        return bitmap
+        return drawable.toBitmap(
+            width = tamanoPx,
+            height = tamanoPx,
+            config = Bitmap.Config.ARGB_8888
+        )
     }
 }

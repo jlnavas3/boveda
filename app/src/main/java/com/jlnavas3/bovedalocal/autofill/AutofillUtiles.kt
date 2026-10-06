@@ -11,6 +11,7 @@ import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Path
 import android.widget.RemoteViews
+import androidx.core.graphics.drawable.toBitmap
 import com.jlnavas3.bovedalocal.R
 import com.jlnavas3.bovedalocal.data.Entrada
 import com.jlnavas3.bovedalocal.util.Dominios
@@ -167,6 +168,21 @@ object AutofillUtiles {
         }
     }
 
+    /**
+     * Obtiene el bitmap nativo del icono de la app (soporta AdaptiveIconDrawable y VectorDrawable),
+     * adecuado para sugerencias en línea del teclado (InlinePresentation).
+     */
+    fun obtenerBitmapIcono(contexto: Context, paquete: String, tamanoPx: Int = 96): Bitmap? {
+        return try {
+            val pm = contexto.packageManager
+            val appInfo = pm.getApplicationInfo(paquete, 0)
+            val drawable = appInfo.loadIcon(pm) ?: return null
+            drawable.toBitmap(width = tamanoPx, height = tamanoPx)
+        } catch (_: Exception) {
+            null
+        }
+    }
+
     fun presentacion(
         contexto: Context,
         titulo: String,
@@ -212,9 +228,16 @@ object AutofillUtiles {
             LanzadorEnlaces.obtenerNombreApp(contexto, paquete)
         } else null
 
-        val iconoBitmap = if (paquete != null && LanzadorEnlaces.estaInstalada(contexto, paquete)) {
+        val iconoBitmapCirculo = if (paquete != null && LanzadorEnlaces.estaInstalada(contexto, paquete)) {
             obtenerBitmapIconoCircular(contexto, paquete)
         } else null
+
+        val iconoGlifoTeclado = ResolverIconoGlifoTeclado.resolver(
+            contexto = contexto,
+            entrada = entrada,
+            paquete = paquete,
+            dominioWeb = campos.dominioWeb ?: entrada.urls.firstNotNullOfOrNull { Dominios.host(it) }
+        )
 
         val domPaquete = if (paquete != null) Dominios.dominioDePaquete(paquete) else null
         val tituloAlmacenado = entrada.titulo.trim()
@@ -239,7 +262,7 @@ object AutofillUtiles {
             contexto = contexto,
             titulo = tituloMostrar,
             subtitulo = subtituloMostrar,
-            iconoBitmap = iconoBitmap
+            iconoBitmap = iconoBitmapCirculo
         )
 
         val inlineTitulo = if (entrada.usuario.isNotBlank()) entrada.usuario else tituloMostrar
@@ -255,7 +278,7 @@ object AutofillUtiles {
                 spec = inlineSpec,
                 titulo = inlineTitulo,
                 subtitulo = inlineSubtitulo,
-                iconoBitmap = iconoBitmap
+                iconoBitmap = iconoGlifoTeclado
             )
         } else null
 

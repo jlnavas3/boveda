@@ -23,6 +23,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -111,10 +112,23 @@ class AutofillAuthActivity : FragmentActivity() {
         val ambito = androidx.compose.runtime.rememberCoroutineScope()
         val flujo = remember { FlujoBiometria(this, repositorio) }
         // Se pregunta al entrar y al volver, no se cachea: un sensor ocupado cambia la respuesta.
-        var biometriaLista by remember { mutableStateOf(false) }
+        var biometriaLista by remember { mutableStateOf(flujo.disponible()) }
         LifecycleResumeEffect(Unit) {
             biometriaLista = flujo.disponible()
             onPauseOrDispose { }
+        }
+
+        var biometriaLanzada by remember { mutableStateOf(false) }
+        LaunchedEffect(biometriaLista) {
+            if (biometriaLista && !biometriaLanzada) {
+                biometriaLanzada = true
+                desbloquearConBiometria(
+                    flujo = flujo,
+                    haptica = haptica,
+                    alFallar = { error = it },
+                    alCambiarDisponibilidad = { biometriaLista = flujo.disponible() }
+                )
+            }
         }
 
         Box(
@@ -272,7 +286,15 @@ class AutofillAuthActivity : FragmentActivity() {
         }
         val datos = Intent()
         if (alguno || tipos != 0) {
-            datos.putExtra(AutofillManager.EXTRA_AUTHENTICATION_RESULT, respuesta.build())
+            val fillRes = respuesta.build()
+            val primerDataset = if (compatibles.size == 1) {
+                AutofillUtiles.dataset(this, compatibles.first(), campos, specs.firstOrNull(), paquete)
+            } else null
+            if (primerDataset != null) {
+                datos.putExtra(AutofillManager.EXTRA_AUTHENTICATION_RESULT, primerDataset)
+            } else {
+                datos.putExtra(AutofillManager.EXTRA_AUTHENTICATION_RESULT, fillRes)
+            }
         }
         setResult(Activity.RESULT_OK, datos)
         finish()

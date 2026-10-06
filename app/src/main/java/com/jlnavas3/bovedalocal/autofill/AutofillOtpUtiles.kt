@@ -86,9 +86,15 @@ object AutofillOtpUtiles {
             ?: (if (paqueteDeDominio != null && LanzadorEnlaces.estaInstalada(contexto, paqueteDeDominio)) paqueteDeDominio else null)
             ?: GestorAppsInstaladas.resolverPaqueteApp(contexto, entrada)
             ?: (if (!paqueteSolicitante.isNullOrBlank() && LanzadorEnlaces.estaInstalada(contexto, paqueteSolicitante)) paqueteSolicitante else null)
-        val iconoBitmap = if (paquete != null && LanzadorEnlaces.estaInstalada(contexto, paquete)) {
+        val iconoBitmapCirculo = if (paquete != null && LanzadorEnlaces.estaInstalada(contexto, paquete)) {
             AutofillUtiles.obtenerBitmapIconoCircular(contexto, paquete)
         } else null
+        val iconoGlifoTeclado = ResolverIconoGlifoTeclado.resolver(
+            contexto = contexto,
+            entrada = entrada,
+            paquete = paquete,
+            dominioWeb = entrada.urls.firstNotNullOfOrNull { Dominios.host(it) }
+        )
         val nombreApp = if (paquete != null && LanzadorEnlaces.estaInstalada(contexto, paquete)) {
             LanzadorEnlaces.obtenerNombreApp(contexto, paquete)
         } else null
@@ -103,7 +109,7 @@ object AutofillOtpUtiles {
             contexto = contexto,
             titulo = "$tituloBase (Código de verificación)",
             subtitulo = "Código actual: $codigo",
-            iconoBitmap = iconoBitmap
+            iconoBitmap = iconoBitmapCirculo
         )
         val inlinePres = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R && inlineSpec != null) {
             CreadorInlineSuggestion.crear(
@@ -111,7 +117,7 @@ object AutofillOtpUtiles {
                 spec = inlineSpec,
                 titulo = "$tituloBase: $codigo",
                 subtitulo = "Código de verificación",
-                iconoBitmap = iconoBitmap
+                iconoBitmap = iconoGlifoTeclado
             )
         } else null
 
