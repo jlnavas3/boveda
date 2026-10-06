@@ -24,6 +24,13 @@ private fun deserializarPrefijosSubdominios(raw: String): List<String> = try {
     AjustesDefaults.NormalizacionTitulos.PREFIJOS_SUBDOMINIOS
 }
 
+private fun deserializarTldsDescartables(raw: String): List<String> = try {
+    if (raw.isBlank()) AjustesDefaults.NormalizacionTitulos.TLDS_DESCARTABLES
+    else jsonAjustes.decodeFromString(raw)
+} catch (_: Exception) {
+    AjustesDefaults.NormalizacionTitulos.TLDS_DESCARTABLES
+}
+
 /** El modo de huella en uso, o null si está apagada. Única lectura de [AjustesApp.biometriaModo]. */
 val AjustesApp.modoBiometriaActivo: BiometricKeyStore.Modo?
     get() = if (biometriaActiva) BiometricKeyStore.Modo.desde(biometriaModo) else null
@@ -253,6 +260,7 @@ data class AjustesApp(
     val autofillSugerenciasTeclado: Boolean = AjustesDefaults.Autocompletado.SUGERENCIAS_TECLADO,
     // Normalización de títulos y redes locales
     val prefijosSubdominios: List<String> = AjustesDefaults.NormalizacionTitulos.PREFIJOS_SUBDOMINIOS,
+    val tldsDescartables: List<String> = AjustesDefaults.NormalizacionTitulos.TLDS_DESCARTABLES,
     val plantillaRouterIp: String = AjustesDefaults.NormalizacionTitulos.PLANTILLA_ROUTER_IP,
     val plantillaServidorIp: String = AjustesDefaults.NormalizacionTitulos.PLANTILLA_SERVIDOR_IP,
     val formatoColisionTitulos: String = AjustesDefaults.NormalizacionTitulos.FORMATO_COLISION_TITULOS,
@@ -528,6 +536,7 @@ class AlmacenAjustes(contexto: Context) {
             colorIdSistema = prefs.getString("color_id_sistema", AjustesDefaults.ColoresIds.SISTEMA) ?: AjustesDefaults.ColoresIds.SISTEMA,
             autofillSugerenciasTeclado = prefs.getBoolean("autofill_sugerencias_teclado", AjustesDefaults.Autocompletado.SUGERENCIAS_TECLADO),
             prefijosSubdominios = deserializarPrefijosSubdominios(prefs.getString("prefijos_subdominios_json", "") ?: ""),
+            tldsDescartables = deserializarTldsDescartables(prefs.getString("tlds_descartables_json", "") ?: ""),
             plantillaRouterIp = prefs.getString("plantilla_router_ip", AjustesDefaults.NormalizacionTitulos.PLANTILLA_ROUTER_IP) ?: AjustesDefaults.NormalizacionTitulos.PLANTILLA_ROUTER_IP,
             plantillaServidorIp = prefs.getString("plantilla_servidor_ip", AjustesDefaults.NormalizacionTitulos.PLANTILLA_SERVIDOR_IP) ?: AjustesDefaults.NormalizacionTitulos.PLANTILLA_SERVIDOR_IP,
             formatoColisionTitulos = prefs.getString("formato_colision_titulos", AjustesDefaults.NormalizacionTitulos.FORMATO_COLISION_TITULOS) ?: AjustesDefaults.NormalizacionTitulos.FORMATO_COLISION_TITULOS,
@@ -720,6 +729,7 @@ class AlmacenAjustes(contexto: Context) {
             .putString("color_id_sistema", nuevo.colorIdSistema)
             .putBoolean("autofill_sugerencias_teclado", nuevo.autofillSugerenciasTeclado)
             .putString("prefijos_subdominios_json", jsonAjustes.encodeToString(nuevo.prefijosSubdominios))
+            .putString("tlds_descartables_json", jsonAjustes.encodeToString(nuevo.tldsDescartables))
             .putString("plantilla_router_ip", nuevo.plantillaRouterIp)
             .putString("plantilla_servidor_ip", nuevo.plantillaServidorIp)
             .putString("formato_colision_titulos", nuevo.formatoColisionTitulos)

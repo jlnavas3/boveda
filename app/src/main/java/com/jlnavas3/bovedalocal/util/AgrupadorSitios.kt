@@ -17,6 +17,7 @@ fun construirItemsAgrupadosPorSitio(
     prefijosConfigurados: List<String> = emptyList(),
     plantillaRouter: String = "Router ({ip})",
     plantillaServidor: String = "Servidor ({ip})",
+    tldsConfigurados: List<String> = emptyList(),
     expandido: (String) -> Boolean
 ): List<ItemAgrupado> {
     if (!agrupar) {
@@ -24,13 +25,13 @@ fun construirItemsAgrupadosPorSitio(
     }
 
     val porSitio = entradas.groupBy {
-        claveAgrupacionSitio(it, prefijosConfigurados, plantillaRouter, plantillaServidor)
+        claveAgrupacionSitio(it, prefijosConfigurados, plantillaRouter, plantillaServidor, tldsConfigurados)
     }
     val vistos = mutableSetOf<String>()
     val itemsPrincipales = mutableListOf<ItemAgrupado>()
 
     entradas.forEach { entrada ->
-        val clave = claveAgrupacionSitio(entrada, prefijosConfigurados, plantillaRouter, plantillaServidor)
+        val clave = claveAgrupacionSitio(entrada, prefijosConfigurados, plantillaRouter, plantillaServidor, tldsConfigurados)
         val delMismoSitio = clave?.let { porSitio[it] }
         if (clave != null && delMismoSitio != null && delMismoSitio.size > 1) {
             if (vistos.add(clave)) {

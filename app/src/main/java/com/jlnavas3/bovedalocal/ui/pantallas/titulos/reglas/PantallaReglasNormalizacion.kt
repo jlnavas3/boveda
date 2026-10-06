@@ -38,6 +38,7 @@ fun PantallaReglasNormalizacion(
     val scrollState = rememberScrollState()
 
     var mostrarDialogoAgregar by remember { mutableStateOf(false) }
+    var mostrarDialogoAgregarTld by remember { mutableStateOf(false) }
     var mostrarDialogoRestablecer by remember { mutableStateOf(false) }
 
     Column(
@@ -64,6 +65,16 @@ fun PantallaReglasNormalizacion(
                 prefijos = ajustes.prefijosSubdominios,
                 alAgregarClick = { mostrarDialogoAgregar = true },
                 alEliminarPrefijo = { vm.eliminarPrefijoSubdominio(it) },
+                mostrarId = ajustes.mostrarIdsAjustes,
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            SeccionChipsTldsDescartables(
+                tlds = ajustes.tldsDescartables,
+                alAgregarClick = { mostrarDialogoAgregarTld = true },
+                alEliminarTld = { vm.eliminarTldDescartable(it) },
                 mostrarId = ajustes.mostrarIdsAjustes,
                 modifier = Modifier.fillMaxWidth()
             )
@@ -107,10 +118,20 @@ fun PantallaReglasNormalizacion(
         )
     }
 
+    if (mostrarDialogoAgregarTld) {
+        DialogoAgregarTld(
+            alConfirmar = { nuevo ->
+                vm.agregarTldDescartable(nuevo)
+                mostrarDialogoAgregarTld = false
+            },
+            alDescartar = { mostrarDialogoAgregarTld = false }
+        )
+    }
+
     if (mostrarDialogoRestablecer) {
         DialogoConfirmacionBoveda(
             titulo = "¿Restablecer reglas?",
-            mensaje = "Se restaurará la lista estándar de prefijos de subdominios y el formato de IPs locales.",
+            mensaje = "Se restaurará la lista estándar de prefijos de subdominios, extensiones de dominio (TLDs) y el formato de IPs locales.",
             textoConfirmar = "Restablecer",
             textoCancelar = "Cancelar",
             alConfirmar = {

@@ -11,7 +11,8 @@ fun claveAgrupacionSitio(
     entrada: Entrada,
     prefijosConfigurados: List<String> = emptyList(),
     plantillaRouter: String = "Router ({ip})",
-    plantillaServidor: String = "Servidor ({ip})"
+    plantillaServidor: String = "Servidor ({ip})",
+    tldsConfigurados: List<String> = emptyList()
 ): String? = when (entrada.tipo) {
     TipoEntrada.LOGIN -> {
         val web = entrada.urls.asSequence()
@@ -24,7 +25,8 @@ fun claveAgrupacionSitio(
                 rawTitulo = entrada.titulo,
                 prefijosConfigurados = prefijosConfigurados,
                 plantillaRouter = plantillaRouter,
-                plantillaServidor = plantillaServidor
+                plantillaServidor = plantillaServidor,
+                tldsConfigurados = tldsConfigurados
             )
         } else null
     }
@@ -36,7 +38,8 @@ fun claveAgrupacionSitio(
                 rawTitulo = entrada.titulo,
                 prefijosConfigurados = prefijosConfigurados,
                 plantillaRouter = plantillaRouter,
-                plantillaServidor = plantillaServidor
+                plantillaServidor = plantillaServidor,
+                tldsConfigurados = tldsConfigurados
             )
         }
     else -> null

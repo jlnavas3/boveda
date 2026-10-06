@@ -109,4 +109,31 @@ class NormalizadorTitulosSitiosTest {
         assertEquals("Lenovo", claveLenovo)
         assertEquals("Router (192.168.1.1)", claveRouter)
     }
+
+    @Test
+    fun tldsDinamicos_seRecortanYDetectanCorrectamente() {
+        val tlds = listOf("lan", "tech", "local", "co")
+
+        // 1. Podar TLD
+        assertEquals("servidor", NormalizadorTitulosSitios.podarTlds("servidor.lan", tlds))
+        assertEquals("mi-empresa", NormalizadorTitulosSitios.podarTlds("mi-empresa.tech", tlds))
+        assertEquals("intranet", NormalizadorTitulosSitios.podarTlds("intranet.local", tlds))
+
+        // 2. Extraer nombre base limpio
+        val nombreTech = NormalizadorTitulosSitios.extraerNombreBase(
+            urlODominio = "https://innovacion.tech",
+            tldsConfigurados = tlds
+        )
+        assertEquals("Innovacion", nombreTech)
+
+        val nombreLan = NormalizadorTitulosSitios.extraerNombreBase(
+            urlODominio = "http://nas-server.lan",
+            tldsConfigurados = tlds
+        )
+        assertEquals("Nas Server", nombreLan)
+
+        // 3. Título técnico con TLD personalizado
+        assertTrue(NormalizadorTitulosSitios.esTituloTecnico("empresa.tech", tldsConfigurados = tlds))
+        assertTrue(NormalizadorTitulosSitios.esTituloTecnico("portal.lan", tldsConfigurados = tlds))
+    }
 }

@@ -1,5 +1,6 @@
 package com.jlnavas3.bovedalocal.util
 
+import com.jlnavas3.bovedalocal.data.AjustesDefaults
 import com.jlnavas3.bovedalocal.data.ModoFormatoTitulos
 import java.util.Locale
 
@@ -102,12 +103,26 @@ object NormalizadorTitulosSitios {
         return h
     }
 
+    fun podarTlds(host: String, tlds: List<String>): String {
+        var h = host.trim().lowercase()
+        val listaTlds = tlds.ifEmpty { AjustesDefaults.NormalizacionTitulos.TLDS_DESCARTABLES }
+        for (tld in listaTlds) {
+            val tldConPunto = if (tld.startsWith(".")) tld.lowercase() else ".${tld.lowercase()}"
+            if (h.endsWith(tldConPunto) && h.length > tldConPunto.length) {
+                h = h.removeSuffix(tldConPunto)
+                break
+            }
+        }
+        return h
+    }
+
     fun extraerNombreBase(
         urlODominio: String,
         rawTitulo: String = "",
         prefijosConfigurados: List<String> = emptyList(),
         plantillaRouter: String = "Router ({ip})",
-        plantillaServidor: String = "Servidor ({ip})"
+        plantillaServidor: String = "Servidor ({ip})",
+        tldsConfigurados: List<String> = emptyList()
     ): String {
         val tituloLimpio = rawTitulo.substringBefore('(').substringBefore('·').substringBefore('[').trim()
         val entradaAnalisis = if (urlODominio.isNotBlank()) urlODominio else tituloLimpio
@@ -142,15 +157,20 @@ object NormalizadorTitulosSitios {
         if (nombreOficial != null) return nombreOficial
 
         // 6. Si es un dominio genérico con extensiones compuestas (.gob.ec, .edu.ec, etc.)
+        val hostSinTld = podarTlds(hostPodado, tldsConfigurados)
         val nombreLimpio = when {
-            hostPodado.contains('.') -> hostPodado.substringBefore('.')
-            else -> hostPodado
+            hostSinTld.contains('.') -> hostSinTld.substringBefore('.')
+            else -> hostSinTld
         }
 
         return capitalizarAmigable(nombreLimpio)
     }
 
-    fun esTituloTecnico(titulo: String, urls: List<String> = emptyList()): Boolean {
+    fun esTituloTecnico(
+        titulo: String,
+        urls: List<String> = emptyList(),
+        tldsConfigurados: List<String> = emptyList()
+    ): Boolean {
         val t = titulo.trim().lowercase()
         if (t.startsWith("http://") || t.startsWith("https://") || t.startsWith("android://") || t.startsWith("androidapp://")) {
             return true
@@ -161,8 +181,9 @@ object NormalizadorTitulosSitios {
         if (t.matches(Regex("""^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}(:\d+)?.*"""))) {
             return true
         }
-        val tldsComunes = listOf(".com", ".net", ".org", ".io", ".tv", ".it", ".es", ".ec", ".edu", ".gob", ".app", ".me", ".info", ".online", ".guru", ".cloud")
-        if (tldsComunes.any { t.contains(it) }) {
+        val listaTlds = tldsConfigurados.ifEmpty { AjustesDefaults.NormalizacionTitulos.TLDS_DESCARTABLES }
+        val tlds = listaTlds.map { if (it.startsWith(".")) it.lowercase() else ".${it.lowercase()}" }
+        if (tlds.any { t.contains(it) }) {
             return true
         }
         val hostCoincidente = urls.firstOrNull { u ->
@@ -176,9 +197,10 @@ object NormalizadorTitulosSitios {
         titulo: String,
         nombreBase: String,
         usuario: String,
-        urls: List<String> = emptyList()
+        urls: List<String> = emptyList(),
+        tldsConfigurados: List<String> = emptyList()
     ): Boolean {
-        if (esTituloTecnico(titulo, urls)) return true
+        if (esTituloTecnico(titulo, urls, tldsConfigurados)) return true
         val t = titulo.trim()
         val base = nombreBase.trim()
         if (t.equals(base, ignoreCase = true)) return true

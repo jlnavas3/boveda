@@ -270,6 +270,11 @@ object AjustesDefaults {
             "myaccount", "identity", "id", "passport", "portal", "webmail",
             "clientes", "servicios", "online", "banca", "app", "mobile", "m", "www"
         )
+        val TLDS_DESCARTABLES = listOf(
+            "com", "net", "org", "io", "co", "ec", "es", "pe", "cl", "ar", "mx",
+            "app", "dev", "ai", "tech", "me", "info", "online", "tv", "it",
+            "edu", "gob", "guru", "cloud"
+        )
         const val PLANTILLA_ROUTER_IP = "Router ({ip})"
         const val PLANTILLA_SERVIDOR_IP = "Servidor ({ip})"
         const val FORMATO_COLISION_TITULOS = "EXPLICITO_PARENTESIS"

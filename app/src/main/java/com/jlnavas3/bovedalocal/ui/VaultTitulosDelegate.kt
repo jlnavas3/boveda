@@ -37,7 +37,8 @@ interface VaultTitulosDelegate {
                 rawTitulo = e.titulo,
                 prefijosConfigurados = ajustes.prefijosSubdominios,
                 plantillaRouter = ajustes.plantillaRouterIp,
-                plantillaServidor = ajustes.plantillaServidorIp
+                plantillaServidor = ajustes.plantillaServidorIp,
+                tldsConfigurados = ajustes.tldsDescartables
             )
             val clave = nombreBase.lowercase()
             grupos.getOrPut(clave) { mutableListOf() }.add(e)
@@ -51,7 +52,8 @@ interface VaultTitulosDelegate {
                 rawTitulo = primerTitulo,
                 prefijosConfigurados = ajustes.prefijosSubdominios,
                 plantillaRouter = ajustes.plantillaRouterIp,
-                plantillaServidor = ajustes.plantillaServidorIp
+                plantillaServidor = ajustes.plantillaServidorIp,
+                tldsConfigurados = ajustes.tldsDescartables
             )
             val domMostrar = if (primeraUrl.isNotBlank()) {
                 Dominios.host(primeraUrl).ifBlank { primeraUrl }
@@ -150,10 +152,29 @@ interface VaultTitulosDelegate {
         }
     }
 
+    fun agregarTldDescartable(tld: String) {
+        val limpio = tld.trim().lowercase().removePrefix(".").removeSuffix(".")
+        if (limpio.isNotBlank()) {
+            repositorio.ajustes.actualizar {
+                if (!it.tldsDescartables.contains(limpio)) {
+                    it.copy(tldsDescartables = it.tldsDescartables + limpio)
+                } else it
+            }
+        }
+    }
+
+    fun eliminarTldDescartable(tld: String) {
+        val limpio = tld.trim().lowercase().removePrefix(".").removeSuffix(".")
+        repositorio.ajustes.actualizar {
+            it.copy(tldsDescartables = it.tldsDescartables.filterNot { t -> t.equals(limpio, ignoreCase = true) })
+        }
+    }
+
     fun restablecerReglasNormalizacion() {
         repositorio.ajustes.actualizar {
             it.copy(
                 prefijosSubdominios = AjustesDefaults.NormalizacionTitulos.PREFIJOS_SUBDOMINIOS,
+                tldsDescartables = AjustesDefaults.NormalizacionTitulos.TLDS_DESCARTABLES,
                 plantillaRouterIp = AjustesDefaults.NormalizacionTitulos.PLANTILLA_ROUTER_IP,
                 plantillaServidorIp = AjustesDefaults.NormalizacionTitulos.PLANTILLA_SERVIDOR_IP,
                 formatoColisionTitulos = AjustesDefaults.NormalizacionTitulos.FORMATO_COLISION_TITULOS,
