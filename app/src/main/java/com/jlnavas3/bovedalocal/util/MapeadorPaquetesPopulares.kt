@@ -71,18 +71,21 @@ object MapeadorPaquetesPopulares {
     )
 
     /**
-     * Obtiene el dominio web asociado al nombre de paquete si existe en el catálogo.
+     * Obtiene el dominio web asociado al nombre de paquete si existe en las reglas personalizadas
+     * o en el catálogo oficial de respaldo.
      */
-    fun obtenerDominio(paquete: String): String? {
+    fun obtenerDominio(paquete: String, mapeoPersonalizado: Map<String, String> = emptyMap()): String? {
         val clave = paquete.trim().lowercase()
-        return PAQUETES_A_DOMINIO[clave]
+        return mapeoPersonalizado[clave] ?: PAQUETES_A_DOMINIO[clave]
     }
 
     /**
-     * Obtiene el paquete de app Android asociado a un dominio si existe en el catálogo.
+     * Obtiene el paquete de app Android asociado a un dominio si existe en las reglas personalizadas
+     * o en el catálogo oficial de respaldo.
      */
-    fun obtenerPaquete(dominio: String): String? {
+    fun obtenerPaquete(dominio: String, mapeoPersonalizado: Map<String, String> = emptyMap()): String? {
         val clave = dominio.trim().lowercase()
-        return PAQUETES_A_DOMINIO.entries.firstOrNull { it.value == clave }?.key
+        return mapeoPersonalizado.entries.firstOrNull { it.value.equals(clave, ignoreCase = true) }?.key
+            ?: PAQUETES_A_DOMINIO.entries.firstOrNull { it.value == clave }?.key
     }
 }

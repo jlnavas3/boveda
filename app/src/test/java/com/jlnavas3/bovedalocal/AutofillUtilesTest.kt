@@ -53,4 +53,29 @@ class AutofillUtilesTest {
         val compatibles = AutofillUtiles.entradasCompatibles(listOf(eSinClave), "com.chrome", "twitter.com")
         assertTrue(compatibles.isEmpty())
     }
+
+    @Test
+    fun `entradasCompatibles resuelve paquetes con mapeo dinamico personalizado`() {
+        val entradaBanco = Entrada(
+            "1",
+            titulo = "Banco Pichincha Web",
+            usuario = "1720000000",
+            contrasena = "claveSecreta",
+            urls = listOf("https://bancaweb.pichincha.com/login")
+        )
+        val entradaOtra = Entrada("2", titulo = "Otra App", contrasena = "1234", urls = listOf("https://otra.com"))
+
+        val mapeoPersonalizado = mapOf("com.bancopichincha.banca" to "pichincha.com")
+
+        // Al solicitar autofill desde la app nativa de Android de Banco Pichincha:
+        val compatibles = AutofillUtiles.entradasCompatibles(
+            entradas = listOf(entradaBanco, entradaOtra),
+            paquete = "com.bancopichincha.banca",
+            dominioWeb = null,
+            mapeoPersonalizado = mapeoPersonalizado
+        )
+
+        assertEquals(1, compatibles.size)
+        assertEquals("Banco Pichincha Web", compatibles.first().titulo)
+    }
 }

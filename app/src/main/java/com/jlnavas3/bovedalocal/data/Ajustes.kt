@@ -73,6 +73,20 @@ private fun deserializarPistasOtp(raw: String): List<String> = try {
     AjustesDefaults.Autocompletado.PISTAS_OTP
 }
 
+private fun deserializarMapeoPaquetes(raw: String): Map<String, String> = try {
+    if (raw.isBlank()) AjustesDefaults.Autocompletado.MAPEO_PAQUETES_PERSONALIZADOS
+    else jsonAjustes.decodeFromString(raw)
+} catch (_: Exception) {
+    AjustesDefaults.Autocompletado.MAPEO_PAQUETES_PERSONALIZADOS
+}
+
+private fun deserializarNavegadoresPersonalizados(raw: String): List<String> = try {
+    if (raw.isBlank()) AjustesDefaults.Autocompletado.NAVEGADORES_PERSONALIZADOS
+    else jsonAjustes.decodeFromString(raw)
+} catch (_: Exception) {
+    AjustesDefaults.Autocompletado.NAVEGADORES_PERSONALIZADOS
+}
+
 /** El modo de huella en uso, o null si está apagada. Única lectura de [AjustesApp.biometriaModo]. */
 val AjustesApp.modoBiometriaActivo: BiometricKeyStore.Modo?
     get() = if (biometriaActiva) BiometricKeyStore.Modo.desde(biometriaModo) else null
@@ -310,6 +324,9 @@ data class AjustesApp(
     val autofillPistasUsuario: List<String> = AjustesDefaults.Autocompletado.PISTAS_USUARIO,
     val autofillPistasContrasena: List<String> = AjustesDefaults.Autocompletado.PISTAS_CONTRASENA,
     val autofillPistasOtp: List<String> = AjustesDefaults.Autocompletado.PISTAS_OTP,
+    val mapeoPaquetesPersonalizados: Map<String, String> = AjustesDefaults.Autocompletado.MAPEO_PAQUETES_PERSONALIZADOS,
+    val navegadoresPersonalizados: List<String> = AjustesDefaults.Autocompletado.NAVEGADORES_PERSONALIZADOS,
+    val maxSugerenciasAutofill: Int = AjustesDefaults.Autocompletado.MAX_SUGERENCIAS_AUTOFILL,
     // Normalización de títulos y redes locales
     val prefijosSubdominios: List<String> = AjustesDefaults.NormalizacionTitulos.PREFIJOS_SUBDOMINIOS,
     val tldsDescartables: List<String> = AjustesDefaults.NormalizacionTitulos.TLDS_DESCARTABLES,
@@ -598,6 +615,9 @@ class AlmacenAjustes(contexto: Context) {
             autofillPistasUsuario = deserializarPistasUsuario(prefs.getString("autofill_pistas_usuario_json", "") ?: ""),
             autofillPistasContrasena = deserializarPistasContrasena(prefs.getString("autofill_pistas_contrasena_json", "") ?: ""),
             autofillPistasOtp = deserializarPistasOtp(prefs.getString("autofill_pistas_otp_json", "") ?: ""),
+            mapeoPaquetesPersonalizados = deserializarMapeoPaquetes(prefs.getString("mapeo_paquetes_personalizados_json", "") ?: ""),
+            navegadoresPersonalizados = deserializarNavegadoresPersonalizados(prefs.getString("navegadores_personalizados_json", "") ?: ""),
+            maxSugerenciasAutofill = prefs.getInt("max_sugerencias_autofill", AjustesDefaults.Autocompletado.MAX_SUGERENCIAS_AUTOFILL),
             prefijosSubdominios = deserializarPrefijosSubdominios(prefs.getString("prefijos_subdominios_json", "") ?: ""),
             tldsDescartables = deserializarTldsDescartables(prefs.getString("tlds_descartables_json", "") ?: ""),
             marcasPersonalizadas = deserializarMarcasPersonalizadas(prefs.getString("marcas_personalizadas_json", "") ?: ""),
@@ -802,6 +822,9 @@ class AlmacenAjustes(contexto: Context) {
             .putString("autofill_pistas_usuario_json", jsonAjustes.encodeToString(nuevo.autofillPistasUsuario))
             .putString("autofill_pistas_contrasena_json", jsonAjustes.encodeToString(nuevo.autofillPistasContrasena))
             .putString("autofill_pistas_otp_json", jsonAjustes.encodeToString(nuevo.autofillPistasOtp))
+            .putString("mapeo_paquetes_personalizados_json", jsonAjustes.encodeToString(nuevo.mapeoPaquetesPersonalizados))
+            .putString("navegadores_personalizados_json", jsonAjustes.encodeToString(nuevo.navegadoresPersonalizados))
+            .putInt("max_sugerencias_autofill", nuevo.maxSugerenciasAutofill)
             .putString("prefijos_subdominios_json", jsonAjustes.encodeToString(nuevo.prefijosSubdominios))
             .putString("tlds_descartables_json", jsonAjustes.encodeToString(nuevo.tldsDescartables))
             .putString("marcas_personalizadas_json", jsonAjustes.encodeToString(nuevo.marcasPersonalizadas))
@@ -967,6 +990,12 @@ class AlmacenAjustes(contexto: Context) {
             10 to "10 versiones",
             15 to "15 versiones",
             20 to "20 versiones"
+        )
+        val OPCIONES_MAX_SUGERENCIAS_AUTOFILL = listOf(
+            3 to "3 sugerencias",
+            5 to "5 sugerencias (predeterminado)",
+            10 to "10 sugerencias",
+            0 to "Todas las cuentas compatibles"
         )
     }
 }

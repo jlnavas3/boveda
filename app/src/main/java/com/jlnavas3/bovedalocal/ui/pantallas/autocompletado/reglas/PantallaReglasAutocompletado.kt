@@ -44,6 +44,8 @@ fun PantallaReglasAutocompletado(
     val scrollState = rememberScrollState()
 
     var dialogoAgregarTipo by remember { mutableStateOf<TipoPistaDialogo?>(null) }
+    var mostrarDialogoAgregarMapeo by remember { mutableStateOf(false) }
+    var mostrarDialogoAgregarNavegador by remember { mutableStateOf(false) }
     var mostrarDialogoRestablecer by remember { mutableStateOf(false) }
 
     Column(
@@ -106,6 +108,26 @@ fun PantallaReglasAutocompletado(
                 modifier = Modifier.fillMaxWidth()
             )
 
+            Spacer(modifier = Modifier.height(16.dp))
+
+            SeccionMapeoPaquetesApps(
+                mapeos = ajustes.mapeoPaquetesPersonalizados,
+                alAgregarClick = { mostrarDialogoAgregarMapeo = true },
+                alEliminarMapeo = { vm.eliminarMapeoPaquete(it) },
+                mostrarId = ajustes.mostrarIdsAjustes,
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            SeccionNavegadoresPersonalizados(
+                navegadores = ajustes.navegadoresPersonalizados,
+                alAgregarClick = { mostrarDialogoAgregarNavegador = true },
+                alEliminarNavegador = { vm.eliminarNavegadorPersonalizado(it) },
+                mostrarId = ajustes.mostrarIdsAjustes,
+                modifier = Modifier.fillMaxWidth()
+            )
+
             Spacer(modifier = Modifier.height(24.dp))
 
             BotonBoveda(
@@ -157,10 +179,30 @@ fun PantallaReglasAutocompletado(
         null -> {}
     }
 
+    if (mostrarDialogoAgregarMapeo) {
+        DialogoAgregarMapeoPaquete(
+            alConfirmar = { paquete, dominio ->
+                vm.agregarMapeoPaquete(paquete, dominio)
+                mostrarDialogoAgregarMapeo = false
+            },
+            alDescartar = { mostrarDialogoAgregarMapeo = false }
+        )
+    }
+
+    if (mostrarDialogoAgregarNavegador) {
+        DialogoAgregarNavegadorPersonalizado(
+            alConfirmar = { paquete ->
+                vm.agregarNavegadorPersonalizado(paquete)
+                mostrarDialogoAgregarNavegador = false
+            },
+            alDescartar = { mostrarDialogoAgregarNavegador = false }
+        )
+    }
+
     if (mostrarDialogoRestablecer) {
         DialogoConfirmacionBoveda(
             titulo = "¿Restablecer reglas de autocompletado?",
-            mensaje = "Se restaurarán las listas predeterminadas de palabras clave para usuario, contraseña y 2FA/OTP.",
+            mensaje = "Se restaurarán las listas predeterminadas de palabras clave (usuario, contraseña, 2FA/OTP), vinculaciones de apps a sitios web y navegadores web personalizados.",
             textoConfirmar = "Restablecer",
             textoCancelar = "Cancelar",
             alConfirmar = {

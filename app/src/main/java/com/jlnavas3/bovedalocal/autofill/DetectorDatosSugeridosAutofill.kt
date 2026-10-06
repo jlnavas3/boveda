@@ -4,6 +4,7 @@ import android.content.Context
 import com.jlnavas3.bovedalocal.util.Dominios
 import com.jlnavas3.bovedalocal.util.FiltroNavegadoresWeb
 import com.jlnavas3.bovedalocal.util.LanzadorEnlaces
+import com.jlnavas3.bovedalocal.util.MapeadorPaquetesPopulares
 import com.jlnavas3.bovedalocal.util.ResolverIconoAppDominio
 
 /**
@@ -12,10 +13,18 @@ import com.jlnavas3.bovedalocal.util.ResolverIconoAppDominio
  */
 object DetectorDatosSugeridosAutofill {
 
-    fun detectar(contexto: Context, paquete: String, dominioWeb: String?): DatosSugeridosAutofill {
-        val dom = dominioWeb?.takeIf { it.isNotBlank() }?.let { Dominios.raiz(it) }
+    fun detectar(
+        contexto: Context,
+        paquete: String,
+        dominioWeb: String?,
+        navegadoresPersonalizados: List<String> = emptyList(),
+        mapeoPersonalizado: Map<String, String> = emptyMap()
+    ): DatosSugeridosAutofill {
+        val domMapeado = if (paquete.isNotBlank()) MapeadorPaquetesPopulares.obtenerDominio(paquete, mapeoPersonalizado) else null
+        val dom = dominioWeb?.takeIf { it.isNotBlank() }?.let { Dominios.raiz(it) } ?: domMapeado
+
         val paqueteDeDominio = dom?.let { ResolverIconoAppDominio.resolverPaquete(contexto, it) }
-        val esNavegador = FiltroNavegadoresWeb.esNavegador(contexto, paquete) || !dominioWeb.isNullOrBlank()
+        val esNavegador = FiltroNavegadoresWeb.esNavegador(contexto, paquete, navegadoresPersonalizados) || !dominioWeb.isNullOrBlank()
 
         val paqueteEfectivo = when {
             paqueteDeDominio != null && LanzadorEnlaces.estaInstalada(contexto, paqueteDeDominio) -> paqueteDeDominio
@@ -39,6 +48,7 @@ object DetectorDatosSugeridosAutofill {
 
         val url = when {
             !dominioWeb.isNullOrBlank() -> "https://$dominioWeb"
+            domMapeado != null -> "https://$domMapeado"
             paqueteEfectivo != null -> "android://$paqueteEfectivo"
             !esNavegador && paquete.isNotBlank() -> "android://$paquete"
             else -> ""

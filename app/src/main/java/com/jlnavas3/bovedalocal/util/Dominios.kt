@@ -56,8 +56,8 @@ object Dominios {
     }
 
     /** Coincidencia inteligente: mismo dominio raíz, mismo paquete de aplicación o equivalencia de catálogo/marca. */
-    fun coincide(guardado: String, solicitado: String): Boolean =
-        ComparadorPaqueteDominio.coincide(guardado, solicitado)
+    fun coincide(guardado: String, solicitado: String, mapeoPersonalizado: Map<String, String> = emptyMap()): Boolean =
+        ComparadorPaqueteDominio.coincide(guardado, solicitado, mapeoPersonalizado)
 
     /** Deriva un dominio candidato desde un nombre de paquete (com.ejemplo.app -> ejemplo.com). */
     fun dominioDePaquete(paquete: String): String {

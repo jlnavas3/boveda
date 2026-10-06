@@ -146,9 +146,25 @@ class BovedaAutofillService : AutofillService() {
                 respuesta.setAuthentication(ids, pendiente.intentSender, presentacion)
             }
         } else {
-            val compatibles = AutofillUtiles.entradasCompatibles(repositorio.entradas(), paquete, campos.dominioWeb)
+            val compatibles = AutofillUtiles.entradasCompatibles(
+                repositorio.entradas(),
+                paquete,
+                campos.dominioWeb,
+                ajustes.mapeoPaquetesPersonalizados
+            )
+            val sugerencias = if (ajustes.maxSugerenciasAutofill > 0) {
+                compatibles.take(ajustes.maxSugerenciasAutofill)
+            } else {
+                compatibles
+            }
             if (compatibles.isEmpty()) {
-                val datosSugeridos = DetectorDatosSugeridosAutofill.detectar(this, paquete, campos.dominioWeb)
+                val datosSugeridos = DetectorDatosSugeridosAutofill.detectar(
+                    this,
+                    paquete,
+                    campos.dominioWeb,
+                    ajustes.navegadoresPersonalizados,
+                    ajustes.mapeoPaquetesPersonalizados
+                )
                 val inlineSpec = specs.firstOrNull()
                 CreadorAccionNuevaEntradaAutofill.aplicar(
                     contexto = this,
@@ -158,7 +174,7 @@ class BovedaAutofillService : AutofillService() {
                     inlineSpec = inlineSpec
                 )
             } else {
-                compatibles.forEachIndexed { indice, entrada ->
+                sugerencias.forEachIndexed { indice, entrada ->
                     val spec = specs.getOrElse(indice) { specs.lastOrNull() }
                     AutofillUtiles.dataset(this, entrada, campos, spec, paquete)?.let { respuesta.addDataset(it) }
                     if (campos.otp != null && !entrada.secretoTotp.isNullOrBlank()) {
@@ -235,7 +251,7 @@ class BovedaAutofillService : AutofillService() {
         }
 
         val existente = repositorio.entradas().firstOrNull { entrada ->
-            entrada.usuario == (usuario ?: "") && entrada.urls.any { Dominios.coincide(it, objetivo) }
+            entrada.usuario == (usuario ?: "") && entrada.urls.any { Dominios.coincide(it, objetivo, ajustes.mapeoPaquetesPersonalizados) }
         }
         val entrada = existente?.let { exist ->
             val domPaquete = if (paquete.isNotBlank()) Dominios.dominioDePaquete(paquete) else ""

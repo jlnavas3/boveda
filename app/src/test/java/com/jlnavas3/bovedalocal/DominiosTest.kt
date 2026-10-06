@@ -81,4 +81,33 @@ class DominiosTest {
         assertTrue(Dominios.coincide("aldiko.android.com", "com.aldiko.android"))
         assertTrue(Dominios.coincide("android.instagram.com", "com.instagram.android"))
     }
+
+    @Test
+    fun `coincide con mapeo dinamico personalizado de paquetes a dominios`() {
+        val mapeo = mapOf(
+            "com.miempresa.portal" to "miempresa.com",
+            "ec.gob.sri.srienlinea" to "sri.gob.ec"
+        )
+        assertTrue(Dominios.coincide("https://miempresa.com/login", "com.miempresa.portal", mapeo))
+        assertTrue(Dominios.coincide("com.miempresa.portal", "https://miempresa.com", mapeo))
+        assertTrue(Dominios.coincide("https://sri.gob.ec", "ec.gob.sri.srienlinea", mapeo))
+        assertFalse(Dominios.coincide("https://otraempresa.com", "com.miempresa.portal", mapeo))
+    }
+
+    @Test
+    fun `FiltroNavegadoresWeb reconoce navegadores personalizados`() {
+        val navegadores = listOf("org.torproject.torbrowser", "com.kiwibrowser.browser")
+        assertTrue(com.jlnavas3.bovedalocal.util.FiltroNavegadoresWeb.esNavegador(
+            paquete = "org.torproject.torbrowser",
+            navegadoresPersonalizados = navegadores
+        ))
+        assertTrue(com.jlnavas3.bovedalocal.util.FiltroNavegadoresWeb.esNavegador(
+            paquete = "com.kiwibrowser.browser",
+            navegadoresPersonalizados = navegadores
+        ))
+        assertFalse(com.jlnavas3.bovedalocal.util.FiltroNavegadoresWeb.esNavegador(
+            paquete = "com.miempresa.app",
+            navegadoresPersonalizados = navegadores
+        ))
+    }
 }

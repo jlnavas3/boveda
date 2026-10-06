@@ -347,11 +347,16 @@ object AutofillUtiles {
     fun contextoSolicitante(paquete: String, dominioWeb: String?): String =
         if (!dominioWeb.isNullOrBlank()) Dominios.raiz(dominioWeb) else paquete
 
-    fun entradasCompatibles(entradas: List<Entrada>, paquete: String, dominioWeb: String?): List<Entrada> {
+    fun entradasCompatibles(
+        entradas: List<Entrada>,
+        paquete: String,
+        dominioWeb: String?,
+        mapeoPersonalizado: Map<String, String> = emptyMap()
+    ): List<Entrada> {
         val objetivo = contextoSolicitante(paquete, dominioWeb)
         return entradas.filter { entrada ->
             (entrada.contrasena.isNotBlank() || !entrada.secretoTotp.isNullOrBlank()) && entrada.urls.any { guardado ->
-                Dominios.coincide(guardado, objetivo)
+                Dominios.coincide(guardado, objetivo, mapeoPersonalizado)
             }
         }
     }

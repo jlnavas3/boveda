@@ -8,11 +8,12 @@ import android.os.Build
 
 /**
  * Detecta y filtra paquetes correspondientes a navegadores web en el dispositivo,
- * combinando categorías del sistema, esquemas genéricos y lista conocida de respaldo.
+ * combinando categorías del sistema, esquemas genéricos, lista conocida de respaldo
+ * y navegadores personalizados por el usuario.
  */
 object FiltroNavegadoresWeb {
 
-    private val NAVEGADORES_CONOCIDOS = setOf(
+    val NAVEGADORES_CONOCIDOS = setOf(
         "com.brave.browser",
         "com.android.chrome",
         "org.mozilla.firefox",
@@ -32,46 +33,56 @@ object FiltroNavegadoresWeb {
     private var timestampCache: Long = 0L
     private const val TTL_CACHE_MS = 60_000L
 
-    fun obtenerNavegadores(contexto: Context): Set<String> {
+    fun obtenerNavegadores(contexto: Context? = null, navegadoresPersonalizados: List<String> = emptyList()): Set<String> {
         val ahora = System.currentTimeMillis()
         val actual = cachePaquetes
-        if (actual != null && ahora - timestampCache < TTL_CACHE_MS) {
-            return actual
+        val base = if (actual != null && ahora - timestampCache < TTL_CACHE_MS) {
+            actual
+        } else {
+            val resultado = mutableSetOf<String>()
+            resultado.addAll(NAVEGADORES_CONOCIDOS)
+
+            val pm = contexto?.packageManager
+            val flags = PackageManager.MATCH_ALL
+
+            if (pm != null) {
+                try {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                        val intentCategoria = Intent(Intent.ACTION_VIEW, Uri.parse("https://")).apply {
+                            addCategory(Intent.CATEGORY_APP_BROWSER)
+                        }
+                        pm.queryIntentActivities(intentCategoria, flags).forEach { info ->
+                            info.activityInfo?.packageName?.let { resultado.add(it) }
+                        }
+                    }
+                } catch (_: Exception) {}
+
+                try {
+                    val intentGenerico = Intent(Intent.ACTION_VIEW, Uri.parse("https://")).apply {
+                        addCategory(Intent.CATEGORY_BROWSABLE)
+                    }
+                    pm.queryIntentActivities(intentGenerico, flags).forEach { info ->
+                        info.activityInfo?.packageName?.let { resultado.add(it) }
+                    }
+                } catch (_: Exception) {}
+            }
+
+            cachePaquetes = resultado
+            timestampCache = ahora
+            resultado
         }
 
-        val resultado = mutableSetOf<String>()
-        resultado.addAll(NAVEGADORES_CONOCIDOS)
-
-        val pm = contexto.packageManager
-        val flags = PackageManager.MATCH_ALL
-
-        try {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                val intentCategoria = Intent(Intent.ACTION_VIEW, Uri.parse("https://")).apply {
-                    addCategory(Intent.CATEGORY_APP_BROWSER)
-                }
-                pm.queryIntentActivities(intentCategoria, flags).forEach { info ->
-                    info.activityInfo?.packageName?.let { resultado.add(it) }
-                }
-            }
-        } catch (_: Exception) {}
-
-        try {
-            val intentGenerico = Intent(Intent.ACTION_VIEW, Uri.parse("https://")).apply {
-                addCategory(Intent.CATEGORY_BROWSABLE)
-            }
-            pm.queryIntentActivities(intentGenerico, flags).forEach { info ->
-                info.activityInfo?.packageName?.let { resultado.add(it) }
-            }
-        } catch (_: Exception) {}
-
-        cachePaquetes = resultado
-        timestampCache = ahora
-        return resultado
+        return if (navegadoresPersonalizados.isEmpty()) {
+            base
+        } else {
+            base + navegadoresPersonalizados.map { it.trim().lowercase() }
+        }
     }
 
-    fun esNavegador(contexto: Context, paquete: String): Boolean {
+    fun esNavegador(contexto: Context? = null, paquete: String, navegadoresPersonalizados: List<String> = emptyList()): Boolean {
         if (paquete.isBlank()) return false
-        return paquete in obtenerNavegadores(contexto)
+        val p = paquete.trim().lowercase()
+        if (navegadoresPersonalizados.any { it.trim().equals(p, ignoreCase = true) }) return true
+        return p in obtenerNavegadores(contexto, navegadoresPersonalizados)
     }
 }

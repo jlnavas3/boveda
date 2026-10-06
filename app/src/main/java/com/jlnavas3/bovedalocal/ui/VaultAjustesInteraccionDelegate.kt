@@ -86,13 +86,57 @@ interface VaultAjustesInteraccionDelegate {
         }
     }
 
+    fun agregarMapeoPaquete(paquete: String, dominio: String) {
+        val paqueteLimpio = paquete.trim().lowercase().removePrefix("android://")
+        val dominioLimpio = dominio.trim().lowercase().removePrefix("https://").removePrefix("http://").removePrefix("www.").substringBefore('/')
+        if (paqueteLimpio.isNotBlank() && dominioLimpio.isNotBlank()) {
+            repositorio.ajustes.actualizar {
+                it.copy(mapeoPaquetesPersonalizados = it.mapeoPaquetesPersonalizados + (paqueteLimpio to dominioLimpio))
+            }
+        }
+    }
+
+    fun eliminarMapeoPaquete(paquete: String) {
+        val paqueteLimpio = paquete.trim().lowercase().removePrefix("android://")
+        repositorio.ajustes.actualizar {
+            it.copy(mapeoPaquetesPersonalizados = it.mapeoPaquetesPersonalizados.filterKeys { k -> !k.equals(paqueteLimpio, ignoreCase = true) })
+        }
+    }
+
+    fun agregarNavegadorPersonalizado(paquete: String) {
+        val paqueteLimpio = paquete.trim().lowercase().removePrefix("android://")
+        if (paqueteLimpio.isNotBlank()) {
+            repositorio.ajustes.actualizar {
+                if (!it.navegadoresPersonalizados.contains(paqueteLimpio)) {
+                    it.copy(navegadoresPersonalizados = (it.navegadoresPersonalizados + paqueteLimpio).sorted())
+                } else it
+            }
+        }
+    }
+
+    fun eliminarNavegadorPersonalizado(paquete: String) {
+        val paqueteLimpio = paquete.trim().lowercase().removePrefix("android://")
+        repositorio.ajustes.actualizar {
+            it.copy(navegadoresPersonalizados = it.navegadoresPersonalizados.filterNot { p -> p.equals(paqueteLimpio, ignoreCase = true) })
+        }
+    }
+
+    fun ajustarMaxSugerenciasAutofill(max: Int) {
+        repositorio.ajustes.actualizar {
+            it.copy(maxSugerenciasAutofill = max)
+        }
+    }
+
     fun restablecerReglasAutocompletado() {
         repositorio.ajustes.actualizar {
             it.copy(
                 autofillPistasUsuario = AjustesDefaults.Autocompletado.PISTAS_USUARIO,
                 autofillPistasContrasena = AjustesDefaults.Autocompletado.PISTAS_CONTRASENA,
                 autofillPistasOtp = AjustesDefaults.Autocompletado.PISTAS_OTP,
-                autofillSugerenciasTeclado = AjustesDefaults.Autocompletado.SUGERENCIAS_TECLADO
+                autofillSugerenciasTeclado = AjustesDefaults.Autocompletado.SUGERENCIAS_TECLADO,
+                mapeoPaquetesPersonalizados = AjustesDefaults.Autocompletado.MAPEO_PAQUETES_PERSONALIZADOS,
+                navegadoresPersonalizados = AjustesDefaults.Autocompletado.NAVEGADORES_PERSONALIZADOS,
+                maxSugerenciasAutofill = AjustesDefaults.Autocompletado.MAX_SUGERENCIAS_AUTOFILL
             )
         }
     }

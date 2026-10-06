@@ -15,7 +15,7 @@ object ComparadorPaqueteDominio {
         "http", "https", "www", "mail", "api", "local", "localhost"
     )
 
-    fun coincide(guardado: String, solicitado: String): Boolean {
+    fun coincide(guardado: String, solicitado: String, mapeoPersonalizado: Map<String, String> = emptyMap()): Boolean {
         if (guardado.isBlank() || solicitado.isBlank()) return false
         val g = guardado.trim().lowercase()
         val s = solicitado.trim().lowercase()
@@ -34,7 +34,7 @@ object ComparadorPaqueteDominio {
         // 3. Coincidencia a través de catálogo de apps populares
         val paqueteObjetivo = paqS ?: (if (esPaqueteDirecto(s)) s else null)
         if (paqueteObjetivo != null) {
-            val dominioMapeado = MapeadorPaquetesPopulares.obtenerDominio(paqueteObjetivo)
+            val dominioMapeado = MapeadorPaquetesPopulares.obtenerDominio(paqueteObjetivo, mapeoPersonalizado)
             if (dominioMapeado != null) {
                 val raizGuardado = Dominios.raiz(g)
                 val raizMapeado = Dominios.raiz(dominioMapeado)
@@ -45,7 +45,7 @@ object ComparadorPaqueteDominio {
         // 4. Coincidencia inversa de catálogo si la entrada guardó un paquete
         val paqueteGuardado = paqG ?: (if (esPaqueteDirecto(g)) g else null)
         if (paqueteGuardado != null) {
-            val dominioMapeado = MapeadorPaquetesPopulares.obtenerDominio(paqueteGuardado)
+            val dominioMapeado = MapeadorPaquetesPopulares.obtenerDominio(paqueteGuardado, mapeoPersonalizado)
             if (dominioMapeado != null) {
                 val raizSolicitado = Dominios.raiz(s)
                 val raizMapeado = Dominios.raiz(dominioMapeado)

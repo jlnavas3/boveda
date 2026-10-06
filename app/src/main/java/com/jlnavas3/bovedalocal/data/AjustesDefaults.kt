@@ -110,6 +110,9 @@ object AjustesDefaults {
         val PISTAS_OTP = listOf(
             "otp", "totp", "2fa", "mfa", "one-time-code", "verification", "verificacion", "verificación", "codigo", "código", "security_code", "auth_code", "token"
         )
+        val MAPEO_PAQUETES_PERSONALIZADOS: Map<String, String> = emptyMap()
+        val NAVEGADORES_PERSONALIZADOS: List<String> = emptyList()
+        const val MAX_SUGERENCIAS_AUTOFILL: Int = 5
     }
 
     // 8. Índice Alfabético Lateral (Ola Niagara)
