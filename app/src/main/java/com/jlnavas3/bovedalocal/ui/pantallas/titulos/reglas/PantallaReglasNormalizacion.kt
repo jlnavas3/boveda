@@ -11,7 +11,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.RestartAlt
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -26,8 +25,6 @@ import com.jlnavas3.bovedalocal.ui.componentes.BotonBoveda
 import com.jlnavas3.bovedalocal.ui.componentes.DialogoConfirmacionBoveda
 import com.jlnavas3.bovedalocal.ui.componentes.VarianteBoton
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjustesFondo
-import com.jlnavas3.bovedalocal.ui.preview.BovedaPantallaPreview
-import com.jlnavas3.bovedalocal.ui.theme.BovedaTheme
 
 @Composable
 fun PantallaReglasNormalizacion(
@@ -37,8 +34,11 @@ fun PantallaReglasNormalizacion(
     val ajustes by vm.ajustes.collectAsStateWithLifecycle()
     val scrollState = rememberScrollState()
 
-    var mostrarDialogoAgregar by remember { mutableStateOf(false) }
+    var mostrarDialogoAgregarPrefijo by remember { mutableStateOf(false) }
     var mostrarDialogoAgregarTld by remember { mutableStateOf(false) }
+    var mostrarDialogoAgregarMarca by remember { mutableStateOf(false) }
+    var mostrarDialogoAgregarPuerto by remember { mutableStateOf(false) }
+    var mostrarDialogoAgregarOcteto by remember { mutableStateOf(false) }
     var mostrarDialogoRestablecer by remember { mutableStateOf(false) }
 
     Column(
@@ -63,7 +63,7 @@ fun PantallaReglasNormalizacion(
         ) {
             SeccionChipsPrefijos(
                 prefijos = ajustes.prefijosSubdominios,
-                alAgregarClick = { mostrarDialogoAgregar = true },
+                alAgregarClick = { mostrarDialogoAgregarPrefijo = true },
                 alEliminarPrefijo = { vm.eliminarPrefijoSubdominio(it) },
                 mostrarId = ajustes.mostrarIdsAjustes,
                 modifier = Modifier.fillMaxWidth()
@@ -81,15 +81,38 @@ fun PantallaReglasNormalizacion(
 
             Spacer(modifier = Modifier.height(16.dp))
 
+            SeccionMarcasPersonalizadas(
+                marcasPersonalizadas = ajustes.marcasPersonalizadas,
+                alAgregarClick = { mostrarDialogoAgregarMarca = true },
+                alEliminarMarca = { vm.eliminarMarcaPersonalizada(it) },
+                mostrarId = ajustes.mostrarIdsAjustes,
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            SeccionPuertosRedLocal(
+                puertosServicios = ajustes.puertosServiciosLocales,
+                alAgregarClick = { mostrarDialogoAgregarPuerto = true },
+                alEliminarPuerto = { vm.eliminarPuertoServicio(it) },
+                mostrarId = ajustes.mostrarIdsAjustes,
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
             SeccionConfiguracionRedLocal(
                 plantillaRouter = ajustes.plantillaRouterIp,
                 plantillaServidor = ajustes.plantillaServidorIp,
+                octetosRouter = ajustes.octetosRouter,
                 alCambiarPlantillaRouter = { nueva ->
                     vm.repositorio.ajustes.actualizar { it.copy(plantillaRouterIp = nueva) }
                 },
                 alCambiarPlantillaServidor = { nueva ->
                     vm.repositorio.ajustes.actualizar { it.copy(plantillaServidorIp = nueva) }
                 },
+                alAgregarOctetoClick = { mostrarDialogoAgregarOcteto = true },
+                alEliminarOcteto = { vm.eliminarOctetoRouter(it) },
                 mostrarId = ajustes.mostrarIdsAjustes,
                 modifier = Modifier.fillMaxWidth()
             )
@@ -108,13 +131,13 @@ fun PantallaReglasNormalizacion(
         }
     }
 
-    if (mostrarDialogoAgregar) {
+    if (mostrarDialogoAgregarPrefijo) {
         DialogoAgregarPrefijo(
             alConfirmar = { nuevo ->
                 vm.agregarPrefijoSubdominio(nuevo)
-                mostrarDialogoAgregar = false
+                mostrarDialogoAgregarPrefijo = false
             },
-            alDescartar = { mostrarDialogoAgregar = false }
+            alDescartar = { mostrarDialogoAgregarPrefijo = false }
         )
     }
 
@@ -128,10 +151,40 @@ fun PantallaReglasNormalizacion(
         )
     }
 
+    if (mostrarDialogoAgregarMarca) {
+        DialogoAgregarMarca(
+            alConfirmar = { dominio, nombre ->
+                vm.agregarMarcaPersonalizada(dominio, nombre)
+                mostrarDialogoAgregarMarca = false
+            },
+            alDescartar = { mostrarDialogoAgregarMarca = false }
+        )
+    }
+
+    if (mostrarDialogoAgregarPuerto) {
+        DialogoAgregarPuertoServicio(
+            alConfirmar = { puerto, servicio ->
+                vm.agregarPuertoServicio(puerto, servicio)
+                mostrarDialogoAgregarPuerto = false
+            },
+            alDescartar = { mostrarDialogoAgregarPuerto = false }
+        )
+    }
+
+    if (mostrarDialogoAgregarOcteto) {
+        DialogoAgregarOctetoRouter(
+            alConfirmar = { octeto ->
+                vm.agregarOctetoRouter(octeto)
+                mostrarDialogoAgregarOcteto = false
+            },
+            alDescartar = { mostrarDialogoAgregarOcteto = false }
+        )
+    }
+
     if (mostrarDialogoRestablecer) {
         DialogoConfirmacionBoveda(
             titulo = "¿Restablecer reglas?",
-            mensaje = "Se restaurará la lista estándar de prefijos de subdominios, extensiones de dominio (TLDs) y el formato de IPs locales.",
+            mensaje = "Se restaurará la configuración predeterminada de prefijos, extensiones TLD, marcas personalizadas, puertos de servicios locales y formato de IPs.",
             textoConfirmar = "Restablecer",
             textoCancelar = "Cancelar",
             alConfirmar = {

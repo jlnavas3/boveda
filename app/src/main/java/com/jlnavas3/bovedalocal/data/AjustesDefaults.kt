@@ -289,6 +289,19 @@ object AjustesDefaults {
             "app", "dev", "ai", "tech", "me", "info", "online", "tv", "it",
             "edu", "gob", "guru", "cloud"
         )
+        val MARCAS_PERSONALIZADAS: Map<String, String> = emptyMap()
+        val PUERTOS_SERVICIOS_LOCALES: Map<String, String> = mapOf(
+            "8006" to "Proxmox",
+            "9000" to "Portainer",
+            "9443" to "Portainer",
+            "8123" to "Home Assistant",
+            "32400" to "Plex",
+            "8096" to "Jellyfin",
+            "5000" to "Synology",
+            "5001" to "Synology",
+            "8080" to "Servidor Web"
+        )
+        val OCTETOS_ROUTER: List<Int> = listOf(1, 254)
         const val PLANTILLA_ROUTER_IP = "Router ({ip})"
         const val PLANTILLA_SERVIDOR_IP = "Servidor ({ip})"
         const val FORMATO_COLISION_TITULOS = "EXPLICITO_PARENTESIS"

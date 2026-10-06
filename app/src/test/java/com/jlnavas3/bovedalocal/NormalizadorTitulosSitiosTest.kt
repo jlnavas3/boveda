@@ -141,6 +141,44 @@ class NormalizadorTitulosSitiosTest {
     }
 
     @Test
+    fun marcasPersonalizadas_sobrescribenMarcasOficialesYCapitalizacion() {
+        val marcas = mapOf(
+            "miempresa" to "Mi Empresa S.A.",
+            "google" to "Google Workspace Pro",
+            "pichincha" to "Banco Pichincha"
+        )
+        // Sobrescribe marca oficial "Google"
+        assertEquals("Google Workspace Pro", NormalizadorTitulosSitios.extraerNombreBase("https://google.com", marcasPersonalizadas = marcas))
+        // Aplica a marca no existente en catálogo
+        assertEquals("Mi Empresa S.A.", NormalizadorTitulosSitios.extraerNombreBase("https://miempresa.com/login", marcasPersonalizadas = marcas))
+        assertEquals("Banco Pichincha", NormalizadorTitulosSitios.extraerNombreBase("https://bancaweb.pichincha.com", marcasPersonalizadas = marcas))
+    }
+
+    @Test
+    fun puertosServiciosLocales_identificaServiciosHomelab() {
+        val puertos = mapOf(
+            "8006" to "Proxmox",
+            "9000" to "Portainer",
+            "8123" to "Home Assistant",
+            "32400" to "Plex"
+        )
+        assertEquals("Proxmox (192.168.1.50:8006)", NormalizadorTitulosSitios.extraerNombreBase("https://192.168.1.50:8006", puertosConfigurados = puertos))
+        assertEquals("Portainer", NormalizadorTitulosSitios.extraerNombreBase("http://localhost:9000", puertosConfigurados = puertos))
+        assertEquals("Home Assistant (10.0.0.15:8123)", NormalizadorTitulosSitios.extraerNombreBase("http://10.0.0.15:8123", puertosConfigurados = puertos))
+        assertEquals("Plex (192.168.0.20:32400)", NormalizadorTitulosSitios.extraerNombreBase("http://192.168.0.20:32400/web", puertosConfigurados = puertos))
+    }
+
+    @Test
+    fun octetosRouterDinamicos_reconocePuertasDeEnlacePersonalizadas() {
+        val octetos = listOf(1, 100, 250, 254)
+        assertEquals("Router (192.168.1.1)", NormalizadorTitulosSitios.extraerNombreBase("http://192.168.1.1", octetosRouter = octetos))
+        assertEquals("Router (192.168.1.250)", NormalizadorTitulosSitios.extraerNombreBase("http://192.168.1.250", octetosRouter = octetos))
+        assertEquals("Router (10.0.0.100)", NormalizadorTitulosSitios.extraerNombreBase("http://10.0.0.100", octetosRouter = octetos))
+        // Octeto que no está en la lista se clasifica como servidor
+        assertEquals("Servidor (192.168.1.5)", NormalizadorTitulosSitios.extraerNombreBase("http://192.168.1.5", octetosRouter = octetos))
+    }
+
+    @Test
     fun grupoTitulosSitio_idUnicoPrevieneColisiones() {
         val grupo1 = com.jlnavas3.bovedalocal.data.GrupoTitulosSitio(
             id = "localhost_3000",

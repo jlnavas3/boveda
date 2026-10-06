@@ -99,7 +99,10 @@ fun CuerpoListaEntradas(
         ajustes.prefijosSubdominios,
         ajustes.plantillaRouterIp,
         ajustes.plantillaServidorIp,
-        ajustes.tldsDescartables
+        ajustes.tldsDescartables,
+        ajustes.marcasPersonalizadas,
+        ajustes.puertosServiciosLocales,
+        ajustes.octetosRouter
     ) {
         construirItemsAgrupadosPorSitio(
             entradas = visibles,
@@ -109,6 +112,9 @@ fun CuerpoListaEntradas(
             plantillaRouter = ajustes.plantillaRouterIp,
             plantillaServidor = ajustes.plantillaServidorIp,
             tldsConfigurados = ajustes.tldsDescartables,
+            marcasPersonalizadas = ajustes.marcasPersonalizadas,
+            puertosConfigurados = ajustes.puertosServiciosLocales,
+            octetosRouter = ajustes.octetosRouter,
             expandido = { false }
         )
     }

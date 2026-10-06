@@ -17,7 +17,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Router
+import androidx.compose.material.icons.filled.Dns
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -27,7 +27,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.jlnavas3.bovedalocal.ui.componentes.CampoBoveda
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteGrupo
 import com.jlnavas3.bovedalocal.ui.preview.BovedaPreview
 import com.jlnavas3.bovedalocal.ui.theme.BovedaTheme
@@ -36,56 +35,39 @@ import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun SeccionConfiguracionRedLocal(
-    plantillaRouter: String,
-    plantillaServidor: String,
-    octetosRouter: List<Int>,
-    alCambiarPlantillaRouter: (String) -> Unit,
-    alCambiarPlantillaServidor: (String) -> Unit,
-    alAgregarOctetoClick: () -> Unit,
-    alEliminarOcteto: (Int) -> Unit,
+fun SeccionPuertosRedLocal(
+    puertosServicios: Map<String, String>,
+    alAgregarClick: () -> Unit,
+    alEliminarPuerto: (String) -> Unit,
     mostrarId: Boolean = false,
     modifier: Modifier = Modifier
 ) {
     ComponenteGrupo(
-        etiqueta = "Redes Privadas e IPs (RFC 1918)",
-        icono = Icons.Filled.Router,
+        etiqueta = "Puertos de Servicios y Homelab",
+        icono = Icons.Filled.Dns,
         colorIcono = ColorAcento,
-        idGrupo = "03-LST-RGL-G02",
+        idGrupo = "03-LST-RGL-G04",
         mostrarId = mostrarId,
         modifier = modifier
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(
-                text = "Formato automático para direcciones IP privadas (192.168.*, 10.*, 172.16-31.*, localhost). Usa '{ip}' como comodín.",
+                text = "Identificación automática por número de puerto TCP/UDP en redes locales y localhost (ej. :8006 → Proxmox, :9000 → Portainer, :8123 → Home Assistant).",
                 color = TextoSecundario,
                 fontSize = 13.sp,
                 lineHeight = 18.sp
             )
             Spacer(modifier = Modifier.height(14.dp))
-            CampoBoveda(
-                valor = plantillaRouter,
-                alCambiar = alCambiarPlantillaRouter,
-                etiqueta = "Plantilla de Routers y Puertas de Enlace",
-                modifier = Modifier.fillMaxWidth()
-            )
-            Spacer(modifier = Modifier.height(10.dp))
-            Text(
-                text = "Octetos finales identificados como router / gateway:",
-                color = TextoSecundario,
-                fontSize = 12.sp
-            )
-            Spacer(modifier = Modifier.height(6.dp))
             FlowRow(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp),
                 modifier = Modifier.fillMaxWidth()
             ) {
-                octetosRouter.forEach { octeto ->
-                    ChipOctetoRouter(
-                        octeto = octeto,
-                        alEliminar = alEliminarOcteto,
-                        permitirEliminar = octetosRouter.size > 1
+                puertosServicios.forEach { (puerto, servicio) ->
+                    ChipPuertoServicio(
+                        puerto = puerto,
+                        servicio = servicio,
+                        alEliminar = alEliminarPuerto
                     )
                 }
 
@@ -94,13 +76,13 @@ fun SeccionConfiguracionRedLocal(
                     modifier = Modifier
                         .clip(RoundedCornerShape(8.dp))
                         .background(ColorAcento.copy(alpha = 0.15f))
-                        .clickable { alAgregarOctetoClick() }
+                        .clickable { alAgregarClick() }
                         .padding(horizontal = 12.dp, vertical = 6.dp)
                 ) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(
                             imageVector = Icons.Filled.Add,
-                            contentDescription = "Agregar octeto",
+                            contentDescription = "Agregar puerto de servicio",
                             tint = ColorAcento,
                             modifier = Modifier.size(16.dp)
                         )
@@ -114,29 +96,18 @@ fun SeccionConfiguracionRedLocal(
                     }
                 }
             }
-            Spacer(modifier = Modifier.height(14.dp))
-            CampoBoveda(
-                valor = plantillaServidor,
-                alCambiar = alCambiarPlantillaServidor,
-                etiqueta = "Plantilla de Servidores y Equipos Locales",
-                modifier = Modifier.fillMaxWidth()
-            )
         }
     }
 }
 
 @BovedaPreview
 @Composable
-private fun PreviaSeccionConfiguracionRedLocal() {
+private fun PreviaSeccionPuertosRedLocal() {
     BovedaTheme {
-        SeccionConfiguracionRedLocal(
-            plantillaRouter = "Router ({ip})",
-            plantillaServidor = "Servidor ({ip})",
-            octetosRouter = listOf(1, 254),
-            alCambiarPlantillaRouter = {},
-            alCambiarPlantillaServidor = {},
-            alAgregarOctetoClick = {},
-            alEliminarOcteto = {}
+        SeccionPuertosRedLocal(
+            puertosServicios = mapOf("8006" to "Proxmox", "8123" to "Home Assistant", "32400" to "Plex"),
+            alAgregarClick = {},
+            alEliminarPuerto = {}
         )
     }
 }

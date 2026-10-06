@@ -38,7 +38,10 @@ interface VaultTitulosDelegate {
                 prefijosConfigurados = ajustes.prefijosSubdominios,
                 plantillaRouter = ajustes.plantillaRouterIp,
                 plantillaServidor = ajustes.plantillaServidorIp,
-                tldsConfigurados = ajustes.tldsDescartables
+                tldsConfigurados = ajustes.tldsDescartables,
+                marcasPersonalizadas = ajustes.marcasPersonalizadas,
+                puertosConfigurados = ajustes.puertosServiciosLocales,
+                octetosRouter = ajustes.octetosRouter
             )
             val clave = nombreBase.lowercase()
             grupos.getOrPut(clave) { mutableListOf() }.add(e)
@@ -53,7 +56,10 @@ interface VaultTitulosDelegate {
                 prefijosConfigurados = ajustes.prefijosSubdominios,
                 plantillaRouter = ajustes.plantillaRouterIp,
                 plantillaServidor = ajustes.plantillaServidorIp,
-                tldsConfigurados = ajustes.tldsDescartables
+                tldsConfigurados = ajustes.tldsDescartables,
+                marcasPersonalizadas = ajustes.marcasPersonalizadas,
+                puertosConfigurados = ajustes.puertosServiciosLocales,
+                octetosRouter = ajustes.octetosRouter
             )
             val domMostrar = if (primeraUrl.isNotBlank()) {
                 val host = Dominios.host(primeraUrl)
@@ -179,11 +185,64 @@ interface VaultTitulosDelegate {
         }
     }
 
+    fun agregarMarcaPersonalizada(dominioOClave: String, nombreFormateado: String) {
+        val claveLimpia = dominioOClave.trim().lowercase().removePrefix("https://").removePrefix("http://").removePrefix("www.").substringBefore('/')
+        val nombreLimpio = nombreFormateado.trim()
+        if (claveLimpia.isNotBlank() && nombreLimpio.isNotBlank()) {
+            repositorio.ajustes.actualizar {
+                it.copy(marcasPersonalizadas = it.marcasPersonalizadas + (claveLimpia to nombreLimpio))
+            }
+        }
+    }
+
+    fun eliminarMarcaPersonalizada(dominioOClave: String) {
+        val claveLimpia = dominioOClave.trim().lowercase()
+        repositorio.ajustes.actualizar {
+            it.copy(marcasPersonalizadas = it.marcasPersonalizadas.filterKeys { k -> !k.equals(claveLimpia, ignoreCase = true) })
+        }
+    }
+
+    fun agregarPuertoServicio(puerto: String, nombreServicio: String) {
+        val puertoLimpio = puerto.trim().removePrefix(":")
+        val servicioLimpio = nombreServicio.trim()
+        if (puertoLimpio.isNotBlank() && servicioLimpio.isNotBlank()) {
+            repositorio.ajustes.actualizar {
+                it.copy(puertosServiciosLocales = it.puertosServiciosLocales + (puertoLimpio to servicioLimpio))
+            }
+        }
+    }
+
+    fun eliminarPuertoServicio(puerto: String) {
+        val puertoLimpio = puerto.trim().removePrefix(":")
+        repositorio.ajustes.actualizar {
+            it.copy(puertosServiciosLocales = it.puertosServiciosLocales.filterKeys { k -> k != puertoLimpio })
+        }
+    }
+
+    fun agregarOctetoRouter(octeto: Int) {
+        if (octeto in 1..254) {
+            repositorio.ajustes.actualizar {
+                if (!it.octetosRouter.contains(octeto)) {
+                    it.copy(octetosRouter = (it.octetosRouter + octeto).sorted())
+                } else it
+            }
+        }
+    }
+
+    fun eliminarOctetoRouter(octeto: Int) {
+        repositorio.ajustes.actualizar {
+            it.copy(octetosRouter = it.octetosRouter.filter { o -> o != octeto })
+        }
+    }
+
     fun restablecerReglasNormalizacion() {
         repositorio.ajustes.actualizar {
             it.copy(
                 prefijosSubdominios = AjustesDefaults.NormalizacionTitulos.PREFIJOS_SUBDOMINIOS,
                 tldsDescartables = AjustesDefaults.NormalizacionTitulos.TLDS_DESCARTABLES,
+                marcasPersonalizadas = AjustesDefaults.NormalizacionTitulos.MARCAS_PERSONALIZADAS,
+                puertosServiciosLocales = AjustesDefaults.NormalizacionTitulos.PUERTOS_SERVICIOS_LOCALES,
+                octetosRouter = AjustesDefaults.NormalizacionTitulos.OCTETOS_ROUTER,
                 plantillaRouterIp = AjustesDefaults.NormalizacionTitulos.PLANTILLA_ROUTER_IP,
                 plantillaServidorIp = AjustesDefaults.NormalizacionTitulos.PLANTILLA_SERVIDOR_IP,
                 formatoColisionTitulos = AjustesDefaults.NormalizacionTitulos.FORMATO_COLISION_TITULOS,

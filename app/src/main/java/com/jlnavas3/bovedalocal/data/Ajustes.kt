@@ -31,6 +31,27 @@ private fun deserializarTldsDescartables(raw: String): List<String> = try {
     AjustesDefaults.NormalizacionTitulos.TLDS_DESCARTABLES
 }
 
+private fun deserializarMarcasPersonalizadas(raw: String): Map<String, String> = try {
+    if (raw.isBlank()) AjustesDefaults.NormalizacionTitulos.MARCAS_PERSONALIZADAS
+    else jsonAjustes.decodeFromString(raw)
+} catch (_: Exception) {
+    AjustesDefaults.NormalizacionTitulos.MARCAS_PERSONALIZADAS
+}
+
+private fun deserializarPuertosServicios(raw: String): Map<String, String> = try {
+    if (raw.isBlank()) AjustesDefaults.NormalizacionTitulos.PUERTOS_SERVICIOS_LOCALES
+    else jsonAjustes.decodeFromString(raw)
+} catch (_: Exception) {
+    AjustesDefaults.NormalizacionTitulos.PUERTOS_SERVICIOS_LOCALES
+}
+
+private fun deserializarOctetosRouter(raw: String): List<Int> = try {
+    if (raw.isBlank()) AjustesDefaults.NormalizacionTitulos.OCTETOS_ROUTER
+    else jsonAjustes.decodeFromString(raw)
+} catch (_: Exception) {
+    AjustesDefaults.NormalizacionTitulos.OCTETOS_ROUTER
+}
+
 private fun deserializarPistasUsuario(raw: String): List<String> = try {
     if (raw.isBlank()) AjustesDefaults.Autocompletado.PISTAS_USUARIO
     else jsonAjustes.decodeFromString(raw)
@@ -292,6 +313,9 @@ data class AjustesApp(
     // Normalización de títulos y redes locales
     val prefijosSubdominios: List<String> = AjustesDefaults.NormalizacionTitulos.PREFIJOS_SUBDOMINIOS,
     val tldsDescartables: List<String> = AjustesDefaults.NormalizacionTitulos.TLDS_DESCARTABLES,
+    val marcasPersonalizadas: Map<String, String> = AjustesDefaults.NormalizacionTitulos.MARCAS_PERSONALIZADAS,
+    val puertosServiciosLocales: Map<String, String> = AjustesDefaults.NormalizacionTitulos.PUERTOS_SERVICIOS_LOCALES,
+    val octetosRouter: List<Int> = AjustesDefaults.NormalizacionTitulos.OCTETOS_ROUTER,
     val plantillaRouterIp: String = AjustesDefaults.NormalizacionTitulos.PLANTILLA_ROUTER_IP,
     val plantillaServidorIp: String = AjustesDefaults.NormalizacionTitulos.PLANTILLA_SERVIDOR_IP,
     val formatoColisionTitulos: String = AjustesDefaults.NormalizacionTitulos.FORMATO_COLISION_TITULOS,
@@ -576,6 +600,9 @@ class AlmacenAjustes(contexto: Context) {
             autofillPistasOtp = deserializarPistasOtp(prefs.getString("autofill_pistas_otp_json", "") ?: ""),
             prefijosSubdominios = deserializarPrefijosSubdominios(prefs.getString("prefijos_subdominios_json", "") ?: ""),
             tldsDescartables = deserializarTldsDescartables(prefs.getString("tlds_descartables_json", "") ?: ""),
+            marcasPersonalizadas = deserializarMarcasPersonalizadas(prefs.getString("marcas_personalizadas_json", "") ?: ""),
+            puertosServiciosLocales = deserializarPuertosServicios(prefs.getString("puertos_servicios_locales_json", "") ?: ""),
+            octetosRouter = deserializarOctetosRouter(prefs.getString("octetos_router_json", "") ?: ""),
             plantillaRouterIp = prefs.getString("plantilla_router_ip", AjustesDefaults.NormalizacionTitulos.PLANTILLA_ROUTER_IP) ?: AjustesDefaults.NormalizacionTitulos.PLANTILLA_ROUTER_IP,
             plantillaServidorIp = prefs.getString("plantilla_servidor_ip", AjustesDefaults.NormalizacionTitulos.PLANTILLA_SERVIDOR_IP) ?: AjustesDefaults.NormalizacionTitulos.PLANTILLA_SERVIDOR_IP,
             formatoColisionTitulos = prefs.getString("formato_colision_titulos", AjustesDefaults.NormalizacionTitulos.FORMATO_COLISION_TITULOS) ?: AjustesDefaults.NormalizacionTitulos.FORMATO_COLISION_TITULOS,
@@ -777,6 +804,9 @@ class AlmacenAjustes(contexto: Context) {
             .putString("autofill_pistas_otp_json", jsonAjustes.encodeToString(nuevo.autofillPistasOtp))
             .putString("prefijos_subdominios_json", jsonAjustes.encodeToString(nuevo.prefijosSubdominios))
             .putString("tlds_descartables_json", jsonAjustes.encodeToString(nuevo.tldsDescartables))
+            .putString("marcas_personalizadas_json", jsonAjustes.encodeToString(nuevo.marcasPersonalizadas))
+            .putString("puertos_servicios_locales_json", jsonAjustes.encodeToString(nuevo.puertosServiciosLocales))
+            .putString("octetos_router_json", jsonAjustes.encodeToString(nuevo.octetosRouter))
             .putString("plantilla_router_ip", nuevo.plantillaRouterIp)
             .putString("plantilla_servidor_ip", nuevo.plantillaServidorIp)
             .putString("formato_colision_titulos", nuevo.formatoColisionTitulos)

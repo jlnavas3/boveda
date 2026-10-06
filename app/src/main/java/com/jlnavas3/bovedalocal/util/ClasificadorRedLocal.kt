@@ -4,7 +4,11 @@ import java.net.URI
 
 object ClasificadorRedLocal {
 
-    fun analizar(urlORaw: String): InfoRedLocal? {
+    fun analizar(
+        urlORaw: String,
+        puertosConfigurados: Map<String, String> = emptyMap(),
+        octetosRouter: List<Int> = listOf(1, 254)
+    ): InfoRedLocal? {
         val limpio = urlORaw.trim().lowercase()
         if (limpio.isBlank()) return null
 
@@ -24,11 +28,13 @@ object ClasificadorRedLocal {
         }
         val ruta = uri?.path?.lowercase() ?: limpio.substringAfter(host).substringBefore('?')
 
-        val servicio = when {
+        val servicioRuta = when {
             ruta.contains("phpmyadmin") -> "phpMyAdmin"
             ruta.contains("web/guest") || ruta.contains("portal") -> "Portal Web"
             else -> null
         }
+        val servicioPuerto = puerto?.let { puertosConfigurados[it] }
+        val servicio = servicioRuta ?: servicioPuerto
 
         if (host == "localhost" || host == "127.0.0.1") {
             return InfoRedLocal(
@@ -52,7 +58,8 @@ object ClasificadorRedLocal {
                     (o1 == 192 && o2 == 168) ||
                     (o1 == 169 && o2 == 254)
 
-            val esRouter = esPrivada && (o4 == 1 || o4 == 254)
+            val listaOctetos = octetosRouter.ifEmpty { listOf(1, 254) }
+            val esRouter = esPrivada && (o4 in listaOctetos)
             return InfoRedLocal(
                 esRedPrivada = esPrivada,
                 esRouterOPuertaEnlace = esRouter,

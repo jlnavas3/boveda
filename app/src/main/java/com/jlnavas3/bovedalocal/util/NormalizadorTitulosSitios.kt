@@ -122,14 +122,21 @@ object NormalizadorTitulosSitios {
         prefijosConfigurados: List<String> = emptyList(),
         plantillaRouter: String = "Router ({ip})",
         plantillaServidor: String = "Servidor ({ip})",
-        tldsConfigurados: List<String> = emptyList()
+        tldsConfigurados: List<String> = emptyList(),
+        marcasPersonalizadas: Map<String, String> = emptyMap(),
+        puertosConfigurados: Map<String, String> = emptyMap(),
+        octetosRouter: List<Int> = listOf(1, 254)
     ): String {
         val tituloLimpio = rawTitulo.substringBefore('(').substringBefore('·').substringBefore('[').trim()
         val entradaAnalisis = if (urlODominio.isNotBlank()) urlODominio else tituloLimpio
         if (entradaAnalisis.isBlank()) return tituloLimpio.ifBlank { "Cuenta" }
 
         // 1. Redes locales / IPs (públicas o privadas) / Localhost
-        val infoRed = ClasificadorRedLocal.analizar(entradaAnalisis)
+        val infoRed = ClasificadorRedLocal.analizar(
+            urlORaw = entradaAnalisis,
+            puertosConfigurados = puertosConfigurados,
+            octetosRouter = octetosRouter
+        )
         if (infoRed != null) {
             return ClasificadorRedLocal.formatearNombre(infoRed, plantillaRouter, plantillaServidor)
         }
@@ -143,6 +150,8 @@ object NormalizadorTitulosSitios {
         // Si no contiene punto y no es URL con protocolo, ya es un nombre limpio o marca
         if (!host.contains('.') && !entradaAnalisis.startsWith("http")) {
             val marcaKey = host.lowercase()
+            val marcaPers = marcasPersonalizadas[marcaKey]
+            if (marcaPers != null) return marcaPers
             return MAPA_MARCAS_OFICIALES[marcaKey] ?: capitalizarAmigable(host)
         }
 
@@ -152,11 +161,15 @@ object NormalizadorTitulosSitios {
         // 4. Marca o nombre raíz
         val marcaKey = Dominios.marca(hostPodado).lowercase()
 
-        // 5. Diccionario oficial
+        // 5. Diccionario de marcas personalizadas (prioridad sobre diccionario oficial)
+        val marcaPers = marcasPersonalizadas[marcaKey] ?: marcasPersonalizadas[hostPodado.lowercase()]
+        if (marcaPers != null) return marcaPers
+
+        // 6. Diccionario oficial
         val nombreOficial = MAPA_MARCAS_OFICIALES[marcaKey]
         if (nombreOficial != null) return nombreOficial
 
-        // 6. Si es un dominio genérico con extensiones compuestas (.gob.ec, .edu.ec, etc.)
+        // 7. Si es un dominio genérico con extensiones compuestas (.gob.ec, .edu.ec, etc.)
         val hostSinTld = podarTlds(hostPodado, tldsConfigurados)
         val nombreLimpio = when {
             hostSinTld.contains('.') -> hostSinTld.substringBefore('.')

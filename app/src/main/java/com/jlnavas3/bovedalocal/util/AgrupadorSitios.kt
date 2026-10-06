@@ -18,6 +18,9 @@ fun construirItemsAgrupadosPorSitio(
     plantillaRouter: String = "Router ({ip})",
     plantillaServidor: String = "Servidor ({ip})",
     tldsConfigurados: List<String> = emptyList(),
+    marcasPersonalizadas: Map<String, String> = emptyMap(),
+    puertosConfigurados: Map<String, String> = emptyMap(),
+    octetosRouter: List<Int> = listOf(1, 254),
     expandido: (String) -> Boolean
 ): List<ItemAgrupado> {
     if (!agrupar) {
@@ -25,13 +28,31 @@ fun construirItemsAgrupadosPorSitio(
     }
 
     val porSitio = entradas.groupBy {
-        claveAgrupacionSitio(it, prefijosConfigurados, plantillaRouter, plantillaServidor, tldsConfigurados)
+        claveAgrupacionSitio(
+            it,
+            prefijosConfigurados,
+            plantillaRouter,
+            plantillaServidor,
+            tldsConfigurados,
+            marcasPersonalizadas,
+            puertosConfigurados,
+            octetosRouter
+        )
     }
     val vistos = mutableSetOf<String>()
     val itemsPrincipales = mutableListOf<ItemAgrupado>()
 
     entradas.forEach { entrada ->
-        val clave = claveAgrupacionSitio(entrada, prefijosConfigurados, plantillaRouter, plantillaServidor, tldsConfigurados)
+        val clave = claveAgrupacionSitio(
+            entrada,
+            prefijosConfigurados,
+            plantillaRouter,
+            plantillaServidor,
+            tldsConfigurados,
+            marcasPersonalizadas,
+            puertosConfigurados,
+            octetosRouter
+        )
         val delMismoSitio = clave?.let { porSitio[it] }
         if (clave != null && delMismoSitio != null && delMismoSitio.size > 1) {
             if (vistos.add(clave)) {
