@@ -41,7 +41,7 @@ object ClasificadorRedLocal {
         }
 
         val partesIp = host.split('.')
-        if (partesIp.size == 4 && partesIp.all { it.toIntOrNull() != null }) {
+        if (partesIp.size == 4 && partesIp.all { it.toIntOrNull() != null && it.toInt() in 0..255 }) {
             val octetos = partesIp.map { it.toInt() }
             val o1 = octetos[0]
             val o2 = octetos[1]
@@ -52,16 +52,14 @@ object ClasificadorRedLocal {
                     (o1 == 192 && o2 == 168) ||
                     (o1 == 169 && o2 == 254)
 
-            if (esPrivada) {
-                val esRouter = o4 == 1 || o4 == 254
-                return InfoRedLocal(
-                    esRedPrivada = true,
-                    esRouterOPuertaEnlace = esRouter,
-                    hostOIp = host,
-                    puerto = puerto,
-                    servicioDetectado = servicio
-                )
-            }
+            val esRouter = esPrivada && (o4 == 1 || o4 == 254)
+            return InfoRedLocal(
+                esRedPrivada = esPrivada,
+                esRouterOPuertaEnlace = esRouter,
+                hostOIp = host,
+                puerto = puerto,
+                servicioDetectado = servicio
+            )
         }
 
         return null

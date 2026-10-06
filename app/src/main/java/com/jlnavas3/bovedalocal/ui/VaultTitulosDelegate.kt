@@ -31,17 +31,21 @@ interface VaultTitulosDelegate {
 
         val grupos = mutableMapOf<String, MutableList<Entrada>>()
         for (e in entradas) {
-            val clave = when {
-                e.urls.isNotEmpty() -> Dominios.sitioAgrupacion(e.urls.first())
-                e.titulo.isNotBlank() -> Dominios.sitioAgrupacion(e.titulo)
-                else -> "otros"
-            }
+            val primeraUrl = e.urls.firstOrNull() ?: ""
+            val nombreBase = NormalizadorTitulosSitios.extraerNombreBase(
+                urlODominio = primeraUrl,
+                rawTitulo = e.titulo,
+                prefijosConfigurados = ajustes.prefijosSubdominios,
+                plantillaRouter = ajustes.plantillaRouterIp,
+                plantillaServidor = ajustes.plantillaServidorIp
+            )
+            val clave = nombreBase.lowercase()
             grupos.getOrPut(clave) { mutableListOf() }.add(e)
         }
 
-        val resultadoGrupos = grupos.map { (clave, lista) ->
-            val primeraUrl = lista.firstOrNull()?.urls?.firstOrNull() ?: clave
-            val primerTitulo = lista.firstOrNull()?.titulo ?: clave
+        val resultadoGrupos = grupos.map { (_, lista) ->
+            val primeraUrl = lista.firstOrNull { it.urls.isNotEmpty() }?.urls?.firstOrNull() ?: ""
+            val primerTitulo = lista.firstOrNull()?.titulo ?: ""
             val nombreBase = NormalizadorTitulosSitios.extraerNombreBase(
                 urlODominio = primeraUrl,
                 rawTitulo = primerTitulo,
@@ -49,8 +53,13 @@ interface VaultTitulosDelegate {
                 plantillaRouter = ajustes.plantillaRouterIp,
                 plantillaServidor = ajustes.plantillaServidorIp
             )
+            val domMostrar = if (primeraUrl.isNotBlank()) {
+                Dominios.host(primeraUrl).ifBlank { primeraUrl }
+            } else {
+                primerTitulo
+            }
             GrupoTitulosSitio(
-                dominioClave = clave,
+                dominioClave = domMostrar,
                 nombreSugerido = nombreBase,
                 nombrePersonalizado = nombreBase,
                 entradas = lista,
@@ -88,7 +97,13 @@ interface VaultTitulosDelegate {
 
             for (grupo in grupos) {
                 for (entrada in grupo.entradas) {
-                    if (respetarManuales && !NormalizadorTitulosSitios.esTituloTecnico(entrada.titulo, entrada.urls)) {
+                    if (respetarManuales && !NormalizadorTitulosSitios.esTituloGeneradoOModificable(
+                            titulo = entrada.titulo,
+                            nombreBase = grupo.nombreEfectivo,
+                            usuario = entrada.usuario,
+                            urls = entrada.urls
+                        )
+                    ) {
                         continue
                     }
                     val tituloFinal = NormalizadorTitulosSitios.generarTituloFinal(

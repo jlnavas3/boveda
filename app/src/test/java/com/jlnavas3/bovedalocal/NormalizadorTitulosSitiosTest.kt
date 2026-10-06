@@ -31,6 +31,22 @@ class NormalizadorTitulosSitiosTest {
         assertEquals("phpMyAdmin (192.168.0.200)", NormalizadorTitulosSitios.extraerNombreBase("http://192.168.0.200/phpmyadmin/", "http://192.168.0.200", prefijos))
         assertEquals("Servidor (192.168.1.4:8001)", NormalizadorTitulosSitios.extraerNombreBase("http://192.168.1.4:8001/server_privileges.php", "http://192.168.1.4:8001", prefijos))
         assertEquals("phpMyAdmin", NormalizadorTitulosSitios.extraerNombreBase("http://localhost/phpmyadmin/", "localhost", prefijos))
+        // IP Pública: nunca debe truncarse al primer octeto
+        assertEquals("Servidor (186.4.146.197:9904)", NormalizadorTitulosSitios.extraerNombreBase("http://186.4.146.197:9904/", "http://186.4.146.197:9904", prefijos))
+    }
+
+    @Test
+    fun reversibilidad_titulosGeneradosSonModificables() {
+        val base = "Google"
+        val usuario = "central.paramotos"
+        // Formato original o técnico
+        assertTrue(NormalizadorTitulosSitios.esTituloGeneradoOModificable("accounts.google.com", base, usuario))
+        // Formato ya normalizado en explícito
+        assertTrue(NormalizadorTitulosSitios.esTituloGeneradoOModificable("Google (central.paramotos)", base, usuario))
+        // Formato ya normalizado en minimalista
+        assertTrue(NormalizadorTitulosSitios.esTituloGeneradoOModificable("Google", base, usuario))
+        // Título personalizado por el usuario no debe considerarse generado
+        assertTrue(!NormalizadorTitulosSitios.esTituloGeneradoOModificable("Mi Cuenta de Trabajo", base, usuario))
     }
 
     @Test
@@ -62,6 +78,7 @@ class NormalizadorTitulosSitiosTest {
     fun deteccionTitulosTecnicos() {
         assertTrue(NormalizadorTitulosSitios.esTituloTecnico("account.lenovo.com"))
         assertTrue(NormalizadorTitulosSitios.esTituloTecnico("http://192.168.1.1"))
+        assertTrue(NormalizadorTitulosSitios.esTituloTecnico("http://186.4.146.197:9904"))
         assertTrue(NormalizadorTitulosSitios.esTituloTecnico("https://accounts.google.com"))
         assertTrue(!NormalizadorTitulosSitios.esTituloTecnico("Mi Banco Personal Ahorros"))
         assertTrue(!NormalizadorTitulosSitios.esTituloTecnico("Servidor Principal Casa"))

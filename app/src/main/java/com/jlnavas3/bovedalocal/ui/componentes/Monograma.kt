@@ -29,11 +29,17 @@ fun Monograma(titulo: String, semilla: String, tamano: Int = 46) {
         val t = titulo.trim()
         if (t.isEmpty()) "?"
         else {
-            val partes = t.split(' ').filter { it.isNotEmpty() }
-            if (partes.size >= 2) {
-                "${partes[0].first().uppercaseChar()}${partes[1].first().uppercaseChar()}"
+            val tituloLimpio = t.substringBefore('(').substringBefore('·').substringBefore('[').trim()
+            val fuente = if (tituloLimpio.isNotBlank()) tituloLimpio else t
+            val palabras = fuente.split(' ')
+                .map { palabra -> palabra.filter { it.isLetterOrDigit() } }
+                .filter { it.isNotEmpty() }
+            if (palabras.size >= 2) {
+                "${palabras[0].first().uppercaseChar()}${palabras[1].first().uppercaseChar()}"
+            } else if (palabras.isNotEmpty()) {
+                "${palabras[0].first().uppercaseChar()}"
             } else {
-                "${partes[0].first().uppercaseChar()}"
+                "${fuente.first().uppercaseChar()}"
             }
         }
     }

@@ -109,12 +109,13 @@ object NormalizadorTitulosSitios {
         plantillaRouter: String = "Router ({ip})",
         plantillaServidor: String = "Servidor ({ip})"
     ): String {
-        val entradaAnalisis = if (urlODominio.isNotBlank()) urlODominio else rawTitulo
-        if (entradaAnalisis.isBlank()) return rawTitulo.ifBlank { "Cuenta" }
+        val tituloLimpio = rawTitulo.substringBefore('(').substringBefore('·').substringBefore('[').trim()
+        val entradaAnalisis = if (urlODominio.isNotBlank()) urlODominio else tituloLimpio
+        if (entradaAnalisis.isBlank()) return tituloLimpio.ifBlank { "Cuenta" }
 
-        // 1. Redes locales / IPs / Localhost
+        // 1. Redes locales / IPs (públicas o privadas) / Localhost
         val infoRed = ClasificadorRedLocal.analizar(entradaAnalisis)
-        if (infoRed != null && infoRed.esRedPrivada) {
+        if (infoRed != null) {
             return ClasificadorRedLocal.formatearNombre(infoRed, plantillaRouter, plantillaServidor)
         }
 
@@ -122,6 +123,12 @@ object NormalizadorTitulosSitios {
         var host = Dominios.host(entradaAnalisis)
         if (host.isBlank()) {
             host = entradaAnalisis.substringBefore('/').substringBefore(':').removePrefix("www.")
+        }
+
+        // Si no contiene punto y no es URL con protocolo, ya es un nombre limpio o marca
+        if (!host.contains('.') && !entradaAnalisis.startsWith("http")) {
+            val marcaKey = host.lowercase()
+            return MAPA_MARCAS_OFICIALES[marcaKey] ?: capitalizarAmigable(host)
         }
 
         // 3. Podar prefijos de subdominios configurados
@@ -151,6 +158,9 @@ object NormalizadorTitulosSitios {
         if (t.startsWith("192.168.") || t.startsWith("10.") || t.startsWith("172.") || t.startsWith("localhost")) {
             return true
         }
+        if (t.matches(Regex("""^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}(:\d+)?.*"""))) {
+            return true
+        }
         val tldsComunes = listOf(".com", ".net", ".org", ".io", ".tv", ".it", ".es", ".ec", ".edu", ".gob", ".app", ".me", ".info", ".online", ".guru", ".cloud")
         if (tldsComunes.any { t.contains(it) }) {
             return true
@@ -160,6 +170,23 @@ object NormalizadorTitulosSitios {
             h.equals(t, ignoreCase = true) || h.removePrefix("www.").equals(t, ignoreCase = true)
         }
         return hostCoincidente != null
+    }
+
+    fun esTituloGeneradoOModificable(
+        titulo: String,
+        nombreBase: String,
+        usuario: String,
+        urls: List<String> = emptyList()
+    ): Boolean {
+        if (esTituloTecnico(titulo, urls)) return true
+        val t = titulo.trim()
+        val base = nombreBase.trim()
+        if (t.equals(base, ignoreCase = true)) return true
+        if (usuario.isNotBlank()) {
+            if (t.equals("$base ($usuario)", ignoreCase = true)) return true
+            if (t.equals("$base · $usuario", ignoreCase = true)) return true
+        }
+        return false
     }
 
     fun generarTituloFinal(
