@@ -10,7 +10,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -65,10 +65,10 @@ fun ContenidoListaRegistro(
                     modifier = Modifier.fillMaxSize(),
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    items(
+                    itemsIndexed(
                         items = eventosOrdenados,
-                        key = { it.textoCompleto + it.timestamp }
-                    ) { ev ->
+                        key = { indice, ev -> "${indice}_${ev.timestamp}_${ev.textoCompleto}" }
+                    ) { _, ev ->
                         TarjetaEventoRegistro(ev = ev)
                     }
                 }

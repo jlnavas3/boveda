@@ -44,7 +44,7 @@ interface VaultTitulosDelegate {
             grupos.getOrPut(clave) { mutableListOf() }.add(e)
         }
 
-        val resultadoGrupos = grupos.map { (_, lista) ->
+        val resultadoGrupos = grupos.map { (claveAgrupacion, lista) ->
             val primeraUrl = lista.firstOrNull { it.urls.isNotEmpty() }?.urls?.firstOrNull() ?: ""
             val primerTitulo = lista.firstOrNull()?.titulo ?: ""
             val nombreBase = NormalizadorTitulosSitios.extraerNombreBase(
@@ -56,11 +56,18 @@ interface VaultTitulosDelegate {
                 tldsConfigurados = ajustes.tldsDescartables
             )
             val domMostrar = if (primeraUrl.isNotBlank()) {
-                Dominios.host(primeraUrl).ifBlank { primeraUrl }
+                val host = Dominios.host(primeraUrl)
+                if (host.isNotBlank()) {
+                    val conPuerto = primeraUrl.substringAfter("://").substringBefore('/').removePrefix("www.")
+                    if (conPuerto.contains(':')) conPuerto else host
+                } else {
+                    primeraUrl
+                }
             } else {
                 primerTitulo
             }
             GrupoTitulosSitio(
+                id = claveAgrupacion,
                 dominioClave = domMostrar,
                 nombreSugerido = nombreBase,
                 nombrePersonalizado = nombreBase,
@@ -72,9 +79,9 @@ interface VaultTitulosDelegate {
         gruposTitulosInterno.value = resultadoGrupos
     }
 
-    fun actualizarNombreGrupo(dominioClave: String, nuevoNombre: String) {
+    fun actualizarNombreGrupo(idGrupo: String, nuevoNombre: String) {
         gruposTitulosInterno.value = gruposTitulosInterno.value.map { g ->
-            if (g.dominioClave == dominioClave) g.copy(nombrePersonalizado = nuevoNombre) else g
+            if (g.id == idGrupo) g.copy(nombrePersonalizado = nuevoNombre) else g
         }
     }
 
@@ -93,6 +100,7 @@ interface VaultTitulosDelegate {
             val grupos = gruposTitulosInterno.value
             val modo = modoFormatoTitulosInterno.value
             val respetarManuales = respetarTitulosManualesInterno.value
+            val tldsActuales = repositorio.ajustes.actual.tldsDescartables
 
             var modificadas = 0
             val mapaReemplazo = mutableMapOf<String, Entrada>()
@@ -103,7 +111,8 @@ interface VaultTitulosDelegate {
                             titulo = entrada.titulo,
                             nombreBase = grupo.nombreEfectivo,
                             usuario = entrada.usuario,
-                            urls = entrada.urls
+                            urls = entrada.urls,
+                            tldsConfigurados = tldsActuales
                         )
                     ) {
                         continue

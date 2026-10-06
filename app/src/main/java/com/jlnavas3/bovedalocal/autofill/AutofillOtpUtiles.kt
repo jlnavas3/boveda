@@ -133,7 +133,7 @@ object AutofillOtpUtiles {
         }
         return try {
             constructor.build()
-        } catch (_: IllegalArgumentException) {
+        } catch (_: Exception) {
             null
         }
     }

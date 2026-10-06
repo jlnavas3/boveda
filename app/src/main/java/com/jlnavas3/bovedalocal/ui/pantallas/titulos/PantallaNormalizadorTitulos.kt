@@ -9,7 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Tune
@@ -103,15 +103,15 @@ fun PantallaNormalizadorTitulos(
                 )
             }
 
-            items(
+            itemsIndexed(
                 items = grupos,
-                key = { it.dominioClave }
-            ) { grupo ->
+                key = { indice, grupo -> "${indice}_${grupo.id}" }
+            ) { _, grupo ->
                 TarjetaGrupoTitulos(
                     grupo = grupo,
                     modo = modo,
                     alCambiarNombre = { nuevoNombre ->
-                        vm.actualizarNombreGrupo(grupo.dominioClave, nuevoNombre)
+                        vm.actualizarNombreGrupo(grupo.id, nuevoNombre)
                     },
                     modifier = Modifier.fillMaxWidth()
                 )

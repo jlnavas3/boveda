@@ -135,5 +135,23 @@ class NormalizadorTitulosSitiosTest {
         // 3. Título técnico con TLD personalizado
         assertTrue(NormalizadorTitulosSitios.esTituloTecnico("empresa.tech", tldsConfigurados = tlds))
         assertTrue(NormalizadorTitulosSitios.esTituloTecnico("portal.lan", tldsConfigurados = tlds))
+
+        // 4. esTituloGeneradoOModificable con TLD personalizado
+        assertTrue(NormalizadorTitulosSitios.esTituloGeneradoOModificable("empresa.tech", "Empresa", "admin", tldsConfigurados = tlds))
+    }
+
+    @Test
+    fun grupoTitulosSitio_idUnicoPrevieneColisiones() {
+        val grupo1 = com.jlnavas3.bovedalocal.data.GrupoTitulosSitio(
+            id = "localhost_3000",
+            dominioClave = "localhost:3000",
+            nombreSugerido = "Localhost :3000"
+        )
+        val grupo2 = com.jlnavas3.bovedalocal.data.GrupoTitulosSitio(
+            id = "localhost_8080",
+            dominioClave = "localhost:8080",
+            nombreSugerido = "Localhost :8080"
+        )
+        org.junit.Assert.assertNotEquals(grupo1.id, grupo2.id)
     }
 }

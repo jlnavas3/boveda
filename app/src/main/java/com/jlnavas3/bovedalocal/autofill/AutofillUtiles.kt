@@ -297,34 +297,48 @@ object AutofillUtiles {
 
         android.util.Log.i("BovedaAutofill", "Dataset para ${entrada.titulo}: inlinePres=$inlinePres, inlineSpec=$inlineSpec")
         val constructor = Dataset.Builder(vista)
+        var camposAsignados = 0
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R && inlinePres != null) {
             constructor.setInlinePresentation(inlinePres)
             campos.usuario?.let {
                 @Suppress("DEPRECATION")
                 constructor.setValue(it, AutofillValue.forText(entrada.usuario), vista, inlinePres)
+                camposAsignados++
             }
             campos.contrasena?.let {
                 @Suppress("DEPRECATION")
                 constructor.setValue(it, AutofillValue.forText(entrada.contrasena), vista, inlinePres)
+                camposAsignados++
             }
             campos.otp?.let { idOtp ->
                 AutofillOtpUtiles.obtenerCodigoTotp(entrada)?.let { codigo ->
                     @Suppress("DEPRECATION")
                     constructor.setValue(idOtp, AutofillValue.forText(codigo), vista, inlinePres)
+                    camposAsignados++
                 }
             }
         } else {
-            campos.usuario?.let { constructor.setValue(it, AutofillValue.forText(entrada.usuario)) }
-            campos.contrasena?.let { constructor.setValue(it, AutofillValue.forText(entrada.contrasena)) }
+            campos.usuario?.let {
+                constructor.setValue(it, AutofillValue.forText(entrada.usuario))
+                camposAsignados++
+            }
+            campos.contrasena?.let {
+                constructor.setValue(it, AutofillValue.forText(entrada.contrasena))
+                camposAsignados++
+            }
             campos.otp?.let { idOtp ->
                 AutofillOtpUtiles.obtenerCodigoTotp(entrada)?.let { codigo ->
                     constructor.setValue(idOtp, AutofillValue.forText(codigo))
+                    camposAsignados++
                 }
             }
         }
+
+        if (camposAsignados == 0) return null
+
         return try {
             constructor.build()
-        } catch (e: IllegalArgumentException) {
+        } catch (e: Exception) {
             null
         }
     }
