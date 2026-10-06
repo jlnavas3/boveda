@@ -31,6 +31,27 @@ private fun deserializarTldsDescartables(raw: String): List<String> = try {
     AjustesDefaults.NormalizacionTitulos.TLDS_DESCARTABLES
 }
 
+private fun deserializarPistasUsuario(raw: String): List<String> = try {
+    if (raw.isBlank()) AjustesDefaults.Autocompletado.PISTAS_USUARIO
+    else jsonAjustes.decodeFromString(raw)
+} catch (_: Exception) {
+    AjustesDefaults.Autocompletado.PISTAS_USUARIO
+}
+
+private fun deserializarPistasContrasena(raw: String): List<String> = try {
+    if (raw.isBlank()) AjustesDefaults.Autocompletado.PISTAS_CONTRASENA
+    else jsonAjustes.decodeFromString(raw)
+} catch (_: Exception) {
+    AjustesDefaults.Autocompletado.PISTAS_CONTRASENA
+}
+
+private fun deserializarPistasOtp(raw: String): List<String> = try {
+    if (raw.isBlank()) AjustesDefaults.Autocompletado.PISTAS_OTP
+    else jsonAjustes.decodeFromString(raw)
+} catch (_: Exception) {
+    AjustesDefaults.Autocompletado.PISTAS_OTP
+}
+
 /** El modo de huella en uso, o null si está apagada. Única lectura de [AjustesApp.biometriaModo]. */
 val AjustesApp.modoBiometriaActivo: BiometricKeyStore.Modo?
     get() = if (biometriaActiva) BiometricKeyStore.Modo.desde(biometriaModo) else null
@@ -258,6 +279,9 @@ data class AjustesApp(
     val colorIdSistema: String = AjustesDefaults.ColoresIds.SISTEMA,
     // Autocompletado de Android e Inline Suggestions
     val autofillSugerenciasTeclado: Boolean = AjustesDefaults.Autocompletado.SUGERENCIAS_TECLADO,
+    val autofillPistasUsuario: List<String> = AjustesDefaults.Autocompletado.PISTAS_USUARIO,
+    val autofillPistasContrasena: List<String> = AjustesDefaults.Autocompletado.PISTAS_CONTRASENA,
+    val autofillPistasOtp: List<String> = AjustesDefaults.Autocompletado.PISTAS_OTP,
     // Normalización de títulos y redes locales
     val prefijosSubdominios: List<String> = AjustesDefaults.NormalizacionTitulos.PREFIJOS_SUBDOMINIOS,
     val tldsDescartables: List<String> = AjustesDefaults.NormalizacionTitulos.TLDS_DESCARTABLES,
@@ -535,6 +559,9 @@ class AlmacenAjustes(contexto: Context) {
             colorIdCopias = prefs.getString("color_id_copias", AjustesDefaults.ColoresIds.COPIAS) ?: AjustesDefaults.ColoresIds.COPIAS,
             colorIdSistema = prefs.getString("color_id_sistema", AjustesDefaults.ColoresIds.SISTEMA) ?: AjustesDefaults.ColoresIds.SISTEMA,
             autofillSugerenciasTeclado = prefs.getBoolean("autofill_sugerencias_teclado", AjustesDefaults.Autocompletado.SUGERENCIAS_TECLADO),
+            autofillPistasUsuario = deserializarPistasUsuario(prefs.getString("autofill_pistas_usuario_json", "") ?: ""),
+            autofillPistasContrasena = deserializarPistasContrasena(prefs.getString("autofill_pistas_contrasena_json", "") ?: ""),
+            autofillPistasOtp = deserializarPistasOtp(prefs.getString("autofill_pistas_otp_json", "") ?: ""),
             prefijosSubdominios = deserializarPrefijosSubdominios(prefs.getString("prefijos_subdominios_json", "") ?: ""),
             tldsDescartables = deserializarTldsDescartables(prefs.getString("tlds_descartables_json", "") ?: ""),
             plantillaRouterIp = prefs.getString("plantilla_router_ip", AjustesDefaults.NormalizacionTitulos.PLANTILLA_ROUTER_IP) ?: AjustesDefaults.NormalizacionTitulos.PLANTILLA_ROUTER_IP,
@@ -728,6 +755,9 @@ class AlmacenAjustes(contexto: Context) {
             .putString("color_id_copias", nuevo.colorIdCopias)
             .putString("color_id_sistema", nuevo.colorIdSistema)
             .putBoolean("autofill_sugerencias_teclado", nuevo.autofillSugerenciasTeclado)
+            .putString("autofill_pistas_usuario_json", jsonAjustes.encodeToString(nuevo.autofillPistasUsuario))
+            .putString("autofill_pistas_contrasena_json", jsonAjustes.encodeToString(nuevo.autofillPistasContrasena))
+            .putString("autofill_pistas_otp_json", jsonAjustes.encodeToString(nuevo.autofillPistasOtp))
             .putString("prefijos_subdominios_json", jsonAjustes.encodeToString(nuevo.prefijosSubdominios))
             .putString("tlds_descartables_json", jsonAjustes.encodeToString(nuevo.tldsDescartables))
             .putString("plantilla_router_ip", nuevo.plantillaRouterIp)

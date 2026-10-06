@@ -33,7 +33,14 @@ object AutofillUtiles {
     private val PISTAS_USUARIO = listOf("username", "email", "user", "correo", "usuario", "login", "identifier", "phone")
     private val PISTAS_CONTRASENA = listOf("password", "contrasena", "contraseña", "passwd", "pwd", "clave")
 
-    fun detectar(estructura: AssistStructure): CamposDetectados {
+    fun detectar(
+        estructura: AssistStructure,
+        pistasUsuario: List<String> = emptyList(),
+        pistasContrasena: List<String> = emptyList(),
+        pistasOtp: List<String> = emptyList()
+    ): CamposDetectados {
+        val listaUsuario = pistasUsuario.ifEmpty { com.jlnavas3.bovedalocal.data.AjustesDefaults.Autocompletado.PISTAS_USUARIO }
+        val listaContrasena = pistasContrasena.ifEmpty { com.jlnavas3.bovedalocal.data.AjustesDefaults.Autocompletado.PISTAS_CONTRASENA }
         var usuario: AutofillId? = null
         var contrasena: AutofillId? = null
         var otp: AutofillId? = null
@@ -68,14 +75,14 @@ object AutofillUtiles {
                         }
                     }
                 }
-                val esOtp = AutofillOtpUtiles.esCampoOtp(pistasSistema, textoPistas, htmlAutocomplete)
+                val esOtp = AutofillOtpUtiles.esCampoOtp(pistasSistema, textoPistas, htmlAutocomplete, pistasOtp)
                 val variacion = nodo.inputType and InputType.TYPE_MASK_VARIATION
                 val esContrasenaPorTipo = variacion == InputType.TYPE_TEXT_VARIATION_PASSWORD ||
                     variacion == InputType.TYPE_NUMBER_VARIATION_PASSWORD
                 val esContrasena = esContrasenaWeb || esContrasenaPorTipo || textoPistas.any { pista ->
-                    PISTAS_CONTRASENA.any { pista.contains(it) }
+                    listaContrasena.any { pista.contains(it) }
                 }
-                val esUsuario = esUsuarioWeb || textoPistas.any { pista -> PISTAS_USUARIO.any { pista.contains(it) } }
+                val esUsuario = esUsuarioWeb || textoPistas.any { pista -> listaUsuario.any { pista.contains(it) } }
                 if (esOtp && otp == null) {
                     otp = id
                 } else if (esContrasena && contrasena == null) {
@@ -94,7 +101,13 @@ object AutofillUtiles {
     }
 
     /** Devuelve el par (usuario, contraseña) escrito por la persona, para el flujo de guardado. */
-    fun leerValores(estructura: AssistStructure): Pair<String?, String?> {
+    fun leerValores(
+        estructura: AssistStructure,
+        pistasUsuario: List<String> = emptyList(),
+        pistasContrasena: List<String> = emptyList()
+    ): Pair<String?, String?> {
+        val listaUsuario = pistasUsuario.ifEmpty { com.jlnavas3.bovedalocal.data.AjustesDefaults.Autocompletado.PISTAS_USUARIO }
+        val listaContrasena = pistasContrasena.ifEmpty { com.jlnavas3.bovedalocal.data.AjustesDefaults.Autocompletado.PISTAS_CONTRASENA }
         var usuario: String? = null
         var contrasena: String? = null
 
@@ -130,8 +143,8 @@ object AutofillUtiles {
                 val variacion = nodo.inputType and InputType.TYPE_MASK_VARIATION
                 val esContrasenaPorTipo = variacion == InputType.TYPE_TEXT_VARIATION_PASSWORD ||
                     variacion == InputType.TYPE_NUMBER_VARIATION_PASSWORD
-                val esContrasena = esContrasenaWeb || esContrasenaPorTipo || pistas.any { p -> PISTAS_CONTRASENA.any { p.contains(it) } }
-                val esUsuario = esUsuarioWeb || pistas.any { p -> PISTAS_USUARIO.any { p.contains(it) } }
+                val esContrasena = esContrasenaWeb || esContrasenaPorTipo || pistas.any { p -> listaContrasena.any { p.contains(it) } }
+                val esUsuario = esUsuarioWeb || pistas.any { p -> listaUsuario.any { p.contains(it) } }
                 if (esContrasena && contrasena == null) contrasena = texto(nodo)
                 else if (esUsuario && usuario == null) usuario = texto(nodo)
             }

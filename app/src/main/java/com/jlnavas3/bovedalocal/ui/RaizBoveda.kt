@@ -50,6 +50,7 @@ import com.jlnavas3.bovedalocal.ui.pantallas.PantallaAjustes
 import com.jlnavas3.bovedalocal.ui.pantallas.PantallaAjustesAutenticador
 import com.jlnavas3.bovedalocal.ui.pantallas.titulos.PantallaNormalizadorTitulos
 import com.jlnavas3.bovedalocal.ui.pantallas.titulos.reglas.PantallaReglasNormalizacion
+import com.jlnavas3.bovedalocal.ui.pantallas.autocompletado.reglas.PantallaReglasAutocompletado
 import com.jlnavas3.bovedalocal.ui.pantallas.PantallaAjustesAutodestruccion
 import com.jlnavas3.bovedalocal.ui.pantallas.PantallaAjustesCamara
 import com.jlnavas3.bovedalocal.ui.pantallas.PantallaAjustesIndice
@@ -313,6 +314,7 @@ fun RaizBoveda(vm: VaultViewModel, actividad: FragmentActivity) {
                     is Pantalla.Avanzada -> PantallaAvanzada(vm, destino.seccionId)
                     is Pantalla.NormalizadorTitulos -> PantallaNormalizadorTitulos(vm, destino.esPostImportacion)
                     Pantalla.ReglasNormalizacion -> PantallaReglasNormalizacion(vm)
+                    Pantalla.ReglasAutocompletado -> PantallaReglasAutocompletado(vm)
                 }
             }
 

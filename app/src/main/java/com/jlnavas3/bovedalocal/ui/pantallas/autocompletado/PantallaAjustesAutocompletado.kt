@@ -54,10 +54,12 @@ fun PantallaAjustesAutocompletado(
                     BotonMenuOpcionesPantalla(
                         grupos = listOf(
                             AccionSaltoGrupo("04-HER-PSK-G01", "Sugerencias en teclado"),
-                            AccionSaltoGrupo("04-HER-PSK-G02", "Proveedor del sistema")
+                            AccionSaltoGrupo("04-HER-PSK-G02", "Proveedor del sistema"),
+                            AccionSaltoGrupo("04-HER-PSK-G03", "Reglas de detección")
                         ),
                         alRestablecerPantalla = {
                             vm.ajustarAutofillSugerenciasTeclado(true)
+                            vm.restablecerReglasAutocompletado()
                         },
                         mensajeToastRestablecer = "Autocompletado restablecido"
                     )
@@ -80,6 +82,16 @@ fun PantallaAjustesAutocompletado(
                     },
                     alRestablecer = {
                         vm.ajustarAutofillSugerenciasTeclado(true)
+                    }
+                )
+
+                Spacer(Modifier.height(16.dp))
+
+                GrupoReglasDeteccionAutofill(
+                    mostrarIdsAjustes = ajustes.mostrarIdsAjustes,
+                    alAbrirReglas = {
+                        haptica.tic()
+                        vm.ir(com.jlnavas3.bovedalocal.ui.Pantalla.ReglasAutocompletado)
                     }
                 )
 

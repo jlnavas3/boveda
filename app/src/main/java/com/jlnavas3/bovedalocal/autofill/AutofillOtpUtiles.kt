@@ -36,7 +36,8 @@ object AutofillOtpUtiles {
     fun esCampoOtp(
         pistasSistema: List<String>,
         textoPistas: List<String>,
-        htmlAutocomplete: String? = null
+        htmlAutocomplete: String? = null,
+        pistasOtp: List<String> = emptyList()
     ): Boolean {
         if (pistasSistema.any { it.contains("otp") || it.contains("one-time-code") || it.contains("sms_otp") }) {
             return true
@@ -44,8 +45,9 @@ object AutofillOtpUtiles {
         if (htmlAutocomplete?.contains("one-time-code", ignoreCase = true) == true) {
             return true
         }
+        val listaOtp = pistasOtp.ifEmpty { com.jlnavas3.bovedalocal.data.AjustesDefaults.Autocompletado.PISTAS_OTP }
         return textoPistas.any { pista ->
-            PISTAS_OTP.any { pista.contains(it, ignoreCase = true) }
+            listaOtp.any { pista.contains(it, ignoreCase = true) }
         }
     }
 

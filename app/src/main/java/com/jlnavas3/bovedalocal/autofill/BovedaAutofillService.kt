@@ -22,6 +22,7 @@ import com.jlnavas3.bovedalocal.util.LanzadorEnlaces
 
 import android.os.Build
 import android.widget.inline.InlinePresentationSpec
+import com.jlnavas3.bovedalocal.data.AlmacenAjustes
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -73,7 +74,13 @@ class BovedaAutofillService : AutofillService() {
             return
         }
         val estructura = contexto.structure
-        val campos = AutofillUtiles.detectar(estructura)
+        val ajustes = AlmacenAjustes(this).ajustes.value
+        val campos = AutofillUtiles.detectar(
+            estructura = estructura,
+            pistasUsuario = ajustes.autofillPistasUsuario,
+            pistasContrasena = ajustes.autofillPistasContrasena,
+            pistasOtp = ajustes.autofillPistasOtp
+        )
         if (!campos.hayAlgo) {
             callback.onSuccess(null)
             return
@@ -89,7 +96,6 @@ class BovedaAutofillService : AutofillService() {
         val respuesta = FillResponse.Builder()
         val ids: Array<AutofillId> = listOfNotNull(campos.usuario, campos.contrasena, campos.otp).toTypedArray()
 
-        val ajustes = repositorio.ajustes.ajustes.value
         val inlineReq = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) request.inlineSuggestionsRequest else null
         android.util.Log.i("BovedaAutofill", "onFillRequest: paquete=$paquete, inlineReq=$inlineReq, specsCount=${inlineReq?.inlinePresentationSpecs?.size}, switchActivo=${ajustes.autofillSugerenciasTeclado}")
         val specs: List<InlinePresentationSpec> = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && ajustes.autofillSugerenciasTeclado) {
@@ -193,8 +199,18 @@ class BovedaAutofillService : AutofillService() {
             return
         }
         val estructura = contexto.structure
-        val campos = AutofillUtiles.detectar(estructura)
-        val (usuario, contrasena) = AutofillUtiles.leerValores(estructura)
+        val ajustes = AlmacenAjustes(this).ajustes.value
+        val campos = AutofillUtiles.detectar(
+            estructura = estructura,
+            pistasUsuario = ajustes.autofillPistasUsuario,
+            pistasContrasena = ajustes.autofillPistasContrasena,
+            pistasOtp = ajustes.autofillPistasOtp
+        )
+        val (usuario, contrasena) = AutofillUtiles.leerValores(
+            estructura = estructura,
+            pistasUsuario = ajustes.autofillPistasUsuario,
+            pistasContrasena = ajustes.autofillPistasContrasena
+        )
         if (contrasena.isNullOrBlank()) {
             Diagnostico.apuntar("autofill", "Guardado rechazado: Android no expuso una contraseña")
             callback.onFailure("No se encontró ninguna contraseña que guardar")

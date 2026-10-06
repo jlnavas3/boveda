@@ -35,6 +35,68 @@ interface VaultAjustesInteraccionDelegate {
         repositorio.ajustes.actualizar { it.copy(autofillSugerenciasTeclado = activado) }
     }
 
+    fun agregarPistaUsuario(pista: String) {
+        val limpio = pista.trim().lowercase()
+        if (limpio.isNotBlank()) {
+            repositorio.ajustes.actualizar {
+                if (!it.autofillPistasUsuario.contains(limpio)) {
+                    it.copy(autofillPistasUsuario = it.autofillPistasUsuario + limpio)
+                } else it
+            }
+        }
+    }
+
+    fun eliminarPistaUsuario(pista: String) {
+        repositorio.ajustes.actualizar {
+            it.copy(autofillPistasUsuario = it.autofillPistasUsuario.filterNot { p -> p.equals(pista, ignoreCase = true) })
+        }
+    }
+
+    fun agregarPistaContrasena(pista: String) {
+        val limpio = pista.trim().lowercase()
+        if (limpio.isNotBlank()) {
+            repositorio.ajustes.actualizar {
+                if (!it.autofillPistasContrasena.contains(limpio)) {
+                    it.copy(autofillPistasContrasena = it.autofillPistasContrasena + limpio)
+                } else it
+            }
+        }
+    }
+
+    fun eliminarPistaContrasena(pista: String) {
+        repositorio.ajustes.actualizar {
+            it.copy(autofillPistasContrasena = it.autofillPistasContrasena.filterNot { p -> p.equals(pista, ignoreCase = true) })
+        }
+    }
+
+    fun agregarPistaOtp(pista: String) {
+        val limpio = pista.trim().lowercase()
+        if (limpio.isNotBlank()) {
+            repositorio.ajustes.actualizar {
+                if (!it.autofillPistasOtp.contains(limpio)) {
+                    it.copy(autofillPistasOtp = it.autofillPistasOtp + limpio)
+                } else it
+            }
+        }
+    }
+
+    fun eliminarPistaOtp(pista: String) {
+        repositorio.ajustes.actualizar {
+            it.copy(autofillPistasOtp = it.autofillPistasOtp.filterNot { p -> p.equals(pista, ignoreCase = true) })
+        }
+    }
+
+    fun restablecerReglasAutocompletado() {
+        repositorio.ajustes.actualizar {
+            it.copy(
+                autofillPistasUsuario = AjustesDefaults.Autocompletado.PISTAS_USUARIO,
+                autofillPistasContrasena = AjustesDefaults.Autocompletado.PISTAS_CONTRASENA,
+                autofillPistasOtp = AjustesDefaults.Autocompletado.PISTAS_OTP,
+                autofillSugerenciasTeclado = AjustesDefaults.Autocompletado.SUGERENCIAS_TECLADO
+            )
+        }
+    }
+
     fun ajustarAlumbradoActivo(activo: Boolean) {
         repositorio.ajustes.actualizar { it.copy(alumbradoActivo = activo) }
         AlumbradoActivo = activo

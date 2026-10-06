@@ -311,5 +311,6 @@ sealed interface Pantalla {
         override fun hashCode(): Int = esPostImportacion.hashCode()
     }
     object ReglasNormalizacion : Pantalla
+    object ReglasAutocompletado : Pantalla
 }
 

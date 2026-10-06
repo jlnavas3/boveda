@@ -21,6 +21,14 @@ class AutofillOtpUtilesTest {
     }
 
     @Test
+    fun `esCampoOtp detecta terminos personalizados configurados dinamicamente`() {
+        val pistasCustom = listOf("coordenadas", "clave_dinamica", "tarjeta_clave")
+        assertTrue(AutofillOtpUtiles.esCampoOtp(emptyList(), listOf("ingrese_sus_coordenadas"), pistasOtp = pistasCustom))
+        assertTrue(AutofillOtpUtiles.esCampoOtp(emptyList(), listOf("campo_clave_dinamica"), pistasOtp = pistasCustom))
+        assertFalse(AutofillOtpUtiles.esCampoOtp(emptyList(), listOf("input_token_normal"), pistasOtp = pistasCustom))
+    }
+
+    @Test
     fun `obtenerCodigoTotp genera codigo de 6 digitos si hay secreto`() {
         val entrada = Entrada(
             id = "totp-1",

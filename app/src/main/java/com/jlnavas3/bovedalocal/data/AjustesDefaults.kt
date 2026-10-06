@@ -98,6 +98,15 @@ object AjustesDefaults {
     // 8. Autocompletado e Inline Suggestions
     object Autocompletado {
         const val SUGERENCIAS_TECLADO = true
+        val PISTAS_USUARIO = listOf(
+            "username", "email", "user", "correo", "usuario", "login", "identifier", "phone", "celular", "cedula", "dni", "ruc"
+        )
+        val PISTAS_CONTRASENA = listOf(
+            "password", "contrasena", "contraseña", "passwd", "pwd", "clave", "pin", "nip"
+        )
+        val PISTAS_OTP = listOf(
+            "otp", "totp", "2fa", "mfa", "one-time-code", "verification", "verificacion", "verificación", "codigo", "código", "security_code", "auth_code", "token"
+        )
     }
 
     // 8. Índice Alfabético Lateral (Ola Niagara)
