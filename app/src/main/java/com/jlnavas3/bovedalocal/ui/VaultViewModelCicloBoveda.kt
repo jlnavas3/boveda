@@ -38,10 +38,19 @@ interface VaultCicloBovedaDelegate {
     // ------------------------------------------- freno a los intentos de clave
 
     /** Segundos que faltan para poder volver a probar. 0 si se puede probar ya. */
-    fun esperaPorIntentos(): Long = FrenoIntentos.esperaSegundos(contextoApp)
+    fun esperaPorIntentos(): Long = FrenoIntentos.esperaSegundos(
+        contexto = contextoApp,
+        maxCastigoSegundos = repositorio.ajustes.actual.frenoSegundosMax
+    )
 
     suspend fun apuntarFallo() = withContext(Dispatchers.IO) {
-        FrenoIntentos.apuntarFallo(contextoApp)
+        val ajustes = repositorio.ajustes.actual
+        FrenoIntentos.apuntarFallo(
+            contexto = contextoApp,
+            gratis = ajustes.frenoIntentosGratis,
+            castigoBaseSegundos = ajustes.frenoSegundosBase,
+            maxCastigoSegundos = ajustes.frenoSegundosMax
+        )
     }
 
     suspend fun limpiarFallos() = withContext(Dispatchers.IO) {

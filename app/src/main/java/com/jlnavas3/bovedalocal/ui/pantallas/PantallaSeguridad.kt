@@ -96,13 +96,15 @@ fun PantallaSeguridad(
                         grupos = listOf(
                             AccionSaltoGrupo("01-SEG-BIO-G01", "Biometría"),
                             AccionSaltoGrupo("01-SEG-BIO-G02", "Bloqueo de aplicación"),
+                            AccionSaltoGrupo("01-SEG-BIO-G05", "Fuerza bruta"),
                             AccionSaltoGrupo("01-SEG-BIO-G03", "Portapapeles")
                         ),
                         alRestablecerPantalla = {
                             haptica.tic()
                             vm.restablecerBloqueoApp()
+                            vm.restablecerFrenoIntentos()
                             vm.restablecerPortapapeles()
-                            vm.avisar("Ajustes de biometría restablecidos")
+                            vm.avisar("Ajustes de seguridad restablecidos")
                         }
                     )
                 }

@@ -17,6 +17,9 @@ object AjustesDefaults {
         const val PROTECCION_PANTALLA = true
         const val PERFIL_ARGON2 = "estandar"
         const val UMBRAL_ANTIGUEDAD_DIAS = 180
+        const val FRENO_INTENTOS_GRATIS = 5
+        const val FRENO_SEGUNDOS_BASE = 5L
+        const val FRENO_SEGUNDOS_MAX = 300L
     }
 
     // 1b. Seguridad Visual y Privacidad de Pantalla

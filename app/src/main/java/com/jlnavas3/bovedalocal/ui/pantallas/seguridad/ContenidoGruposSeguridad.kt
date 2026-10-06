@@ -88,6 +88,28 @@ fun ContenidoGruposSeguridad(
 
         Spacer(Modifier.height(18.dp))
 
+        // Grupo: Protección contra fuerza bruta
+        GrupoFrenoFuerzaBruta(
+            frenoIntentosGratis = ajustes.frenoIntentosGratis,
+            frenoSegundosMax = ajustes.frenoSegundosMax,
+            mostrarIdsAjustes = ajustes.mostrarIdsAjustes,
+            alAjustarIntentos = { valor ->
+                haptica.tic()
+                vm.ajustarFrenoIntentosGratis(valor)
+            },
+            alAjustarMaxTiempo = { segundos ->
+                haptica.tic()
+                vm.ajustarFrenoSegundosMax(segundos)
+            },
+            alRestablecer = {
+                haptica.tic()
+                vm.restablecerFrenoIntentos()
+                vm.avisar("Protección contra fuerza bruta restablecida")
+            }
+        )
+
+        Spacer(Modifier.height(18.dp))
+
         // Grupo: Seguridad visual (Privacidad de pantalla)
         GrupoSeguridadVisual(
             seguridadVisualActiva = ajustes.seguridadVisualActiva,

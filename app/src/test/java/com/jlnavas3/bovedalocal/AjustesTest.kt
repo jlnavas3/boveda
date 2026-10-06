@@ -17,6 +17,9 @@ class AjustesTest {
         assertEquals(60, ajustes.autoBloqueoSegundos)
         assertFalse("La biometría debe estar desactivada por defecto", ajustes.biometriaActiva)
         assertEquals("", ajustes.biometriaModo)
+        assertEquals(5, ajustes.frenoIntentosGratis)
+        assertEquals(5L, ajustes.frenoSegundosBase)
+        assertEquals(300L, ajustes.frenoSegundosMax)
 
         // Quick Settings Tile
         assertEquals("longitud", ajustes.tileModo)
@@ -142,5 +145,17 @@ class AjustesTest {
         val versiones = AlmacenAjustes.OPCIONES_MAX_HISTORIAL_CONTRASENAS_POR_ENTRADA.map { it.first }
         assertTrue(versiones.contains(0))
         assertTrue(versiones.contains(5))
+    }
+
+    @Test
+    fun `opciones de proteccion contra fuerza bruta son coherentes`() {
+        val intentos = AlmacenAjustes.OPCIONES_FRENO_INTENTOS.map { it.first }
+        assertTrue(intentos.contains(3))
+        assertTrue(intentos.contains(5))
+        assertTrue(intentos.contains(0))
+
+        val tiempos = AlmacenAjustes.OPCIONES_FRENO_MAX_TIEMPO.map { it.first }
+        assertTrue(tiempos.contains(60L))
+        assertTrue(tiempos.contains(300L))
     }
 }

@@ -49,9 +49,30 @@ interface VaultAjustesSeguridadDelegate {
         Diagnostico.apuntar("seguridad", "Protección de pantalla (FLAG_SECURE) $desc por el usuario")
     }
 
+    fun ajustarFrenoIntentosGratis(intentos: Int) {
+        repositorio.ajustes.actualizar { it.copy(frenoIntentosGratis = intentos) }
+        val desc = if (intentos <= 0) "desactivado" else "$intentos intentos"
+        Diagnostico.apuntar("seguridad", "Tolerancia de intentos fallidos antes de penalización establecida en $desc")
+    }
+
+    fun ajustarFrenoSegundosMax(segundos: Long) {
+        repositorio.ajustes.actualizar { it.copy(frenoSegundosMax = segundos) }
+        Diagnostico.apuntar("seguridad", "Tiempo máximo de penalización establecido en ${segundos / 60} min")
+    }
+
     fun restablecerBloqueoApp() {
         ajustarAutoBloqueo(AjustesDefaults.Seguridad.AUTO_BLOQUEO_SEGUNDOS)
         ajustarProteccionPantalla(AjustesDefaults.Seguridad.PROTECCION_PANTALLA)
+    }
+
+    fun restablecerFrenoIntentos() {
+        repositorio.ajustes.actualizar {
+            it.copy(
+                frenoIntentosGratis = AjustesDefaults.Seguridad.FRENO_INTENTOS_GRATIS,
+                frenoSegundosBase = AjustesDefaults.Seguridad.FRENO_SEGUNDOS_BASE,
+                frenoSegundosMax = AjustesDefaults.Seguridad.FRENO_SEGUNDOS_MAX
+            )
+        }
     }
 
     fun restablecerPortapapeles() = ajustarPortapapeles(AjustesDefaults.Seguridad.PORTAPAPELES_SEGUNDOS)

@@ -19,33 +19,37 @@ object FrenoIntentos {
     private const val CLAVE_INTENTOS = "intentos"
     private const val CLAVE_HASTA = "bloqueado_hasta"
 
-    /** Intentos antes de empezar a castigar. */
-    private const val GRATIS = 5
-    private const val CASTIGO_BASE_SEGUNDOS = 5L
-    private const val MAX_CASTIGO_SEGUNDOS = 300L
-
     private fun prefs(contexto: Context) =
         contexto.applicationContext.getSharedPreferences(FICHERO, Context.MODE_PRIVATE)
 
     /** Segundos que faltan para poder volver a probar. 0 si se puede probar ya. */
-    fun esperaSegundos(contexto: Context): Long {
+    fun esperaSegundos(
+        contexto: Context,
+        maxCastigoSegundos: Long = AjustesDefaults.Seguridad.FRENO_SEGUNDOS_MAX
+    ): Long {
         val restante = prefs(contexto).getLong(CLAVE_HASTA, 0L) - System.currentTimeMillis()
         if (restante <= 0) return 0
         // Si alguien atrasa el reloj del móvil, la espera saldría eterna. La topamos
         // en el castigo máximo: adelantar el reloj tampoco ayuda, porque el contador
         // de intentos sigue subiendo y la siguiente espera es más larga.
-        val tope = MAX_CASTIGO_SEGUNDOS * 1000L
+        val tope = maxCastigoSegundos * 1000L
         return (minOf(restante, tope) / 1000) + 1
     }
 
-    fun apuntarFallo(contexto: Context) {
+    fun apuntarFallo(
+        contexto: Context,
+        gratis: Int = AjustesDefaults.Seguridad.FRENO_INTENTOS_GRATIS,
+        castigoBaseSegundos: Long = AjustesDefaults.Seguridad.FRENO_SEGUNDOS_BASE,
+        maxCastigoSegundos: Long = AjustesDefaults.Seguridad.FRENO_SEGUNDOS_MAX
+    ) {
+        if (gratis <= 0) return
         val prefs = prefs(contexto)
         val intentos = prefs.getInt(CLAVE_INTENTOS, 0) + 1
         val editor = prefs.edit().putInt(CLAVE_INTENTOS, intentos)
-        if (intentos >= GRATIS) {
+        if (intentos >= gratis) {
             val castigo = minOf(
-                MAX_CASTIGO_SEGUNDOS,
-                CASTIGO_BASE_SEGUNDOS * (1L shl minOf(6, intentos - GRATIS))
+                maxCastigoSegundos,
+                castigoBaseSegundos * (1L shl minOf(6, intentos - gratis))
             )
             editor.putLong(CLAVE_HASTA, System.currentTimeMillis() + castigo * 1000L)
         }

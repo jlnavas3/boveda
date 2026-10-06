@@ -206,6 +206,10 @@ data class AjustesApp(
     val proteccionPantalla: Boolean = AjustesDefaults.Seguridad.PROTECCION_PANTALLA,
     /** Umbral en días para advertir sobre contraseñas antiguas en Salud (0 = desactivado). */
     val umbralAntiguedadDias: Int = AjustesDefaults.Seguridad.UMBRAL_ANTIGUEDAD_DIAS,
+    // Freno a fuerza bruta / Rate limiting
+    val frenoIntentosGratis: Int = AjustesDefaults.Seguridad.FRENO_INTENTOS_GRATIS,
+    val frenoSegundosBase: Long = AjustesDefaults.Seguridad.FRENO_SEGUNDOS_BASE,
+    val frenoSegundosMax: Long = AjustesDefaults.Seguridad.FRENO_SEGUNDOS_MAX,
     // Seguridad visual (Privacidad de pantalla)
     val seguridadVisualActiva: Boolean = AjustesDefaults.SeguridadVisual.ACTIVA,
     val estiloOcultamientoVisual: String = AjustesDefaults.SeguridadVisual.ESTILO,
@@ -494,6 +498,9 @@ class AlmacenAjustes(contexto: Context) {
             perfilArgon2 = prefs.getString("perfil_argon2", AjustesDefaults.Seguridad.PERFIL_ARGON2) ?: AjustesDefaults.Seguridad.PERFIL_ARGON2,
             proteccionPantalla = prefs.getBoolean("proteccion_pantalla", AjustesDefaults.Seguridad.PROTECCION_PANTALLA),
             umbralAntiguedadDias = prefs.getInt("umbral_antiguedad_dias", AjustesDefaults.Seguridad.UMBRAL_ANTIGUEDAD_DIAS),
+            frenoIntentosGratis = prefs.getInt("freno_intentos_gratis", AjustesDefaults.Seguridad.FRENO_INTENTOS_GRATIS),
+            frenoSegundosBase = prefs.getLong("freno_segundos_base", AjustesDefaults.Seguridad.FRENO_SEGUNDOS_BASE),
+            frenoSegundosMax = prefs.getLong("freno_segundos_max", AjustesDefaults.Seguridad.FRENO_SEGUNDOS_MAX),
             seguridadVisualActiva = prefs.getBoolean("seguridad_visual_activa", AjustesDefaults.SeguridadVisual.ACTIVA),
             estiloOcultamientoVisual = prefs.getString("estilo_ocultamiento_visual", AjustesDefaults.SeguridadVisual.ESTILO) ?: AjustesDefaults.SeguridadVisual.ESTILO,
             tiempoAutoOcultarSegundos = prefs.getInt("tiempo_auto_ocultar_segundos", AjustesDefaults.SeguridadVisual.AUTO_OCULTAR_SEGUNDOS),
@@ -699,6 +706,9 @@ class AlmacenAjustes(contexto: Context) {
             .putString("perfil_argon2", nuevo.perfilArgon2)
             .putBoolean("proteccion_pantalla", nuevo.proteccionPantalla)
             .putInt("umbral_antiguedad_dias", nuevo.umbralAntiguedadDias)
+            .putInt("freno_intentos_gratis", nuevo.frenoIntentosGratis)
+            .putLong("freno_segundos_base", nuevo.frenoSegundosBase)
+            .putLong("freno_segundos_max", nuevo.frenoSegundosMax)
             .putBoolean("seguridad_visual_activa", nuevo.seguridadVisualActiva)
             .putString("estilo_ocultamiento_visual", nuevo.estiloOcultamientoVisual)
             .putInt("tiempo_auto_ocultar_segundos", nuevo.tiempoAutoOcultarSegundos)
@@ -793,6 +803,18 @@ class AlmacenAjustes(contexto: Context) {
             60 to "1 minuto",
             120 to "2 minutos",
             300 to "5 minutos"
+        )
+        val OPCIONES_FRENO_INTENTOS = listOf(
+            3 to "3 intentos (Estricto)",
+            5 to "5 intentos (Predeterminado)",
+            10 to "10 intentos (Permisivo)",
+            0 to "Desactivado (Sin bloqueo)"
+        )
+        val OPCIONES_FRENO_MAX_TIEMPO = listOf(
+            60L to "1 minuto",
+            300L to "5 minutos (Predeterminado)",
+            900L to "15 minutos",
+            1800L to "30 minutos"
         )
         val OPCIONES_TILE_LONGITUD = listOf(
             10 to "10 caracteres",
