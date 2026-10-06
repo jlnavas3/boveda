@@ -40,7 +40,7 @@ class AgrupadorSitiosTest {
         // Deben ser 2 items: 1 Grupo (Amazon con 2 entradas) y 1 Suelto (GitHub)
         assertEquals(2, items.size)
         val grupoAmazon = items[0] as ItemAgrupado.Grupo
-        assertEquals("amazon", grupoAmazon.clave)
+        assertEquals("Amazon", grupoAmazon.clave)
         assertEquals(2, grupoAmazon.entradas.size)
 
         val sueltoGithub = items[1] as ItemAgrupado.Suelto
@@ -52,12 +52,12 @@ class AgrupadorSitiosTest {
         val e1 = Entrada("1", titulo = "Google Personal", urls = listOf("https://accounts.google.com/u/1"))
         val e2 = Entrada("2", titulo = "Google Trabajo", urls = listOf("https://accounts.google.com/u/2"))
 
-        val items = construirItemsAgrupadosPorSitio(listOf(e1, e2)) { clave -> clave == "accounts.google" }
+        val items = construirItemsAgrupadosPorSitio(listOf(e1, e2)) { clave -> clave == "Google" }
 
         // 1 Grupo + 2 Hijos
         assertEquals(3, items.size)
         assertTrue(items[0] is ItemAgrupado.Grupo)
-        assertEquals("accounts.google", (items[0] as ItemAgrupado.Grupo).clave)
+        assertEquals("Google", (items[0] as ItemAgrupado.Grupo).clave)
         assertTrue(items[1] is ItemAgrupado.Hijo)
         assertTrue(items[2] is ItemAgrupado.Hijo)
         assertEquals("1", (items[1] as ItemAgrupado.Hijo).entrada.id)
@@ -65,7 +65,7 @@ class AgrupadorSitiosTest {
     }
 
     @Test
-    fun `subdominios distintos como account xiaomi y xiaomi no se mezclan y respetan orden alfabetico`() {
+    fun `subdominios de un mismo servicio se unifican bajo la marca oficial`() {
         val eAccount1 = Entrada("1", titulo = "account.xiaomi.com (personal)", urls = listOf("https://account.xiaomi.com"))
         val eAccount2 = Entrada("2", titulo = "account.xiaomi.com (trabajo)", urls = listOf("https://account.xiaomi.com"))
         val eXiaomi1 = Entrada("3", titulo = "xiaomi.com (tienda)", urls = listOf("https://xiaomi.com"))
@@ -77,16 +77,12 @@ class AgrupadorSitiosTest {
             agrupar = true
         ) { false }
 
-        // Deben ser 2 grupos independientes: account.xiaomi y xiaomi
-        assertEquals(2, items.size)
+        // Se unifican en 1 solo grupo bajo el nombre de marca "Xiaomi"
+        assertEquals(1, items.size)
         val g1 = items[0] as ItemAgrupado.Grupo
-        val g2 = items[1] as ItemAgrupado.Grupo
 
-        assertEquals("account.xiaomi", g1.clave)
-        assertEquals(2, g1.entradas.size)
-
-        assertEquals("xiaomi", g2.clave)
-        assertEquals(2, g2.entradas.size)
+        assertEquals("Xiaomi", g1.clave)
+        assertEquals(4, g1.entradas.size)
     }
 
     @Test
@@ -112,8 +108,8 @@ class AgrupadorSitiosTest {
         val e1 = Entrada("1", tipo = TipoEntrada.PASSKEY, titulo = "PayPal 1", passkey = p1)
         val e2 = Entrada("2", tipo = TipoEntrada.PASSKEY, titulo = "PayPal 2", passkey = p2)
 
-        assertEquals("paypal", claveAgrupacionSitio(e1))
-        assertEquals("paypal", claveAgrupacionSitio(e2))
+        assertEquals("PayPal", claveAgrupacionSitio(e1))
+        assertEquals("PayPal", claveAgrupacionSitio(e2))
 
         val items = construirItemsAgrupadosPorSitio(listOf(e1, e2)) { false }
         assertEquals(1, items.size)

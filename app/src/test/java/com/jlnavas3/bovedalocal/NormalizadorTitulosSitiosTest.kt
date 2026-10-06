@@ -83,4 +83,30 @@ class NormalizadorTitulosSitiosTest {
         assertTrue(!NormalizadorTitulosSitios.esTituloTecnico("Mi Banco Personal Ahorros"))
         assertTrue(!NormalizadorTitulosSitios.esTituloTecnico("Servidor Principal Casa"))
     }
+
+    @Test
+    fun agrupacionesListadoPrincipal_descartanSubdominiosConfigurados() {
+        val entradaGoogle = com.jlnavas3.bovedalocal.data.Entrada(
+            id = "g1",
+            titulo = "accounts.google.com",
+            urls = listOf("https://accounts.google.com/signin")
+        )
+        val entradaLenovo = com.jlnavas3.bovedalocal.data.Entrada(
+            id = "l1",
+            titulo = "account.lenovo",
+            urls = listOf("https://account.lenovo.com/ec/es/signin")
+        )
+        val entradaRouter = com.jlnavas3.bovedalocal.data.Entrada(
+            id = "r1",
+            titulo = "192.168.1.1",
+            urls = listOf("http://192.168.1.1/")
+        )
+        val claveGoogle = com.jlnavas3.bovedalocal.util.claveAgrupacionSitio(entradaGoogle, prefijos)
+        val claveLenovo = com.jlnavas3.bovedalocal.util.claveAgrupacionSitio(entradaLenovo, prefijos)
+        val claveRouter = com.jlnavas3.bovedalocal.util.claveAgrupacionSitio(entradaRouter, prefijos)
+
+        assertEquals("Google", claveGoogle)
+        assertEquals("Lenovo", claveLenovo)
+        assertEquals("Router (192.168.1.1)", claveRouter)
+    }
 }

@@ -22,6 +22,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -30,6 +31,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.res.painterResource
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorCampoAjustes
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorTarjetaAjustes
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
@@ -40,6 +42,7 @@ import com.jlnavas3.bovedalocal.ui.theme.EstiloBorde
 import com.jlnavas3.bovedalocal.ui.theme.GrosorBorde
 import com.jlnavas3.bovedalocal.ui.theme.TextoPrincipal
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
+import com.jlnavas3.bovedalocal.util.IconosMarcas
 
 @Composable
 fun FilaGrupoSitio(
@@ -54,6 +57,9 @@ fun FilaGrupoSitio(
     val compacta = alturaFila.value <= 48f
     val forma = RoundedCornerShape(CurvaturaEsquinas)
     val tamanoIcono = if (compacta) 32 else if (alturaFila.value <= 64f) 36 else 40
+    val infoMarca = remember(clave) {
+        IconosMarcas.buscarInfo(clave, clave)
+    }
 
     Row(
         modifier = Modifier
@@ -76,12 +82,21 @@ fun FilaGrupoSitio(
                 .background(ColorCampoAjustes),
             contentAlignment = Alignment.Center
         ) {
-            Icon(
-                imageVector = Icons.Filled.Dns,
-                contentDescription = null,
-                tint = ColorAcento,
-                modifier = Modifier.size((tamanoIcono * 0.52f).dp)
-            )
+            if (infoMarca != null) {
+                Icon(
+                    painter = painterResource(infoMarca.drawableRes),
+                    contentDescription = clave,
+                    tint = if (infoMarca.esMulticolor) Color.Unspecified else (infoMarca.colorOficial ?: ColorAcento),
+                    modifier = Modifier.size((tamanoIcono * 0.52f).dp)
+                )
+            } else {
+                Icon(
+                    imageVector = Icons.Filled.Dns,
+                    contentDescription = null,
+                    tint = ColorAcento,
+                    modifier = Modifier.size((tamanoIcono * 0.52f).dp)
+                )
+            }
         }
         Spacer(Modifier.width(12.dp))
         Column(modifier = Modifier.weight(1f)) {

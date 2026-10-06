@@ -69,8 +69,8 @@ fun CabeceraHeroDetalle(
             tit.isBlank() ||
                 tit == "Nueva entrada" ||
                 (domPaquete != null && (tit.equals(domPaquete, ignoreCase = true) || titDominio.equals(domPaquete, ignoreCase = true))) ||
-                (marcaPaquete != null && (tit.equals(marcaPaquete, ignoreCase = true) || titDominio.equals(marcaPaquete, ignoreCase = true))) ||
-                (paquete != null && tit.equals(paquete, ignoreCase = true))
+                (paquete != null && tit.equals(paquete, ignoreCase = true)) ||
+                com.jlnavas3.bovedalocal.util.NormalizadorTitulosSitios.esTituloTecnico(tit, entrada.urls)
         )
     }
 

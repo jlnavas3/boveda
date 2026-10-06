@@ -91,7 +91,10 @@ fun SeccionDatosPrincipalesEdicion(
                     LanzadorEnlaces.obtenerNombreApp(contexto, paqueteDetectado)
                 } else null
             }
-            if (nombreAppDetectada != null && !titulo.trim().equals(nombreAppDetectada, ignoreCase = true)) {
+            val debeSugerirNombreApp = nombreAppDetectada != null &&
+                !titulo.trim().equals(nombreAppDetectada, ignoreCase = true) &&
+                (titulo.isBlank() || titulo == "Nueva entrada" || com.jlnavas3.bovedalocal.util.NormalizadorTitulosSitios.esTituloTecnico(titulo, urlsParaResolver))
+            if (debeSugerirNombreApp) {
                 Spacer(Modifier.height(6.dp))
                 Row(
                     modifier = Modifier

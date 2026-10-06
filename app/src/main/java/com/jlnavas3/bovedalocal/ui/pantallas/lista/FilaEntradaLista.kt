@@ -111,16 +111,10 @@ fun FilaEntrada(
         val marcaPaquete = remember(domPaquete) { if (domPaquete != null) Dominios.marca(domPaquete) else null }
         val tituloMostrar = remember(entrada.titulo, nombreApp, domPaquete, marcaPaquete, paquete) {
             val tit = entrada.titulo.trim()
-            val titDominio = tit.removePrefix("https://").removePrefix("http://").removePrefix("www.").trimEnd('/')
             when {
-                !nombreApp.isNullOrBlank() && (tit.isBlank() ||
-                    tit == "Nueva entrada" ||
-                    tit.equals(domPaquete, ignoreCase = true) ||
-                    titDominio.equals(domPaquete, ignoreCase = true) ||
-                    (marcaPaquete != null && (tit.equals(marcaPaquete, ignoreCase = true) || titDominio.equals(marcaPaquete, ignoreCase = true))) ||
-                    tit.equals(paquete, ignoreCase = true)) -> nombreApp
-                tit.isNotBlank() -> tit
+                tit.isNotBlank() && !com.jlnavas3.bovedalocal.util.NormalizadorTitulosSitios.esTituloTecnico(tit, entrada.urls) -> tit
                 !nombreApp.isNullOrBlank() -> nombreApp
+                tit.isNotBlank() -> tit
                 else -> "Sin título"
             }
         }

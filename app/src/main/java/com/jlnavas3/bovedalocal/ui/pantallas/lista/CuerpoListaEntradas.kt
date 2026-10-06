@@ -91,11 +91,22 @@ fun CuerpoListaEntradas(
         )
     }
 
-    val itemsAMostrar = remember(visibles, modoSeleccion, criterioOrdenacion, ajustes.agruparPorSitio) {
+    val itemsAMostrar = remember(
+        visibles,
+        modoSeleccion,
+        criterioOrdenacion,
+        ajustes.agruparPorSitio,
+        ajustes.prefijosSubdominios,
+        ajustes.plantillaRouterIp,
+        ajustes.plantillaServidorIp
+    ) {
         construirItemsAgrupadosPorSitio(
             entradas = visibles,
             criterio = criterioOrdenacion,
             agrupar = ajustes.agruparPorSitio,
+            prefijosConfigurados = ajustes.prefijosSubdominios,
+            plantillaRouter = ajustes.plantillaRouterIp,
+            plantillaServidor = ajustes.plantillaServidorIp,
             expandido = { false }
         )
     }
