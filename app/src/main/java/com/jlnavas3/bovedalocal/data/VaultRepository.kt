@@ -14,12 +14,6 @@ import java.io.File
 import java.util.UUID
 import java.util.concurrent.TimeUnit
 
-/** Días que una entrada borrada se queda en la papelera antes de desaparecer sola. */
-private const val DIAS_PAPELERA = 30L
-
-/** Cuántas contraseñas anteriores se guardan como mucho por entrada. */
-private const val MAX_HISTORIAL_CONTRASENAS = 5
-
 /**
  * Una sola bóveda para todo el proceso.
  *
@@ -193,17 +187,21 @@ class VaultRepository private constructor(contexto: Context) {
                 val previa = lista[existente]
                 // Solo queda constancia si la contraseña de verdad cambió: editar el
                 // usuario o las notas no debería llenar el historial de ruido.
-                val historial = if (previa.contrasena.isNotBlank() && previa.contrasena != entrada.contrasena) {
+                val maxHistorial = ajustes.actual.maxHistorialContrasenasPorEntrada
+                val historial = if (previa.contrasena.isNotBlank() && previa.contrasena != entrada.contrasena && maxHistorial > 0) {
                     val base = if (entrada.historialContrasenas.isNotEmpty()) entrada.historialContrasenas else previa.historialContrasenas
                     val baseSinDuplicados = base
                         .distinctBy { it.contrasena }
                         .filterNot { it.contrasena == previa.contrasena || it.contrasena == entrada.contrasena }
                     (listOf(CambioContrasena(previa.contrasena, previa.modificadaEn.takeIf { it > 0 } ?: ahora)) + baseSinDuplicados)
-                        .take(MAX_HISTORIAL_CONTRASENAS)
+                        .take(maxHistorial)
+                } else if (maxHistorial <= 0) {
+                    emptyList()
                 } else {
                     entrada.historialContrasenas
                         .distinctBy { it.contrasena }
                         .filterNot { it.contrasena == entrada.contrasena }
+                        .take(maxHistorial)
                 }
                 lista[existente] = entrada.copy(modificadaEn = ahora, creadaEn = previa.creadaEn, historialContrasenas = historial)
             } else {
@@ -398,9 +396,11 @@ class VaultRepository private constructor(contexto: Context) {
         }
     }
 
-    /** Se llama al abrir la bóveda: lo que lleva más de [DIAS_PAPELERA] días ahí se borra solo. */
+    /** Se llama al abrir la bóveda: lo que lleva más de los días configurados en retención se borra solo. Si es <= 0, no se purga. */
     private fun purgarPapeleraVencida() {
-        val limite = System.currentTimeMillis() - TimeUnit.DAYS.toMillis(DIAS_PAPELERA)
+        val diasRetencion = ajustes.actual.diasRetencionPapelera
+        if (diasRetencion <= 0) return
+        val limite = System.currentTimeMillis() - TimeUnit.DAYS.toMillis(diasRetencion.toLong())
         val vigente = contenido.papelera.filter { it.eliminadaEn >= limite }
         if (vigente.size != contenido.papelera.size) {
             contenido = contenido.copy(papelera = vigente)

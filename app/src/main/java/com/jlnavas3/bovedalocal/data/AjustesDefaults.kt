@@ -245,6 +245,8 @@ object AjustesDefaults {
 
     // 14. Historial, Copias y Respaldos
     object HistorialCopias {
+        const val DIAS_RETENCION_PAPELERA = 30
+        const val MAX_HISTORIAL_CONTRASENAS_POR_ENTRADA = 5
         const val HISTORIAL_MAX = 15
         const val HISTORIAL_VACIADO_AUTO = true
         const val HISTORIAL_TIEMPO_AUTO_DESTRUCCION_MS = 30 * 60 * 1000L

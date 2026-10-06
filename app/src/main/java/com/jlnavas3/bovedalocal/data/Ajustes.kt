@@ -220,6 +220,9 @@ data class AjustesApp(
     val historialClavesVaciadoAuto: Boolean = AjustesDefaults.HistorialCopias.HISTORIAL_VACIADO_AUTO,
     val historialClavesTiempoAutoDestruccion: Long = AjustesDefaults.HistorialCopias.HISTORIAL_TIEMPO_AUTO_DESTRUCCION_MS,
     val historialClaves: List<RegistroClaveGenerada> = emptyList(),
+    // Retención y ciclo de vida de datos en bóveda
+    val diasRetencionPapelera: Int = AjustesDefaults.HistorialCopias.DIAS_RETENCION_PAPELERA,
+    val maxHistorialContrasenasPorEntrada: Int = AjustesDefaults.HistorialCopias.MAX_HISTORIAL_CONTRASENAS_POR_ENTRADA,
     // Copia de seguridad automática local rotativa
     val backupAutoFrecuenciaDias: Int = AjustesDefaults.HistorialCopias.BACKUP_AUTO_FRECUENCIA_DIAS,
     val backupAutoPasswordCifrado: String = AjustesDefaults.HistorialCopias.BACKUP_AUTO_PASSWORD_CIFRADO,
@@ -503,6 +506,8 @@ class AlmacenAjustes(contexto: Context) {
             historialClavesVaciadoAuto = prefs.getBoolean("historial_claves_vaciado_auto", AjustesDefaults.HistorialCopias.HISTORIAL_VACIADO_AUTO),
             historialClavesTiempoAutoDestruccion = prefs.getLong("historial_claves_tiempo_autodestruccion", AjustesDefaults.HistorialCopias.HISTORIAL_TIEMPO_AUTO_DESTRUCCION_MS),
             historialClaves = deserializarHistorial(prefs.getString("historial_claves_json", "") ?: ""),
+            diasRetencionPapelera = prefs.getInt("dias_retencion_papelera", AjustesDefaults.HistorialCopias.DIAS_RETENCION_PAPELERA),
+            maxHistorialContrasenasPorEntrada = prefs.getInt("max_historial_contrasenas_por_entrada", AjustesDefaults.HistorialCopias.MAX_HISTORIAL_CONTRASENAS_POR_ENTRADA),
             backupAutoFrecuenciaDias = prefs.getInt("backup_auto_frecuencia_dias", AjustesDefaults.HistorialCopias.BACKUP_AUTO_FRECUENCIA_DIAS),
             backupAutoPasswordCifrado = prefs.getString("backup_auto_password", AjustesDefaults.HistorialCopias.BACKUP_AUTO_PASSWORD_CIFRADO) ?: AjustesDefaults.HistorialCopias.BACKUP_AUTO_PASSWORD_CIFRADO,
             backupAutoUltimaEjecucion = prefs.getLong("backup_auto_ultima_ejecucion", AjustesDefaults.HistorialCopias.BACKUP_AUTO_ULTIMA_EJECUCION),
@@ -706,6 +711,8 @@ class AlmacenAjustes(contexto: Context) {
             .putBoolean("historial_claves_vaciado_auto", nuevo.historialClavesVaciadoAuto)
             .putLong("historial_claves_tiempo_autodestruccion", nuevo.historialClavesTiempoAutoDestruccion)
             .putString("historial_claves_json", jsonAjustes.encodeToString(nuevo.historialClaves))
+            .putInt("dias_retencion_papelera", nuevo.diasRetencionPapelera)
+            .putInt("max_historial_contrasenas_por_entrada", nuevo.maxHistorialContrasenasPorEntrada)
             .putInt("backup_auto_frecuencia_dias", nuevo.backupAutoFrecuenciaDias)
             .putString("backup_auto_password", nuevo.backupAutoPasswordCifrado)
             .putLong("backup_auto_ultima_ejecucion", nuevo.backupAutoUltimaEjecucion)
@@ -892,6 +899,22 @@ class AlmacenAjustes(contexto: Context) {
             30 to "Cada mes",
             60 to "Cada 2 meses",
             90 to "Cada 3 meses"
+        )
+        val OPCIONES_DIAS_RETENCION_PAPELERA = listOf(
+            7 to "7 días",
+            15 to "15 días",
+            30 to "30 días (predeterminado)",
+            60 to "60 días (2 meses)",
+            90 to "90 días (3 meses)",
+            -1 to "Nunca purgar (indefinido)"
+        )
+        val OPCIONES_MAX_HISTORIAL_CONTRASENAS_POR_ENTRADA = listOf(
+            0 to "Desactivado (0 versiones)",
+            3 to "3 versiones",
+            5 to "5 versiones (predeterminado)",
+            10 to "10 versiones",
+            15 to "15 versiones",
+            20 to "20 versiones"
         )
     }
 }

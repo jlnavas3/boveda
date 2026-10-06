@@ -31,6 +31,12 @@ import com.jlnavas3.bovedalocal.ui.theme.EspaciadoComponentes
 import com.jlnavas3.bovedalocal.ui.theme.Peligro
 import com.jlnavas3.bovedalocal.util.Haptica
 
+import androidx.compose.material.icons.filled.DeleteSweep
+import androidx.compose.material.icons.filled.LockReset
+import com.jlnavas3.bovedalocal.data.AlmacenAjustes
+import com.jlnavas3.bovedalocal.ui.preview.BovedaPantallaPreview
+import com.jlnavas3.bovedalocal.ui.theme.BovedaTheme
+
 @Composable
 fun PantallaAjustesHistorial(
     vm: VaultViewModel,
@@ -60,6 +66,30 @@ fun PantallaAjustesHistorial(
         )
     }
 
+    val opcionesHistorialEntrada = remember {
+        AlmacenAjustes.OPCIONES_MAX_HISTORIAL_CONTRASENAS_POR_ENTRADA.map { (valor, etiqueta) ->
+            OpcionSelectorModal(
+                valor = valor,
+                etiquetaFila = etiqueta,
+                etiquetaModal = etiqueta,
+                descripcionModal = if (valor == 0) "No conserva versiones anteriores al modificar una credencial" else "Guarda hasta las últimas $valor versiones de contraseñas de cada entrada",
+                icono = Icons.Filled.LockReset
+            )
+        }
+    }
+
+    val opcionesRetencionPapelera = remember {
+        AlmacenAjustes.OPCIONES_DIAS_RETENCION_PAPELERA.map { (dias, etiqueta) ->
+            OpcionSelectorModal(
+                valor = dias,
+                etiquetaFila = etiqueta,
+                etiquetaModal = etiqueta,
+                descripcionModal = if (dias <= 0) "Las entradas descartadas permanecen en la papelera indefinidamente" else "Las entradas descartadas se borran automáticamente tras $dias días",
+                icono = Icons.Filled.DeleteSweep
+            )
+        }
+    }
+
     ContenedorPrincipal(
         titulo = "Ajustes del historial",
         idEtiqueta = "04-HER-HST",
@@ -72,11 +102,13 @@ fun PantallaAjustesHistorial(
                 grupos = listOf(
                     AccionSaltoGrupo("04-HER-HST-G01", "Retención y caducidad"),
                     AccionSaltoGrupo("04-HER-HST-G02", "Capacidad del historial"),
-                    AccionSaltoGrupo("04-HER-HST-G03", "Zona de peligro")
+                    AccionSaltoGrupo("04-HER-HST-G03", "Credenciales y papelera"),
+                    AccionSaltoGrupo("04-HER-HST-G04", "Zona de peligro")
                 ),
                 alRestablecerPantalla = {
                     haptica.tic()
                     vm.restablecerHistorialClavesConfig()
+                    vm.restablecerAjustesRetencionEHistorial()
                     vm.avisar("Ajustes del historial restablecidos")
                 }
             )
@@ -159,12 +191,58 @@ fun PantallaAjustesHistorial(
 
         Spacer(Modifier.height(14.dp))
 
-        // Grupo 3: Zona de peligro
+        // Grupo 3: Credenciales y papelera
+        ComponenteGrupo(
+            etiqueta = "Credenciales y papelera",
+            icono = Icons.Filled.LockReset,
+            colorIcono = ColorGenerador,
+            alRestablecer = {
+                haptica.tic()
+                vm.restablecerAjustesRetencionEHistorial()
+                vm.avisar("Ciclo de vida y retención restablecidos")
+            },
+            idGrupo = "04-HER-HST-G03",
+            mostrarId = ajustes.mostrarIdsAjustes
+        ) {
+            ComponenteSelectorModal(
+                titulo = "Versiones previas por entrada",
+                descripcionModal = "Cantidad máxima de contraseñas anteriores guardadas por cada entrada al modificarla",
+                icono = null,
+                idFila = "04-HER-HST-ENT",
+                mostrarId = ajustes.mostrarIdsAjustes,
+                valorSeleccionado = ajustes.maxHistorialContrasenasPorEntrada,
+                opciones = opcionesHistorialEntrada,
+                alSeleccionar = { max ->
+                    haptica.tic()
+                    vm.ajustarMaxHistorialContrasenasPorEntrada(max)
+                }
+            )
+
+            ComponenteSeparador(sangriaInicio = 16.dp)
+
+            ComponenteSelectorModal(
+                titulo = "Retención de la papelera",
+                descripcionModal = "Días antes de purgar permanentemente las entradas descartadas de la papelera",
+                icono = null,
+                idFila = "04-HER-HST-PAP",
+                mostrarId = ajustes.mostrarIdsAjustes,
+                valorSeleccionado = ajustes.diasRetencionPapelera,
+                opciones = opcionesRetencionPapelera,
+                alSeleccionar = { dias ->
+                    haptica.tic()
+                    vm.ajustarDiasRetencionPapelera(dias)
+                }
+            )
+        }
+
+        Spacer(Modifier.height(14.dp))
+
+        // Grupo 4: Zona de peligro
         ComponenteGrupo(
             etiqueta = "Zona de peligro",
             icono = Icons.Filled.Delete,
             colorIcono = Peligro,
-            idGrupo = "04-HER-HST-G03",
+            idGrupo = "04-HER-HST-G04",
             mostrarId = ajustes.mostrarIdsAjustes
         ) {
             ComponenteBotonFila(
@@ -192,5 +270,13 @@ fun PantallaAjustesHistorial(
                 vm.avisar("Historial vaciado")
             }
         )
+    }
+}
+
+@BovedaPantallaPreview
+@Composable
+private fun PantallaAjustesHistorialPreview() {
+    BovedaTheme {
+        // Preview decorativa
     }
 }

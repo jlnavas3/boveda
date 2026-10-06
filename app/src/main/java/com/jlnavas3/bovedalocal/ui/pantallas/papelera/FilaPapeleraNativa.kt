@@ -217,20 +217,48 @@ fun FilaPapeleraNativa(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
+                    val esPeligro = diasRestantes in 0..3
+                    val colorTiempo = if (esPeligro) Peligro else ColorAjusteGris
+                    val textoExpiracion = when {
+                        diasRestantes < 0 -> "Conservada indefinidamente"
+                        diasRestantes > 0 -> "Expira en $diasRestantes días"
+                        else -> "Expira en cualquier momento"
+                    }
                     Icon(
                         imageVector = Icons.Filled.Schedule,
                         contentDescription = null,
-                        tint = if (diasRestantes <= 3) Peligro else ColorAjusteGris,
+                        tint = colorTiempo,
                         modifier = Modifier.size(12.dp)
                     )
                     Text(
-                        text = if (diasRestantes > 0) "Expira en $diasRestantes días" else "Expira en cualquier momento",
-                        color = if (diasRestantes <= 3) Peligro else ColorAjusteGris,
+                        text = textoExpiracion,
+                        color = colorTiempo,
                         style = MaterialTheme.typography.labelSmall.copy(fontSize = 11.sp)
                     )
                 }
             }
         }
         }
+    }
+}
+
+@com.jlnavas3.bovedalocal.ui.preview.BovedaPreview
+@Composable
+private fun FilaPapeleraNativaPreview() {
+    com.jlnavas3.bovedalocal.ui.theme.BovedaTheme {
+        FilaPapeleraNativa(
+            entrada = Entrada(
+                id = "demo",
+                titulo = "Google Workspace",
+                usuario = "usuario@correo.com",
+                contrasena = "secret123",
+                eliminadaEn = System.currentTimeMillis()
+            ),
+            diasRestantes = 15,
+            alRestaurar = {},
+            alBorrarDefinitivo = {},
+            mostrarIndicadores = true,
+            enGrupo = false
+        )
     }
 }

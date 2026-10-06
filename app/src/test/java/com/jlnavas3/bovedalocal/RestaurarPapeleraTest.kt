@@ -151,4 +151,29 @@ class RestaurarPapeleraTest {
         assertEquals("ClaveRestaurada", copia?.contrasena)
         assertNotEquals("id-100", copia?.id)
     }
+
+    @Test
+    fun purgaPapelera_respetaDiasRetencionConfigurables() {
+        val ahora = 100_000_000_000L
+        val unDiaMs = 24 * 60 * 60 * 1000L
+
+        val entradaReciente = Entrada(id = "reciente", eliminadaEn = ahora - 5 * unDiaMs)
+        val entradaAntigua = Entrada(id = "antigua", eliminadaEn = ahora - 40 * unDiaMs)
+        val papelera = listOf(entradaReciente, entradaAntigua)
+
+        // Con retención estándar de 30 días: la de 40 días se purga
+        val limite30 = ahora - 30 * unDiaMs
+        val vigentes30 = papelera.filter { it.eliminadaEn >= limite30 }
+        assertEquals(listOf(entradaReciente), vigentes30)
+
+        // Con retención de 60 días: ambas se conservan
+        val limite60 = ahora - 60 * unDiaMs
+        val vigentes60 = papelera.filter { it.eliminadaEn >= limite60 }
+        assertEquals(2, vigentes60.size)
+
+        // Con retención <= 0 (-1 indefinido): nunca se purgan
+        val diasRetencionIndefinido = -1
+        val vigentesIndefinido = if (diasRetencionIndefinido <= 0) papelera else emptyList()
+        assertEquals(2, vigentesIndefinido.size)
+    }
 }

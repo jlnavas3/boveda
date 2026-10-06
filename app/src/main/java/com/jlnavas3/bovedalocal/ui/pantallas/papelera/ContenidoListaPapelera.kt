@@ -9,13 +9,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import com.jlnavas3.bovedalocal.data.AjustesApp
 import com.jlnavas3.bovedalocal.data.Entrada
 import com.jlnavas3.bovedalocal.ui.pantallas.lista.ComponenteGrupoLista
 import com.jlnavas3.bovedalocal.ui.pantallas.salud.diasDesde
 import com.jlnavas3.bovedalocal.util.ItemAgrupado
-
-private const val DIAS_PAPELERA = 30L
 
 /**
  * Muestra el estado vacío o la lista (individual o agrupada) de entradas en la papelera.
@@ -48,7 +47,11 @@ fun ContenidoListaPapelera(
         ) {
             if (!ajustes.agruparPorSitio) {
                 items(ordenadas, key = { it.id }) { entrada ->
-                    val diasRestantes = (DIAS_PAPELERA - diasDesde(entrada.eliminadaEn, ahora)).coerceAtLeast(0)
+                    val diasRestantes = if (ajustes.diasRetencionPapelera <= 0) {
+                        -1L
+                    } else {
+                        (ajustes.diasRetencionPapelera.toLong() - diasDesde(entrada.eliminadaEn, ahora)).coerceAtLeast(0)
+                    }
                     FilaPapeleraNativa(
                         entrada = entrada,
                         diasRestantes = diasRestantes,
@@ -75,7 +78,11 @@ fun ContenidoListaPapelera(
                                 expandido = gruposExpandidos.contains(item.clave),
                                 alAlternar = { alAlternarGrupo(item.clave) },
                                 contenidoEntrada = { entradaHija, _, _ ->
-                                    val diasRestantes = (DIAS_PAPELERA - diasDesde(entradaHija.eliminadaEn, ahora)).coerceAtLeast(0)
+                                    val diasRestantes = if (ajustes.diasRetencionPapelera <= 0) {
+                                        -1L
+                                    } else {
+                                        (ajustes.diasRetencionPapelera.toLong() - diasDesde(entradaHija.eliminadaEn, ahora)).coerceAtLeast(0)
+                                    }
                                     FilaPapeleraNativa(
                                         entrada = entradaHija,
                                         diasRestantes = diasRestantes,
@@ -89,7 +96,11 @@ fun ContenidoListaPapelera(
                             )
                         }
                         is ItemAgrupado.Suelto -> {
-                            val diasRestantes = (DIAS_PAPELERA - diasDesde(item.entrada.eliminadaEn, ahora)).coerceAtLeast(0)
+                            val diasRestantes = if (ajustes.diasRetencionPapelera <= 0) {
+                                -1L
+                            } else {
+                                (ajustes.diasRetencionPapelera.toLong() - diasDesde(item.entrada.eliminadaEn, ahora)).coerceAtLeast(0)
+                            }
                             FilaPapeleraNativa(
                                 entrada = item.entrada,
                                 diasRestantes = diasRestantes,
@@ -105,5 +116,24 @@ fun ContenidoListaPapelera(
                 }
             }
         }
+    }
+}
+
+@com.jlnavas3.bovedalocal.ui.preview.BovedaPreview
+@Composable
+private fun ContenidoListaPapeleraPreview() {
+    com.jlnavas3.bovedalocal.ui.theme.BovedaTheme {
+        ContenidoListaPapelera(
+            papelera = emptyList(),
+            ordenadas = emptyList(),
+            itemsAgrupados = emptyList(),
+            gruposExpandidos = emptySet(),
+            ajustes = AjustesApp(),
+            ahora = System.currentTimeMillis(),
+            espaciadoFilas = 8.dp,
+            alAlternarGrupo = {},
+            alRestaurar = {},
+            alBorrarDefinitivo = {}
+        )
     }
 }

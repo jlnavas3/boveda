@@ -37,7 +37,8 @@ fun BarraSuperiorPapelera(
     alVolver: () -> Unit,
     alConfirmarVaciar: () -> Unit,
     alIrADisenoLista: () -> Unit,
-    alIrAAutodestruccion: () -> Unit
+    alIrAAutodestruccion: () -> Unit,
+    alCambiarRetencion: () -> Unit
 ) {
     BarraSuperiorPantalla(
         titulo = "Papelera",
@@ -83,8 +84,18 @@ fun BarraSuperiorPapelera(
                     )
                     SeparadorOpcionMenu()
                     ElementoMenuCompacto(
-                        texto = "Ajustes de autodestrucción...",
+                        texto = "Tiempo de retención...",
                         icono = Icons.Filled.Timer,
+                        colorIcono = ColorAcento,
+                        onClick = {
+                            menuAbierto = false
+                            alCambiarRetencion()
+                        }
+                    )
+                    SeparadorOpcionMenu()
+                    ElementoMenuCompacto(
+                        texto = "Ajustes de autodestrucción...",
+                        icono = Icons.Filled.DeleteForever,
                         colorIcono = ColorAcento,
                         onClick = {
                             menuAbierto = false
@@ -95,4 +106,20 @@ fun BarraSuperiorPapelera(
             }
         }
     )
+}
+
+@com.jlnavas3.bovedalocal.ui.preview.BovedaPreview
+@Composable
+private fun BarraSuperiorPapeleraPreview() {
+    com.jlnavas3.bovedalocal.ui.theme.BovedaTheme {
+        BarraSuperiorPapelera(
+            tieneElementos = true,
+            mostrarId = false,
+            alVolver = {},
+            alConfirmarVaciar = {},
+            alIrADisenoLista = {},
+            alIrAAutodestruccion = {},
+            alCambiarRetencion = {}
+        )
+    }
 }

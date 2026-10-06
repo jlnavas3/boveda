@@ -23,11 +23,10 @@ import com.jlnavas3.bovedalocal.ui.componentes.DescripcionPantalla
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjustesFondo
 import com.jlnavas3.bovedalocal.ui.pantallas.papelera.BarraSuperiorPapelera
 import com.jlnavas3.bovedalocal.ui.pantallas.papelera.ContenidoListaPapelera
+import com.jlnavas3.bovedalocal.ui.pantallas.papelera.DialogoAjustesRetencionPapelera
 import com.jlnavas3.bovedalocal.ui.pantallas.papelera.DialogosPapelera
 import com.jlnavas3.bovedalocal.ui.theme.calcularEspaciadoFilas
 import com.jlnavas3.bovedalocal.util.construirItemsAgrupadosPorTitulo
-
-private const val DIAS_PAPELERA = 30L
 
 @Composable
 fun PantallaPapelera(
@@ -40,6 +39,7 @@ fun PantallaPapelera(
     val entradasActivas = (estado as? EstadoBoveda.Desbloqueada)?.entradas ?: emptyList()
     val ahora = remember { System.currentTimeMillis() }
     var confirmarVaciar by remember { mutableStateOf(false) }
+    var mostrarDialogoRetencion by remember { mutableStateOf(false) }
     var aBorrarDefinitivo by remember { mutableStateOf<Entrada?>(null) }
     var conflictoRestaurar by remember { mutableStateOf<Entrada?>(null) }
     var gruposExpandidos by rememberSaveable { mutableStateOf(emptySet<String>()) }
@@ -76,7 +76,8 @@ fun PantallaPapelera(
             alVolver = { vm.volverAtras() },
             alConfirmarVaciar = { confirmarVaciar = true },
             alIrADisenoLista = { vm.ir(Pantalla.OrganizacionLista("03-LST-DES-GRP")) },
-            alIrAAutodestruccion = { vm.ir(Pantalla.AjustesAutodestruccion("01-SEG-DES")) }
+            alIrAAutodestruccion = { vm.ir(Pantalla.AjustesAutodestruccion("01-SEG-DES")) },
+            alCambiarRetencion = { mostrarDialogoRetencion = true }
         )
 
         Column(
@@ -85,7 +86,13 @@ fun PantallaPapelera(
                 .padding(horizontal = 16.dp, vertical = 8.dp)
         ) {
             DescripcionPantalla(
-                subtitulo = if (papelera.isEmpty()) "Sin elementos en la papelera" else "${papelera.size} entrada${if (papelera.size == 1) "" else "s"} · Se borran tras $DIAS_PAPELERA días"
+                subtitulo = if (papelera.isEmpty()) {
+                    "Sin elementos en la papelera"
+                } else if (ajustes.diasRetencionPapelera <= 0) {
+                    "${papelera.size} entrada${if (papelera.size == 1) "" else "s"} · Sin expiración automática"
+                } else {
+                    "${papelera.size} entrada${if (papelera.size == 1) "" else "s"} · Se borran tras ${ajustes.diasRetencionPapelera} días"
+                }
             )
 
             Spacer(Modifier.height(10.dp))
@@ -142,4 +149,17 @@ fun PantallaPapelera(
             vm.restaurarDeLaPapelera(id, sustituir = false)
         }
     )
+
+    if (mostrarDialogoRetencion) {
+        DialogoAjustesRetencionPapelera(
+            diasActuales = ajustes.diasRetencionPapelera,
+            alDescartar = { mostrarDialogoRetencion = false },
+            alSeleccionarDias = { dias ->
+                vm.ajustarDiasRetencionPapelera(dias)
+                mostrarDialogoRetencion = false
+                val desc = if (dias <= 0) "Sin expiración automática" else "Retención: $dias días"
+                vm.avisar(desc)
+            }
+        )
+    }
 }

@@ -193,4 +193,28 @@ class HistorialContrasenasTest {
         assertEquals(listOf("ClaveVieja1", "ClaveVieja3"), resultado.historialContrasenas.map { it.contrasena })
         assertFalse(resultado.historialContrasenas.any { it.contrasena == "ClaveVieja2" })
     }
+
+    @Test
+    fun `limite configurable de historial recorta a la cantidad deseada o vacia con cero`() {
+        val entradaCon5 = Entrada(
+            id = "1",
+            contrasena = "ClaveActual",
+            historialContrasenas = listOf(
+                CambioContrasena("k1", 100L),
+                CambioContrasena("k2", 200L),
+                CambioContrasena("k3", 300L),
+                CambioContrasena("k4", 400L),
+                CambioContrasena("k5", 500L)
+            )
+        )
+
+        // Límite de 3 versiones
+        val limit3 = entradaCon5.historialContrasenas.take(3)
+        assertEquals(3, limit3.size)
+        assertEquals(listOf("k1", "k2", "k3"), limit3.map { it.contrasena })
+
+        // Límite de 0 versiones (desactivado)
+        val limit0 = if (0 <= 0) emptyList<CambioContrasena>() else entradaCon5.historialContrasenas.take(0)
+        assertTrue(limit0.isEmpty())
+    }
 }

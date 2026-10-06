@@ -43,4 +43,25 @@ interface VaultAjustesCopiasDelegate {
     fun ajustarBackupAutoSecuencia(secuencia: Int) {
         repositorio.ajustes.actualizar { it.copy(backupAutoSecuencia = secuencia) }
     }
+
+    fun ajustarDiasRetencionPapelera(dias: Int) {
+        repositorio.ajustes.actualizar { it.copy(diasRetencionPapelera = dias) }
+        val desc = if (dias <= 0) "sin expiración automática" else "$dias días"
+        Diagnostico.apuntar("papelera", "Retención de papelera establecida en $desc")
+    }
+
+    fun ajustarMaxHistorialContrasenasPorEntrada(max: Int) {
+        repositorio.ajustes.actualizar { it.copy(maxHistorialContrasenasPorEntrada = max) }
+        val desc = if (max <= 0) "desactivado" else "$max versiones"
+        Diagnostico.apuntar("historial", "Historial de contraseñas por entrada establecido en $desc")
+    }
+
+    fun restablecerAjustesRetencionEHistorial() {
+        repositorio.ajustes.actualizar {
+            it.copy(
+                diasRetencionPapelera = AjustesDefaults.HistorialCopias.DIAS_RETENCION_PAPELERA,
+                maxHistorialContrasenasPorEntrada = AjustesDefaults.HistorialCopias.MAX_HISTORIAL_CONTRASENAS_POR_ENTRADA
+            )
+        }
+    }
 }

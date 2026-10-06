@@ -43,6 +43,10 @@ class AjustesTest {
         assertEquals(30 * 60 * 1000L, ajustes.historialClavesTiempoAutoDestruccion)
         assertTrue(ajustes.historialClaves.isEmpty())
 
+        // Retención y ciclo de vida de datos
+        assertEquals(30, ajustes.diasRetencionPapelera)
+        assertEquals(5, ajustes.maxHistorialContrasenasPorEntrada)
+
         // Backup automático local
         assertEquals(0, ajustes.backupAutoFrecuenciaDias)
         assertEquals(5, ajustes.backupAutoMaxCopias)
@@ -127,5 +131,16 @@ class AjustesTest {
 
         val activado = ajustes.copy(mostrarIdsAjustes = true)
         assertTrue(activado.mostrarIdsAjustes)
+    }
+
+    @Test
+    fun `opciones de retencion de papelera e historial de contrasenas son coherentes`() {
+        val dias = AlmacenAjustes.OPCIONES_DIAS_RETENCION_PAPELERA.map { it.first }
+        assertTrue(dias.contains(30))
+        assertTrue(dias.contains(-1))
+
+        val versiones = AlmacenAjustes.OPCIONES_MAX_HISTORIAL_CONTRASENAS_POR_ENTRADA.map { it.first }
+        assertTrue(versiones.contains(0))
+        assertTrue(versiones.contains(5))
     }
 }
