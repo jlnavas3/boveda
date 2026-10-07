@@ -36,7 +36,12 @@ object GeneradorRapidoHelper {
             "diceware" -> {
                 val palabras = if (esWidget1x1) ajustes.widget1x1DicewarePalabras else ajustes.tileDicewarePalabras
                 val separador = if (esWidget1x1) ajustes.widget1x1DicewareSeparador else ajustes.tileDicewareSeparador
-                PasswordGenerator.generarFrase(numeroPalabras = palabras, separador = separador)
+                PasswordGenerator.generarFrase(
+                    numeroPalabras = palabras,
+                    separador = separador,
+                    idioma = ajustes.generadorIdiomaFrases,
+                    capitalizar = ajustes.generadorCapitalizarFrases
+                )
             }
             else -> PasswordGenerator.generarAleatoria(
                 OpcionesGenerador(
@@ -45,7 +50,8 @@ object GeneradorRapidoHelper {
                     minusculas = true,
                     digitos = true,
                     simbolos = true,
-                    simbolosPersonalizados = if (esWidget1x1) ajustes.widget1x1Simbolos else ajustes.tileSimbolos
+                    simbolosPersonalizados = if (esWidget1x1) ajustes.widget1x1Simbolos else ajustes.tileSimbolos,
+                    excluirAmbiguos = ajustes.generadorExcluirAmbiguos
                 )
             )
         }

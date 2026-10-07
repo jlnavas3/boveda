@@ -73,4 +73,19 @@ class DiagnosticoTest {
         assertTrue(informe.contains("Huella: ninguna"))
         assertTrue(informe.contains("camara: paso"))
     }
+
+    @Test
+    fun `la capacidad en memoria se ajusta dinamicamente`() {
+        preparar()
+        Diagnostico.configurar(100)
+        assertEquals(100, Diagnostico.maxLineasMemoriaConfigurable)
+        repeat(150) { Diagnostico.apuntar("test", "evento $it") }
+        assertEquals(100, Diagnostico.ultimas(500).size)
+
+        Diagnostico.configurar(500)
+        assertEquals(500, Diagnostico.maxLineasMemoriaConfigurable)
+        repeat(200) { Diagnostico.apuntar("test", "nuevo evento $it") }
+        assertEquals(300, Diagnostico.ultimas(500).size)
+    }
 }
+

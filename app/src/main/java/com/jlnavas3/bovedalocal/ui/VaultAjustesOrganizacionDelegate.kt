@@ -140,4 +140,25 @@ interface VaultAjustesOrganizacionDelegate {
         repositorio.ajustes.actualizar { it.copy(separadorDecimal = separador) }
         Diagnostico.apuntar("formatos", "Separador decimal establecido en $separador")
     }
+
+    // --- Plantillas de Campos Personalizadas ---
+    fun guardarPlantillaCampos(plantilla: com.jlnavas3.bovedalocal.data.PlantillaCamposPersonalizada) {
+        repositorio.ajustes.actualizar { actual ->
+            val lista = actual.plantillasCamposPersonalizadas.filterNot { it.id == plantilla.id } + plantilla
+            actual.copy(plantillasCamposPersonalizadas = lista)
+        }
+        Diagnostico.apuntar("plantillas", "Plantilla de campos guardada: ${plantilla.titulo}")
+    }
+
+    fun eliminarPlantillaCampos(id: String) {
+        repositorio.ajustes.actualizar { actual ->
+            actual.copy(plantillasCamposPersonalizadas = actual.plantillasCamposPersonalizadas.filterNot { it.id == id })
+        }
+        Diagnostico.apuntar("plantillas", "Plantilla de campos eliminada: $id")
+    }
+
+    fun restablecerPlantillasCampos() {
+        repositorio.ajustes.actualizar { it.copy(plantillasCamposPersonalizadas = emptyList()) }
+        Diagnostico.apuntar("plantillas", "Plantillas de campos restablecidas a valores predeterminados")
+    }
 }

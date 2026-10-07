@@ -233,6 +233,11 @@ sealed interface Pantalla {
         override fun equals(other: Any?): Boolean = other is FormatosCampos && other.seccionId == seccionId
         override fun hashCode(): Int = seccionId?.hashCode() ?: 0
     }
+    open class PlantillasCampos(val seccionId: String? = null) : Pantalla {
+        companion object : PlantillasCampos(null)
+        override fun equals(other: Any?): Boolean = other is PlantillasCampos && other.seccionId == seccionId
+        override fun hashCode(): Int = seccionId?.hashCode() ?: 0
+    }
     open class HistorialClaves(val seccionId: String? = null) : Pantalla {
         companion object : HistorialClaves(null)
         override fun equals(other: Any?): Boolean = other is HistorialClaves && other.seccionId == seccionId

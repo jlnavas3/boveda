@@ -26,6 +26,7 @@ import com.jlnavas3.bovedalocal.ui.pantallas.generador.SelectorPlantillaPatron
 import com.jlnavas3.bovedalocal.ui.theme.ColorTitulos
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
 import com.jlnavas3.bovedalocal.util.Haptica
+import com.jlnavas3.bovedalocal.data.AjustesDefaults
 import kotlin.math.roundToInt
 
 @Composable
@@ -127,13 +128,13 @@ fun GeneradorEnLineaEdicion(
                     SliderBoveda(
                         value = opcionesGenerador.longitud.toFloat(),
                         onValueChange = {
-                            val nuevo = it.roundToInt().coerceIn(8, 64)
+                            val nuevo = it.roundToInt().coerceIn(AjustesDefaults.Generador.LONGITUD_MIN, AjustesDefaults.Generador.LONGITUD_MAX)
                             if (nuevo != opcionesGenerador.longitud) {
                                 haptica.tic()
                                 alCambiarOpciones(opcionesGenerador.copy(longitud = nuevo))
                             }
                         },
-                        valueRange = 8f..64f
+                        valueRange = AjustesDefaults.Generador.LONGITUD_MIN.toFloat()..AjustesDefaults.Generador.LONGITUD_MAX.toFloat()
                     )
                 }
 

@@ -42,6 +42,9 @@ import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
 import com.jlnavas3.bovedalocal.util.Haptica
 import kotlin.math.roundToInt
 
+import com.jlnavas3.bovedalocal.data.AjustesDefaults
+import com.jlnavas3.bovedalocal.ui.pantallas.generador.SwitchExcluirAmbiguos
+
 @Composable
 fun PanelModoAleatorio(
     opciones: OpcionesGenerador,
@@ -53,13 +56,20 @@ fun PanelModoAleatorio(
         SliderBoveda(
             value = opciones.longitud.toFloat(),
             onValueChange = {
-                val nuevo = it.roundToInt().coerceIn(8, 64)
+                val nuevo = it.roundToInt().coerceIn(AjustesDefaults.Generador.LONGITUD_MIN, AjustesDefaults.Generador.LONGITUD_MAX)
                 if (nuevo != opciones.longitud) {
                     haptica.tic()
                     alCambiarOpciones(opciones.copy(longitud = nuevo))
                 }
             },
-            valueRange = 8f..64f
+            valueRange = AjustesDefaults.Generador.LONGITUD_MIN.toFloat()..AjustesDefaults.Generador.LONGITUD_MAX.toFloat()
+        )
+
+        Spacer(Modifier.height(8.dp))
+        SwitchExcluirAmbiguos(
+            excluirAmbiguos = opciones.excluirAmbiguos,
+            alCambiar = { alCambiarOpciones(opciones.copy(excluirAmbiguos = it)) },
+            haptica = haptica
         )
 
         var mostrarCampoSimbolos by remember { mutableStateOf(false) }

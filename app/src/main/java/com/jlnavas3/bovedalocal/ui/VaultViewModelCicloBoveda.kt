@@ -43,7 +43,7 @@ interface VaultCicloBovedaDelegate {
         maxCastigoSegundos = repositorio.ajustes.actual.frenoSegundosMax
     )
 
-    suspend fun apuntarFallo() = withContext(Dispatchers.IO) {
+    suspend fun apuntarFallo(): Int = withContext(Dispatchers.IO) {
         val ajustes = repositorio.ajustes.actual
         FrenoIntentos.apuntarFallo(
             contexto = contextoApp,
@@ -141,10 +141,21 @@ interface VaultCicloBovedaDelegate {
                 procesarShortcutPendiente()
                 verificarBackupAutomatico()
             } catch (e: Exception) {
-                apuntarFallo()
-                Diagnostico.apuntar("bóveda", "Desbloqueo con contraseña rechazado")
-                errorInterno.value = "Contraseña incorrecta"
-                alTerminar(false)
+                val fallos = apuntarFallo()
+                Diagnostico.apuntar("bóveda", "Desbloqueo con contraseña rechazado (intento $fallos)")
+                val maxFallos = repositorio.ajustes.actual.autodestruccionIntentosFallidosMax
+                if (maxFallos > 0 && fallos >= maxFallos) {
+                    Diagnostico.apuntar("seguridad", "Autodestrucción ejecutada tras alcanzar $fallos intentos fallidos consecutivos (límite: $maxFallos)")
+                    repositorio.borrarTodo()
+                    PinAutodestruccion.desactivar(contextoApp)
+                    BovedaSenuelo.desactivar(contextoApp)
+                    limpiarFallos()
+                    irRaiz(Pantalla.Onboarding)
+                    alTerminar(false)
+                } else {
+                    errorInterno.value = "Contraseña incorrecta"
+                    alTerminar(false)
+                }
             } finally {
                 Zeroizar.borrar(chars)
             }

@@ -1,6 +1,7 @@
 package com.jlnavas3.bovedalocal
 
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
@@ -66,5 +67,24 @@ class FrenoIntentosTest {
         // Al 3er intento con umbral 3 ya se penaliza
         val castigo = calcularCastigo(intentos = 3, gratis = 3, castigoBaseSegundos = 5L, maxCastigoSegundos = 300L)
         assertEquals(5L, castigo)
+    }
+
+    @Test
+    fun `evaluacion de umbral de autodestruccion por intentos fallidos`() {
+        fun debeAutodestruir(intentos: Int, maxPermitidos: Int): Boolean {
+            return maxPermitidos > 0 && intentos >= maxPermitidos
+        }
+
+        // Con límite desactivado (0) nunca autodestruye
+        assertFalse(debeAutodestruir(intentos = 100, maxPermitidos = 0))
+
+        // Con límite 10: 9 intentos no destruye, 10 sí, 11 sí
+        assertFalse(debeAutodestruir(intentos = 9, maxPermitidos = 10))
+        assertTrue(debeAutodestruir(intentos = 10, maxPermitidos = 10))
+        assertTrue(debeAutodestruir(intentos = 15, maxPermitidos = 10))
+
+        // Con límite 5: 4 intentos no destruye, 5 sí
+        assertFalse(debeAutodestruir(intentos = 4, maxPermitidos = 5))
+        assertTrue(debeAutodestruir(intentos = 5, maxPermitidos = 5))
     }
 }

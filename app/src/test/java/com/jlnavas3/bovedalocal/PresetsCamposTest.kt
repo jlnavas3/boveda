@@ -143,4 +143,56 @@ class PresetsCamposTest {
         assertEquals("Lista", TipoCampo.LISTA.etiqueta)
         assertEquals("Notas", TipoCampo.NOTAS.etiqueta)
     }
+
+    @Test
+    fun `plantillas personalizadas se serializan y deserializan correctamente`() {
+        val plantilla = com.jlnavas3.bovedalocal.data.PlantillaCamposPersonalizada(
+            id = "plantilla-vpn-1",
+            titulo = "Servidor VPN Corporativo",
+            descripcion = "IP, Usuario y Clave",
+            campos = listOf(
+                CampoPersonalizado(etiqueta = "Host VPN", tipo = TipoCampo.TEXTO),
+                CampoPersonalizado(etiqueta = "Clave Precompartida", tipo = TipoCampo.TEXTO, esSensible = true)
+            )
+        )
+
+        val raw = json.encodeToString(com.jlnavas3.bovedalocal.data.PlantillaCamposPersonalizada.serializer(), plantilla)
+        val recuperada = json.decodeFromString(com.jlnavas3.bovedalocal.data.PlantillaCamposPersonalizada.serializer(), raw)
+
+        assertEquals(plantilla.id, recuperada.id)
+        assertEquals(plantilla.titulo, recuperada.titulo)
+        assertEquals(plantilla.descripcion, recuperada.descripcion)
+        assertEquals(2, recuperada.campos.size)
+        assertEquals("Host VPN", recuperada.campos[0].etiqueta)
+        assertTrue(recuperada.campos[1].esSensible)
+    }
+
+    @Test
+    fun `obtenerTodos combina presets del sistema y plantillas personalizadas generando nuevos UUIDs`() {
+        assertEquals(6, PresetsCampos.obtenerTodos(emptyList()).size)
+
+        val personalizadas = listOf(
+            com.jlnavas3.bovedalocal.data.PlantillaCamposPersonalizada(
+                id = "custom-db",
+                titulo = "Base de Datos",
+                descripcion = "Puerto, Host, Engine",
+                campos = listOf(
+                    CampoPersonalizado(id = "original-id", etiqueta = "Engine", valor = "PostgreSQL")
+                )
+            )
+        )
+
+        val combinados = PresetsCampos.obtenerTodos(personalizadas)
+        assertEquals(7, combinados.size)
+
+        val presetCustom = combinados.firstOrNull { it.id == "custom-db" }
+        assertNotNull(presetCustom)
+        assertEquals("Base de Datos", presetCustom!!.titulo)
+
+        val camposGenerados = presetCustom.generarCampos()
+        assertEquals(1, camposGenerados.size)
+        assertEquals("Engine", camposGenerados.first().etiqueta)
+        assertEquals("PostgreSQL", camposGenerados.first().valor)
+        assertNotEquals("original-id", camposGenerados.first().id)
+    }
 }

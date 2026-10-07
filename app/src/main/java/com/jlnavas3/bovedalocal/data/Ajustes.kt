@@ -87,6 +87,13 @@ private fun deserializarNavegadoresPersonalizados(raw: String): List<String> = t
     AjustesDefaults.Autocompletado.NAVEGADORES_PERSONALIZADOS
 }
 
+private fun deserializarPlantillasCampos(raw: String): List<PlantillaCamposPersonalizada> = try {
+    if (raw.isBlank()) AjustesDefaults.PlantillasCampos.PREDETERMINADAS
+    else jsonAjustes.decodeFromString(raw)
+} catch (_: Exception) {
+    AjustesDefaults.PlantillasCampos.PREDETERMINADAS
+}
+
 /** El modo de huella en uso, o null si está apagada. Única lectura de [AjustesApp.biometriaModo]. */
 val AjustesApp.modoBiometriaActivo: BiometricKeyStore.Modo?
     get() = if (biometriaActiva) BiometricKeyStore.Modo.desde(biometriaModo) else null
@@ -133,6 +140,13 @@ data class AjustesApp(
     val totpManualPeriodo: Int = AjustesDefaults.TotpManual.PERIODO,
     val totpManualAlgoritmo: String = AjustesDefaults.TotpManual.ALGORITMO,
     val totpSepararDigitos: Boolean = AjustesDefaults.TotpManual.SEPARAR_DIGITOS,
+    // Preferencias del Generador de Contraseñas y Frases
+    val generadorExcluirAmbiguos: Boolean = AjustesDefaults.Generador.EXCLUIR_AMBIGUOS,
+    val generadorLongitudMax: Int = AjustesDefaults.Generador.LONGITUD_MAX,
+    val generadorIdiomaFrases: String = AjustesDefaults.Generador.IDIOMA_FRASE,
+    val generadorCapitalizarFrases: Boolean = AjustesDefaults.Generador.CAPITALIZAR_FRASE,
+    // Diagnóstico y Registro de Eventos
+    val diagnosticoMaxEventos: Int = AjustesDefaults.DiagnosticoConfig.MAX_EVENTOS_MEMORIA,
     // Personalización de formas y bordes
     val curvaturaEsquinasDp: Float = AjustesDefaults.Formas.CURVATURA_ESQUINAS_DP,
     val grosorBordeDp: Float = AjustesDefaults.Formas.GROSOR_BORDE_DP,
@@ -336,7 +350,10 @@ data class AjustesApp(
     val plantillaRouterIp: String = AjustesDefaults.NormalizacionTitulos.PLANTILLA_ROUTER_IP,
     val plantillaServidorIp: String = AjustesDefaults.NormalizacionTitulos.PLANTILLA_SERVIDOR_IP,
     val formatoColisionTitulos: String = AjustesDefaults.NormalizacionTitulos.FORMATO_COLISION_TITULOS,
-    val respetarTitulosPersonalizados: Boolean = AjustesDefaults.NormalizacionTitulos.RESPETAR_TITULOS_PERSONALIZADOS
+    val respetarTitulosPersonalizados: Boolean = AjustesDefaults.NormalizacionTitulos.RESPETAR_TITULOS_PERSONALIZADOS,
+    // Autodestrucción por intentos fallidos y plantillas de campos personalizadas
+    val autodestruccionIntentosFallidosMax: Int = AjustesDefaults.Seguridad.AUTODESTRUCCION_INTENTOS_FALLIDOS_MAX,
+    val plantillasCamposPersonalizadas: List<PlantillaCamposPersonalizada> = AjustesDefaults.PlantillasCampos.PREDETERMINADAS
 ) {
     val modoVisualizacionIdentidades: ModoVisualizacionIdentidades
         get() = ModoVisualizacionIdentidades.desde(modoIdentidades)
@@ -443,6 +460,11 @@ class AlmacenAjustes(contexto: Context) {
             totpManualPeriodo = prefs.getInt("totp_manual_periodo", AjustesDefaults.TotpManual.PERIODO),
             totpManualAlgoritmo = prefs.getString("totp_manual_algoritmo", AjustesDefaults.TotpManual.ALGORITMO) ?: AjustesDefaults.TotpManual.ALGORITMO,
             totpSepararDigitos = prefs.getBoolean("totp_separar_digitos", AjustesDefaults.TotpManual.SEPARAR_DIGITOS),
+            generadorExcluirAmbiguos = prefs.getBoolean("generador_excluir_ambiguos", AjustesDefaults.Generador.EXCLUIR_AMBIGUOS),
+            generadorLongitudMax = prefs.getInt("generador_longitud_max", AjustesDefaults.Generador.LONGITUD_MAX),
+            generadorIdiomaFrases = prefs.getString("generador_idioma_frases", AjustesDefaults.Generador.IDIOMA_FRASE) ?: AjustesDefaults.Generador.IDIOMA_FRASE,
+            generadorCapitalizarFrases = prefs.getBoolean("generador_capitalizar_frases", AjustesDefaults.Generador.CAPITALIZAR_FRASE),
+            diagnosticoMaxEventos = prefs.getInt("diagnostico_max_eventos", AjustesDefaults.DiagnosticoConfig.MAX_EVENTOS_MEMORIA),
             curvaturaEsquinasDp = prefs.getFloat("curvatura_esquinas_dp", AjustesDefaults.Formas.CURVATURA_ESQUINAS_DP),
             grosorBordeDp = prefs.getFloat("grosor_borde_dp", AjustesDefaults.Formas.GROSOR_BORDE_DP),
             estiloBorde = prefs.getString("estilo_borde", AjustesDefaults.Formas.ESTILO_BORDE) ?: AjustesDefaults.Formas.ESTILO_BORDE,
@@ -626,7 +648,9 @@ class AlmacenAjustes(contexto: Context) {
             plantillaRouterIp = prefs.getString("plantilla_router_ip", AjustesDefaults.NormalizacionTitulos.PLANTILLA_ROUTER_IP) ?: AjustesDefaults.NormalizacionTitulos.PLANTILLA_ROUTER_IP,
             plantillaServidorIp = prefs.getString("plantilla_servidor_ip", AjustesDefaults.NormalizacionTitulos.PLANTILLA_SERVIDOR_IP) ?: AjustesDefaults.NormalizacionTitulos.PLANTILLA_SERVIDOR_IP,
             formatoColisionTitulos = prefs.getString("formato_colision_titulos", AjustesDefaults.NormalizacionTitulos.FORMATO_COLISION_TITULOS) ?: AjustesDefaults.NormalizacionTitulos.FORMATO_COLISION_TITULOS,
-            respetarTitulosPersonalizados = prefs.getBoolean("respetar_titulos_personalizados", AjustesDefaults.NormalizacionTitulos.RESPETAR_TITULOS_PERSONALIZADOS)
+            respetarTitulosPersonalizados = prefs.getBoolean("respetar_titulos_personalizados", AjustesDefaults.NormalizacionTitulos.RESPETAR_TITULOS_PERSONALIZADOS),
+            autodestruccionIntentosFallidosMax = prefs.getInt("autodestruccion_intentos_max", AjustesDefaults.Seguridad.AUTODESTRUCCION_INTENTOS_FALLIDOS_MAX),
+            plantillasCamposPersonalizadas = deserializarPlantillasCampos(prefs.getString("plantillas_campos_personalizadas_json", "") ?: "")
         )
     }
 
@@ -657,6 +681,11 @@ class AlmacenAjustes(contexto: Context) {
             .putInt("totp_manual_periodo", nuevo.totpManualPeriodo)
             .putString("totp_manual_algoritmo", nuevo.totpManualAlgoritmo)
             .putBoolean("totp_separar_digitos", nuevo.totpSepararDigitos)
+            .putBoolean("generador_excluir_ambiguos", nuevo.generadorExcluirAmbiguos)
+            .putInt("generador_longitud_max", nuevo.generadorLongitudMax)
+            .putString("generador_idioma_frases", nuevo.generadorIdiomaFrases)
+            .putBoolean("generador_capitalizar_frases", nuevo.generadorCapitalizarFrases)
+            .putInt("diagnostico_max_eventos", nuevo.diagnosticoMaxEventos)
             .putFloat("curvatura_esquinas_dp", nuevo.curvaturaEsquinasDp)
             .putFloat("grosor_borde_dp", nuevo.grosorBordeDp)
             .putString("estilo_borde", nuevo.estiloBorde)
@@ -834,9 +863,12 @@ class AlmacenAjustes(contexto: Context) {
             .putString("plantilla_servidor_ip", nuevo.plantillaServidorIp)
             .putString("formato_colision_titulos", nuevo.formatoColisionTitulos)
             .putBoolean("respetar_titulos_personalizados", nuevo.respetarTitulosPersonalizados)
+            .putInt("autodestruccion_intentos_max", nuevo.autodestruccionIntentosFallidosMax)
+            .putString("plantillas_campos_personalizadas_json", jsonAjustes.encodeToString(nuevo.plantillasCamposPersonalizadas))
             .apply()
         _ajustes.value = nuevo
         com.jlnavas3.bovedalocal.util.Haptica.sincronizar(nuevo)
+        com.jlnavas3.bovedalocal.util.Diagnostico.configurar(nuevo.diagnosticoMaxEventos)
     }
 
     companion object {
@@ -996,6 +1028,13 @@ class AlmacenAjustes(contexto: Context) {
             5 to "5 sugerencias (predeterminado)",
             10 to "10 sugerencias",
             0 to "Todas las cuentas compatibles"
+        )
+        val OPCIONES_AUTODESTRUCCION_INTENTOS = listOf(
+            0 to "Desactivado",
+            5 to "5 intentos fallidos",
+            10 to "10 intentos fallidos (Recomendado)",
+            15 to "15 intentos fallidos",
+            20 to "20 intentos fallidos"
         )
     }
 }

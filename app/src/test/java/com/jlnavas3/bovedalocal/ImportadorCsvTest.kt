@@ -186,4 +186,55 @@ class ImportadorCsvTest {
         assertEquals("dvdb.com", entradas[0].titulo)
         assertEquals(listOf("android://com.dvdb.bergnotes"), entradas[0].urls)
     }
+
+    @Test
+    fun `detecta correctamente delimitadores en cabecera`() {
+        val csvComas = "name,url,username,password\n"
+        val csvPuntoYComas = "nombre;sitio;usuario;clave\n"
+        val csvTabs = "title\turl\tusername\tpassword\n"
+
+        assertEquals(',', ImportadorCsv.detectarDelimitador(csvComas))
+        assertEquals(';', ImportadorCsv.detectarDelimitador(csvPuntoYComas))
+        assertEquals('\t', ImportadorCsv.detectarDelimitador(csvTabs))
+    }
+
+    @Test
+    fun `parsea CSV con punto y coma tipico de Excel en espanol`() {
+        val csv = """
+            nombre;sitio;usuario;clave;notas
+            "Banco, S.A.";https://banco.com;usuario1;pass1;"Nota con ; punto y coma"
+            Servidor Local;https://192.168.1.50;admin;root123;
+        """.trimIndent()
+
+        val entradas = ImportadorCsv.parsear(csv.toByteArray(Charsets.UTF_8))
+        assertEquals(2, entradas.size)
+        assertEquals("Banco, S.A.", entradas[0].titulo)
+        assertEquals("https://banco.com", entradas[0].urls.first())
+        assertEquals("usuario1", entradas[0].usuario)
+        assertEquals("pass1", entradas[0].contrasena)
+        assertEquals("Nota con ; punto y coma", entradas[0].notas)
+
+        assertEquals("Servidor Local", entradas[1].titulo)
+        assertEquals("admin", entradas[1].usuario)
+    }
+
+    @Test
+    fun `parsea TSV con tabuladores`() {
+        val tsv = "name\turl\tusername\tpassword\nGoogle\thttps://google.com\tadmin\tClave123"
+        val entradas = ImportadorCsv.parsear(tsv.toByteArray(Charsets.UTF_8))
+        assertEquals(1, entradas.size)
+        assertEquals("Google", entradas[0].titulo)
+        assertEquals("https://google.com", entradas[0].urls.first())
+        assertEquals("admin", entradas[0].usuario)
+        assertEquals("Clave123", entradas[0].contrasena)
+    }
+
+    @Test
+    fun `respeta delimitador manual forzado`() {
+        val csv = "nombre;sitio;usuario;clave\nTest;https://test.com;user;pass"
+        val entradas = ImportadorCsv.parsear(csv.toByteArray(Charsets.UTF_8), delimitadorManual = ';')
+        assertEquals(1, entradas.size)
+        assertEquals("Test", entradas[0].titulo)
+    }
 }
+

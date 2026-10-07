@@ -210,6 +210,8 @@ fun PantallaEdicion(
                 alAlternarIgnoradaEnSalud = { ignoradaEnSalud = it; haptica.tic() },
                 ajustes = ajustes,
                 haptica = haptica,
+                alGuardarPlantillaCampos = { vm.guardarPlantillaCampos(it) },
+                alEliminarPlantillaCampos = { vm.eliminarPlantillaCampos(it) },
                 modifier = Modifier.weight(1f)
             )
         }

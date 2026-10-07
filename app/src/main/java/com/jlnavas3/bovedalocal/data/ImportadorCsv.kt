@@ -17,9 +17,44 @@ object ImportadorCsv {
     private val ALIAS_CONTRASENA = listOf("password", "login_password", "contraseña", "contrasena", "clave")
     private val ALIAS_NOTAS = listOf("notes", "note", "extra", "notas", "comentario", "comentarios")
 
-    fun parsear(datos: ByteArray): List<Entrada> {
+    val DELIMITADORES_SOPORTADOS = listOf(',', ';', '\t')
+
+    /**
+     * Detecta automáticamente si el archivo usa comas (,), punto y coma (;) o tabuladores (\t).
+     * Analiza los separadores fuera de comillas en la cabecera.
+     */
+    fun detectarDelimitador(texto: String): Char {
+        val primeraLinea = texto.lineSequence()
+            .firstOrNull { it.isNotBlank() } ?: return ','
+
+        var enComillas = false
+        var comas = 0
+        var puntosYComas = 0
+        var tabuladores = 0
+
+        for (c in primeraLinea) {
+            if (c == '"') {
+                enComillas = !enComillas
+            } else if (!enComillas) {
+                when (c) {
+                    ',' -> comas++
+                    ';' -> puntosYComas++
+                    '\t' -> tabuladores++
+                }
+            }
+        }
+
+        return when {
+            tabuladores > comas && tabuladores > puntosYComas -> '\t'
+            puntosYComas > comas -> ';'
+            else -> ','
+        }
+    }
+
+    fun parsear(datos: ByteArray, delimitadorManual: Char? = null): List<Entrada> {
         val texto = String(datos, Charsets.UTF_8).removePrefix("\uFEFF")
-        val filas = tokenizar(texto)
+        val delimitador = delimitadorManual ?: detectarDelimitador(texto)
+        val filas = tokenizar(texto, delimitador)
         if (filas.size < 2) throw IllegalArgumentException("El CSV no tiene filas de datos")
 
         val cabecera = filas.first().map { it.trim().lowercase() }
@@ -76,8 +111,8 @@ object ImportadorCsv {
     private fun indiceDe(cabecera: List<String>, alias: List<String>): Int =
         alias.firstNotNullOfOrNull { a -> cabecera.indexOf(a).takeIf { it >= 0 } } ?: -1
 
-    /** Tokenizador CSV manual: comillas dobles, comas y saltos de línea dentro de campos. */
-    private fun tokenizar(texto: String): List<List<String>> {
+    /** Tokenizador CSV manual: soporta comillas dobles, delimitador parametrizado y saltos de línea dentro de campos. */
+    fun tokenizar(texto: String, delimitador: Char = ','): List<List<String>> {
         val filas = mutableListOf<List<String>>()
         var fila = mutableListOf<String>()
         val campo = StringBuilder()
@@ -93,11 +128,11 @@ object ImportadorCsv {
                     else -> campo.append(c)
                 }
             } else {
-                when (c) {
-                    '"' -> dentroComillas = true
-                    ',' -> { fila.add(campo.toString()); campo.clear() }
-                    '\r' -> {}
-                    '\n' -> {
+                when {
+                    c == '"' -> dentroComillas = true
+                    c == delimitador -> { fila.add(campo.toString()); campo.clear() }
+                    c == '\r' -> {}
+                    c == '\n' -> {
                         fila.add(campo.toString())
                         campo.clear()
                         filas.add(fila)

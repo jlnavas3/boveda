@@ -156,6 +156,14 @@ fun SelectorCaracteresGenerador(
                 ) to {
                     haptica.tic()
                     alCambiarOpciones(opciones.copy(simbolos = !opciones.simbolos))
+                },
+                Triple(
+                    "Excluir ambiguos",
+                    "Evita caracteres confusos: I, l, 1, O, 0",
+                    opciones.excluirAmbiguos
+                ) to {
+                    haptica.tic()
+                    alCambiarOpciones(opciones.copy(excluirAmbiguos = !opciones.excluirAmbiguos))
                 }
             )
 

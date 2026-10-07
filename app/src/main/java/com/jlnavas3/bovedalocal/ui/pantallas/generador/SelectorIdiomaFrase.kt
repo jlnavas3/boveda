@@ -20,10 +20,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.unit.dp
-import com.jlnavas3.bovedalocal.crypto.OpcionesGenerador
-import com.jlnavas3.bovedalocal.crypto.Wordlist
 import com.jlnavas3.bovedalocal.ui.componentes.EtiquetaSeccion
-import com.jlnavas3.bovedalocal.ui.componentes.ajustes.SliderBoveda
+import com.jlnavas3.bovedalocal.ui.preview.BovedaPreview
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
 import com.jlnavas3.bovedalocal.ui.theme.ColorSobreAcento
@@ -32,32 +30,22 @@ import com.jlnavas3.bovedalocal.ui.theme.FormaCampo
 import com.jlnavas3.bovedalocal.ui.theme.GrosorBorde
 import com.jlnavas3.bovedalocal.ui.theme.Superficie
 import com.jlnavas3.bovedalocal.ui.theme.TextoPrincipal
-import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
 import com.jlnavas3.bovedalocal.util.Haptica
-import kotlin.math.roundToInt
 
 @Composable
-fun PanelModoDiceware(
-    opciones: OpcionesGenerador,
-    alCambiarOpciones: (OpcionesGenerador) -> Unit,
-    haptica: Haptica
+fun SelectorIdiomaFrase(
+    idiomaActual: String,
+    alCambiarIdioma: (String) -> Unit,
+    haptica: Haptica?,
+    modifier: Modifier = Modifier
 ) {
-    Column(modifier = Modifier.fillMaxWidth()) {
-        EtiquetaSeccion("Número de palabras: ${opciones.palabras}")
-        SliderBoveda(
-            value = opciones.palabras.toFloat(),
-            onValueChange = {
-                val nuevo = it.roundToInt().coerceIn(3, 12)
-                if (nuevo != opciones.palabras) {
-                    haptica.tic()
-                    alCambiarOpciones(opciones.copy(palabras = nuevo))
-                }
-            },
-            valueRange = 3f..12f,
-            steps = 8
-        )
-        Spacer(Modifier.height(10.dp))
-        EtiquetaSeccion("Separador")
+    val opciones = listOf(
+        "es" to "Español (1,290 palabras)",
+        "en" to "Inglés (2,048 palabras)"
+    )
+
+    Column(modifier = modifier.fillMaxWidth()) {
+        EtiquetaSeccion("Diccionario de palabras")
         Spacer(Modifier.height(6.dp))
         Row(
             modifier = Modifier
@@ -65,8 +53,8 @@ fun PanelModoDiceware(
                 .horizontalScroll(rememberScrollState()),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            listOf("-" to "Guion (-)", " " to "Espacio", "." to "Punto (.)", "_" to "Guion bajo (_)", "" to "Sin separador").forEach { (sep, label) ->
-                val activo = opciones.separadorFrase == sep
+            opciones.forEach { (codigo, etiqueta) ->
+                val activo = idiomaActual.lowercase() == codigo
                 Box(
                     modifier = Modifier
                         .clip(FormaCampo)
@@ -77,38 +65,28 @@ fun PanelModoDiceware(
                             else Modifier
                         )
                         .clickable {
-                            haptica.tic()
-                            alCambiarOpciones(opciones.copy(separadorFrase = sep))
+                            haptica?.tic()
+                            alCambiarIdioma(codigo)
                         }
                         .padding(horizontal = 12.dp, vertical = 8.dp)
                 ) {
                     Text(
-                        label,
+                        text = etiqueta,
                         style = MaterialTheme.typography.labelMedium,
                         color = if (activo) ColorSobreAcento else TextoPrincipal
                     )
                 }
             }
         }
-        Spacer(Modifier.height(10.dp))
-        SelectorIdiomaFrase(
-            idiomaActual = opciones.idiomaFrase,
-            alCambiarIdioma = { alCambiarOpciones(opciones.copy(idiomaFrase = it)) },
-            haptica = haptica
-        )
-        Spacer(Modifier.height(8.dp))
-        SwitchCapitalizarFrase(
-            capitalizar = opciones.capitalizarFrase,
-            alCambiar = { alCambiarOpciones(opciones.copy(capitalizarFrase = it)) },
-            haptica = haptica
-        )
-        Spacer(Modifier.height(12.dp))
-        val tamanoActual = Wordlist.obtenerTamano(opciones.idiomaFrase)
-        val idiomaNombre = if (opciones.idiomaFrase.lowercase() in listOf("en", "inglés", "ingles", "english")) "inglés (BIP-39)" else "español"
-        Text(
-            "Diccionario local de $tamanoActual palabras en $idiomaNombre, integrado dentro de la app sin conexión.",
-            color = TextoSecundario,
-            style = MaterialTheme.typography.bodySmall
-        )
     }
+}
+
+@BovedaPreview
+@Composable
+private fun SelectorIdiomaFrasePreview() {
+    SelectorIdiomaFrase(
+        idiomaActual = "es",
+        alCambiarIdioma = {},
+        haptica = null
+    )
 }

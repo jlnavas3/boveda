@@ -74,6 +74,7 @@ import com.jlnavas3.bovedalocal.ui.pantallas.PantallaEscaner
 import com.jlnavas3.bovedalocal.ui.pantallas.PantallaExportarSelectivo
 import com.jlnavas3.bovedalocal.ui.pantallas.PantallaFormas
 import com.jlnavas3.bovedalocal.ui.pantallas.PantallaFormatosCampos
+import com.jlnavas3.bovedalocal.ui.pantallas.PantallaPlantillasCampos
 import com.jlnavas3.bovedalocal.ui.pantallas.PantallaGenerador
 import com.jlnavas3.bovedalocal.ui.pantallas.PantallaHistorialClaves
 import com.jlnavas3.bovedalocal.ui.pantallas.PantallaKitEmergencia
@@ -296,6 +297,7 @@ fun RaizBoveda(vm: VaultViewModel, actividad: FragmentActivity) {
                     is Pantalla.AjustesSenuelo -> PantallaAjustesSenuelo(vm, destino.seccionId)
                     is Pantalla.AjustesAutodestruccion -> PantallaAjustesAutodestruccion(vm, destino.seccionId)
                     is Pantalla.FormatosCampos -> PantallaFormatosCampos(vm, destino.seccionId)
+                    is Pantalla.PlantillasCampos -> PantallaPlantillasCampos(vm, destino.seccionId)
                     is Pantalla.HistorialClaves -> PantallaHistorialClaves(vm, destino.seccionId)
                     is Pantalla.AjustesHistorial -> PantallaAjustesHistorial(vm, destino.seccionId)
                     is Pantalla.Seguridad -> PantallaSeguridad(vm, actividad, destino.seccionId)

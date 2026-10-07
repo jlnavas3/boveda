@@ -14,6 +14,7 @@ import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Share
+import androidx.compose.material.icons.filled.Storage
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -54,6 +55,8 @@ fun BarraSuperiorRegistro(
     alBorrarRegistro: () -> Unit,
     alRestablecerFiltros: () -> Unit,
     modifier: Modifier = Modifier,
+    capacidadActual: Int = 200,
+    alMostrarCapacidad: () -> Unit = {},
     idEtiqueta: String = "06-SIS-LOG",
     mostrarId: Boolean = false
 ) {
@@ -139,6 +142,17 @@ fun BarraSuperiorRegistro(
                         onClick = {
                             menuOpcionesDesplegado = false
                             alMostrarOrdenacion()
+                        }
+                    )
+                    SeparadorOpcionMenu()
+                    DropdownMenuItem(
+                        leadingIcon = {
+                            Icon(Icons.Filled.Storage, contentDescription = null, tint = ColorIconosInternos, modifier = Modifier.size(20.dp))
+                        },
+                        text = { Text("Capacidad ($capacidadActual eventos)", color = TextoPrincipal) },
+                        onClick = {
+                            menuOpcionesDesplegado = false
+                            alMostrarCapacidad()
                         }
                     )
                     SeparadorOpcionMenu()

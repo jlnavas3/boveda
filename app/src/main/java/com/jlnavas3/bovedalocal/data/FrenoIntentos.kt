@@ -41,12 +41,11 @@ object FrenoIntentos {
         gratis: Int = AjustesDefaults.Seguridad.FRENO_INTENTOS_GRATIS,
         castigoBaseSegundos: Long = AjustesDefaults.Seguridad.FRENO_SEGUNDOS_BASE,
         maxCastigoSegundos: Long = AjustesDefaults.Seguridad.FRENO_SEGUNDOS_MAX
-    ) {
-        if (gratis <= 0) return
+    ): Int {
         val prefs = prefs(contexto)
         val intentos = prefs.getInt(CLAVE_INTENTOS, 0) + 1
         val editor = prefs.edit().putInt(CLAVE_INTENTOS, intentos)
-        if (intentos >= gratis) {
+        if (gratis > 0 && intentos >= gratis) {
             val castigo = minOf(
                 maxCastigoSegundos,
                 castigoBaseSegundos * (1L shl minOf(6, intentos - gratis))
@@ -56,6 +55,11 @@ object FrenoIntentos {
         // commit() y no apply(): si matan la app justo después de fallar, el intento
         // tiene que haber llegado al disco. Es la única razón de que esto exista.
         editor.commit()
+        return intentos
+    }
+
+    fun obtenerIntentosFallidos(contexto: Context): Int {
+        return prefs(contexto).getInt(CLAVE_INTENTOS, 0)
     }
 
     fun limpiar(contexto: Context) {

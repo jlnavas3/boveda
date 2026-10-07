@@ -131,4 +131,45 @@ class GeneradorTest {
         val bits = PasswordGenerator.entropiaPatron("XXXXX-XXXXX")
         assertTrue(bits > 40.0)
     }
+
+    @Test
+    fun `soporta longitudes extendidas hasta 128 caracteres`() {
+        listOf(4, 16, 64, 100, 128).forEach { largo ->
+            val clave = PasswordGenerator.generar(OpcionesGenerador(longitud = largo))
+            assertEquals(largo, clave.length)
+        }
+    }
+
+    @Test
+    fun `permite incluir caracteres ambiguos si la opcion se desactiva`() {
+        val opcionesConAmbiguos = OpcionesGenerador(longitud = 100, excluirAmbiguos = false)
+        val conjunto = PasswordGenerator.conjunto(opcionesConAmbiguos)
+        val ambiguos = listOf('I', 'O', '0', '1', 'l')
+        ambiguos.forEach {
+            assertTrue("Debe contener $it cuando excluirAmbiguos es false", it in conjunto)
+        }
+    }
+
+    @Test
+    fun `soporta frases en ingles con wordlist BIP-39`() {
+        val frase = PasswordGenerator.generar(OpcionesGenerador(modoFrase = true, palabras = 5, idiomaFrase = "en"))
+        val palabras = frase.split("-")
+        assertEquals(5, palabras.size)
+        val palabrasEn = com.jlnavas3.bovedalocal.crypto.WordlistEn.PALABRAS
+        palabras.forEach { assertTrue("$it debe estar en WordlistEn", it in palabrasEn) }
+    }
+
+    @Test
+    fun `soporta capitalizacion de palabras en frases`() {
+        val frase = PasswordGenerator.generar(
+            OpcionesGenerador(modoFrase = true, palabras = 4, separadorFrase = " ", capitalizarFrase = true)
+        )
+        val palabras = frase.split(" ")
+        assertEquals(4, palabras.size)
+        palabras.forEach {
+            assertTrue("La palabra '$it' debe iniciar con mayúscula", it.first().isUpperCase())
+            assertTrue("El resto de la palabra '$it' debe ser minúscula", it.drop(1).all { c -> c.isLowerCase() })
+        }
+    }
 }
+

@@ -97,6 +97,7 @@ interface VaultNavegacionDelegate {
             limpio.startsWith("03-LST-AZX-RES") -> Pantalla.IndiceResaltado(limpio)
             limpio.startsWith("03-LST-AZX") || limpio.startsWith("03.2") || limpio.startsWith("09.5") -> Pantalla.AjustesIndice(limpio)
             limpio.startsWith("03-LST-FMT") || limpio.startsWith("03.3") || limpio.startsWith("10") -> Pantalla.FormatosCampos(limpio)
+            limpio.startsWith("03-LST-PLT") -> Pantalla.PlantillasCampos(limpio)
 
             limpio.startsWith("04-HER-AUT") || limpio.startsWith("04.1") || limpio == "07" || limpio.startsWith("07.0") -> Pantalla.AjustesAutenticador(limpio)
             limpio.startsWith("04-HER-HST-CFG") -> Pantalla.AjustesHistorial(limpio)

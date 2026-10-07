@@ -27,7 +27,17 @@ import java.util.concurrent.TimeUnit
 object Diagnostico {
 
     const val MAX_LINEAS_MEMORIA = 200
-    const val MAX_BYTES_ARCHIVO = 32 * 1024
+    const val MAX_BYTES_ARCHIVO = 64 * 1024L
+
+    @Volatile
+    var maxLineasMemoriaConfigurable: Int = MAX_LINEAS_MEMORIA
+        private set
+
+    @Synchronized
+    fun configurar(maxEventos: Int) {
+        maxLineasMemoriaConfigurable = maxEventos.coerceIn(50, 5000)
+        while (lineas.size > maxLineasMemoriaConfigurable) lineas.removeFirst()
+    }
 
     private val lineas = ArrayDeque<String>()
     private var archivo: File? = null
@@ -45,7 +55,7 @@ object Diagnostico {
             if (destino.exists()) {
                 destino.readLines(Charsets.UTF_8)
                     .filter { it.isNotBlank() }
-                    .takeLast(MAX_LINEAS_MEMORIA)
+                    .takeLast(maxLineasMemoriaConfigurable)
                     .forEach { lineas.addLast(it) }
             }
         } catch (e: Exception) {
@@ -70,7 +80,7 @@ object Diagnostico {
         val destino: File?
         synchronized(this) {
             lineas.addLast(texto)
-            while (lineas.size > MAX_LINEAS_MEMORIA) lineas.removeFirst()
+            while (lineas.size > maxLineasMemoriaConfigurable) lineas.removeFirst()
             destino = archivo
         }
         if (destino != null) encolar { escribir(destino, texto) }

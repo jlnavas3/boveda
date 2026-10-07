@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.BookmarkAdd
 import androidx.compose.material.icons.filled.DynamicForm
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -31,10 +32,13 @@ fun SeccionCamposPersonalizados(
     alCambiarCampos: (List<CampoPersonalizado>) -> Unit,
     etiquetasBase: Set<String> = emptySet(),
     ajustes: AjustesApp = AjustesApp(),
-    haptica: Haptica
+    haptica: Haptica,
+    alGuardarPlantilla: ((com.jlnavas3.bovedalocal.data.PlantillaCamposPersonalizada) -> Unit)? = null,
+    alEliminarPlantilla: ((String) -> Unit)? = null
 ) {
     var mostrandoDialogoNuevoCampo by remember { mutableStateOf(false) }
     var mostrandoDialogoPresets by remember { mutableStateOf(false) }
+    var mostrandoDialogoGuardarPlantilla by remember { mutableStateOf(false) }
 
     val camposVisibles = remember(camposPersonalizados, etiquetasBase) {
         if (etiquetasBase.isEmpty()) camposPersonalizados
@@ -66,39 +70,40 @@ fun SeccionCamposPersonalizados(
         }
     }
 
-    if (etiquetasBase.isEmpty()) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            BotonBorde(
-                texto = "Añadir campo",
-                icono = Icons.Filled.Add,
-                modifier = Modifier.weight(1f),
-                alPulsar = {
-                    haptica.tic()
-                    mostrandoDialogoNuevoCampo = true
-                }
-            )
-            BotonColorido(
-                texto = "Presets",
-                icono = Icons.Filled.DynamicForm,
-                color = ColorAcento,
-                modifier = Modifier.weight(1f),
-                alPulsar = {
-                    haptica.tic()
-                    mostrandoDialogoPresets = true
-                }
-            )
-        }
-    } else {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
         BotonBorde(
-            texto = "Añadir campo adicional",
+            texto = if (etiquetasBase.isEmpty()) "Añadir campo" else "Añadir campo adicional",
             icono = Icons.Filled.Add,
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.weight(1f),
             alPulsar = {
                 haptica.tic()
                 mostrandoDialogoNuevoCampo = true
+            }
+        )
+        BotonColorido(
+            texto = "Presets",
+            icono = Icons.Filled.DynamicForm,
+            color = ColorAcento,
+            modifier = Modifier.weight(1f),
+            alPulsar = {
+                haptica.tic()
+                mostrandoDialogoPresets = true
+            }
+        )
+    }
+
+    if (camposPersonalizados.isNotEmpty() && alGuardarPlantilla != null) {
+        Spacer(Modifier.height(8.dp))
+        BotonBorde(
+            texto = "Guardar como plantilla (${camposPersonalizados.size} campos)",
+            icono = Icons.Filled.BookmarkAdd,
+            modifier = Modifier.fillMaxWidth(),
+            alPulsar = {
+                haptica.tic()
+                mostrandoDialogoGuardarPlantilla = true
             }
         )
     }
@@ -114,9 +119,24 @@ fun SeccionCamposPersonalizados(
 
     if (mostrandoDialogoPresets) {
         DialogoPresetsRapidos(
+            plantillasPersonalizadas = ajustes.plantillasCamposPersonalizadas,
+            camposActuales = camposPersonalizados,
             alDescartar = { mostrandoDialogoPresets = false },
             alSeleccionarPreset = { camposPreset ->
                 alCambiarCampos(camposPersonalizados + camposPreset)
+            },
+            alGuardarComoPlantilla = alGuardarPlantilla,
+            alEliminarPlantilla = alEliminarPlantilla
+        )
+    }
+
+    if (mostrandoDialogoGuardarPlantilla && alGuardarPlantilla != null) {
+        DialogoGuardarPlantillaCampos(
+            campos = camposPersonalizados,
+            alDescartar = { mostrandoDialogoGuardarPlantilla = false },
+            alGuardar = { nuevaPlantilla ->
+                alGuardarPlantilla(nuevaPlantilla)
+                mostrandoDialogoGuardarPlantilla = false
             }
         )
     }

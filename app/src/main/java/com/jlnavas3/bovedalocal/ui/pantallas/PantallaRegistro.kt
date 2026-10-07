@@ -34,6 +34,7 @@ import com.jlnavas3.bovedalocal.ui.pantallas.registro.BarraSuperiorRegistro
 import com.jlnavas3.bovedalocal.ui.pantallas.registro.CATEGORIAS_OPCIONES_REGISTRO
 import com.jlnavas3.bovedalocal.ui.pantallas.registro.ContenidoListaRegistro
 import com.jlnavas3.bovedalocal.ui.pantallas.registro.CriterioOrdenRegistro
+import com.jlnavas3.bovedalocal.ui.pantallas.registro.DialogoCapacidadRegistro
 import com.jlnavas3.bovedalocal.ui.pantallas.registro.DialogoOrdenacionRegistro
 import com.jlnavas3.bovedalocal.ui.pantallas.registro.ModalCategoriasRegistro
 import com.jlnavas3.bovedalocal.ui.pantallas.registro.filtrarYOrdenarEventos
@@ -59,6 +60,7 @@ fun PantallaRegistro(
     var criterioOrden by remember { mutableStateOf(CriterioOrdenRegistro.RECIENTES) }
     var mostrarModalCategorias by remember { mutableStateOf(false) }
     var mostrarDialogoOrdenacion by remember { mutableStateOf(false) }
+    var mostrarDialogoCapacidad by remember { mutableStateOf(false) }
 
     val categoriasOpciones = remember { CATEGORIAS_OPCIONES_REGISTRO }
 
@@ -66,8 +68,8 @@ fun PantallaRegistro(
         refresco++
         onPauseOrDispose { }
     }
-    LaunchedEffect(refresco) {
-        registro = Diagnostico.ultimas(Diagnostico.MAX_LINEAS_MEMORIA)
+    LaunchedEffect(refresco, ajustes.diagnosticoMaxEventos) {
+        registro = Diagnostico.ultimas(ajustes.diagnosticoMaxEventos)
     }
 
     val eventosParseados = remember(registro) {
@@ -94,6 +96,7 @@ fun PantallaRegistro(
             filtroTexto = filtroTexto,
             categoriaSeleccionada = categoriaSeleccionada,
             tieneFiltrosActivos = tieneFiltrosActivos,
+            capacidadActual = ajustes.diagnosticoMaxEventos,
             idEtiqueta = "06-SIS-LOG",
             mostrarId = ajustes.mostrarIdsAjustes,
             alVolver = { vm.volverAtras() },
@@ -105,6 +108,7 @@ fun PantallaRegistro(
             },
             alMostrarCategorias = { mostrarModalCategorias = true },
             alMostrarOrdenacion = { mostrarDialogoOrdenacion = true },
+            alMostrarCapacidad = { mostrarDialogoCapacidad = true },
             alCopiarRegistro = {
                 haptica.tic()
                 Portapapeles.copiar(contexto, "Registro Bóveda local", textoRegistroFiltrado())
@@ -194,6 +198,17 @@ fun PantallaRegistro(
             criterioActual = criterioOrden,
             alSeleccionarCriterio = { criterioOrden = it },
             alCerrar = { mostrarDialogoOrdenacion = false }
+        )
+    }
+
+    if (mostrarDialogoCapacidad) {
+        DialogoCapacidadRegistro(
+            capacidadActual = ajustes.diagnosticoMaxEventos,
+            alSeleccionarCapacidad = { nuevaCapacidad ->
+                vm.ajustarDiagnosticoMaxEventos(nuevaCapacidad)
+                registro = Diagnostico.ultimas(nuevaCapacidad)
+            },
+            alCerrar = { mostrarDialogoCapacidad = false }
         )
     }
 }

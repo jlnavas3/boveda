@@ -57,6 +57,7 @@ object MapeoJerarquiaPantallas {
         is Pantalla.OrganizacionLista -> Pantalla.Ajustes("03-LST-DES")
         is Pantalla.AjustesIndice -> Pantalla.Ajustes("03-LST-AZX")
         is Pantalla.FormatosCampos -> Pantalla.Ajustes("03-LST-FMT")
+        is Pantalla.PlantillasCampos -> if (!pantalla.seccionId.isNullOrBlank()) Pantalla.Ajustes(pantalla.seccionId) else Pantalla.Ajustes("03-LST-PLT")
         is Pantalla.WidgetTotpAjustes,
         is Pantalla.Widget1x1Modo,
         is Pantalla.Widget1x1Comportamiento -> Pantalla.AjustesWidget("04-HER-WGT")

@@ -148,14 +148,30 @@ class AjustesTest {
     }
 
     @Test
-    fun `opciones de proteccion contra fuerza bruta son coherentes`() {
-        val intentos = AlmacenAjustes.OPCIONES_FRENO_INTENTOS.map { it.first }
-        assertTrue(intentos.contains(3))
-        assertTrue(intentos.contains(5))
-        assertTrue(intentos.contains(0))
+    fun `plantillasCamposPersonalizadas es accesible y configurable por defecto`() {
+        val ajustes = AjustesApp()
+        assertTrue(ajustes.plantillasCamposPersonalizadas.isEmpty())
+        val conPlantilla = ajustes.copy(
+            plantillasCamposPersonalizadas = listOf(
+                com.jlnavas3.bovedalocal.data.PlantillaCamposPersonalizada(
+                    titulo = "Mi Servidor",
+                    campos = listOf(
+                        com.jlnavas3.bovedalocal.data.CampoPersonalizado(etiqueta = "IP"),
+                        com.jlnavas3.bovedalocal.data.CampoPersonalizado(etiqueta = "Puerto")
+                    )
+                )
+            )
+        )
+        assertEquals(1, conPlantilla.plantillasCamposPersonalizadas.size)
+        assertEquals(2, conPlantilla.plantillasCamposPersonalizadas[0].campos.size)
+    }
 
-        val tiempos = AlmacenAjustes.OPCIONES_FRENO_MAX_TIEMPO.map { it.first }
-        assertTrue(tiempos.contains(60L))
-        assertTrue(tiempos.contains(300L))
+    @Test
+    fun `MapeoJerarquiaPantallas resuelve correctamente PlantillasCampos a Ajustes 03-LST-PLT`() {
+        val padre = com.jlnavas3.bovedalocal.ui.MapeoJerarquiaPantallas.resolverPadre(
+            com.jlnavas3.bovedalocal.ui.Pantalla.PlantillasCampos("03-LST-PLT")
+        )
+        assertTrue(padre is com.jlnavas3.bovedalocal.ui.Pantalla.Ajustes)
+        assertEquals("03-LST-PLT", (padre as com.jlnavas3.bovedalocal.ui.Pantalla.Ajustes).seccionId)
     }
 }

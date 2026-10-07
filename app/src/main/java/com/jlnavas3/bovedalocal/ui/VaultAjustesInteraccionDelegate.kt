@@ -190,6 +190,12 @@ interface VaultAjustesInteraccionDelegate {
         }
     }
 
+    fun ajustarDiagnosticoMaxEventos(max: Int) {
+        val valor = max.coerceIn(50, 5000)
+        repositorio.ajustes.actualizar { it.copy(diagnosticoMaxEventos = valor) }
+        com.jlnavas3.bovedalocal.util.Diagnostico.configurar(valor)
+    }
+
     fun recargarAjustes() {
         repositorio.ajustes.recargar()
     }

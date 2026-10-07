@@ -60,8 +60,17 @@ import com.jlnavas3.bovedalocal.util.Haptica
 fun PantallaGenerador(vm: VaultViewModel) {
     val contexto = LocalContext.current
     val haptica = remember { Haptica(contexto) }
+    val ajustes by vm.ajustes.collectAsStateWithLifecycle()
 
-    var opciones by remember { mutableStateOf(OpcionesGenerador()) }
+    var opciones by remember(ajustes.generadorExcluirAmbiguos, ajustes.generadorIdiomaFrases, ajustes.generadorCapitalizarFrases) {
+        mutableStateOf(
+            OpcionesGenerador(
+                excluirAmbiguos = ajustes.generadorExcluirAmbiguos,
+                idiomaFrase = ajustes.generadorIdiomaFrases,
+                capitalizarFrase = ajustes.generadorCapitalizarFrases
+            )
+        )
+    }
     var generada by remember { mutableStateOf("") }
     var generacion by remember { mutableIntStateOf(0) }
 
@@ -71,8 +80,6 @@ fun PantallaGenerador(vm: VaultViewModel) {
     }
 
     LaunchedEffect(opciones) { regenerar() }
-
-    val ajustes by vm.ajustes.collectAsStateWithLifecycle()
     val bits = PasswordGenerator.entropiaBits(opciones)
     val scrollState = rememberScrollState()
     val formaFab = RoundedCornerShape(CurvaturaEsquinas)

@@ -140,4 +140,11 @@ object Wordlist {
         .sorted()
 
     val TAMANO: Int get() = PALABRAS.size
+
+    fun obtenerPalabras(idioma: String = "es"): List<String> = when (idioma.lowercase()) {
+        "en", "inglés", "ingles", "english" -> WordlistEn.PALABRAS
+        else -> PALABRAS
+    }
+
+    fun obtenerTamano(idioma: String = "es"): Int = obtenerPalabras(idioma).size
 }

@@ -124,4 +124,20 @@ object PresetsCampos {
             generarCampos = ::criptoWallet
         )
     )
+
+    fun obtenerTodos(personalizadas: List<PlantillaCamposPersonalizada> = emptyList()): List<PresetRapido> {
+        if (personalizadas.isEmpty()) return todos
+        val personalizadasMapeadas = personalizadas.map { p ->
+            PresetRapido(
+                id = p.id,
+                titulo = p.titulo,
+                descripcion = p.descripcion.ifBlank { "${p.campos.size} campo(s) personalizado(s)" },
+                tipoEntradaSugerido = TipoEntrada.NOTA,
+                generarCampos = {
+                    p.campos.map { it.copy(id = UUID.randomUUID().toString()) }
+                }
+            )
+        }
+        return todos + personalizadasMapeadas
+    }
 }

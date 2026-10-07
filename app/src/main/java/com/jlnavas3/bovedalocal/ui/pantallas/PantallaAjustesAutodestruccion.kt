@@ -32,6 +32,7 @@ import com.jlnavas3.bovedalocal.ui.componentes.ajustes.BotonMenuOpcionesPantalla
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ProveedorResaltadoAjustes
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjustesFondo
 import com.jlnavas3.bovedalocal.ui.pantallas.autodestruccion.AlertaCriticaAutodestruccion
+import com.jlnavas3.bovedalocal.ui.pantallas.autodestruccion.GrupoAutodestruccionIntentosFallidos
 import com.jlnavas3.bovedalocal.ui.pantallas.autodestruccion.GrupoConfiguracionPinAutodestruccion
 import com.jlnavas3.bovedalocal.ui.pantallas.autodestruccion.TarjetaExplicativaAutodestruccion
 import com.jlnavas3.bovedalocal.util.Haptica
@@ -55,12 +56,14 @@ fun PantallaAjustesAutodestruccion(
 
     val reqExplicacion = remember { BringIntoViewRequester() }
     val reqPin = remember { BringIntoViewRequester() }
+    val reqIntentos = remember { BringIntoViewRequester() }
 
     LaunchedEffect(seccionDestino) {
         if (seccionDestino != null) {
             when {
                 seccionDestino == "01-SEG-DES-G01" || seccionDestino.contains("DES-G01") -> reqExplicacion.bringIntoView()
                 seccionDestino == "01-SEG-DES-G02" || seccionDestino.contains("DES-G02") -> reqPin.bringIntoView()
+                seccionDestino == "01-SEG-DES-G03" || seccionDestino.contains("DES-G03") || seccionDestino.contains("DES-INT") -> reqIntentos.bringIntoView()
                 seccionDestino.startsWith("01-SEG-DES") -> reqPin.bringIntoView()
             }
         }
@@ -83,7 +86,8 @@ fun PantallaAjustesAutodestruccion(
                     BotonMenuOpcionesPantalla(
                         grupos = listOf(
                             AccionSaltoGrupo("01-SEG-DES-G01", "Información"),
-                            AccionSaltoGrupo("01-SEG-DES-G02", "PIN de emergencia")
+                            AccionSaltoGrupo("01-SEG-DES-G02", "PIN de emergencia"),
+                            AccionSaltoGrupo("01-SEG-DES-G03", "Intentos fallidos")
                         )
                     )
                 }
@@ -157,6 +161,19 @@ fun PantallaAjustesAutodestruccion(
                         }
                     },
                     modifier = Modifier.bringIntoViewRequester(reqPin)
+                )
+
+                Spacer(Modifier.height(16.dp))
+
+                // Configuración de autodestrucción por intentos fallidos consecutivos
+                GrupoAutodestruccionIntentosFallidos(
+                    intentosMax = ajustes.autodestruccionIntentosFallidosMax,
+                    alCambiarIntentosMax = { nuevoLimite ->
+                        haptica.tic()
+                        vm.ajustarAutodestruccionIntentosFallidosMax(nuevoLimite)
+                    },
+                    mostrarIdsAjustes = ajustes.mostrarIdsAjustes,
+                    modifier = Modifier.bringIntoViewRequester(reqIntentos)
                 )
 
                 Spacer(Modifier.height(32.dp))

@@ -131,4 +131,13 @@ interface VaultAjustesSeguridadDelegate {
         repositorio.ajustes.actualizar { it.copy(historialClaves = emptyList()) }
         Diagnostico.apuntar("generador", "Historial de contraseñas vaciado manualmente")
     }
+
+    fun ajustarAutodestruccionIntentosFallidosMax(max: Int) {
+        repositorio.ajustes.actualizar { it.copy(autodestruccionIntentosFallidosMax = max) }
+        val desc = if (max <= 0) "desactivado" else "$max intentos fallidos"
+        Diagnostico.apuntar("seguridad", "Autodestrucción por intentos fallidos configurada en $desc")
+    }
+
+    fun restablecerAutodestruccionIntentosFallidosMax() =
+        ajustarAutodestruccionIntentosFallidosMax(AjustesDefaults.Seguridad.AUTODESTRUCCION_INTENTOS_FALLIDOS_MAX)
 }

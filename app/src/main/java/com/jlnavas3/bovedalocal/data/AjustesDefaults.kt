@@ -20,6 +20,8 @@ object AjustesDefaults {
         const val FRENO_INTENTOS_GRATIS = 5
         const val FRENO_SEGUNDOS_BASE = 5L
         const val FRENO_SEGUNDOS_MAX = 300L
+        const val AUTODESTRUCCION_INTENTOS_FALLIDOS_MAX = 0
+        val OPCIONES_AUTODESTRUCCION_INTENTOS = listOf(0, 5, 10, 15, 20)
     }
 
     // 1b. Seguridad Visual y Privacidad de Pantalla
@@ -310,4 +312,46 @@ object AjustesDefaults {
         const val FORMATO_COLISION_TITULOS = "EXPLICITO_PARENTESIS"
         const val RESPETAR_TITULOS_PERSONALIZADOS = true
     }
+
+    // 17. Generador de Contraseñas y Frases
+    object Generador {
+        const val LONGITUD = 20
+        const val LONGITUD_MIN = 4
+        const val LONGITUD_MAX = 128
+        const val MAYUSCULAS = true
+        const val MINUSCULAS = true
+        const val DIGITOS = true
+        const val SIMBOLOS = true
+        const val EXCLUIR_AMBIGUOS = true
+        const val SIMBOLOS_PERSONALIZADOS = "!@#$%&*()-_=+[]{}?/.,:;"
+        const val MODO_FRASE = false
+        const val PALABRAS = 5
+        const val PALABRAS_MIN = 3
+        const val PALABRAS_MAX = 12
+        const val SEPARADOR_FRASE = "-"
+        const val IDIOMA_FRASE = "es" // "es", "en"
+        const val CAPITALIZAR_FRASE = false
+        const val MODO_PATRON = false
+        const val PATRON = "XXXXX-XXXXX-XXXXX-XXXXX-XXXXX"
+    }
+
+    // 18. Importación CSV
+    object Csv {
+        const val DELIMITADOR_AUTO = true
+        const val DELIMITADOR_PREDETERMINADO = ','
+    }
+
+    // 19. Diagnóstico y Registro de Eventos
+    object DiagnosticoConfig {
+        const val MAX_EVENTOS_MEMORIA = 200
+        const val MAX_BYTES_ARCHIVO = 64 * 1024L
+        val OPCIONES_MAX_EVENTOS = listOf(100, 200, 500, 1000)
+    }
+
+    // 20. Plantillas de Campos Personalizadas
+    object PlantillasCampos {
+        val PREDETERMINADAS: List<PlantillaCamposPersonalizada> = emptyList()
+    }
 }
+
+

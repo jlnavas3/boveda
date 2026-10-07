@@ -4,6 +4,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.FormatListBulleted
 import androidx.compose.material.icons.automirrored.filled.Sort
 import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.filled.DynamicForm
 import androidx.compose.material.icons.filled.Layers
 import androidx.compose.ui.graphics.Color
 import com.jlnavas3.bovedalocal.data.AjustesApp
@@ -58,5 +59,16 @@ fun crearElementosListaAjustes(
         grupo = "Lista de cuentas",
         palabrasClave = "formatos campos plantillas autofill rellenar formulario",
         alPulsar = { vm.ir(Pantalla.FormatosCampos("03-LST-FMT")) }
+    ),
+    ElementoMenuAjustes(
+        titulo = "Plantillas de campos",
+        subtitulo = "Plantillas personalizadas y del sistema",
+        icono = Icons.Filled.DynamicForm,
+        colorIcono = Color(0xFF10B981),
+        idEtiqueta = "03-LST-PLT",
+        grupo = "Lista de cuentas",
+        palabrasClave = "plantillas campos presets personalizados formulas formularios modelos estructuras",
+        valorTexto = "${ajustes.plantillasCamposPersonalizadas.size} pers.",
+        alPulsar = { vm.ir(Pantalla.PlantillasCampos("03-LST-PLT")) }
     )
 )

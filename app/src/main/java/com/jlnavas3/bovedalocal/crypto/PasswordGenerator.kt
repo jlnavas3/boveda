@@ -1,21 +1,25 @@
 package com.jlnavas3.bovedalocal.crypto
 
+import com.jlnavas3.bovedalocal.data.AjustesDefaults
 import java.security.SecureRandom
 import kotlin.math.ln
 import kotlin.math.pow
 
 data class OpcionesGenerador(
-    val longitud: Int = 20,
-    val mayusculas: Boolean = true,
-    val minusculas: Boolean = true,
-    val digitos: Boolean = true,
-    val simbolos: Boolean = true,
+    val longitud: Int = AjustesDefaults.Generador.LONGITUD,
+    val mayusculas: Boolean = AjustesDefaults.Generador.MAYUSCULAS,
+    val minusculas: Boolean = AjustesDefaults.Generador.MINUSCULAS,
+    val digitos: Boolean = AjustesDefaults.Generador.DIGITOS,
+    val simbolos: Boolean = AjustesDefaults.Generador.SIMBOLOS,
     val simbolosPersonalizados: String = PasswordGenerator.SIMBOLOS,
-    val modoFrase: Boolean = false,
-    val palabras: Int = 5,
-    val separadorFrase: String = "-",
-    val modoPatron: Boolean = false,
-    val patron: String = "XXXXX-XXXXX-XXXXX-XXXXX-XXXXX"
+    val excluirAmbiguos: Boolean = AjustesDefaults.Generador.EXCLUIR_AMBIGUOS,
+    val modoFrase: Boolean = AjustesDefaults.Generador.MODO_FRASE,
+    val palabras: Int = AjustesDefaults.Generador.PALABRAS,
+    val separadorFrase: String = AjustesDefaults.Generador.SEPARADOR_FRASE,
+    val idiomaFrase: String = AjustesDefaults.Generador.IDIOMA_FRASE,
+    val capitalizarFrase: Boolean = AjustesDefaults.Generador.CAPITALIZAR_FRASE,
+    val modoPatron: Boolean = AjustesDefaults.Generador.MODO_PATRON,
+    val patron: String = AjustesDefaults.Generador.PATRON
 )
 
 object PasswordGenerator {
@@ -23,7 +27,7 @@ object PasswordGenerator {
     const val MAYUSCULAS = "ABCDEFGHJKLMNPQRSTUVWXYZ"
     const val MINUSCULAS = "abcdefghijkmnopqrstuvwxyz"
     const val DIGITOS = "23456789"
-    const val SIMBOLOS = "!@#\$%&*()-_=+[]{}?/.,:;"
+    const val SIMBOLOS = "!@#$%&*()-_=+[]{}?/.,:;"
 
     const val ALFANUM_MAYUS = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"
     const val LETRAS_MAYUS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
@@ -33,9 +37,12 @@ object PasswordGenerator {
     private val aleatorio = SecureRandom()
 
     fun conjunto(opciones: OpcionesGenerador): String = buildString {
-        if (opciones.mayusculas) append(MAYUSCULAS)
-        if (opciones.minusculas) append(MINUSCULAS)
-        if (opciones.digitos) append(DIGITOS)
+        val mayus = if (opciones.excluirAmbiguos) MAYUSCULAS else LETRAS_MAYUS
+        val minus = if (opciones.excluirAmbiguos) MINUSCULAS else LETRAS_MINUS
+        val dig = if (opciones.excluirAmbiguos) DIGITOS else DIGITOS_TODOS
+        if (opciones.mayusculas) append(mayus)
+        if (opciones.minusculas) append(minus)
+        if (opciones.digitos) append(dig)
         if (opciones.simbolos) {
             val s = if (opciones.simbolosPersonalizados.isNotEmpty()) opciones.simbolosPersonalizados else SIMBOLOS
             append(s)
@@ -44,15 +51,28 @@ object PasswordGenerator {
 
     fun generar(opciones: OpcionesGenerador): String = when {
         opciones.modoPatron -> generarPorPatron(opciones.patron)
-        opciones.modoFrase -> generarFrase(opciones.palabras.coerceIn(3, 12), opciones.separadorFrase)
+        opciones.modoFrase -> generarFrase(
+            numeroPalabras = opciones.palabras.coerceIn(AjustesDefaults.Generador.PALABRAS_MIN, AjustesDefaults.Generador.PALABRAS_MAX),
+            separador = opciones.separadorFrase,
+            idioma = opciones.idiomaFrase,
+            capitalizar = opciones.capitalizarFrase
+        )
         else -> generarAleatoria(opciones)
     }
 
-    fun generarFrase(numeroPalabras: Int, separador: String = "-"): String {
-        val lista = Wordlist.PALABRAS
-        val cant = numeroPalabras.coerceIn(3, 12)
+    fun generarFrase(
+        numeroPalabras: Int,
+        separador: String = AjustesDefaults.Generador.SEPARADOR_FRASE,
+        idioma: String = AjustesDefaults.Generador.IDIOMA_FRASE,
+        capitalizar: Boolean = AjustesDefaults.Generador.CAPITALIZAR_FRASE
+    ): String {
+        val lista = Wordlist.obtenerPalabras(idioma)
+        val cant = numeroPalabras.coerceIn(AjustesDefaults.Generador.PALABRAS_MIN, AjustesDefaults.Generador.PALABRAS_MAX)
         return (0 until cant)
-            .map { lista[aleatorio.nextInt(lista.size)] }
+            .map {
+                val palabra = lista[aleatorio.nextInt(lista.size)]
+                if (capitalizar) palabra.replaceFirstChar { c -> c.uppercaseChar() } else palabra
+            }
             .joinToString(separador)
     }
 
@@ -84,14 +104,17 @@ object PasswordGenerator {
     }
 
     fun generarAleatoria(opciones: OpcionesGenerador): String {
-        val longitud = opciones.longitud.coerceIn(8, 64)
+        val longitud = opciones.longitud.coerceIn(AjustesDefaults.Generador.LONGITUD_MIN, AjustesDefaults.Generador.LONGITUD_MAX)
         val simbolosEfectivos = if (opciones.simbolosPersonalizados.isNotEmpty()) opciones.simbolosPersonalizados else SIMBOLOS
+        val mayus = if (opciones.excluirAmbiguos) MAYUSCULAS else LETRAS_MAYUS
+        val minus = if (opciones.excluirAmbiguos) MINUSCULAS else LETRAS_MINUS
+        val dig = if (opciones.excluirAmbiguos) DIGITOS else DIGITOS_TODOS
         val grupos = buildList {
-            if (opciones.mayusculas) add(MAYUSCULAS)
-            if (opciones.minusculas) add(MINUSCULAS)
-            if (opciones.digitos) add(DIGITOS)
+            if (opciones.mayusculas) add(mayus)
+            if (opciones.minusculas) add(minus)
+            if (opciones.digitos) add(dig)
             if (opciones.simbolos && simbolosEfectivos.isNotEmpty()) add(simbolosEfectivos)
-        }.ifEmpty { listOf(MINUSCULAS) }
+        }.ifEmpty { listOf(minus) }
         val todos = grupos.joinToString("")
         val salida = CharArray(longitud)
         for (i in 0 until longitud) salida[i] = todos[aleatorio.nextInt(todos.length)]
@@ -110,10 +133,13 @@ object PasswordGenerator {
 
     fun entropiaBits(opciones: OpcionesGenerador): Double = when {
         opciones.modoPatron -> entropiaPatron(opciones.patron)
-        opciones.modoFrase -> log2(Wordlist.TAMANO.toDouble()) * opciones.palabras.coerceIn(3, 12)
+        opciones.modoFrase -> {
+            val tamano = Wordlist.obtenerTamano(opciones.idiomaFrase)
+            log2(tamano.toDouble()) * opciones.palabras.coerceIn(AjustesDefaults.Generador.PALABRAS_MIN, AjustesDefaults.Generador.PALABRAS_MAX)
+        }
         else -> {
             val tamano = conjunto(opciones).length.coerceAtLeast(1)
-            log2(tamano.toDouble()) * opciones.longitud.coerceIn(8, 64)
+            log2(tamano.toDouble()) * opciones.longitud.coerceIn(AjustesDefaults.Generador.LONGITUD_MIN, AjustesDefaults.Generador.LONGITUD_MAX)
         }
     }
 

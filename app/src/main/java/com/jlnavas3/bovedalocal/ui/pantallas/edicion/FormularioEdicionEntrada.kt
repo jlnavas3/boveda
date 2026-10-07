@@ -70,6 +70,8 @@ fun FormularioEdicionEntrada(
     alAlternarIgnoradaEnSalud: (Boolean) -> Unit,
     ajustes: AjustesApp,
     haptica: Haptica,
+    alGuardarPlantillaCampos: ((com.jlnavas3.bovedalocal.data.PlantillaCamposPersonalizada) -> Unit)? = null,
+    alEliminarPlantillaCampos: ((String) -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -153,7 +155,9 @@ fun FormularioEdicionEntrada(
                     alCambiarCampos = alCambiarCamposPersonalizados,
                     etiquetasBase = etiquetasBase,
                     ajustes = ajustes,
-                    haptica = haptica
+                    haptica = haptica,
+                    alGuardarPlantilla = alGuardarPlantillaCampos,
+                    alEliminarPlantilla = alEliminarPlantillaCampos
                 )
             }
         }
