@@ -21,6 +21,7 @@ app/build/
 *.apk
 *.aab
 *.aar
+release-v*/
 captures/
 
 # --- Editores ---
