@@ -87,9 +87,11 @@ class AjustesTest {
         val segundos = AlmacenAjustes.OPCIONES_AUTO_BLOQUEO.map { it.first }
         assertTrue(segundos.isNotEmpty())
         assertTrue("El bloqueo mínimo no debe ser inferior a 5 segundos", segundos.minOrNull()!! >= 5)
-        assertTrue("El bloqueo máximo no debe exceder 300 segundos (5 min)", segundos.maxOrNull()!! <= 300)
+        assertTrue("El bloqueo máximo no debe exceder 1200 segundos (20 min)", segundos.maxOrNull()!! <= 1200)
         assertTrue(segundos.contains(30))
         assertTrue(segundos.contains(60))
+        assertTrue(segundos.contains(600))
+        assertTrue(segundos.contains(1200))
     }
 
     @Test

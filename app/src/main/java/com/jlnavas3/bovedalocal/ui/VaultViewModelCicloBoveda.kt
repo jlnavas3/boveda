@@ -43,6 +43,8 @@ interface VaultCicloBovedaDelegate {
         maxCastigoSegundos = repositorio.ajustes.actual.frenoSegundosMax
     )
 
+    fun intentosFallidosActuales(): Int = FrenoIntentos.obtenerIntentosFallidos(contextoApp)
+
     suspend fun apuntarFallo(): Int = withContext(Dispatchers.IO) {
         val ajustes = repositorio.ajustes.actual
         FrenoIntentos.apuntarFallo(

@@ -46,10 +46,7 @@ object FrenoIntentos {
         val intentos = prefs.getInt(CLAVE_INTENTOS, 0) + 1
         val editor = prefs.edit().putInt(CLAVE_INTENTOS, intentos)
         if (gratis > 0 && intentos >= gratis) {
-            val castigo = minOf(
-                maxCastigoSegundos,
-                castigoBaseSegundos * (1L shl minOf(6, intentos - gratis))
-            )
+            val castigo = maxCastigoSegundos
             editor.putLong(CLAVE_HASTA, System.currentTimeMillis() + castigo * 1000L)
         }
         // commit() y no apply(): si matan la app justo después de fallar, el intento

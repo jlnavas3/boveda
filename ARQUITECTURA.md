@@ -50,7 +50,7 @@ flowchart TD
         Defaults["AjustesDefaults.kt<br/>(Fuente Única de la Verdad - Cero Hardcoding)"]
         Repo["VaultRepository<br/>(Orquestador I/O y Cifrado)"]
         Almacen["AlmacenAjustes.kt<br/>(StateFlow<AjustesApp>)"]
-        Models["Modelos de Dominio Inmutables<br/>(Entrada, AjustesApp, PlantillaCampos)"]
+        Models["Modelos de Dominio Inmutables<br/>(Entrada, AjustesApp, PlantillaCampos, ConfiguracionBovedaExportable)"]
     end
 
     subgraph Crypto_Engine ["Motor Criptográfico y Aislamiento de Memoria"]
@@ -333,9 +333,42 @@ Offset (Bytes)   Longitud (Bytes)   Campo               Descripción
 37..48           12                 NONCE               Vector de inicialización único para AES-GCM
 ----------------------------------------------------------------------------------------
 Total Cabecera:  49 Bytes
-49..N-16         Variable           CIPHERTEXT          Datos JSON serializados y cifrados
+49..N-16         Variable           CIPHERTEXT          Datos JSON serializados y cifrados (ContenidoBoveda)
 N-16..N          16                 TAG_GCM             Etiqueta de autenticación de 128 bits
 ```
+
+### Estructura del Carga Útil Cifrada (`ContenidoBoveda`)
+El bloque `CIPHERTEXT` desencriptado produce la estructura canónica en formato JSON (`ContenidoBoveda.kt`):
+
+```json
+{
+  "version": 1,
+  "entradas": [ ... ],
+  "papelera": [ ... ],
+  "colecciones": [ ... ],
+  "identidades": [ ... ],
+  "configuracion": {
+    "prefijosSubdominios": [ "api", "auth", "vpn", ... ],
+    "tldsDescartables": [ "local", "internal", ... ],
+    "marcasPersonalizadas": { "proxmox.home": "Proxmox VE", ... },
+    "puertosServiciosLocales": { "8006": "Proxmox", "8123": "Home Assistant", ... },
+    "octetosRouter": [ 1, 254 ],
+    "plantillasCamposPersonalizadas": [ ... ],
+    "autoBloqueoSegundos": 600,
+    "frenoIntentosGratis": 3,
+    "frenoSegundosMax": 300,
+    "autodestruccionIntentosFallidosMax": 10,
+    "autofillSugerenciasTeclado": true,
+    ...
+  }
+}
+```
+
+#### Modelo de Sincronización Bidireccional de Configuración
+1. **Inclusión en Exportación y Persistencia:** Al guardar o exportar la bóveda (`persistir()`, `exportar()`), el repositorio extrae la configuración funcional activa mediante `ajustes.actual.aConfiguracionExportable()`.
+2. **Exclusión Estricta de Temas:** Las preferencias de personalización visual (paletas de acento, colores de tarjetas/títulos, familias tipográficas, formas de bordes y animaciones relojeras) quedan expresamente fuera de `ConfiguracionBovedaExportable`. Esto previene que una importación sobreescriba la estética elegida en el dispositivo cliente.
+3. **Restauración Automática al Abrir:** Al desbloquear con contraseña o huella (`desbloquear()`), o al importar una copia (`importar()`), si el payload contiene `configuracion`, se aplica inmediatamente sobre `AlmacenAjustes` restaurando todas las reglas sin fisuras.
+4. **Sincronización Reactiva en Caliente:** Cualquier mutación en `AlmacenAjustes` dispara el listener `alActualizar`. Si la bóveda se encuentra en estado `Desbloqueada`, las nuevas reglas se persisten atómicamente en disco.
 
 ---
 
@@ -350,10 +383,15 @@ stateDiagram-v2
     Desbloqueando --> Desbloqueada: Autenticación Exitosa (Tag GCM Válido)
     Desbloqueando --> Coaccion: Ingreso de PIN de Señuelo
     Desbloqueando --> AutodestruccionPIN: Ingreso de PIN de Autodestrucción
-    Desbloqueando --> Penalizada: Error de Clave (Tag GCM Inválido)
+    Desbloqueando --> AvisoUltimoIntento: Error de Clave (Resta 1 Intento para Wipe)
+    Desbloqueando --> Penalizada: Error de Clave (Intentos >= Gratis)
     
+    AvisoUltimoIntento --> AutodestruccionIntentos: Próximo Intento Fallido
+    AvisoUltimoIntento --> Desbloqueada: Contraseña Maestra Correcta
+    
+    Penalizada --> Penalizada: Intento Fallido Adicional (Cronómetro MM:SS en Vivo)
     Penalizada --> AutodestruccionIntentos: Intentos Fallidos >= Límite Configurado
-    Penalizada --> Cerrada: Expiración de Tiempo Penalizado (Backoff)
+    Penalizada --> Cerrada: Expiración de Tiempo Penalizado (Tope Estricto)
 
     Desbloqueada --> Bloqueada: Inactividad / Cambio de App (FLAG_SECURE)
     Bloqueada --> Desbloqueando: Desbloqueo Rápido Biométrico

@@ -23,22 +23,22 @@ fun aplicarPersonalizacionColores(ajustes: AjustesApp) {
         colorAcentoFuerteManual = null
     }
 
-    ColorIconosInternos = if (ajustes.colorIconosInternos.isNotBlank()) {
-        parsearColorO(ajustes.colorIconosInternos, if (esOscuroActivo) Color(0xFFD6DAE2) else Color(0xFF1E232E))
+    if (ajustes.colorIconosInternos.isNotBlank()) {
+        ColorIconosInternos = parsearColorO(ajustes.colorIconosInternos, if (esOscuroActivo) Color(0xFFD6DAE2) else Color(0xFF1E232E))
     } else {
-        if (esOscuroActivo) (paletaSobriaGuardadaOscura?.textoSecundario ?: Color(0xFFD6DAE2)) else (paletaSobriaGuardadaClara?.textoSecundario ?: Color(0xFF1E232E))
+        colorIconosBase = null
     }
 
-    ColorTitulos = if (ajustes.colorTitulos.isNotBlank()) {
-        parsearColorO(ajustes.colorTitulos, if (esOscuroActivo) Color(0xFFF3F4F8) else Color(0xFF11141A))
+    if (ajustes.colorTitulos.isNotBlank()) {
+        ColorTitulos = parsearColorO(ajustes.colorTitulos, if (esOscuroActivo) Color(0xFFF3F4F8) else Color(0xFF11141A))
     } else {
-        if (esOscuroActivo) (paletaSobriaGuardadaOscura?.textoPrincipal ?: Color(0xFFF3F4F8)) else (paletaSobriaGuardadaClara?.textoPrincipal ?: Color(0xFF11141A))
+        colorTitulosBase = null
     }
 
-    ColorTarjetas = if (ajustes.colorTarjetas.isNotBlank()) {
-        parsearColorO(ajustes.colorTarjetas, if (esOscuroActivo) paletaOscura.superficieAlta else paletaClara.superficie)
+    if (ajustes.colorTarjetas.isNotBlank()) {
+        ColorTarjetas = parsearColorO(ajustes.colorTarjetas, if (esOscuroActivo) paletaOscura.superficieAlta else paletaClara.superficie)
     } else {
-        if (esOscuroActivo) (paletaSobriaGuardadaOscura?.tarjeta ?: paletaOscura.superficieAlta) else (paletaSobriaGuardadaClara?.tarjeta ?: paletaClara.superficie)
+        colorTarjetasBase = null
     }
 
     // Colores semánticos de secciones funcionales

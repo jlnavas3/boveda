@@ -16,9 +16,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import kotlinx.coroutines.delay
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -44,17 +46,39 @@ fun PantallaDesbloqueo(vm: VaultViewModel, actividad: FragmentActivity) {
     var abriendo by remember { mutableStateOf(false) }
     var mensajeBiometria by remember { mutableStateOf<String?>(null) }
     var fallos by remember { mutableIntStateOf(0) }
+    var segundosBloqueo by remember { mutableLongStateOf(vm.esperaPorIntentos()) }
+    var intentosFallidos by remember { mutableIntStateOf(vm.intentosFallidosActuales()) }
     val sacudida = remember { Animatable(0f) }
     val ajustes by vm.ajustes.collectAsStateWithLifecycle()
     val flujo = remember { FlujoBiometria(actividad, vm.repositorio) }
 
+    val maxAutodestruccion = ajustes.autodestruccionIntentosFallidosMax
+    val esUltimoIntento = maxAutodestruccion > 0 && intentosFallidos == (maxAutodestruccion - 1)
+
     var biometriaUsable by remember { mutableStateOf(false) }
     LifecycleResumeEffect(ajustes.biometriaActiva, ajustes.biometriaModo) {
         biometriaUsable = flujo.disponible()
+        segundosBloqueo = vm.esperaPorIntentos()
+        intentosFallidos = vm.intentosFallidosActuales()
         onPauseOrDispose { }
     }
 
+    LaunchedEffect(segundosBloqueo) {
+        if (segundosBloqueo > 0) {
+            delay(1000)
+            segundosBloqueo = vm.esperaPorIntentos()
+            intentosFallidos = vm.intentosFallidosActuales()
+        }
+    }
+
+    LaunchedEffect(esUltimoIntento) {
+        if (esUltimoIntento && segundosBloqueo <= 0) {
+            vm.avisar("⚠️ ADVERTENCIA: El próximo intento fallido destruirá permanentemente los datos.")
+        }
+    }
+
     fun lanzarBiometria() {
+        if (segundosBloqueo > 0) return
         mensajeBiometria = null
         val compatible = flujo.modoActivo == BiometricKeyStore.Modo.COMPATIBLE
         flujo.desbloquear(
@@ -76,14 +100,14 @@ fun PantallaDesbloqueo(vm: VaultViewModel, actividad: FragmentActivity) {
 
     var biometriaLanzada by remember { mutableStateOf(false) }
     LaunchedEffect(biometriaUsable) {
-        if (biometriaUsable && !biometriaLanzada) {
+        if (biometriaUsable && !biometriaLanzada && segundosBloqueo <= 0) {
             biometriaLanzada = true
             lanzarBiometria()
         }
     }
 
     fun ejecutarDesbloqueo() {
-        if (contrasena.isEmpty() || abriendo) return
+        if (contrasena.isEmpty() || abriendo || segundosBloqueo > 0) return
         vm.desbloquear(contrasena) { correcto ->
             if (correcto) {
                 abriendo = true
@@ -92,6 +116,8 @@ fun PantallaDesbloqueo(vm: VaultViewModel, actividad: FragmentActivity) {
                 haptica.error()
                 fallos++
                 contrasena = ""
+                segundosBloqueo = vm.esperaPorIntentos()
+                intentosFallidos = vm.intentosFallidosActuales()
             }
         }
     }
@@ -138,7 +164,9 @@ fun PantallaDesbloqueo(vm: VaultViewModel, actividad: FragmentActivity) {
                     biometriaUsable = biometriaUsable,
                     etiquetaBotonBiometria = flujo.etiquetaBoton(),
                     alDesbloquear = { ejecutarDesbloqueo() },
-                    alLanzarBiometria = { lanzarBiometria() }
+                    alLanzarBiometria = { lanzarBiometria() },
+                    segundosBloqueo = segundosBloqueo,
+                    esUltimoIntentoAntesAutodestruccion = esUltimoIntento
                 )
             }
         }

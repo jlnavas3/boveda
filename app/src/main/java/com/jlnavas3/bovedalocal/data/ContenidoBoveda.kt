@@ -11,7 +11,8 @@ data class ContenidoBoveda(
     val papelera: List<Entrada> = emptyList(),
     @SerialName("colecciones")
     val categorias: List<Categoria> = emptyList(),
-    val identidades: List<Identidad> = emptyList()
+    val identidades: List<Identidad> = emptyList(),
+    val configuracion: ConfiguracionBovedaExportable? = null
 ) {
     /** Alias de compatibilidad hacia atrás */
     val colecciones: List<Categoria> get() = categorias

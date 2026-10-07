@@ -207,7 +207,7 @@ fun RaizBoveda(vm: VaultViewModel, actividad: FragmentActivity) {
 
     Scaffold(
         containerColor = Obsidiana,
-        snackbarHost = { SnackbarHost(anfitrion) }
+        snackbarHost = { SnackbarHost(anfitrion, modifier = Modifier.imePadding()) }
     ) { relleno ->
         Box(
             modifier = Modifier

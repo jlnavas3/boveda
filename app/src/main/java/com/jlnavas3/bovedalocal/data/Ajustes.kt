@@ -387,6 +387,7 @@ class AlmacenAjustes(contexto: Context) {
 
     private val _ajustes = MutableStateFlow(leer())
     val ajustes: StateFlow<AjustesApp> = _ajustes
+    var alActualizar: (() -> Unit)? = null
 
     private val prefListener = SharedPreferences.OnSharedPreferenceChangeListener { _, _ ->
         val nuevo = leer()
@@ -869,6 +870,7 @@ class AlmacenAjustes(contexto: Context) {
         _ajustes.value = nuevo
         com.jlnavas3.bovedalocal.util.Haptica.sincronizar(nuevo)
         com.jlnavas3.bovedalocal.util.Diagnostico.configurar(nuevo.diagnosticoMaxEventos)
+        alActualizar?.invoke()
     }
 
     companion object {
@@ -887,7 +889,9 @@ class AlmacenAjustes(contexto: Context) {
             50 to "50 segundos",
             60 to "1 minuto",
             120 to "2 minutos",
-            300 to "5 minutos"
+            300 to "5 minutos",
+            600 to "10 minutos",
+            1200 to "20 minutos"
         )
         val OPCIONES_FRENO_INTENTOS = listOf(
             3 to "3 intentos (Estricto)",

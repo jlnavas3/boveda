@@ -69,9 +69,9 @@ internal var colorAcentoManual by mutableStateOf<Color?>(null)
 internal var colorAcentoFuerteManual by mutableStateOf<Color?>(null)
 internal var colorDinamicoMonet by mutableStateOf<Color?>(null)
 internal var colorDinamicoFuerteMonet by mutableStateOf<Color?>(null)
-private var colorIconosBase by mutableStateOf<Color?>(null)
-private var colorTitulosBase by mutableStateOf<Color?>(null)
-private var colorTarjetasBase by mutableStateOf<Color?>(null)
+internal var colorIconosBase by mutableStateOf<Color?>(null)
+internal var colorTitulosBase by mutableStateOf<Color?>(null)
+internal var colorTarjetasBase by mutableStateOf<Color?>(null)
 
 var ColorAcento: Color
     get() {

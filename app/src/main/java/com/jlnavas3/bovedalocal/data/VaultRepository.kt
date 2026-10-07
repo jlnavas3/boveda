@@ -47,6 +47,18 @@ class VaultRepository private constructor(contexto: Context) {
     @Volatile private var params: KdfParams = KdfParams.PREDETERMINADOS
     @Volatile private var contenido: ContenidoBoveda = ContenidoBoveda()
 
+    @Volatile private var sincronizandoDesdeBoveda = false
+
+    init {
+        ajustes.alActualizar = {
+            synchronized(candado) {
+                if (!sincronizandoDesdeBoveda && claveMaestra != null) {
+                    persistir()
+                }
+            }
+        }
+    }
+
     private val _estado = MutableStateFlow<EstadoBoveda>(
         if (archivoBoveda.exists()) EstadoBoveda.Bloqueada else EstadoBoveda.SinCrear
     )
@@ -81,7 +93,10 @@ class VaultRepository private constructor(contexto: Context) {
             salt = nuevoSalt
             params = kdfParams
             claveMaestra = clave
-            contenido = ContenidoBoveda(identidades = identidadesIniciales)
+            contenido = ContenidoBoveda(
+                identidades = identidadesIniciales,
+                configuracion = ajustes.actual.aConfiguracionExportable()
+            )
             persistir()
             publicar()
         }
@@ -119,6 +134,14 @@ class VaultRepository private constructor(contexto: Context) {
             params = cabecera.params
             claveMaestra = clave
             contenido = leido
+            leido.configuracion?.let { config ->
+                sincronizandoDesdeBoveda = true
+                try {
+                    ajustes.actualizar { prev -> prev.aplicarConfiguracionExportable(config) }
+                } finally {
+                    sincronizandoDesdeBoveda = false
+                }
+            }
             sanearDuplicadosSiExisten()
             purgarPapeleraVencida()
             publicar()
@@ -139,6 +162,14 @@ class VaultRepository private constructor(contexto: Context) {
             params = cabecera.params
             claveMaestra = clave.copyOf()
             contenido = leido
+            leido.configuracion?.let { config ->
+                sincronizandoDesdeBoveda = true
+                try {
+                    ajustes.actualizar { prev -> prev.aplicarConfiguracionExportable(config) }
+                } finally {
+                    sincronizandoDesdeBoveda = false
+                }
+            }
             sanearDuplicadosSiExisten()
             purgarPapeleraVencida()
             publicar()
@@ -646,10 +677,19 @@ class VaultRepository private constructor(contexto: Context) {
             return
         }
         val clave = claveMaestra ?: throw IllegalStateException("La bóveda está bloqueada")
+        contenido = contenido.copy(configuracion = ajustes.actual.aConfiguracionExportable())
         val plano = json.encodeToString(ContenidoBoveda.serializer(), contenido).toByteArray(Charsets.UTF_8)
         val archivo = VaultCrypto.cifrar(plano, clave, salt, params)
         VaultCrypto.escribirAtomico(archivoBoveda, archivo)
         Zeroizar.borrar(plano)
+    }
+
+    fun persistirConfiguracionActual() {
+        synchronized(candado) {
+            if (claveMaestra != null) {
+                persistir()
+            }
+        }
     }
 
     /**
@@ -680,7 +720,7 @@ class VaultRepository private constructor(contexto: Context) {
         // La foto del contenido se coge con el candado; el Argon2 y el cifrado, fuera.
         val instantanea = synchronized(candado) {
             if (claveMaestra == null) throw IllegalStateException("La bóveda está bloqueada")
-            contenido
+            contenido.copy(configuracion = ajustes.actual.aConfiguracionExportable())
         }
         val saltExport = VaultCrypto.nuevoSalt()
         val clave = VaultCrypto.derivarClave(passwordExportacion, saltExport, KdfParams.PREDETERMINADOS)
@@ -699,7 +739,8 @@ class VaultRepository private constructor(contexto: Context) {
                 version = contenido.version,
                 entradas = entradasFiltradas,
                 categorias = contenido.categorias,
-                identidades = contenido.identidades
+                identidades = contenido.identidades,
+                configuracion = ajustes.actual.aConfiguracionExportable()
             )
         }
         val saltExport = VaultCrypto.nuevoSalt()
@@ -754,11 +795,20 @@ class VaultRepository private constructor(contexto: Context) {
                     porIdIden[iden.id] = iden
                 }
             }
+            importado.configuracion?.let { config ->
+                sincronizandoDesdeBoveda = true
+                try {
+                    ajustes.actualizar { prev -> prev.aplicarConfiguracionExportable(config) }
+                } finally {
+                    sincronizandoDesdeBoveda = false
+                }
+            }
             contenido = contenido.copy(
                 entradas = porId.values.sortedBy { it.titulo.lowercase() },
                 papelera = contenido.papelera.filterNot { idsImportados.contains(it.id) },
                 categorias = porIdCat.values.toList(),
-                identidades = porIdIden.values.toList()
+                identidades = porIdIden.values.toList(),
+                configuracion = ajustes.actual.aConfiguracionExportable()
             )
             persistir()
             publicar()

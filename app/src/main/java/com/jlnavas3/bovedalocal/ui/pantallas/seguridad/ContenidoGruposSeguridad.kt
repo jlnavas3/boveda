@@ -14,6 +14,7 @@ import com.jlnavas3.bovedalocal.crypto.BiometricKeyStore
 import com.jlnavas3.bovedalocal.data.AjustesApp
 import com.jlnavas3.bovedalocal.ui.VaultViewModel
 import com.jlnavas3.bovedalocal.ui.componentes.DescripcionPantalla
+import com.jlnavas3.bovedalocal.ui.pantallas.autodestruccion.GrupoAutodestruccionIntentosFallidos
 import com.jlnavas3.bovedalocal.util.Biometria
 import com.jlnavas3.bovedalocal.util.Haptica
 
@@ -106,6 +107,18 @@ fun ContenidoGruposSeguridad(
                 vm.restablecerFrenoIntentos()
                 vm.avisar("Protección contra fuerza bruta restablecida")
             }
+        )
+
+        Spacer(Modifier.height(18.dp))
+
+        // Grupo: Autodestrucción por intentos fallidos
+        GrupoAutodestruccionIntentosFallidos(
+            intentosMax = ajustes.autodestruccionIntentosFallidosMax,
+            alCambiarIntentosMax = { valor ->
+                haptica.tic()
+                vm.ajustarAutodestruccionIntentosFallidosMax(valor)
+            },
+            mostrarIdsAjustes = ajustes.mostrarIdsAjustes
         )
 
         Spacer(Modifier.height(18.dp))

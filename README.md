@@ -3,7 +3,8 @@
 [![Kotlin](https://img.shields.io/badge/Kotlin-2.x-7F52FF?logo=kotlin&logoColor=white)](https://kotlinlang.org/)
 [![Jetpack Compose](https://img.shields.io/badge/Jetpack%20Compose-Material%203-4285F4?logo=jetpackcompose&logoColor=white)](https://developer.android.com/jetpack/compose)
 [![Platform](https://img.shields.io/badge/Android-Min%2029%20%7C%20Target%2035%20%7C%20Compile%2036-3DDC84?logo=android&logoColor=white)](https://developer.android.com/)
-[![Tests](https://img.shields.io/badge/Tests-346%2F346%20Passing-brightgreen?logo=gradle)](https://gradle.org/)
+[![Tests](https://img.shields.io/badge/Tests-349%2F349%20Passing-brightgreen?logo=gradle)](https://gradle.org/)
+[![Version](https://img.shields.io/badge/Version-v1.9.49-blue?logo=android)](https://github.com/)
 [![Architecture](https://img.shields.io/badge/Architecture-Clean%20%7C%20Micro--Design%20%7C%20MVI-blueviolet)](https://github.com/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
@@ -117,7 +118,12 @@ Todos los valores predeterminados de la aplicación residen de forma canónica e
 4. **Importación CSV Universal:** Motor con autodetección de delimitadores (coma `,`, punto y coma `;` y tabulador `\t`), compatible con Bitwarden, KeePass, Google Passwords y Excel en español.
 5. **Diagnóstico y Capacidad del Registro:** Capacidad en memoria parametrizable (`diagnosticoMaxEventos`: 100, 200, 500, 1000) con sincronización reactiva inmediata.
 6. **Plantillas de Campos Personalizadas:** Creación y guardado de esquemas recurrentes de campos (`PlantillaCamposPersonalizada.kt`) integradas en el selector rápido de presets.
-7. **Autodestrucción por Intentos Fallidos:** Wipe automático total de la base de datos tras $N$ intentos consecutivos fallidos de contraseña maestra (0 = desactivado, 5, 10, 15, 20).
+7. **Autodestrucción por Intentos Fallidos y Aviso de Último Intento:** Wipe automático total de la base de datos tras $N$ intentos consecutivos fallidos de contraseña maestra (0 = desactivado, 5, 10, 15, 20). Cuando resta un único intento antes de la purga irreversible, la pantalla de desbloqueo exhibe un banner de advertencia crítico en rojo y un toast persistente de alta visibilidad alertando al usuario.
+8. **Freno Estricto contra Fuerza Bruta con Ticker en Vivo:** Al superar los intentos permitidos, el sistema impone inmediatamente el tiempo de espera configurado (hasta 5 minutos) sin escalado progresivo tardío. La penalización se almacena atómicamente en disco persistiendo aunque la aplicación sea cerrada o forzada a detenerse, mostrando un cronómetro en tiempo real MM:SS.
+9. **Copia de Seguridad y Exportación `.bvda` Integral:** Todas las reglas de URLs, puertos, servicios homelab, plantillas de campos personalizadas, autocompletado y seguridad funcional se empaquetan cifradas dentro del archivo `.bvda` (`ConfiguracionBovedaExportable`), quedando totalmente excluidas las configuraciones visuales de temas para preservar las preferencias estéticas del dispositivo importador.
+10. **Ventana de Auto-Bloqueo Ampliada:** Opciones de inactividad extendidas incorporando **10 minutos (600s)** y **20 minutos (1200s)** para sesiones de trabajo prolongadas.
+11. **Elevación de Notificaciones sobre el Teclado (`imePadding`):** Todos los mensajes informativos, advertencias y Snackbars se posicionan automáticamente por encima del teclado virtual cuando este se encuentra desplegado.
+12. **Reactividad Dinámica al Tema del Sistema:** Los títulos, tarjetas e íconos responden en tiempo real al conmutar entre modo oscuro y claro de Android sin necesidad de reconfiguración manual en la app.
 
 ---
 
