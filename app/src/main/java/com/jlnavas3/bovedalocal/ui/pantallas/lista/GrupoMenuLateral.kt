@@ -70,7 +70,7 @@ fun GrupoMenuLateral(
             modifier = Modifier
                 .fillMaxWidth()
                 .then(
-                    if (GrosorBorde > 0.dp && EstiloBorde != "ninguno") {
+                    if (GrosorBorde > 0.dp && EstiloBorde != "ninguno" && ajustes?.menuLateralSinBordes != true) {
                         Modifier.border(
                             width = GrosorBorde,
                             color = ColorBordeActual,

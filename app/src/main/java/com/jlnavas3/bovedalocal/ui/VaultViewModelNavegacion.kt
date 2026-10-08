@@ -45,7 +45,14 @@ interface VaultNavegacionDelegate {
                     }
                 }
                 pantallaInterna.value is Pantalla.Lista -> Pantalla.Lista
-                else -> pantallaInterna.value
+                else -> {
+                    val padre = padreDe(pantalla)
+                    if (padre != null && padre::class == pantallaInterna.value::class) {
+                        padre
+                    } else {
+                        pantallaInterna.value
+                    }
+                }
             }
             pilaNavegacion.addLast(origen)
             if (pilaNavegacion.size > 20) pilaNavegacion.removeFirst()
@@ -68,14 +75,22 @@ interface VaultNavegacionDelegate {
     fun irPorId(id: String) {
         val limpio = id.trim()
         val destino = when {
+            limpio.startsWith("01-SEG-BIO-BLO") -> Pantalla.BloqueoBiometria(limpio)
+            limpio.startsWith("01-SEG-BIO-VIS") -> Pantalla.SeguridadVisual(limpio)
+            limpio.startsWith("01-SEG-BIO-CLP") -> Pantalla.Portapapeles(limpio)
+            limpio.startsWith("01-SEG-BIO-AUD") -> Pantalla.AuditoriaSeguridad(limpio)
             limpio.startsWith("01-SEG-BIO") || limpio == "01" || limpio.startsWith("01.1") || limpio.startsWith("01.0") -> Pantalla.Seguridad(limpio)
             limpio.startsWith("01-SEG-SEN") || limpio.startsWith("01.3") -> Pantalla.AjustesSenuelo(limpio)
+            limpio.startsWith("01-SEG-DES-INT") -> Pantalla.AutodestruccionIntentos(limpio)
             limpio.startsWith("01-SEG-DES") || limpio.startsWith("01.4") -> Pantalla.AjustesAutodestruccion(limpio)
             limpio.startsWith("01-SEG-CRY") || limpio.startsWith("01.5") -> Pantalla.Argon2id(limpio)
 
-            limpio.startsWith("02-APA-THM-ANI") || limpio.startsWith("02-APA-THM-CAL") || limpio.startsWith("03.2.G2") -> Pantalla.CalibracionAnimacion(limpio)
+            limpio.startsWith("02-APA-THM-PAL") -> Pantalla.TemaPaletas(limpio)
+            limpio.startsWith("02-APA-THM-ANI") -> Pantalla.AnimacionDesbloqueo(limpio)
+            limpio.startsWith("02-APA-THM-CAL") || limpio.startsWith("03.2.G2") -> Pantalla.CalibracionAnimacion(limpio)
             limpio.startsWith("02-APA-THM-DAT") || limpio.startsWith("02-APA-THM-G04") || limpio.startsWith("03.2.1") -> Pantalla.ColoresDatos(limpio)
             limpio.startsWith("02-APA-THM") || limpio.startsWith("02.1") || limpio.startsWith("09.2") -> Pantalla.Tema(limpio)
+            limpio.startsWith("02-APA-MNL") -> Pantalla.PersonalizarMenuLateral(limpio)
 
             limpio.startsWith("02-APA-GEO-PRE") -> Pantalla.FormasPresets(limpio)
             limpio.startsWith("02-APA-GEO-CRV") -> Pantalla.FormasCurvatura(limpio)
@@ -90,6 +105,9 @@ interface VaultNavegacionDelegate {
             limpio.startsWith("02-APA-TYP-ESP") -> Pantalla.TipografiaEspaciado(limpio)
             limpio.startsWith("02-APA-TYP") || limpio.startsWith("02.3") -> Pantalla.Tipografia(limpio)
 
+            limpio.startsWith("03-LST-DES-EST") -> Pantalla.OrganizacionEstructura(limpio)
+            limpio.startsWith("03-LST-DES-JER") -> Pantalla.OrganizacionJerarquia(limpio)
+            limpio.startsWith("03-LST-DES-IND") -> Pantalla.OrganizacionIndicadores(limpio)
             limpio.startsWith("03-LST-DES") || limpio.startsWith("03.1") || limpio.startsWith("09.6") -> Pantalla.OrganizacionLista(limpio)
             limpio.startsWith("03-LST-AZX-OLA") -> Pantalla.IndiceOla(limpio)
             limpio.startsWith("03-LST-AZX-CRE") -> Pantalla.IndiceCresta(limpio)
@@ -100,24 +118,31 @@ interface VaultNavegacionDelegate {
             limpio.startsWith("03-LST-PLT") -> Pantalla.PlantillasCampos(limpio)
 
             limpio.startsWith("04-HER-AUT") || limpio.startsWith("04.1") || limpio == "07" || limpio.startsWith("07.0") -> Pantalla.AjustesAutenticador(limpio)
+            limpio.startsWith("04-HER-HST-GEN") -> Pantalla.HistorialClavesGeneradas(limpio)
+            limpio.startsWith("04-HER-HST-ENT") -> Pantalla.HistorialCredenciales(limpio)
             limpio.startsWith("04-HER-HST-CFG") -> Pantalla.AjustesHistorial(limpio)
             limpio.startsWith("04-HER-HST") || limpio.startsWith("04.2") || limpio == "04" || limpio.startsWith("04.0") -> Pantalla.HistorialClaves(limpio)
             limpio.startsWith("04-HER-CAM") || limpio.startsWith("04.3") || limpio == "05" || limpio.startsWith("05.0") -> Pantalla.AjustesCamara(limpio)
-            limpio.startsWith("04-HER-WGT-TOT") || limpio.startsWith("04.4.1") -> Pantalla.WidgetTotpAjustes(limpio)
-            limpio.startsWith("04-HER-WGT-CAL") || limpio.startsWith("04.4.2") -> Pantalla.CalibracionWidgetTotp(limpio)
-            limpio.startsWith("04-HER-WGT-MOD") || limpio.startsWith("04.4.3") -> Pantalla.Widget1x1Modo(limpio)
-            limpio.startsWith("04-HER-WGT-CMP") || limpio.startsWith("04.4.4") -> Pantalla.Widget1x1Comportamiento(limpio)
-            limpio.startsWith("04-HER-WGT-1X1") || limpio.startsWith("04.4.5") -> Pantalla.CalibracionWidget1x1(limpio)
+            limpio.startsWith("04-HER-WGT-TOT") -> Pantalla.AjustesWidgetTotpSub(limpio)
+            limpio.startsWith("04-HER-WGT-1X1") -> Pantalla.AjustesWidget1x1Sub(limpio)
             limpio.startsWith("04-HER-WGT") || limpio.startsWith("04.4") || limpio.startsWith("09.4") -> Pantalla.AjustesWidget(limpio)
+            limpio.startsWith("04-HER-MSK-CFG") -> Pantalla.TileConfiguracion(limpio)
             limpio.startsWith("04-HER-MSK") || limpio.startsWith("04.5") -> Pantalla.TileRapido(limpio)
             limpio.startsWith("04-HER-PSK") || limpio.startsWith("04.6") -> Pantalla.AjustesAutocompletado(limpio)
 
-            limpio.startsWith("05-COP-ATM") || limpio.startsWith("05.1.4") -> Pantalla.AjustesCopiaAutomatica(limpio)
+            limpio.startsWith("05-COP-MAN-FIL") -> Pantalla.CopiaManual(limpio)
+            limpio.startsWith("05-COP-AUT-FIL") || limpio.startsWith("05-COP-ATM") || limpio.startsWith("05.1.4") -> Pantalla.CopiaAutomaticaLocalSub(limpio)
+            limpio.startsWith("05-COP-REC-FIL") -> Pantalla.CopiaRecordatorios(limpio)
             limpio.startsWith("05-COP-EXP") || limpio.startsWith("05.1.2") -> Pantalla.ExportarSelectivo(limpio)
             limpio.startsWith("05-COP-MAN") || limpio.startsWith("05.1") || limpio == "06" || limpio.startsWith("06.0") -> Pantalla.CopiaSeguridad(limpio)
             limpio.startsWith("05-COP-CSV") || limpio.startsWith("05.2") || limpio == "08" || limpio.startsWith("08.0") -> Pantalla.CsvGoogle(limpio)
             limpio.startsWith("05-COP-KIT") || limpio.startsWith("05.3") -> Pantalla.KitEmergencia(limpio)
 
+            limpio.startsWith("06-SIS-AVZ-DES") -> Pantalla.AvanzadaDesarrollo(limpio)
+            limpio.startsWith("06-SIS-AVZ-LGT") -> Pantalla.AvanzadaAlumbrado(limpio)
+            limpio.startsWith("06-SIS-AVZ-ORG") -> Pantalla.ReorganizarAjustes
+            limpio.startsWith("06-SIS-AVZ-HAP") -> Pantalla.AvanzadaHaptica(limpio)
+            limpio.startsWith("06-SIS-AVZ-PEL") -> Pantalla.AvanzadaZonaPeligro(limpio)
             limpio.startsWith("06-SIS-AVZ-COL") || limpio.startsWith("06.1.2b") || limpio.contains("COL-IDS") -> Pantalla.ColoresIdentificadores(limpio)
             limpio.startsWith("06-SIS-AVZ") || limpio.startsWith("06.1") || limpio.startsWith("11.1") || limpio == "11" -> Pantalla.Avanzada(limpio)
             limpio.startsWith("06-SIS-LOG") || limpio.startsWith("06.2") -> Pantalla.Registro(limpio)
@@ -172,18 +197,7 @@ interface VaultNavegacionDelegate {
             pantallaInterna.value is Pantalla.Editar || pantallaInterna.value is Pantalla.Escaner || pantallaInterna.value is Pantalla.CamaraQr -> {
                 anterior ?: padre
             }
-            anterior is Pantalla.Lista ||
-            anterior is Pantalla.Detalle ||
-            anterior is Pantalla.Passkeys ||
-            anterior is Pantalla.Autenticador ||
-            anterior is Pantalla.SaludBoveda ||
-            anterior is Pantalla.Papelera ||
-            anterior is Pantalla.Duplicados ||
-            anterior is Pantalla.Generador ||
-            anterior is Pantalla.HistorialClaves -> {
-                anterior
-            }
-            anterior is Pantalla.Ajustes && !anterior.seccionId.isNullOrBlank() -> {
+            anterior != null && anterior != pantallaInterna.value -> {
                 anterior
             }
             padre != null -> {

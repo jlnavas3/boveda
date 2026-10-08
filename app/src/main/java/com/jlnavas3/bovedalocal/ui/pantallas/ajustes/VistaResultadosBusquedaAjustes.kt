@@ -16,7 +16,7 @@ import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
 @Composable
 fun VistaResultadosBusquedaAjustes(
     textoBusqueda: String,
-    elementosFiltrados: List<ElementoMenuAjustes>,
+    elementosFiltrados: List<ItemBusquedaAjustes>,
     mostrarIds: Boolean,
     modifier: Modifier = Modifier
 ) {
@@ -41,11 +41,11 @@ fun VistaResultadosBusquedaAjustes(
                 if (index > 0) ComponenteSeparador(sangriaInicio = 68.dp)
                 ComponenteNavegacion(
                     titulo = elem.titulo,
+                    subtitulo = "${elem.ruta} • ${elem.subtitulo}",
                     icono = elem.icono,
                     colorIcono = elem.colorIcono,
                     idFila = elem.idEtiqueta,
                     mostrarId = mostrarIds,
-                    valorTexto = elem.valorTexto,
                     alPulsar = elem.alPulsar
                 )
             }

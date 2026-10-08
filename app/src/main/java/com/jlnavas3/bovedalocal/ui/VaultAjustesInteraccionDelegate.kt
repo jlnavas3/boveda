@@ -196,6 +196,69 @@ interface VaultAjustesInteraccionDelegate {
         com.jlnavas3.bovedalocal.util.Diagnostico.configurar(valor)
     }
 
+    fun ajustarOrdenAjustesPersonalizado(orden: List<String>) {
+        repositorio.ajustes.actualizar { it.copy(ordenAjustesPersonalizado = orden) }
+    }
+
+    fun restablecerOrdenAjustesPersonalizado() {
+        repositorio.ajustes.actualizar { it.copy(ordenAjustesPersonalizado = AjustesDefaults.Interaccion.ORDEN_AJUSTES_PERSONALIZADO) }
+    }
+
+    fun ajustarOrdenJerarquiaPersonalizado(orden: Map<String, List<String>>) {
+        repositorio.ajustes.actualizar { it.copy(ordenJerarquiaPersonalizado = orden) }
+    }
+
+    fun ajustarReparentingPersonalizado(reparenting: Map<String, String>) {
+        repositorio.ajustes.actualizar { it.copy(reparentingPersonalizado = reparenting) }
+    }
+
+    fun restablecerTodoArbolAjustes() {
+        repositorio.ajustes.actualizar {
+            it.copy(
+                ordenAjustesPersonalizado = AjustesDefaults.Interaccion.ORDEN_AJUSTES_PERSONALIZADO,
+                ordenJerarquiaPersonalizado = emptyMap(),
+                reparentingPersonalizado = emptyMap()
+            )
+        }
+    }
+
+    fun ajustarMenuLateralMostrarCabecera(mostrar: Boolean) {
+        repositorio.ajustes.actualizar { it.copy(menuLateralMostrarCabecera = mostrar) }
+    }
+
+    fun ajustarMenuLateralMostrarPie(mostrar: Boolean) {
+        repositorio.ajustes.actualizar { it.copy(menuLateralMostrarPie = mostrar) }
+    }
+
+    fun ajustarMenuLateralMostrarBotonBloquear(mostrar: Boolean) {
+        repositorio.ajustes.actualizar { it.copy(menuLateralMostrarBotonBloquear = mostrar) }
+    }
+
+    fun ajustarMenuLateralAgruparItems(agrupar: Boolean) {
+        repositorio.ajustes.actualizar { it.copy(menuLateralAgruparItems = agrupar) }
+    }
+
+    fun ajustarMenuLateralSinBordes(sinBordes: Boolean) {
+        repositorio.ajustes.actualizar { it.copy(menuLateralSinBordes = sinBordes) }
+    }
+
+    fun ajustarMenuLateralItemsVisibles(items: List<String>) {
+        repositorio.ajustes.actualizar { it.copy(menuLateralItemsVisibles = items) }
+    }
+
+    fun restablecerMenuLateral() {
+        repositorio.ajustes.actualizar {
+            it.copy(
+                menuLateralMostrarCabecera = AjustesDefaults.MenuLateral.MOSTRAR_CABECERA,
+                menuLateralMostrarPie = AjustesDefaults.MenuLateral.MOSTRAR_PIE,
+                menuLateralMostrarBotonBloquear = AjustesDefaults.MenuLateral.MOSTRAR_BOTON_BLOQUEAR,
+                menuLateralAgruparItems = AjustesDefaults.MenuLateral.AGRUPAR_ITEMS,
+                menuLateralSinBordes = AjustesDefaults.MenuLateral.SIN_BORDES,
+                menuLateralItemsVisibles = AjustesDefaults.MenuLateral.ITEMS_PREDETERMINADOS
+            )
+        }
+    }
+
     fun recargarAjustes() {
         repositorio.ajustes.recargar()
     }

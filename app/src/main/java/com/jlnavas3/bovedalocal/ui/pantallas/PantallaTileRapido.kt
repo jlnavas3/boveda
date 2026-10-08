@@ -1,6 +1,5 @@
 package com.jlnavas3.bovedalocal.ui.pantallas
 
-import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -12,29 +11,30 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.jlnavas3.bovedalocal.ui.Pantalla
 import com.jlnavas3.bovedalocal.ui.VaultViewModel
 import com.jlnavas3.bovedalocal.ui.componentes.BarraSuperiorPantalla
-import com.jlnavas3.bovedalocal.ui.componentes.ajustes.AccionSaltoGrupo
-import com.jlnavas3.bovedalocal.ui.componentes.ajustes.BotonMenuOpcionesPantalla
+import com.jlnavas3.bovedalocal.ui.componentes.DescripcionPantalla
+import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteGrupo
+import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteNavegacion
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ProveedorResaltadoAjustes
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjustesFondo
-import com.jlnavas3.bovedalocal.ui.pantallas.tile.GrupoConfiguracionTile
-import com.jlnavas3.bovedalocal.ui.pantallas.tile.GrupoWidgetsInicioTile
-import com.jlnavas3.bovedalocal.util.Haptica
+import com.jlnavas3.bovedalocal.ui.preview.BovedaPantallaPreview
+import com.jlnavas3.bovedalocal.ui.theme.BovedaTheme
+import com.jlnavas3.bovedalocal.ui.theme.EspaciadoComponentes
 
+/**
+ * Pantalla contenedora de Nivel 2 para Mosaico Rápido (Quick Settings Tile).
+ * Navegación fractal limpia con filas 100% tipográficas sin íconos.
+ */
 @Composable
 fun PantallaTileRapido(
     vm: VaultViewModel,
     seccionId: String? = null
 ) {
-    val contexto = LocalContext.current
-    val haptica = remember { Haptica(contexto) }
     val ajustes by vm.ajustes.collectAsStateWithLifecycle()
     val scrollState = rememberScrollState()
 
@@ -50,89 +50,74 @@ fun PantallaTileRapido(
                 mostrarId = ajustes.mostrarIdsAjustes,
                 alVolver = { vm.volverAtras() },
                 conSeparador = scrollState.value > 0,
-                colorFondo = ColorAjustesFondo,
-                acciones = {
-                    BotonMenuOpcionesPantalla(
-                        grupos = listOf(
-                            AccionSaltoGrupo("04-HER-MSK-G01", "Generación rápida"),
-                            AccionSaltoGrupo("04-HER-MSK-G02", "Accesos rápidos")
-                        ),
-                        alRestablecerPantalla = {
-                            haptica.tic()
-                            vm.restablecerTile()
-                            vm.avisar("Mosaico rápido restablecido")
-                        }
-                    )
-                }
+                colorFondo = ColorAjustesFondo
             )
 
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .weight(1f)
                     .verticalScroll(scrollState)
                     .padding(horizontal = 16.dp, vertical = 12.dp)
             ) {
-                // Grupo 1: Modo de generación y opciones del mosaico
-                GrupoConfiguracionTile(
-                    mostrarIdsAjustes = ajustes.mostrarIdsAjustes,
-                    tileModo = ajustes.tileModo,
-                    tileLongitud = ajustes.tileLongitud,
-                    tilePatron = ajustes.tilePatron,
-                    tileCopiarPortapapeles = ajustes.tileCopiarPortapapeles,
-                    tileMostrarToast = ajustes.tileMostrarToast,
-                    tileHaptica = ajustes.tileHaptica,
-                    tileHapticaIntensidad = ajustes.tileHapticaIntensidad,
-                    haptica = haptica,
-                    alCambiarTileModo = { valor ->
-                        haptica.tic()
-                        vm.ajustarTileModo(valor)
-                    },
-                    alCambiarTileLongitud = { valor ->
-                        haptica.tic()
-                        vm.ajustarTileLongitud(valor)
-                    },
-                    alCambiarTilePatron = { vm.ajustarTilePatron(it) },
-                    alCambiarTileCopiarPortapapeles = {
-                        haptica.toque()
-                        vm.ajustarTileCopiarPortapapeles(it)
-                        Toast.makeText(
-                            contexto,
-                            if (it) "Copia al portapapeles activada" else "Copia al portapapeles desactivada",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    },
-                    alCambiarTileMostrarToast = {
-                        haptica.tic()
-                        vm.ajustarTileMostrarToast(it)
-                    },
-                    alCambiarTileHaptica = {
-                        haptica.tic()
-                        vm.ajustarTileHaptica(it)
-                    },
-                    alCambiarTileHapticaIntensidad = { vm.ajustarTileHapticaIntensidad(it) },
-                    alRestablecerGrupo = {
-                        haptica.tic()
-                        vm.restablecerTile()
-                        vm.avisar("Mosaico rápido restablecido")
-                    },
-                    vm = vm,
-                    ajustes = ajustes
-                )
+                DescripcionPantalla(subtitulo = "Acceso directo y generación rápida desde la cortina de notificaciones")
+                Spacer(Modifier.height(10.dp))
 
-                Spacer(Modifier.height(14.dp))
+                // Grupo: Configuración del mosaico
+                ComponenteGrupo(
+                    etiqueta = "Configuración del mosaico",
+                    idGrupo = "04-HER-MSK-G01",
+                    mostrarId = ajustes.mostrarIdsAjustes
+                ) {
+                    ComponenteNavegacion(
+                        titulo = "Configuración del mosaico",
+                        icono = null,
+                        idFila = "04-HER-MSK-CFG",
+                        mostrarId = ajustes.mostrarIdsAjustes,
+                        alPulsar = { vm.ir(Pantalla.TileConfiguracion()) }
+                    )
+                }
 
-                // Grupo 2: Widgets de inicio
-                GrupoWidgetsInicioTile(
-                    mostrarIdsAjustes = ajustes.mostrarIdsAjustes,
-                    alNavegarWidgets = {
-                        haptica.tic()
-                        vm.ir(Pantalla.AjustesWidget("04-HER-WGT"))
-                    }
-                )
+                Spacer(Modifier.height(EspaciadoComponentes))
+
+                // Grupo: Accesos rápidos
+                ComponenteGrupo(
+                    etiqueta = "Accesos rápidos",
+                    idGrupo = "04-HER-MSK-G02",
+                    mostrarId = ajustes.mostrarIdsAjustes
+                ) {
+                    ComponenteNavegacion(
+                        titulo = "Widgets de inicio",
+                        icono = null,
+                        idFila = "04-HER-MSK-WGT",
+                        mostrarId = ajustes.mostrarIdsAjustes,
+                        alPulsar = { vm.ir(Pantalla.AjustesWidget("04-HER-WGT")) }
+                    )
+                }
 
                 Spacer(Modifier.height(32.dp))
             }
+        }
+    }
+}
+
+@BovedaPantallaPreview
+@Composable
+private fun PantallaTileRapidoPreview() {
+    BovedaTheme {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(ColorAjustesFondo)
+        ) {
+            BarraSuperiorPantalla(
+                titulo = "Mosaico rápido",
+                idEtiqueta = "04-HER-MSK",
+                mostrarId = true,
+                alVolver = {},
+                conSeparador = false,
+                colorFondo = ColorAjustesFondo
+            )
+            DescripcionPantalla(subtitulo = "Acceso directo y generación rápida desde la cortina de notificaciones")
         }
     }
 }

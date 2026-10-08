@@ -11,40 +11,55 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.jlnavas3.bovedalocal.ui.Pantalla
 import com.jlnavas3.bovedalocal.ui.VaultViewModel
 import com.jlnavas3.bovedalocal.ui.componentes.BarraSuperiorPantalla
-import com.jlnavas3.bovedalocal.ui.componentes.ajustes.AccionSaltoGrupo
-import com.jlnavas3.bovedalocal.ui.componentes.ajustes.BotonMenuOpcionesPantalla
+import com.jlnavas3.bovedalocal.ui.componentes.DescripcionPantalla
+import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteGrupo
+import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteNavegacion
+import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteSeparador
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ProveedorResaltadoAjustes
+import androidx.compose.material3.Text
+import androidx.compose.runtime.remember
+import androidx.compose.ui.unit.sp
+import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjusteGris
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjustesFondo
-import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.DialogoBorrarBoveda
-import com.jlnavas3.bovedalocal.ui.pantallas.avanzada.GrupoDesarrolloReferencia
-import com.jlnavas3.bovedalocal.ui.pantallas.avanzada.GrupoRespuestaHaptica
-import com.jlnavas3.bovedalocal.ui.pantallas.avanzada.GrupoZonaPeligro
-import com.jlnavas3.bovedalocal.util.Haptica
+import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.MapaAjustes
+import com.jlnavas3.bovedalocal.ui.preview.BovedaPantallaPreview
+import com.jlnavas3.bovedalocal.ui.theme.BovedaTheme
+import com.jlnavas3.bovedalocal.ui.theme.EspaciadoComponentes
 
+/**
+ * Pantalla contenedora de Nivel 2 para Opciones Avanzadas.
+ * Navegación fractal limpia con filas 100% tipográficas sin íconos.
+ */
 @Composable
 fun PantallaAvanzada(
     vm: VaultViewModel,
     seccionDestino: String? = null
 ) {
-    val contexto = LocalContext.current
-    val haptica = remember { Haptica(contexto) }
     val ajustes by vm.ajustes.collectAsStateWithLifecycle()
-
-    var dialogoBorrar by remember { mutableStateOf(false) }
-
     val scrollState = rememberScrollState()
 
-    ProveedorResaltadoAjustes(seccionDestino, scrollState) {
+    val hijosActuales = remember(ajustes.reparentingPersonalizado, ajustes.ordenJerarquiaPersonalizado) {
+        MapaAjustes.obtenerHijosDe(
+            padreId = "06-SIS-AVZ",
+            ordenPersonalizado = ajustes.ordenJerarquiaPersonalizado,
+            reparenting = ajustes.reparentingPersonalizado
+        )
+    }
+    val hijosIds = remember(hijosActuales) { hijosActuales.map { it.id }.toSet() }
+
+    val itemsG1 = remember(hijosIds) { listOf("06-SIS-AVZ-DES", "06-SIS-AVZ-LGT", "06-SIS-AVZ-ORG").filter { it in hijosIds } }
+    val itemsG2 = remember(hijosIds) { listOf("06-SIS-AVZ-HAP").filter { it in hijosIds } }
+    val itemsG3 = remember(hijosIds) { listOf("06-SIS-AVZ-PEL").filter { it in hijosIds } }
+    val idsNativos = remember { setOf("06-SIS-AVZ-DES", "06-SIS-AVZ-LGT", "06-SIS-AVZ-ORG", "06-SIS-AVZ-HAP", "06-SIS-AVZ-PEL") }
+    val itemsAdoptados = remember(hijosActuales) { hijosActuales.filter { it.id !in idsNativos } }
+
+    ProveedorResaltadoAjustes(seccionDestino) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -56,74 +71,149 @@ fun PantallaAvanzada(
                 mostrarId = ajustes.mostrarIdsAjustes,
                 alVolver = { vm.volverAtras() },
                 conSeparador = scrollState.value > 0,
-                colorFondo = ColorAjustesFondo,
-                acciones = {
-                    BotonMenuOpcionesPantalla(
-                        grupos = listOf(
-                            AccionSaltoGrupo("06-SIS-AVZ-G01", "Desarrollo y referencia"),
-                            AccionSaltoGrupo("06-SIS-AVZ-G02", "Respuesta táctil y vibración"),
-                            AccionSaltoGrupo("06-SIS-AVZ-G03", "Zona de peligro")
-                        )
-                    )
-                }
+                colorFondo = ColorAjustesFondo
             )
 
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .weight(1f)
                     .verticalScroll(scrollState)
                     .padding(horizontal = 16.dp, vertical = 12.dp)
             ) {
-                // Grupo 1: Desarrollo y referencia
-                GrupoDesarrolloReferencia(
-                    mostrarIdsAjustes = ajustes.mostrarIdsAjustes,
-                    alumbradoActivo = ajustes.alumbradoActivo,
-                    alumbradoIntensidad = ajustes.alumbradoIntensidad,
-                    alumbradoRepeticiones = ajustes.alumbradoRepeticiones,
-                    alumbradoDuracionMs = ajustes.alumbradoDuracionMs,
-                    alCambiarMostrarIds = { vm.ajustarMostrarIdsAjustes(it) },
-                    alCambiarAlumbradoActivo = { vm.ajustarAlumbradoActivo(it) },
-                    alCambiarIntensidad = { vm.ajustarAlumbradoIntensidad(it) },
-                    alCambiarRepeticiones = { vm.ajustarAlumbradoRepeticiones(it) },
-                    alCambiarDuracion = { vm.ajustarAlumbradoDuracionMs(it) },
-                    alNavegarColoresIds = { vm.ir(Pantalla.ColoresIdentificadores()) },
-                    haptica = haptica
-                )
+                DescripcionPantalla(subtitulo = "Desarrollo, calibración háptica, ordenación y zona de peligro")
+                Spacer(Modifier.height(10.dp))
 
-                Spacer(Modifier.height(14.dp))
+                if (hijosActuales.isEmpty()) {
+                    ComponenteGrupo(
+                        etiqueta = "Opciones avanzadas",
+                        idGrupo = "06-SIS-AVZ-G00",
+                        mostrarId = ajustes.mostrarIdsAjustes
+                    ) {
+                        Text(
+                            text = "Todos los ajustes de esta sección han sido reorganizados a otros niveles.",
+                            color = ColorAjusteGris,
+                            fontSize = 13.sp,
+                            modifier = Modifier.padding(16.dp)
+                        )
+                    }
+                } else {
+                    if (itemsG1.isNotEmpty()) {
+                        ComponenteGrupo(
+                            etiqueta = "Desarrollo y navegación",
+                            idGrupo = "06-SIS-AVZ-G01",
+                            mostrarId = ajustes.mostrarIdsAjustes
+                        ) {
+                            itemsG1.forEachIndexed { idx, id ->
+                                if (idx > 0) ComponenteSeparador()
+                                when (id) {
+                                    "06-SIS-AVZ-DES" -> ComponenteNavegacion(
+                                        titulo = "Desarrollo e identificadores",
+                                        icono = null,
+                                        idFila = "06-SIS-AVZ-DES",
+                                        mostrarId = ajustes.mostrarIdsAjustes,
+                                        alPulsar = { vm.ir(Pantalla.AvanzadaDesarrollo()) }
+                                    )
+                                    "06-SIS-AVZ-LGT" -> ComponenteNavegacion(
+                                        titulo = "Alumbrado y navegación",
+                                        icono = null,
+                                        idFila = "06-SIS-AVZ-LGT",
+                                        mostrarId = ajustes.mostrarIdsAjustes,
+                                        alPulsar = { vm.ir(Pantalla.AvanzadaAlumbrado()) }
+                                    )
+                                    "06-SIS-AVZ-ORG" -> ComponenteNavegacion(
+                                        titulo = "Reorganizar ajustes",
+                                        icono = null,
+                                        idFila = "06-SIS-AVZ-ORG",
+                                        mostrarId = ajustes.mostrarIdsAjustes,
+                                        alPulsar = { vm.ir(Pantalla.ReorganizarAjustes) }
+                                    )
+                                }
+                            }
+                        }
+                        Spacer(Modifier.height(EspaciadoComponentes))
+                    }
 
-                // Grupo 2: Respuesta táctil y vibración
-                GrupoRespuestaHaptica(
-                    mostrarIdsAjustes = ajustes.mostrarIdsAjustes,
-                    hapticaApp = ajustes.hapticaApp,
-                    hapticaAppIntensidad = ajustes.hapticaAppIntensidad,
-                    alCambiarHapticaApp = { vm.ajustarHapticaApp(it) },
-                    alCambiarIntensidad = { vm.ajustarHapticaAppIntensidad(it) },
-                    haptica = haptica
-                )
+                    if (itemsG2.isNotEmpty()) {
+                        ComponenteGrupo(
+                            etiqueta = "Interacción y sistema",
+                            idGrupo = "06-SIS-AVZ-G02",
+                            mostrarId = ajustes.mostrarIdsAjustes
+                        ) {
+                            ComponenteNavegacion(
+                                titulo = "Respuesta táctil y vibración",
+                                icono = null,
+                                idFila = "06-SIS-AVZ-HAP",
+                                mostrarId = ajustes.mostrarIdsAjustes,
+                                alPulsar = { vm.ir(Pantalla.AvanzadaHaptica()) }
+                            )
+                        }
+                        Spacer(Modifier.height(EspaciadoComponentes))
+                    }
 
-                Spacer(Modifier.height(14.dp))
+                    if (itemsG3.isNotEmpty()) {
+                        ComponenteGrupo(
+                            etiqueta = "Seguridad crítica",
+                            idGrupo = "06-SIS-AVZ-G03",
+                            mostrarId = ajustes.mostrarIdsAjustes
+                        ) {
+                            ComponenteNavegacion(
+                                titulo = "Zona de peligro",
+                                icono = null,
+                                idFila = "06-SIS-AVZ-PEL",
+                                mostrarId = ajustes.mostrarIdsAjustes,
+                                alPulsar = { vm.ir(Pantalla.AvanzadaZonaPeligro()) }
+                            )
+                        }
+                        Spacer(Modifier.height(EspaciadoComponentes))
+                    }
 
-                // Grupo 3: Zona de peligro
-                GrupoZonaPeligro(
-                    mostrarIdsAjustes = ajustes.mostrarIdsAjustes,
-                    alSolicitarBorrado = { dialogoBorrar = true }
-                )
+                    if (itemsAdoptados.isNotEmpty()) {
+                        ComponenteGrupo(
+                            etiqueta = "Ajustes vinculados",
+                            idGrupo = "06-SIS-AVZ-EXT",
+                            mostrarId = ajustes.mostrarIdsAjustes
+                        ) {
+                            itemsAdoptados.forEachIndexed { idx, hijo ->
+                                if (idx > 0) ComponenteSeparador()
+                                ComponenteNavegacion(
+                                    titulo = hijo.titulo,
+                                    icono = null,
+                                    idFila = hijo.id,
+                                    mostrarId = ajustes.mostrarIdsAjustes,
+                                    alPulsar = {
+                                        if (hijo.pantallaDestino != null) vm.ir(hijo.pantallaDestino)
+                                        else vm.irPorId(hijo.id)
+                                    }
+                                )
+                            }
+                        }
+                    }
+                }
 
                 Spacer(Modifier.height(32.dp))
             }
         }
     }
+}
 
-    if (dialogoBorrar) {
-        DialogoBorrarBoveda(
-            alDescartar = { dialogoBorrar = false },
-            alConfirmar = {
-                dialogoBorrar = false
-                vm.repositorio.borrarTodo()
-                vm.ir(Pantalla.Onboarding)
-            }
-        )
+@BovedaPantallaPreview
+@Composable
+private fun PantallaAvanzadaPreview() {
+    BovedaTheme {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(ColorAjustesFondo)
+        ) {
+            BarraSuperiorPantalla(
+                titulo = "Opciones avanzadas",
+                idEtiqueta = "06-SIS-AVZ",
+                mostrarId = true,
+                alVolver = {},
+                conSeparador = false,
+                colorFondo = ColorAjustesFondo
+            )
+            DescripcionPantalla(subtitulo = "Desarrollo, calibración háptica, ordenación y zona de peligro")
+        }
     }
 }

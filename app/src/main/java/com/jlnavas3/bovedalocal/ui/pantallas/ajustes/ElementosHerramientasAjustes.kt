@@ -19,6 +19,16 @@ fun crearElementosHerramientasAjustes(
     alAbrirProveedorPasskeys: () -> Unit
 ): List<ElementoMenuAjustes> = listOf(
     ElementoMenuAjustes(
+        titulo = "Autocompletado y llaves",
+        subtitulo = "Sugerencias en teclado y proveedor de credenciales",
+        icono = Icons.Filled.Key,
+        colorIcono = Color(0xFF8B5CF6),
+        idEtiqueta = "04-HER-PSK",
+        grupo = "Herramientas",
+        palabrasClave = "autofill autocompletado teclado sugerencias passkey passkeys proveedor credenciales llaves paso acceso android servicio activar",
+        alPulsar = { vm.ir(Pantalla.AjustesAutocompletado()) }
+    ),
+    ElementoMenuAjustes(
         titulo = "Verificación en dos pasos",
         subtitulo = "Parámetros predeterminados de códigos de dos pasos",
         icono = Icons.Filled.Timer,
@@ -26,7 +36,7 @@ fun crearElementosHerramientasAjustes(
         idEtiqueta = "04-HER-AUT",
         grupo = "Herramientas",
         palabrasClave = "2fa totp autenticador codigos periodo hmac digitos verificacion dos pasos",
-        alPulsar = { vm.ir(Pantalla.AjustesAutenticador("04-HER-AUT")) }
+        alPulsar = { vm.ir(Pantalla.AjustesAutenticador()) }
     ),
     ElementoMenuAjustes(
         titulo = "Historial de claves",
@@ -36,7 +46,7 @@ fun crearElementosHerramientasAjustes(
         idEtiqueta = "04-HER-HST",
         grupo = "Herramientas",
         palabrasClave = "historial contrasenas generadas retencion autodestruccion claves temporal tiempo",
-        alPulsar = { vm.ir(Pantalla.AjustesHistorial("04-HER-HST")) }
+        alPulsar = { vm.ir(Pantalla.AjustesHistorial()) }
     ),
     ElementoMenuAjustes(
         titulo = "Cámara y escáner",
@@ -46,7 +56,7 @@ fun crearElementosHerramientasAjustes(
         idEtiqueta = "04-HER-CAM",
         grupo = "Herramientas",
         palabrasClave = "camara escaner qr camerax optico lector",
-        alPulsar = { vm.ir(Pantalla.AjustesCamara("04-HER-CAM")) }
+        alPulsar = { vm.ir(Pantalla.AjustesCamara()) }
     ),
     ElementoMenuAjustes(
         titulo = "Widgets",
@@ -56,7 +66,7 @@ fun crearElementosHerramientasAjustes(
         idEtiqueta = "04-HER-WGT",
         grupo = "Herramientas",
         palabrasClave = "widgets escritorio inicio favoritos totp generador 1x1",
-        alPulsar = { vm.ir(Pantalla.AjustesWidget("04-HER-WGT")) }
+        alPulsar = { vm.ir(Pantalla.AjustesWidget()) }
     ),
     ElementoMenuAjustes(
         titulo = "Mosaico rápido",
@@ -66,16 +76,6 @@ fun crearElementosHerramientasAjustes(
         idEtiqueta = "04-HER-MSK",
         grupo = "Herramientas",
         palabrasClave = "tile mosaico barra estado cortina notificaciones rapido",
-        alPulsar = { vm.ir(Pantalla.TileRapido("04-HER-MSK")) }
-    ),
-    ElementoMenuAjustes(
-        titulo = "Autocompletado y llaves",
-        subtitulo = "Sugerencias en teclado y proveedor de credenciales",
-        icono = Icons.Filled.Key,
-        colorIcono = Color(0xFF8B5CF6),
-        idEtiqueta = "04-HER-PSK",
-        grupo = "Herramientas",
-        palabrasClave = "autofill autocompletado teclado sugerencias passkey passkeys proveedor credenciales llaves paso acceso android servicio activar",
-        alPulsar = { vm.ir(Pantalla.AjustesAutocompletado("04-HER-PSK")) }
+        alPulsar = { vm.ir(Pantalla.TileRapido()) }
     )
 )

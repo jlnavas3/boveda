@@ -81,7 +81,10 @@ data class ConfiguracionBovedaExportable(
     // 8. Retención y Ciclo de Vida
     val diasRetencionPapelera: Int? = null,
     val maxHistorialContrasenasPorEntrada: Int? = null,
-    val recordatorioExportacionDias: Int? = null
+    val recordatorioExportacionDias: Int? = null,
+
+    // 9. Reorganización de Ajustes
+    val ordenAjustesPersonalizado: List<String>? = null
 )
 
 fun AjustesApp.aConfiguracionExportable(): ConfiguracionBovedaExportable {
@@ -140,7 +143,8 @@ fun AjustesApp.aConfiguracionExportable(): ConfiguracionBovedaExportable {
         generadorCapitalizarFrases = generadorCapitalizarFrases,
         diasRetencionPapelera = diasRetencionPapelera,
         maxHistorialContrasenasPorEntrada = maxHistorialContrasenasPorEntrada,
-        recordatorioExportacionDias = recordatorioExportacionDias
+        recordatorioExportacionDias = recordatorioExportacionDias,
+        ordenAjustesPersonalizado = ordenAjustesPersonalizado
     )
 }
 
@@ -204,6 +208,7 @@ fun AjustesApp.aplicarConfiguracionExportable(config: ConfiguracionBovedaExporta
         generadorCapitalizarFrases = config.generadorCapitalizarFrases ?: this.generadorCapitalizarFrases,
         diasRetencionPapelera = config.diasRetencionPapelera ?: this.diasRetencionPapelera,
         maxHistorialContrasenasPorEntrada = config.maxHistorialContrasenasPorEntrada ?: this.maxHistorialContrasenasPorEntrada,
-        recordatorioExportacionDias = config.recordatorioExportacionDias ?: this.recordatorioExportacionDias
+        recordatorioExportacionDias = config.recordatorioExportacionDias ?: this.recordatorioExportacionDias,
+        ordenAjustesPersonalizado = config.ordenAjustesPersonalizado ?: this.ordenAjustesPersonalizado
     )
 }

@@ -86,4 +86,27 @@ class MenuLateralTest {
         assertEquals("Passkeys + ★", etiquetaFiltro(TipoEntrada.PASSKEY, true))
         assertEquals("Notas + ★", etiquetaFiltro(TipoEntrada.NOTA, true))
     }
+
+    @Test
+    fun `resolucion de grupos e identificadores de etiquetas del menu lateral`() {
+        assertEquals("Herramientas", com.jlnavas3.bovedalocal.ui.pantallas.lista.resolverGrupoItemMenuLateral("04-HER-GEN"))
+        assertEquals("Organización y auditoría", com.jlnavas3.bovedalocal.ui.pantallas.lista.resolverGrupoItemMenuLateral("03-LST-SLD"))
+        assertEquals("Sistema", com.jlnavas3.bovedalocal.ui.pantallas.lista.resolverGrupoItemMenuLateral("00-AJU"))
+        assertEquals("Seguridad", com.jlnavas3.bovedalocal.ui.pantallas.lista.resolverGrupoItemMenuLateral("01-SEG-BIO"))
+        assertEquals("Apariencia", com.jlnavas3.bovedalocal.ui.pantallas.lista.resolverGrupoItemMenuLateral("02-APA-MNL"))
+
+        assertEquals("04-HER", com.jlnavas3.bovedalocal.ui.pantallas.lista.resolverIdEtiquetaGrupo("Herramientas"))
+        assertEquals("03-LST", com.jlnavas3.bovedalocal.ui.pantallas.lista.resolverIdEtiquetaGrupo("Organización y auditoría"))
+        assertEquals("06-SIS", com.jlnavas3.bovedalocal.ui.pantallas.lista.resolverIdEtiquetaGrupo("Sistema"))
+    }
+
+    @Test
+    fun `valores por defecto de personalizacion del menu lateral`() {
+        assertTrue(com.jlnavas3.bovedalocal.data.AjustesDefaults.MenuLateral.MOSTRAR_CABECERA)
+        assertTrue(com.jlnavas3.bovedalocal.data.AjustesDefaults.MenuLateral.MOSTRAR_PIE)
+        assertTrue(com.jlnavas3.bovedalocal.data.AjustesDefaults.MenuLateral.MOSTRAR_BOTON_BLOQUEAR)
+        assertTrue(com.jlnavas3.bovedalocal.data.AjustesDefaults.MenuLateral.AGRUPAR_ITEMS)
+        assertTrue(com.jlnavas3.bovedalocal.data.AjustesDefaults.MenuLateral.SIN_BORDES)
+        assertEquals(10, com.jlnavas3.bovedalocal.data.AjustesDefaults.MenuLateral.ITEMS_PREDETERMINADOS.size)
+    }
 }

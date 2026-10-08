@@ -317,5 +317,155 @@ sealed interface Pantalla {
     }
     object ReglasNormalizacion : Pantalla
     object ReglasAutocompletado : Pantalla
+    open class BloqueoBiometria(val seccionId: String? = null) : Pantalla {
+        companion object : BloqueoBiometria(null)
+        override fun equals(other: Any?): Boolean = other is BloqueoBiometria && other.seccionId == seccionId
+        override fun hashCode(): Int = seccionId?.hashCode() ?: 0
+    }
+    open class AjustesBiometria(val seccionId: String? = null) : Pantalla {
+        companion object : AjustesBiometria(null)
+        override fun equals(other: Any?): Boolean = other is AjustesBiometria && other.seccionId == seccionId
+        override fun hashCode(): Int = seccionId?.hashCode() ?: 0
+    }
+    open class BloqueoApp(val seccionId: String? = null) : Pantalla {
+        companion object : BloqueoApp(null)
+        override fun equals(other: Any?): Boolean = other is BloqueoApp && other.seccionId == seccionId
+        override fun hashCode(): Int = seccionId?.hashCode() ?: 0
+    }
+    open class FuerzaBruta(val seccionId: String? = null) : Pantalla {
+        companion object : FuerzaBruta(null)
+        override fun equals(other: Any?): Boolean = other is FuerzaBruta && other.seccionId == seccionId
+        override fun hashCode(): Int = seccionId?.hashCode() ?: 0
+    }
+    open class SeguridadVisualMemoria(val seccionId: String? = null) : Pantalla {
+        companion object : SeguridadVisualMemoria(null)
+        override fun equals(other: Any?): Boolean = other is SeguridadVisualMemoria && other.seccionId == seccionId
+        override fun hashCode(): Int = seccionId?.hashCode() ?: 0
+    }
+    open class SeguridadVisual(val seccionId: String? = null) : Pantalla {
+        companion object : SeguridadVisual(null)
+        override fun equals(other: Any?): Boolean = other is SeguridadVisual && other.seccionId == seccionId
+        override fun hashCode(): Int = seccionId?.hashCode() ?: 0
+    }
+    open class Portapapeles(val seccionId: String? = null) : Pantalla {
+        companion object : Portapapeles(null)
+        override fun equals(other: Any?): Boolean = other is Portapapeles && other.seccionId == seccionId
+        override fun hashCode(): Int = seccionId?.hashCode() ?: 0
+    }
+    open class AuditoriaSeguridad(val seccionId: String? = null) : Pantalla {
+        companion object : AuditoriaSeguridad(null)
+        override fun equals(other: Any?): Boolean = other is AuditoriaSeguridad && other.seccionId == seccionId
+        override fun hashCode(): Int = seccionId?.hashCode() ?: 0
+    }
+    open class AutodestruccionIntentos(val seccionId: String? = null) : Pantalla {
+        companion object : AutodestruccionIntentos(null)
+        override fun equals(other: Any?): Boolean = other is AutodestruccionIntentos && other.seccionId == seccionId
+        override fun hashCode(): Int = seccionId?.hashCode() ?: 0
+    }
+
+    // Tema
+    open class TemaPaletas(val seccionId: String? = null) : Pantalla {
+        companion object : TemaPaletas(null)
+        override fun equals(other: Any?): Boolean = other is TemaPaletas && other.seccionId == seccionId
+        override fun hashCode(): Int = seccionId?.hashCode() ?: 0
+    }
+    open class AnimacionDesbloqueo(val seccionId: String? = null) : Pantalla {
+        companion object : AnimacionDesbloqueo(null)
+        override fun equals(other: Any?): Boolean = other is AnimacionDesbloqueo && other.seccionId == seccionId
+        override fun hashCode(): Int = seccionId?.hashCode() ?: 0
+    }
+
+    // Organización lista
+    open class OrganizacionEstructura(val seccionId: String? = null) : Pantalla {
+        companion object : OrganizacionEstructura(null)
+        override fun equals(other: Any?): Boolean = other is OrganizacionEstructura && other.seccionId == seccionId
+        override fun hashCode(): Int = seccionId?.hashCode() ?: 0
+    }
+    open class OrganizacionJerarquia(val seccionId: String? = null) : Pantalla {
+        companion object : OrganizacionJerarquia(null)
+        override fun equals(other: Any?): Boolean = other is OrganizacionJerarquia && other.seccionId == seccionId
+        override fun hashCode(): Int = seccionId?.hashCode() ?: 0
+    }
+    open class OrganizacionIndicadores(val seccionId: String? = null) : Pantalla {
+        companion object : OrganizacionIndicadores(null)
+        override fun equals(other: Any?): Boolean = other is OrganizacionIndicadores && other.seccionId == seccionId
+        override fun hashCode(): Int = seccionId?.hashCode() ?: 0
+    }
+
+    // Historial
+    open class HistorialClavesGeneradas(val seccionId: String? = null) : Pantalla {
+        companion object : HistorialClavesGeneradas(null)
+        override fun equals(other: Any?): Boolean = other is HistorialClavesGeneradas && other.seccionId == seccionId
+        override fun hashCode(): Int = seccionId?.hashCode() ?: 0
+    }
+    open class HistorialCredenciales(val seccionId: String? = null) : Pantalla {
+        companion object : HistorialCredenciales(null)
+        override fun equals(other: Any?): Boolean = other is HistorialCredenciales && other.seccionId == seccionId
+        override fun hashCode(): Int = seccionId?.hashCode() ?: 0
+    }
+
+    // Widgets
+    open class AjustesWidgetTotpSub(val seccionId: String? = null) : Pantalla {
+        companion object : AjustesWidgetTotpSub(null)
+        override fun equals(other: Any?): Boolean = other is AjustesWidgetTotpSub && other.seccionId == seccionId
+        override fun hashCode(): Int = seccionId?.hashCode() ?: 0
+    }
+    open class AjustesWidget1x1Sub(val seccionId: String? = null) : Pantalla {
+        companion object : AjustesWidget1x1Sub(null)
+        override fun equals(other: Any?): Boolean = other is AjustesWidget1x1Sub && other.seccionId == seccionId
+        override fun hashCode(): Int = seccionId?.hashCode() ?: 0
+    }
+
+    // Tile
+    open class TileConfiguracion(val seccionId: String? = null) : Pantalla {
+        companion object : TileConfiguracion(null)
+        override fun equals(other: Any?): Boolean = other is TileConfiguracion && other.seccionId == seccionId
+        override fun hashCode(): Int = seccionId?.hashCode() ?: 0
+    }
+
+    // Copia de seguridad
+    open class CopiaManual(val seccionId: String? = null) : Pantalla {
+        companion object : CopiaManual(null)
+        override fun equals(other: Any?): Boolean = other is CopiaManual && other.seccionId == seccionId
+        override fun hashCode(): Int = seccionId?.hashCode() ?: 0
+    }
+    open class CopiaAutomaticaLocalSub(val seccionId: String? = null) : Pantalla {
+        companion object : CopiaAutomaticaLocalSub(null)
+        override fun equals(other: Any?): Boolean = other is CopiaAutomaticaLocalSub && other.seccionId == seccionId
+        override fun hashCode(): Int = seccionId?.hashCode() ?: 0
+    }
+    open class CopiaRecordatorios(val seccionId: String? = null) : Pantalla {
+        companion object : CopiaRecordatorios(null)
+        override fun equals(other: Any?): Boolean = other is CopiaRecordatorios && other.seccionId == seccionId
+        override fun hashCode(): Int = seccionId?.hashCode() ?: 0
+    }
+
+    // Avanzada
+    open class AvanzadaDesarrollo(val seccionId: String? = null) : Pantalla {
+        companion object : AvanzadaDesarrollo(null)
+        override fun equals(other: Any?): Boolean = other is AvanzadaDesarrollo && other.seccionId == seccionId
+        override fun hashCode(): Int = seccionId?.hashCode() ?: 0
+    }
+    open class AvanzadaAlumbrado(val seccionId: String? = null) : Pantalla {
+        companion object : AvanzadaAlumbrado(null)
+        override fun equals(other: Any?): Boolean = other is AvanzadaAlumbrado && other.seccionId == seccionId
+        override fun hashCode(): Int = seccionId?.hashCode() ?: 0
+    }
+    open class AvanzadaHaptica(val seccionId: String? = null) : Pantalla {
+        companion object : AvanzadaHaptica(null)
+        override fun equals(other: Any?): Boolean = other is AvanzadaHaptica && other.seccionId == seccionId
+        override fun hashCode(): Int = seccionId?.hashCode() ?: 0
+    }
+    open class AvanzadaZonaPeligro(val seccionId: String? = null) : Pantalla {
+        companion object : AvanzadaZonaPeligro(null)
+        override fun equals(other: Any?): Boolean = other is AvanzadaZonaPeligro && other.seccionId == seccionId
+        override fun hashCode(): Int = seccionId?.hashCode() ?: 0
+    }
+    open class PersonalizarMenuLateral(val seccionId: String? = null) : Pantalla {
+        companion object : PersonalizarMenuLateral(null)
+        override fun equals(other: Any?): Boolean = other is PersonalizarMenuLateral && other.seccionId == seccionId
+        override fun hashCode(): Int = seccionId?.hashCode() ?: 0
+    }
+    object ReorganizarAjustes : Pantalla
 }
 

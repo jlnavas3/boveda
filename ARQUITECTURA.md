@@ -99,7 +99,7 @@ Para evitar la sobrecarga del controlador central (`VaultViewModel`), se impleme
 
 | Delegado | Archivo | Responsabilidad Arquitectónica |
 | :--- | :--- | :--- |
-| **`VaultViewModelNavegacion`** | [`VaultViewModelNavegacion.kt`](file:///home/jln/BovedaLocal/app/src/main/java/com/jlnavas3/bovedalocal/ui/VaultViewModelNavegacion.kt) | Pila LIFO en memoria (`ArrayDeque<Pantalla>`), resolución jerárquica `padreDe()` y enrutamiento $O(1)$ por identificadores Tri-Grama `irPorId()`. |
+| **`VaultViewModelNavegacion`** | [`VaultViewModelNavegacion.kt`](file:///home/jln/BovedaLocal/app/src/main/java/com/jlnavas3/bovedalocal/ui/VaultViewModelNavegacion.kt) | Pila LIFO en memoria (`ArrayDeque<Pantalla>`), retorno multinivel estricto nivel a nivel, índice exhaustivo de búsqueda ([`IndiceBusquedaAjustes.kt`](file:///home/jln/BovedaLocal/app/src/main/java/com/jlnavas3/bovedalocal/ui/pantallas/ajustes/IndiceBusquedaAjustes.kt)) y enrutamiento $O(1)$ por identificadores Tri-Grama `irPorId()`. |
 | **`VaultViewModelEntradas`** | [`VaultViewModelEntradas.kt`](file:///home/jln/BovedaLocal/app/src/main/java/com/jlnavas3/bovedalocal/ui/VaultViewModelEntradas.kt) | Operaciones CRUD de credenciales, ordenación multi-criterio, motor de búsqueda fonética y filtrado por identidades/categorías. |
 | **`VaultViewModelCicloBoveda`** | [`VaultViewModelCicloBoveda.kt`](file:///home/jln/BovedaLocal/app/src/main/java/com/jlnavas3/bovedalocal/ui/VaultViewModelCicloBoveda.kt) | Máquina de estados (cerrada, abierta, señuelo), freno anti-fuerza bruta en disco, autodestrucción por PIN y wipe tras exceder intentos fallidos permitidos. |
 | **`VaultViewModelBackup`** | [`VaultViewModelBackup.kt`](file:///home/jln/BovedaLocal/app/src/main/java/com/jlnavas3/bovedalocal/ui/VaultViewModelBackup.kt) | Copias de seguridad automáticas y manuales con SAF, exportación `.bvda` cifrada e importador CSV universal autodetectable. |
@@ -209,18 +209,20 @@ flowchart TD
     Root --> B01 & B02 & B03 & B04 & B05 & B06
 
     %% Submódulos 01
-    B01 --> B01_BIO["01-SEG-BIO (Biometría StrongBox)"]
+    B01 --> B01_BIO["01-SEG-BIO (Biometría y Seguridad)"]
+    B01_BIO --> B01_BIO_BLO["01-SEG-BIO-BLO (Bloqueo y Biometría)"]
+    B01_BIO --> B01_BIO_VIS["01-SEG-BIO-VIS (Seguridad Visual y Portapapeles)"]
     B01 --> B01_PAS["01-SEG-PAS (Clave Maestra)"]
     B01 --> B01_SNU["01-SEG-SNU (Bóveda Señuelo)"]
     B01 --> B01_DES["01-SEG-DES (Autodestrucción: PIN e Intentos)"]
     B01 --> B01_ARG["01-SEG-ARG (Perfil Argon2id)"]
-    B01 --> B01_VIS["01-SEG-VIS (Seguridad Visual)"]
 
     %% Submódulos 02
     B02 --> B02_THM["02-APA-THM (Tema y 20 Paletas)"]
     B02 --> B02_ANI["02-APA-ANI (Engranajes y Puerta)"]
     B02 --> B02_GEO["02-APA-GEO (Curvatura, Grosor, Espaciado)"]
     B02 --> B02_TYP["02-APA-TYP (Tipografía e Interlineado)"]
+    B02 --> B02_MNL["02-APA-MNL (Personalizar Menú Lateral)"]
 
     %% Submódulos 03
     B03 --> B03_AZX["03-LST-AZX (Índice Niagara con Ola)"]
@@ -242,10 +244,30 @@ flowchart TD
     B05 --> B05_CSV["05-COP-CSV (Importador CSV Multiformato)"]
 
     %% Submódulos 06
+    B06 --> B06_AVZ["06-SIS-AVZ (Opciones Avanzadas)"]
+    B06_AVZ --> B06_AVZ_ORG["06-SIS-AVZ-ORG (Reorganizar Ajustes Drag & Drop)"]
     B06 --> B06_DGN["06-SIS-DGN (Diagnóstico Hardware/RAM)"]
     B06 --> B06_LOG["06-SIS-LOG (Registro de Eventos y Capacidad)"]
     B06 --> B06_ACR["06-SIS-ACR (Acerca de la Bóveda)"]
 ```
+
+### 4.1 Arquitectura Fractal de Ajustes y Mapa Centralizado (`MapaAjustes.kt`)
+1. **Fuente Única de Navegación:** El árbol completo de Ajustes, relaciones jerárquicas padre-hijo, pantallas destino y palabras clave de búsqueda residen de forma inmutable y tipada en [`MapaAjustes.kt`](file:///home/jln/BovedaLocal/app/src/main/java/com/jlnavas3/bovedalocal/ui/pantallas/ajustes/MapaAjustes.kt).
+2. **Estándar Tipográfico sin Íconos en Subniveles (Regla Pixel / iOS):**
+   - **Nivel 1 (Raíz de Ajustes):** Filas con ícono squircle y color semántico distintivo (`icono != null`).
+   - **Subniveles (Niveles 2, 3, 4):** Filas 100% tipográficas y limpias (`icono = null`), maximizando el espacio de lectura horizontal y eliminando la redundancia visual.
+3. **Navegación Fractal Atómica:** Pantallas complejas multigrupo (como *Biometría*) se descomponen en una pantalla de navegación contenedora de Nivel 2 y micro-pantallas atómicas independientes de Nivel 3 ([`PantallaBloqueoBiometria`](file:///home/jln/BovedaLocal/app/src/main/java/com/jlnavas3/bovedalocal/ui/pantallas/seguridad/PantallaBloqueoBiometria.kt) y [`PantallaSeguridadVisualMemoria`](file:///home/jln/BovedaLocal/app/src/main/java/com/jlnavas3/bovedalocal/ui/pantallas/seguridad/PantallaSeguridadVisualMemoria.kt)).
+4. **Reorganización por Arrastre Vertical (Drag & Drop):** En Opciones Avanzadas ([`PantallaReorganizarAjustes`](file:///home/jln/BovedaLocal/app/src/main/java/com/jlnavas3/bovedalocal/ui/pantallas/avanzada/PantallaReorganizarAjustes.kt)), el usuario puede reorganizar las opciones arrastrando o con botones rápidos. El orden se persiste en `AjustesApp.ordenAjustesPersonalizado` y se respalda en el archivo cifrado `.bvda`.
+
+### 4.2 Personalización Integral de la Barra Lateral (`PantallaPersonalizarMenuLateral.kt`)
+1. **Configuración Estructural Modular:**
+   - Control granular de visibilidad de cabecera (`menuLateralMostrarCabecera`), pie de página (`menuLateralMostrarPie`) y botón inferior de bloqueo (`menuLateralMostrarBotonBloquear`).
+   - Modo de agrupación por categorías semánticas (`menuLateralAgruparItems = true`) versus lista plana continua sin tarjetas separadas (`false`).
+   - Anulación dedicada de bordes para tarjetas del menú (`menuLateralSinBordes = true`).
+2. **Reordenación y Catálogo Dinámico:**
+   - Reordenación vertical táctil con física reactiva spring y elevación `zIndex`.
+   - Inclusión/exclusión de accesos directos desde el catálogo de [`MapaAjustes`](file:///home/jln/BovedaLocal/app/src/main/java/com/jlnavas3/bovedalocal/ui/pantallas/ajustes/MapaAjustes.kt).
+   - Acceso rápido contextual vía menú de 3 puntos (⋮) en [`CabeceraMenuLateral`](file:///home/jln/BovedaLocal/app/src/main/java/com/jlnavas3/bovedalocal/ui/pantallas/lista/CabeceraMenuLateral.kt).
 
 ---
 

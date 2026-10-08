@@ -31,8 +31,7 @@ fun AccionesCalibracionEngranajes(
     ) {
         ComponenteNavegacion(
             titulo = "Copiar valores",
-            icono = Icons.Filled.ContentCopy,
-            colorIcono = ColorIconosInternos,
+            icono = null,
             alPulsar = {
                 val textoConfig = buildString {
                     appendLine("=== CONFIGURACIÓN DE ENGRANAJES ===")

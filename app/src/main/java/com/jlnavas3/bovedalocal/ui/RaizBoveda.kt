@@ -95,9 +95,37 @@ import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.widget.PantallaWidget1x1Mod
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.widget.PantallaWidgetTotpAjustes
 import com.jlnavas3.bovedalocal.ui.pantallas.autocompletado.PantallaAjustesAutocompletado
 import com.jlnavas3.bovedalocal.ui.pantallas.avanzada.PantallaColoresIds
+import com.jlnavas3.bovedalocal.ui.pantallas.avanzada.PantallaReorganizarAjustes
+import com.jlnavas3.bovedalocal.ui.pantallas.menulateral.PantallaPersonalizarMenuLateral
 import com.jlnavas3.bovedalocal.ui.pantallas.categorias.PantallaGestionCategorias
 import com.jlnavas3.bovedalocal.ui.pantallas.copia.PantallaCopiaAutomatica
 import com.jlnavas3.bovedalocal.ui.pantallas.cxf.PantallaConfirmarImportacionCxf
+import com.jlnavas3.bovedalocal.ui.pantallas.seguridad.PantallaBloqueoBiometria
+import com.jlnavas3.bovedalocal.ui.pantallas.seguridad.PantallaAjustesBiometria
+import com.jlnavas3.bovedalocal.ui.pantallas.seguridad.PantallaBloqueoApp
+import com.jlnavas3.bovedalocal.ui.pantallas.seguridad.PantallaFuerzaBruta
+import com.jlnavas3.bovedalocal.ui.pantallas.seguridad.PantallaSeguridadVisualMemoria
+import com.jlnavas3.bovedalocal.ui.pantallas.seguridad.PantallaSeguridadVisual
+import com.jlnavas3.bovedalocal.ui.pantallas.seguridad.PantallaPortapapeles
+import com.jlnavas3.bovedalocal.ui.pantallas.seguridad.PantallaAuditoriaSeguridad
+import com.jlnavas3.bovedalocal.ui.pantallas.autodestruccion.PantallaAutodestruccionIntentos
+import com.jlnavas3.bovedalocal.ui.pantallas.tema.PantallaTemaPaletas
+import com.jlnavas3.bovedalocal.ui.pantallas.tema.PantallaAnimacionDesbloqueo
+import com.jlnavas3.bovedalocal.ui.pantallas.organizacion.PantallaOrganizacionEstructura
+import com.jlnavas3.bovedalocal.ui.pantallas.organizacion.PantallaOrganizacionJerarquia
+import com.jlnavas3.bovedalocal.ui.pantallas.organizacion.PantallaOrganizacionIndicadores
+import com.jlnavas3.bovedalocal.ui.pantallas.historial.PantallaHistorialClavesGeneradas
+import com.jlnavas3.bovedalocal.ui.pantallas.historial.PantallaHistorialCredenciales
+import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.widget.PantallaAjustesWidgetTotp
+import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.widget.PantallaAjustesWidget1x1
+import com.jlnavas3.bovedalocal.ui.pantallas.tile.PantallaTileConfiguracion
+import com.jlnavas3.bovedalocal.ui.pantallas.copia.PantallaCopiaManual
+import com.jlnavas3.bovedalocal.ui.pantallas.copia.PantallaCopiaAutomaticaLocal
+import com.jlnavas3.bovedalocal.ui.pantallas.copia.PantallaCopiaRecordatorios
+import com.jlnavas3.bovedalocal.ui.pantallas.avanzada.PantallaAvanzadaDesarrollo
+import com.jlnavas3.bovedalocal.ui.pantallas.avanzada.PantallaAvanzadaAlumbrado
+import com.jlnavas3.bovedalocal.ui.pantallas.avanzada.PantallaAvanzadaHaptica
+import com.jlnavas3.bovedalocal.ui.pantallas.avanzada.PantallaAvanzadaZonaPeligro
 import com.jlnavas3.bovedalocal.ui.pantallas.escaner.PantallaCamaraQr
 import com.jlnavas3.bovedalocal.ui.pantallas.formas.PantallaFormasBorde
 import com.jlnavas3.bovedalocal.ui.pantallas.formas.PantallaFormasCurvatura
@@ -296,11 +324,39 @@ fun RaizBoveda(vm: VaultViewModel, actividad: FragmentActivity) {
                     is Pantalla.AjustesCopiaAutomatica -> PantallaCopiaAutomatica(vm, destino.seccionId)
                     is Pantalla.AjustesSenuelo -> PantallaAjustesSenuelo(vm, destino.seccionId)
                     is Pantalla.AjustesAutodestruccion -> PantallaAjustesAutodestruccion(vm, destino.seccionId)
+                    is Pantalla.AutodestruccionIntentos -> PantallaAutodestruccionIntentos(vm, destino.seccionId)
                     is Pantalla.FormatosCampos -> PantallaFormatosCampos(vm, destino.seccionId)
                     is Pantalla.PlantillasCampos -> PantallaPlantillasCampos(vm, destino.seccionId)
                     is Pantalla.HistorialClaves -> PantallaHistorialClaves(vm, destino.seccionId)
                     is Pantalla.AjustesHistorial -> PantallaAjustesHistorial(vm, destino.seccionId)
+                    is Pantalla.HistorialClavesGeneradas -> PantallaHistorialClavesGeneradas(vm, destino.seccionId)
+                    is Pantalla.HistorialCredenciales -> PantallaHistorialCredenciales(vm, destino.seccionId)
                     is Pantalla.Seguridad -> PantallaSeguridad(vm, actividad, destino.seccionId)
+                    is Pantalla.BloqueoBiometria -> PantallaBloqueoBiometria(vm, actividad, destino.seccionId)
+                    is Pantalla.AjustesBiometria -> PantallaAjustesBiometria(vm, actividad, destino.seccionId)
+                    is Pantalla.BloqueoApp -> PantallaBloqueoApp(vm, destino.seccionId)
+                    is Pantalla.FuerzaBruta -> PantallaFuerzaBruta(vm, destino.seccionId)
+                    is Pantalla.SeguridadVisualMemoria -> PantallaSeguridadVisualMemoria(vm, destino.seccionId)
+                    is Pantalla.SeguridadVisual -> PantallaSeguridadVisual(vm, destino.seccionId)
+                    is Pantalla.Portapapeles -> PantallaPortapapeles(vm, destino.seccionId)
+                    is Pantalla.AuditoriaSeguridad -> PantallaAuditoriaSeguridad(vm, destino.seccionId)
+                    is Pantalla.TemaPaletas -> PantallaTemaPaletas(vm, destino.seccionId)
+                    is Pantalla.AnimacionDesbloqueo -> PantallaAnimacionDesbloqueo(vm, destino.seccionId)
+                    is Pantalla.OrganizacionEstructura -> PantallaOrganizacionEstructura(vm, destino.seccionId)
+                    is Pantalla.OrganizacionJerarquia -> PantallaOrganizacionJerarquia(vm, destino.seccionId)
+                    is Pantalla.OrganizacionIndicadores -> PantallaOrganizacionIndicadores(vm, destino.seccionId)
+                    is Pantalla.AjustesWidgetTotpSub -> PantallaAjustesWidgetTotp(vm, destino.seccionId)
+                    is Pantalla.AjustesWidget1x1Sub -> PantallaAjustesWidget1x1(vm, destino.seccionId)
+                    is Pantalla.TileConfiguracion -> PantallaTileConfiguracion(vm, destino.seccionId)
+                    is Pantalla.CopiaManual -> PantallaCopiaManual(vm, destino.seccionId)
+                    is Pantalla.CopiaAutomaticaLocalSub -> PantallaCopiaAutomaticaLocal(vm, destino.seccionId)
+                    is Pantalla.CopiaRecordatorios -> PantallaCopiaRecordatorios(vm, destino.seccionId)
+                    is Pantalla.AvanzadaDesarrollo -> PantallaAvanzadaDesarrollo(vm, destino.seccionId)
+                    is Pantalla.AvanzadaAlumbrado -> PantallaAvanzadaAlumbrado(vm, destino.seccionId)
+                    is Pantalla.AvanzadaHaptica -> PantallaAvanzadaHaptica(vm, destino.seccionId)
+                    is Pantalla.AvanzadaZonaPeligro -> PantallaAvanzadaZonaPeligro(vm, destino.seccionId)
+                    Pantalla.ReorganizarAjustes -> PantallaReorganizarAjustes(vm)
+                    is Pantalla.PersonalizarMenuLateral -> PantallaPersonalizarMenuLateral(vm, destino.seccionId)
                     is Pantalla.CopiaSeguridad -> PantallaCopiaSeguridad(vm, destino.seccionId)
                     is Pantalla.CsvGoogle -> PantallaCsvGoogle(vm, destino.seccionId)
                     is Pantalla.ConfirmarMigracion -> PantallaConfirmarMigracion(vm, destino.urlMigracion)

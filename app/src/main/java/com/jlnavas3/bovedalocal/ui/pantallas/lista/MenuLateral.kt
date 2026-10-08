@@ -1,54 +1,42 @@
 package com.jlnavas3.bovedalocal.ui.pantallas.lista
 
 import android.os.Build
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountCircle
-import androidx.compose.material.icons.filled.AutoAwesome
-import androidx.compose.material.icons.filled.ContentCopy
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Fingerprint
-import androidx.compose.material.icons.filled.Folder
-import androidx.compose.material.icons.filled.HealthAndSafety
-import androidx.compose.material.icons.filled.History
-import androidx.compose.material.icons.filled.Security
-import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material.icons.filled.Timer
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import com.jlnavas3.bovedalocal.crypto.PerfilArgon2
 import com.jlnavas3.bovedalocal.data.AjustesApp
+import com.jlnavas3.bovedalocal.data.AjustesDefaults
 import com.jlnavas3.bovedalocal.ui.Pantalla
-import com.jlnavas3.bovedalocal.ui.theme.Color2FA
-import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
-import com.jlnavas3.bovedalocal.ui.theme.ColorExportacion
-import com.jlnavas3.bovedalocal.ui.theme.ColorGenerador
-import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
-import com.jlnavas3.bovedalocal.ui.theme.ColorPapelera
-import com.jlnavas3.bovedalocal.ui.theme.ColorPasskeys
-import com.jlnavas3.bovedalocal.ui.theme.ColorSalud
-import com.jlnavas3.bovedalocal.ui.theme.ColorSeguridad
-import com.jlnavas3.bovedalocal.ui.theme.Peligro
+import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorTarjetaAjustes
+import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
+import com.jlnavas3.bovedalocal.ui.theme.CurvaturaEsquinas
+import com.jlnavas3.bovedalocal.ui.theme.EstiloBorde
+import com.jlnavas3.bovedalocal.ui.theme.GrosorBorde
 
 /**
- * Menú lateral rediseñado estilo MagicOS / Samsung One UI:
- * - Tarjetas agrupadas con esquinas redondeadas y sin divisores duros.
- * - Iconos en contenedores redondeados con colores temáticos por sección.
- * - Badges numéricos modernos con píldoras de contraste suave.
- * - Acción de bloqueo dedicada y pie de página con badges de seguridad.
+ * Menú lateral personalizable y rediseñado estilo MagicOS / Samsung One UI:
+ * - Opciones dinámicas de visibilidad (cabecera, pie, botón bloquear).
+ * - Modo agrupado por tarjetas o lista plana continua.
+ * - Soporte para sin bordes en tarjetas.
+ * - Ítems y orden dinámicos configurables por el usuario.
  */
 @Composable
 fun MenuLateral(
@@ -65,166 +53,116 @@ fun MenuLateral(
     val topInset = WindowInsets.statusBars.asPaddingValues().calculateTopPadding()
     val topAjusted = (topInset - 24.dp).coerceAtLeast(8.dp)
 
+    val mostrarCabecera = ajustes?.menuLateralMostrarCabecera != false
+    val mostrarPie = ajustes?.menuLateralMostrarPie != false
+    val mostrarBotonBloquear = ajustes?.menuLateralMostrarBotonBloquear != false
+    val agruparItems = ajustes?.menuLateralAgruparItems != false
+    val sinBordes = ajustes?.menuLateralSinBordes == true
+
+    val itemsVisibles = remember(ajustes?.menuLateralItemsVisibles) {
+        val listaCruda = ajustes?.menuLateralItemsVisibles ?: AjustesDefaults.MenuLateral.ITEMS_PREDETERMINADOS
+        listaCruda.filter { id ->
+            !(id == "04-HER-PSK" && Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
+        }
+    }
+
     Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .navigationBarsPadding()
-            .padding(start = 14.dp, end = 14.dp, top = topAjusted, bottom = 10.dp)
+        modifier = Modifier.fillMaxSize()
     ) {
-        // Cabecera destacada estilo MagicOS / One UI
-        CabeceraMenuLateral(nombreApp = nombreApp)
-
-        Spacer(Modifier.height(10.dp))
-
-        // Contenido scrolleable agrupado en tarjetas suaves
         Column(
             modifier = Modifier
                 .weight(1f)
-                .verticalScroll(rememberScrollState()),
-            verticalArrangement = Arrangement.spacedBy(10.dp)
+                .padding(start = 14.dp, end = 14.dp, top = topAjusted, bottom = 8.dp)
         ) {
-            // Grupo 1: Herramientas
-            GrupoMenuLateral(
-                titulo = "Herramientas",
-                idEtiqueta = "04-HER",
-                mostrarId = mostrarIds,
-                ajustes = ajustes
+            if (mostrarCabecera) {
+                CabeceraMenuLateral(
+                    nombreApp = nombreApp,
+                    alPersonalizar = { alIr(Pantalla.PersonalizarMenuLateral()) }
+                )
+                Spacer(Modifier.height(10.dp))
+            }
+
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .verticalScroll(rememberScrollState()),
+                verticalArrangement = Arrangement.spacedBy(10.dp)
             ) {
-                ItemMenu(
-                    texto = "Generar contraseñas",
-                    icono = Icons.Filled.AutoAwesome,
-                    colorIcono = ColorGenerador,
-                    idEtiqueta = "04-HER-GEN",
-                    mostrarId = mostrarIds,
-                    ajustes = ajustes
-                ) { alIr(Pantalla.Generador) }
+                if (agruparItems) {
+                    val grupos = remember(itemsVisibles) {
+                        val mapa = linkedMapOf<String, MutableList<String>>()
+                        for (id in itemsVisibles) {
+                            val grupo = resolverGrupoItemMenuLateral(id)
+                            mapa.getOrPut(grupo) { mutableListOf() }.add(id)
+                        }
+                        mapa
+                    }
 
-                SeparadorItemMenu()
-
-                ItemMenu(
-                    texto = "Historial de contraseñas",
-                    icono = Icons.Filled.History,
-                    colorIcono = ColorGenerador,
-                    idEtiqueta = "04-HER-HST",
-                    mostrarId = mostrarIds,
-                    ajustes = ajustes
-                ) { alIr(Pantalla.HistorialClaves) }
-
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-                    SeparadorItemMenu()
-                    ItemMenu(
-                        texto = "Llaves de paso",
-                        icono = Icons.Filled.Fingerprint,
-                        colorIcono = ColorPasskeys,
-                        idEtiqueta = "04-HER-PSK",
-                        mostrarId = mostrarIds,
-                        ajustes = ajustes
-                    ) { alIr(Pantalla.Passkeys) }
+                    grupos.forEach { (nombreGrupo, itemsDelGrupo) ->
+                        GrupoMenuLateral(
+                            titulo = nombreGrupo,
+                            idEtiqueta = resolverIdEtiquetaGrupo(nombreGrupo),
+                            mostrarId = mostrarIds,
+                            ajustes = ajustes
+                        ) {
+                            itemsDelGrupo.forEachIndexed { indice, id ->
+                                if (indice > 0) {
+                                    SeparadorItemMenu()
+                                }
+                                FilaItemMenuLateral(
+                                    id = id,
+                                    totalDuplicadas = totalDuplicadas,
+                                    totalPapelera = totalPapelera,
+                                    mostrarIds = mostrarIds,
+                                    ajustes = ajustes,
+                                    alIr = alIr
+                                )
+                            }
+                        }
+                    }
+                } else {
+                    // Modo lista plana continua
+                    val formaTarjeta = RoundedCornerShape(CurvaturaEsquinas)
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .then(
+                                if (GrosorBorde > 0.dp && EstiloBorde != "ninguno" && !sinBordes) {
+                                    Modifier.border(
+                                        width = GrosorBorde,
+                                        color = ColorBordeActual,
+                                        shape = formaTarjeta
+                                    )
+                                } else Modifier
+                            )
+                            .clip(formaTarjeta)
+                            .background(ColorTarjetaAjustes)
+                    ) {
+                        itemsVisibles.forEachIndexed { indice, id ->
+                            if (indice > 0) {
+                                SeparadorItemMenu()
+                            }
+                            FilaItemMenuLateral(
+                                id = id,
+                                totalDuplicadas = totalDuplicadas,
+                                totalPapelera = totalPapelera,
+                                mostrarIds = mostrarIds,
+                                ajustes = ajustes,
+                                alIr = alIr
+                            )
+                        }
+                    }
                 }
-
-                SeparadorItemMenu()
-
-                ItemMenu(
-                    texto = "Verificación en dos pasos",
-                    icono = Icons.Filled.Timer,
-                    colorIcono = Color2FA,
-                    idEtiqueta = "04-HER-2FA",
-                    mostrarId = mostrarIds,
-                    ajustes = ajustes
-                ) { alIr(Pantalla.Autenticador) }
             }
 
-            // Grupo 2: Organización y auditoría
-            GrupoMenuLateral(
-                titulo = "Organización y auditoría",
-                idEtiqueta = "03-LST",
-                mostrarId = mostrarIds,
-                ajustes = ajustes
-            ) {
-                ItemMenu(
-                    texto = "Salud",
-                    icono = Icons.Filled.HealthAndSafety,
-                    colorIcono = ColorSalud,
-                    idEtiqueta = "03-LST-SLD",
-                    mostrarId = mostrarIds,
-                    ajustes = ajustes
-                ) { alIr(Pantalla.SaludBoveda) }
-
-                SeparadorItemMenu()
-
-                ItemMenu(
-                    texto = "Duplicados",
-                    icono = Icons.Filled.ContentCopy,
-                    colorIcono = if (totalDuplicadas > 0) Peligro else ColorIconosInternos,
-                    badge = if (totalDuplicadas > 0) totalDuplicadas.toString() else null,
-                    colorBadge = if (totalDuplicadas > 0) Peligro else ColorIconosInternos,
-                    idEtiqueta = "03-LST-DUP",
-                    mostrarId = mostrarIds,
-                    ajustes = ajustes
-                ) { alIr(Pantalla.Duplicados) }
-
-                SeparadorItemMenu()
-
-                ItemMenu(
-                    texto = "Papelera",
-                    icono = Icons.Filled.Delete,
-                    colorIcono = if (totalPapelera > 0) ColorPapelera else ColorIconosInternos,
-                    badge = if (totalPapelera > 0) totalPapelera.toString() else null,
-                    colorBadge = ColorAcento,
-                    idEtiqueta = "03-LST-PAP",
-                    mostrarId = mostrarIds,
-                    ajustes = ajustes
-                ) { alIr(Pantalla.Papelera) }
-
-                SeparadorItemMenu()
-
-                ItemMenu(
-                    texto = "Identidades",
-                    icono = Icons.Filled.AccountCircle,
-                    colorIcono = Color(0xFF0284C7),
-                    idEtiqueta = "03-LST-IDE",
-                    mostrarId = mostrarIds,
-                    ajustes = ajustes
-                ) { alIr(Pantalla.Identidades()) }
-
-                SeparadorItemMenu()
-
-                ItemMenu(
-                    texto = "Categorías",
-                    icono = Icons.Filled.Folder,
-                    colorIcono = Color(0xFF10B981),
-                    idEtiqueta = "03-LST-CAT",
-                    mostrarId = mostrarIds,
-                    ajustes = ajustes
-                ) { alIr(Pantalla.Categorias()) }
-            }
-
-            // Grupo 3: Sistema
-            GrupoMenuLateral(
-                titulo = "Sistema",
-                idEtiqueta = "06-SIS",
-                mostrarId = mostrarIds,
-                ajustes = ajustes
-            ) {
-                ItemMenu(
-                    texto = "Ajustes",
-                    icono = Icons.Filled.Settings,
-                    colorIcono = Color(0xFF546E7A),
-                    idEtiqueta = "00-AJU",
-                    mostrarId = mostrarIds,
-                    ajustes = ajustes
-                ) { alIr(Pantalla.Ajustes) }
+            if (mostrarPie) {
+                Spacer(Modifier.height(8.dp))
+                PieMenuLateral(perfilArgon2 = perfilArgon2)
             }
         }
 
-        Spacer(Modifier.height(10.dp))
-
-        // Pie de Menú: Cápsulas de seguridad y versión
-        PieMenuLateral(perfilArgon2 = perfilArgon2)
-
-        Spacer(Modifier.height(10.dp))
-
-        // Botón Bloquear aplicación
-        BotonFilaBloquear(alBloquear = alBloquear)
+        if (mostrarBotonBloquear) {
+            BotonFilaBloquear(alBloquear = alBloquear)
+        }
     }
 }

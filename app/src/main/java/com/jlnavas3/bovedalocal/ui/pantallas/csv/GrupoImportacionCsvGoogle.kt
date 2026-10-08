@@ -42,8 +42,7 @@ fun GrupoImportacionCsvGoogle(
         SeparadorFilaSimple()
         ComponenteBotonFila(
             titulo = "Importar contraseñas de Google",
-            colorIcono = ColorExportacion,
-            icono = Icons.Filled.FileDownload,
+            icono = null,
             idFila = "05-COP-CSV-IMP",
             mostrarId = mostrarId,
             alPulsar = alIniciarImportacion
@@ -52,7 +51,7 @@ fun GrupoImportacionCsvGoogle(
         ComponenteNavegacion(
             titulo = "Asistente de títulos de sitios web",
             subtitulo = "Normalizar nombres técnicos y resolver cuentas múltiples",
-            icono = Icons.Filled.AutoFixHigh,
+            icono = null,
             idFila = "05-COP-CSV-TIT",
             mostrarId = mostrarId,
             alPulsar = alAbrirNormalizador

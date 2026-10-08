@@ -280,6 +280,7 @@ object AjustesDefaults {
         const val HAPTICA_APP = true
         const val HAPTICA_APP_INTENSIDAD = 0.10f
         const val MOSTRAR_IDS_AJUSTES = false
+        val ORDEN_AJUSTES_PERSONALIZADO: List<String> = emptyList()
     }
 
     // 16. Normalización de Títulos y Redes Locales
@@ -351,6 +352,27 @@ object AjustesDefaults {
     // 20. Plantillas de Campos Personalizadas
     object PlantillasCampos {
         val PREDETERMINADAS: List<PlantillaCamposPersonalizada> = emptyList()
+    }
+
+    // 21. Barra Lateral / Menú Lateral
+    object MenuLateral {
+        const val MOSTRAR_CABECERA = true
+        const val MOSTRAR_PIE = true
+        const val MOSTRAR_BOTON_BLOQUEAR = true
+        const val AGRUPAR_ITEMS = true
+        const val SIN_BORDES = true
+        val ITEMS_PREDETERMINADOS = listOf(
+            "04-HER-GEN",
+            "04-HER-HST",
+            "04-HER-PSK",
+            "04-HER-2FA",
+            "03-LST-SLD",
+            "03-LST-DUP",
+            "03-LST-PAP",
+            "03-LST-IDE",
+            "03-LST-CAT",
+            "00-AJU"
+        )
     }
 }
 

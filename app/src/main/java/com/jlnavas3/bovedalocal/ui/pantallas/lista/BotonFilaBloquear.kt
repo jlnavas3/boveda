@@ -27,53 +27,50 @@ import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorTarjetaAjustes
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorTextoAjustes
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
-import com.jlnavas3.bovedalocal.ui.theme.CurvaturaEsquinas
-import com.jlnavas3.bovedalocal.ui.theme.EstiloBorde
-import com.jlnavas3.bovedalocal.ui.theme.GrosorBorde
+import androidx.compose.foundation.layout.navigationBarsPadding
+import com.jlnavas3.bovedalocal.ui.theme.Peligro
 
 /**
- * Botón estilo fila para bloquear la aplicación situado debajo del pie del menú lateral.
+ * Botón estilo barra inferior para bloquear la aplicación situado debajo del pie del menú lateral.
+ * Se extiende de borde a borde absoluto (izquierdo, derecho e inferior) con fondo distintivo.
  */
 @Composable
 fun BotonFilaBloquear(
     alBloquear: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val forma = RoundedCornerShape(CurvaturaEsquinas)
+    val colorFondoBloquear = Peligro.copy(alpha = 0.14f)
+    val colorContenido = Peligro
 
-    Row(
+    androidx.compose.foundation.layout.Box(
         modifier = modifier
             .fillMaxWidth()
-            .then(
-                if (GrosorBorde > 0.dp && EstiloBorde != "ninguno") {
-                    Modifier.border(
-                        width = GrosorBorde,
-                        color = ColorBordeActual,
-                        shape = forma
-                    )
-                } else Modifier
-            )
-            .clip(forma)
-            .background(ColorTarjetaAjustes)
+            .background(colorFondoBloquear)
             .clickable { alBloquear() }
-            .padding(horizontal = 14.dp, vertical = 11.dp),
-        horizontalArrangement = Arrangement.Center,
-        verticalAlignment = Alignment.CenterVertically
     ) {
-        Icon(
-            imageVector = Icons.Filled.Lock,
-            contentDescription = null,
-            tint = ColorAcento,
-            modifier = Modifier.size(19.dp)
-        )
-        Spacer(Modifier.width(8.dp))
-        Text(
-            text = "Bloquear aplicación",
-            style = MaterialTheme.typography.bodyMedium.copy(
-                fontSize = 13.5.sp,
-                fontWeight = FontWeight.Medium
-            ),
-            color = ColorTextoAjustes
-        )
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .navigationBarsPadding()
+                .padding(horizontal = 16.dp, vertical = 14.dp),
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                imageVector = Icons.Filled.Lock,
+                contentDescription = null,
+                tint = colorContenido,
+                modifier = Modifier.size(19.dp)
+            )
+            Spacer(Modifier.width(8.dp))
+            Text(
+                text = "Bloquear aplicación",
+                style = MaterialTheme.typography.bodyMedium.copy(
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.SemiBold
+                ),
+                color = colorContenido
+            )
+        }
     }
 }

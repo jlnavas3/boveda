@@ -27,7 +27,17 @@ fun crearElementosListaAjustes(
         grupo = "Lista de cuentas",
         palabrasClave = "agrupar agrupamiento lista densidad compacta comoda cuentas sitio dominio carpetas orden",
         valorTexto = if (ajustes.agruparPorSitio) "Agrupada" else "Individual",
-        alPulsar = { vm.ir(Pantalla.OrganizacionLista(null)) }
+        alPulsar = { vm.ir(Pantalla.OrganizacionLista()) }
+    ),
+    ElementoMenuAjustes(
+        titulo = "Asistente de títulos",
+        subtitulo = "Normalizar nombres web y reglas de URLs",
+        icono = Icons.Filled.Layers,
+        colorIcono = Color(0xFF00ACC1),
+        idEtiqueta = "03-LST-DES-TIT",
+        grupo = "Lista de cuentas",
+        palabrasClave = "asistente titulos normalizador nombres urls reglas google sitios",
+        alPulsar = { vm.ir(Pantalla.NormalizadorTitulos()) }
     ),
     ElementoMenuAjustes(
         titulo = "Identidades",
@@ -37,7 +47,7 @@ fun crearElementosListaAjustes(
         idEtiqueta = "03-LST-IDE",
         grupo = "Lista de cuentas",
         palabrasClave = "identidades cuentas perfiles correo email alias inteligente vincular personas",
-        alPulsar = { vm.ir(Pantalla.Identidades("03-LST-IDE")) }
+        alPulsar = { vm.ir(Pantalla.Identidades()) }
     ),
     ElementoMenuAjustes(
         titulo = "Índice A-Z",
@@ -48,7 +58,7 @@ fun crearElementosListaAjustes(
         grupo = "Lista de cuentas",
         palabrasClave = "abecedario indice lateral ola niagara alfabeto scroll letras a-z",
         valorTexto = if (ajustes.mostrarIndiceAlfabetico) "Activo" else "Oculto",
-        alPulsar = { vm.ir(Pantalla.AjustesIndice("03-LST-AZX")) }
+        alPulsar = { vm.ir(Pantalla.AjustesIndice()) }
     ),
     ElementoMenuAjustes(
         titulo = "Formatos",
@@ -58,7 +68,7 @@ fun crearElementosListaAjustes(
         idEtiqueta = "03-LST-FMT",
         grupo = "Lista de cuentas",
         palabrasClave = "formatos campos plantillas autofill rellenar formulario",
-        alPulsar = { vm.ir(Pantalla.FormatosCampos("03-LST-FMT")) }
+        alPulsar = { vm.ir(Pantalla.FormatosCampos()) }
     ),
     ElementoMenuAjustes(
         titulo = "Plantillas de campos",
@@ -69,6 +79,6 @@ fun crearElementosListaAjustes(
         grupo = "Lista de cuentas",
         palabrasClave = "plantillas campos presets personalizados formulas formularios modelos estructuras",
         valorTexto = "${ajustes.plantillasCamposPersonalizadas.size} pers.",
-        alPulsar = { vm.ir(Pantalla.PlantillasCampos("03-LST-PLT")) }
+        alPulsar = { vm.ir(Pantalla.PlantillasCampos()) }
     )
 )

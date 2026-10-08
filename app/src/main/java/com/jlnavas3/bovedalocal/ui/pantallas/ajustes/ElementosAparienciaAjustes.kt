@@ -1,6 +1,7 @@
 package com.jlnavas3.bovedalocal.ui.pantallas.ajustes
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.Badge
 import androidx.compose.material.icons.filled.Palette
 import androidx.compose.material.icons.filled.SquareFoot
@@ -31,29 +32,29 @@ fun crearElementosAparienciaAjustes(
             "oscuro" -> "Oscuro"
             else -> "Sistema"
         },
-        alPulsar = { vm.ir(Pantalla.Tema("02-APA-THM")) }
+        alPulsar = { vm.ir(Pantalla.Tema()) }
     ),
     ElementoMenuAjustes(
         titulo = "Tipografía",
         subtitulo = "Familia, peso y escala tipográfica",
         icono = Icons.Filled.TextFields,
         colorIcono = Color(0xFF5E35B1),
-        idEtiqueta = "02-APA-FNT",
+        idEtiqueta = "02-APA-TYP",
         grupo = "Apariencia",
         palabrasClave = "fuente tipografia letra mono sans tamano escala peso",
         valorTexto = ajustes.familiaFuente.replaceFirstChar { it.uppercase() },
-        alPulsar = { vm.ir(Pantalla.Tipografia("02-APA-FNT")) }
+        alPulsar = { vm.ir(Pantalla.Tipografia()) }
     ),
     ElementoMenuAjustes(
         titulo = "Formas y bordes",
         subtitulo = "Curvatura, grosor de líneas y separación",
         icono = Icons.Filled.SquareFoot,
         colorIcono = Color(0xFF3949AB),
-        idEtiqueta = "02-APA-SHP",
+        idEtiqueta = "02-APA-GEO",
         grupo = "Apariencia",
         palabrasClave = "formas bordes esquinas curvatura radio contorno tarjetas estilo separacion",
         valorTexto = "${ajustes.curvaturaEsquinasDp.toInt()}dp",
-        alPulsar = { vm.ir(Pantalla.Formas("02-APA-SHP")) }
+        alPulsar = { vm.ir(Pantalla.Formas()) }
     ),
     ElementoMenuAjustes(
         titulo = "Identificadores de campos",
@@ -63,7 +64,7 @@ fun crearElementosAparienciaAjustes(
         idEtiqueta = "02-APA-COL",
         grupo = "Apariencia",
         palabrasClave = "colores etiquetas tipos credenciales pastillas insignias",
-        alPulsar = { vm.ir(Pantalla.ColoresDatos("02-APA-COL")) }
+        alPulsar = { vm.ir(Pantalla.ColoresDatos()) }
     ),
     ElementoMenuAjustes(
         titulo = "Nombre de la bóveda",

@@ -30,5 +30,12 @@ fun crearCatalogoAjustesHub(
     val herramientas = crearElementosHerramientasAjustes(vm, alAbrirProveedorPasskeys)
     val (copias, sistema) = crearElementosCopiasYSistemaAjustes(vm)
 
-    return seguridad + apariencia + lista + herramientas + copias + sistema
+    val base = seguridad + apariencia + lista + herramientas + copias + sistema
+    val orden = ajustes.ordenAjustesPersonalizado
+    if (orden.isEmpty()) return base
+
+    val porId = base.associateBy { it.idEtiqueta }
+    val ordenados = orden.mapNotNull { porId[it] }
+    val noOrdenados = base.filterNot { orden.contains(it.idEtiqueta) }
+    return ordenados + noOrdenados
 }

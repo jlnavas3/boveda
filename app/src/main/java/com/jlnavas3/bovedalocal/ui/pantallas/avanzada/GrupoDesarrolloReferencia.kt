@@ -32,6 +32,7 @@ fun GrupoDesarrolloReferencia(
     alCambiarRepeticiones: (Int) -> Unit,
     alCambiarDuracion: (Int) -> Unit,
     alNavegarColoresIds: () -> Unit,
+    alNavegarReorganizarAjustes: () -> Unit = {},
     haptica: Haptica,
     modifier: Modifier = Modifier
 ) {
@@ -79,6 +80,18 @@ fun GrupoDesarrolloReferencia(
                 }
             )
         }
+        ComponenteSeparador(sangriaInicio = 16.dp)
+        ComponenteNavegacion(
+            titulo = "Reorganizar ajustes",
+            subtitulo = "Personalizar el orden de las opciones arrastrando",
+            icono = null,
+            idFila = "06-SIS-AVZ-ORG",
+            mostrarId = mostrarIdsAjustes,
+            alPulsar = {
+                haptica.tic()
+                alNavegarReorganizarAjustes()
+            }
+        )
         ComponenteSeparador(sangriaInicio = 16.dp)
         ComponenteSwitch(
             titulo = "Alumbrado de navegación",

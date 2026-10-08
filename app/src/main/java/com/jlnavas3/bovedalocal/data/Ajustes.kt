@@ -94,6 +94,34 @@ private fun deserializarPlantillasCampos(raw: String): List<PlantillaCamposPerso
     AjustesDefaults.PlantillasCampos.PREDETERMINADAS
 }
 
+private fun deserializarOrdenAjustes(raw: String): List<String> = try {
+    if (raw.isBlank()) AjustesDefaults.Interaccion.ORDEN_AJUSTES_PERSONALIZADO
+    else jsonAjustes.decodeFromString(raw)
+} catch (_: Exception) {
+    AjustesDefaults.Interaccion.ORDEN_AJUSTES_PERSONALIZADO
+}
+
+private fun deserializarOrdenJerarquia(raw: String): Map<String, List<String>> = try {
+    if (raw.isBlank()) emptyMap()
+    else jsonAjustes.decodeFromString(raw)
+} catch (_: Exception) {
+    emptyMap()
+}
+
+private fun deserializarReparenting(raw: String): Map<String, String> = try {
+    if (raw.isBlank()) emptyMap()
+    else jsonAjustes.decodeFromString(raw)
+} catch (_: Exception) {
+    emptyMap()
+}
+
+private fun deserializarItemsMenuLateral(raw: String): List<String> = try {
+    if (raw.isBlank()) AjustesDefaults.MenuLateral.ITEMS_PREDETERMINADOS
+    else jsonAjustes.decodeFromString(raw)
+} catch (_: Exception) {
+    AjustesDefaults.MenuLateral.ITEMS_PREDETERMINADOS
+}
+
 /** El modo de huella en uso, o null si está apagada. Única lectura de [AjustesApp.biometriaModo]. */
 val AjustesApp.modoBiometriaActivo: BiometricKeyStore.Modo?
     get() = if (biometriaActiva) BiometricKeyStore.Modo.desde(biometriaModo) else null
@@ -353,7 +381,18 @@ data class AjustesApp(
     val respetarTitulosPersonalizados: Boolean = AjustesDefaults.NormalizacionTitulos.RESPETAR_TITULOS_PERSONALIZADOS,
     // Autodestrucción por intentos fallidos y plantillas de campos personalizadas
     val autodestruccionIntentosFallidosMax: Int = AjustesDefaults.Seguridad.AUTODESTRUCCION_INTENTOS_FALLIDOS_MAX,
-    val plantillasCamposPersonalizadas: List<PlantillaCamposPersonalizada> = AjustesDefaults.PlantillasCampos.PREDETERMINADAS
+    val plantillasCamposPersonalizadas: List<PlantillaCamposPersonalizada> = AjustesDefaults.PlantillasCampos.PREDETERMINADAS,
+    // Reorganización personalizada de ajustes
+    val ordenAjustesPersonalizado: List<String> = AjustesDefaults.Interaccion.ORDEN_AJUSTES_PERSONALIZADO,
+    val ordenJerarquiaPersonalizado: Map<String, List<String>> = emptyMap(),
+    val reparentingPersonalizado: Map<String, String> = emptyMap(),
+    // Personalización de la barra lateral / menú lateral
+    val menuLateralMostrarCabecera: Boolean = AjustesDefaults.MenuLateral.MOSTRAR_CABECERA,
+    val menuLateralMostrarPie: Boolean = AjustesDefaults.MenuLateral.MOSTRAR_PIE,
+    val menuLateralMostrarBotonBloquear: Boolean = AjustesDefaults.MenuLateral.MOSTRAR_BOTON_BLOQUEAR,
+    val menuLateralAgruparItems: Boolean = AjustesDefaults.MenuLateral.AGRUPAR_ITEMS,
+    val menuLateralSinBordes: Boolean = AjustesDefaults.MenuLateral.SIN_BORDES,
+    val menuLateralItemsVisibles: List<String> = AjustesDefaults.MenuLateral.ITEMS_PREDETERMINADOS
 ) {
     val modoVisualizacionIdentidades: ModoVisualizacionIdentidades
         get() = ModoVisualizacionIdentidades.desde(modoIdentidades)
@@ -651,7 +690,16 @@ class AlmacenAjustes(contexto: Context) {
             formatoColisionTitulos = prefs.getString("formato_colision_titulos", AjustesDefaults.NormalizacionTitulos.FORMATO_COLISION_TITULOS) ?: AjustesDefaults.NormalizacionTitulos.FORMATO_COLISION_TITULOS,
             respetarTitulosPersonalizados = prefs.getBoolean("respetar_titulos_personalizados", AjustesDefaults.NormalizacionTitulos.RESPETAR_TITULOS_PERSONALIZADOS),
             autodestruccionIntentosFallidosMax = prefs.getInt("autodestruccion_intentos_max", AjustesDefaults.Seguridad.AUTODESTRUCCION_INTENTOS_FALLIDOS_MAX),
-            plantillasCamposPersonalizadas = deserializarPlantillasCampos(prefs.getString("plantillas_campos_personalizadas_json", "") ?: "")
+            plantillasCamposPersonalizadas = deserializarPlantillasCampos(prefs.getString("plantillas_campos_personalizadas_json", "") ?: ""),
+            ordenAjustesPersonalizado = deserializarOrdenAjustes(prefs.getString("orden_ajustes_personalizado_json", "") ?: ""),
+            ordenJerarquiaPersonalizado = deserializarOrdenJerarquia(prefs.getString("orden_jerarquia_personalizado_json", "") ?: ""),
+            reparentingPersonalizado = deserializarReparenting(prefs.getString("reparenting_personalizado_json", "") ?: ""),
+            menuLateralMostrarCabecera = prefs.getBoolean("menu_lateral_mostrar_cabecera", AjustesDefaults.MenuLateral.MOSTRAR_CABECERA),
+            menuLateralMostrarPie = prefs.getBoolean("menu_lateral_mostrar_pie", AjustesDefaults.MenuLateral.MOSTRAR_PIE),
+            menuLateralMostrarBotonBloquear = prefs.getBoolean("menu_lateral_mostrar_boton_bloquear", AjustesDefaults.MenuLateral.MOSTRAR_BOTON_BLOQUEAR),
+            menuLateralAgruparItems = prefs.getBoolean("menu_lateral_agrupar_items", AjustesDefaults.MenuLateral.AGRUPAR_ITEMS),
+            menuLateralSinBordes = prefs.getBoolean("menu_lateral_sin_bordes", AjustesDefaults.MenuLateral.SIN_BORDES),
+            menuLateralItemsVisibles = deserializarItemsMenuLateral(prefs.getString("menu_lateral_items_visibles_json", "") ?: "")
         )
     }
 
@@ -866,6 +914,15 @@ class AlmacenAjustes(contexto: Context) {
             .putBoolean("respetar_titulos_personalizados", nuevo.respetarTitulosPersonalizados)
             .putInt("autodestruccion_intentos_max", nuevo.autodestruccionIntentosFallidosMax)
             .putString("plantillas_campos_personalizadas_json", jsonAjustes.encodeToString(nuevo.plantillasCamposPersonalizadas))
+            .putString("orden_ajustes_personalizado_json", jsonAjustes.encodeToString(nuevo.ordenAjustesPersonalizado))
+            .putString("orden_jerarquia_personalizado_json", jsonAjustes.encodeToString(nuevo.ordenJerarquiaPersonalizado))
+            .putString("reparenting_personalizado_json", jsonAjustes.encodeToString(nuevo.reparentingPersonalizado))
+            .putBoolean("menu_lateral_mostrar_cabecera", nuevo.menuLateralMostrarCabecera)
+            .putBoolean("menu_lateral_mostrar_pie", nuevo.menuLateralMostrarPie)
+            .putBoolean("menu_lateral_mostrar_boton_bloquear", nuevo.menuLateralMostrarBotonBloquear)
+            .putBoolean("menu_lateral_agrupar_items", nuevo.menuLateralAgruparItems)
+            .putBoolean("menu_lateral_sin_bordes", nuevo.menuLateralSinBordes)
+            .putString("menu_lateral_items_visibles_json", jsonAjustes.encodeToString(nuevo.menuLateralItemsVisibles))
             .apply()
         _ajustes.value = nuevo
         com.jlnavas3.bovedalocal.util.Haptica.sincronizar(nuevo)

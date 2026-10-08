@@ -26,7 +26,7 @@ fun crearElementosCopiasYSistemaAjustes(
             idEtiqueta = "05-COP-MAN",
             grupo = "Copias y datos",
             palabrasClave = "copia seguridad backup exportar importar restaurar auto automatica",
-            alPulsar = { vm.ir(Pantalla.CopiaSeguridad("05-COP-MAN")) }
+            alPulsar = { vm.ir(Pantalla.CopiaSeguridad()) }
         ),
         ElementoMenuAjustes(
             titulo = "Importar de Google",
@@ -36,7 +36,7 @@ fun crearElementosCopiasYSistemaAjustes(
             idEtiqueta = "05-COP-CSV",
             grupo = "Copias y datos",
             palabrasClave = "google passwords csv importar chrome navegador",
-            alPulsar = { vm.ir(Pantalla.CsvGoogle("05-COP-CSV")) }
+            alPulsar = { vm.ir(Pantalla.CsvGoogle()) }
         ),
         ElementoMenuAjustes(
             titulo = "Kit de emergencia",
@@ -46,7 +46,7 @@ fun crearElementosCopiasYSistemaAjustes(
             idEtiqueta = "05-COP-KIT",
             grupo = "Copias y datos",
             palabrasClave = "kit emergencia papel pdf imprimir hoja rescate",
-            alPulsar = { vm.ir(Pantalla.KitEmergencia("05-COP-KIT")) }
+            alPulsar = { vm.ir(Pantalla.KitEmergencia()) }
         )
     )
 
@@ -59,7 +59,7 @@ fun crearElementosCopiasYSistemaAjustes(
             idEtiqueta = "06-SIS-AVZ",
             grupo = "Sistema",
             palabrasClave = "avanzada maestra clave cambiar borrar ids desarrollo haptica vibracion",
-            alPulsar = { vm.ir(Pantalla.Avanzada("06-SIS-AVZ")) }
+            alPulsar = { vm.ir(Pantalla.Avanzada()) }
         ),
         ElementoMenuAjustes(
             titulo = "Registro de eventos",
@@ -69,7 +69,7 @@ fun crearElementosCopiasYSistemaAjustes(
             idEtiqueta = "06-SIS-LOG",
             grupo = "Sistema",
             palabrasClave = "registro eventos logs historial auditoria fallos accesos",
-            alPulsar = { vm.ir(Pantalla.Registro("06-SIS-LOG")) }
+            alPulsar = { vm.ir(Pantalla.Registro()) }
         ),
         ElementoMenuAjustes(
             titulo = "Diagnóstico de seguridad",
@@ -79,7 +79,7 @@ fun crearElementosCopiasYSistemaAjustes(
             idEtiqueta = "06-SIS-DGN",
             grupo = "Sistema",
             palabrasClave = "diagnostico seguridad acerca de version info auditoria integridad",
-            alPulsar = { vm.ir(Pantalla.AcercaDe("06-SIS-DGN")) }
+            alPulsar = { vm.ir(Pantalla.AcercaDe()) }
         )
     )
 

@@ -76,8 +76,8 @@ fun PantallaAjustesAutodestruccion(
                 .background(ColorAjustesFondo)
         ) {
             BarraSuperiorPantalla(
-                titulo = "Autodestrucción",
-                idEtiqueta = "01-SEG-DES",
+                titulo = "Autodestrucción por PIN",
+                idEtiqueta = "01-SEG-DES-PIN",
                 mostrarId = ajustes.mostrarIdsAjustes,
                 alVolver = { vm.volverAtras() },
                 conSeparador = scrollState.value > 0,
@@ -86,8 +86,7 @@ fun PantallaAjustesAutodestruccion(
                     BotonMenuOpcionesPantalla(
                         grupos = listOf(
                             AccionSaltoGrupo("01-SEG-DES-G01", "Información"),
-                            AccionSaltoGrupo("01-SEG-DES-G02", "PIN de emergencia"),
-                            AccionSaltoGrupo("01-SEG-DES-G03", "Intentos fallidos")
+                            AccionSaltoGrupo("01-SEG-DES-G02", "PIN de emergencia")
                         )
                     )
                 }
@@ -161,19 +160,6 @@ fun PantallaAjustesAutodestruccion(
                         }
                     },
                     modifier = Modifier.bringIntoViewRequester(reqPin)
-                )
-
-                Spacer(Modifier.height(16.dp))
-
-                // Configuración de autodestrucción por intentos fallidos consecutivos
-                GrupoAutodestruccionIntentosFallidos(
-                    intentosMax = ajustes.autodestruccionIntentosFallidosMax,
-                    alCambiarIntentosMax = { nuevoLimite ->
-                        haptica.tic()
-                        vm.ajustarAutodestruccionIntentosFallidosMax(nuevoLimite)
-                    },
-                    mostrarIdsAjustes = ajustes.mostrarIdsAjustes,
-                    modifier = Modifier.bringIntoViewRequester(reqIntentos)
                 )
 
                 Spacer(Modifier.height(32.dp))

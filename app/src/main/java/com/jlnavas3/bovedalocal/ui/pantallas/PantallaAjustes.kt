@@ -32,6 +32,7 @@ import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.DialogoProveedorPasskeys
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.VistaGruposAjustesHub
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.VistaResultadosBusquedaAjustes
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.crearCatalogoAjustesHub
+import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.crearIndiceBusquedaAjustes
 
 @Composable
 fun PantallaAjustes(
@@ -64,14 +65,25 @@ fun PantallaAjustes(
         )
     }
 
-    val elementosFiltrados = remember(textoBusqueda, todosLosElementos) {
+    val indiceBusqueda = remember(ajustes) {
+        crearIndiceBusquedaAjustes(
+            ajustes = ajustes,
+            vm = vm,
+            alAbrirNombreBoveda = { dialogoNombreBoveda = true },
+            alAbrirProveedorPasskeys = { dialogoProveedorPasskeys = true },
+            alAbrirCambioMaestra = { dialogoCambioMaestra = true }
+        )
+    }
+
+    val elementosFiltrados = remember(textoBusqueda, indiceBusqueda) {
         val q = textoBusqueda.trim().lowercase()
         if (q.isEmpty()) emptyList()
-        else todosLosElementos.filter {
-            it.titulo.lowercase().contains(q) ||
-            it.subtitulo.lowercase().contains(q) ||
-            it.idEtiqueta.lowercase().contains(q) ||
-            it.palabrasClave.lowercase().contains(q)
+        else {
+            val palabras = q.split("\\s+".toRegex()).filter { it.isNotBlank() }
+            indiceBusqueda.filter { item ->
+                val textoCompleto = "${item.titulo} ${item.subtitulo} ${item.ruta} ${item.idEtiqueta} ${item.palabrasClave}".lowercase()
+                palabras.all { textoCompleto.contains(it) }
+            }
         }
     }
 
@@ -116,7 +128,11 @@ fun PantallaAjustes(
                 } else {
                     VistaGruposAjustesHub(
                         todosLosElementos = todosLosElementos,
-                        mostrarIds = ajustes.mostrarIdsAjustes
+                        ajustes = ajustes,
+                        vm = vm,
+                        alAbrirNombreBoveda = { dialogoNombreBoveda = true },
+                        alAbrirProveedorPasskeys = { dialogoProveedorPasskeys = true },
+                        alAbrirCambioMaestra = { dialogoCambioMaestra = true }
                     )
                 }
 

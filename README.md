@@ -3,8 +3,8 @@
 [![Kotlin](https://img.shields.io/badge/Kotlin-2.x-7F52FF?logo=kotlin&logoColor=white)](https://kotlinlang.org/)
 [![Jetpack Compose](https://img.shields.io/badge/Jetpack%20Compose-Material%203-4285F4?logo=jetpackcompose&logoColor=white)](https://developer.android.com/jetpack/compose)
 [![Platform](https://img.shields.io/badge/Android-Min%2029%20%7C%20Target%2035%20%7C%20Compile%2036-3DDC84?logo=android&logoColor=white)](https://developer.android.com/)
-[![Tests](https://img.shields.io/badge/Tests-349%2F349%20Passing-brightgreen?logo=gradle)](https://gradle.org/)
-[![Version](https://img.shields.io/badge/Version-v1.9.49-blue?logo=android)](https://github.com/)
+[![Tests](https://img.shields.io/badge/Tests-354%2F354%20Passing-brightgreen?logo=gradle)](https://gradle.org/)
+[![Version](https://img.shields.io/badge/Version-v1.10.7-blue?logo=android)](https://github.com/)
 [![Architecture](https://img.shields.io/badge/Architecture-Clean%20%7C%20Micro--Design%20%7C%20MVI-blueviolet)](https://github.com/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
