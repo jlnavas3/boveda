@@ -78,10 +78,10 @@ fun IndicadorContenidoTarjeta(
     Canvas(
         modifier = modifier
             .fillMaxWidth()
-            .height(3.5.dp)
+            .height(2.dp)
     ) {
         val espaciadoPx = 2.dp.toPx()
-        val cornerRadiusPx = 2.dp.toPx()
+        val cornerRadiusPx = 1.dp.toPx()
         val numSegmentos = segmentos.size
         val anchoSegmento = (size.width - (espaciadoPx * (numSegmentos - 1))) / numSegmentos
         val cornerRadius = CornerRadius(cornerRadiusPx, cornerRadiusPx)
@@ -90,7 +90,7 @@ fun IndicadorContenidoTarjeta(
         for (seg in segmentos) {
             if (seg.activo) {
                 drawRoundRect(
-                    color = seg.color,
+                    color = seg.color.copy(alpha = 0.70f),
                     topLeft = Offset(xOffset, 0f),
                     size = Size(anchoSegmento, size.height),
                     cornerRadius = cornerRadius

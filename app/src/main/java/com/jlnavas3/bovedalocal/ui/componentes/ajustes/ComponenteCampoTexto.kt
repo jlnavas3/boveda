@@ -74,6 +74,7 @@ fun ComponenteCampoTexto(
     readOnly: Boolean = false,
     habilitado: Boolean = true,
     botonLimpiar: Boolean = false,
+    sinFondo: Boolean = false,
     leadingIcon: (@Composable () -> Unit)? = null,
     trailingIcon: (@Composable () -> Unit)? = null,
     alPulsar: (() -> Unit)? = null,
@@ -85,7 +86,7 @@ fun ComponenteCampoTexto(
     val esOscuro = esOscuroActivo
 
     // Superficie suave One UI / MagicOS vinculada a la paleta sobria (Capa 2)
-    val colorFondoCampo = ColorCampoAjustes
+    val colorFondoCampo = if (sinFondo) Color.Transparent else ColorCampoAjustes
 
     // Estado interno para visibilidad de contraseña si no se controla externamente
     var verContrasenaInterno by remember { mutableStateOf(false) }
@@ -170,6 +171,7 @@ fun ComponenteCampoTexto(
 
     val grosorConfigurado = if (GrosorBorde > 0.dp) GrosorBorde else 1.dp
     val borderModifier = when {
+        sinFondo -> Modifier
         isFocused && colorBordeIzquierdo != null -> {
             Modifier.border(grosorConfigurado, colorBordeIzquierdo.copy(alpha = 0.65f), forma)
         }
@@ -184,11 +186,15 @@ fun ComponenteCampoTexto(
 
     val estiloTexto = if (monoespaciada) {
         MaterialTheme.typography.bodyMedium.copy(
+            color = TextoPrincipal,
             fontFamily = FontFamily.Monospace,
             fontSize = 14.5.sp
         )
     } else {
-        MaterialTheme.typography.bodyMedium.copy(fontSize = 15.sp)
+        MaterialTheme.typography.bodyMedium.copy(
+            color = TextoPrincipal,
+            fontSize = 15.sp
+        )
     }
     val composablePlaceholder: (@Composable () -> Unit)? = placeholder?.let { { Text(it) } }
 
@@ -196,9 +202,14 @@ fun ComponenteCampoTexto(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .clip(forma)
-                .background(colorFondoCampo)
-                .then(borderModifier)
+                .then(
+                    if (!sinFondo) {
+                        Modifier
+                            .clip(forma)
+                            .background(colorFondoCampo)
+                            .then(borderModifier)
+                    } else Modifier
+                )
                 .then(
                     if (alPulsar != null && habilitado) {
                         Modifier.clickable { alPulsar() }
@@ -227,7 +238,7 @@ fun ComponenteCampoTexto(
                 colores = coloresSinBordes,
                 interactionSource = interactionSource
             )
-            if (colorBordeIzquierdo != null) {
+            if (colorBordeIzquierdo != null && !sinFondo) {
                 Box(
                     modifier = Modifier.matchParentSize()
                 ) {

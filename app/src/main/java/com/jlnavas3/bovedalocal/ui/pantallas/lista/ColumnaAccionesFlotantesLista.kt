@@ -23,6 +23,7 @@ import com.jlnavas3.bovedalocal.ui.theme.ColorSobreAcento
 import com.jlnavas3.bovedalocal.ui.theme.CurvaturaEsquinas
 import com.jlnavas3.bovedalocal.ui.theme.EstiloBorde
 import com.jlnavas3.bovedalocal.ui.theme.GrosorBorde
+import com.jlnavas3.bovedalocal.ui.theme.Peligro
 
 /**
  * Columna vertical de botones flotantes (FAB) para la pantalla principal:
@@ -42,21 +43,22 @@ fun ColumnaAccionesFlotantesLista(
         horizontalAlignment = Alignment.End,
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        // FAB superior: Bloquear app (Candado)
+        // FAB superior: Bloquear app (Candado) con estilo y color idéntico al menú lateral
         SmallFloatingActionButton(
             onClick = alBloquear,
-            containerColor = ColorTarjetaAjustes,
-            contentColor = ColorAcento,
+            containerColor = Peligro.copy(alpha = 0.15f),
+            contentColor = Peligro,
             shape = formaFab,
             modifier = Modifier.then(
                 if (GrosorBorde > 0.dp && EstiloBorde != "ninguno") {
-                    Modifier.border(GrosorBorde, ColorBordeActual, formaFab)
+                    Modifier.border(GrosorBorde, Peligro.copy(alpha = 0.30f), formaFab)
                 } else Modifier
             )
         ) {
             Icon(
                 imageVector = Icons.Filled.Lock,
                 contentDescription = "Bloquear bóveda",
+                tint = Peligro,
                 modifier = Modifier.size(22.dp)
             )
         }

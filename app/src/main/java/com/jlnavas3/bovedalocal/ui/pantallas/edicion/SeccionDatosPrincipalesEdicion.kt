@@ -3,6 +3,7 @@ package com.jlnavas3.bovedalocal.ui.pantallas.edicion
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
@@ -55,20 +56,12 @@ fun SeccionDatosPrincipalesEdicion(
     alCambiarCamposPersonalizados: (List<CampoPersonalizado>) -> Unit,
     listaEnlaces: List<EnlaceEditable>,
     ajustes: AjustesApp,
-    haptica: Haptica
+    haptica: Haptica,
+    modifier: Modifier = Modifier
 ) {
     val contexto = LocalContext.current
 
-    GrupoAjustes(etiqueta = "Datos principales") {
-        Column(modifier = Modifier.padding(14.dp)) {
-            ComponenteCampoTexto(
-                valor = titulo,
-                etiqueta = "Título",
-                alCambiar = alCambiarTitulo,
-                colorBordeIzquierdo = ColorAcento,
-                botonLimpiar = true
-            )
-
+    Column(modifier = modifier.fillMaxWidth()) {
             val urlsParaResolver = remember(listaEnlaces, original) {
                 val reconstruidas = listaEnlaces.map { LanzadorEnlaces.reconstruirDesdeEdicion(it) }.filter { it.isNotBlank() }
                 if (reconstruidas.isEmpty() && original != null) original.urls else reconstruidas
@@ -95,7 +88,6 @@ fun SeccionDatosPrincipalesEdicion(
                 !titulo.trim().equals(nombreAppDetectada, ignoreCase = true) &&
                 (titulo.isBlank() || titulo == "Nueva entrada" || com.jlnavas3.bovedalocal.util.NormalizadorTitulosSitios.esTituloTecnico(titulo, urlsParaResolver))
             if (debeSugerirNombreApp) {
-                Spacer(Modifier.height(6.dp))
                 Row(
                     modifier = Modifier
                         .clip(RoundedCornerShape(8.dp))
@@ -122,12 +114,14 @@ fun SeccionDatosPrincipalesEdicion(
                         overflow = TextOverflow.Ellipsis
                     )
                 }
+                Spacer(Modifier.height(8.dp))
             }
 
             when (tipo) {
                 TipoEntrada.LOGIN, TipoEntrada.PASSKEY -> {
-                    SeccionCredencialesEdicion(
-                        passkey = original?.passkey,
+                    TarjetaCredencialesUnificada(
+                        titulo = titulo,
+                        alCambiarTitulo = alCambiarTitulo,
                         usuario = usuario,
                         alCambiarUsuario = alCambiarUsuario,
                         contrasena = contrasena,
@@ -136,8 +130,24 @@ fun SeccionDatosPrincipalesEdicion(
                         alAlternarMostrarContrasena = alAlternarMostrarContrasena,
                         opcionesGenerador = opcionesGenerador,
                         alCambiarOpcionesGenerador = alCambiarOpcionesGenerador,
+                        passkey = original?.passkey,
                         haptica = haptica
                     )
+                }
+                else -> {
+                    ComponenteCampoTexto(
+                        valor = titulo,
+                        etiqueta = "Título",
+                        alCambiar = alCambiarTitulo,
+                        colorBordeIzquierdo = ColorAcento,
+                        botonLimpiar = true
+                    )
+                }
+            }
+
+            when (tipo) {
+                TipoEntrada.LOGIN, TipoEntrada.PASSKEY -> {
+                    // Ya gestionado por TarjetaCredencialesUnificada
                 }
                 TipoEntrada.TARJETA -> {
                     Spacer(Modifier.height(12.dp))
@@ -187,5 +197,4 @@ fun SeccionDatosPrincipalesEdicion(
                 }
             }
         }
-    }
 }

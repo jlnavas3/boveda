@@ -43,7 +43,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.jlnavas3.bovedalocal.data.AjustesApp
 import com.jlnavas3.bovedalocal.data.Entrada
-import com.jlnavas3.bovedalocal.ui.pantallas.detalle.ColumnaAccionesFlotantesDetalle
+import com.jlnavas3.bovedalocal.ui.pantallas.detalle.BarraAccionesDockedDetalle
 import com.jlnavas3.bovedalocal.ui.pantallas.detalle.ContenidoEntradaDetalle
 import com.jlnavas3.bovedalocal.ui.pantallas.detalle.DialogosDetalle
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
@@ -138,85 +138,81 @@ fun PantallaDetalle(
         }
     }
 
-    Box(
+    Column(
         modifier = Modifier
             .fillMaxSize()
             .background(ColorAjustesFondo)
     ) {
-        Column(
-            modifier = Modifier.fillMaxSize()
-        ) {
-            BarraSuperiorDetalle(
-                conSeparador = true,
-                alVolver = { vm.volverAtras() },
-                alIrCopiaRapida = { vm.ir(Pantalla.AjustesCopiaAutomatica("03.2.1")) },
-                alIrFormatosCampos = { vm.ir(Pantalla.FormatosCampos("03-LST-CAM")) },
-                alIrSeguridadDatos = { vm.ir(Pantalla.Seguridad("01-SEG-DAT")) },
-                alIrColoresIds = { vm.ir(Pantalla.ColoresIdentificadores("06-AVN-IDS")) }
-            )
+        BarraSuperiorDetalle(
+            conSeparador = true,
+            alVolver = { vm.volverAtras() },
+            alIrCopiaRapida = { vm.ir(Pantalla.AjustesCopiaAutomatica("03.2.1")) },
+            alIrFormatosCampos = { vm.ir(Pantalla.FormatosCampos("03-LST-CAM")) },
+            alIrSeguridadDatos = { vm.ir(Pantalla.Seguridad("01-SEG-DAT")) },
+            alIrColoresIds = { vm.ir(Pantalla.ColoresIdentificadores("06-AVN-IDS")) }
+        )
 
-            // Indicador de modo comparación
-            if (modoComparacion && total >= 2) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(ColorTarjetaAjustes)
-                        .padding(horizontal = 16.dp, vertical = 6.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(6.dp)
-                    ) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.CompareArrows,
-                            contentDescription = null,
-                            tint = ColorAcento,
-                            modifier = Modifier.size(18.dp)
-                        )
-                        Text(
-                            text = "Comparando ${indiceActual + 1} de $total",
-                            style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
-                            color = ColorAcento
-                        )
-                    }
-                    Text(
-                        text = "Desliza para alternar",
-                        style = MaterialTheme.typography.labelSmall,
-                        color = TextoSecundario
-                    )
-                }
-            }
-
-            HorizontalPager(
-                state = pagerState,
+        // Indicador de modo comparación
+        if (modoComparacion && total >= 2) {
+            Row(
                 modifier = Modifier
-                    .weight(1f)
                     .fillMaxWidth()
-            ) { page ->
-                val idx = if (total > 0) page % total else 0
-                val idEntrada = listaIds.getOrElse(idx) { "" }
-                val entradaPagina = todasLasEntradas.find { it.id == idEntrada } ?: vm.entrada(idEntrada)
-
-                if (entradaPagina != null) {
-                    ContenidoEntradaDetalle(
-                        entrada = entradaPagina,
-                        ajustes = ajustes,
-                        vm = vm,
-                        haptica = haptica,
-                        alMostrarQr = {
-                            haptica.tic()
-                            mostrarDialogoQr = true
-                        }
+                    .background(ColorTarjetaAjustes)
+                    .padding(horizontal = 16.dp, vertical = 6.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(6.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.CompareArrows,
+                        contentDescription = null,
+                        tint = ColorAcento,
+                        modifier = Modifier.size(18.dp)
                     )
-                } else {
-                    EstadoEntradaNoEncontrada(alVolver = { vm.volverAtras() })
+                    Text(
+                        text = "Comparando ${indiceActual + 1} de $total",
+                        style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
+                        color = ColorAcento
+                    )
                 }
+                Text(
+                    text = "Desliza para alternar",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = TextoSecundario
+                )
             }
         }
 
-        ColumnaAccionesFlotantesDetalle(
+        HorizontalPager(
+            state = pagerState,
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxWidth()
+        ) { page ->
+            val idx = if (total > 0) page % total else 0
+            val idEntrada = listaIds.getOrElse(idx) { "" }
+            val entradaPagina = todasLasEntradas.find { it.id == idEntrada } ?: vm.entrada(idEntrada)
+
+            if (entradaPagina != null) {
+                ContenidoEntradaDetalle(
+                    entrada = entradaPagina,
+                    ajustes = ajustes,
+                    vm = vm,
+                    haptica = haptica,
+                    alMostrarQr = {
+                        haptica.tic()
+                        mostrarDialogoQr = true
+                    }
+                )
+            } else {
+                EstadoEntradaNoEncontrada(alVolver = { vm.volverAtras() })
+            }
+        }
+
+        BarraAccionesDockedDetalle(
             esFavorito = entradaActual?.favorito == true,
             alEliminar = {
                 haptica.tic()
@@ -235,10 +231,7 @@ fun PantallaDetalle(
                     haptica.toque()
                     vm.ir(Pantalla.Editar(it.id))
                 }
-            },
-            modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .navigationBarsPadding()
+            }
         )
     }
 

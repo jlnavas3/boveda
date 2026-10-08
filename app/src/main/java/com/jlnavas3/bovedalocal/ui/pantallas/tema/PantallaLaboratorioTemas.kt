@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
@@ -222,55 +223,71 @@ fun PantallaLaboratorioTemas(
                 }
             )
 
-            Box(modifier = Modifier.fillMaxSize()) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .verticalScroll(scrollState)
-                        .padding(horizontal = 16.dp, vertical = 8.dp)
-                ) {
-                    SeccionEscalaCapasLab(
-                        estadoLab = estadoLab,
-                        colorFondo = colorFondo,
-                        colorTarjeta = colorTarjeta,
-                        colorCampo = colorCampo,
-                        colorBorde = colorBorde,
-                        colorTextoPrincipal = colorTextoPrincipal,
-                        colorTextoSecundario = colorTextoSecundario,
-                        colorAcentoActual = colorAcentoActual,
-                        haptica = haptica,
-                        marcarModificado = ::marcarModificado
-                    )
-
-                    Spacer(Modifier.height(18.dp))
-
-                    SeccionAcentoEsencialLab(
-                        estadoLab = estadoLab,
-                        colorCampo = colorCampo,
-                        colorBorde = colorBorde,
-                        colorTextoPrincipal = colorTextoPrincipal,
-                        colorTextoSecundario = colorTextoSecundario,
-                        acentosPredefinidos = acentosPredefinidos,
-                        acentosGrisesNeutros = acentosGrisesNeutros,
-                        haptica = haptica,
-                        marcarModificado = ::marcarModificado
-                    )
-
-                    Spacer(Modifier.height(180.dp))
-                }
-
-                ColumnaAccionesFlotantesLab(
-                    colorAcentoActual = colorAcentoActual,
-                    alRestablecer = {
-                        haptica.toque()
-                        restablecerValores(contexto)
-                        Toast.makeText(contexto, "Valores de fábrica restablecidos", Toast.LENGTH_SHORT).show()
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxWidth()
+                    .verticalScroll(scrollState)
+                    .padding(horizontal = 16.dp, vertical = 8.dp)
+            ) {
+                FilaPresetsRapidosLab(
+                    modoOscuro = modoOscuro,
+                    alSeleccionarPreset = { preset ->
+                        lumFondo = preset.lumFondo
+                        lumTarjeta = preset.lumTarjeta
+                        lumCampo = preset.lumCampo
+                        lumBorde = preset.lumBorde
+                        lumTextoPrincipal = preset.lumTextoPrincipal
+                        lumTextoSecundario = preset.lumTextoSecundario
+                        tonoGlobal = preset.tonoGlobal
+                        saturacionTinte = preset.saturacionTinte
+                        marcarModificado()
                     },
-                    alCopiarPaleta = ::copiarPaletaAlPortapapeles,
-                    alGuardar = ::solicitarGuardar,
-                    modifier = Modifier.align(Alignment.BottomEnd)
+                    haptica = haptica
                 )
+
+                Spacer(Modifier.height(10.dp))
+
+                SeccionEscalaCapasLab(
+                    estadoLab = estadoLab,
+                    colorFondo = colorFondo,
+                    colorTarjeta = colorTarjeta,
+                    colorCampo = colorCampo,
+                    colorBorde = colorBorde,
+                    colorTextoPrincipal = colorTextoPrincipal,
+                    colorTextoSecundario = colorTextoSecundario,
+                    colorAcentoActual = colorAcentoActual,
+                    haptica = haptica,
+                    marcarModificado = ::marcarModificado
+                )
+
+                Spacer(Modifier.height(18.dp))
+
+                SeccionAcentoEsencialLab(
+                    estadoLab = estadoLab,
+                    colorCampo = colorCampo,
+                    colorBorde = colorBorde,
+                    colorTextoPrincipal = colorTextoPrincipal,
+                    colorTextoSecundario = colorTextoSecundario,
+                    acentosPredefinidos = acentosPredefinidos,
+                    acentosGrisesNeutros = acentosGrisesNeutros,
+                    haptica = haptica,
+                    marcarModificado = ::marcarModificado
+                )
+
+                Spacer(Modifier.height(24.dp))
             }
+
+            BarraAccionesDockedLab(
+                colorAcentoActual = colorAcentoActual,
+                alRestablecer = {
+                    haptica.toque()
+                    restablecerValores(contexto)
+                    Toast.makeText(contexto, "Valores de fábrica restablecidos", Toast.LENGTH_SHORT).show()
+                },
+                alCopiarPaleta = ::copiarPaletaAlPortapapeles,
+                alGuardar = ::solicitarGuardar
+            )
         }
 
         DialogoConfirmacionGuardarTema(

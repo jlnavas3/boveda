@@ -47,7 +47,7 @@ fun BotonBorde(
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .height(42.dp)
+            .height(38.dp)
             .clip(forma)
             .background(fondoBoton)
             .then(

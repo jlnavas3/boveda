@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.dp
 import com.jlnavas3.bovedalocal.data.AjustesApp
 import com.jlnavas3.bovedalocal.data.Entrada
 import com.jlnavas3.bovedalocal.ui.CriterioOrdenacion
+import com.jlnavas3.bovedalocal.ui.componentes.CerrarTecladoAlHacerScroll
 import com.jlnavas3.bovedalocal.ui.componentes.IndiceAlfabetico
 import com.jlnavas3.bovedalocal.ui.componentes.reboteElastico
 import com.jlnavas3.bovedalocal.ui.componentes.encontrarIndiceParaLetra
@@ -120,6 +121,7 @@ fun CuerpoListaEntradas(
     }
 
     val estadoLista = rememberLazyListState()
+    CerrarTecladoAlHacerScroll(estadoLista.isScrollInProgress)
     val mostrarIndice = ajustes.mostrarIndiceAlfabetico &&
         itemsAMostrar.size >= 5 &&
         criterioOrdenacion == CriterioOrdenacion.NOMBRE_AZ

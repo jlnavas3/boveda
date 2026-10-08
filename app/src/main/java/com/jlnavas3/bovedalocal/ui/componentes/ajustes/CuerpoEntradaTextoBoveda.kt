@@ -1,29 +1,38 @@
 package com.jlnavas3.bovedalocal.ui.componentes.ajustes
 
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldColors
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.unit.dp
+import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
+import com.jlnavas3.bovedalocal.ui.theme.TextoPrincipal
 import com.jlnavas3.bovedalocal.util.FormateadorCampos
 
 /**
  * Microcomponente que renderiza el TextField nativo de Compose soportando tanto
- * edición plana como formateo dinámico reactivo con máscara de cursor (TextFieldValue).
+ * edición plana como formateo dinámico reactivo con máscara de cursor (TextFieldValue),
+ * optimizado con BasicTextField y DecorationBox para una altura compacta y elegante (~46-48 dp).
  */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CuerpoEntradaTextoBoveda(
     valor: String,
@@ -45,6 +54,13 @@ fun CuerpoEntradaTextoBoveda(
     colores: TextFieldColors,
     interactionSource: MutableInteractionSource
 ) {
+    val paddingCompacto = PaddingValues(
+        start = if (leadingIcon != null) 4.dp else 12.dp,
+        end = if (trailingIcon != null) 4.dp else 12.dp,
+        top = if (varias) 8.dp else 4.dp,
+        bottom = if (varias) 8.dp else 4.dp
+    )
+
     if (formateadorMascara != null) {
         var tfv by remember {
             mutableStateOf(TextFieldValue(text = valor, selection = TextRange(valor.length)))
@@ -53,7 +69,7 @@ fun CuerpoEntradaTextoBoveda(
             val nuevoCursor = tfv.selection.end.coerceIn(0, valor.length)
             tfv = tfv.copy(text = valor, selection = TextRange(nuevoCursor))
         }
-        TextField(
+        BasicTextField(
             value = tfv,
             onValueChange = { nuevo ->
                 val transformado = FormateadorCampos.transformarConMascara(
@@ -64,45 +80,71 @@ fun CuerpoEntradaTextoBoveda(
                 tfv = transformado
                 alCambiar(transformado.text)
             },
-            label = { Text(etiqueta) },
-            placeholder = composablePlaceholder,
             modifier = Modifier.fillMaxWidth(),
             readOnly = readOnly,
             enabled = habilitado,
-            isError = esError,
             singleLine = !varias,
             minLines = if (varias) 3 else 1,
-            textStyle = estiloTexto,
+            textStyle = estiloTexto.copy(color = TextoPrincipal),
+            cursorBrush = SolidColor(ColorAcento),
             visualTransformation = transformacionVisual,
-            leadingIcon = leadingIcon,
-            trailingIcon = trailingIcon,
             keyboardOptions = opcionesTeclado,
             keyboardActions = keyboardActions,
-            shape = forma,
-            colors = colores,
-            interactionSource = interactionSource
+            interactionSource = interactionSource,
+            decorationBox = @Composable { innerTextField ->
+                TextFieldDefaults.DecorationBox(
+                    value = tfv.text,
+                    innerTextField = innerTextField,
+                    enabled = habilitado,
+                    singleLine = !varias,
+                    visualTransformation = transformacionVisual,
+                    interactionSource = interactionSource,
+                    isError = esError,
+                    label = { Text(etiqueta) },
+                    placeholder = composablePlaceholder,
+                    leadingIcon = leadingIcon,
+                    trailingIcon = trailingIcon,
+                    shape = forma,
+                    colors = colores,
+                    contentPadding = paddingCompacto,
+                    container = {}
+                )
+            }
         )
     } else {
-        TextField(
+        BasicTextField(
             value = valor,
             onValueChange = alCambiar,
-            label = { Text(etiqueta) },
-            placeholder = composablePlaceholder,
             modifier = Modifier.fillMaxWidth(),
             readOnly = readOnly,
             enabled = habilitado,
-            isError = esError,
             singleLine = !varias,
             minLines = if (varias) 3 else 1,
-            textStyle = estiloTexto,
+            textStyle = estiloTexto.copy(color = TextoPrincipal),
+            cursorBrush = SolidColor(ColorAcento),
             visualTransformation = transformacionVisual,
-            leadingIcon = leadingIcon,
-            trailingIcon = trailingIcon,
             keyboardOptions = opcionesTeclado,
             keyboardActions = keyboardActions,
-            shape = forma,
-            colors = colores,
-            interactionSource = interactionSource
+            interactionSource = interactionSource,
+            decorationBox = @Composable { innerTextField ->
+                TextFieldDefaults.DecorationBox(
+                    value = valor,
+                    innerTextField = innerTextField,
+                    enabled = habilitado,
+                    singleLine = !varias,
+                    visualTransformation = transformacionVisual,
+                    interactionSource = interactionSource,
+                    isError = esError,
+                    label = { Text(etiqueta) },
+                    placeholder = composablePlaceholder,
+                    leadingIcon = leadingIcon,
+                    trailingIcon = trailingIcon,
+                    shape = forma,
+                    colors = colores,
+                    contentPadding = paddingCompacto,
+                    container = {}
+                )
+            }
         )
     }
 }

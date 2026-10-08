@@ -58,30 +58,35 @@ fun ColumnaDetallesFilaEntrada(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(
-                text = tituloMostrar,
-                style = if (compacta) {
-                    MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold)
-                } else {
-                    MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold, fontSize = 15.sp)
-                },
-                color = if (resaltado) ColorAcento else TextoPrincipal,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                modifier = Modifier.weight(1f, fill = false)
-            )
-
-            if (entrada.ignoradaEnSalud) {
-                Spacer(Modifier.width(4.dp))
-                Icon(
-                    imageVector = Icons.Filled.VisibilityOff,
-                    contentDescription = "Ignorada en salud",
-                    tint = TextoSecundario.copy(alpha = 0.55f),
-                    modifier = Modifier.size(13.dp)
+            Row(
+                modifier = Modifier.weight(1f),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = tituloMostrar,
+                    style = if (compacta) {
+                        MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold)
+                    } else {
+                        MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold, fontSize = 15.sp)
+                    },
+                    color = if (resaltado) ColorAcento else TextoPrincipal,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
                 )
+
+                if (entrada.ignoradaEnSalud) {
+                    Spacer(Modifier.width(4.dp))
+                    Icon(
+                        imageVector = Icons.Filled.VisibilityOff,
+                        contentDescription = "Ignorada en salud",
+                        tint = TextoSecundario.copy(alpha = 0.55f),
+                        modifier = Modifier.size(13.dp)
+                    )
+                }
             }
 
             if (tieneTotp && secreto != null) {
+                Spacer(Modifier.width(8.dp))
                 ContenidoTotpEnFila(
                     secreto = secreto,
                     segundosUnix = segundosUnix,
@@ -134,7 +139,8 @@ fun ColumnaDetallesFilaEntrada(
         ) {
             if (coincideConCorreoIdentidad && mostrarChipIdentidad) {
                 com.jlnavas3.bovedalocal.ui.pantallas.identidades.InsigniaIdentidadEntrada(
-                    identidad = identidadAsociada!!
+                    identidad = identidadAsociada!!,
+                    compacta = compacta
                 )
             } else {
                 TextoSeguroVisual(
@@ -151,7 +157,8 @@ fun ColumnaDetallesFilaEntrada(
                 if (identidadAsociada != null && mostrarChipIdentidad) {
                     Spacer(Modifier.width(6.dp))
                     com.jlnavas3.bovedalocal.ui.pantallas.identidades.InsigniaIdentidadEntrada(
-                        identidad = identidadAsociada
+                        identidad = identidadAsociada,
+                        compacta = compacta
                     )
                 }
             }

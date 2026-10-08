@@ -58,7 +58,7 @@ fun BotonPrimario(
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .height(42.dp)
+            .height(38.dp)
             .clip(forma)
             .background(if (activo) DegradadoAcento else Brush.horizontalGradient(listOf(Borde, Borde)))
             .then(

@@ -33,6 +33,7 @@ import com.jlnavas3.bovedalocal.data.EstadoBoveda
 import com.jlnavas3.bovedalocal.data.TipoEntrada
 import com.jlnavas3.bovedalocal.ui.Pantalla
 import com.jlnavas3.bovedalocal.ui.VaultViewModel
+import com.jlnavas3.bovedalocal.ui.componentes.cerrarTecladoAlTocarFuera
 import com.jlnavas3.bovedalocal.ui.componentes.seleccion.BarraSuperiorSeleccion
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjustesFondo
 import com.jlnavas3.bovedalocal.ui.pantallas.lista.BarraBusquedaAnimada
@@ -126,6 +127,7 @@ fun PantallaSaludBoveda(
                 .fillMaxSize()
                 .background(ColorAjustesFondo)
                 .imePadding()
+                .cerrarTecladoAlTocarFuera()
         ) {
             if (modoSeleccion) {
                 BarraSuperiorSeleccion(

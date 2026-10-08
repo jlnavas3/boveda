@@ -32,6 +32,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -71,6 +72,7 @@ fun ModalInferiorBoveda(
 ) {
     if (!abierto) return
 
+    val focusManager = LocalFocusManager.current
     val fondoModal = fondo
     val formaModal = RoundedCornerShape(CurvaturaEsquinas)
 
@@ -114,7 +116,7 @@ fun ModalInferiorBoveda(
                     .clickable(
                         interactionSource = remember { MutableInteractionSource() },
                         indication = null
-                    ) { /* Detener propagación de click para no cerrar al tocar la tarjeta */ }
+                    ) { focusManager.clearFocus() }
                     .padding(horizontal = 20.dp, vertical = 22.dp)
             ) {
                 Column(modifier = Modifier.fillMaxWidth()) {

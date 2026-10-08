@@ -30,6 +30,7 @@ import com.jlnavas3.bovedalocal.ui.componentes.colorAhsv
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjusteGris
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorTextoAjustes
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.SeparadorFilaAjuste
+import com.jlnavas3.bovedalocal.ui.theme.rangoLuminanciaParaCapa
 import com.jlnavas3.bovedalocal.util.Haptica
 
 /**
@@ -158,6 +159,7 @@ fun SeccionEscalaCapasLab(
                     lumFondo = it
                     marcarModificado()
                 },
+                rangoLuminancia = rangoLuminanciaParaCapa(modoOscuro, esSuperficie = true),
                 mostrarControlTono = !unificarTonos,
                 tono = tonoFondo,
                 alCambiarTono = {
@@ -176,6 +178,7 @@ fun SeccionEscalaCapasLab(
                     lumTarjeta = it
                     marcarModificado()
                 },
+                rangoLuminancia = rangoLuminanciaParaCapa(modoOscuro, esSuperficie = true),
                 mostrarControlTono = !unificarTonos,
                 tono = tonoTarjeta,
                 alCambiarTono = {
@@ -194,6 +197,7 @@ fun SeccionEscalaCapasLab(
                     lumCampo = it
                     marcarModificado()
                 },
+                rangoLuminancia = rangoLuminanciaParaCapa(modoOscuro, esSuperficie = true),
                 mostrarControlTono = !unificarTonos,
                 tono = tonoCampo,
                 alCambiarTono = {
@@ -212,6 +216,7 @@ fun SeccionEscalaCapasLab(
                     lumBorde = it
                     marcarModificado()
                 },
+                rangoLuminancia = rangoLuminanciaParaCapa(modoOscuro, esSuperficie = true),
                 mostrarControlTono = !unificarTonos,
                 tono = tonoBorde,
                 alCambiarTono = {
@@ -230,6 +235,7 @@ fun SeccionEscalaCapasLab(
                     lumTextoPrincipal = it
                     marcarModificado()
                 },
+                rangoLuminancia = rangoLuminanciaParaCapa(modoOscuro, esSuperficie = false),
                 mostrarControlTono = !unificarTonos,
                 tono = tonoTextoPrincipal,
                 alCambiarTono = {
@@ -248,6 +254,7 @@ fun SeccionEscalaCapasLab(
                     lumTextoSecundario = it
                     marcarModificado()
                 },
+                rangoLuminancia = rangoLuminanciaParaCapa(modoOscuro, esSuperficie = false),
                 mostrarControlTono = !unificarTonos,
                 tono = tonoTextoSecundario,
                 alCambiarTono = {

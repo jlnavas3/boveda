@@ -23,9 +23,15 @@ import com.jlnavas3.bovedalocal.data.EstadoBoveda
 import com.jlnavas3.bovedalocal.data.TipoEntrada
 import com.jlnavas3.bovedalocal.data.normalizarEtiqueta
 import com.jlnavas3.bovedalocal.ui.VaultViewModel
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
 import com.jlnavas3.bovedalocal.ui.componentes.BarraSuperiorPantalla
+import com.jlnavas3.bovedalocal.ui.componentes.BotonIconoCabecera
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjustesFondo
-import com.jlnavas3.bovedalocal.ui.pantallas.edicion.BotonGuardarEdicion
+import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorTarjetaAjustes
+import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
+import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
+import com.jlnavas3.bovedalocal.ui.theme.ColorSobreAcento
 import com.jlnavas3.bovedalocal.ui.pantallas.edicion.FormularioEdicionEntrada
 import com.jlnavas3.bovedalocal.ui.pantallas.edicion.ModalesEdicion
 import com.jlnavas3.bovedalocal.util.AppInstalada
@@ -154,7 +160,22 @@ fun PantallaEdicion(
                 alVolver = { vm.volverAtras() },
                 conSeparador = scrollState.value > 0,
                 colorFondo = ColorAjustesFondo,
-                acciones = {}
+                acciones = {
+                    BotonIconoCabecera(
+                        onClick = {
+                            if (puedeGuardar) {
+                                guardarEntrada()
+                            } else {
+                                haptica.error()
+                                vm.avisar("Introduce un título para guardar")
+                            }
+                        },
+                        icono = Icons.Filled.Check,
+                        descripcion = "Guardar",
+                        colorFondo = if (puedeGuardar) ColorAcento else ColorTarjetaAjustes,
+                        tint = if (puedeGuardar) ColorSobreAcento else ColorIconosInternos
+                    )
+                }
             )
 
             FormularioEdicionEntrada(
@@ -215,18 +236,6 @@ fun PantallaEdicion(
                 modifier = Modifier.weight(1f)
             )
         }
-
-        BotonGuardarEdicion(
-            alGuardar = {
-                if (puedeGuardar) {
-                    guardarEntrada()
-                } else {
-                    haptica.error()
-                    vm.avisar("Introduce un título para guardar")
-                }
-            },
-            modifier = Modifier.align(Alignment.BottomEnd)
-        )
     }
 
     ModalesEdicion(

@@ -26,25 +26,46 @@ import com.jlnavas3.bovedalocal.ui.componentes.BotonBorde
 import com.jlnavas3.bovedalocal.ui.componentes.CampoBoveda
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
 
+import androidx.compose.material.icons.automirrored.filled.Label
+import androidx.compose.ui.graphics.Color
+import com.jlnavas3.bovedalocal.ui.pantallas.edicion.FilaSeccionColapsableEdicion
+
 @Composable
 fun SeccionEtiquetasEdicion(
     etiquetas: List<String>,
     alCambiarEtiquetas: (List<String>) -> Unit,
-    etiquetasSugeridas: List<String>
+    etiquetasSugeridas: List<String>,
+    modifier: Modifier = Modifier
 ) {
     var nuevaEtiqueta by remember { mutableStateOf("") }
+    var expandido by remember { mutableStateOf(etiquetas.isNotEmpty()) }
 
-    if (etiquetas.isNotEmpty()) {
-        Row(
-            modifier = Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            etiquetas.forEach { etiqueta ->
-                ChipEtiqueta(etiqueta) { alCambiarEtiquetas(etiquetas - etiqueta) }
-            }
-        }
-        Spacer(Modifier.height(10.dp))
+    val resumen = when {
+        etiquetas.isEmpty() -> "Sin etiquetas añadidas"
+        else -> etiquetas.joinToString(" ") { "#$it" }
     }
+
+    FilaSeccionColapsableEdicion(
+        icono = Icons.AutoMirrored.Filled.Label,
+        colorIcono = Color(0xFFFF9800),
+        titulo = "Etiquetas",
+        resumen = resumen,
+        insigniaTexto = if (etiquetas.isNotEmpty()) "${etiquetas.size}" else null,
+        expandido = expandido,
+        alAlternarExpandido = { expandido = !expandido },
+        modifier = modifier
+    ) {
+        if (etiquetas.isNotEmpty()) {
+            Row(
+                modifier = Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                etiquetas.forEach { etiqueta ->
+                    ChipEtiqueta(etiqueta) { alCambiarEtiquetas(etiquetas - etiqueta) }
+                }
+            }
+            Spacer(Modifier.height(10.dp))
+        }
     Row(verticalAlignment = Alignment.CenterVertically) {
         Box(modifier = Modifier.weight(1f)) {
             CampoBoveda(
@@ -85,5 +106,6 @@ fun SeccionEtiquetasEdicion(
                 }
             }
         }
+    }
     }
 }

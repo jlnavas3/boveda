@@ -21,6 +21,8 @@ import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.jlnavas3.bovedalocal.ui.VaultViewModel
 import com.jlnavas3.bovedalocal.ui.componentes.BarraSuperiorPantalla
+import com.jlnavas3.bovedalocal.ui.componentes.CerrarTecladoAlHacerScroll
+import com.jlnavas3.bovedalocal.ui.componentes.cerrarTecladoAlTocarFuera
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.LocalCoordinadorResaltado
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ProveedorResaltadoAjustes
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.contenedorScrollAjustes
@@ -103,12 +105,15 @@ fun PantallaAjustes(
                 colorFondo = ColorAjustesFondo
             )
 
+            CerrarTecladoAlHacerScroll(scrollState.isScrollInProgress)
+
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f)
                     .contenedorScrollAjustes(coordinador)
                     .verticalScroll(scrollState)
+                    .cerrarTecladoAlTocarFuera()
                     .padding(horizontal = 16.dp, vertical = 8.dp)
             ) {
                 BarraBusquedaAjustes(

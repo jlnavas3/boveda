@@ -19,6 +19,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
+import com.jlnavas3.bovedalocal.ui.componentes.CerrarTecladoAlHacerScroll
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Android
@@ -160,8 +162,11 @@ fun SelectorAppModal(
                     } else {
                         val busquedaLimpia = consultaBusqueda.trim()
                         val esPaqueteDirecto = remember(busquedaLimpia) { LanzadorEnlaces.esNombrePaquete(busquedaLimpia) }
+                        val lazyListState = rememberLazyListState()
+                        CerrarTecladoAlHacerScroll(lazyListState.isScrollInProgress)
 
                         LazyColumn(
+                            state = lazyListState,
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .heightIn(min = 100.dp, max = 280.dp)

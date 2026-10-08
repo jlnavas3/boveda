@@ -86,13 +86,13 @@ fun FilaEntrada(
     ocultarEmailIdentidad: Boolean = false,
     mostrarChipIdentidad: Boolean = true
 ) {
-    val compacta = alturaFila.value <= 48f
+    val compacta = alturaFila.value <= 44f
     val forma = if (enGrupo) {
         if (esUltimoEnGrupo) RoundedCornerShape(bottomStart = CurvaturaEsquinas, bottomEnd = CurvaturaEsquinas) else RoundedCornerShape(0.dp)
     } else {
         RoundedCornerShape(CurvaturaEsquinas)
     }
-    val tamanoIcono = if (compacta) 32 else if (alturaFila.value <= 64f) 36 else 40
+    val tamanoIcono = if (compacta) 28 else if (alturaFila.value <= 56f) 32 else 38
 
     val contenidoFila: @Composable () -> Unit = {
         val secreto = entrada.secretoTotp
@@ -154,7 +154,7 @@ fun FilaEntrada(
             Row(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(horizontal = 14.dp, vertical = 6.dp),
+                    .padding(horizontal = 14.dp, vertical = 3.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 if (seleccionActiva) {

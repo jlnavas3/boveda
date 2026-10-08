@@ -58,14 +58,14 @@ fun PantallaExportarSelectivo(
 
     val densidad = ajustes.densidadLista
     val densidadAltura = when (densidad) {
-        "compacta" -> 48.dp
-        "comoda" -> 60.dp
-        else -> 74.dp
+        "compacta" -> 42.dp
+        "comoda" -> 54.dp
+        else -> 64.dp
     }
     val densidadMonograma = when (densidad) {
-        "compacta" -> 34
-        "comoda" -> 40
-        else -> 46
+        "compacta" -> 30
+        "comoda" -> 36
+        else -> 40
     }
     val espaciadoFilas = calcularEspaciadoFilas(densidad)
 

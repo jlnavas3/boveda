@@ -55,12 +55,12 @@ import com.jlnavas3.bovedalocal.util.LanzadorEnlaces
 @Composable
 fun SeccionSitiosYAppsEdicion(
     listaEnlaces: MutableList<EnlaceEditable>,
-    alSolicitarExplorarApp: (Int?) -> Unit
+    alSolicitarExplorarApp: (Int?) -> Unit,
+    modifier: Modifier = Modifier
 ) {
     val contexto = LocalContext.current
 
-    GrupoAjustes(etiqueta = "Sitios o aplicaciones") {
-        Column(modifier = Modifier.padding(14.dp)) {
+    Column(modifier = modifier.fillMaxWidth()) {
             if (listaEnlaces.isNotEmpty()) {
                 listaEnlaces.forEachIndexed { index, enlace ->
                     val paquete = remember(enlace.valor) { LanzadorEnlaces.extraerPaquete(enlace.valor) }
@@ -195,5 +195,4 @@ fun SeccionSitiosYAppsEdicion(
                 }
             }
         }
-    }
 }

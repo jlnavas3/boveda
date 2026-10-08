@@ -21,7 +21,7 @@ import com.jlnavas3.bovedalocal.data.ModoVisualizacionIdentidades
 import com.jlnavas3.bovedalocal.data.TipoEntrada
 import com.jlnavas3.bovedalocal.ui.CriterioOrdenacion
 import com.jlnavas3.bovedalocal.ui.componentes.seleccion.BarraSuperiorSeleccion
-import com.jlnavas3.bovedalocal.ui.pantallas.categorias.BarraCategoriasLista
+import com.jlnavas3.bovedalocal.ui.pantallas.lista.pildoras.BarraPildorasFiltrosAnimada
 
 /**
  * Cabecera superior de PantallaLista:
@@ -76,6 +76,13 @@ fun CabeceraPrincipalLista(
     conteoPorIdentidad: Map<String, Int> = emptyMap(),
     conteoSinIdentidad: Int = 0,
     alSeleccionarIdentidad: (String?) -> Unit = {},
+    barraPildorasVisible: Boolean = true,
+    etiquetasDisponibles: List<String> = emptyList(),
+    alAbrirSelectorIdentidad: () -> Unit = {},
+    alAbrirSelectorCategoria: () -> Unit = {},
+    alAbrirSelectorEtiqueta: () -> Unit = {},
+    alSeleccionarEtiqueta: (String?) -> Unit = {},
+    alLimpiarTipo: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier.fillMaxWidth()) {
@@ -132,62 +139,34 @@ fun CabeceraPrincipalLista(
                 }
             }
 
-            val esModoSecciones = modoVisualizacionIdentidades == ModoVisualizacionIdentidades.SECCIONES
-            val mostrarChipsIdentidad = modoVisualizacionIdentidades == ModoVisualizacionIdentidades.CHIPS && identidades.isNotEmpty()
+            val mostrarPildoraIdentidad = modoVisualizacionIdentidades != ModoVisualizacionIdentidades.DESACTIVADO && identidades.isNotEmpty()
+            val mostrarPildoraCategoria = categorias.isNotEmpty()
+            val mostrarPildoraEtiqueta = etiquetasDisponibles.isNotEmpty()
 
-            if (!esModoSecciones) {
-                if (jerarquiaOrganizacion == JerarquiaOrganizacion.IDENTIDAD_SOBRE_CATEGORIA) {
-                    // Nivel 1: Identidades
-                    if (mostrarChipsIdentidad) {
-                        ChipsFiltroIdentidades(
-                            identidades = identidades,
-                            identidadSeleccionadaId = identidadSeleccionadaId,
-                            conteoPorIdentidad = conteoPorIdentidad,
-                            totalEntradas = totalEntradas,
-                            conteoSinIdentidad = conteoSinIdentidad,
-                            alSeleccionarIdentidad = alSeleccionarIdentidad
-                        )
-                        Spacer(Modifier.height(2.dp))
-                    }
-
-                    // Nivel 2 (Subordinado): Categorías
-                    BarraCategoriasLista(
-                        categorias = categorias,
-                        categoriaSeleccionadaId = categoriaSeleccionadaId,
-                        totalEntradas = totalEntradas,
-                        conteoPorCategoria = conteoPorCategoria,
-                        alSeleccionarCategoria = alSeleccionarCategoria,
-                        alCrearCategoria = alCrearCategoria,
-                        alEditarCategoria = alEditarCategoria,
-                        alEliminarCategoria = alEliminarCategoria
-                    )
-                } else {
-                    // Nivel 1: Categorías
-                    BarraCategoriasLista(
-                        categorias = categorias,
-                        categoriaSeleccionadaId = categoriaSeleccionadaId,
-                        totalEntradas = totalEntradas,
-                        conteoPorCategoria = conteoPorCategoria,
-                        alSeleccionarCategoria = alSeleccionarCategoria,
-                        alCrearCategoria = alCrearCategoria,
-                        alEditarCategoria = alEditarCategoria,
-                        alEliminarCategoria = alEliminarCategoria
-                    )
-
-                    // Nivel 2 (Subordinado): Identidades
-                    if (mostrarChipsIdentidad) {
-                        Spacer(Modifier.height(2.dp))
-                        ChipsFiltroIdentidades(
-                            identidades = identidades,
-                            identidadSeleccionadaId = identidadSeleccionadaId,
-                            conteoPorIdentidad = conteoPorIdentidad,
-                            totalEntradas = totalEntradas,
-                            conteoSinIdentidad = conteoSinIdentidad,
-                            alSeleccionarIdentidad = alSeleccionarIdentidad
-                        )
-                    }
-                }
-            }
+            BarraPildorasFiltrosAnimada(
+                visible = barraPildorasVisible,
+                soloFavoritos = soloFavoritos,
+                filtroTipo = filtro,
+                alAlternarFavoritos = alAlternarSoloFavoritos,
+                alLimpiarTipo = alLimpiarTipo,
+                mostrarPildoraIdentidad = mostrarPildoraIdentidad,
+                identidades = identidades,
+                identidadSeleccionadaId = identidadSeleccionadaId,
+                conteoPorIdentidad = conteoPorIdentidad,
+                conteoSinIdentidad = conteoSinIdentidad,
+                alAbrirSelectorIdentidad = alAbrirSelectorIdentidad,
+                alSeleccionarIdentidad = alSeleccionarIdentidad,
+                mostrarPildoraCategoria = mostrarPildoraCategoria,
+                categorias = categorias,
+                categoriaSeleccionadaId = categoriaSeleccionadaId,
+                conteoPorCategoria = conteoPorCategoria,
+                alAbrirSelectorCategoria = alAbrirSelectorCategoria,
+                alSeleccionarCategoria = alSeleccionarCategoria,
+                mostrarPildoraEtiqueta = mostrarPildoraEtiqueta,
+                filtroEtiqueta = filtroEtiqueta,
+                alAbrirSelectorEtiqueta = alAbrirSelectorEtiqueta,
+                alSeleccionarEtiqueta = alSeleccionarEtiqueta
+            )
         }
     }
 }

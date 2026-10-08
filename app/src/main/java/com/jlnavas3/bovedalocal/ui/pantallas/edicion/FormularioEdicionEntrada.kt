@@ -1,6 +1,7 @@
 package com.jlnavas3.bovedalocal.ui.pantallas.edicion
 
 import androidx.compose.foundation.ScrollState
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -8,9 +9,13 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.unit.dp
 import com.jlnavas3.bovedalocal.crypto.OpcionesGenerador
 import com.jlnavas3.bovedalocal.data.AjustesApp
@@ -20,12 +25,12 @@ import com.jlnavas3.bovedalocal.data.Entrada
 import com.jlnavas3.bovedalocal.data.TipoEntrada
 import com.jlnavas3.bovedalocal.ui.componentes.DescripcionPantalla
 import com.jlnavas3.bovedalocal.ui.componentes.reboteElastico
-import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.GrupoAjustes
 import com.jlnavas3.bovedalocal.util.EnlaceEditable
 import com.jlnavas3.bovedalocal.util.Haptica
 
 /**
- * Contenido desplazable del formulario de creación y edición de entradas en la bóveda.
+ * Contenido desplazable del formulario de creación y edición de entradas en la bóveda,
+ * con autocierre inteligente de teclado al pulsar en espacios vacíos o iniciar scroll.
  */
 @Composable
 fun FormularioEdicionEntrada(
@@ -74,9 +79,28 @@ fun FormularioEdicionEntrada(
     alEliminarPlantillaCampos: ((String) -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
+    val focusManager = LocalFocusManager.current
+    val keyboardController = LocalSoftwareKeyboardController.current
+
+    // Cierre automático al iniciar desplazamiento
+    LaunchedEffect(scrollState.isScrollInProgress) {
+        if (scrollState.isScrollInProgress) {
+            focusManager.clearFocus()
+            keyboardController?.hide()
+        }
+    }
+
     Column(
         modifier = modifier
             .fillMaxWidth()
+            .pointerInput(Unit) {
+                detectTapGestures(
+                    onTap = {
+                        focusManager.clearFocus()
+                        keyboardController?.hide()
+                    }
+                )
+            }
             .reboteElastico()
             .verticalScroll(scrollState)
             .padding(horizontal = 16.dp, vertical = 12.dp)
@@ -88,18 +112,14 @@ fun FormularioEdicionEntrada(
 
         // Selector de tipo (solo para nuevas entradas)
         if (original == null) {
-            GrupoAjustes(etiqueta = "Tipo de registro") {
-                Column(modifier = Modifier.padding(14.dp)) {
-                    SelectorTipoEntrada(
-                        tipoActual = tipo,
-                        alSeleccionarTipo = { alCambiarTipo(it); haptica.tic() }
-                    )
-                }
-            }
-            Spacer(Modifier.height(16.dp))
+            SelectorTipoEntrada(
+                tipoActual = tipo,
+                alSeleccionarTipo = { alCambiarTipo(it); haptica.tic() }
+            )
+            Spacer(Modifier.height(12.dp))
         }
 
-        // Grupo: Datos principales
+        // Datos principales (Tarjeta unificada)
         SeccionDatosPrincipalesEdicion(
             titulo = titulo,
             alCambiarTitulo = alCambiarTitulo,
@@ -120,15 +140,15 @@ fun FormularioEdicionEntrada(
             haptica = haptica
         )
 
-        // Grupo: Sitios o aplicaciones
+        // Sitios o aplicaciones y 2FA
         if (tipo == TipoEntrada.LOGIN || tipo == TipoEntrada.PASSKEY) {
-            Spacer(Modifier.height(16.dp))
+            Spacer(Modifier.height(10.dp))
             SeccionSitiosYAppsEdicion(
                 listaEnlaces = listaEnlaces,
                 alSolicitarExplorarApp = alSolicitarExplorarApp
             )
 
-            Spacer(Modifier.height(16.dp))
+            Spacer(Modifier.height(10.dp))
             SeccionTotpEdicion(
                 totp = totp,
                 alCambiarTotp = alCambiarTotp,
@@ -138,32 +158,28 @@ fun FormularioEdicionEntrada(
             )
         }
 
-        // Grupo: Notas
-        Spacer(Modifier.height(16.dp))
+        // Notas
+        Spacer(Modifier.height(10.dp))
         SeccionNotasEdicion(
             notas = notas,
             alCambiarNotas = alCambiarNotas
         )
 
-        // Grupo: Campos adicionales
-        Spacer(Modifier.height(16.dp))
+        // Campos adicionales
         val etiquetasBase = remember(tipo) { GestorCamposBase.etiquetasBaseParaTipo(tipo) }
-        GrupoAjustes(etiqueta = if (etiquetasBase.isEmpty()) "Campos personalizados" else "Campos adicionales") {
-            Column(modifier = Modifier.padding(14.dp)) {
-                SeccionCamposPersonalizados(
-                    camposPersonalizados = camposPersonalizados,
-                    alCambiarCampos = alCambiarCamposPersonalizados,
-                    etiquetasBase = etiquetasBase,
-                    ajustes = ajustes,
-                    haptica = haptica,
-                    alGuardarPlantilla = alGuardarPlantillaCampos,
-                    alEliminarPlantilla = alEliminarPlantillaCampos
-                )
-            }
-        }
+        Spacer(Modifier.height(10.dp))
+        SeccionCamposPersonalizados(
+            camposPersonalizados = camposPersonalizados,
+            alCambiarCampos = alCambiarCamposPersonalizados,
+            etiquetasBase = etiquetasBase,
+            ajustes = ajustes,
+            haptica = haptica,
+            alGuardarPlantilla = alGuardarPlantillaCampos,
+            alEliminarPlantilla = alEliminarPlantillaCampos
+        )
 
-        // Grupo: Organización
-        Spacer(Modifier.height(16.dp))
+        // Organización (Identidad, Categorías, Etiquetas, Favorito, Ignorar en salud)
+        Spacer(Modifier.height(10.dp))
         SeccionOrganizacionEdicion(
             categoriasDisponibles = categoriasDisponibles,
             categoriasSeleccionadas = categorias,
@@ -181,6 +197,6 @@ fun FormularioEdicionEntrada(
             alAlternarIgnoradaEnSalud = alAlternarIgnoradaEnSalud
         )
 
-        Spacer(Modifier.height(80.dp))
+        Spacer(Modifier.height(24.dp))
     }
 }

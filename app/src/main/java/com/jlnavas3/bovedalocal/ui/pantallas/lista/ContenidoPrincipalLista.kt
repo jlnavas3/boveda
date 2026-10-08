@@ -63,18 +63,6 @@ fun ColumnScope.ContenidoPrincipalLista(
         }
     }
 
-    FilaFiltrosYEtiquetasLista(
-        soloFavoritos = soloFavoritos,
-        filtroTipo = filtro,
-        filtroEtiqueta = filtroEtiqueta,
-        etiquetasDisponibles = etiquetasDisponibles,
-        alAlternarFavoritos = { vm.alternarSoloFavoritos() },
-        alLimpiarTipo = { vm.filtrarPorTipo(null) },
-        alLimpiarEtiqueta = { vm.filtrarPorEtiqueta(null) },
-        alSeleccionarEtiqueta = { vm.filtrarPorEtiqueta(it) }
-    )
-
-    Spacer(Modifier.height((EspaciadoComponentes * 0.8f).coerceAtLeast(6.dp)))
 
     if (visibles.isEmpty()) {
         EstadoVacioLista(

@@ -27,7 +27,9 @@ import com.jlnavas3.bovedalocal.data.EstadoBoveda
 import com.jlnavas3.bovedalocal.ui.CriterioOrdenacion
 import com.jlnavas3.bovedalocal.ui.Pantalla
 import com.jlnavas3.bovedalocal.ui.VaultViewModel
+import com.jlnavas3.bovedalocal.ui.componentes.CerrarTecladoAlHacerScroll
 import com.jlnavas3.bovedalocal.ui.componentes.DescripcionPantalla
+import com.jlnavas3.bovedalocal.ui.componentes.cerrarTecladoAlTocarFuera
 import com.jlnavas3.bovedalocal.ui.componentes.seleccion.BarraSuperiorSeleccion
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjustesFondo
 import com.jlnavas3.bovedalocal.ui.pantallas.autenticador.BarraAccionesSeleccionAutenticador
@@ -171,11 +173,14 @@ fun PantallaAutenticador(vm: VaultViewModel, estado: EstadoBoveda) {
                 )
             }
 
+            CerrarTecladoAlHacerScroll(scrollState.isScrollInProgress)
+
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f)
                     .verticalScroll(scrollState)
+                    .cerrarTecladoAlTocarFuera()
                     .padding(horizontal = 16.dp, vertical = 10.dp)
             ) {
                 DescripcionPantalla(subtitulo = "Códigos de verificación en dos pasos calculados en el dispositivo")

@@ -108,7 +108,7 @@ fun ComponenteFila(
             .then(modifierClick)
             .padding(
                 horizontal = 16.dp,
-                vertical = if (tieneBadgeId || !subtitulo.isNullOrBlank()) 10.dp else 13.dp
+                vertical = if (tieneBadgeId || !subtitulo.isNullOrBlank()) 8.dp else 10.dp
             ),
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -117,7 +117,7 @@ fun ComponenteFila(
             val fondoIcono = colorIcono ?: ColorIconosInternos
             Box(
                 modifier = Modifier
-                    .size(32.dp)
+                    .size(30.dp)
                     .clip(RoundedCornerShape(8.dp))
                     .background(fondoIcono),
                 contentAlignment = Alignment.Center
@@ -126,10 +126,10 @@ fun ComponenteFila(
                     imageVector = icono,
                     contentDescription = null,
                     tint = colorTinteIcono,
-                    modifier = Modifier.size(18.dp)
+                    modifier = Modifier.size(16.dp)
                 )
             }
-            Spacer(Modifier.width(12.dp))
+            Spacer(Modifier.width(10.dp))
         }
 
         // Título + Subtítulo + ID de fila

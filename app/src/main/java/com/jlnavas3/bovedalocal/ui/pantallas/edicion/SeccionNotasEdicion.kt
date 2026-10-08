@@ -1,17 +1,20 @@
 package com.jlnavas3.bovedalocal.ui.pantallas.edicion
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Description
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteCampoTexto
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.TipoCampoTexto
-import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.GrupoAjustes
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 
 /**
- * Microcomponente para el bloque de notas y observaciones de una credencial.
+ * Microcomponente para el bloque de notas y observaciones de una credencial,
+ * presentado en una fila compacta colapsable.
  */
 @Composable
 fun SeccionNotasEdicion(
@@ -19,18 +22,31 @@ fun SeccionNotasEdicion(
     alCambiarNotas: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    GrupoAjustes(
-        etiqueta = "Notas",
+    var expandido by remember { mutableStateOf(notas.isNotBlank()) }
+
+    val resumen = when {
+        notas.isBlank() -> "Sin notas añadidas"
+        else -> {
+            val primeraLinea = notas.trim().lines().firstOrNull() ?: ""
+            if (primeraLinea.length > 35) "${primeraLinea.take(35)}..." else primeraLinea
+        }
+    }
+
+    FilaSeccionColapsableEdicion(
+        icono = Icons.Filled.Description,
+        colorIcono = ColorAcento,
+        titulo = "Notas y detalles",
+        resumen = resumen,
+        expandido = expandido,
+        alAlternarExpandido = { expandido = !expandido },
         modifier = modifier
     ) {
-        Column(modifier = Modifier.padding(14.dp)) {
-            ComponenteCampoTexto(
-                valor = notas,
-                etiqueta = "Notas y detalles",
-                alCambiar = alCambiarNotas,
-                tipo = TipoCampoTexto.MULTILINEA,
-                colorBordeIzquierdo = ColorAcento
-            )
-        }
+        ComponenteCampoTexto(
+            valor = notas,
+            etiqueta = "Notas y detalles",
+            alCambiar = alCambiarNotas,
+            tipo = TipoCampoTexto.MULTILINEA,
+            varias = true
+        )
     }
 }

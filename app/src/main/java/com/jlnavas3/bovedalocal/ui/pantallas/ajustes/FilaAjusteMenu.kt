@@ -59,14 +59,14 @@ fun FilaAjusteMenu(
             }
             .padding(
                 horizontal = 16.dp,
-                vertical = if (mostrarId && !idEtiqueta.isNullOrBlank()) 11.dp else 15.dp
+                vertical = if (mostrarId && !idEtiqueta.isNullOrBlank()) 8.dp else 10.dp
             ),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Box(
             modifier = Modifier
-                .size(38.dp)
-                .clip(RoundedCornerShape(10.dp))
+                .size(32.dp)
+                .clip(RoundedCornerShape(8.dp))
                 .background(colorIcono),
             contentAlignment = Alignment.Center
         ) {
@@ -74,11 +74,11 @@ fun FilaAjusteMenu(
                 imageVector = icono,
                 contentDescription = null,
                 tint = Color.White,
-                modifier = Modifier.size(22.dp)
+                modifier = Modifier.size(17.dp)
             )
         }
 
-        Spacer(Modifier.width(14.dp))
+        Spacer(Modifier.width(12.dp))
 
         Column(
             modifier = Modifier.weight(1f),

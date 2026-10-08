@@ -9,6 +9,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.BookmarkAdd
 import androidx.compose.material.icons.filled.DynamicForm
+import androidx.compose.material.icons.filled.Extension
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -24,7 +25,8 @@ import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.util.Haptica
 
 /**
- * Sección de campos adicionales personalizados dentro de la pantalla de edición de entradas.
+ * Sección de campos adicionales personalizados dentro de la pantalla de edición de entradas,
+ * presentada como fila colapsable homogénea.
  */
 @Composable
 fun SeccionCamposPersonalizados(
@@ -34,7 +36,8 @@ fun SeccionCamposPersonalizados(
     ajustes: AjustesApp = AjustesApp(),
     haptica: Haptica,
     alGuardarPlantilla: ((com.jlnavas3.bovedalocal.data.PlantillaCamposPersonalizada) -> Unit)? = null,
-    alEliminarPlantilla: ((String) -> Unit)? = null
+    alEliminarPlantilla: ((String) -> Unit)? = null,
+    modifier: Modifier = Modifier
 ) {
     var mostrandoDialogoNuevoCampo by remember { mutableStateOf(false) }
     var mostrandoDialogoPresets by remember { mutableStateOf(false) }
@@ -47,8 +50,23 @@ fun SeccionCamposPersonalizados(
         }
     }
 
-    if (camposVisibles.isNotEmpty()) {
-        camposVisibles.forEachIndexed { indice, campo ->
+    var expandido by remember { mutableStateOf(camposVisibles.isNotEmpty()) }
+
+    val tituloSeccion = if (etiquetasBase.isEmpty()) "Campos personalizados" else "Campos adicionales"
+    val resumenSeccion = if (camposVisibles.isEmpty()) "Sin campos adicionales" else "${camposVisibles.size} configurado(s)"
+
+    FilaSeccionColapsableEdicion(
+        icono = Icons.Filled.Extension,
+        colorIcono = ColorAcento,
+        titulo = tituloSeccion,
+        resumen = resumenSeccion,
+        insigniaTexto = if (camposVisibles.isNotEmpty()) "${camposVisibles.size}" else null,
+        expandido = expandido,
+        alAlternarExpandido = { expandido = !expandido },
+        modifier = modifier
+    ) {
+        if (camposVisibles.isNotEmpty()) {
+            camposVisibles.forEachIndexed { indice, campo ->
             TarjetaCampoPersonalizadoEdicion(
                 numero = indice + 1,
                 campo = campo,
@@ -95,17 +113,18 @@ fun SeccionCamposPersonalizados(
         )
     }
 
-    if (camposPersonalizados.isNotEmpty() && alGuardarPlantilla != null) {
-        Spacer(Modifier.height(8.dp))
-        BotonBorde(
-            texto = "Guardar como plantilla (${camposPersonalizados.size} campos)",
-            icono = Icons.Filled.BookmarkAdd,
-            modifier = Modifier.fillMaxWidth(),
-            alPulsar = {
-                haptica.tic()
-                mostrandoDialogoGuardarPlantilla = true
-            }
-        )
+        if (camposPersonalizados.isNotEmpty() && alGuardarPlantilla != null) {
+            Spacer(Modifier.height(8.dp))
+            BotonBorde(
+                texto = "Guardar como plantilla (${camposPersonalizados.size} campos)",
+                icono = Icons.Filled.BookmarkAdd,
+                modifier = Modifier.fillMaxWidth(),
+                alPulsar = {
+                    haptica.tic()
+                    mostrandoDialogoGuardarPlantilla = true
+                }
+            )
+        }
     }
 
     if (mostrandoDialogoNuevoCampo) {

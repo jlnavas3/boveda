@@ -39,6 +39,7 @@ fun ControlCapaFila(
     luminancia: Float,
     alCambiarLuminancia: (Float) -> Unit,
     modifier: Modifier = Modifier,
+    rangoLuminancia: ClosedFloatingPointRange<Float> = 0.0f..1.0f,
     mostrarControlTono: Boolean = false,
     tono: Float = 0f,
     alCambiarTono: ((Float) -> Unit)? = null
@@ -88,9 +89,9 @@ fun ControlCapaFila(
             )
         }
         SliderBoveda(
-            value = luminancia,
+            value = luminancia.coerceIn(rangoLuminancia.start, rangoLuminancia.endInclusive),
             onValueChange = alCambiarLuminancia,
-            valueRange = 0.0f..1.0f
+            valueRange = rangoLuminancia
         )
 
         if (mostrarControlTono && alCambiarTono != null) {
