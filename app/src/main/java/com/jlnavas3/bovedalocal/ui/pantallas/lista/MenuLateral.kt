@@ -74,13 +74,12 @@ fun MenuLateral(
                 .weight(1f)
                 .padding(start = 14.dp, end = 14.dp, top = topAjusted, bottom = 8.dp)
         ) {
-            if (mostrarCabecera) {
-                CabeceraMenuLateral(
-                    nombreApp = nombreApp,
-                    alPersonalizar = { alIr(Pantalla.PersonalizarMenuLateral()) }
-                )
-                Spacer(Modifier.height(10.dp))
-            }
+            CabeceraMenuLateral(
+                nombreApp = nombreApp,
+                mostrarTitulo = mostrarCabecera,
+                alPersonalizar = { alIr(Pantalla.PersonalizarMenuLateral()) }
+            )
+            Spacer(Modifier.height(if (mostrarCabecera) 10.dp else 4.dp))
 
             Column(
                 modifier = Modifier

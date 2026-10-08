@@ -51,6 +51,7 @@ import com.jlnavas3.bovedalocal.ui.theme.fondoBadgeParaTema
 fun CabeceraMenuLateral(
     nombreApp: String,
     modifier: Modifier = Modifier,
+    mostrarTitulo: Boolean = true,
     alPersonalizar: () -> Unit = {}
 ) {
     var menuAbierto by remember { mutableStateOf(false) }
@@ -58,62 +59,66 @@ fun CabeceraMenuLateral(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = 4.dp, vertical = 2.dp),
+            .padding(horizontal = 4.dp, vertical = if (mostrarTitulo) 2.dp else 0.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Box(
-            modifier = Modifier.size(40.dp),
-            contentAlignment = Alignment.Center
-        ) {
-            Icon(
-                imageVector = Icons.Filled.Lock,
-                contentDescription = null,
-                tint = ColorIconosInternos,
-                modifier = Modifier.size(26.dp)
-            )
-        }
-
-        Spacer(Modifier.width(12.dp))
-
-        Column(
-            modifier = Modifier.weight(1f),
-            verticalArrangement = Arrangement.spacedBy(3.dp)
-        ) {
-            Text(
-                text = nombreApp,
-                style = MaterialTheme.typography.titleMedium.copy(
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 17.sp
-                ),
-                color = ColorTitulos,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
-
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(6.dp),
-                modifier = Modifier
-                    .clip(RoundedCornerShape(8.dp))
-                    .background(fondoBadgeParaTema(ColorAcento))
-                    .padding(horizontal = 7.dp, vertical = 2.dp)
+        if (mostrarTitulo) {
+            Box(
+                modifier = Modifier.size(40.dp),
+                contentAlignment = Alignment.Center
             ) {
-                Box(
-                    modifier = Modifier
-                        .size(6.dp)
-                        .clip(CircleShape)
-                        .background(ColorAcento)
-                )
-                Text(
-                    text = "Bóveda cifrada",
-                    style = MaterialTheme.typography.labelSmall.copy(
-                        fontWeight = FontWeight.Medium,
-                        fontSize = 11.sp
-                    ),
-                    color = colorLegibleParaTema(ColorAcento),
-                    maxLines = 1
+                Icon(
+                    imageVector = Icons.Filled.Lock,
+                    contentDescription = null,
+                    tint = ColorIconosInternos,
+                    modifier = Modifier.size(26.dp)
                 )
             }
+
+            Spacer(Modifier.width(12.dp))
+
+            Column(
+                modifier = Modifier.weight(1f),
+                verticalArrangement = Arrangement.spacedBy(3.dp)
+            ) {
+                Text(
+                    text = nombreApp,
+                    style = MaterialTheme.typography.titleMedium.copy(
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 17.sp
+                    ),
+                    color = ColorTitulos,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(6.dp),
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(8.dp))
+                        .background(fondoBadgeParaTema(ColorAcento))
+                        .padding(horizontal = 7.dp, vertical = 2.dp)
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(6.dp)
+                            .clip(CircleShape)
+                            .background(ColorAcento)
+                    )
+                    Text(
+                        text = "Bóveda cifrada",
+                        style = MaterialTheme.typography.labelSmall.copy(
+                            fontWeight = FontWeight.Medium,
+                            fontSize = 11.sp
+                        ),
+                        color = colorLegibleParaTema(ColorAcento),
+                        maxLines = 1
+                    )
+                }
+            }
+        } else {
+            Spacer(Modifier.weight(1f))
         }
 
         Box {

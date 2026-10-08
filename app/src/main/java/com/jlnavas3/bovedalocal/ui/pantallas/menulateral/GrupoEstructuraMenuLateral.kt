@@ -25,7 +25,7 @@ fun GrupoEstructuraMenuLateral(
     ) {
         ComponenteSwitch(
             titulo = "Mostrar cabecera",
-            subtitulo = "Título de la bóveda y candado superior",
+            subtitulo = "Título de la bóveda y candado (el menú ⋮ se mantiene accesible)",
             activo = ajustes.menuLateralMostrarCabecera,
             alCambiar = { vm.ajustarMenuLateralMostrarCabecera(it) },
             idFila = "02-APA-MNL-EST-CAB",
