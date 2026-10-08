@@ -35,6 +35,7 @@ import com.jlnavas3.bovedalocal.ui.componentes.DescripcionPantalla
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ProveedorResaltadoAjustes
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjustesFondo
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.MapaAjustes
+import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.NodoAjuste
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 
 /**
@@ -51,8 +52,14 @@ fun PantallaPersonalizarMenuLateral(
     var mostrarDialogoAnadir by remember { mutableStateOf(false) }
 
     val itemsNodos = remember(ajustes.menuLateralItemsVisibles) {
-        ajustes.menuLateralItemsVisibles.mapNotNull { id ->
-            MapaAjustes.buscarPorId(id)
+        ajustes.menuLateralItemsVisibles.map { id ->
+            MapaAjustes.buscarPorId(id) ?: NodoAjuste(
+                id = id,
+                titulo = if (id == "00-AJU") "Ajustes" else id,
+                subtitulo = "Acceso directo",
+                ruta = id,
+                grupo = "General"
+            )
         }
     }
 

@@ -38,7 +38,7 @@ fun FilaItemMenuLateral(
     ajustes: AjustesApp? = null,
     alIr: (Pantalla) -> Unit
 ) {
-    if (id == "04-HER-PSK" && Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+    if ((id == "04-HER-PSK" || id == "04-HER-PAS") && Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
         return
     }
 
@@ -61,7 +61,7 @@ fun FilaItemMenuLateral(
             ajustes = ajustes
         ) { alIr(Pantalla.HistorialClaves) }
 
-        "04-HER-PSK" -> ItemMenu(
+        "04-HER-PAS", "04-HER-PSK" -> ItemMenu(
             texto = "Llaves de paso",
             icono = Icons.Filled.Fingerprint,
             colorIcono = ColorPasskeys,

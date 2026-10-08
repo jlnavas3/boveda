@@ -117,7 +117,10 @@ private fun deserializarReparenting(raw: String): Map<String, String> = try {
 
 private fun deserializarItemsMenuLateral(raw: String): List<String> = try {
     if (raw.isBlank()) AjustesDefaults.MenuLateral.ITEMS_PREDETERMINADOS
-    else jsonAjustes.decodeFromString(raw)
+    else {
+        val lista: List<String> = jsonAjustes.decodeFromString(raw)
+        lista.map { if (it == "04-HER-PSK") "04-HER-PAS" else it }
+    }
 } catch (_: Exception) {
     AjustesDefaults.MenuLateral.ITEMS_PREDETERMINADOS
 }

@@ -1138,8 +1138,41 @@ object MapaAjustes {
         )
     )
 
+    val NODO_AJUSTES: NodoAjuste = NodoAjuste(
+        id = "00-AJU",
+        titulo = "Ajustes",
+        subtitulo = "Todos los ajustes y configuración general de la aplicación",
+        ruta = "Ajustes",
+        grupo = "Sistema",
+        esRaiz = false,
+        icono = Icons.Filled.Settings,
+        colorIcono = Color(0xFF546E7A),
+        pantallaDestino = Pantalla.Ajustes,
+        padreId = "APP",
+        palabrasClave = listOf("ajustes", "configuracion", "sistema", "opciones", "preferencias", "todos", "general")
+    )
+
+    val NODO_PASSKEYS: NodoAjuste = NodoAjuste(
+        id = "04-HER-PAS",
+        titulo = "Llaves de paso",
+        subtitulo = "Credenciales FIDO2 WebAuthn y passkeys locales",
+        ruta = "Herramientas > Llaves de paso",
+        grupo = "Herramientas",
+        esRaiz = false,
+        icono = Icons.Filled.Fingerprint,
+        colorIcono = Color(0xFF10B981),
+        pantallaDestino = Pantalla.Passkeys,
+        padreId = "04-HER",
+        palabrasClave = listOf("passkeys", "llaves", "fido2", "webauthn", "biometria", "sin contrasena")
+    )
+
+    val NODOS_ACCESOS_DIRECTOS: List<NodoAjuste> = listOf(
+        NODO_AJUSTES,
+        NODO_PASSKEYS
+    )
+
     val TODOS_LOS_NODOS: List<NodoAjuste> by lazy {
-        NODOS_RAIZ + SUBNODOS
+        NODOS_RAIZ + SUBNODOS + NODOS_ACCESOS_DIRECTOS
     }
 
     /**

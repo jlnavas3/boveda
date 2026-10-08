@@ -364,7 +364,7 @@ object AjustesDefaults {
         val ITEMS_PREDETERMINADOS = listOf(
             "04-HER-GEN",
             "04-HER-HST",
-            "04-HER-PSK",
+            "04-HER-PAS",
             "04-HER-2FA",
             "03-LST-SLD",
             "03-LST-DUP",

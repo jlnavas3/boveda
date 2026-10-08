@@ -62,7 +62,7 @@ fun MenuLateral(
     val itemsVisibles = remember(ajustes?.menuLateralItemsVisibles) {
         val listaCruda = ajustes?.menuLateralItemsVisibles ?: AjustesDefaults.MenuLateral.ITEMS_PREDETERMINADOS
         listaCruda.filter { id ->
-            !(id == "04-HER-PSK" && Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
+            !( (id == "04-HER-PSK" || id == "04-HER-PAS") && Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
         }
     }
 
