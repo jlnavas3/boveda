@@ -23,6 +23,7 @@ import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.Fingerprint
 import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Wifi
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
@@ -73,6 +74,7 @@ fun SelectorTipoEntrada(
         TipoEntrada.SERVIDOR -> Icons.Filled.Dns
         TipoEntrada.WALLET -> Icons.Filled.AccountBalanceWallet
         TipoEntrada.PASSKEY -> Icons.Filled.Fingerprint
+        TipoEntrada.CONTACTO -> Icons.Filled.Person
     }
     val texto = tipoActual.etiqueta
 
@@ -127,6 +129,7 @@ fun SelectorTipoEntrada(
                 Triple(TipoEntrada.WIFI, "Red Wi-Fi", Icons.Filled.Wifi),
                 Triple(TipoEntrada.CUENTA_BANCARIA, "Cuenta bancaria", Icons.Filled.AccountBalance),
                 Triple(TipoEntrada.IDENTIDAD, "Documento de identidad", Icons.Filled.Badge),
+                Triple(TipoEntrada.CONTACTO, "Contacto seguro", Icons.Filled.Person),
                 Triple(TipoEntrada.SERVIDOR, "Servidor / SSH", Icons.Filled.Dns),
                 Triple(TipoEntrada.WALLET, "Cripto Wallet", Icons.Filled.AccountBalanceWallet)
             )

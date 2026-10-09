@@ -25,6 +25,7 @@ import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Memory
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Palette
+import androidx.compose.material.icons.filled.QrCodeScanner
 import androidx.compose.material.icons.filled.Security
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.SquareFoot
@@ -159,6 +160,18 @@ object MapaAjustes {
             colorIcono = Color(0xFF1E88E5),
             palabrasClave = listOf("seguridad", "huella", "biometria", "clave", "contrasena", "maestra", "pin", "bloqueo", "inactividad", "fuerza bruta", "portapapeles", "autodestruccion", "senuelo", "cifrado", "argon2id")
         ),
+        NodoAjuste(
+            id = "01-SEG-ACC",
+            titulo = "Auditoría de accesibilidad",
+            subtitulo = "Detección de aplicaciones espía y servicios con acceso a la pantalla",
+            ruta = "Seguridad > Auditoría de accesibilidad",
+            grupo = "Seguridad",
+            pantallaDestino = Pantalla.AuditoriaAccesibilidad(),
+            padreId = "01-SEG",
+            icono = Icons.Filled.Security,
+            colorIcono = Color(0xFFE65100),
+            palabrasClave = listOf("accesibilidad", "permiso", "pantalla", "espia", "scraping", "cube acr", "lista blanca", "confianza", "servicios")
+        ),
 
         // ==========================================
         // NIVEL 2: Hijos de Apariencia (02-APA)
@@ -250,18 +263,6 @@ object MapaAjustes {
             icono = Icons.Filled.Layers,
             colorIcono = Color(0xFF00ACC1),
             palabrasClave = listOf("agrupar", "lista", "densidad", "compacta", "comoda", "sitio")
-        ),
-        NodoAjuste(
-            id = "03-LST-DES-TIT",
-            titulo = "Asistente de títulos",
-            subtitulo = "Normalizar nombres web y reglas de URLs",
-            ruta = "Lista de cuentas > Asistente de títulos",
-            grupo = "Lista de cuentas",
-            pantallaDestino = Pantalla.NormalizadorTitulos(),
-            padreId = "03-LST",
-            icono = Icons.Filled.Layers,
-            colorIcono = Color(0xFF00ACC1),
-            palabrasClave = listOf("asistente", "titulos", "normalizador", "urls", "reglas")
         ),
         NodoAjuste(
             id = "03-LST-IDE",
@@ -459,6 +460,18 @@ object MapaAjustes {
             colorIcono = Color(0xFFF97316),
             palabrasClave = listOf("autenticador", "totp", "2fa", "codigos", "temporales", "doble factor")
         ),
+        NodoAjuste(
+            id = "04-HER-QRS",
+            titulo = "Escáner QR",
+            subtitulo = "Escanear contactos, Wi-Fi, 2FA y transferencias Bóveda",
+            ruta = "Herramientas > Escáner QR",
+            grupo = "Herramientas",
+            pantallaDestino = Pantalla.CamaraQr(null),
+            padreId = "04-HER",
+            icono = Icons.Filled.QrCodeScanner,
+            colorIcono = Color(0xFF8B5CF6),
+            palabrasClave = listOf("escaner", "qr", "camara", "lector", "escanear", "vcard", "contacto", "wifi", "transferir", "codigo")
+        ),
 
         // ==========================================
         // NIVEL 2: Hijos de Copias y datos (05-COP)
@@ -570,7 +583,17 @@ object MapaAjustes {
             grupo = "Seguridad",
             pantallaDestino = Pantalla.BloqueoApp(),
             padreId = "01-SEG-BIO-BLO",
-            palabrasClave = listOf("bloqueo", "inactividad", "temporizador", "minutos", "flag secure", "pantalla")
+            palabrasClave = listOf("bloqueo", "inactividad", "temporizador", "minutos", "flag secure", "pantalla", "tapjacking")
+        ),
+        NodoAjuste(
+            id = "01-SEG-BIO-TAP",
+            titulo = "Protección contra tapjacking",
+            subtitulo = "Bloquea toques táctiles si otra aplicación o burbuja flota sobre la pantalla",
+            ruta = "Seguridad > Biometría y seguridad > Bloqueo de aplicación",
+            grupo = "Seguridad",
+            pantallaDestino = Pantalla.BloqueoApp("01-SEG-BIO-TAP"),
+            padreId = "01-SEG-BIO-APP",
+            palabrasClave = listOf("tapjacking", "superposicion", "overlay", "flotante", "burbuja", "pantalla", "toques")
         ),
         NodoAjuste(
             id = "01-SEG-BIO-BRU",
@@ -837,6 +860,16 @@ object MapaAjustes {
             pantallaDestino = Pantalla.OrganizacionIndicadores(),
             padreId = "03-LST-DES",
             palabrasClave = listOf("indicadores", "badges", "pastillas", "totp", "etiquetas", "iconos")
+        ),
+        NodoAjuste(
+            id = "03-LST-DES-TIT",
+            titulo = "Asistente de títulos",
+            subtitulo = "Normalizar nombres web y reglas de URLs",
+            ruta = "Lista de cuentas > Diseño de lista",
+            grupo = "Lista de cuentas",
+            pantallaDestino = Pantalla.NormalizadorTitulos(),
+            padreId = "03-LST-DES",
+            palabrasClave = listOf("asistente", "titulos", "normalizador", "urls", "reglas")
         ),
 
         // ==========================================
@@ -1254,6 +1287,7 @@ object MapaAjustes {
             "06-SIS-AVZ-ORG" -> Icons.AutoMirrored.Filled.Sort to Color(0xFF8B5CF6)
             "06-SIS-AVZ-HAP" -> Icons.Filled.Tune to Color(0xFF00897B)
             "06-SIS-AVZ-PEL" -> Icons.Filled.DeleteForever to Color(0xFFD32F2F)
+            "01-SEG-ACC" -> Icons.Filled.Security to Color(0xFFE65100)
             else -> null
         }
         if (iconoDedicado != null) return iconoDedicado

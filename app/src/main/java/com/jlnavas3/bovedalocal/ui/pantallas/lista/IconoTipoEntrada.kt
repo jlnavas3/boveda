@@ -15,6 +15,7 @@ import androidx.compose.material.icons.filled.CreditCard
 import androidx.compose.material.icons.filled.Description
 import androidx.compose.material.icons.filled.Dns
 import androidx.compose.material.icons.filled.Fingerprint
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Wifi
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
@@ -69,6 +70,7 @@ fun IconoTipoEntrada(
                 TipoEntrada.SERVIDOR -> IconoTipoCircular(Icons.Filled.Dns, tamanoIcono)
                 TipoEntrada.WALLET -> IconoTipoCircular(Icons.Filled.AccountBalanceWallet, tamanoIcono)
                 TipoEntrada.IDENTIDAD -> IconoTipoCircular(Icons.Filled.Badge, tamanoIcono)
+                TipoEntrada.CONTACTO -> IconoTipoCircular(Icons.Filled.Person, tamanoIcono)
                 else -> {
                     Monograma(
                         titulo = entrada.titulo.ifBlank { "?" },

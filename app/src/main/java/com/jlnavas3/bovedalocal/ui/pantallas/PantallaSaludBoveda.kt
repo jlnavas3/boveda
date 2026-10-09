@@ -73,6 +73,9 @@ fun PantallaSaludBoveda(
         ahora = ahora,
         contexto = contexto
     )
+    val diagnosticoAccesibilidad = remember(contexto, ajustes.listaBlancaAccesibilidad) {
+        com.jlnavas3.bovedalocal.util.DetectorServiciosAccesibilidad.evaluar(contexto, ajustes.listaBlancaAccesibilidad)
+    }
     val claves = datosSalud.claves
     val ignoradas = datosSalud.ignoradas
     val duplicadas = datosSalud.duplicadas
@@ -280,7 +283,8 @@ fun PantallaSaludBoveda(
         antiguasCount = antiguas.size,
         ignoradasCount = ignoradas.size,
         umbralDias = ajustes.umbralAntiguedadDias,
-        alIrDuplicados = { vm.ir(Pantalla.Duplicados) }
+        alIrDuplicados = { vm.ir(Pantalla.Duplicados) },
+        diagnosticoAccesibilidad = diagnosticoAccesibilidad
     )
 
     entradaParaCambioRapido?.let { entrada ->

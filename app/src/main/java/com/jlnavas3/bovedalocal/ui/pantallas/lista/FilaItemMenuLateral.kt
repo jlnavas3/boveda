@@ -10,6 +10,8 @@ import androidx.compose.material.icons.filled.Fingerprint
 import androidx.compose.material.icons.filled.Folder
 import androidx.compose.material.icons.filled.HealthAndSafety
 import androidx.compose.material.icons.filled.History
+import androidx.compose.material.icons.filled.QrCodeScanner
+import androidx.compose.material.icons.filled.Security
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Timer
 import androidx.compose.runtime.Composable
@@ -79,6 +81,15 @@ fun FilaItemMenuLateral(
             ajustes = ajustes
         ) { alIr(Pantalla.Autenticador) }
 
+        "04-HER-QRS" -> ItemMenu(
+            texto = "Escáner QR",
+            icono = Icons.Filled.QrCodeScanner,
+            colorIcono = ColorAcento,
+            idEtiqueta = id,
+            mostrarId = mostrarIds,
+            ajustes = ajustes
+        ) { alIr(Pantalla.CamaraQr(null)) }
+
         "03-LST-SLD" -> ItemMenu(
             texto = "Salud",
             icono = Icons.Filled.HealthAndSafety,
@@ -136,6 +147,15 @@ fun FilaItemMenuLateral(
             mostrarId = mostrarIds,
             ajustes = ajustes
         ) { alIr(Pantalla.Ajustes) }
+
+        "01-SEG-ACC" -> ItemMenu(
+            texto = "Auditoría de accesibilidad",
+            icono = Icons.Filled.Security,
+            colorIcono = Color(0xFFE65100),
+            idEtiqueta = id,
+            mostrarId = mostrarIds,
+            ajustes = ajustes
+        ) { alIr(Pantalla.AuditoriaAccesibilidad()) }
 
         else -> {
             val nodo = MapaAjustes.buscarPorId(id)

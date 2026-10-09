@@ -78,7 +78,7 @@ fun BarraSuperiorCamaraQr(
 
             // Acciones rápidas flotantes: Luz, Escanear imagen, Manual, Ajustes
             Row(
-                horizontalArrangement = Arrangement.spacedBy(16.dp),
+                horizontalArrangement = Arrangement.spacedBy(6.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 // Luz / Flash
@@ -89,10 +89,10 @@ fun BarraSuperiorCamaraQr(
                     alPulsar = alAlternarFlash
                 )
 
-                // Escanear Imagen
+                // Escanear Imagen (en 2 líneas para evitar recortes)
                 BotonAccionSuperior(
                     icono = Icons.Filled.Image,
-                    etiqueta = "Escanear imag…",
+                    etiqueta = "Escanear\nimagen",
                     activo = false,
                     alPulsar = alEscanearImagen
                 )
@@ -133,7 +133,7 @@ private fun BotonAccionSuperior(
         modifier = modifier
             .clip(FormaPequena)
             .clickable(onClick = alPulsar)
-            .padding(horizontal = 8.dp, vertical = 4.dp)
+            .padding(horizontal = 4.dp, vertical = 2.dp)
     ) {
         Box(
             modifier = Modifier
@@ -144,7 +144,7 @@ private fun BotonAccionSuperior(
         ) {
             Icon(
                 imageVector = icono,
-                contentDescription = etiqueta,
+                contentDescription = etiqueta.replace("\n", " "),
                 tint = if (activo) ColorAcento else Color.White,
                 modifier = Modifier.size(20.dp)
             )
@@ -153,8 +153,13 @@ private fun BotonAccionSuperior(
         Text(
             text = etiqueta,
             color = if (activo) ColorAcento else Color.White,
-            style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.5.sp, fontWeight = FontWeight.Medium),
-            maxLines = 1
+            style = MaterialTheme.typography.labelSmall.copy(
+                fontSize = 10.sp,
+                fontWeight = FontWeight.Medium,
+                lineHeight = 11.sp
+            ),
+            textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+            maxLines = 2
         )
     }
 }

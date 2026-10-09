@@ -49,6 +49,22 @@ interface VaultAjustesSeguridadDelegate {
         Diagnostico.apuntar("seguridad", "Protección de pantalla (FLAG_SECURE) $desc por el usuario")
     }
 
+    fun ajustarProteccionTapjacking(activo: Boolean) {
+        repositorio.ajustes.actualizar { it.copy(proteccionTapjacking = activo) }
+        val desc = if (activo) "activada" else "desactivada"
+        Diagnostico.apuntar("seguridad", "Protección contra superposiciones y tapjacking $desc por el usuario")
+    }
+
+    fun agregarAppListaBlancaAccesibilidad(paquete: String) {
+        repositorio.ajustes.actualizar { it.copy(listaBlancaAccesibilidad = it.listaBlancaAccesibilidad + paquete.lowercase()) }
+        Diagnostico.apuntar("seguridad", "App $paquete añadida a la lista blanca de accesibilidad")
+    }
+
+    fun quitarAppListaBlancaAccesibilidad(paquete: String) {
+        repositorio.ajustes.actualizar { it.copy(listaBlancaAccesibilidad = it.listaBlancaAccesibilidad - paquete.lowercase()) }
+        Diagnostico.apuntar("seguridad", "App $paquete removida de la lista blanca de accesibilidad")
+    }
+
     fun ajustarFrenoIntentosGratis(intentos: Int) {
         repositorio.ajustes.actualizar { it.copy(frenoIntentosGratis = intentos) }
         val desc = if (intentos <= 0) "desactivado" else "$intentos intentos"

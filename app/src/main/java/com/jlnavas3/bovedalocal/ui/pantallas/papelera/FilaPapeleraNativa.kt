@@ -23,6 +23,7 @@ import androidx.compose.material.icons.filled.Description
 import androidx.compose.material.icons.filled.Dns
 import androidx.compose.material.icons.filled.Fingerprint
 import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Restore
 import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material.icons.filled.Wifi
@@ -92,6 +93,7 @@ fun FilaPapeleraNativa(
         TipoEntrada.IDENTIDAD -> Icons.Filled.Badge
         TipoEntrada.SERVIDOR -> Icons.Filled.Dns
         TipoEntrada.WALLET -> Icons.Filled.AccountBalanceWallet
+        TipoEntrada.CONTACTO -> Icons.Filled.Person
     }
 
     val colorIcono = when (entrada.tipo) {
@@ -104,6 +106,7 @@ fun FilaPapeleraNativa(
         TipoEntrada.IDENTIDAD -> ColorExportacion
         TipoEntrada.SERVIDOR -> ColorIconosInternos
         TipoEntrada.WALLET -> ColorAcento
+        TipoEntrada.CONTACTO -> ColorAcento
     }
 
     val subtitulo = entrada.usuario.ifBlank {

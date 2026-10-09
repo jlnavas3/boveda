@@ -111,6 +111,23 @@ fun PantallaOrganizacionLista(
                     )
                 }
 
+                Spacer(Modifier.height(EspaciadoComponentes))
+
+                // Grupo: Títulos y normalización
+                ComponenteGrupo(
+                    etiqueta = "Títulos y normalización",
+                    idGrupo = "03-LST-DES-G04",
+                    mostrarId = ajustes.mostrarIdsAjustes
+                ) {
+                    ComponenteNavegacion(
+                        titulo = "Asistente de títulos",
+                        icono = null,
+                        idFila = "03-LST-DES-TIT",
+                        mostrarId = ajustes.mostrarIdsAjustes,
+                        alPulsar = { vm.ir(Pantalla.NormalizadorTitulos()) }
+                    )
+                }
+
                 Spacer(Modifier.height(32.dp))
             }
         }

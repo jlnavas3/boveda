@@ -76,4 +76,17 @@ class MapaAjustesTest {
         val padreReorganizar = MapeoJerarquiaPantallas.resolverPadre(Pantalla.ReorganizarAjustes)
         assertEquals(Pantalla.Avanzada("06-SIS-AVZ-ORG"), padreReorganizar)
     }
+
+    @Test
+    fun `asistente de titulos es hijo de 03-LST-DES y retorna a OrganizacionLista`() {
+        val nodoTitulos = MapaAjustes.buscarPorId("03-LST-DES-TIT")
+        assertNotNull("Debe existir el nodo 03-LST-DES-TIT", nodoTitulos)
+        assertEquals("03-LST-DES", nodoTitulos?.padreId)
+
+        val hijosDiseno = MapaAjustes.obtenerHijosDe("03-LST-DES")
+        assertTrue("03-LST-DES-TIT debe ser hijo de 03-LST-DES", hijosDiseno.any { it.id == "03-LST-DES-TIT" })
+
+        val padrePantalla = MapeoJerarquiaPantallas.resolverPadre(Pantalla.NormalizadorTitulos())
+        assertEquals(Pantalla.OrganizacionLista("03-LST-DES-TIT"), padrePantalla)
+    }
 }

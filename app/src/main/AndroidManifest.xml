@@ -6,6 +6,8 @@
     <uses-permission android:name="android.permission.VIBRATE" />
     <!-- Solo para leer el QR de un 2FA. Se pide al pulsar "Escanear", nunca al abrir la app. -->
     <uses-permission android:name="android.permission.CAMERA" />
+    <!-- Solo para importar contactos seleccionados del dispositivo hacia la bóveda de forma offline. -->
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
     <uses-feature android:name="android.hardware.camera" android:required="false" />
     <uses-feature android:name="android.hardware.camera.any" android:required="false" />
     <!-- El permiso CAMERA da por exigido el autoenfoque si no se dice lo contrario. -->
@@ -95,6 +97,15 @@
                 <data android:mimeType="application/bvda" />
                 <data android:pathSuffix=".bvda" />
                 <data android:pathPattern=".*\\.bvda" />
+            </intent-filter>
+
+            <!-- Asociación para transferencia de credenciales y contactos por QR / Enlace profundo -->
+            <intent-filter tools:ignore="AppLinkUrlError">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="bovedalocal" android:host="importar" />
+                <data android:scheme="boveda" android:host="importar" />
             </intent-filter>
 
             <intent-filter

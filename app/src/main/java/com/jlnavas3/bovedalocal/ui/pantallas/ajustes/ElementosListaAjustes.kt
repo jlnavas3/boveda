@@ -30,16 +30,6 @@ fun crearElementosListaAjustes(
         alPulsar = { vm.ir(Pantalla.OrganizacionLista()) }
     ),
     ElementoMenuAjustes(
-        titulo = "Asistente de títulos",
-        subtitulo = "Normalizar nombres web y reglas de URLs",
-        icono = Icons.Filled.Layers,
-        colorIcono = Color(0xFF00ACC1),
-        idEtiqueta = "03-LST-DES-TIT",
-        grupo = "Lista de cuentas",
-        palabrasClave = "asistente titulos normalizador nombres urls reglas google sitios",
-        alPulsar = { vm.ir(Pantalla.NormalizadorTitulos()) }
-    ),
-    ElementoMenuAjustes(
         titulo = "Identidades",
         subtitulo = "Perfiles de correo y vinculación inteligente",
         icono = Icons.Filled.AccountCircle,

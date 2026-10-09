@@ -8,6 +8,7 @@ import androidx.compose.material.icons.filled.CreditCard
 import androidx.compose.material.icons.filled.Description
 import androidx.compose.material.icons.filled.Dns
 import androidx.compose.material.icons.filled.Fingerprint
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.VpnKey
 import androidx.compose.material.icons.filled.Wifi
 import androidx.compose.runtime.Composable
@@ -37,6 +38,7 @@ fun PildoraTipoEntrada(
         TipoEntrada.SERVIDOR -> Icons.Filled.Dns
         TipoEntrada.WALLET -> Icons.Filled.AccountBalanceWallet
         TipoEntrada.PASSKEY -> Icons.Filled.Fingerprint
+        TipoEntrada.CONTACTO -> Icons.Filled.Person
     }
 
     PildoraFiltroBase(

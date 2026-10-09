@@ -14,10 +14,13 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 
+import com.jlnavas3.bovedalocal.ui.componentes.blindajeSemanticoSensible
+
 /**
  * Texto protegido visualmente.
  * Soporta desenfoque por hardware (Android 12+) con animación suave de enfoque/desenfoque,
  * o fallback seguro a puntos de longitud fija / real.
+ * Incorpora blindaje semántico para impedir que servicios de accesibilidad lean el secreto.
  */
 @Composable
 fun TextoSeguroVisual(
@@ -32,13 +35,18 @@ fun TextoSeguroVisual(
 ) {
     val usaBlur = estilo == "desenfoque" && UtilesSeguridadVisual.soportaDesenfoqueHardware()
 
+    val modificadorBlindado = modifier.blindajeSemanticoSensible(
+        esSensible = true,
+        etiquetaAccesible = if (oculto) "Contenido protegido" else null
+    )
+
     if (usaBlur) {
         val radioDesenfoque by animateDpAsState(
             targetValue = if (oculto) 7.dp else 0.dp,
             animationSpec = tween(durationMillis = 200),
             label = "blur_anim"
         )
-        Box(modifier = modifier) {
+        Box(modifier = modificadorBlindado) {
             Text(
                 text = texto,
                 style = estiloTexto,
@@ -60,7 +68,7 @@ fun TextoSeguroVisual(
             color = colorTexto,
             maxLines = maxLines,
             overflow = overflow,
-            modifier = modifier
+            modifier = modificadorBlindado
         )
     }
 }

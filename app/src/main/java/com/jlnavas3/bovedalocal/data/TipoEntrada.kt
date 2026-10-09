@@ -12,7 +12,8 @@ enum class TipoEntrada {
     IDENTIDAD,
     SERVIDOR,
     WALLET,
-    PASSKEY;
+    PASSKEY,
+    CONTACTO;
 
     val etiqueta: String
         get() = when (this) {
@@ -25,5 +26,6 @@ enum class TipoEntrada {
             SERVIDOR -> "Servidor / SSH"
             WALLET -> "Cripto Wallet"
             PASSKEY -> "Llave de paso"
+            CONTACTO -> "Contacto seguro"
         }
 }

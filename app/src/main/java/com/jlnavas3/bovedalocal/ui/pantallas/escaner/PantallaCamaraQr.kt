@@ -73,6 +73,7 @@ fun PantallaCamaraQr(
     var mensajeEstado by remember { mutableStateOf<String?>(null) }
     var esErrorMensaje by remember { mutableStateOf(false) }
     var procesandoLectura by remember { mutableStateOf(false) }
+    var entradaConfirmar by remember { mutableStateOf<com.jlnavas3.bovedalocal.data.Entrada?>(null) }
 
     val yaLeido = remember { AtomicBoolean(false) }
     val principal = remember { Handler(Looper.getMainLooper()) }
@@ -120,16 +121,24 @@ fun PantallaCamaraQr(
 
                     principal.postDelayed({
                         val res = procesarLecturaQr(texto, "la cámara", entradaDestino, vm)
-                        if (res is ResultadoProcesoQr.Error) {
-                            if (ajustes.hapticaApp) haptica.error()
-                            mensajeEstado = res.mensaje
-                            esErrorMensaje = true
-                            principal.postDelayed({
-                                codigoDetectado = false
-                                procesandoLectura = false
-                                yaLeido.set(false)
-                                mensajeEstado = null
-                            }, 2_500)
+                        when (res) {
+                            is ResultadoProcesoQr.EntradaDetectada -> {
+                                entradaConfirmar = res.entrada
+                            }
+                            is ResultadoProcesoQr.Error -> {
+                                if (ajustes.hapticaApp) haptica.error()
+                                mensajeEstado = res.mensaje
+                                esErrorMensaje = true
+                                principal.postDelayed({
+                                    codigoDetectado = false
+                                    procesandoLectura = false
+                                    yaLeido.set(false)
+                                    mensajeEstado = null
+                                }, 2_500)
+                            }
+                            is ResultadoProcesoQr.Exito -> {
+                                // Redirige o cierra directamente
+                            }
                         }
                     }, 250)
                 }
@@ -152,12 +161,18 @@ fun PantallaCamaraQr(
                 }
                 else -> {
                     val res = procesarLecturaQr(texto, "una imagen", entradaDestino, vm)
-                    if (res is ResultadoProcesoQr.Exito) {
-                        if (ajustes.hapticaApp) haptica.exito()
-                    } else if (res is ResultadoProcesoQr.Error) {
-                        if (ajustes.hapticaApp) haptica.error()
-                        mensajeEstado = res.mensaje
-                        esErrorMensaje = true
+                    when (res) {
+                        is ResultadoProcesoQr.EntradaDetectada -> {
+                            entradaConfirmar = res.entrada
+                        }
+                        is ResultadoProcesoQr.Exito -> {
+                            if (ajustes.hapticaApp) haptica.exito()
+                        }
+                        is ResultadoProcesoQr.Error -> {
+                            if (ajustes.hapticaApp) haptica.error()
+                            mensajeEstado = res.mensaje
+                            esErrorMensaje = true
+                        }
                     }
                 }
             }
@@ -257,6 +272,25 @@ fun PantallaCamaraQr(
                 if (ajustes.hapticaApp) haptica.tic()
             },
             modifier = Modifier.align(Alignment.BottomCenter)
+        )
+    }
+
+    if (entradaConfirmar != null) {
+        DialogoConfirmarImportacionQr(
+            entrada = entradaConfirmar!!,
+            alConfirmar = { entradaAGuardar ->
+                vm.guardar(entradaAGuardar)
+                vm.avisar("«${entradaAGuardar.titulo}» guardada en la bóveda")
+                entradaConfirmar = null
+                vm.volverAtras()
+            },
+            alDescartar = {
+                entradaConfirmar = null
+                codigoDetectado = false
+                procesandoLectura = false
+                yaLeido.set(false)
+                mensajeEstado = null
+            }
         )
     }
 }

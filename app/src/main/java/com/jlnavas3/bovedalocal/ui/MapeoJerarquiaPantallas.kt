@@ -40,7 +40,7 @@ object MapeoJerarquiaPantallas {
         is Pantalla.OrganizacionEstructura -> Pantalla.OrganizacionLista("03-LST-DES-EST")
         is Pantalla.OrganizacionJerarquia -> Pantalla.OrganizacionLista("03-LST-DES-JER")
         is Pantalla.OrganizacionIndicadores -> Pantalla.OrganizacionLista("03-LST-DES-IND")
-        is Pantalla.NormalizadorTitulos -> Pantalla.OrganizacionIndicadores("03-LST-DES-TIT")
+        is Pantalla.NormalizadorTitulos -> Pantalla.OrganizacionLista("03-LST-DES-TIT")
         is Pantalla.ColoresDatos -> Pantalla.OrganizacionIndicadores("02-APA-THM-G04")
 
         // Bloque 04: Historial, Widgets y Tile
@@ -117,6 +117,7 @@ object MapeoJerarquiaPantallas {
 
         // Nivel 2: Seguridad -> Ajustes (Nivel 1)
         is Pantalla.Seguridad -> Pantalla.Ajustes("01-SEG-BIO")
+        is Pantalla.AuditoriaAccesibilidad -> if (!pantalla.seccionId.isNullOrBlank()) Pantalla.Ajustes(pantalla.seccionId) else Pantalla.Ajustes("01-SEG-ACC")
 
         // Nivel 2: Copias y datos -> Ajustes (Nivel 1)
         is Pantalla.CopiaSeguridad -> Pantalla.Ajustes("05-COP-MAN")

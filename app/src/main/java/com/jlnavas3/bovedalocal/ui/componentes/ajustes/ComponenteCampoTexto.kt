@@ -236,7 +236,8 @@ fun ComponenteCampoTexto(
                 keyboardActions = keyboardActions,
                 forma = forma,
                 colores = coloresSinBordes,
-                interactionSource = interactionSource
+                interactionSource = interactionSource,
+                esSensible = esContrasena
             )
             if (colorBordeIzquierdo != null && !sinFondo) {
                 Box(

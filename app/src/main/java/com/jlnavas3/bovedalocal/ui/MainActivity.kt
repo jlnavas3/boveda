@@ -68,6 +68,7 @@ class MainActivity : FragmentActivity() {
         setIntent(intent)
         manejarAccionShortcut(intent)
         manejarIntentArchivoBvda(intent)
+        manejarIntentBovedaUrl(intent)
     }
 
     private fun manejarIntentArchivoBvda(intent: Intent?) {
@@ -153,11 +154,28 @@ class MainActivity : FragmentActivity() {
         }
     }
 
+    private fun manejarIntentBovedaUrl(intent: Intent?) {
+        val uri = intent?.data ?: return
+        val scheme = uri.scheme?.lowercase() ?: ""
+        if (scheme == "bovedalocal" || scheme == "boveda") {
+            val textoCompleto = uri.toString()
+            if (com.jlnavas3.bovedalocal.util.ParserBovedaQr.esBovedaTransfer(textoCompleto)) {
+                val entrada = com.jlnavas3.bovedalocal.util.ParserBovedaQr.parsear(textoCompleto)
+                if (entrada != null) {
+                    vm.guardar(entrada)
+                    vm.avisar("Entrada «${entrada.titulo}» importada a la bóveda")
+                    intent.data = null
+                }
+            }
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         actualizarShortcutsDinamicos()
         manejarAccionShortcut(intent)
         manejarIntentArchivoBvda(intent)
+        manejarIntentBovedaUrl(intent)
         // FLAG_SECURE activa por defecto; se gestiona dinámicamente según la preferencia del usuario
         // Cargar paleta sobria personalizada si existe
         val (guardadaOsc, guardadaCla) = GestorPaletaSobria.cargar(this)
@@ -176,6 +194,11 @@ class MainActivity : FragmentActivity() {
                 } else {
                     window.clearFlags(WindowManager.LayoutParams.FLAG_SECURE)
                 }
+            }
+            // Protección contra Tapjacking: descarta toques si hay ventanas superpuestas (overlays)
+            LaunchedEffect(ajustes.proteccionTapjacking) {
+                window.decorView.filterTouchesWhenObscured = ajustes.proteccionTapjacking
+                findViewById<android.view.View>(android.R.id.content)?.filterTouchesWhenObscured = ajustes.proteccionTapjacking
             }
             BovedaTheme(temaApp = ajustes.temaApp) {
                 RaizBoveda(vm, this)

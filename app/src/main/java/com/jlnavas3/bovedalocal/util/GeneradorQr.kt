@@ -9,6 +9,7 @@ import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel
 import com.jlnavas3.bovedalocal.data.Entrada
 import com.jlnavas3.bovedalocal.data.TipoEntrada
 import com.jlnavas3.bovedalocal.ui.pantallas.edicion.GestorCamposBase
+import kotlinx.serialization.json.Json
 
 object GeneradorQr {
 
@@ -17,6 +18,11 @@ object GeneradorQr {
         EncodeHintType.MARGIN to 1,
         EncodeHintType.ERROR_CORRECTION to ErrorCorrectionLevel.M
     )
+
+    private val jsonSeguro = Json {
+        ignoreUnknownKeys = true
+        encodeDefaults = false
+    }
 
     /**
      * Genera una matriz booleana para representar el código QR.
@@ -160,20 +166,17 @@ object GeneradorQr {
     }
 
     /**
-     * Formatea los datos de la entrada en un formato claro para compartir pantalla a pantalla.
+     * Genera tarjeta vCard 3.0 estándar a partir de la entrada para ser importada por cualquier agenda nativa.
      */
-    fun textoCredencialCompleta(entrada: Entrada): String = buildString {
-        appendLine("--- CREDENCIAL BÓVEDA LOCAL ---")
-        if (entrada.titulo.isNotBlank()) appendLine("Título: ${entrada.titulo}")
-        if (entrada.tipo != TipoEntrada.LOGIN) appendLine("Tipo: ${entrada.tipo.etiqueta}")
-        if (entrada.usuario.isNotBlank()) appendLine("Usuario: ${entrada.usuario}")
-        if (entrada.contrasena.isNotBlank()) appendLine("Contraseña: ${entrada.contrasena}")
-        if (entrada.urls.isNotEmpty()) appendLine("URL: ${entrada.urls.first()}")
-        entrada.camposPersonalizados.forEach { campo ->
-            if (campo.valor.isNotBlank()) {
-                appendLine("${campo.etiqueta}: ${campo.valor}")
-            }
-        }
-        if (entrada.notas.isNotBlank()) appendLine("Notas: ${entrada.notas}")
-    }.trim()
+    fun textoVCardDesdeEntrada(entrada: Entrada): String {
+        return GeneradorVCard.generarVCard(entrada)
+    }
+
+    /**
+     * Serializa la entrada de forma estructurada para transferencia segura y directa entre dispositivos Bóveda.
+     */
+    fun textoTransferenciaBoveda(entrada: Entrada): String {
+        val jsonEntrada = jsonSeguro.encodeToString(Entrada.serializer(), entrada)
+        return "bovedalocal://importar?payload=${java.net.URLEncoder.encode(jsonEntrada, "UTF-8")}"
+    }
 }

@@ -82,6 +82,11 @@ fun PantallaBloqueoApp(
                             confirmarDesactivarSecure = true
                         }
                     },
+                    proteccionTapjacking = ajustes.proteccionTapjacking,
+                    alCambiarProteccionTapjacking = { activar ->
+                        haptica.tic()
+                        vm.ajustarProteccionTapjacking(activar)
+                    },
                     alRestablecer = {
                         haptica.tic()
                         vm.restablecerBloqueoApp()

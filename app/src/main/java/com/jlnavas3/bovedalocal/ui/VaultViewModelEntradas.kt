@@ -273,4 +273,20 @@ interface VaultEntradasDelegate : VaultDuplicadosPapeleraDelegate {
         }
         return procesadas
     }
+
+    fun importarEntradasContactos(entradas: List<Entrada>): Int {
+        if (entradas.isEmpty()) return 0
+        ejecutar {
+            var importadas = 0
+            withContext(Dispatchers.IO) {
+                entradas.forEach { e ->
+                    repositorio.guardarEntrada(e)
+                    importadas++
+                }
+            }
+            Diagnostico.apuntar("contactos", "$importadas contactos importados a la bóveda")
+            avisar(if (importadas == 1) "1 contacto importado a la bóveda" else "$importadas contactos importados a la bóveda")
+        }
+        return entradas.size
+    }
 }

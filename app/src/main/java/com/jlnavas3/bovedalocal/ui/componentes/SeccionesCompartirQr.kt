@@ -19,6 +19,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.ContentCopy
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.QrCode
 import androidx.compose.material.icons.filled.Timer
 import androidx.compose.material.icons.filled.Wifi
@@ -67,6 +68,27 @@ internal fun CabeceraCompartirQr(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.weight(1f)
         ) {
+            val iconoCabecera = when (modoSeleccionado) {
+                ModoCompartirQr.CONTACTO -> Icons.Filled.Person
+                ModoCompartirQr.WIFI -> Icons.Filled.Wifi
+                ModoCompartirQr.TOTP -> Icons.Filled.QrCode
+                ModoCompartirQr.TRANSFERIR -> Icons.Filled.QrCode
+            }
+
+            val tituloCabecera = when (modoSeleccionado) {
+                ModoCompartirQr.CONTACTO -> "Contacto (vCard)"
+                ModoCompartirQr.WIFI -> "Conectar a Wi-Fi"
+                ModoCompartirQr.TOTP -> "Vincular 2FA"
+                ModoCompartirQr.TRANSFERIR -> "Transferir a Bóveda"
+            }
+
+            val subtituloCabecera = when (modoSeleccionado) {
+                ModoCompartirQr.CONTACTO -> tituloEntrada.ifBlank { "Contacto" }
+                ModoCompartirQr.WIFI -> if (ssidWifi.isNotBlank()) "Red: $ssidWifi" else tituloEntrada
+                ModoCompartirQr.TOTP -> tituloEntrada.ifBlank { "Código 2FA" }
+                ModoCompartirQr.TRANSFERIR -> tituloEntrada.ifBlank { "Credencial segura" }
+            }
+
             Box(
                 modifier = Modifier
                     .size(40.dp)
@@ -75,7 +97,7 @@ internal fun CabeceraCompartirQr(
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
-                    imageVector = if (esWifi && modoSeleccionado == ModoCompartirQr.WIFI) Icons.Filled.Wifi else Icons.Filled.QrCode,
+                    imageVector = iconoCabecera,
                     contentDescription = null,
                     tint = ColorSobreAcento,
                     modifier = Modifier.size(22.dp)
@@ -84,12 +106,12 @@ internal fun CabeceraCompartirQr(
             Spacer(Modifier.width(12.dp))
             Column {
                 Text(
-                    text = if (esWifi && modoSeleccionado == ModoCompartirQr.WIFI) "Conectar a Wi-Fi" else "Compartir por QR",
+                    text = tituloCabecera,
                     color = TextoPrincipal,
                     style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold, fontSize = 16.sp)
                 )
                 Text(
-                    text = if (esWifi && ssidWifi.isNotBlank()) "Red: $ssidWifi" else tituloEntrada.ifBlank { "Credencial" },
+                    text = subtituloCabecera,
                     color = ColorAjusteGris,
                     style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp),
                     maxLines = 1,

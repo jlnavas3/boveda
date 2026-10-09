@@ -108,6 +108,7 @@ import com.jlnavas3.bovedalocal.ui.pantallas.seguridad.PantallaSeguridadVisualMe
 import com.jlnavas3.bovedalocal.ui.pantallas.seguridad.PantallaSeguridadVisual
 import com.jlnavas3.bovedalocal.ui.pantallas.seguridad.PantallaPortapapeles
 import com.jlnavas3.bovedalocal.ui.pantallas.seguridad.PantallaAuditoriaSeguridad
+import com.jlnavas3.bovedalocal.ui.pantallas.seguridad.PantallaAuditoriaAccesibilidad
 import com.jlnavas3.bovedalocal.ui.pantallas.autodestruccion.PantallaAutodestruccionIntentos
 import com.jlnavas3.bovedalocal.ui.pantallas.tema.PantallaTemaPaletas
 import com.jlnavas3.bovedalocal.ui.pantallas.tema.PantallaAnimacionDesbloqueo
@@ -340,6 +341,7 @@ fun RaizBoveda(vm: VaultViewModel, actividad: FragmentActivity) {
                     is Pantalla.SeguridadVisual -> PantallaSeguridadVisual(vm, destino.seccionId)
                     is Pantalla.Portapapeles -> PantallaPortapapeles(vm, destino.seccionId)
                     is Pantalla.AuditoriaSeguridad -> PantallaAuditoriaSeguridad(vm, destino.seccionId)
+                    is Pantalla.AuditoriaAccesibilidad -> PantallaAuditoriaAccesibilidad(vm, destino.seccionId)
                     is Pantalla.TemaPaletas -> PantallaTemaPaletas(vm, destino.seccionId)
                     is Pantalla.AnimacionDesbloqueo -> PantallaAnimacionDesbloqueo(vm, destino.seccionId)
                     is Pantalla.OrganizacionEstructura -> PantallaOrganizacionEstructura(vm, destino.seccionId)

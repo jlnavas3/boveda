@@ -6,6 +6,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import com.jlnavas3.bovedalocal.data.AjustesApp
 import com.jlnavas3.bovedalocal.data.AjustesDefaults
 
@@ -184,6 +186,20 @@ var ColorDatosWeb: Color
 var ColorDatosApp: Color
     get() = colorDatosAppBase
     set(valor) { colorDatosAppBase = valor }
+
+// Dimensiones y Apariencia de Indicadores de Datos en Tarjetas
+private var alturaIndicadoresDpBase by mutableStateOf(AjustesDefaults.ColoresDatos.ALTURA_INDICADORES_DP)
+private var opacidadIndicadoresBase by mutableStateOf(AjustesDefaults.ColoresDatos.OPACIDAD_INDICADORES)
+
+var AlturaIndicadoresDp: Float
+    get() = alturaIndicadoresDpBase
+    set(valor) { alturaIndicadoresDpBase = valor }
+
+val AlturaIndicadores: Dp get() = alturaIndicadoresDpBase.dp
+
+var OpacidadIndicadores: Float
+    get() = opacidadIndicadoresBase
+    set(valor) { opacidadIndicadoresBase = valor }
 
 var ColorSeguridad: Color
     get() = colorSeguridadBase

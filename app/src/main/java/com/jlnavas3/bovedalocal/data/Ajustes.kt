@@ -284,6 +284,10 @@ data class AjustesApp(
     val perfilArgon2: String = AjustesDefaults.Seguridad.PERFIL_ARGON2,
     /** FLAG_SECURE: protección anti-captura de pantalla y anti-recientes. Activa por defecto. */
     val proteccionPantalla: Boolean = AjustesDefaults.Seguridad.PROTECCION_PANTALLA,
+    /** Protección contra superposiciones y tapjacking (filterTouchesWhenObscured). */
+    val proteccionTapjacking: Boolean = AjustesDefaults.Seguridad.PROTECCION_TAPJACKING,
+    /** Paquetes de aplicaciones de confianza con permiso de accesibilidad (lista blanca). */
+    val listaBlancaAccesibilidad: Set<String> = AjustesDefaults.Seguridad.LISTA_BLANCA_ACCESIBILIDAD,
     /** Umbral en días para advertir sobre contraseñas antiguas en Salud (0 = desactivado). */
     val umbralAntiguedadDias: Int = AjustesDefaults.Seguridad.UMBRAL_ANTIGUEDAD_DIAS,
     // Freno a fuerza bruta / Rate limiting
@@ -348,8 +352,10 @@ data class AjustesApp(
     // Vibración háptica global de la app
     val hapticaApp: Boolean = AjustesDefaults.Interaccion.HAPTICA_APP,
     val hapticaAppIntensidad: Float = AjustesDefaults.Interaccion.HAPTICA_APP_INTENSIDAD,
-    // Indicadores superiores de contenido en tarjetas de la lista
+    // Indicadores superiores o de fondo en tarjetas de la lista
     val mostrarIndicadoresContenido: Boolean = AjustesDefaults.ColoresDatos.MOSTRAR_INDICADORES,
+    val alturaIndicadoresDp: Float = AjustesDefaults.ColoresDatos.ALTURA_INDICADORES_DP,
+    val opacidadIndicadores: Float = AjustesDefaults.ColoresDatos.OPACIDAD_INDICADORES,
     // Colores aislados exclusivos para datos e indicadores de tarjetas
     val colorDatosUsuario: String = AjustesDefaults.ColoresDatos.USUARIO,
     val colorDatosContrasena: String = AjustesDefaults.ColoresDatos.CONTRASENA,
@@ -603,6 +609,8 @@ class AlmacenAjustes(contexto: Context) {
             separadorDecimal = prefs.getString("separador_decimal", AjustesDefaults.ListaFormatos.SEPARADOR_DECIMAL) ?: AjustesDefaults.ListaFormatos.SEPARADOR_DECIMAL,
             perfilArgon2 = prefs.getString("perfil_argon2", AjustesDefaults.Seguridad.PERFIL_ARGON2) ?: AjustesDefaults.Seguridad.PERFIL_ARGON2,
             proteccionPantalla = prefs.getBoolean("proteccion_pantalla", AjustesDefaults.Seguridad.PROTECCION_PANTALLA),
+            proteccionTapjacking = prefs.getBoolean("proteccion_tapjacking", AjustesDefaults.Seguridad.PROTECCION_TAPJACKING),
+            listaBlancaAccesibilidad = prefs.getStringSet("lista_blanca_accesibilidad", AjustesDefaults.Seguridad.LISTA_BLANCA_ACCESIBILIDAD) ?: emptySet(),
             umbralAntiguedadDias = prefs.getInt("umbral_antiguedad_dias", AjustesDefaults.Seguridad.UMBRAL_ANTIGUEDAD_DIAS),
             frenoIntentosGratis = prefs.getInt("freno_intentos_gratis", AjustesDefaults.Seguridad.FRENO_INTENTOS_GRATIS),
             frenoSegundosBase = prefs.getLong("freno_segundos_base", AjustesDefaults.Seguridad.FRENO_SEGUNDOS_BASE),
@@ -664,6 +672,8 @@ class AlmacenAjustes(contexto: Context) {
             hapticaApp = prefs.getBoolean("haptica_app", AjustesDefaults.Interaccion.HAPTICA_APP),
             hapticaAppIntensidad = prefs.getFloat("haptica_app_intensidad", AjustesDefaults.Interaccion.HAPTICA_APP_INTENSIDAD),
             mostrarIndicadoresContenido = prefs.getBoolean("mostrar_indicadores_contenido", AjustesDefaults.ColoresDatos.MOSTRAR_INDICADORES),
+            alturaIndicadoresDp = prefs.getFloat("altura_indicadores_dp", AjustesDefaults.ColoresDatos.ALTURA_INDICADORES_DP),
+            opacidadIndicadores = prefs.getFloat("opacidad_indicadores", AjustesDefaults.ColoresDatos.OPACIDAD_INDICADORES),
             colorDatosUsuario = prefs.getString("color_datos_usuario", AjustesDefaults.ColoresDatos.USUARIO) ?: AjustesDefaults.ColoresDatos.USUARIO,
             colorDatosContrasena = prefs.getString("color_datos_contrasena", AjustesDefaults.ColoresDatos.CONTRASENA) ?: AjustesDefaults.ColoresDatos.CONTRASENA,
             colorDatos2FA = prefs.getString("color_datos_2fa", AjustesDefaults.ColoresDatos.DOS_FA) ?: AjustesDefaults.ColoresDatos.DOS_FA,
@@ -833,6 +843,8 @@ class AlmacenAjustes(contexto: Context) {
             .putString("separador_decimal", nuevo.separadorDecimal)
             .putString("perfil_argon2", nuevo.perfilArgon2)
             .putBoolean("proteccion_pantalla", nuevo.proteccionPantalla)
+            .putBoolean("proteccion_tapjacking", nuevo.proteccionTapjacking)
+            .putStringSet("lista_blanca_accesibilidad", nuevo.listaBlancaAccesibilidad)
             .putInt("umbral_antiguedad_dias", nuevo.umbralAntiguedadDias)
             .putInt("freno_intentos_gratis", nuevo.frenoIntentosGratis)
             .putLong("freno_segundos_base", nuevo.frenoSegundosBase)
@@ -887,6 +899,8 @@ class AlmacenAjustes(contexto: Context) {
             .putBoolean("haptica_app", nuevo.hapticaApp)
             .putFloat("haptica_app_intensidad", nuevo.hapticaAppIntensidad)
             .putBoolean("mostrar_indicadores_contenido", nuevo.mostrarIndicadoresContenido)
+            .putFloat("altura_indicadores_dp", nuevo.alturaIndicadoresDp)
+            .putFloat("opacidad_indicadores", nuevo.opacidadIndicadores)
             .putString("color_datos_usuario", nuevo.colorDatosUsuario)
             .putString("color_datos_contrasena", nuevo.colorDatosContrasena)
             .putString("color_datos_2fa", nuevo.colorDatos2FA)

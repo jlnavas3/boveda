@@ -43,7 +43,7 @@ class GeneradorQrTest {
     }
 
     @Test
-    fun `textoCredencialCompleta formatea correctamente los campos`() {
+    fun `textoTransferenciaBoveda genera esquema estructurado de bovedalocal`() {
         val entrada = Entrada(
             id = "test-3",
             titulo = "Servidor Local",
@@ -51,11 +51,24 @@ class GeneradorQrTest {
             contrasena = "SuperClave99!",
             urls = listOf("https://192.168.1.1")
         )
-        val texto = GeneradorQr.textoCredencialCompleta(entrada)
-        assertTrue(texto.contains("Título: Servidor Local"))
-        assertTrue(texto.contains("Usuario: admin"))
-        assertTrue(texto.contains("Contraseña: SuperClave99!"))
-        assertTrue(texto.contains("URL: https://192.168.1.1"))
+        val texto = GeneradorQr.textoTransferenciaBoveda(entrada)
+        assertTrue(texto.startsWith("bovedalocal://importar?payload="))
+        assertTrue(texto.contains("Servidor"))
+    }
+
+    @Test
+    fun `textoVCardDesdeEntrada genera vCard 3 estándar para contacto`() {
+        val entrada = Entrada(
+            id = "test-contacto",
+            titulo = "Ana García",
+            usuario = "600123456",
+            tipo = com.jlnavas3.bovedalocal.data.TipoEntrada.CONTACTO
+        )
+        val vcard = GeneradorQr.textoVCardDesdeEntrada(entrada)
+        assertTrue(vcard.startsWith("BEGIN:VCARD"))
+        assertTrue(vcard.contains("FN:Ana García"))
+        assertTrue(vcard.contains("TEL;TYPE=CELL:600123456"))
+        assertTrue(vcard.endsWith("END:VCARD"))
     }
 
     @Test

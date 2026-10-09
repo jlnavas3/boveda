@@ -34,6 +34,8 @@ interface VaultNavegacionDelegate {
                         is Pantalla.Generador -> "04-HER-GEN"
                         is Pantalla.AjustesAutocompletado -> "04-HER-PSK"
                         is Pantalla.Autenticador -> "04-HER-2FA"
+                        is Pantalla.CamaraQr -> "04-HER-QRS"
+                        is Pantalla.AuditoriaAccesibilidad -> "01-SEG-ACC"
                         else -> null
                     }
                     if (idHijo != null) {
@@ -79,6 +81,7 @@ interface VaultNavegacionDelegate {
             limpio.startsWith("01-SEG-BIO-VIS") -> Pantalla.SeguridadVisual(limpio)
             limpio.startsWith("01-SEG-BIO-CLP") -> Pantalla.Portapapeles(limpio)
             limpio.startsWith("01-SEG-BIO-AUD") -> Pantalla.AuditoriaSeguridad(limpio)
+            limpio.startsWith("01-SEG-ACC") -> Pantalla.AuditoriaAccesibilidad(limpio)
             limpio.startsWith("01-SEG-BIO") || limpio == "01" || limpio.startsWith("01.1") || limpio.startsWith("01.0") -> Pantalla.Seguridad(limpio)
             limpio.startsWith("01-SEG-SEN") || limpio.startsWith("01.3") -> Pantalla.AjustesSenuelo(limpio)
             limpio.startsWith("01-SEG-DES-INT") -> Pantalla.AutodestruccionIntentos(limpio)

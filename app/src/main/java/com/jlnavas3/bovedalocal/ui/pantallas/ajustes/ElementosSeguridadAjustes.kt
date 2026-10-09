@@ -26,6 +26,16 @@ fun crearElementosSeguridadAjustes(
         grupo = "Seguridad",
         palabrasClave = "huella biometria pin contrasena bloqueo inactividad flag secure pantalla portapapeles autodestruccion argon2id cifrado senuelo",
         alPulsar = { vm.ir(Pantalla.Seguridad()) }
+    ),
+    ElementoMenuAjustes(
+        titulo = "Auditoría de accesibilidad",
+        subtitulo = "Detección de aplicaciones espía y servicios con acceso a la pantalla",
+        icono = Icons.Filled.Security,
+        colorIcono = Color(0xFFE65100),
+        idEtiqueta = "01-SEG-ACC",
+        grupo = "Seguridad",
+        palabrasClave = "accesibilidad permiso pantalla espia scraping cube acr lista blanca confianza servicios",
+        alPulsar = { vm.ir(Pantalla.AuditoriaAccesibilidad()) }
     )
 )
 

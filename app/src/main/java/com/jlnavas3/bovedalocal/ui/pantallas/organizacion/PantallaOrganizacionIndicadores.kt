@@ -97,28 +97,19 @@ fun PantallaOrganizacionIndicadores(
                             vm.ajustarMostrarIndicadoresContenido(it)
                         }
                     )
-                    ComponenteSeparador()
-                    ComponenteNavegacion(
-                        titulo = "Colores de campos y datos",
-                        icono = null,
-                        idFila = "02-APA-THM-G04",
-                        mostrarId = ajustes.mostrarIdsAjustes,
-                        alPulsar = {
-                            haptica.tic()
-                            vm.ir(Pantalla.ColoresDatos())
-                        }
-                    )
-                    ComponenteSeparador()
-                    ComponenteNavegacion(
-                        titulo = "Asistente de títulos",
-                        icono = null,
-                        idFila = "03-LST-DES-TIT",
-                        mostrarId = ajustes.mostrarIdsAjustes,
-                        alPulsar = {
-                            haptica.tic()
-                            vm.ir(Pantalla.NormalizadorTitulos())
-                        }
-                    )
+                    if (ajustes.mostrarIndicadoresContenido) {
+                        ComponenteSeparador()
+                        ComponenteNavegacion(
+                            titulo = "Colores de campos y datos",
+                            icono = null,
+                            idFila = "02-APA-THM-G04",
+                            mostrarId = ajustes.mostrarIdsAjustes,
+                            alPulsar = {
+                                haptica.tic()
+                                vm.ir(Pantalla.ColoresDatos())
+                            }
+                        )
+                    }
                 }
 
                 Spacer(Modifier.height(32.dp))

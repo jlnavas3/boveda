@@ -22,6 +22,8 @@ fun BoxScope.CapaInferiorAccionesLista(
     entradas: List<Entrada>,
     vm: VaultViewModel,
     haptica: Haptica,
+    tieneAlertaAccesibilidad: Boolean = false,
+    alAbrirAuditoriaAccesibilidad: (() -> Unit)? = null,
     alTransferirCxf: (List<Entrada>) -> Unit,
     alRenombrar: (String) -> Unit,
     alAsignarCategoria: () -> Unit,
@@ -37,6 +39,8 @@ fun BoxScope.CapaInferiorAccionesLista(
                 haptica.toque()
                 vm.ir(Pantalla.Editar(null))
             },
+            tieneAlertaAccesibilidad = tieneAlertaAccesibilidad,
+            alAbrirAuditoriaAccesibilidad = alAbrirAuditoriaAccesibilidad,
             modifier = Modifier.align(Alignment.BottomEnd)
         )
     } else {

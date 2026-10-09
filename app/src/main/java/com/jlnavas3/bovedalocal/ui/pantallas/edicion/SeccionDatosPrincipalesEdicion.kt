@@ -134,6 +134,22 @@ fun SeccionDatosPrincipalesEdicion(
                         haptica = haptica
                     )
                 }
+                TipoEntrada.CONTACTO -> {
+                    ComponenteCampoTexto(
+                        valor = titulo,
+                        etiqueta = "Nombre y apellidos",
+                        alCambiar = alCambiarTitulo,
+                        colorBordeIzquierdo = ColorAcento,
+                        botonLimpiar = true
+                    )
+                    Spacer(Modifier.height(8.dp))
+                    ComponenteCampoTexto(
+                        valor = usuario,
+                        etiqueta = "Teléfono principal",
+                        alCambiar = alCambiarUsuario,
+                        botonLimpiar = true
+                    )
+                }
                 else -> {
                     ComponenteCampoTexto(
                         valor = titulo,
@@ -192,8 +208,8 @@ fun SeccionDatosPrincipalesEdicion(
                         alCambiarCampos = alCambiarCamposPersonalizados
                     )
                 }
-                TipoEntrada.NOTA -> {
-                    // Para nota, el campo principal es la nota
+                TipoEntrada.NOTA, TipoEntrada.CONTACTO -> {
+                    // Para nota y contacto, gestionado en sus campos correspondientes
                 }
             }
         }

@@ -25,6 +25,7 @@ import androidx.compose.material.icons.filled.Description
 import androidx.compose.material.icons.filled.Dns
 import androidx.compose.material.icons.filled.Fingerprint
 import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Wifi
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
@@ -91,6 +92,7 @@ fun FilaProblemaAgil(
         TipoEntrada.IDENTIDAD -> Icons.Filled.Badge
         TipoEntrada.SERVIDOR -> Icons.Filled.Dns
         TipoEntrada.WALLET -> Icons.Filled.AccountBalanceWallet
+        TipoEntrada.CONTACTO -> Icons.Filled.Person
     }
 
     val forma = if (enGrupo) RectangleShape else RoundedCornerShape(CurvaturaEsquinas)

@@ -1,5 +1,7 @@
 package com.jlnavas3.bovedalocal.ui.pantallas
 
+import android.Manifest
+import android.content.pm.PackageManager
 import android.provider.OpenableColumns
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -20,6 +22,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.jlnavas3.bovedalocal.BovedaApp
 import com.jlnavas3.bovedalocal.ui.Pantalla
@@ -33,6 +36,8 @@ import com.jlnavas3.bovedalocal.ui.componentes.ajustes.contenedorScrollAjustes
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjustesFondo
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.DialogoBorradoManualCsv
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.DialogoImportarCsv
+import com.jlnavas3.bovedalocal.ui.pantallas.contactos.ModalImportarContactos
+import com.jlnavas3.bovedalocal.ui.pantallas.csv.GrupoImportacionContactos
 import com.jlnavas3.bovedalocal.ui.pantallas.csv.GrupoImportacionCsvGoogle
 import com.jlnavas3.bovedalocal.ui.pantallas.csv.GrupoSeguridadArchivoCsvGoogle
 import com.jlnavas3.bovedalocal.util.Haptica
@@ -48,6 +53,30 @@ fun PantallaCsvGoogle(
 
     var dialogoImportarCsv by remember { mutableStateOf(false) }
     var mostrarDialogoBorradoManual by remember { mutableStateOf(false) }
+    var mostrandoModalContactos by remember { mutableStateOf(false) }
+
+    val lanzadorPermisoContactos = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { concedido ->
+        if (concedido) {
+            mostrandoModalContactos = true
+        } else {
+            vm.avisar("Se requiere permiso para leer los contactos del teléfono")
+        }
+    }
+
+    fun solicitarImportarContactos() {
+        val tienePermiso = ContextCompat.checkSelfPermission(
+            contexto,
+            Manifest.permission.READ_CONTACTS
+        ) == PackageManager.PERMISSION_GRANTED
+
+        if (tienePermiso) {
+            mostrandoModalContactos = true
+        } else {
+            lanzadorPermisoContactos.launch(Manifest.permission.READ_CONTACTS)
+        }
+    }
 
     val lanzadorAbrirCsv = rememberLauncherForActivityResult(
         ActivityResultContracts.OpenDocument()
@@ -90,7 +119,7 @@ fun PantallaCsvGoogle(
                 .background(ColorAjustesFondo)
         ) {
             BarraSuperiorPantalla(
-                titulo = "Contraseñas de Google",
+                titulo = "Importar datos",
                 idEtiqueta = "05-COP-CSV",
                 mostrarId = ajustes.mostrarIdsAjustes,
                 alVolver = { vm.volverAtras() },
@@ -99,7 +128,8 @@ fun PantallaCsvGoogle(
                 acciones = {
                     BotonMenuOpcionesPantalla(
                         grupos = listOf(
-                            AccionSaltoGrupo("05-COP-CSV-G01", "Importación"),
+                            AccionSaltoGrupo("05-COP-CSV-G01", "Importación CSV"),
+                            AccionSaltoGrupo("05-COP-CNT-G01", "Contactos del teléfono"),
                             AccionSaltoGrupo("05-COP-CSV-G02", "Seguridad del archivo CSV")
                         )
                     )
@@ -121,10 +151,18 @@ fun PantallaCsvGoogle(
                     alAbrirNormalizador = { vm.ir(Pantalla.NormalizadorTitulos()) }
                 )
 
+                Spacer(Modifier.height(14.dp))
+
+                // Grupo 2: Importación de Contactos del teléfono
+                GrupoImportacionContactos(
+                    mostrarId = ajustes.mostrarIdsAjustes,
+                    alIniciarImportacion = { solicitarImportarContactos() }
+                )
+
                 if (ajustes.csvGoogleRuta.isNotBlank()) {
                     Spacer(Modifier.height(14.dp))
 
-                    // Grupo 2: Seguridad del archivo descargado
+                    // Grupo 3: Seguridad del archivo descargado
                     GrupoSeguridadArchivoCsvGoogle(
                         mostrarId = ajustes.mostrarIdsAjustes,
                         csvGoogleEliminado = ajustes.csvGoogleEliminado,
@@ -136,6 +174,16 @@ fun PantallaCsvGoogle(
                 Spacer(Modifier.height(32.dp))
             }
         }
+    }
+
+    if (mostrandoModalContactos) {
+        ModalImportarContactos(
+            abierto = true,
+            alCerrar = { mostrandoModalContactos = false },
+            alImportar = { entradas ->
+                vm.importarEntradasContactos(entradas)
+            }
+        )
     }
 
     if (dialogoImportarCsv) {

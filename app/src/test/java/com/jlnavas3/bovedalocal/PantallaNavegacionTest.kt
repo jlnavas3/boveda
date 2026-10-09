@@ -466,7 +466,7 @@ class PantallaNavegacionTest {
             return false
         }
 
-        // Flujo fractal de 5 niveles: Lista -> Ajustes -> OrganizacionLista -> OrganizacionIndicadores -> NormalizadorTitulos -> ReglasNormalizacion
+        // Flujo fractal de 4 niveles: Lista -> Ajustes -> OrganizacionLista -> NormalizadorTitulos -> ReglasNormalizacion
         assertEquals(Pantalla.Lista, pantallaActual)
 
         ir(Pantalla.Ajustes)
@@ -475,26 +475,19 @@ class PantallaNavegacionTest {
         ir(Pantalla.OrganizacionLista())
         assertEquals(Pantalla.OrganizacionLista(), pantallaActual)
 
-        ir(Pantalla.OrganizacionIndicadores())
-        assertEquals(Pantalla.OrganizacionIndicadores(), pantallaActual)
-
         ir(Pantalla.NormalizadorTitulos())
         assertEquals(Pantalla.NormalizadorTitulos(), pantallaActual)
 
         ir(Pantalla.ReglasNormalizacion)
         assertEquals(Pantalla.ReglasNormalizacion, pantallaActual)
 
-        // Retroceso Nivel 5 -> Nivel 4 (ReglasNormalizacion -> NormalizadorTitulos)
+        // Retroceso Nivel 4 -> Nivel 3 (ReglasNormalizacion -> NormalizadorTitulos)
         assertTrue(retroceder())
         assertEquals(Pantalla.NormalizadorTitulos(), pantallaActual)
 
-        // Retroceso Nivel 4 -> Nivel 3 (NormalizadorTitulos -> OrganizacionIndicadores)
+        // Retroceso Nivel 3 -> Nivel 2 (NormalizadorTitulos -> OrganizacionLista)
         assertTrue(retroceder())
-        assertEquals(Pantalla.OrganizacionIndicadores("03-LST-DES-TIT"), pantallaActual)
-
-        // Retroceso Nivel 3 -> Nivel 2 (OrganizacionIndicadores -> OrganizacionLista)
-        assertTrue(retroceder())
-        assertEquals(Pantalla.OrganizacionLista("03-LST-DES-IND"), pantallaActual)
+        assertEquals(Pantalla.OrganizacionLista("03-LST-DES-TIT"), pantallaActual)
 
         // Retroceso Nivel 2 -> Nivel 1 (OrganizacionLista -> Ajustes)
         assertTrue(retroceder())

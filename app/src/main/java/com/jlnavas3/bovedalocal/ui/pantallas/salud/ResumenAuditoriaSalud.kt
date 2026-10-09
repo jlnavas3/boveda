@@ -43,7 +43,8 @@ fun ResumenAuditoriaSalud(
     alAlternarExpandido: () -> Unit,
     modifier: Modifier = Modifier,
     umbralAntiguedadDias: Int = 180,
-    ignoradasCount: Int = 0
+    ignoradasCount: Int = 0,
+    diagnosticoAccesibilidad: com.jlnavas3.bovedalocal.util.DiagnosticoAccesibilidad? = null
 ) {
     Column(modifier = modifier) {
         Row(
@@ -126,9 +127,18 @@ fun ResumenAuditoriaSalud(
                         color = ColorAjusteGris
                     )
                 }
+                if (diagnosticoAccesibilidad != null) {
+                    SeparadorFilaSimple()
+                    FilaAuditoriaAccesibilidad(diagnostico = diagnosticoAccesibilidad)
+                }
             }
         } else {
             // Modo compacto: cápsula horizontal estilo Honor MagicOS / One UI
+            val textoCompacto = if (diagnosticoAccesibilidad != null && !diagnosticoAccesibilidad.esSeguro) {
+                "$clavesCount analizadas · ⚠️ Accesibilidad no autorizada"
+            } else {
+                "$clavesCount analizadas · $repetidasCount repetidas · $muyComunesCount comunes · $debilesCount débiles"
+            }
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -140,9 +150,9 @@ fun ResumenAuditoriaSalud(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "$clavesCount analizadas · $repetidasCount repetidas · $muyComunesCount comunes · $debilesCount débiles",
+                    text = textoCompacto,
                     style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Medium),
-                    color = ColorTextoAjustes,
+                    color = if (diagnosticoAccesibilidad != null && !diagnosticoAccesibilidad.esSeguro) Peligro else ColorTextoAjustes,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )

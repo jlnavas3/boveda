@@ -15,6 +15,7 @@ object AjustesDefaults {
         const val BIOMETRIA_MODO = ""
         const val MOTOR_CAMARA = "auto"
         const val PROTECCION_PANTALLA = true
+        const val PROTECCION_TAPJACKING = true
         const val PERFIL_ARGON2 = "estandar"
         const val UMBRAL_ANTIGUEDAD_DIAS = 180
         const val FRENO_INTENTOS_GRATIS = 5
@@ -22,6 +23,7 @@ object AjustesDefaults {
         const val FRENO_SEGUNDOS_MAX = 300L
         const val AUTODESTRUCCION_INTENTOS_FALLIDOS_MAX = 0
         val OPCIONES_AUTODESTRUCCION_INTENTOS = listOf(0, 5, 10, 15, 20)
+        val LISTA_BLANCA_ACCESIBILIDAD: Set<String> = emptySet()
     }
 
     // 1b. Seguridad Visual y Privacidad de Pantalla
@@ -70,6 +72,8 @@ object AjustesDefaults {
         const val PASSKEY = "#8B5CF6"
         const val WEB = "#06B6D4"
         const val APP = "#10B981"
+        const val ALTURA_INDICADORES_DP = 2.0f
+        const val OPACIDAD_INDICADORES = 0.70f
     }
 
     // 5. Colores Bloques de Identificadores (IDs)

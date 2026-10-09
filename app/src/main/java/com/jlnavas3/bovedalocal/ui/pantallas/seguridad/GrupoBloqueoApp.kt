@@ -22,7 +22,9 @@ fun GrupoBloqueoApp(
     alAjustarAutoBloqueo: (Int) -> Unit,
     alCambiarProteccionPantalla: (Boolean) -> Unit,
     alRestablecer: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    proteccionTapjacking: Boolean = true,
+    alCambiarProteccionTapjacking: ((Boolean) -> Unit)? = null
 ) {
     ComponenteGrupo(
         etiqueta = "Bloqueo de aplicación",
@@ -66,5 +68,18 @@ fun GrupoBloqueoApp(
             mostrarId = mostrarIdsAjustes,
             alCambiar = alCambiarProteccionPantalla
         )
+
+        if (alCambiarProteccionTapjacking != null) {
+            ComponenteSeparador(sangriaInicio = 16.dp)
+
+            ComponenteSwitch(
+                titulo = "Protección contra tapjacking",
+                icono = null,
+                activo = proteccionTapjacking,
+                idFila = "01-SEG-BIO-TAP",
+                mostrarId = mostrarIdsAjustes,
+                alCambiar = alCambiarProteccionTapjacking
+            )
+        }
     }
 }

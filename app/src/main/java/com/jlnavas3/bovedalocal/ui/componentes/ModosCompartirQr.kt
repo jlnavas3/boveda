@@ -9,21 +9,21 @@ import com.jlnavas3.bovedalocal.util.GeneradorQr
  * Modos de compartición disponibles para generación de códigos QR.
  */
 enum class ModoCompartirQr(val etiqueta: String, val descripcionInformativa: String) {
+    CONTACTO(
+        "Contacto",
+        "Escanea con la cámara de cualquier teléfono para guardar este contacto directamente en la agenda."
+    ),
     WIFI(
-        "Conectar Wi-Fi",
+        "Wi-Fi",
         "Escanea este código con la cámara de otro teléfono para conectarte automáticamente a la red Wi-Fi."
     ),
     TOTP(
         "2FA / TOTP",
         "Escanea con tu aplicación de autenticación para vincular este token 2FA."
     ),
-    CONTRASENA(
-        "Contraseña",
-        "Escanea pantalla a pantalla para transferir únicamente la contraseña."
-    ),
-    CREDENCIAL(
-        "Completa",
-        "Transfiere los datos de la cuenta de forma segura y 100% offline."
+    TRANSFERIR(
+        "Transferir",
+        "Escanea desde otra Bóveda Local para importar esta entrada de forma íntegra y 100% offline."
     )
 }
 
@@ -34,8 +34,8 @@ data class EstadoDatosQr(
     val ssidWifi: String,
     val claveWifi: String,
     val esWifi: Boolean,
+    val esContacto: Boolean,
     val tieneTotp: Boolean,
-    val tieneContrasena: Boolean,
     val modosDisponibles: List<ModoCompartirQr>,
     val modoInicial: ModoCompartirQr
 )
@@ -58,29 +58,30 @@ object ExtractorModosQr {
         val esWifi = entrada.tipo == TipoEntrada.WIFI ||
             GestorCamposBase.valorDeCampo(entrada.camposPersonalizados, "Nombre de red (SSID)").isNotBlank()
 
+        val esContacto = entrada.tipo == TipoEntrada.CONTACTO
+
         val tieneTotp = !entrada.secretoTotp.isNullOrBlank()
-        val tieneContrasena = entrada.contrasena.isNotBlank() || (esWifi && claveWifi.isNotBlank())
 
         val modosDisponibles = buildList {
+            if (esContacto) add(ModoCompartirQr.CONTACTO)
             if (esWifi) add(ModoCompartirQr.WIFI)
             if (tieneTotp) add(ModoCompartirQr.TOTP)
-            if (tieneContrasena) add(ModoCompartirQr.CONTRASENA)
-            add(ModoCompartirQr.CREDENCIAL)
+            add(ModoCompartirQr.TRANSFERIR)
         }
 
         val modoInicial = when {
+            esContacto -> ModoCompartirQr.CONTACTO
             esWifi -> ModoCompartirQr.WIFI
             tieneTotp -> ModoCompartirQr.TOTP
-            tieneContrasena -> ModoCompartirQr.CONTRASENA
-            else -> ModoCompartirQr.CREDENCIAL
+            else -> ModoCompartirQr.TRANSFERIR
         }
 
         return EstadoDatosQr(
             ssidWifi = ssidWifi,
             claveWifi = claveWifi,
             esWifi = esWifi,
+            esContacto = esContacto,
             tieneTotp = tieneTotp,
-            tieneContrasena = tieneContrasena,
             modosDisponibles = modosDisponibles,
             modoInicial = modoInicial
         )
@@ -88,10 +89,10 @@ object ExtractorModosQr {
 
     fun generarTextoQr(entrada: Entrada, modo: ModoCompartirQr, estado: EstadoDatosQr): String {
         return when (modo) {
+            ModoCompartirQr.CONTACTO -> GeneradorQr.textoVCardDesdeEntrada(entrada)
             ModoCompartirQr.WIFI -> GeneradorQr.textoWifiDesdeEntrada(entrada)
             ModoCompartirQr.TOTP -> GeneradorQr.uriTotp(entrada) ?: entrada.titulo
-            ModoCompartirQr.CONTRASENA -> if (estado.esWifi) estado.claveWifi else entrada.contrasena
-            ModoCompartirQr.CREDENCIAL -> GeneradorQr.textoCredencialCompleta(entrada)
+            ModoCompartirQr.TRANSFERIR -> GeneradorQr.textoTransferenciaBoveda(entrada)
         }
     }
 }

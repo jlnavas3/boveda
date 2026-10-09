@@ -59,6 +59,8 @@ fun aplicarPersonalizacionColores(ajustes: AjustesApp) {
     ColorDatosPasskey = parsearColorO(ajustes.colorDatosPasskey, Color(0xFF8B5CF6))
     ColorDatosWeb = parsearColorO(ajustes.colorDatosWeb, Color(0xFF06B6D4))
     ColorDatosApp = parsearColorO(ajustes.colorDatosApp, Color(0xFF10B981))
+    AlturaIndicadoresDp = ajustes.alturaIndicadoresDp
+    OpacidadIndicadores = ajustes.opacidadIndicadores
 
     // Colores de identificadores jerárquicos de Ajustes (06-SIS-AVZ-COL)
     ColorIdSeguridad = parsearColorO(ajustes.colorIdSeguridad, parsearColorO(AjustesDefaults.ColoresIds.SEGURIDAD, Color(0xFF3F51B5)))

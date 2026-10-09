@@ -122,6 +122,10 @@ object ExtractorDatosKitEmergencia {
                 iden = "—"
                 sec = e.notas.ifBlank { "(sin contenido)" }
             }
+            TipoEntrada.CONTACTO -> {
+                iden = e.usuario.ifBlank { "Contacto" }
+                sec = e.notas.ifBlank { "—" }
+            }
             TipoEntrada.LOGIN -> {
                 iden = e.usuario.ifBlank { e.urls.firstOrNull() ?: "—" }
                 sec = e.contrasena

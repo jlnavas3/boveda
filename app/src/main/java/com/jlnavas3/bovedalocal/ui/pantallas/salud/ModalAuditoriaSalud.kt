@@ -33,7 +33,8 @@ fun ModalAuditoriaSalud(
     antiguasCount: Int,
     ignoradasCount: Int,
     umbralDias: Int,
-    alIrDuplicados: () -> Unit
+    alIrDuplicados: () -> Unit,
+    diagnosticoAccesibilidad: com.jlnavas3.bovedalocal.util.DiagnosticoAccesibilidad? = null
 ) {
     ModalInferiorBoveda(
         abierto = abierto,
@@ -74,7 +75,8 @@ fun ModalAuditoriaSalud(
                 expandido = true,
                 alAlternarExpandido = {},
                 umbralAntiguedadDias = umbralDias,
-                ignoradasCount = ignoradasCount
+                ignoradasCount = ignoradasCount,
+                diagnosticoAccesibilidad = diagnosticoAccesibilidad
             )
         }
     }

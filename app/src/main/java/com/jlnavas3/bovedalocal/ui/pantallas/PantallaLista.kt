@@ -18,11 +18,15 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.jlnavas3.bovedalocal.cxf.CxfGestorTransferencia
 import com.jlnavas3.bovedalocal.cxf.ResultadoImportacionCxf
@@ -43,6 +47,7 @@ import com.jlnavas3.bovedalocal.ui.pantallas.lista.rememberEstadoDialogosLista
 import com.jlnavas3.bovedalocal.ui.pantallas.lista.rememberEstadoSeleccionLista
 import com.jlnavas3.bovedalocal.ui.componentes.cerrarTecladoAlTocarFuera
 import com.jlnavas3.bovedalocal.ui.theme.calcularEspaciadoFilas
+import com.jlnavas3.bovedalocal.util.DetectorServiciosAccesibilidad
 import com.jlnavas3.bovedalocal.util.Haptica
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -54,6 +59,22 @@ fun PantallaLista(vm: VaultViewModel, estado: EstadoBoveda) {
     val haptica = remember { Haptica(contexto) }
     val ajustes by vm.ajustes.collectAsStateWithLifecycle()
     val busqueda by vm.busqueda.collectAsStateWithLifecycle()
+
+    val duenoCicloVida = LocalLifecycleOwner.current
+    var triggerCicloVida by remember { mutableStateOf(0) }
+    DisposableEffect(duenoCicloVida) {
+        val observador = LifecycleEventObserver { _, evento ->
+            if (evento == Lifecycle.Event.ON_RESUME) {
+                triggerCicloVida++
+            }
+        }
+        duenoCicloVida.lifecycle.addObserver(observador)
+        onDispose { duenoCicloVida.lifecycle.removeObserver(observador) }
+    }
+    val diagnosticoAccesibilidad = remember(contexto, ajustes.listaBlancaAccesibilidad, triggerCicloVida) {
+        DetectorServiciosAccesibilidad.evaluar(contexto, ajustes.listaBlancaAccesibilidad)
+    }
+
     val filtro by vm.filtroTipo.collectAsStateWithLifecycle()
     val soloFavoritos by vm.soloFavoritos.collectAsStateWithLifecycle()
     val filtroEtiqueta by vm.filtroEtiqueta.collectAsStateWithLifecycle()
@@ -378,6 +399,8 @@ fun PantallaLista(vm: VaultViewModel, estado: EstadoBoveda) {
                 entradas = entradas,
                 vm = vm,
                 haptica = haptica,
+                tieneAlertaAccesibilidad = !diagnosticoAccesibilidad.esSeguro,
+                alAbrirAuditoriaAccesibilidad = { vm.ir(Pantalla.AuditoriaAccesibilidad()) },
                 alTransferirCxf = { copia -> dialogos.prepararTransferirCxf(copia) },
                 alRenombrar = { titulo -> dialogos.iniciarRenombrar(titulo) },
                 alAsignarCategoria = { dialogos.asignarCategorias = true },

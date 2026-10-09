@@ -187,10 +187,22 @@ interface VaultAjustesColoresTemaDelegate {
         aplicarPersonalizacionColores(repositorio.ajustes.actual)
     }
 
+    fun ajustarAlturaIndicadores(altura: Float) {
+        repositorio.ajustes.actualizar { it.copy(alturaIndicadoresDp = altura) }
+        aplicarPersonalizacionColores(repositorio.ajustes.actual)
+    }
+
+    fun ajustarOpacidadIndicadores(opacidad: Float) {
+        repositorio.ajustes.actualizar { it.copy(opacidadIndicadores = opacidad) }
+        aplicarPersonalizacionColores(repositorio.ajustes.actual)
+    }
+
     fun restablecerColoresDatos() {
         repositorio.ajustes.actualizar {
             it.copy(
                 mostrarIndicadoresContenido = AjustesDefaults.ColoresDatos.MOSTRAR_INDICADORES,
+                alturaIndicadoresDp = AjustesDefaults.ColoresDatos.ALTURA_INDICADORES_DP,
+                opacidadIndicadores = AjustesDefaults.ColoresDatos.OPACIDAD_INDICADORES,
                 colorDatosUsuario = AjustesDefaults.ColoresDatos.USUARIO,
                 colorDatosContrasena = AjustesDefaults.ColoresDatos.CONTRASENA,
                 colorDatos2FA = AjustesDefaults.ColoresDatos.DOS_FA,

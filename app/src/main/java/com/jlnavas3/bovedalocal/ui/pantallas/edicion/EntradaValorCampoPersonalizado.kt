@@ -33,7 +33,8 @@ fun EntradaValorCampoPersonalizado(
     alAlternarMostrarValor: () -> Unit,
     alModificar: (CampoPersonalizado) -> Unit,
     ajustes: AjustesApp,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    etiquetaPersonalizada: String? = null
 ) {
     val contexto = LocalContext.current
 
@@ -63,25 +64,30 @@ fun EntradaValorCampoPersonalizado(
         }, h, min, es24h).show()
     }
 
+    val etiquetaFinal = etiquetaPersonalizada?.takeIf { it.isNotBlank() }
+
     when (campo.tipo) {
         TipoCampo.NOTAS -> {
             ComponenteCampoTexto(
                 valor = campo.valor,
-                etiqueta = "Notas / Contenido",
+                etiqueta = etiquetaFinal ?: "Notas / Contenido",
                 alCambiar = { alModificar(campo.copy(valor = it)) },
                 tipo = TipoCampoTexto.MULTILINEA,
                 esContrasena = esSensible,
                 mostrarContrasena = if (esSensible) mostrarValor else null,
                 alAlternarMostrarContrasena = if (esSensible) alAlternarMostrarValor else null,
-                monoespaciada = esSensible
+                monoespaciada = esSensible,
+                modifier = modifier
             )
         }
         TipoCampo.FECHA -> {
+            val etiquetaFecha = if (etiquetaFinal != null) "$etiquetaFinal (${ajustes.formatoFecha})" else "Fecha (${ajustes.formatoFecha})"
             CampoBoveda(
                 valor = campo.valor,
-                etiqueta = "Fecha (${ajustes.formatoFecha})",
+                etiqueta = etiquetaFecha,
                 alCambiar = {},
                 readOnly = true,
+                modifier = modifier,
                 trailingIcon = {
                     IconButton(onClick = { abrirSelectorFecha() }) {
                         Icon(
@@ -95,11 +101,13 @@ fun EntradaValorCampoPersonalizado(
             )
         }
         TipoCampo.HORA -> {
+            val etiquetaHora = if (etiquetaFinal != null) "$etiquetaFinal (${ajustes.formatoHora})" else "Hora (${ajustes.formatoHora})"
             CampoBoveda(
                 valor = campo.valor,
-                etiqueta = "Hora (${ajustes.formatoHora})",
+                etiqueta = etiquetaHora,
                 alCambiar = {},
                 readOnly = true,
+                modifier = modifier,
                 trailingIcon = {
                     IconButton(onClick = { abrirSelectorHora() }) {
                         Icon(
@@ -115,10 +123,11 @@ fun EntradaValorCampoPersonalizado(
         TipoCampo.TELEFONO -> {
             CampoBoveda(
                 valor = campo.valor,
-                etiqueta = "Teléfono",
+                etiqueta = etiquetaFinal ?: "Teléfono",
                 alCambiar = { nuevoValor ->
                     alModificar(campo.copy(valor = nuevoValor))
                 },
+                modifier = modifier,
                 formateadorMascara = { raw ->
                     FormateadorCampos.aplicarMascaraTelefono(raw, ajustes.formatoTelefono)
                 },
@@ -129,11 +138,12 @@ fun EntradaValorCampoPersonalizado(
         TipoCampo.NUMERO, TipoCampo.PIN -> {
             CampoBoveda(
                 valor = campo.valor,
-                etiqueta = if (campo.tipo == TipoCampo.PIN) "PIN (solo números)" else "Número entero",
+                etiqueta = etiquetaFinal ?: if (campo.tipo == TipoCampo.PIN) "PIN (solo números)" else "Número entero",
                 alCambiar = { raw ->
                     val sanitizado = FormateadorCampos.sanitizarNumero(raw)
                     alModificar(campo.copy(valor = sanitizado))
                 },
+                modifier = modifier,
                 esContrasena = esSensible,
                 mostrarContrasena = mostrarValor,
                 alAlternarMostrarContrasena = if (esSensible) alAlternarMostrarValor else null,
@@ -145,11 +155,12 @@ fun EntradaValorCampoPersonalizado(
         TipoCampo.DECIMAL -> {
             CampoBoveda(
                 valor = campo.valor,
-                etiqueta = "Número decimal (separador '${ajustes.separadorDecimal}')",
+                etiqueta = etiquetaFinal ?: "Número decimal (${ajustes.separadorDecimal})",
                 alCambiar = { raw ->
                     val sanitizado = FormateadorCampos.sanitizarDecimal(raw, ajustes.separadorDecimal)
                     alModificar(campo.copy(valor = sanitizado))
                 },
+                modifier = modifier,
                 keyboardType = KeyboardType.Decimal,
                 monoespaciada = true
             )
@@ -157,24 +168,27 @@ fun EntradaValorCampoPersonalizado(
         TipoCampo.EMAIL -> {
             CampoBoveda(
                 valor = campo.valor,
-                etiqueta = "Correo electrónico",
+                etiqueta = etiquetaFinal ?: "Correo electrónico",
                 alCambiar = { alModificar(campo.copy(valor = it)) },
+                modifier = modifier,
                 keyboardType = KeyboardType.Email
             )
         }
         TipoCampo.URL -> {
             CampoBoveda(
                 valor = campo.valor,
-                etiqueta = "Dirección web (URL)",
+                etiqueta = etiquetaFinal ?: "Dirección web (URL)",
                 alCambiar = { alModificar(campo.copy(valor = it)) },
+                modifier = modifier,
                 keyboardType = KeyboardType.Uri
             )
         }
         else -> {
             CampoBoveda(
                 valor = campo.valor,
-                etiqueta = "Valor del campo",
+                etiqueta = etiquetaFinal ?: "Valor del campo",
                 alCambiar = { alModificar(campo.copy(valor = it)) },
+                modifier = modifier,
                 esContrasena = esSensible,
                 mostrarContrasena = mostrarValor,
                 alAlternarMostrarContrasena = if (esSensible) alAlternarMostrarValor else null

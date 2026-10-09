@@ -23,6 +23,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
+import com.jlnavas3.bovedalocal.ui.componentes.blindajeSemanticoSensible
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.TextoPrincipal
 import com.jlnavas3.bovedalocal.util.FormateadorCampos
@@ -52,7 +53,8 @@ fun CuerpoEntradaTextoBoveda(
     keyboardActions: KeyboardActions,
     forma: RoundedCornerShape,
     colores: TextFieldColors,
-    interactionSource: MutableInteractionSource
+    interactionSource: MutableInteractionSource,
+    esSensible: Boolean = false
 ) {
     val paddingCompacto = PaddingValues(
         start = if (leadingIcon != null) 4.dp else 12.dp,
@@ -80,7 +82,9 @@ fun CuerpoEntradaTextoBoveda(
                 tfv = transformado
                 alCambiar(transformado.text)
             },
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .blindajeSemanticoSensible(esSensible, etiqueta),
             readOnly = readOnly,
             enabled = habilitado,
             singleLine = !varias,
@@ -115,7 +119,9 @@ fun CuerpoEntradaTextoBoveda(
         BasicTextField(
             value = valor,
             onValueChange = alCambiar,
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .blindajeSemanticoSensible(esSensible, etiqueta),
             readOnly = readOnly,
             enabled = habilitado,
             singleLine = !varias,

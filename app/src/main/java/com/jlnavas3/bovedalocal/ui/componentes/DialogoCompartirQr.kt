@@ -90,11 +90,7 @@ fun DialogoCompartirQr(
                 tituloEntrada = entrada.titulo,
                 onCopiar = {
                     haptica.toque()
-                    if (modoSeleccionado == ModoCompartirQr.CONTRASENA) {
-                        Portapapeles.copiarSensible(contexto, "Contraseña", textoQr)
-                    } else {
-                        Portapapeles.copiar(contexto, "Contenido QR", textoQr)
-                    }
+                    Portapapeles.copiar(contexto, "Contenido QR", textoQr)
                 },
                 onCerrar = alCerrar
             )
