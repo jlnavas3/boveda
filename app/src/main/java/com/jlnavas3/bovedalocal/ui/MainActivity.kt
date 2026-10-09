@@ -82,12 +82,15 @@ class MainActivity : FragmentActivity() {
             else -> null
         } ?: return
 
+        val scheme = uri.scheme?.lowercase() ?: ""
+        if (scheme == "bovedalocal" || scheme == "boveda") return
+        if (scheme != "content" && scheme != "file") return
+
         val path = uri.path?.lowercase() ?: ""
         val lastSegment = uri.lastPathSegment?.lowercase() ?: ""
         val mime = intent.type?.lowercase() ?: ""
         val esBvda = path.endsWith(".bvda") || lastSegment.endsWith(".bvda") ||
-                mime.contains("boveda") || mime.contains("bvda") ||
-                intent.action == Intent.ACTION_VIEW
+                mime.contains("boveda") || mime.contains("bvda")
 
         if (esBvda) {
             vm.establecerUriBvdaPendiente(uri)
@@ -160,12 +163,8 @@ class MainActivity : FragmentActivity() {
         if (scheme == "bovedalocal" || scheme == "boveda") {
             val textoCompleto = uri.toString()
             if (com.jlnavas3.bovedalocal.util.ParserBovedaQr.esBovedaTransfer(textoCompleto)) {
-                val entrada = com.jlnavas3.bovedalocal.util.ParserBovedaQr.parsear(textoCompleto)
-                if (entrada != null) {
-                    vm.guardar(entrada)
-                    vm.avisar("Entrada «${entrada.titulo}» importada a la bóveda")
-                    intent.data = null
-                }
+                vm.solicitarImportacionQr(textoCompleto)
+                intent.data = null
             }
         }
     }

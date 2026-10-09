@@ -32,6 +32,7 @@ interface VaultCicloBovedaDelegate {
     fun ejecutar(bloque: suspend () -> Unit)
     fun ir(pantalla: Pantalla)
     fun irRaiz(pantalla: Pantalla)
+    fun procesarImportacionQrPendiente() {}
 
     val contextoApp: Application get() = obtenerApp()
 
@@ -141,6 +142,7 @@ interface VaultCicloBovedaDelegate {
                 delay(520)
                 irRaiz(Pantalla.Lista)
                 procesarShortcutPendiente()
+                procesarImportacionQrPendiente()
                 verificarBackupAutomatico()
             } catch (e: Exception) {
                 val fallos = apuntarFallo()
@@ -175,6 +177,7 @@ interface VaultCicloBovedaDelegate {
                 delay(520)
                 irRaiz(Pantalla.Lista)
                 procesarShortcutPendiente()
+                procesarImportacionQrPendiente()
                 verificarBackupAutomatico()
             } catch (e: Exception) {
                 Diagnostico.apuntar("huella", "La clave desenvuelta no abrió la bóveda: ${e.javaClass.simpleName}")

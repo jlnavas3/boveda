@@ -3,7 +3,7 @@
 [![Kotlin](https://img.shields.io/badge/Kotlin-2.x-7F52FF?logo=kotlin&logoColor=white)](https://kotlinlang.org/)
 [![Jetpack Compose](https://img.shields.io/badge/Jetpack%20Compose-Material%203-4285F4?logo=jetpackcompose&logoColor=white)](https://developer.android.com/jetpack/compose)
 [![Platform](https://img.shields.io/badge/Android-Min%2029%20%7C%20Target%2035%20%7C%20Compile%2036-3DDC84?logo=android&logoColor=white)](https://developer.android.com/)
-[![Tests](https://img.shields.io/badge/Tests-377%2F377%20Passing-brightgreen?logo=gradle)](https://gradle.org/)
+[![Tests](https://img.shields.io/badge/Tests-386%2F386%20Passing-brightgreen?logo=gradle)](https://gradle.org/)
 [![Version](https://img.shields.io/badge/Version-v1.10.11-blue?logo=android)](https://github.com/)
 [![Architecture](https://img.shields.io/badge/Architecture-Clean%20%7C%20Micro--Design%20%7C%20MVI-blueviolet)](https://github.com/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
@@ -26,7 +26,8 @@ Bóveda Local no solicita ni declara permisos de conectividad a redes en su mani
 
     <uses-permission android:name="android.permission.USE_BIOMETRIC" />
     <uses-permission android:name="android.permission.VIBRATE" />
-    <uses-permission android:name="android.permission.CAMERA" /> <!-- Solo escáner QR local -->
+    <uses-permission android:name="android.permission.CAMERA" /> <!-- Solo escáner QR local bajo demanda -->
+    <uses-permission android:name="android.permission.READ_CONTACTS" /> <!-- Solo importación offline bajo demanda -->
 </manifest>
 ```
 
@@ -34,7 +35,8 @@ Bóveda Local no solicita ni declara permisos de conectividad a redes en su mani
 | :--- | :--- | :--- |
 | `android.permission.USE_BIOMETRIC` | Normal | Autenticación biométrica de hardware de Clase 3 (Fuerte) o Clase 2 (Compatible) para liberar la clave maestra envuelta en el Android Keystore (`BiometricPrompt.CryptoObject`). |
 | `android.permission.VIBRATE` | Normal | Respuesta háptica sub-milisegúndica en eventos de confirmación, validación de clave y deslizamiento en el índice alfabético Niagara. |
-| `android.permission.CAMERA` | Peligroso (Runtime) | Lectura óptica en memoria de códigos QR estándar para tokens 2FA (`otpauth://totp/...`). El flujo óptico CameraX se decodifica en un hilo secundario y jamás persiste imágenes en disco. |
+| `android.permission.CAMERA` | Peligroso (Runtime) | Lectura óptica en memoria de códigos QR estándar para tokens 2FA (`otpauth://totp/...`), transferencias offline entre dispositivos, passkeys, Wi-Fi o vCard. El flujo óptico CameraX se decodifica en un hilo secundario y jamás persiste imágenes en disco. |
+| `android.permission.READ_CONTACTS` | Peligroso (Runtime) | Lectura puntual y bajo demanda de la agenda telefónica local para permitir la selección e importación de contactos seguros hacia la base de datos cifrada de la bóveda. Se solicita únicamente al presionar "Importar contactos" y jamás transmite datos al exterior (sin permisos de red). |
 
 ---
 

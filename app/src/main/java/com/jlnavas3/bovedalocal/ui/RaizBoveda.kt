@@ -71,6 +71,7 @@ import com.jlnavas3.bovedalocal.ui.pantallas.PantallaDetalle
 import com.jlnavas3.bovedalocal.ui.pantallas.PantallaDuplicados
 import com.jlnavas3.bovedalocal.ui.pantallas.PantallaEdicion
 import com.jlnavas3.bovedalocal.ui.pantallas.PantallaEscaner
+import com.jlnavas3.bovedalocal.ui.pantallas.escaner.DialogoConfirmarImportacionQr
 import com.jlnavas3.bovedalocal.ui.pantallas.PantallaExportarSelectivo
 import com.jlnavas3.bovedalocal.ui.pantallas.PantallaFormas
 import com.jlnavas3.bovedalocal.ui.pantallas.PantallaFormatosCampos
@@ -210,6 +211,21 @@ fun RaizBoveda(vm: VaultViewModel, actividad: FragmentActivity) {
             },
             alCancelar = {
                 vm.descartarUriBvdaPendiente()
+            }
+        )
+    }
+
+    val entradaQrPendiente by vm.entradaQrImportacionPendiente.collectAsStateWithLifecycle()
+    if (entradaQrPendiente != null && estado is EstadoBoveda.Desbloqueada) {
+        DialogoConfirmarImportacionQr(
+            entrada = entradaQrPendiente!!,
+            alConfirmar = { entradaAGuardar ->
+                vm.guardar(entradaAGuardar)
+                vm.avisar("«${entradaAGuardar.titulo}» guardada en la bóveda")
+                vm.descartarEntradaQrImportacionPendiente()
+            },
+            alDescartar = {
+                vm.descartarEntradaQrImportacionPendiente()
             }
         )
     }

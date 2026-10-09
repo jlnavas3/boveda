@@ -31,7 +31,8 @@ class VaultViewModel(app: Application) : AndroidViewModel(app),
     VaultCategoriasDelegate,
     VaultIdentidadesDelegate,
     VaultCicloBovedaDelegate,
-    VaultTitulosDelegate {
+    VaultTitulosDelegate,
+    VaultImportacionQrDelegate {
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
@@ -41,6 +42,10 @@ class VaultViewModel(app: Application) : AndroidViewModel(app),
 
     override val repositorio = VaultRepository.obtener(app)
     override fun obtenerApp(): Application = getApplication()
+
+    override fun procesarImportacionQrPendiente() {
+        super<VaultImportacionQrDelegate>.procesarImportacionQrPendiente()
+    }
 
     val estado: StateFlow<EstadoBoveda> = repositorio.estado
     val ajustes: StateFlow<AjustesApp> = repositorio.ajustes.ajustes

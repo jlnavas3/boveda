@@ -274,13 +274,21 @@ interface VaultEntradasDelegate : VaultDuplicadosPapeleraDelegate {
         return procesadas
     }
 
+    fun resolverTituloDuplicado(entrada: Entrada): Entrada {
+        val titulos = repositorio.entradas().map { it.titulo }
+        return com.jlnavas3.bovedalocal.util.ResolverTituloDuplicado.resolverEntrada(entrada, titulos)
+    }
+
     fun importarEntradasContactos(entradas: List<Entrada>): Int {
         if (entradas.isEmpty()) return 0
         ejecutar {
             var importadas = 0
             withContext(Dispatchers.IO) {
+                val titulosExistentes = repositorio.entradas().map { it.titulo }.toMutableList()
                 entradas.forEach { e ->
-                    repositorio.guardarEntrada(e)
+                    val ajustada = com.jlnavas3.bovedalocal.util.ResolverTituloDuplicado.resolverEntrada(e, titulosExistentes)
+                    repositorio.guardarEntrada(ajustada)
+                    titulosExistentes.add(ajustada.titulo)
                     importadas++
                 }
             }

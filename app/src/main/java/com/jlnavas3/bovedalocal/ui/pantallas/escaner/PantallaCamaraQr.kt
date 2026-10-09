@@ -123,7 +123,7 @@ fun PantallaCamaraQr(
                         val res = procesarLecturaQr(texto, "la cámara", entradaDestino, vm)
                         when (res) {
                             is ResultadoProcesoQr.EntradaDetectada -> {
-                                entradaConfirmar = res.entrada
+                                entradaConfirmar = vm.resolverTituloDuplicado(res.entrada)
                             }
                             is ResultadoProcesoQr.Error -> {
                                 if (ajustes.hapticaApp) haptica.error()
@@ -163,7 +163,7 @@ fun PantallaCamaraQr(
                     val res = procesarLecturaQr(texto, "una imagen", entradaDestino, vm)
                     when (res) {
                         is ResultadoProcesoQr.EntradaDetectada -> {
-                            entradaConfirmar = res.entrada
+                            entradaConfirmar = vm.resolverTituloDuplicado(res.entrada)
                         }
                         is ResultadoProcesoQr.Exito -> {
                             if (ajustes.hapticaApp) haptica.exito()

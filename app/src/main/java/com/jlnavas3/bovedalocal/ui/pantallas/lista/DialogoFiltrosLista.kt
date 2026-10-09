@@ -16,6 +16,7 @@ import androidx.compose.material.icons.filled.Description
 import androidx.compose.material.icons.filled.Dns
 import androidx.compose.material.icons.filled.Fingerprint
 import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.SelectAll
 import androidx.compose.material.icons.filled.Wifi
 import androidx.compose.material3.Icon
@@ -41,6 +42,7 @@ fun DialogoFiltrosLista(
         TipoEntrada.PASSKEY to ("Llaves de paso" to Icons.Filled.Fingerprint),
         TipoEntrada.NOTA to ("Notas seguras" to Icons.Filled.Description),
         TipoEntrada.TARJETA to ("Tarjetas bancarias" to Icons.Filled.CreditCard),
+        TipoEntrada.CONTACTO to ("Contactos" to Icons.Filled.Person),
         TipoEntrada.WIFI to ("Redes Wi-Fi" to Icons.Filled.Wifi),
         TipoEntrada.CUENTA_BANCARIA to ("Cuentas bancarias" to Icons.Filled.AccountBalance),
         TipoEntrada.IDENTIDAD to ("Identidad" to Icons.Filled.Badge),
