@@ -227,7 +227,7 @@ com.jlnavas3.bovedalocal/
 ## 🛠️ Ingeniería de Compilación y Calidad
 
 ### Requisitos del Entorno
-* **JDK:** Java 17 (OpenJDK 17 o superior).
+* **JDK:** Java 17 o Java 21 LTS (compatible hasta OpenJDK 25 gracias a Gradle 9.6 + AGP 9.4).
 * **Android SDK:** `compileSdk = 36`, `minSdk = 29` (Android 10+), `targetSdk = 35` (Android 15).
 * **Compilador:** Kotlin 2.x con optimizaciones Compose Compiler integradas.
 
