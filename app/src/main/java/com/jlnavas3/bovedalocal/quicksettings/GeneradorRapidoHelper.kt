@@ -1,3 +1,9 @@
+/*
+ * Copyright (C) 2026 Jose Luis Navas
+ * Licensed under the GNU General Public License v3.0 (GPLv3).
+ * See LICENSE file in the project root for full license information.
+ */
+
 package com.jlnavas3.bovedalocal.quicksettings
 
 import android.content.ClipData
@@ -36,11 +42,17 @@ object GeneradorRapidoHelper {
             "diceware" -> {
                 val palabras = if (esWidget1x1) ajustes.widget1x1DicewarePalabras else ajustes.tileDicewarePalabras
                 val separador = if (esWidget1x1) ajustes.widget1x1DicewareSeparador else ajustes.tileDicewareSeparador
+                val idioma = ajustes.generadorIdiomaFrases
+                val esIngles = idioma.lowercase().startsWith("en")
+                val anadidas = if (esIngles) ajustes.diccionarioAnadidasEn else ajustes.diccionarioAnadidasEs
+                val excluidas = if (esIngles) ajustes.diccionarioExcluidasEn else ajustes.diccionarioExcluidasEs
                 PasswordGenerator.generarFrase(
                     numeroPalabras = palabras,
                     separador = separador,
-                    idioma = ajustes.generadorIdiomaFrases,
-                    capitalizar = ajustes.generadorCapitalizarFrases
+                    idioma = idioma,
+                    capitalizar = ajustes.generadorCapitalizarFrases,
+                    anadidas = anadidas,
+                    excluidas = excluidas
                 )
             }
             else -> PasswordGenerator.generarAleatoria(

@@ -1,3 +1,9 @@
+/*
+ * Copyright (C) 2026 Jose Luis Navas
+ * Licensed under the GNU General Public License v3.0 (GPLv3).
+ * See LICENSE file in the project root for full license information.
+ */
+
 package com.jlnavas3.bovedalocal.ui.pantallas
 
 import androidx.compose.foundation.background
@@ -40,6 +46,9 @@ fun PantallaFormatosCampos(
     val ejemploHora = FormateadorCampos.formatearHora(19, 30, ajustes.formatoHora)
     val ejemploTel = FormateadorCampos.aplicarMascaraTelefono("612345678", ajustes.formatoTelefono)
     val ejemploDecimal = "1250${ajustes.separadorDecimal}50"
+    val ejemploTarjeta = FormateadorCampos.aplicarMascaraTarjeta("4532891023456789", ajustes.formatoTarjeta)
+    val ejemploExpiracion = FormateadorCampos.aplicarMascaraExpiracion("1228", ajustes.formatoExpiracionTarjeta)
+    val ejemploIban = FormateadorCampos.aplicarMascaraIban("ES91210004184502", ajustes.formatoIban)
     val scrollState = rememberScrollState()
 
     ProveedorResaltadoAjustes(seccionId) {
@@ -50,7 +59,7 @@ fun PantallaFormatosCampos(
         ) {
             BarraSuperiorPantalla(
                 titulo = "Formatos",
-                idEtiqueta = "03-LST-FMT",
+                idEtiqueta = "02-APA-FMT",
                 mostrarId = ajustes.mostrarIdsAjustes,
                 alVolver = { vm.volverAtras() },
                 conSeparador = scrollState.value > 0,
@@ -58,8 +67,9 @@ fun PantallaFormatosCampos(
                 acciones = {
                     BotonMenuOpcionesPantalla(
                         grupos = listOf(
-                            AccionSaltoGrupo("03-LST-FMT-G01", "Vista previa"),
-                            AccionSaltoGrupo("03-LST-FMT-G02", "Configuración de formatos")
+                            AccionSaltoGrupo("02-APA-FMT-G01", "Vista previa"),
+                            AccionSaltoGrupo("02-APA-FMT-G02", "Configuración de formatos"),
+                            AccionSaltoGrupo("02-APA-FMT-G03", "Formatos financieros")
                         ),
                         alRestablecerPantalla = {
                             haptica.tic()
@@ -83,7 +93,10 @@ fun PantallaFormatosCampos(
                     ejemploFecha = ejemploFecha,
                     ejemploHora = ejemploHora,
                     ejemploTel = ejemploTel,
-                    ejemploDecimal = ejemploDecimal
+                    ejemploDecimal = ejemploDecimal,
+                    ejemploTarjeta = ejemploTarjeta,
+                    ejemploExpiracion = ejemploExpiracion,
+                    ejemploIban = ejemploIban
                 )
 
                 Spacer(Modifier.height(14.dp))
@@ -115,6 +128,33 @@ fun PantallaFormatosCampos(
                         haptica.tic()
                         vm.restablecerFormatos()
                         vm.avisar("Formatos restablecidos")
+                    }
+                )
+
+                Spacer(Modifier.height(14.dp))
+
+                // Grupo 3: Formatos financieros y bancarios
+                com.jlnavas3.bovedalocal.ui.pantallas.formatos.GrupoConfiguracionFormatosFinancieros(
+                    mostrarIdsAjustes = ajustes.mostrarIdsAjustes,
+                    formatoTarjeta = ajustes.formatoTarjeta,
+                    formatoExpiracionTarjeta = ajustes.formatoExpiracionTarjeta,
+                    formatoIban = ajustes.formatoIban,
+                    alCambiarFormatoTarjeta = {
+                        haptica.tic()
+                        vm.ajustarFormatoTarjeta(it)
+                    },
+                    alCambiarFormatoExpiracionTarjeta = {
+                        haptica.tic()
+                        vm.ajustarFormatoExpiracionTarjeta(it)
+                    },
+                    alCambiarFormatoIban = {
+                        haptica.tic()
+                        vm.ajustarFormatoIban(it)
+                    },
+                    alRestablecerGrupo = {
+                        haptica.tic()
+                        vm.restablecerFormatosFinancieros()
+                        vm.avisar("Formatos financieros restablecidos")
                     }
                 )
 

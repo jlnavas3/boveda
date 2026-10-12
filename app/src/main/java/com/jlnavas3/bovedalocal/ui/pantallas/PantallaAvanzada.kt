@@ -1,3 +1,9 @@
+/*
+ * Copyright (C) 2026 Jose Luis Navas
+ * Licensed under the GNU General Public License v3.0 (GPLv3).
+ * See LICENSE file in the project root for full license information.
+ */
+
 package com.jlnavas3.bovedalocal.ui.pantallas
 
 import androidx.compose.foundation.background
@@ -21,9 +27,12 @@ import com.jlnavas3.bovedalocal.ui.componentes.DescripcionPantalla
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteGrupo
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteNavegacion
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteSeparador
+import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteSwitch
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ProveedorResaltadoAjustes
 import androidx.compose.material3.Text
 import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.LocalContext
+import com.jlnavas3.bovedalocal.util.Haptica
 import androidx.compose.ui.unit.sp
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjusteGris
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjustesFondo
@@ -43,6 +52,8 @@ fun PantallaAvanzada(
 ) {
     val ajustes by vm.ajustes.collectAsStateWithLifecycle()
     val scrollState = rememberScrollState()
+    val contexto = LocalContext.current
+    val haptica = remember { Haptica(contexto) }
 
     val hijosActuales = remember(ajustes.reparentingPersonalizado, ajustes.ordenJerarquiaPersonalizado) {
         MapaAjustes.obtenerHijosDe(
@@ -54,9 +65,9 @@ fun PantallaAvanzada(
     val hijosIds = remember(hijosActuales) { hijosActuales.map { it.id }.toSet() }
 
     val itemsG1 = remember(hijosIds) { listOf("06-SIS-AVZ-DES", "06-SIS-AVZ-LGT", "06-SIS-AVZ-ORG").filter { it in hijosIds } }
-    val itemsG2 = remember(hijosIds) { listOf("06-SIS-AVZ-HAP").filter { it in hijosIds } }
+    val itemsG2 = remember(hijosIds) { listOf("06-SIS-AVZ-HAP", "06-SIS-AVZ-TST").filter { it in hijosIds } }
     val itemsG3 = remember(hijosIds) { listOf("06-SIS-AVZ-PEL").filter { it in hijosIds } }
-    val idsNativos = remember { setOf("06-SIS-AVZ-DES", "06-SIS-AVZ-LGT", "06-SIS-AVZ-ORG", "06-SIS-AVZ-HAP", "06-SIS-AVZ-PEL") }
+    val idsNativos = remember { setOf("06-SIS-AVZ-DES", "06-SIS-AVZ-LGT", "06-SIS-AVZ-ORG", "06-SIS-AVZ-HAP", "06-SIS-AVZ-TST", "06-SIS-AVZ-PEL") }
     val itemsAdoptados = remember(hijosActuales) { hijosActuales.filter { it.id !in idsNativos } }
 
     ProveedorResaltadoAjustes(seccionDestino) {
@@ -139,13 +150,33 @@ fun PantallaAvanzada(
                             idGrupo = "06-SIS-AVZ-G02",
                             mostrarId = ajustes.mostrarIdsAjustes
                         ) {
-                            ComponenteNavegacion(
-                                titulo = "Respuesta táctil y vibración",
-                                icono = null,
-                                idFila = "06-SIS-AVZ-HAP",
-                                mostrarId = ajustes.mostrarIdsAjustes,
-                                alPulsar = { vm.ir(Pantalla.AvanzadaHaptica()) }
-                            )
+                            itemsG2.forEachIndexed { idx, id ->
+                                if (idx > 0) ComponenteSeparador()
+                                when (id) {
+                                    "06-SIS-AVZ-HAP" -> ComponenteNavegacion(
+                                        titulo = "Respuesta táctil y vibración",
+                                        icono = null,
+                                        idFila = "06-SIS-AVZ-HAP",
+                                        mostrarId = ajustes.mostrarIdsAjustes,
+                                        alPulsar = { vm.ir(Pantalla.AvanzadaHaptica()) }
+                                    )
+                                    "06-SIS-AVZ-TST" -> ComponenteSwitch(
+                                        titulo = "Avisos emergentes descriptivos",
+                                        subtitulo = if (ajustes.toastDescriptivo) "Tarjeta con cabecera, título y botón de cierre (✕)" else "Diseño minimalista compacto con botón de cierre (✕)",
+                                        activo = ajustes.toastDescriptivo,
+                                        idFila = "06-SIS-AVZ-TST",
+                                        mostrarId = ajustes.mostrarIdsAjustes,
+                                        alCambiar = { nuevoValor ->
+                                            haptica.tic()
+                                            vm.ajustarToastDescriptivo(nuevoValor)
+                                            vm.avisar(
+                                                mensaje = if (nuevoValor) "Avisos descriptivos con cabecera activados" else "Avisos minimalistas compactos activados",
+                                                titulo = "Avisos en pantalla"
+                                            )
+                                        }
+                                    )
+                                }
+                            }
                         }
                         Spacer(Modifier.height(EspaciadoComponentes))
                     }

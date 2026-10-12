@@ -1,3 +1,9 @@
+/*
+ * Copyright (C) 2026 Jose Luis Navas
+ * Licensed under the GNU General Public License v3.0 (GPLv3).
+ * See LICENSE file in the project root for full license information.
+ */
+
 package com.jlnavas3.bovedalocal.ui.pantallas.salud
 
 import androidx.compose.foundation.layout.Box
@@ -41,7 +47,8 @@ fun BarraSuperiorSalud(
     alAbrirAuditoria: () -> Unit,
     alIrDuplicados: () -> Unit,
     alIrSeguridad: () -> Unit,
-    alIrGenerador: () -> Unit
+    alIrGenerador: () -> Unit,
+    alIrContrasenasComunes: () -> Unit
 ) {
     BarraSuperiorPantalla(
         titulo = "Salud",
@@ -108,6 +115,16 @@ fun BarraSuperiorSalud(
                         onClick = {
                             menuAbiertoSalud = false
                             alIrGenerador()
+                        }
+                    )
+                    SeparadorOpcionMenu()
+                    ElementoMenuCompacto(
+                        texto = "Contraseñas comunes...",
+                        icono = Icons.Filled.Security,
+                        colorIcono = com.jlnavas3.bovedalocal.ui.theme.Peligro,
+                        onClick = {
+                            menuAbiertoSalud = false
+                            alIrContrasenasComunes()
                         }
                     )
                 }

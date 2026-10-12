@@ -1,3 +1,9 @@
+/*
+ * Copyright (C) 2026 Jose Luis Navas
+ * Licensed under the GNU General Public License v3.0 (GPLv3).
+ * See LICENSE file in the project root for full license information.
+ */
+
 package com.jlnavas3.bovedalocal.ui
 
 import android.app.Application
@@ -22,6 +28,11 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+
+data class DatosAviso(
+    val mensaje: String,
+    val titulo: String? = null
+)
 
 class VaultViewModel(app: Application) : AndroidViewModel(app),
     VaultAjustesDelegate,
@@ -62,11 +73,23 @@ class VaultViewModel(app: Application) : AndroidViewModel(app),
     val error: StateFlow<String?> = _error
     override val errorInterno: MutableStateFlow<String?> get() = _error
 
-    private val _aviso = MutableStateFlow<String?>(null)
-    val aviso: StateFlow<String?> = _aviso
-    override val avisoInterno: MutableStateFlow<String?> get() = _aviso
+    private val _aviso = MutableStateFlow<DatosAviso?>(null)
+    val aviso: StateFlow<DatosAviso?> = _aviso
+    private val _avisoInternoString = MutableStateFlow<String?>(null)
+    override val avisoInterno: MutableStateFlow<String?> get() = _avisoInternoString
 
-    fun mostrarAviso(mensaje: String) { _aviso.value = mensaje }
+    init {
+        viewModelScope.launch {
+            _avisoInternoString.collect { texto ->
+                if (texto != null) {
+                    avisar(texto)
+                    _avisoInternoString.value = null
+                }
+            }
+        }
+    }
+
+    fun mostrarAviso(mensaje: String) { avisar(mensaje) }
     fun mostrarError(mensaje: String) { _error.value = mensaje }
 
     private val _cuentaAtrasPortapapeles = MutableStateFlow(0)
@@ -138,9 +161,14 @@ class VaultViewModel(app: Application) : AndroidViewModel(app),
     // ------------------------------------- bloqueo por inactividad en pantalla
 
     private val _ultimaInteraccion = MutableStateFlow(System.currentTimeMillis())
+    private var ultimoRegistroInteraccion: Long = 0L
 
     override fun registrarInteraccion() {
-        _ultimaInteraccion.value = System.currentTimeMillis()
+        val ahora = System.currentTimeMillis()
+        if (ahora - ultimoRegistroInteraccion >= 350L) {
+            ultimoRegistroInteraccion = ahora
+            _ultimaInteraccion.value = ahora
+        }
     }
 
     private var vigilante: Job? = null
@@ -154,7 +182,7 @@ class VaultViewModel(app: Application) : AndroidViewModel(app),
         vigilante = viewModelScope.launch {
             var estabaDesbloqueada = repositorio.estaDesbloqueada
             while (true) {
-                delay(5_000)
+                delay(1_000)
                 val limite = repositorio.ajustes.actual.autoBloqueoSegundos
                 val desbloqueada = repositorio.estaDesbloqueada
                 if (desbloqueada && !estabaDesbloqueada) registrarInteraccion()
@@ -164,7 +192,7 @@ class VaultViewModel(app: Application) : AndroidViewModel(app),
                     val quieto = System.currentTimeMillis() - _ultimaInteraccion.value
                     if (quieto >= limite * 1000L) {
                         bloquear(porInactividad = true)
-                        _aviso.value = "Bóveda cerrada por inactividad"
+                        avisar("Bóveda cerrada por inactividad", "Seguridad")
                     }
                 }
             }
@@ -177,14 +205,31 @@ class VaultViewModel(app: Application) : AndroidViewModel(app),
 
     fun limpiarAviso() {
         _aviso.value = null
+        _avisoInternoString.value = null
+    }
+
+    fun avisar(mensaje: String, titulo: String? = null) {
+        _aviso.value = DatosAviso(mensaje = mensaje, titulo = titulo)
     }
 
     override fun avisar(texto: String) {
-        _aviso.value = texto
+        avisar(mensaje = texto, titulo = null)
     }
 
-    override fun ir(pantalla: Pantalla) = super<VaultNavegacionDelegate>.ir(pantalla)
-    override fun irRaiz(pantalla: Pantalla) = super<VaultNavegacionDelegate>.irRaiz(pantalla)
+    override fun ir(pantalla: Pantalla) {
+        registrarInteraccion()
+        super<VaultNavegacionDelegate>.ir(pantalla)
+    }
+
+    override fun volverAtras() {
+        registrarInteraccion()
+        super<VaultNavegacionDelegate>.volverAtras()
+    }
+
+    override fun irRaiz(pantalla: Pantalla) {
+        registrarInteraccion()
+        super<VaultNavegacionDelegate>.irRaiz(pantalla)
+    }
 
     // ------------------------------------------------------------ portapapeles
 

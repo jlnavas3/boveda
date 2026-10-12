@@ -1,4 +1,12 @@
+/*
+ * Copyright (C) 2026 Jose Luis Navas
+ * Licensed under the GNU General Public License v3.0 (GPLv3).
+ * See LICENSE file in the project root for full license information.
+ */
+
 package com.jlnavas3.bovedalocal.ui
+
+import com.jlnavas3.bovedalocal.data.TipoEntrada
 
 /**
  * Resuelve la jerarquía de navegación y determina la pantalla padre
@@ -36,12 +44,16 @@ object MapeoJerarquiaPantallas {
         is Pantalla.LaboratorioTemas -> Pantalla.Tema("02-APA-THM-LAB")
         is Pantalla.PersonalizarMenuLateral -> Pantalla.Ajustes("02-APA-MNL")
 
-        // Bloque 03: Lista
-        is Pantalla.OrganizacionEstructura -> Pantalla.OrganizacionLista("03-LST-DES-EST")
-        is Pantalla.OrganizacionJerarquia -> Pantalla.OrganizacionLista("03-LST-DES-JER")
-        is Pantalla.OrganizacionIndicadores -> Pantalla.OrganizacionLista("03-LST-DES-IND")
-        is Pantalla.NormalizadorTitulos -> Pantalla.OrganizacionLista("03-LST-DES-TIT")
-        is Pantalla.ColoresDatos -> Pantalla.OrganizacionIndicadores("02-APA-THM-G04")
+        // Bloque 02: Apariencia
+        is Pantalla.OrganizacionEstructura -> Pantalla.OrganizacionLista("02-APA-DES-EST")
+        is Pantalla.OrganizacionJerarquia -> Pantalla.OrganizacionLista("02-APA-DES-JER")
+        is Pantalla.OrganizacionIndicadores -> Pantalla.OrganizacionLista("02-APA-DES-IND")
+        is Pantalla.NormalizadorTitulos -> Pantalla.OrganizacionLista("02-APA-DES-TIT")
+        is Pantalla.ColoresDatos -> when {
+            pantalla.seccionId == "02-APA-THM-G04" -> Pantalla.OrganizacionIndicadores("02-APA-THM-G04")
+            !pantalla.seccionId.isNullOrBlank() -> Pantalla.Ajustes(pantalla.seccionId)
+            else -> Pantalla.Ajustes("02-APA-COL")
+        }
 
         // Bloque 04: Historial, Widgets y Tile
         is Pantalla.HistorialClavesGeneradas -> Pantalla.AjustesHistorial("04-HER-HST-GEN")
@@ -79,11 +91,11 @@ object MapeoJerarquiaPantallas {
         is Pantalla.AvanzadaZonaPeligro -> Pantalla.Avanzada("06-SIS-AVZ-PEL")
         is Pantalla.ColoresIdentificadores -> Pantalla.AvanzadaDesarrollo("06-SIS-AVZ-COL")
 
-        is Pantalla.SaludBoveda -> if (!pantalla.seccionId.isNullOrBlank()) Pantalla.Ajustes(pantalla.seccionId) else Pantalla.Lista
-        is Pantalla.Duplicados -> if (!pantalla.seccionId.isNullOrBlank()) Pantalla.Ajustes(pantalla.seccionId) else Pantalla.Lista
-        is Pantalla.Papelera -> if (!pantalla.seccionId.isNullOrBlank()) Pantalla.Ajustes(pantalla.seccionId) else Pantalla.Lista
-        is Pantalla.Identidades -> if (!pantalla.seccionId.isNullOrBlank()) Pantalla.Ajustes(pantalla.seccionId) else Pantalla.Lista
-        is Pantalla.Categorias -> if (!pantalla.seccionId.isNullOrBlank()) Pantalla.Ajustes(pantalla.seccionId) else Pantalla.Lista
+        is Pantalla.SaludBoveda -> if (!pantalla.seccionId.isNullOrBlank()) Pantalla.Ajustes(pantalla.seccionId) else Pantalla.Ajustes("03-LST-SLD")
+        is Pantalla.Duplicados -> if (!pantalla.seccionId.isNullOrBlank()) Pantalla.Ajustes(pantalla.seccionId) else Pantalla.Ajustes("03-LST-DUP")
+        is Pantalla.Papelera -> if (!pantalla.seccionId.isNullOrBlank()) Pantalla.Ajustes(pantalla.seccionId) else Pantalla.Ajustes("03-LST-PAP")
+        is Pantalla.Identidades -> if (!pantalla.seccionId.isNullOrBlank()) Pantalla.Ajustes(pantalla.seccionId) else Pantalla.Ajustes("03-LST-IDE")
+        is Pantalla.Categorias -> if (!pantalla.seccionId.isNullOrBlank()) Pantalla.Ajustes(pantalla.seccionId) else Pantalla.Ajustes("03-LST-CAT")
 
         // Nivel 3: Subpáginas de Formas -> Formas (Nivel 2)
         is Pantalla.FormasPresets,
@@ -104,20 +116,33 @@ object MapeoJerarquiaPantallas {
         is Pantalla.IndiceOla,
         is Pantalla.IndiceCresta,
         is Pantalla.IndiceHaptica,
-        is Pantalla.IndiceResaltado -> Pantalla.AjustesIndice("03-LST-AZX")
+        is Pantalla.IndiceResaltado -> Pantalla.AjustesIndice("02-APA-AZX")
 
         is Pantalla.Tema -> Pantalla.Ajustes("02-APA-THM")
         is Pantalla.Formas -> Pantalla.Ajustes("02-APA-GEO")
         is Pantalla.Tipografia -> Pantalla.Ajustes("02-APA-TYP")
-        is Pantalla.OrganizacionLista -> Pantalla.Ajustes("03-LST-DES")
-        is Pantalla.AjustesIndice -> Pantalla.Ajustes("03-LST-AZX")
-        is Pantalla.FormatosCampos -> Pantalla.Ajustes("03-LST-FMT")
-        is Pantalla.PlantillasCampos -> if (!pantalla.seccionId.isNullOrBlank()) Pantalla.Ajustes(pantalla.seccionId) else Pantalla.Ajustes("03-LST-PLT")
+        is Pantalla.OrganizacionLista -> Pantalla.Ajustes("02-APA-DES")
+        is Pantalla.AjustesIndice -> Pantalla.Ajustes("02-APA-AZX")
+        is Pantalla.FormatosCampos -> Pantalla.Ajustes("02-APA-FMT")
+        is Pantalla.PlantillasCampos -> if (!pantalla.seccionId.isNullOrBlank()) Pantalla.Ajustes(pantalla.seccionId) else Pantalla.Ajustes("02-APA-PLT")
         is Pantalla.AjustesWidget -> Pantalla.Ajustes("04-HER-WGT")
+        is Pantalla.EntradasTipo -> when (pantalla.tipo) {
+            TipoEntrada.LOGIN -> Pantalla.Ajustes("03-LST-LOG")
+            TipoEntrada.NOTA -> Pantalla.Ajustes("03-LST-NOT")
+            TipoEntrada.TARJETA -> Pantalla.Ajustes("03-LST-TAR")
+            TipoEntrada.CONTACTO -> Pantalla.Ajustes("03-LST-CON")
+            TipoEntrada.WIFI -> Pantalla.Ajustes("03-LST-WIF")
+            TipoEntrada.CUENTA_BANCARIA -> Pantalla.Ajustes("03-LST-BNC")
+            TipoEntrada.IDENTIDAD -> Pantalla.Ajustes("03-LST-IDN")
+            TipoEntrada.SERVIDOR -> Pantalla.Ajustes("03-LST-SRV")
+            TipoEntrada.WALLET -> Pantalla.Ajustes("03-LST-WAL")
+            TipoEntrada.PASSKEY -> Pantalla.Ajustes("03-LST-PAS")
+        }
 
         // Nivel 2: Seguridad -> Ajustes (Nivel 1)
         is Pantalla.Seguridad -> Pantalla.Ajustes("01-SEG-BIO")
         is Pantalla.AuditoriaAccesibilidad -> if (!pantalla.seccionId.isNullOrBlank()) Pantalla.Ajustes(pantalla.seccionId) else Pantalla.Ajustes("01-SEG-ACC")
+        is Pantalla.ContrasenasComunes -> if (!pantalla.seccionId.isNullOrBlank()) Pantalla.Ajustes(pantalla.seccionId) else Pantalla.Ajustes("01-SEG-COM")
 
         // Nivel 2: Copias y datos -> Ajustes (Nivel 1)
         is Pantalla.CopiaSeguridad -> Pantalla.Ajustes("05-COP-MAN")
@@ -131,18 +156,21 @@ object MapeoJerarquiaPantallas {
         is Pantalla.AjustesCamara -> Pantalla.Ajustes("04-HER-CAM")
         is Pantalla.AjustesAutocompletado -> Pantalla.Ajustes("04-HER-PSK")
         is Pantalla.TileRapido -> Pantalla.Ajustes("04-HER-MSK")
+        is Pantalla.DiccionarioPalabras -> if (!pantalla.seccionId.isNullOrBlank()) Pantalla.Ajustes(pantalla.seccionId) else Pantalla.Ajustes("04-HER-DIC")
 
         // Nivel 2: Sistema -> Ajustes (Nivel 1)
         is Pantalla.Avanzada -> Pantalla.Ajustes("06-SIS-AVZ")
-        is Pantalla.Registro -> if (!pantalla.seccionId.isNullOrBlank()) Pantalla.Ajustes(pantalla.seccionId) else Pantalla.Lista
-        is Pantalla.AcercaDe -> if (!pantalla.seccionId.isNullOrBlank()) Pantalla.Ajustes(pantalla.seccionId) else Pantalla.Lista
+        is Pantalla.Registro -> if (!pantalla.seccionId.isNullOrBlank()) Pantalla.Ajustes(pantalla.seccionId) else Pantalla.Ajustes("06-SIS-LOG")
+        is Pantalla.AcercaDe -> if (!pantalla.seccionId.isNullOrBlank()) Pantalla.Ajustes(pantalla.seccionId) else Pantalla.Ajustes("06-SIS-DGN")
+        is Pantalla.AcercaDeApp -> if (!pantalla.seccionId.isNullOrBlank()) Pantalla.Ajustes(pantalla.seccionId) else Pantalla.Ajustes("06-SIS-APP")
+        is Pantalla.Licencia -> Pantalla.AcercaDeApp("06-SIS-APP")
 
         // Nivel 1: Ajustes -> Lista (Nivel 0)
         is Pantalla.Ajustes -> Pantalla.Lista
 
         // Pantallas abiertas directamente desde Lista
         is Pantalla.Generador -> Pantalla.Lista
-        is Pantalla.Passkeys -> Pantalla.Lista
+        is Pantalla.Passkeys -> if (!pantalla.seccionId.isNullOrBlank()) Pantalla.Ajustes(pantalla.seccionId) else Pantalla.Ajustes("03-LST-PAS")
         is Pantalla.Autenticador -> Pantalla.Lista
         is Pantalla.CamaraQr -> Pantalla.Autenticador
         is Pantalla.Detalle -> Pantalla.Lista

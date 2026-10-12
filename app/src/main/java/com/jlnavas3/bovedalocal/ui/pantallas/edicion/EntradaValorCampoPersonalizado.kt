@@ -1,3 +1,9 @@
+/*
+ * Copyright (C) 2026 Jose Luis Navas
+ * Licensed under the GNU General Public License v3.0 (GPLv3).
+ * See LICENSE file in the project root for full license information.
+ */
+
 package com.jlnavas3.bovedalocal.ui.pantallas.edicion
 
 import android.app.DatePickerDialog
@@ -64,7 +70,186 @@ fun EntradaValorCampoPersonalizado(
         }, h, min, es24h).show()
     }
 
+    fun abrirSelectorFechaExpiracion() {
+        val cal = Calendar.getInstance()
+        var yActual = cal.get(Calendar.YEAR)
+        var mActual = cal.get(Calendar.MONTH)
+        if (campo.valor.contains("/")) {
+            val partes = campo.valor.split("/")
+            val mes = partes.getOrNull(0)?.toIntOrNull()
+            if (mes != null && mes in 1..12) {
+                mActual = mes - 1
+            }
+            val anio = partes.getOrNull(1)?.toIntOrNull()
+            if (anio != null) {
+                yActual = if (anio < 100) 2000 + anio else anio
+            }
+        }
+        DatePickerDialog(contexto, { _, anio, mes, _ ->
+            val mesStr = String.format(java.util.Locale.ROOT, "%02d", mes + 1)
+            val anioStr = if (ajustes.formatoExpiracionTarjeta == FormateadorCampos.EXPIRACION_MMAAAA) {
+                String.format(java.util.Locale.ROOT, "%04d", anio)
+            } else {
+                String.format(java.util.Locale.ROOT, "%02d", anio % 100)
+            }
+            alModificar(campo.copy(valor = "$mesStr/$anioStr"))
+        }, yActual, mActual, 1).show()
+    }
+
     val etiquetaFinal = etiquetaPersonalizada?.takeIf { it.isNotBlank() }
+
+    // Detección de formatos especializados en base a campo.formato
+    when (campo.formato) {
+        "TARJETA_CREDITO" -> {
+            CampoBoveda(
+                valor = campo.valor,
+                etiqueta = etiquetaFinal ?: "Número de tarjeta",
+                alCambiar = { nuevoValor ->
+                    alModificar(campo.copy(valor = nuevoValor))
+                },
+                modifier = modifier,
+                formateadorMascara = { raw ->
+                    FormateadorCampos.aplicarMascaraTarjeta(raw, ajustes.formatoTarjeta)
+                },
+                keyboardType = KeyboardType.Number,
+                monoespaciada = true,
+                esContrasena = esSensible,
+                mostrarContrasena = mostrarValor,
+                alAlternarMostrarContrasena = if (esSensible) alAlternarMostrarValor else null
+            )
+            return
+        }
+        "MM/AA", "VENCIMIENTO" -> {
+            val etiquetaExpiracion = if (etiquetaFinal != null) "$etiquetaFinal (${ajustes.formatoExpiracionTarjeta})" else "Vencimiento (${ajustes.formatoExpiracionTarjeta})"
+            CampoBoveda(
+                valor = campo.valor,
+                etiqueta = etiquetaExpiracion,
+                alCambiar = { nuevoValor ->
+                    alModificar(campo.copy(valor = nuevoValor))
+                },
+                modifier = modifier,
+                formateadorMascara = { raw ->
+                    FormateadorCampos.aplicarMascaraExpiracion(raw, ajustes.formatoExpiracionTarjeta)
+                },
+                trailingIcon = {
+                    IconButton(onClick = { abrirSelectorFechaExpiracion() }) {
+                        Icon(
+                            imageVector = Icons.Filled.CalendarToday,
+                            contentDescription = "Elegir vencimiento",
+                            tint = ColorIconosInternos
+                        )
+                    }
+                },
+                keyboardType = KeyboardType.Number,
+                monoespaciada = true
+            )
+            return
+        }
+        "IBAN" -> {
+            CampoBoveda(
+                valor = campo.valor,
+                etiqueta = etiquetaFinal ?: "Código IBAN",
+                alCambiar = { nuevoValor ->
+                    alModificar(campo.copy(valor = nuevoValor))
+                },
+                modifier = modifier,
+                formateadorMascara = { raw ->
+                    FormateadorCampos.aplicarMascaraIban(raw, ajustes.formatoIban)
+                },
+                monoespaciada = true,
+                esContrasena = esSensible,
+                mostrarContrasena = mostrarValor,
+                alAlternarMostrarContrasena = if (esSensible) alAlternarMostrarValor else null
+            )
+            return
+        }
+        "CVV" -> {
+            CampoBoveda(
+                valor = campo.valor,
+                etiqueta = etiquetaFinal ?: "CVV / CVC",
+                alCambiar = { raw ->
+                    val soloDigitos = raw.filter { it.isDigit() }.take(4)
+                    alModificar(campo.copy(valor = soloDigitos))
+                },
+                modifier = modifier,
+                esContrasena = esSensible,
+                mostrarContrasena = mostrarValor,
+                alAlternarMostrarContrasena = if (esSensible) alAlternarMostrarValor else null,
+                tecladoNumerico = true,
+                keyboardType = if (esSensible) KeyboardType.NumberPassword else KeyboardType.Number,
+                monoespaciada = true
+            )
+            return
+        }
+        "SWIFT_BIC", "DOCUMENTO" -> {
+            CampoBoveda(
+                valor = campo.valor,
+                etiqueta = etiquetaFinal ?: "Identificador oficial",
+                alCambiar = { raw ->
+                    alModificar(campo.copy(valor = FormateadorCampos.sanitizarMayusculas(raw)))
+                },
+                modifier = modifier,
+                esContrasena = esSensible,
+                mostrarContrasena = mostrarValor,
+                alAlternarMostrarContrasena = if (esSensible) alAlternarMostrarValor else null,
+                monoespaciada = true
+            )
+            return
+        }
+        "HOST_IP" -> {
+            CampoBoveda(
+                valor = campo.valor,
+                etiqueta = etiquetaFinal ?: "Host o dirección IP",
+                alCambiar = { raw ->
+                    alModificar(campo.copy(valor = FormateadorCampos.sanitizarHostIp(raw)))
+                },
+                modifier = modifier,
+                keyboardType = KeyboardType.Uri,
+                monoespaciada = true
+            )
+            return
+        }
+        "PUERTO" -> {
+            CampoBoveda(
+                valor = campo.valor,
+                etiqueta = etiquetaFinal ?: "Puerto de conexión",
+                alCambiar = { raw ->
+                    alModificar(campo.copy(valor = FormateadorCampos.sanitizarPuerto(raw)))
+                },
+                modifier = modifier,
+                keyboardType = KeyboardType.Number,
+                monoespaciada = true
+            )
+            return
+        }
+        "FRASE_SEMILLA", "CLAVE_PRIVADA", "DIRECCION_PUBLICA" -> {
+            if (campo.tipo == TipoCampo.NOTAS) {
+                ComponenteCampoTexto(
+                    valor = campo.valor,
+                    etiqueta = etiquetaFinal ?: "Clave o Frase Criptográfica",
+                    alCambiar = { alModificar(campo.copy(valor = it)) },
+                    tipo = TipoCampoTexto.MULTILINEA,
+                    esContrasena = esSensible,
+                    mostrarContrasena = if (esSensible) mostrarValor else null,
+                    alAlternarMostrarContrasena = if (esSensible) alAlternarMostrarValor else null,
+                    monoespaciada = true,
+                    modifier = modifier
+                )
+            } else {
+                CampoBoveda(
+                    valor = campo.valor,
+                    etiqueta = etiquetaFinal ?: "Dirección o Hash Público",
+                    alCambiar = { alModificar(campo.copy(valor = it)) },
+                    modifier = modifier,
+                    esContrasena = esSensible,
+                    mostrarContrasena = mostrarValor,
+                    alAlternarMostrarContrasena = if (esSensible) alAlternarMostrarValor else null,
+                    monoespaciada = true
+                )
+            }
+            return
+        }
+    }
 
     when (campo.tipo) {
         TipoCampo.NOTAS -> {

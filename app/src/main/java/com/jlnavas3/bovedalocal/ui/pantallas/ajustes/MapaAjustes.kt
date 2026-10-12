@@ -1,30 +1,44 @@
+/*
+ * Copyright (C) 2026 Jose Luis Navas
+ * Licensed under the GNU General Public License v3.0 (GPLv3).
+ * See LICENSE file in the project root for full license information.
+ */
+
 package com.jlnavas3.bovedalocal.ui.pantallas.ajustes
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.FormatListBulleted
+import androidx.compose.material.icons.automirrored.filled.MenuBook
 import androidx.compose.material.icons.automirrored.filled.Sort
+import androidx.compose.material.icons.filled.AccountBalance
+import androidx.compose.material.icons.filled.AccountBalanceWallet
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.Backup
 import androidx.compose.material.icons.filled.Badge
 import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.CameraAlt
+import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.material.icons.filled.ContentCopy
+import androidx.compose.material.icons.filled.CreditCard
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.DeleteForever
 import androidx.compose.material.icons.filled.Description
+import androidx.compose.material.icons.filled.Dns
 import androidx.compose.material.icons.filled.DynamicForm
 import androidx.compose.material.icons.filled.FileDownload
 import androidx.compose.material.icons.filled.Fingerprint
 import androidx.compose.material.icons.filled.Folder
 import androidx.compose.material.icons.filled.HealthAndSafety
 import androidx.compose.material.icons.filled.History
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Key
 import androidx.compose.material.icons.filled.Layers
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Memory
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Palette
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.QrCodeScanner
 import androidx.compose.material.icons.filled.Security
 import androidx.compose.material.icons.filled.Settings
@@ -32,9 +46,12 @@ import androidx.compose.material.icons.filled.SquareFoot
 import androidx.compose.material.icons.filled.TextFields
 import androidx.compose.material.icons.filled.Timer
 import androidx.compose.material.icons.filled.Tune
+import androidx.compose.material.icons.filled.Verified
 import androidx.compose.material.icons.filled.Widgets
+import androidx.compose.material.icons.filled.Wifi
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import com.jlnavas3.bovedalocal.data.TipoEntrada
 import com.jlnavas3.bovedalocal.ui.Pantalla
 
 /**
@@ -172,6 +189,18 @@ object MapaAjustes {
             colorIcono = Color(0xFFE65100),
             palabrasClave = listOf("accesibilidad", "permiso", "pantalla", "espia", "scraping", "cube acr", "lista blanca", "confianza", "servicios")
         ),
+        NodoAjuste(
+            id = "01-SEG-COM",
+            titulo = "Contraseñas comunes",
+            subtitulo = "Lista negra de contraseñas inseguras y auditoría de salud",
+            ruta = "Seguridad > Contraseñas comunes",
+            grupo = "Seguridad",
+            pantallaDestino = Pantalla.ContrasenasComunes(),
+            padreId = "01-SEG",
+            icono = Icons.Filled.Security,
+            colorIcono = Color(0xFFE53935),
+            palabrasClave = listOf("contrasenas", "comunes", "prohibidas", "salud", "inseguras", "lista negra", "exclusiones", "vulnerables")
+        ),
 
         // ==========================================
         // NIVEL 2: Hijos de Apariencia (02-APA)
@@ -218,7 +247,7 @@ object MapaAjustes {
             subtitulo = "Pastillas de color por tipo de credencial",
             ruta = "Apariencia > Identificadores de campos",
             grupo = "Apariencia",
-            pantallaDestino = Pantalla.ColoresDatos(),
+            pantallaDestino = Pantalla.ColoresDatos("02-APA-COL"),
             padreId = "02-APA",
             icono = Icons.Filled.Badge,
             colorIcono = Color(0xFF1E88E5),
@@ -253,13 +282,121 @@ object MapaAjustes {
         // NIVEL 2: Hijos de Lista de cuentas (03-LST)
         // ==========================================
         NodoAjuste(
-            id = "03-LST-DES",
+            id = "03-LST-LOG",
+            titulo = "Contraseñas",
+            subtitulo = "Inicios de sesión, credenciales web y aplicaciones",
+            ruta = "Lista de cuentas > Contraseñas",
+            grupo = "Lista de cuentas",
+            pantallaDestino = Pantalla.EntradasTipo(TipoEntrada.LOGIN),
+            padreId = "03-LST",
+            icono = Icons.Filled.Lock,
+            colorIcono = Color(0xFF1E88E5),
+            palabrasClave = listOf("login", "contrasenas", "credenciales", "usuarios", "claves", "cuentas", "web")
+        ),
+        NodoAjuste(
+            id = "03-LST-NOT",
+            titulo = "Notas seguras",
+            subtitulo = "Anotaciones confidenciales, códigos y textos privados",
+            ruta = "Lista de cuentas > Notas seguras",
+            grupo = "Lista de cuentas",
+            pantallaDestino = Pantalla.EntradasTipo(TipoEntrada.NOTA),
+            padreId = "03-LST",
+            icono = Icons.Filled.Description,
+            colorIcono = Color(0xFF00ACC1),
+            palabrasClave = listOf("notas", "seguras", "anotaciones", "privadas", "textos", "secretos")
+        ),
+        NodoAjuste(
+            id = "03-LST-TAR",
+            titulo = "Tarjetas bancarias",
+            subtitulo = "Tarjetas de crédito, débito y prepago",
+            ruta = "Lista de cuentas > Tarjetas bancarias",
+            grupo = "Lista de cuentas",
+            pantallaDestino = Pantalla.EntradasTipo(TipoEntrada.TARJETA),
+            padreId = "03-LST",
+            icono = Icons.Filled.CreditCard,
+            colorIcono = Color(0xFF43A047),
+            palabrasClave = listOf("tarjetas", "bancarias", "credito", "debito", "visa", "mastercard", "cvv", "pin")
+        ),
+        NodoAjuste(
+            id = "03-LST-CON",
+            titulo = "Contactos seguros",
+            subtitulo = "Información de contactos privados y vCards",
+            ruta = "Lista de cuentas > Contactos seguros",
+            grupo = "Lista de cuentas",
+            pantallaDestino = Pantalla.EntradasTipo(TipoEntrada.CONTACTO),
+            padreId = "03-LST",
+            icono = Icons.Filled.Person,
+            colorIcono = Color(0xFF8E24AA),
+            palabrasClave = listOf("contactos", "seguros", "personas", "agenda", "vcard", "telefonos")
+        ),
+        NodoAjuste(
+            id = "03-LST-WIF",
+            titulo = "Redes Wi-Fi",
+            subtitulo = "Claves de acceso a redes inalámbricas y routers",
+            ruta = "Lista de cuentas > Redes Wi-Fi",
+            grupo = "Lista de cuentas",
+            pantallaDestino = Pantalla.EntradasTipo(TipoEntrada.WIFI),
+            padreId = "03-LST",
+            icono = Icons.Filled.Wifi,
+            colorIcono = Color(0xFF00897B),
+            palabrasClave = listOf("wifi", "redes", "inalambricas", "ssid", "contrasena wifi", "routers")
+        ),
+        NodoAjuste(
+            id = "03-LST-BNC",
+            titulo = "Cuentas bancarias",
+            subtitulo = "Cuentas corrientes, IBAN, SWIFT y entidades",
+            ruta = "Lista de cuentas > Cuentas bancarias",
+            grupo = "Lista de cuentas",
+            pantallaDestino = Pantalla.EntradasTipo(TipoEntrada.CUENTA_BANCARIA),
+            padreId = "03-LST",
+            icono = Icons.Filled.AccountBalance,
+            colorIcono = Color(0xFFFB8C00),
+            palabrasClave = listOf("cuentas", "bancarias", "banco", "iban", "swift", "bic", "finanzas")
+        ),
+        NodoAjuste(
+            id = "03-LST-IDN",
+            titulo = "Documentos de identidad",
+            subtitulo = "DNI, pasaportes, licencias de conducir y licencias",
+            ruta = "Lista de cuentas > Documentos de identidad",
+            grupo = "Lista de cuentas",
+            pantallaDestino = Pantalla.EntradasTipo(TipoEntrada.IDENTIDAD),
+            padreId = "03-LST",
+            icono = Icons.Filled.Badge,
+            colorIcono = Color(0xFF0284C7),
+            palabrasClave = listOf("identidad", "documentos", "dni", "pasaporte", "licencia", "nie", "carnet")
+        ),
+        NodoAjuste(
+            id = "03-LST-SRV",
+            titulo = "Servidores / SSH",
+            subtitulo = "Hosts, direcciones IP, claves SSH y accesos remotos",
+            ruta = "Lista de cuentas > Servidores / SSH",
+            grupo = "Lista de cuentas",
+            pantallaDestino = Pantalla.EntradasTipo(TipoEntrada.SERVIDOR),
+            padreId = "03-LST",
+            icono = Icons.Filled.Dns,
+            colorIcono = Color(0xFF546E7A),
+            palabrasClave = listOf("servidores", "ssh", "host", "ip", "puerto", "remoto", "vps", "ftp")
+        ),
+        NodoAjuste(
+            id = "03-LST-WAL",
+            titulo = "Cripto Wallets",
+            subtitulo = "Billeteras cripto, frases semilla y direcciones de red",
+            ruta = "Lista de cuentas > Cripto Wallets",
+            grupo = "Lista de cuentas",
+            pantallaDestino = Pantalla.EntradasTipo(TipoEntrada.WALLET),
+            padreId = "03-LST",
+            icono = Icons.Filled.AccountBalanceWallet,
+            colorIcono = Color(0xFFF59E0B),
+            palabrasClave = listOf("cripto", "wallets", "billeteras", "seed phrase", "semilla", "bitcoin", "ethereum")
+        ),
+        NodoAjuste(
+            id = "02-APA-DES",
             titulo = "Diseño de lista",
             subtitulo = "Agrupamiento por sitio y densidad",
-            ruta = "Lista de cuentas > Diseño de lista",
-            grupo = "Lista de cuentas",
+            ruta = "Apariencia > Diseño de lista",
+            grupo = "Apariencia",
             pantallaDestino = Pantalla.OrganizacionLista(),
-            padreId = "03-LST",
+            padreId = "02-APA",
             icono = Icons.Filled.Layers,
             colorIcono = Color(0xFF00ACC1),
             palabrasClave = listOf("agrupar", "lista", "densidad", "compacta", "comoda", "sitio")
@@ -270,44 +407,80 @@ object MapaAjustes {
             subtitulo = "Perfiles de correo y vinculación inteligente",
             ruta = "Lista de cuentas > Identidades",
             grupo = "Lista de cuentas",
-            pantallaDestino = Pantalla.Identidades(),
+            pantallaDestino = Pantalla.Identidades("03-LST-IDE"),
             padreId = "03-LST",
             icono = Icons.Filled.AccountCircle,
             colorIcono = Color(0xFF0284C7),
             palabrasClave = listOf("identidades", "cuentas", "perfiles", "correo", "email", "alias")
         ),
         NodoAjuste(
-            id = "03-LST-AZX",
+            id = "02-APA-AZX",
             titulo = "Índice A-Z",
             subtitulo = "Desplazamiento rápido alfabético lateral",
-            ruta = "Lista de cuentas > Índice A-Z",
-            grupo = "Lista de cuentas",
+            ruta = "Apariencia > Índice A-Z",
+            grupo = "Apariencia",
             pantallaDestino = Pantalla.AjustesIndice(),
-            padreId = "03-LST",
+            padreId = "02-APA",
             icono = Icons.AutoMirrored.Filled.Sort,
             colorIcono = Color(0xFF6A1B9A),
             palabrasClave = listOf("abecedario", "indice", "ola", "niagara", "scroll", "a-z")
         ),
         NodoAjuste(
-            id = "03-LST-FMT",
+            id = "02-APA-FMT",
             titulo = "Formatos",
             subtitulo = "Campos personalizados predeterminados",
-            ruta = "Lista de cuentas > Formatos",
-            grupo = "Lista de cuentas",
+            ruta = "Apariencia > Formatos",
+            grupo = "Apariencia",
             pantallaDestino = Pantalla.FormatosCampos(),
-            padreId = "03-LST",
+            padreId = "02-APA",
             icono = Icons.AutoMirrored.Filled.FormatListBulleted,
             colorIcono = Color(0xFFFFA000),
             palabrasClave = listOf("formatos", "campos", "plantillas", "formulario")
         ),
         NodoAjuste(
-            id = "03-LST-PLT",
+            id = "02-APA-FMT-TAR",
+            titulo = "Formato de tarjeta bancaria",
+            subtitulo = "Espaciado 4x4 o continuo para números de tarjeta",
+            ruta = "Apariencia > Formatos > Tarjeta bancaria",
+            grupo = "Apariencia",
+            pantallaDestino = Pantalla.FormatosCampos(seccionId = "02-APA-FMT-TAR"),
+            padreId = "02-APA-FMT",
+            icono = null,
+            colorIcono = null,
+            palabrasClave = listOf("tarjeta", "credito", "debito", "numero", "4x4", "banco")
+        ),
+        NodoAjuste(
+            id = "02-APA-FMT-VNC",
+            titulo = "Vencimiento de tarjeta",
+            subtitulo = "Estándar MM/AA o MM/AAAA para caducidad",
+            ruta = "Apariencia > Formatos > Vencimiento",
+            grupo = "Apariencia",
+            pantallaDestino = Pantalla.FormatosCampos(seccionId = "02-APA-FMT-VNC"),
+            padreId = "02-APA-FMT",
+            icono = null,
+            colorIcono = null,
+            palabrasClave = listOf("vencimiento", "caducidad", "mm/aa", "tarjeta", "fecha")
+        ),
+        NodoAjuste(
+            id = "02-APA-FMT-IBN",
+            titulo = "Formato IBAN",
+            subtitulo = "Agrupación en bloques de 4 para cuentas bancarias",
+            ruta = "Apariencia > Formatos > IBAN",
+            grupo = "Apariencia",
+            pantallaDestino = Pantalla.FormatosCampos(seccionId = "02-APA-FMT-IBN"),
+            padreId = "02-APA-FMT",
+            icono = null,
+            colorIcono = null,
+            palabrasClave = listOf("iban", "cuenta", "bancaria", "transferencia", "bloques")
+        ),
+        NodoAjuste(
+            id = "02-APA-PLT",
             titulo = "Plantillas de campos",
             subtitulo = "Plantillas personalizadas y del sistema",
-            ruta = "Lista de cuentas > Plantillas de campos",
-            grupo = "Lista de cuentas",
+            ruta = "Apariencia > Plantillas de campos",
+            grupo = "Apariencia",
             pantallaDestino = Pantalla.PlantillasCampos(),
-            padreId = "03-LST",
+            padreId = "02-APA",
             icono = Icons.Filled.DynamicForm,
             colorIcono = Color(0xFF10B981),
             palabrasClave = listOf("plantillas", "presets", "personalizados", "modelos")
@@ -318,7 +491,7 @@ object MapaAjustes {
             subtitulo = "Auditoría de contraseñas débiles, repetidas y vulneradas",
             ruta = "Lista de cuentas > Salud de la bóveda",
             grupo = "Lista de cuentas",
-            pantallaDestino = Pantalla.SaludBoveda(),
+            pantallaDestino = Pantalla.SaludBoveda("03-LST-SLD"),
             padreId = "03-LST",
             icono = Icons.Filled.HealthAndSafety,
             colorIcono = Color(0xFF10B981),
@@ -330,7 +503,7 @@ object MapaAjustes {
             subtitulo = "Detección y resolución de entradas repetidas",
             ruta = "Lista de cuentas > Cuentas duplicadas",
             grupo = "Lista de cuentas",
-            pantallaDestino = Pantalla.Duplicados(),
+            pantallaDestino = Pantalla.Duplicados("03-LST-DUP"),
             padreId = "03-LST",
             icono = Icons.Filled.ContentCopy,
             colorIcono = Color(0xFFF59E0B),
@@ -342,7 +515,7 @@ object MapaAjustes {
             subtitulo = "Recuperación y purga definitiva de cuentas eliminadas",
             ruta = "Lista de cuentas > Papelera",
             grupo = "Lista de cuentas",
-            pantallaDestino = Pantalla.Papelera(),
+            pantallaDestino = Pantalla.Papelera("03-LST-PAP"),
             padreId = "03-LST",
             icono = Icons.Filled.Delete,
             colorIcono = Color(0xFFEF4444),
@@ -354,7 +527,7 @@ object MapaAjustes {
             subtitulo = "Organizar entradas por carpetas, etiquetas y grupos",
             ruta = "Lista de cuentas > Categorías",
             grupo = "Lista de cuentas",
-            pantallaDestino = Pantalla.Categorias(),
+            pantallaDestino = Pantalla.Categorias("03-LST-CAT"),
             padreId = "03-LST",
             icono = Icons.Filled.Folder,
             colorIcono = Color(0xFF10B981),
@@ -449,13 +622,13 @@ object MapaAjustes {
             palabrasClave = listOf("generador", "crear", "claves", "longitud", "simbolos", "robustez")
         ),
         NodoAjuste(
-            id = "04-HER-2FA",
+            id = "03-LST-2FA",
             titulo = "Autenticador 2FA",
             subtitulo = "Códigos TOTP temporales de un solo uso",
-            ruta = "Herramientas > Autenticador 2FA",
-            grupo = "Herramientas",
+            ruta = "Lista de cuentas > Autenticador 2FA",
+            grupo = "Lista de cuentas",
             pantallaDestino = Pantalla.Autenticador,
-            padreId = "04-HER",
+            padreId = "03-LST",
             icono = Icons.Filled.Timer,
             colorIcono = Color(0xFFF97316),
             palabrasClave = listOf("autenticador", "totp", "2fa", "codigos", "temporales", "doble factor")
@@ -471,6 +644,18 @@ object MapaAjustes {
             icono = Icons.Filled.QrCodeScanner,
             colorIcono = Color(0xFF8B5CF6),
             palabrasClave = listOf("escaner", "qr", "camara", "lector", "escanear", "vcard", "contacto", "wifi", "transferir", "codigo")
+        ),
+        NodoAjuste(
+            id = "04-HER-DIC",
+            titulo = "Diccionario Diceware",
+            subtitulo = "Personalización de palabras, favoritas y exclusiones en español e inglés",
+            ruta = "Herramientas > Diccionario Diceware",
+            grupo = "Herramientas",
+            pantallaDestino = Pantalla.DiccionarioPalabras(),
+            padreId = "04-HER",
+            icono = Icons.AutoMirrored.Filled.MenuBook,
+            colorIcono = Color(0xFF10B981),
+            palabrasClave = listOf("diccionario", "palabras", "diceware", "frase", "idioma", "espanol", "ingles", "favoritas", "excluidas")
         ),
 
         // ==========================================
@@ -534,7 +719,7 @@ object MapaAjustes {
             subtitulo = "Auditoría de acciones, accesos y seguridad",
             ruta = "Sistema > Registro de eventos",
             grupo = "Sistema",
-            pantallaDestino = Pantalla.Registro(),
+            pantallaDestino = Pantalla.Registro("06-SIS-LOG"),
             padreId = "06-SIS",
             icono = Icons.Filled.History,
             colorIcono = Color(0xFF00897B),
@@ -543,14 +728,36 @@ object MapaAjustes {
         NodoAjuste(
             id = "06-SIS-DGN",
             titulo = "Diagnóstico de seguridad",
-            subtitulo = "Auditoría de integridad, versión y licencias",
+            subtitulo = "Auditoría de integridad, aislamiento y hardware",
             ruta = "Sistema > Diagnóstico de seguridad",
             grupo = "Sistema",
-            pantallaDestino = Pantalla.AcercaDe(),
+            pantallaDestino = Pantalla.AcercaDe("06-SIS-DGN"),
             padreId = "06-SIS",
             icono = Icons.Filled.Security,
             colorIcono = Color(0xFF607D8B),
-            palabrasClave = listOf("diagnostico", "seguridad", "acerca de", "version", "licencias")
+            palabrasClave = listOf("diagnostico", "seguridad", "auditoria", "integridad", "hardware", "aislamiento")
+        ),
+        NodoAjuste(
+            id = "06-SIS-APP",
+            titulo = "Acerca de Bóveda Local",
+            subtitulo = "Versión, autor, filosofía y licencia GPLv3",
+            ruta = "Sistema > Acerca de Bóveda Local",
+            grupo = "Sistema",
+            pantallaDestino = Pantalla.AcercaDeApp("06-SIS-APP"),
+            padreId = "06-SIS",
+            icono = Icons.Filled.Info,
+            colorIcono = Color(0xFF3F51B5),
+            palabrasClave = listOf("acerca de", "boveda local", "version", "autor", "creador", "jlnavas3", "filosofia", "offline", "zero-knowledge")
+        ),
+        NodoAjuste(
+            id = "06-SIS-LIC",
+            titulo = "Licencia de software (GNU GPLv3)",
+            subtitulo = "Términos legales oficiales, copyleft y protección de marca",
+            ruta = "Sistema > Acerca de Bóveda Local > Licencia",
+            grupo = "Sistema",
+            pantallaDestino = Pantalla.Licencia("06-SIS-LIC"),
+            padreId = "06-SIS-APP",
+            palabrasClave = listOf("licencia", "gplv3", "gnu", "copyleft", "codigo abierto", "marca", "legal", "terminos")
         ),
         // ==========================================
         // Hijos de Biometría y seguridad (01-SEG-BIO)
@@ -829,90 +1036,90 @@ object MapaAjustes {
         ),
 
         // ==========================================
-        // Hijos de Diseño de lista (03-LST-DES)
+        // Hijos de Diseño de lista (02-APA-DES)
         // ==========================================
         NodoAjuste(
-            id = "03-LST-DES-EST",
+            id = "02-APA-DES-EST",
             titulo = "Estructura y visualización",
             subtitulo = "Densidad, modo compacto y vista de elementos",
-            ruta = "Lista de cuentas > Diseño de lista",
-            grupo = "Lista de cuentas",
+            ruta = "Apariencia > Diseño de lista",
+            grupo = "Apariencia",
             pantallaDestino = Pantalla.OrganizacionEstructura(),
-            padreId = "03-LST-DES",
+            padreId = "02-APA-DES",
             palabrasClave = listOf("estructura", "densidad", "compacta", "comoda", "vista", "diseno")
         ),
         NodoAjuste(
-            id = "03-LST-DES-JER",
+            id = "02-APA-DES-JER",
             titulo = "Jerarquía y orden",
             subtitulo = "Agrupamiento por sitio y criterios de ordenación",
-            ruta = "Lista de cuentas > Diseño de lista",
-            grupo = "Lista de cuentas",
+            ruta = "Apariencia > Diseño de lista",
+            grupo = "Apariencia",
             pantallaDestino = Pantalla.OrganizacionJerarquia(),
-            padreId = "03-LST-DES",
+            padreId = "02-APA-DES",
             palabrasClave = listOf("jerarquia", "agrupamiento", "sitio", "orden", "carpetas", "criterios")
         ),
         NodoAjuste(
-            id = "03-LST-DES-IND",
+            id = "02-APA-DES-IND",
             titulo = "Indicadores y badges",
             subtitulo = "Pastillas de seguridad, TOTP y tipo de cuenta",
-            ruta = "Lista de cuentas > Diseño de lista",
-            grupo = "Lista de cuentas",
+            ruta = "Apariencia > Diseño de lista",
+            grupo = "Apariencia",
             pantallaDestino = Pantalla.OrganizacionIndicadores(),
-            padreId = "03-LST-DES",
+            padreId = "02-APA-DES",
             palabrasClave = listOf("indicadores", "badges", "pastillas", "totp", "etiquetas", "iconos")
         ),
         NodoAjuste(
-            id = "03-LST-DES-TIT",
+            id = "02-APA-DES-TIT",
             titulo = "Asistente de títulos",
             subtitulo = "Normalizar nombres web y reglas de URLs",
-            ruta = "Lista de cuentas > Diseño de lista",
-            grupo = "Lista de cuentas",
+            ruta = "Apariencia > Diseño de lista",
+            grupo = "Apariencia",
             pantallaDestino = Pantalla.NormalizadorTitulos(),
-            padreId = "03-LST-DES",
+            padreId = "02-APA-DES",
             palabrasClave = listOf("asistente", "titulos", "normalizador", "urls", "reglas")
         ),
 
         // ==========================================
-        // Hijos de Índice A-Z (03-LST-AZX)
+        // Hijos de Índice A-Z (02-APA-AZX)
         // ==========================================
         NodoAjuste(
-            id = "03-LST-AZX-OLA",
+            id = "02-APA-AZX-OLA",
             titulo = "Efecto ola Niagara",
             subtitulo = "Animación expansiva al deslizar el índice lateral",
-            ruta = "Lista de cuentas > Índice A-Z",
-            grupo = "Lista de cuentas",
+            ruta = "Apariencia > Índice A-Z",
+            grupo = "Apariencia",
             pantallaDestino = Pantalla.IndiceOla(),
-            padreId = "03-LST-AZX",
+            padreId = "02-APA-AZX",
             palabrasClave = listOf("ola", "niagara", "animacion", "indice", "curva")
         ),
         NodoAjuste(
-            id = "03-LST-AZX-CRE",
+            id = "02-APA-AZX-CRE",
             titulo = "Curvatura de cresta",
             subtitulo = "Intensidad y amplitud del arco de la ola",
-            ruta = "Lista de cuentas > Índice A-Z",
-            grupo = "Lista de cuentas",
+            ruta = "Apariencia > Índice A-Z",
+            grupo = "Apariencia",
             pantallaDestino = Pantalla.IndiceCresta(),
-            padreId = "03-LST-AZX",
+            padreId = "02-APA-AZX",
             palabrasClave = listOf("cresta", "curvatura", "arco", "amplitud")
         ),
         NodoAjuste(
-            id = "03-LST-AZX-HAP",
+            id = "02-APA-AZX-HAP",
             titulo = "Respuesta háptica del índice",
             subtitulo = "Vibración al pasar por cada letra del alfabeto",
-            ruta = "Lista de cuentas > Índice A-Z",
-            grupo = "Lista de cuentas",
+            ruta = "Apariencia > Índice A-Z",
+            grupo = "Apariencia",
             pantallaDestino = Pantalla.IndiceHaptica(),
-            padreId = "03-LST-AZX",
+            padreId = "02-APA-AZX",
             palabrasClave = listOf("haptica", "vibracion", "indice", "letras")
         ),
         NodoAjuste(
-            id = "03-LST-AZX-RES",
+            id = "02-APA-AZX-RES",
             titulo = "Resaltado de letra activa",
             subtitulo = "Color y tamaño de la pastilla flotante de la letra actual",
-            ruta = "Lista de cuentas > Índice A-Z",
-            grupo = "Lista de cuentas",
+            ruta = "Apariencia > Índice A-Z",
+            grupo = "Apariencia",
             pantallaDestino = Pantalla.IndiceResaltado(),
-            padreId = "03-LST-AZX",
+            padreId = "02-APA-AZX",
             palabrasClave = listOf("resaltado", "letra", "pastilla", "flotante")
         ),
 
@@ -1150,6 +1357,16 @@ object MapaAjustes {
             palabrasClave = listOf("haptica", "vibracion", "tactil", "feedback")
         ),
         NodoAjuste(
+            id = "06-SIS-AVZ-TST",
+            titulo = "Avisos emergentes descriptivos",
+            subtitulo = "Alternar entre formato descriptivo con cabecera y formato minimalista",
+            ruta = "Sistema > Opciones avanzadas",
+            grupo = "Sistema",
+            pantallaDestino = Pantalla.Avanzada("06-SIS-AVZ-TST"),
+            padreId = "06-SIS-AVZ",
+            palabrasClave = listOf("toast", "aviso", "notificacion", "emergente", "descriptivo", "minimalista")
+        ),
+        NodoAjuste(
             id = "06-SIS-AVZ-PEL",
             titulo = "Zona de peligro",
             subtitulo = "Restablecimiento de fábrica y borrado completo",
@@ -1186,16 +1403,16 @@ object MapaAjustes {
     )
 
     val NODO_PASSKEYS: NodoAjuste = NodoAjuste(
-        id = "04-HER-PAS",
+        id = "03-LST-PAS",
         titulo = "Llaves de paso",
         subtitulo = "Credenciales FIDO2 WebAuthn y passkeys locales",
-        ruta = "Herramientas > Llaves de paso",
-        grupo = "Herramientas",
+        ruta = "Lista de cuentas > Llaves de paso",
+        grupo = "Lista de cuentas",
         esRaiz = false,
         icono = Icons.Filled.Fingerprint,
         colorIcono = Color(0xFF10B981),
         pantallaDestino = Pantalla.Passkeys,
-        padreId = "04-HER",
+        padreId = "03-LST",
         palabrasClave = listOf("passkeys", "llaves", "fido2", "webauthn", "biometria", "sin contrasena")
     )
 

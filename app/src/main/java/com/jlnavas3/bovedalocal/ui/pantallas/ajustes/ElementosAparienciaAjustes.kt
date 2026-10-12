@@ -1,8 +1,18 @@
+/*
+ * Copyright (C) 2026 Jose Luis Navas
+ * Licensed under the GNU General Public License v3.0 (GPLv3).
+ * See LICENSE file in the project root for full license information.
+ */
+
 package com.jlnavas3.bovedalocal.ui.pantallas.ajustes
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.FormatListBulleted
+import androidx.compose.material.icons.automirrored.filled.Sort
 import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.Badge
+import androidx.compose.material.icons.filled.DynamicForm
+import androidx.compose.material.icons.filled.Layers
 import androidx.compose.material.icons.filled.Palette
 import androidx.compose.material.icons.filled.SquareFoot
 import androidx.compose.material.icons.filled.TextFields
@@ -57,6 +67,49 @@ fun crearElementosAparienciaAjustes(
         alPulsar = { vm.ir(Pantalla.Formas()) }
     ),
     ElementoMenuAjustes(
+        titulo = "Diseño de lista",
+        subtitulo = "Agrupamiento por sitio y densidad",
+        icono = Icons.Filled.Layers,
+        colorIcono = Color(0xFF00ACC1),
+        idEtiqueta = "02-APA-DES",
+        grupo = "Apariencia",
+        palabrasClave = "agrupar agrupamiento lista densidad compacta comoda cuentas sitio dominio carpetas orden",
+        valorTexto = if (ajustes.agruparPorSitio) "Agrupada" else "Individual",
+        alPulsar = { vm.ir(Pantalla.OrganizacionLista()) }
+    ),
+    ElementoMenuAjustes(
+        titulo = "Índice A-Z",
+        subtitulo = "Desplazamiento rápido alfabético lateral",
+        icono = Icons.AutoMirrored.Filled.Sort,
+        colorIcono = Color(0xFF6A1B9A),
+        idEtiqueta = "02-APA-AZX",
+        grupo = "Apariencia",
+        palabrasClave = "abecedario indice lateral ola niagara alfabeto scroll letras a-z",
+        valorTexto = if (ajustes.mostrarIndiceAlfabetico) "Activo" else "Oculto",
+        alPulsar = { vm.ir(Pantalla.AjustesIndice()) }
+    ),
+    ElementoMenuAjustes(
+        titulo = "Formatos",
+        subtitulo = "Campos personalizados predeterminados",
+        icono = Icons.AutoMirrored.Filled.FormatListBulleted,
+        colorIcono = Color(0xFFFFA000),
+        idEtiqueta = "02-APA-FMT",
+        grupo = "Apariencia",
+        palabrasClave = "formatos campos plantillas autofill rellenar formulario",
+        alPulsar = { vm.ir(Pantalla.FormatosCampos()) }
+    ),
+    ElementoMenuAjustes(
+        titulo = "Plantillas de campos",
+        subtitulo = "Plantillas personalizadas y del sistema",
+        icono = Icons.Filled.DynamicForm,
+        colorIcono = Color(0xFF10B981),
+        idEtiqueta = "02-APA-PLT",
+        grupo = "Apariencia",
+        palabrasClave = "plantillas campos presets personalizados formulas formularios modelos estructuras",
+        valorTexto = "${ajustes.plantillasCamposPersonalizadas.size} pers.",
+        alPulsar = { vm.ir(Pantalla.PlantillasCampos()) }
+    ),
+    ElementoMenuAjustes(
         titulo = "Identificadores de campos",
         subtitulo = "Pastillas de color por tipo de credencial",
         icono = Icons.Filled.Badge,
@@ -64,7 +117,7 @@ fun crearElementosAparienciaAjustes(
         idEtiqueta = "02-APA-COL",
         grupo = "Apariencia",
         palabrasClave = "colores etiquetas tipos credenciales pastillas insignias",
-        alPulsar = { vm.ir(Pantalla.ColoresDatos()) }
+        alPulsar = { vm.ir(Pantalla.ColoresDatos("02-APA-COL")) }
     ),
     ElementoMenuAjustes(
         titulo = "Nombre de la bóveda",

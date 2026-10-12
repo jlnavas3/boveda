@@ -1,5 +1,12 @@
+/*
+ * Copyright (C) 2026 Jose Luis Navas
+ * Licensed under the GNU General Public License v3.0 (GPLv3).
+ * See LICENSE file in the project root for full license information.
+ */
+
 package com.jlnavas3.bovedalocal.ui
 
+import com.jlnavas3.bovedalocal.data.TipoEntrada
 import kotlinx.coroutines.flow.MutableStateFlow
 
 interface VaultNavegacionDelegate {
@@ -33,9 +40,34 @@ interface VaultNavegacionDelegate {
                     val idHijo = when (pantalla) {
                         is Pantalla.Generador -> "04-HER-GEN"
                         is Pantalla.AjustesAutocompletado -> "04-HER-PSK"
-                        is Pantalla.Autenticador -> "04-HER-2FA"
+                        is Pantalla.Autenticador -> "03-LST-2FA"
+                        is Pantalla.Passkeys -> "03-LST-PAS"
                         is Pantalla.CamaraQr -> "04-HER-QRS"
                         is Pantalla.AuditoriaAccesibilidad -> "01-SEG-ACC"
+                        is Pantalla.ColoresDatos -> pantalla.seccionId ?: "02-APA-COL"
+                        is Pantalla.EntradasTipo -> when (pantalla.tipo) {
+                            TipoEntrada.LOGIN -> "03-LST-LOG"
+                            TipoEntrada.NOTA -> "03-LST-NOT"
+                            TipoEntrada.TARJETA -> "03-LST-TAR"
+                            TipoEntrada.CONTACTO -> "03-LST-CON"
+                            TipoEntrada.WIFI -> "03-LST-WIF"
+                            TipoEntrada.CUENTA_BANCARIA -> "03-LST-BNC"
+                            TipoEntrada.IDENTIDAD -> "03-LST-IDN"
+                            TipoEntrada.SERVIDOR -> "03-LST-SRV"
+                            TipoEntrada.WALLET -> "03-LST-WAL"
+                            TipoEntrada.PASSKEY -> "03-LST-PAS"
+                        }
+                        is Pantalla.Identidades -> pantalla.seccionId ?: "03-LST-IDE"
+                        is Pantalla.SaludBoveda -> pantalla.seccionId ?: "03-LST-SLD"
+                        is Pantalla.Duplicados -> pantalla.seccionId ?: "03-LST-DUP"
+                        is Pantalla.Papelera -> pantalla.seccionId ?: "03-LST-PAP"
+                        is Pantalla.Categorias -> pantalla.seccionId ?: "03-LST-CAT"
+                        is Pantalla.Registro -> pantalla.seccionId ?: "06-SIS-LOG"
+                        is Pantalla.AcercaDe -> pantalla.seccionId ?: "06-SIS-DGN"
+                        is Pantalla.AcercaDeApp -> pantalla.seccionId ?: "06-SIS-APP"
+                        is Pantalla.Licencia -> pantalla.seccionId ?: "06-SIS-LIC"
+                        is Pantalla.DiccionarioPalabras -> pantalla.seccionId ?: "04-HER-DIC"
+                        is Pantalla.ContrasenasComunes -> pantalla.seccionId ?: "01-SEG-COM"
                         else -> null
                     }
                     if (idHijo != null) {
@@ -82,6 +114,7 @@ interface VaultNavegacionDelegate {
             limpio.startsWith("01-SEG-BIO-CLP") -> Pantalla.Portapapeles(limpio)
             limpio.startsWith("01-SEG-BIO-AUD") -> Pantalla.AuditoriaSeguridad(limpio)
             limpio.startsWith("01-SEG-ACC") -> Pantalla.AuditoriaAccesibilidad(limpio)
+            limpio.startsWith("01-SEG-COM") -> Pantalla.ContrasenasComunes(limpio)
             limpio.startsWith("01-SEG-BIO") || limpio == "01" || limpio.startsWith("01.1") || limpio.startsWith("01.0") -> Pantalla.Seguridad(limpio)
             limpio.startsWith("01-SEG-SEN") || limpio.startsWith("01.3") -> Pantalla.AjustesSenuelo(limpio)
             limpio.startsWith("01-SEG-DES-INT") -> Pantalla.AutodestruccionIntentos(limpio)
@@ -91,7 +124,7 @@ interface VaultNavegacionDelegate {
             limpio.startsWith("02-APA-THM-PAL") -> Pantalla.TemaPaletas(limpio)
             limpio.startsWith("02-APA-THM-ANI") -> Pantalla.AnimacionDesbloqueo(limpio)
             limpio.startsWith("02-APA-THM-CAL") || limpio.startsWith("03.2.G2") -> Pantalla.CalibracionAnimacion(limpio)
-            limpio.startsWith("02-APA-THM-DAT") || limpio.startsWith("02-APA-THM-G04") || limpio.startsWith("03.2.1") -> Pantalla.ColoresDatos(limpio)
+            limpio.startsWith("02-APA-COL") || limpio.startsWith("02-APA-THM-DAT") || limpio.startsWith("02-APA-THM-G04") || limpio.startsWith("03.2.1") -> Pantalla.ColoresDatos(limpio)
             limpio.startsWith("02-APA-THM") || limpio.startsWith("02.1") || limpio.startsWith("09.2") -> Pantalla.Tema(limpio)
             limpio.startsWith("02-APA-MNL") -> Pantalla.PersonalizarMenuLateral(limpio)
 
@@ -108,17 +141,33 @@ interface VaultNavegacionDelegate {
             limpio.startsWith("02-APA-TYP-ESP") -> Pantalla.TipografiaEspaciado(limpio)
             limpio.startsWith("02-APA-TYP") || limpio.startsWith("02.3") -> Pantalla.Tipografia(limpio)
 
-            limpio.startsWith("03-LST-DES-EST") -> Pantalla.OrganizacionEstructura(limpio)
-            limpio.startsWith("03-LST-DES-JER") -> Pantalla.OrganizacionJerarquia(limpio)
-            limpio.startsWith("03-LST-DES-IND") -> Pantalla.OrganizacionIndicadores(limpio)
-            limpio.startsWith("03-LST-DES") || limpio.startsWith("03.1") || limpio.startsWith("09.6") -> Pantalla.OrganizacionLista(limpio)
-            limpio.startsWith("03-LST-AZX-OLA") -> Pantalla.IndiceOla(limpio)
-            limpio.startsWith("03-LST-AZX-CRE") -> Pantalla.IndiceCresta(limpio)
-            limpio.startsWith("03-LST-AZX-HAP") -> Pantalla.IndiceHaptica(limpio)
-            limpio.startsWith("03-LST-AZX-RES") -> Pantalla.IndiceResaltado(limpio)
-            limpio.startsWith("03-LST-AZX") || limpio.startsWith("03.2") || limpio.startsWith("09.5") -> Pantalla.AjustesIndice(limpio)
-            limpio.startsWith("03-LST-FMT") || limpio.startsWith("03.3") || limpio.startsWith("10") -> Pantalla.FormatosCampos(limpio)
-            limpio.startsWith("03-LST-PLT") -> Pantalla.PlantillasCampos(limpio)
+            limpio.startsWith("02-APA-DES-EST") || limpio.startsWith("03-LST-DES-EST") -> Pantalla.OrganizacionEstructura(limpio)
+            limpio.startsWith("02-APA-DES-JER") || limpio.startsWith("03-LST-DES-JER") -> Pantalla.OrganizacionJerarquia(limpio)
+            limpio.startsWith("02-APA-DES-IND") || limpio.startsWith("03-LST-DES-IND") -> Pantalla.OrganizacionIndicadores(limpio)
+            limpio.startsWith("02-APA-DES") || limpio.startsWith("03-LST-DES") || limpio.startsWith("03.1") || limpio.startsWith("09.6") -> Pantalla.OrganizacionLista(limpio)
+            limpio.startsWith("02-APA-AZX-OLA") || limpio.startsWith("03-LST-AZX-OLA") -> Pantalla.IndiceOla(limpio)
+            limpio.startsWith("02-APA-AZX-CRE") || limpio.startsWith("03-LST-AZX-CRE") -> Pantalla.IndiceCresta(limpio)
+            limpio.startsWith("02-APA-AZX-HAP") || limpio.startsWith("03-LST-AZX-HAP") -> Pantalla.IndiceHaptica(limpio)
+            limpio.startsWith("02-APA-AZX-RES") || limpio.startsWith("03-LST-AZX-RES") -> Pantalla.IndiceResaltado(limpio)
+            limpio.startsWith("02-APA-AZX") || limpio.startsWith("03-LST-AZX") || limpio.startsWith("03.2") || limpio.startsWith("09.5") -> Pantalla.AjustesIndice(limpio)
+            limpio.startsWith("02-APA-FMT") || limpio.startsWith("03-LST-FMT") || limpio.startsWith("03.3") || limpio.startsWith("10") -> Pantalla.FormatosCampos(limpio)
+            limpio.startsWith("02-APA-PLT") || limpio.startsWith("03-LST-PLT") -> Pantalla.PlantillasCampos(limpio)
+            limpio.startsWith("03-LST-LOG") -> Pantalla.EntradasTipo(TipoEntrada.LOGIN)
+            limpio.startsWith("03-LST-NOT") -> Pantalla.EntradasTipo(TipoEntrada.NOTA)
+            limpio.startsWith("03-LST-TAR") -> Pantalla.EntradasTipo(TipoEntrada.TARJETA)
+            limpio.startsWith("03-LST-CON") -> Pantalla.EntradasTipo(TipoEntrada.CONTACTO)
+            limpio.startsWith("03-LST-WIF") -> Pantalla.EntradasTipo(TipoEntrada.WIFI)
+            limpio.startsWith("03-LST-BNC") -> Pantalla.EntradasTipo(TipoEntrada.CUENTA_BANCARIA)
+            limpio.startsWith("03-LST-IDN") -> Pantalla.EntradasTipo(TipoEntrada.IDENTIDAD)
+            limpio.startsWith("03-LST-SRV") -> Pantalla.EntradasTipo(TipoEntrada.SERVIDOR)
+            limpio.startsWith("03-LST-WAL") -> Pantalla.EntradasTipo(TipoEntrada.WALLET)
+            limpio.startsWith("03-LST-IDE") -> Pantalla.Identidades(limpio)
+            limpio.startsWith("03-LST-SLD") -> Pantalla.SaludBoveda(limpio)
+            limpio.startsWith("03-LST-DUP") -> Pantalla.Duplicados(limpio)
+            limpio.startsWith("03-LST-PAP") -> Pantalla.Papelera(limpio)
+            limpio.startsWith("03-LST-CAT") -> Pantalla.Categorias(limpio)
+            limpio.startsWith("03-LST-PAS") || limpio.startsWith("04-HER-PAS") -> Pantalla.Passkeys(limpio)
+            limpio.startsWith("03-LST-2FA") || limpio.startsWith("04-HER-2FA") -> Pantalla.Autenticador
 
             limpio.startsWith("04-HER-AUT") || limpio.startsWith("04.1") || limpio == "07" || limpio.startsWith("07.0") -> Pantalla.AjustesAutenticador(limpio)
             limpio.startsWith("04-HER-HST-GEN") -> Pantalla.HistorialClavesGeneradas(limpio)
@@ -132,6 +181,7 @@ interface VaultNavegacionDelegate {
             limpio.startsWith("04-HER-MSK-CFG") -> Pantalla.TileConfiguracion(limpio)
             limpio.startsWith("04-HER-MSK") || limpio.startsWith("04.5") -> Pantalla.TileRapido(limpio)
             limpio.startsWith("04-HER-PSK") || limpio.startsWith("04.6") -> Pantalla.AjustesAutocompletado(limpio)
+            limpio.startsWith("04-HER-DIC") -> Pantalla.DiccionarioPalabras(seccionId = limpio)
 
             limpio.startsWith("05-COP-MAN-FIL") -> Pantalla.CopiaManual(limpio)
             limpio.startsWith("05-COP-AUT-FIL") || limpio.startsWith("05-COP-ATM") || limpio.startsWith("05.1.4") -> Pantalla.CopiaAutomaticaLocalSub(limpio)
@@ -149,6 +199,8 @@ interface VaultNavegacionDelegate {
             limpio.startsWith("06-SIS-AVZ-COL") || limpio.startsWith("06.1.2b") || limpio.contains("COL-IDS") -> Pantalla.ColoresIdentificadores(limpio)
             limpio.startsWith("06-SIS-AVZ") || limpio.startsWith("06.1") || limpio.startsWith("11.1") || limpio == "11" -> Pantalla.Avanzada(limpio)
             limpio.startsWith("06-SIS-LOG") || limpio.startsWith("06.2") -> Pantalla.Registro(limpio)
+            limpio.startsWith("06-SIS-APP") -> Pantalla.AcercaDeApp(limpio)
+            limpio.startsWith("06-SIS-LIC") -> Pantalla.Licencia(limpio)
             limpio.startsWith("06-SIS-DGN") || limpio.startsWith("06.3") || limpio.startsWith("06.4") || limpio.startsWith("11.3.1") -> Pantalla.AcercaDe(limpio)
             else -> Pantalla.Ajustes(limpio)
         }
@@ -202,6 +254,9 @@ interface VaultNavegacionDelegate {
             }
             anterior != null && anterior != pantallaInterna.value -> {
                 anterior
+            }
+            navegoDesdeMenuLateral -> {
+                Pantalla.Lista
             }
             padre != null -> {
                 padre

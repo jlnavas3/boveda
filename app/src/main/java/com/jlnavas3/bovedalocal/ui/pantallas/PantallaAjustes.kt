@@ -1,3 +1,9 @@
+/*
+ * Copyright (C) 2026 Jose Luis Navas
+ * Licensed under the GNU General Public License v3.0 (GPLv3).
+ * See LICENSE file in the project root for full license information.
+ */
+
 package com.jlnavas3.bovedalocal.ui.pantallas
 
 import androidx.compose.foundation.background
@@ -43,6 +49,7 @@ fun PantallaAjustes(
     seccionDestino: String? = null
 ) {
     val ajustes by vm.ajustes.collectAsStateWithLifecycle()
+    val estado by vm.estado.collectAsStateWithLifecycle()
     val scrollState = rememberScrollState(initial = vm.ultimoScrollAjustes)
     LaunchedEffect(Unit) {
         if (vm.ultimoScrollAjustes == 0 && scrollState.value != 0) {
@@ -57,7 +64,7 @@ fun PantallaAjustes(
     var dialogoProveedorPasskeys by remember { mutableStateOf(false) }
     var dialogoCambioMaestra by remember { mutableStateOf(false) }
 
-    val todosLosElementos = remember(ajustes) {
+    val todosLosElementos = remember(ajustes, estado) {
         crearCatalogoAjustesHub(
             ajustes = ajustes,
             vm = vm,

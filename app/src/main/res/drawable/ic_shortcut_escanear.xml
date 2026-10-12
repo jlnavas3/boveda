@@ -1,9 +1,44 @@
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:width="24dp"
-    android:height="24dp"
-    android:viewportWidth="24"
-    android:viewportHeight="24">
+    android:width="48dp"
+    android:height="48dp"
+    android:viewportWidth="48"
+    android:viewportHeight="48">
+
+    <!-- Círculo blanco de fondo con sutil borde perimetral -->
     <path
         android:fillColor="#FFFFFFFF"
-        android:pathData="M9.5,6.5v3h-3v-3h3M11,5H5v6h6V5zM9.5,14.5v3h-3v-3h3M11,13H5v6h6v-6zM17.5,6.5v3h-3v-3h3M19,5h-6v6h6V5zM13,13h1.5v1.5H13V13zM14.5,14.5H16V16h-1.5V14.5zM16,13h1.5v1.5H16V13zM13,16h1.5v1.5H13V16zM14.5,17.5H16V19h-1.5V17.5zM16,16h1.5v1.5H16V16zM17.5,14.5H19V16h-1.5V14.5zM17.5,17.5H19V19h-1.5V17.5zM22,7h-2V4h-3V2h5V7zM22,22v-5h-2v3h-3v2H22zM2,22h5v-2H4v-3H2V22zM2,2v5h2V4h3V2H2z"/>
+        android:strokeColor="#1F000000"
+        android:strokeWidth="1"
+        android:pathData="M24,24m-21.5,0a21.5,21.5 0,1,1 43,0a21.5,21.5 0,1,1 -43,0" />
+
+    <group
+        android:pivotX="12"
+        android:pivotY="12"
+        android:scaleX="1"
+        android:scaleY="1"
+        android:translateX="12"
+        android:translateY="12">
+
+        <!-- Escáner QR Outlined -->
+        <path
+            android:fillColor="#00000000"
+            android:strokeColor="#212121"
+            android:strokeWidth="1"
+            android:strokeLineCap="round"
+            android:strokeLineJoin="round"
+            android:pathData="
+                M 6,2 H 2 V 6
+                M 18,2 H 22 V 6
+                M 22,18 V 22 H 18
+                M 2,18 V 22 H 6
+                M 6,6 H 10 V 10 H 6 Z
+                M 14,6 H 18 V 10 H 14 Z
+                M 6,14 H 10 V 18 H 6 Z
+                M 14,14 h 0.01
+                M 18,14 h 0.01
+                M 14,18 h 0.01
+                M 18,18 h 0.01
+                M 16,16 h 0.01" />
+
+    </group>
 </vector>

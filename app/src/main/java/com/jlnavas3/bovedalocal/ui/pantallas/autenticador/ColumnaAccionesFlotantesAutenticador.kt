@@ -1,3 +1,9 @@
+/*
+ * Copyright (C) 2026 Jose Luis Navas
+ * Licensed under the GNU General Public License v3.0 (GPLv3).
+ * See LICENSE file in the project root for full license information.
+ */
+
 package com.jlnavas3.bovedalocal.ui.pantallas.autenticador
 
 import androidx.compose.foundation.border
@@ -11,7 +17,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.QrCodeScanner
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.SmallFloatingActionButton
+import com.jlnavas3.bovedalocal.ui.componentes.BotonFlotanteSecundario
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -45,26 +51,14 @@ fun ColumnaAccionesFlotantesAutenticador(
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         // FAB superior: Ingresar clave manual (+)
-        SmallFloatingActionButton(
-            onClick = {
-                haptica.toque()
-                alIngresarManual()
-            },
+        BotonFlotanteSecundario(
+            onClick = alIngresarManual,
+            icono = Icons.Filled.Add,
+            descripcion = "Escribir clave manualmente",
             containerColor = ColorTarjetaAjustes,
             contentColor = Color2FA,
-            shape = formaFab,
-            modifier = Modifier.then(
-                if (GrosorBorde > 0.dp && EstiloBorde != "ninguno") {
-                    Modifier.border(GrosorBorde, ColorBordeActual, formaFab)
-                } else Modifier
-            )
-        ) {
-            Icon(
-                imageVector = Icons.Filled.Add,
-                contentDescription = "Escribir clave manualmente",
-                modifier = Modifier.size(22.dp)
-            )
-        }
+            colorBorde = ColorBordeActual
+        )
 
         // FAB inferior: Escanear código QR
         FloatingActionButton(

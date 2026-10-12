@@ -1,3 +1,9 @@
+/*
+ * Copyright (C) 2026 Jose Luis Navas
+ * Licensed under the GNU General Public License v3.0 (GPLv3).
+ * See LICENSE file in the project root for full license information.
+ */
+
 package com.jlnavas3.bovedalocal.data
 
 import java.util.UUID
@@ -30,8 +36,8 @@ object PresetsCampos {
         campo("Titular", TipoCampo.TEXTO),
         campo("Número de tarjeta", TipoCampo.TEXTO, sensible = true, formato = "TARJETA_CREDITO"),
         campo("Vencimiento", TipoCampo.FECHA, formato = "MM/AA"),
-        campo("CVV", TipoCampo.NUMERO, sensible = true),
-        campo("PIN de tarjeta", TipoCampo.PIN, sensible = true)
+        campo("CVV", TipoCampo.NUMERO, sensible = true, formato = "CVV"),
+        campo("PIN de tarjeta", TipoCampo.PIN, sensible = true, formato = "PIN")
     )
 
     fun wifi(): List<CampoPersonalizado> = listOf(
@@ -44,30 +50,30 @@ object PresetsCampos {
         campo("Banco / Entidad", TipoCampo.TEXTO),
         campo("Titular", TipoCampo.TEXTO),
         campo("Tipo de cuenta", TipoCampo.TEXTO),
-        campo("Número de cuenta / IBAN", TipoCampo.TEXTO, sensible = true),
-        campo("CBU / CLABE / SWIFT", TipoCampo.TEXTO)
+        campo("Número de cuenta / IBAN", TipoCampo.TEXTO, sensible = true, formato = "IBAN"),
+        campo("CBU / CLABE / SWIFT", TipoCampo.TEXTO, formato = "SWIFT_BIC")
     )
 
     fun identidad(): List<CampoPersonalizado> = listOf(
         campo("Tipo de documento (DNI/Pasaporte)", TipoCampo.TEXTO),
-        campo("Número de documento", TipoCampo.TEXTO, sensible = true),
+        campo("Número de documento", TipoCampo.TEXTO, sensible = true, formato = "DOCUMENTO"),
         campo("Fecha de expedición", TipoCampo.FECHA),
         campo("Fecha de caducidad", TipoCampo.FECHA),
         campo("País emisor", TipoCampo.TEXTO)
     )
 
     fun servidorSsh(): List<CampoPersonalizado> = listOf(
-        campo("Host o IP", TipoCampo.TEXTO),
-        campo("Puerto", TipoCampo.NUMERO),
+        campo("Host o IP", TipoCampo.TEXTO, formato = "HOST_IP"),
+        campo("Puerto", TipoCampo.NUMERO, formato = "PUERTO"),
         campo("Usuario SSH", TipoCampo.TEXTO),
-        campo("Clave privada / Contraseña", TipoCampo.NOTAS, sensible = true)
+        campo("Clave privada / Contraseña", TipoCampo.NOTAS, sensible = true, formato = "CLAVE_PRIVADA")
     )
 
     fun criptoWallet(): List<CampoPersonalizado> = listOf(
         campo("Red / Blockchain", TipoCampo.TEXTO),
-        campo("Dirección pública", TipoCampo.TEXTO),
-        campo("Frase semilla (Seed phrase)", TipoCampo.NOTAS, sensible = true),
-        campo("Clave privada", TipoCampo.NOTAS, sensible = true)
+        campo("Dirección pública", TipoCampo.TEXTO, formato = "DIRECCION_PUBLICA"),
+        campo("Frase semilla (Seed phrase)", TipoCampo.NOTAS, sensible = true, formato = "FRASE_SEMILLA"),
+        campo("Clave privada", TipoCampo.NOTAS, sensible = true, formato = "CLAVE_PRIVADA")
     )
 
     fun paraTipoEntrada(tipo: TipoEntrada): List<CampoPersonalizado> = when (tipo) {

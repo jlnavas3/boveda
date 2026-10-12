@@ -1,3 +1,9 @@
+/*
+ * Copyright (C) 2026 Jose Luis Navas
+ * Licensed under the GNU General Public License v3.0 (GPLv3).
+ * See LICENSE file in the project root for full license information.
+ */
+
 package com.jlnavas3.bovedalocal.ui
 
 import com.jlnavas3.bovedalocal.data.AjustesDefaults
@@ -11,7 +17,14 @@ interface VaultAjustesTileTotpManualDelegate {
 
     fun ajustarTileModo(modo: String) = repositorio.ajustes.actualizar { it.copy(tileModo = modo) }
 
-    fun ajustarTileLongitud(longitud: Int) = repositorio.ajustes.actualizar { it.copy(tileLongitud = longitud) }
+    fun ajustarTileLongitud(longitud: Int) = repositorio.ajustes.actualizar {
+        it.copy(
+            tileLongitud = longitud.coerceIn(
+                AjustesDefaults.Tile.LONGITUD_MIN,
+                AjustesDefaults.Tile.LONGITUD_MAX
+            )
+        )
+    }
 
     fun ajustarTilePatron(patron: String) = repositorio.ajustes.actualizar { it.copy(tilePatron = patron) }
 
@@ -29,7 +42,14 @@ interface VaultAjustesTileTotpManualDelegate {
     }
 
     fun ajustarTileDicewarePalabras(palabras: Int) {
-        repositorio.ajustes.actualizar { it.copy(tileDicewarePalabras = palabras) }
+        repositorio.ajustes.actualizar {
+            it.copy(
+                tileDicewarePalabras = palabras.coerceIn(
+                    AjustesDefaults.Tile.DICEWARE_PALABRAS_MIN,
+                    AjustesDefaults.Tile.DICEWARE_PALABRAS_MAX
+                )
+            )
+        }
     }
 
     fun ajustarTileDicewareSeparador(separador: String) {

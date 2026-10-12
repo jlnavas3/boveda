@@ -1,6 +1,13 @@
+/*
+ * Copyright (C) 2026 Jose Luis Navas
+ * Licensed under the GNU General Public License v3.0 (GPLv3).
+ * See LICENSE file in the project root for full license information.
+ */
+
 package com.jlnavas3.bovedalocal.ui.pantallas.ajustes
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.MenuBook
 import androidx.compose.material.icons.filled.CameraAlt
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Key
@@ -77,5 +84,15 @@ fun crearElementosHerramientasAjustes(
         grupo = "Herramientas",
         palabrasClave = "tile mosaico barra estado cortina notificaciones rapido",
         alPulsar = { vm.ir(Pantalla.TileRapido()) }
+    ),
+    ElementoMenuAjustes(
+        titulo = "Diccionario Diceware",
+        subtitulo = "Palabras personalizadas, favoritas y listas EFF",
+        icono = Icons.AutoMirrored.Filled.MenuBook,
+        colorIcono = Color(0xFF10B981),
+        idEtiqueta = "04-HER-DIC",
+        grupo = "Herramientas",
+        palabrasClave = "diccionario diceware palabras frase generador espanol ingles favoritas excluidas anadidas",
+        alPulsar = { vm.ir(Pantalla.DiccionarioPalabras()) }
     )
 )

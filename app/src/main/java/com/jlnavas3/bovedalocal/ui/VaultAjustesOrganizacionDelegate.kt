@@ -1,3 +1,9 @@
+/*
+ * Copyright (C) 2026 Jose Luis Navas
+ * Licensed under the GNU General Public License v3.0 (GPLv3).
+ * See LICENSE file in the project root for full license information.
+ */
+
 package com.jlnavas3.bovedalocal.ui
 
 import com.jlnavas3.bovedalocal.data.AjustesDefaults
@@ -109,14 +115,27 @@ interface VaultAjustesOrganizacionDelegate {
     fun restablecerTamanoCirculoIndice() = ajustarIndiceTamanoCirculoDp(AjustesDefaults.Indice.TAMANO_CIRCULO_DP)
     fun restablecerOffsetCirculoIndice() = ajustarIndiceOffsetCirculoDp(AjustesDefaults.Indice.OFFSET_CIRCULO_DP)
 
-    // --- Formatos Regionales ---
+    // --- Formatos Regionales y Financieros ---
     fun restablecerFormatos() {
         repositorio.ajustes.actualizar {
             it.copy(
                 formatoFecha = AjustesDefaults.ListaFormatos.FORMATO_FECHA,
                 formatoHora = AjustesDefaults.ListaFormatos.FORMATO_HORA,
                 formatoTelefono = AjustesDefaults.ListaFormatos.FORMATO_TELEFONO,
-                separadorDecimal = AjustesDefaults.ListaFormatos.SEPARADOR_DECIMAL
+                separadorDecimal = AjustesDefaults.ListaFormatos.SEPARADOR_DECIMAL,
+                formatoTarjeta = AjustesDefaults.ListaFormatos.FORMATO_TARJETA,
+                formatoExpiracionTarjeta = AjustesDefaults.ListaFormatos.FORMATO_EXPIRACION_TARJETA,
+                formatoIban = AjustesDefaults.ListaFormatos.FORMATO_IBAN
+            )
+        }
+    }
+
+    fun restablecerFormatosFinancieros() {
+        repositorio.ajustes.actualizar {
+            it.copy(
+                formatoTarjeta = AjustesDefaults.ListaFormatos.FORMATO_TARJETA,
+                formatoExpiracionTarjeta = AjustesDefaults.ListaFormatos.FORMATO_EXPIRACION_TARJETA,
+                formatoIban = AjustesDefaults.ListaFormatos.FORMATO_IBAN
             )
         }
     }
@@ -139,6 +158,21 @@ interface VaultAjustesOrganizacionDelegate {
     fun ajustarSeparadorDecimal(separador: String) {
         repositorio.ajustes.actualizar { it.copy(separadorDecimal = separador) }
         Diagnostico.apuntar("formatos", "Separador decimal establecido en $separador")
+    }
+
+    fun ajustarFormatoTarjeta(formato: String) {
+        repositorio.ajustes.actualizar { it.copy(formatoTarjeta = formato) }
+        Diagnostico.apuntar("formatos", "Formato de tarjeta establecido en $formato")
+    }
+
+    fun ajustarFormatoExpiracionTarjeta(formato: String) {
+        repositorio.ajustes.actualizar { it.copy(formatoExpiracionTarjeta = formato) }
+        Diagnostico.apuntar("formatos", "Formato de expiración establecido en $formato")
+    }
+
+    fun ajustarFormatoIban(formato: String) {
+        repositorio.ajustes.actualizar { it.copy(formatoIban = formato) }
+        Diagnostico.apuntar("formatos", "Formato IBAN establecido en $formato")
     }
 
     // --- Plantillas de Campos Personalizadas ---

@@ -1,3 +1,9 @@
+/*
+ * Copyright (C) 2026 Jose Luis Navas
+ * Licensed under the GNU General Public License v3.0 (GPLv3).
+ * See LICENSE file in the project root for full license information.
+ */
+
 package com.jlnavas3.bovedalocal.ui.componentes
 
 import androidx.compose.ui.geometry.Offset
@@ -10,6 +16,7 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.rotate
+import androidx.compose.ui.graphics.lerp
 import kotlin.math.cos
 import kotlin.math.sin
 
@@ -55,7 +62,8 @@ fun DrawScope.dibujarRuedaDentada(
     if (!esFondo && config.sombraIntensidad > 0f) {
         val distSombra = 6.5f * escala
         val centroSombra = Offset(centro.x + distSombra, centro.y + distSombra * 1.25f)
-        val colorSombra = Color(0xFF000000).copy(alpha = alpha * 0.70f * config.sombraIntensidad)
+        val alphaSombraBase = if (config.esOscuro) 0.70f else 0.28f
+        val colorSombra = Color(0xFF000000).copy(alpha = alpha * alphaSombraBase * config.sombraIntensidad)
         val ventanasSombra = if (nRadiosEfectivos > 0 && config.grosorRadios > 0f) {
             crearPathsVentanas(
                 centro = centroSombra,
@@ -93,13 +101,13 @@ fun DrawScope.dibujarRuedaDentada(
         }
     }
 
-    // Colores 100% opacos
-    val factorLuzFondo = 0.50f
-    val colorBrilloActual = if (esFondo) oscurecerColor(config.colorPrincipal, 0.60f) else config.colorBrillo
-    val colorPrincipalActual = if (esFondo) oscurecerColor(config.colorPrincipal, factorLuzFondo) else config.colorPrincipal
-    val colorSombraMedioActual = if (esFondo) oscurecerColor(config.colorSombraMedio, factorLuzFondo) else config.colorSombraMedio
-    val colorSombraOscuroActual = if (esFondo) oscurecerColor(config.colorSombraOscuro, factorLuzFondo) else config.colorSombraOscuro
-    val colorBiselActual = if (esFondo) oscurecerColor(config.colorSombraMedio, factorLuzFondo) else config.colorBisel
+    // Colores: en la capa de fondo (esFondo), los engranajes se funden con la Capa 0 (fondo)
+    val factorMezclaFondo = 0.72f
+    val colorBrilloActual = if (esFondo) lerp(config.colorPrincipal, config.colorFondo, factorMezclaFondo * 0.85f) else config.colorBrillo
+    val colorPrincipalActual = if (esFondo) lerp(config.colorPrincipal, config.colorFondo, factorMezclaFondo) else config.colorPrincipal
+    val colorSombraMedioActual = if (esFondo) lerp(config.colorSombraMedio, config.colorFondo, factorMezclaFondo) else config.colorSombraMedio
+    val colorSombraOscuroActual = if (esFondo) lerp(config.colorSombraOscuro, config.colorFondo, factorMezclaFondo) else config.colorSombraOscuro
+    val colorBiselActual = if (esFondo) lerp(config.colorBisel, config.colorFondo, factorMezclaFondo) else config.colorBisel
 
     // 2. CORONA EXTERIOR, DIENTES, RADIOS Y CUERPO MONOLÍTICO
     rotate(degrees = rotacionDeg, pivot = centro) {
@@ -160,7 +168,7 @@ fun DrawScope.dibujarRuedaDentada(
         val colorInteriorVal = config.colorInterior
         val esInteriorTransparente = colorInteriorVal.alpha <= 0.05f || colorInteriorVal == Color(0xFF19181C)
         if (!esInteriorTransparente && ventanasCuerpo.isNotEmpty()) {
-            val colorIntFinal = (if (esFondo) oscurecerColor(colorInteriorVal, factorLuzFondo) else colorInteriorVal)
+            val colorIntFinal = (if (esFondo) lerp(colorInteriorVal, config.colorFondo, factorMezclaFondo) else colorInteriorVal)
                 .copy(alpha = colorInteriorVal.alpha * alpha)
             for (v in ventanasCuerpo) {
                 drawPath(path = v, color = colorIntFinal)
@@ -190,7 +198,7 @@ fun DrawScope.dibujarRuedaDentada(
         }
 
         // Eje central con muesca metálica
-        val colorEjeActual = if (esFondo) oscurecerColor(config.colorEje, factorLuzFondo) else config.colorEje
+        val colorEjeActual = if (esFondo) lerp(config.colorEje, config.colorFondo, factorMezclaFondo) else config.colorEje
         val rEje = (rHub * 0.42f).coerceAtLeast(2f * escala)
         drawCircle(
             color = colorEjeActual.copy(alpha = colorEjeActual.alpha * alpha),

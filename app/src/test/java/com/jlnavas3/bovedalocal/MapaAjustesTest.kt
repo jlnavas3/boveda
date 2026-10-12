@@ -1,3 +1,9 @@
+/*
+ * Copyright (C) 2026 Jose Luis Navas
+ * Licensed under the GNU General Public License v3.0 (GPLv3).
+ * See LICENSE file in the project root for full license information.
+ */
+
 package com.jlnavas3.bovedalocal
 
 import com.jlnavas3.bovedalocal.ui.MapeoJerarquiaPantallas
@@ -78,15 +84,28 @@ class MapaAjustesTest {
     }
 
     @Test
-    fun `asistente de titulos es hijo de 03-LST-DES y retorna a OrganizacionLista`() {
-        val nodoTitulos = MapaAjustes.buscarPorId("03-LST-DES-TIT")
-        assertNotNull("Debe existir el nodo 03-LST-DES-TIT", nodoTitulos)
-        assertEquals("03-LST-DES", nodoTitulos?.padreId)
+    fun `asistente de titulos es hijo de 02-APA-DES y retorna a OrganizacionLista`() {
+        val nodoTitulos = MapaAjustes.buscarPorId("02-APA-DES-TIT")
+        assertNotNull("Debe existir el nodo 02-APA-DES-TIT", nodoTitulos)
+        assertEquals("02-APA-DES", nodoTitulos?.padreId)
 
-        val hijosDiseno = MapaAjustes.obtenerHijosDe("03-LST-DES")
-        assertTrue("03-LST-DES-TIT debe ser hijo de 03-LST-DES", hijosDiseno.any { it.id == "03-LST-DES-TIT" })
+        val hijosDiseno = MapaAjustes.obtenerHijosDe("02-APA-DES")
+        assertTrue("02-APA-DES-TIT debe ser hijo de 02-APA-DES", hijosDiseno.any { it.id == "02-APA-DES-TIT" })
 
         val padrePantalla = MapeoJerarquiaPantallas.resolverPadre(Pantalla.NormalizadorTitulos())
-        assertEquals(Pantalla.OrganizacionLista("03-LST-DES-TIT"), padrePantalla)
+        assertEquals(Pantalla.OrganizacionLista("02-APA-DES-TIT"), padrePantalla)
+    }
+
+    @Test
+    fun `reorganizacion de grupos en MapaAjustes ubica nodos esteticos en Apariencia y credenciales en Lista de cuentas`() {
+        val hijosApariencia = MapaAjustes.obtenerHijosDe("02-APA").map { it.id }
+        assertTrue("02-APA-DES debe estar en Apariencia", hijosApariencia.contains("02-APA-DES"))
+        assertTrue("02-APA-AZX debe estar en Apariencia", hijosApariencia.contains("02-APA-AZX"))
+        assertTrue("02-APA-FMT debe estar en Apariencia", hijosApariencia.contains("02-APA-FMT"))
+        assertTrue("02-APA-PLT debe estar en Apariencia", hijosApariencia.contains("02-APA-PLT"))
+
+        val hijosLista = MapaAjustes.obtenerHijosDe("03-LST").map { it.id }
+        assertTrue("03-LST-2FA debe estar en Lista de cuentas", hijosLista.contains("03-LST-2FA"))
+        assertTrue("03-LST-PAS debe estar en Lista de cuentas", hijosLista.contains("03-LST-PAS"))
     }
 }

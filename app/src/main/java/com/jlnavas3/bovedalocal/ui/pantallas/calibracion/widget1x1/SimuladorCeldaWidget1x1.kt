@@ -1,6 +1,12 @@
+/*
+ * Copyright (C) 2026 Jose Luis Navas
+ * Licensed under the GNU General Public License v3.0 (GPLv3).
+ * See LICENSE file in the project root for full license information.
+ */
+
 package com.jlnavas3.bovedalocal.ui.pantallas.calibracion.widget1x1
 
-import android.widget.Toast
+import com.jlnavas3.bovedalocal.ui.componentes.LocalAvisador
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -48,6 +54,7 @@ fun SimuladorCeldaWidget1x1(
     }
 
     val colorBordeCelda = ColorSeparadorAjustes.copy(alpha = 0.85f)
+    val avisador = LocalAvisador.current
 
     Box(
         modifier = modifier
@@ -132,7 +139,7 @@ fun SimuladorCeldaWidget1x1(
                                 )
                             )
                         }
-                        Toast.makeText(contexto, "Clave: $clave", Toast.LENGTH_SHORT).show()
+                        avisador("Clave: $clave", "Widget 1x1")
                     },
                 contentAlignment = Alignment.Center
             ) {

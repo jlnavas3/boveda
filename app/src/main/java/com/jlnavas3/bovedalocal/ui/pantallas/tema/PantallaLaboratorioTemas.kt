@@ -1,6 +1,12 @@
+/*
+ * Copyright (C) 2026 Jose Luis Navas
+ * Licensed under the GNU General Public License v3.0 (GPLv3).
+ * See LICENSE file in the project root for full license information.
+ */
+
 package com.jlnavas3.bovedalocal.ui.pantallas.tema
 
-import android.widget.Toast
+import com.jlnavas3.bovedalocal.ui.componentes.LocalAvisador
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -44,6 +50,7 @@ fun PantallaLaboratorioTemas(
     val contexto = LocalContext.current
     val haptica = remember { Haptica(contexto) }
     val portapapeles = LocalClipboardManager.current
+    val avisador = LocalAvisador.current
     val scrollState = rememberScrollState()
 
     val estadoLab = remember { EstadoLaboratorioTemas(contexto) }
@@ -141,12 +148,12 @@ fun PantallaLaboratorioTemas(
             )
             modificadoOscuro = false
             modificadoClaro = false
-            Toast.makeText(contexto, "¡Tema guardado con éxito!", Toast.LENGTH_SHORT).show()
+            avisador("¡Tema guardado con éxito!", "Tema")
         }
 
         fun solicitarGuardar() {
             if (!modificadoOscuro && !modificadoClaro) {
-                Toast.makeText(contexto, "No hay cambios pendientes por guardar", Toast.LENGTH_SHORT).show()
+                avisador("No hay cambios pendientes por guardar", "Tema")
                 return
             }
             if (modificadoOscuro && modificadoClaro) {
@@ -183,7 +190,8 @@ fun PantallaLaboratorioTemas(
                 lumTextoPrincipal = lumTextoPrincipal,
                 tonoEfectivoTextoPrincipal = tonoEfectivoTextoPrincipal,
                 lumTextoSecundario = lumTextoSecundario,
-                tonoEfectivoTextoSecundario = tonoEfectivoTextoSecundario
+                tonoEfectivoTextoSecundario = tonoEfectivoTextoSecundario,
+                alAvisar = avisador
             )
         }
 
@@ -283,7 +291,7 @@ fun PantallaLaboratorioTemas(
                 alRestablecer = {
                     haptica.toque()
                     restablecerValores(contexto)
-                    Toast.makeText(contexto, "Valores de fábrica restablecidos", Toast.LENGTH_SHORT).show()
+                    avisador("Valores de fábrica restablecidos", "Tema")
                 },
                 alCopiarPaleta = ::copiarPaletaAlPortapapeles,
                 alGuardar = ::solicitarGuardar

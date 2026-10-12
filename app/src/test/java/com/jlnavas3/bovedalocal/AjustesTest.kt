@@ -1,6 +1,13 @@
+/*
+ * Copyright (C) 2026 Jose Luis Navas
+ * Licensed under the GNU General Public License v3.0 (GPLv3).
+ * See LICENSE file in the project root for full license information.
+ */
+
 package com.jlnavas3.bovedalocal
 
 import com.jlnavas3.bovedalocal.data.AjustesApp
+import com.jlnavas3.bovedalocal.data.AjustesDefaults
 import com.jlnavas3.bovedalocal.data.AlmacenAjustes
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -97,7 +104,17 @@ class AjustesTest {
     @Test
     fun `las opciones de longitud del tile son validas`() {
         val longitudes = AlmacenAjustes.OPCIONES_TILE_LONGITUD.map { it.first }
-        assertEquals(listOf(10, 15, 20, 30), longitudes)
+        assertEquals(listOf(10, 15, 20, 30, 64, 128), longitudes)
+    }
+
+    @Test
+    fun `las longitudes maximas y minimas de generador y widget 1x1 son consistentes`() {
+        assertEquals(4, AjustesDefaults.Widget1x1.LONGITUD_MIN)
+        assertEquals(128, AjustesDefaults.Widget1x1.LONGITUD_MAX)
+        assertEquals(4, AjustesDefaults.Generador.LONGITUD_MIN)
+        assertEquals(128, AjustesDefaults.Generador.LONGITUD_MAX)
+        assertEquals(3, AjustesDefaults.Widget1x1.DICEWARE_PALABRAS_MIN)
+        assertEquals(12, AjustesDefaults.Widget1x1.DICEWARE_PALABRAS_MAX)
     }
 
     @Test
@@ -123,10 +140,11 @@ class AjustesTest {
     @Test
     fun `opciones y valor por defecto de animacion de desbloqueo`() {
         val ajustes = AjustesApp()
-        assertEquals("engranajes", ajustes.animacionDesbloqueo)
+        assertEquals("ninguna", ajustes.animacionDesbloqueo)
         val opciones = AlmacenAjustes.OPCIONES_ANIMACION_DESBLOQUEO.map { it.first }
         assertTrue(opciones.contains("puerta"))
         assertTrue(opciones.contains("engranajes"))
+        assertTrue(opciones.contains("ninguna"))
     }
 
     @Test
@@ -175,5 +193,35 @@ class AjustesTest {
         )
         assertTrue(padre is com.jlnavas3.bovedalocal.ui.Pantalla.Ajustes)
         assertEquals("03-LST-PLT", (padre as com.jlnavas3.bovedalocal.ui.Pantalla.Ajustes).seccionId)
+    }
+
+    @Test
+    fun `MapeoJerarquiaPantallas resuelve correctamente retorno a fila especifica de ajustes`() {
+        val casos = listOf(
+            com.jlnavas3.bovedalocal.ui.Pantalla.ColoresDatos("02-APA-COL") to "02-APA-COL",
+            com.jlnavas3.bovedalocal.ui.Pantalla.ColoresDatos() to "02-APA-COL",
+            com.jlnavas3.bovedalocal.ui.Pantalla.EntradasTipo(com.jlnavas3.bovedalocal.data.TipoEntrada.LOGIN) to "03-LST-LOG",
+            com.jlnavas3.bovedalocal.ui.Pantalla.EntradasTipo(com.jlnavas3.bovedalocal.data.TipoEntrada.NOTA) to "03-LST-NOT",
+            com.jlnavas3.bovedalocal.ui.Pantalla.EntradasTipo(com.jlnavas3.bovedalocal.data.TipoEntrada.TARJETA) to "03-LST-TAR",
+            com.jlnavas3.bovedalocal.ui.Pantalla.EntradasTipo(com.jlnavas3.bovedalocal.data.TipoEntrada.CONTACTO) to "03-LST-CON",
+            com.jlnavas3.bovedalocal.ui.Pantalla.EntradasTipo(com.jlnavas3.bovedalocal.data.TipoEntrada.WIFI) to "03-LST-WIF",
+            com.jlnavas3.bovedalocal.ui.Pantalla.EntradasTipo(com.jlnavas3.bovedalocal.data.TipoEntrada.CUENTA_BANCARIA) to "03-LST-BNC",
+            com.jlnavas3.bovedalocal.ui.Pantalla.EntradasTipo(com.jlnavas3.bovedalocal.data.TipoEntrada.IDENTIDAD) to "03-LST-IDN",
+            com.jlnavas3.bovedalocal.ui.Pantalla.EntradasTipo(com.jlnavas3.bovedalocal.data.TipoEntrada.SERVIDOR) to "03-LST-SRV",
+            com.jlnavas3.bovedalocal.ui.Pantalla.EntradasTipo(com.jlnavas3.bovedalocal.data.TipoEntrada.WALLET) to "03-LST-WAL",
+            com.jlnavas3.bovedalocal.ui.Pantalla.Identidades("03-LST-IDE") to "03-LST-IDE",
+            com.jlnavas3.bovedalocal.ui.Pantalla.SaludBoveda("03-LST-SLD") to "03-LST-SLD",
+            com.jlnavas3.bovedalocal.ui.Pantalla.Duplicados("03-LST-DUP") to "03-LST-DUP",
+            com.jlnavas3.bovedalocal.ui.Pantalla.Papelera("03-LST-PAP") to "03-LST-PAP",
+            com.jlnavas3.bovedalocal.ui.Pantalla.Categorias("03-LST-CAT") to "03-LST-CAT",
+            com.jlnavas3.bovedalocal.ui.Pantalla.Registro("06-SIS-LOG") to "06-SIS-LOG",
+            com.jlnavas3.bovedalocal.ui.Pantalla.AcercaDe("06-SIS-DGN") to "06-SIS-DGN"
+        )
+
+        for ((pantalla, idEsperado) in casos) {
+            val padre = com.jlnavas3.bovedalocal.ui.MapeoJerarquiaPantallas.resolverPadre(pantalla)
+            assertTrue("Para $pantalla el padre debe ser Pantalla.Ajustes pero fue $padre", padre is com.jlnavas3.bovedalocal.ui.Pantalla.Ajustes)
+            assertEquals("Para $pantalla el id esperado era $idEsperado", idEsperado, (padre as com.jlnavas3.bovedalocal.ui.Pantalla.Ajustes).seccionId)
+        }
     }
 }

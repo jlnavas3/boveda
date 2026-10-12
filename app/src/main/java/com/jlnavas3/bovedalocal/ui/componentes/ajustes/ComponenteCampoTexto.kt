@@ -1,3 +1,9 @@
+/*
+ * Copyright (C) 2026 Jose Luis Navas
+ * Licensed under the GNU General Public License v3.0 (GPLv3).
+ * See LICENSE file in the project root for full license information.
+ */
+
 package com.jlnavas3.bovedalocal.ui.componentes.ajustes
 
 import androidx.compose.foundation.background
@@ -79,6 +85,7 @@ fun ComponenteCampoTexto(
     trailingIcon: (@Composable () -> Unit)? = null,
     alPulsar: (() -> Unit)? = null,
     formateadorMascara: ((String) -> String)? = null,
+    colorearContrasena: Boolean = false,
     esError: Boolean = false,
     mensajeError: String? = null
 ) {
@@ -162,8 +169,8 @@ fun ComponenteCampoTexto(
         imeAction = imeAction
     )
 
-    val transformacionVisual = remember(esContrasena, esVisible) {
-        ConfiguradorCampoTexto.resolverTransformacionVisual(esContrasena, esVisible)
+    val transformacionVisual = remember(esContrasena, esVisible, colorearContrasena) {
+        ConfiguradorCampoTexto.resolverTransformacionVisual(esContrasena, esVisible, colorearContrasena)
     }
 
     val interactionSource = remember { MutableInteractionSource() }

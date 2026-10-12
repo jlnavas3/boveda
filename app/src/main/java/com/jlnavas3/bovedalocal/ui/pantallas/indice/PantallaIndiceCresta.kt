@@ -1,3 +1,9 @@
+/*
+ * Copyright (C) 2026 Jose Luis Navas
+ * Licensed under the GNU General Public License v3.0 (GPLv3).
+ * See LICENSE file in the project root for full license information.
+ */
+
 package com.jlnavas3.bovedalocal.ui.pantallas.indice
 
 import androidx.compose.foundation.layout.padding
@@ -35,7 +41,7 @@ fun PantallaIndiceCresta(
 
     ContenedorPrincipal(
         titulo = "Círculo y cresta",
-        idEtiqueta = "03-LST-AZX-CRE",
+        idEtiqueta = "02-APA-AZX-CRE",
         mostrarId = ajustes.mostrarIdsAjustes,
         alVolver = { vm.volverAtras() },
         cabeceraFlotante = {
@@ -64,13 +70,13 @@ fun PantallaIndiceCresta(
                 vm.restablecerOffsetCirculoIndice()
                 vm.avisar("Valores de cresta restablecidos")
             },
-            idGrupo = "03-LST-AZX-CRE-G01",
+            idGrupo = "02-APA-AZX-CRE-G01",
             mostrarId = ajustes.mostrarIdsAjustes
         ) {
             ComponenteSwitch(
                 titulo = "Mostrar círculo en la cresta",
                 activo = ajustes.indiceMostrarCirculo,
-                idFila = "03-LST-AZX-CRE-SWT",
+                idFila = "02-APA-AZX-CRE-SWT",
                 mostrarId = ajustes.mostrarIdsAjustes,
                 alCambiar = {
                     haptica.tic()
@@ -86,7 +92,7 @@ fun PantallaIndiceCresta(
                     valor = ajustes.indiceTamanoCirculoDp,
                     valorTexto = "${ajustes.indiceTamanoCirculoDp.roundToInt()} dp",
                     rango = 30f..90f,
-                    idFila = "03-LST-AZX-CRE-DIM",
+                    idFila = "02-APA-AZX-CRE-DIM",
                     mostrarId = ajustes.mostrarIdsAjustes,
                     alRestablecer = {
                         haptica.tic()
@@ -105,7 +111,7 @@ fun PantallaIndiceCresta(
                     valor = ajustes.indiceOffsetCirculoDp,
                     valorTexto = "${ajustes.indiceOffsetCirculoDp.roundToInt()} dp",
                     rango = 40f..220f,
-                    idFila = "03-LST-AZX-CRE-OFF",
+                    idFila = "02-APA-AZX-CRE-OFF",
                     mostrarId = ajustes.mostrarIdsAjustes,
                     alRestablecer = {
                         haptica.tic()

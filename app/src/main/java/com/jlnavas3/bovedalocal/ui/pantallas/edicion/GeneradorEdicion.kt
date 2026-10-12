@@ -1,3 +1,9 @@
+/*
+ * Copyright (C) 2026 Jose Luis Navas
+ * Licensed under the GNU General Public License v3.0 (GPLv3).
+ * See LICENSE file in the project root for full license information.
+ */
+
 package com.jlnavas3.bovedalocal.ui.pantallas.edicion
 
 import androidx.compose.foundation.layout.Arrangement
@@ -6,7 +12,9 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.MenuBook
 import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -34,7 +42,8 @@ fun GeneradorEnLineaEdicion(
     opcionesGenerador: OpcionesGenerador,
     alCambiarOpciones: (OpcionesGenerador) -> Unit,
     alGenerarContrasena: (String) -> Unit,
-    haptica: Haptica
+    haptica: Haptica,
+    alAbrirDiccionario: (() -> Unit)? = null
 ) {
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -62,7 +71,34 @@ fun GeneradorEnLineaEdicion(
 
     when {
         opcionesGenerador.modoFrase -> {
-            EtiquetaSeccion("Palabras Diceware: ${opcionesGenerador.palabras}")
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                EtiquetaSeccion("Palabras Diceware: ${opcionesGenerador.palabras}")
+                if (alAbrirDiccionario != null) {
+                    androidx.compose.material3.TextButton(
+                        onClick = {
+                            haptica.tic()
+                            alAbrirDiccionario()
+                        }
+                    ) {
+                        androidx.compose.material3.Icon(
+                            Icons.AutoMirrored.Filled.MenuBook,
+                            contentDescription = null,
+                            tint = com.jlnavas3.bovedalocal.ui.theme.ColorAcento,
+                            modifier = Modifier.padding(end = 4.dp)
+                        )
+                        Text(
+                            "Diccionario",
+                            color = com.jlnavas3.bovedalocal.ui.theme.ColorAcento,
+                            style = MaterialTheme.typography.labelMedium,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                }
+            }
             SliderBoveda(
                 value = opcionesGenerador.palabras.toFloat(),
                 onValueChange = {

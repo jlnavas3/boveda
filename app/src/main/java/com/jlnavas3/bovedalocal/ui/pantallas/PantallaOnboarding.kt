@@ -1,3 +1,9 @@
+/*
+ * Copyright (C) 2026 Jose Luis Navas
+ * Licensed under the GNU General Public License v3.0 (GPLv3).
+ * See LICENSE file in the project root for full license information.
+ */
+
 package com.jlnavas3.bovedalocal.ui.pantallas
 
 import androidx.activity.compose.BackHandler
@@ -20,6 +26,7 @@ import com.jlnavas3.bovedalocal.crypto.PerfilArgon2
 import com.jlnavas3.bovedalocal.data.Identidad
 import com.jlnavas3.bovedalocal.ui.VaultViewModel
 import com.jlnavas3.bovedalocal.ui.pantallas.acercade.PantallaAcercaDeApp
+import com.jlnavas3.bovedalocal.ui.pantallas.acercade.PantallaLicencia
 import com.jlnavas3.bovedalocal.ui.pantallas.onboarding.PasoBienvenida
 import com.jlnavas3.bovedalocal.ui.pantallas.onboarding.PasoConfigurarIdentidadInicial
 import com.jlnavas3.bovedalocal.ui.pantallas.onboarding.PasoCrearContrasena
@@ -47,17 +54,32 @@ fun PantallaOnboarding(vm: VaultViewModel, actividad: FragmentActivity) {
     var contrasenaMaestra by remember { mutableStateOf("") }
     var identidadInicial by remember { mutableStateOf<Identidad?>(null) }
     var mostrandoAcercaDe by remember { mutableStateOf(false) }
+    var mostrandoLicencia by remember { mutableStateOf(false) }
 
-    BackHandler(enabled = mostrandoAcercaDe) {
+    BackHandler(enabled = mostrandoLicencia) {
+        mostrandoLicencia = false
+    }
+
+    BackHandler(enabled = !mostrandoLicencia && mostrandoAcercaDe) {
         mostrandoAcercaDe = false
     }
 
-    BackHandler(enabled = !mostrandoAcercaDe && paso == 2) {
+    BackHandler(enabled = !mostrandoLicencia && !mostrandoAcercaDe && paso == 2) {
         paso = 1
     }
 
-    BackHandler(enabled = !mostrandoAcercaDe && paso == 1) {
+    BackHandler(enabled = !mostrandoLicencia && !mostrandoAcercaDe && paso == 1) {
         paso = 0
+    }
+
+    if (mostrandoLicencia) {
+        PantallaLicencia(
+            alVolver = {
+                haptica.toque()
+                mostrandoLicencia = false
+            }
+        )
+        return
     }
 
     if (mostrandoAcercaDe) {
@@ -65,6 +87,10 @@ fun PantallaOnboarding(vm: VaultViewModel, actividad: FragmentActivity) {
             alVolver = {
                 haptica.toque()
                 mostrandoAcercaDe = false
+            },
+            alVerLicencia = {
+                haptica.toque()
+                mostrandoLicencia = true
             }
         )
         return

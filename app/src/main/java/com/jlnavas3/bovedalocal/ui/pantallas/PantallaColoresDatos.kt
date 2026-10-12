@@ -1,3 +1,9 @@
+/*
+ * Copyright (C) 2026 Jose Luis Navas
+ * Licensed under the GNU General Public License v3.0 (GPLv3).
+ * See LICENSE file in the project root for full license information.
+ */
+
 package com.jlnavas3.bovedalocal.ui.pantallas
 
 import androidx.compose.foundation.background
@@ -83,7 +89,7 @@ fun PantallaColoresDatos(
     ) {
         BarraSuperiorPantalla(
             titulo = "Colores de campos y datos",
-            idEtiqueta = "02-APA-THM-DAT",
+            idEtiqueta = seccionDestino ?: "02-APA-COL",
             mostrarId = ajustes.mostrarIdsAjustes,
             alVolver = { vm.volverAtras() },
             colorFondo = ColorAjustesFondo,

@@ -1,3 +1,9 @@
+/*
+ * Copyright (C) 2026 Jose Luis Navas
+ * Licensed under the GNU General Public License v3.0 (GPLv3).
+ * See LICENSE file in the project root for full license information.
+ */
+
 package com.jlnavas3.bovedalocal.ui.pantallas.ajustes
 
 import androidx.compose.material.icons.Icons
@@ -36,6 +42,16 @@ fun crearElementosSeguridadAjustes(
         grupo = "Seguridad",
         palabrasClave = "accesibilidad permiso pantalla espia scraping cube acr lista blanca confianza servicios",
         alPulsar = { vm.ir(Pantalla.AuditoriaAccesibilidad()) }
+    ),
+    ElementoMenuAjustes(
+        titulo = "Contraseñas comunes",
+        subtitulo = "Lista negra de contraseñas inseguras y auditoría de salud",
+        icono = Icons.Filled.Security,
+        colorIcono = Color(0xFFE53935),
+        idEtiqueta = "01-SEG-COM",
+        grupo = "Seguridad",
+        palabrasClave = "contrasenas comunes prohibidas salud lista negra debiles exclusiones",
+        alPulsar = { vm.ir(Pantalla.ContrasenasComunes()) }
     )
 )
 

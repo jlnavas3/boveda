@@ -1,9 +1,16 @@
+/*
+ * Copyright (C) 2026 Jose Luis Navas
+ * Licensed under the GNU General Public License v3.0 (GPLv3).
+ * See LICENSE file in the project root for full license information.
+ */
+
 package com.jlnavas3.bovedalocal
 
 import com.jlnavas3.bovedalocal.data.TipoEntrada
 import com.jlnavas3.bovedalocal.ui.CriterioOrdenacion
 import com.jlnavas3.bovedalocal.ui.Pantalla
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
@@ -105,8 +112,22 @@ class MenuLateralTest {
         assertTrue(com.jlnavas3.bovedalocal.data.AjustesDefaults.MenuLateral.MOSTRAR_CABECERA)
         assertTrue(com.jlnavas3.bovedalocal.data.AjustesDefaults.MenuLateral.MOSTRAR_PIE)
         assertTrue(com.jlnavas3.bovedalocal.data.AjustesDefaults.MenuLateral.MOSTRAR_BOTON_BLOQUEAR)
-        assertTrue(com.jlnavas3.bovedalocal.data.AjustesDefaults.MenuLateral.AGRUPAR_ITEMS)
-        assertTrue(com.jlnavas3.bovedalocal.data.AjustesDefaults.MenuLateral.SIN_BORDES)
-        assertEquals(10, com.jlnavas3.bovedalocal.data.AjustesDefaults.MenuLateral.ITEMS_PREDETERMINADOS.size)
+        assertFalse(com.jlnavas3.bovedalocal.data.AjustesDefaults.MenuLateral.AGRUPAR_ITEMS)
+        assertFalse(com.jlnavas3.bovedalocal.data.AjustesDefaults.MenuLateral.SIN_BORDES)
+        assertEquals(9, com.jlnavas3.bovedalocal.data.AjustesDefaults.MenuLateral.ITEMS_PREDETERMINADOS.size)
+        assertEquals(
+            listOf(
+                "04-HER-GEN",
+                "04-HER-QRS",
+                "04-HER-HST",
+                "03-LST-SLD",
+                "03-LST-DUP",
+                "03-LST-PAP",
+                "03-LST-IDE",
+                "03-LST-CAT",
+                "00-AJU"
+            ),
+            com.jlnavas3.bovedalocal.data.AjustesDefaults.MenuLateral.ITEMS_PREDETERMINADOS
+        )
     }
 }

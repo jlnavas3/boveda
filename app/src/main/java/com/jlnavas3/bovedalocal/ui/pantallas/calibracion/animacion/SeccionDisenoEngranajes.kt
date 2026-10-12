@@ -1,3 +1,9 @@
+/*
+ * Copyright (C) 2026 Jose Luis Navas
+ * Licensed under the GNU General Public License v3.0 (GPLv3).
+ * See LICENSE file in the project root for full license information.
+ */
+
 package com.jlnavas3.bovedalocal.ui.pantallas.calibracion.animacion
 
 import androidx.compose.foundation.background
@@ -42,14 +48,15 @@ import com.jlnavas3.bovedalocal.ui.theme.GrosorBorde
 import com.jlnavas3.bovedalocal.ui.theme.Superficie
 import com.jlnavas3.bovedalocal.ui.theme.TextoPrincipal
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
-import com.jlnavas3.bovedalocal.ui.theme.aHex
+import com.jlnavas3.bovedalocal.ui.theme.aHexConAlfa
 
 @Composable
 fun SeccionDisenoEngranajes(
     partesEngranajes: List<InfoParteEngranaje>,
     parteEngranajeElegida: Int,
     alSeleccionarParte: (Int) -> Unit,
-    mostrarIds: Boolean
+    mostrarIds: Boolean,
+    alRestablecer: (() -> Unit)? = null
 ) {
     var dropdownPartesEngranajeAbierto by remember { mutableStateOf(false) }
     val parteActual = partesEngranajes[parteEngranajeElegida.coerceIn(0, partesEngranajes.size - 1)]
@@ -58,7 +65,7 @@ fun SeccionDisenoEngranajes(
         etiqueta = "Colores de las piezas",
         idGrupo = "02-APA-THM-ANI-G02",
         mostrarId = mostrarIds,
-        alRestablecer = {
+        alRestablecer = alRestablecer ?: {
             partesEngranajes.forEach { it.mutador(it.colorPorDefecto) }
         }
     ) {
@@ -147,7 +154,7 @@ fun SeccionDisenoEngranajes(
 
             Spacer(Modifier.height(10.dp))
             Text(
-                text = "Color actual: ${parteActual.colorActual.aHex()}",
+                text = "Color actual: ${parteActual.colorActual.aHexConAlfa()}",
                 color = TextoSecundario,
                 style = MaterialTheme.typography.bodySmall
             )
@@ -155,7 +162,8 @@ fun SeccionDisenoEngranajes(
 
             SelectorColorEnTiempoReal(
                 colorInicial = parteActual.colorActual,
-                titulo = parteActual.nombre
+                titulo = parteActual.nombre,
+                permitirAlfa = true
             ) { nuevoColor ->
                 parteActual.mutador(nuevoColor)
             }

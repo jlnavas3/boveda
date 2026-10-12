@@ -1,3 +1,9 @@
+/*
+ * Copyright (C) 2026 Jose Luis Navas
+ * Licensed under the GNU General Public License v3.0 (GPLv3).
+ * See LICENSE file in the project root for full license information.
+ */
+
 package com.jlnavas3.bovedalocal.ui.pantallas.autenticador
 
 import androidx.compose.foundation.background
@@ -102,6 +108,7 @@ fun TarjetaCuentaTotp(
     val tiempoAutoOcultar = ajustes?.tiempoAutoOcultarSegundos ?: 10
 
     var codigoRevelado by rememberSaveable { mutableStateOf(false) }
+    var usuarioRevelado by rememberSaveable { mutableStateOf(false) }
 
     if (ocultarTotp) {
         TemporizadorAutoOcultar(
@@ -109,6 +116,15 @@ fun TarjetaCuentaTotp(
             tiempoSegundos = if (seguridadVisualActiva) tiempoAutoOcultar else 0
         ) {
             codigoRevelado = false
+        }
+    }
+
+    if (ocultarUsuario) {
+        TemporizadorAutoOcultar(
+            revelado = usuarioRevelado,
+            tiempoSegundos = if (seguridadVisualActiva) tiempoAutoOcultar else 0
+        ) {
+            usuarioRevelado = false
         }
     }
 
@@ -197,14 +213,16 @@ fun TarjetaCuentaTotp(
                 )
                 if (entrada.usuario.isNotBlank()) {
                     if (ocultarUsuario) {
-                        TextoSeguroVisual(
+                        com.jlnavas3.bovedalocal.ui.componentes.seguridad.DatoSensibleConRevelado(
                             texto = entrada.usuario,
-                            oculto = true,
+                            oculto = !usuarioRevelado,
                             estilo = estiloOcultamiento,
                             estiloTexto = MaterialTheme.typography.bodySmall,
                             colorTexto = TextoSecundario,
                             maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
+                            overflow = TextOverflow.Ellipsis,
+                            alAlternarRevelado = { usuarioRevelado = !usuarioRevelado },
+                            descripcionAccesible = "usuario o correo de la cuenta 2FA"
                         )
                     } else {
                         Text(

@@ -1,3 +1,9 @@
+/*
+ * Copyright (C) 2026 Jose Luis Navas
+ * Licensed under the GNU General Public License v3.0 (GPLv3).
+ * See LICENSE file in the project root for full license information.
+ */
+
 package com.jlnavas3.bovedalocal.ui.pantallas.edicion
 
 import androidx.compose.foundation.background
@@ -57,6 +63,8 @@ fun SeccionDatosPrincipalesEdicion(
     listaEnlaces: List<EnlaceEditable>,
     ajustes: AjustesApp,
     haptica: Haptica,
+    alAbrirDiccionario: (() -> Unit)? = null,
+    alAbrirContrasenasComunes: (() -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
     val contexto = LocalContext.current
@@ -131,7 +139,9 @@ fun SeccionDatosPrincipalesEdicion(
                         opcionesGenerador = opcionesGenerador,
                         alCambiarOpcionesGenerador = alCambiarOpcionesGenerador,
                         passkey = original?.passkey,
-                        haptica = haptica
+                        haptica = haptica,
+                        alAbrirDiccionario = alAbrirDiccionario,
+                        alAbrirContrasenasComunes = alAbrirContrasenasComunes
                     )
                 }
                 TipoEntrada.CONTACTO -> {
@@ -169,7 +179,8 @@ fun SeccionDatosPrincipalesEdicion(
                     Spacer(Modifier.height(12.dp))
                     FormularioEdicionTarjeta(
                         campos = camposPersonalizados,
-                        alCambiarCampos = alCambiarCamposPersonalizados
+                        alCambiarCampos = alCambiarCamposPersonalizados,
+                        ajustes = ajustes
                     )
                 }
                 TipoEntrada.WIFI -> {
@@ -183,7 +194,8 @@ fun SeccionDatosPrincipalesEdicion(
                     Spacer(Modifier.height(12.dp))
                     FormularioEdicionCuentaBancaria(
                         campos = camposPersonalizados,
-                        alCambiarCampos = alCambiarCamposPersonalizados
+                        alCambiarCampos = alCambiarCamposPersonalizados,
+                        ajustes = ajustes
                     )
                 }
                 TipoEntrada.IDENTIDAD -> {

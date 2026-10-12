@@ -1,3 +1,9 @@
+/*
+ * Copyright (C) 2026 Jose Luis Navas
+ * Licensed under the GNU General Public License v3.0 (GPLv3).
+ * See LICENSE file in the project root for full license information.
+ */
+
 package com.jlnavas3.bovedalocal.ui.pantallas.indice
 
 import androidx.compose.foundation.layout.padding
@@ -33,7 +39,7 @@ fun PantallaIndiceResaltado(
 
     ContenedorPrincipal(
         titulo = "Resaltado y selección",
-        idEtiqueta = "03-LST-AZX-RES",
+        idEtiqueta = "02-APA-AZX-RES",
         mostrarId = ajustes.mostrarIdsAjustes,
         alVolver = { vm.volverAtras() },
         cabeceraFlotante = {
@@ -62,13 +68,13 @@ fun PantallaIndiceResaltado(
                 vm.ajustarIndiceAlinearConCresta(AjustesDefaults.Indice.ALINEAR_CON_CRESTA)
                 vm.avisar("Valores de resaltado restablecidos")
             },
-            idGrupo = "03-LST-AZX-RES-G01",
+            idGrupo = "02-APA-AZX-RES-G01",
             mostrarId = ajustes.mostrarIdsAjustes
         ) {
             ComponenteSwitch(
                 titulo = "Resaltar cuentas al arrastrar",
                 activo = ajustes.indiceResaltarEntradas,
-                idFila = "03-LST-AZX-RES-SWT",
+                idFila = "02-APA-AZX-RES-SWT",
                 mostrarId = ajustes.mostrarIdsAjustes,
                 alCambiar = {
                     haptica.tic()
@@ -82,7 +88,7 @@ fun PantallaIndiceResaltado(
                 ComponenteSwitch(
                     titulo = "Resaltar solo la primera cuenta",
                     activo = ajustes.indiceResaltarSoloPrimera,
-                    idFila = "03-LST-AZX-RES-1ST",
+                    idFila = "02-APA-AZX-RES-1ST",
                     mostrarId = ajustes.mostrarIdsAjustes,
                     alCambiar = {
                         haptica.tic()
@@ -96,7 +102,7 @@ fun PantallaIndiceResaltado(
             ComponenteSwitch(
                 titulo = "Alinear con la cresta de la ola",
                 activo = ajustes.indiceAlinearConCresta,
-                idFila = "03-LST-AZX-RES-ALI",
+                idFila = "02-APA-AZX-RES-ALI",
                 mostrarId = ajustes.mostrarIdsAjustes,
                 alCambiar = {
                     haptica.tic()

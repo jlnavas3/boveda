@@ -1,3 +1,9 @@
+/*
+ * Copyright (C) 2026 Jose Luis Navas
+ * Licensed under the GNU General Public License v3.0 (GPLv3).
+ * See LICENSE file in the project root for full license information.
+ */
+
 package com.jlnavas3.bovedalocal.data
 
 /**
@@ -24,6 +30,8 @@ object AjustesDefaults {
         const val AUTODESTRUCCION_INTENTOS_FALLIDOS_MAX = 0
         val OPCIONES_AUTODESTRUCCION_INTENTOS = listOf(0, 5, 10, 15, 20)
         val LISTA_BLANCA_ACCESIBILIDAD: Set<String> = emptySet()
+        val CONTRASENAS_COMUNES_ANADIDAS: Set<String> = emptySet()
+        val CONTRASENAS_COMUNES_EXCLUIDAS: Set<String> = emptySet()
     }
 
     // 1b. Seguridad Visual y Privacidad de Pantalla
@@ -142,7 +150,7 @@ object AjustesDefaults {
 
     // 9. Animación Desbloqueo: Engranajes y Puerta
     object Animacion {
-        const val TIPO_DESBLOQUEO = "engranajes"
+        const val TIPO_DESBLOQUEO = "ninguna"
 
         object Engranajes {
             const val VELOCIDAD = 24f
@@ -154,21 +162,38 @@ object AjustesDefaults {
             const val CANTIDAD_RADIOS = 6
             const val RADIO_INTERIOR = 0.80f
             const val TAMANO_EJE = 1.23f
-            const val SOMBRA_INTENSIDAD = 0.95f
-            const val COLOR_BRILLO = "#ABA799"
-            const val COLOR_PRINCIPAL = "#918D7E"
-            const val COLOR_SOMBRA_MEDIO = "#635C57"
-            const val COLOR_SOMBRA_OSCURO = "#404038"
-            const val COLOR_BISEL = "#A5A19D"
+            const val SOMBRA_INTENSIDAD = 0.52f
+
+            // Tema Oscuro
+            const val COLOR_BRILLO = "#43433F"
+            const val COLOR_PRINCIPAL = "#37393A"
+            const val COLOR_SOMBRA_MEDIO = "#42423D"
+            const val COLOR_SOMBRA_OSCURO = "#2D2D2B"
+            const val COLOR_BISEL = "#545450"
             const val COLOR_INTERIOR = "#00000000"
             const val COLOR_CUBO = "#D3D1C8"
-            const val COLOR_EJE = "#141316"
+            const val COLOR_EJE = "#363630"
+
+            // Tema Claro
+            const val COLOR_BRILLO_CLARO = "#F3F2EB"
+            const val COLOR_PRINCIPAL_CLARO = "#F2F1E6"
+            const val COLOR_SOMBRA_MEDIO_CLARO = "#F1F1EA"
+            const val COLOR_SOMBRA_OSCURO_CLARO = "#EDEDE1"
+            const val COLOR_BISEL_CLARO = "#CAC9C0"
+            const val COLOR_INTERIOR_CLARO = "#00000000"
+            const val COLOR_CUBO_CLARO = "#FFFFF1"
+            const val COLOR_EJE_CLARO = "#FFFDF2"
         }
 
         object Puerta {
             const val VELOCIDAD = 1.0f
             const val GROSOR_ANILLOS = 1.0f
             const val COLOR = ""
+            const val COLOR_CLARO = ""
+            const val COLOR_OSCURO = ""
+            const val COLOR_DESTELLO = ""
+            const val COLOR_DESTELLO_CLARO = ""
+            const val COLOR_DESTELLO_OSCURO = ""
         }
     }
 
@@ -196,6 +221,8 @@ object AjustesDefaults {
         const val HAPTICA_INTENSIDAD = 0.20f
         const val MODO = "aleatoria"
         const val LONGITUD = 20
+        const val LONGITUD_MIN = 4
+        const val LONGITUD_MAX = 128
         const val PATRON = "XXXXX-XXXXX-XXXXX-XXXXX"
         const val SIMBOLOS = "!@#$%&*()_-=+[]{}?/,.:;"
         const val COPIAR_PORTAPAPELES = true
@@ -217,6 +244,8 @@ object AjustesDefaults {
         const val ESMERILADO_INTENSIDAD = 0.60f
         const val ESMERILADO_LUZ = 0.40f
         const val DICEWARE_PALABRAS = 5
+        const val DICEWARE_PALABRAS_MIN = 3
+        const val DICEWARE_PALABRAS_MAX = 12
         const val DICEWARE_SEPARADOR = "-"
     }
 
@@ -224,9 +253,13 @@ object AjustesDefaults {
     object Tile {
         const val MODO = "longitud"
         const val LONGITUD = 20
+        const val LONGITUD_MIN = 4
+        const val LONGITUD_MAX = 128
         const val PATRON = "XXXXX-XXXXX-XXXXX-XXXXX"
         const val SIMBOLOS = "!@#$%&*()_-=+[]{}?/,.:;"
         const val DICEWARE_PALABRAS = 5
+        const val DICEWARE_PALABRAS_MIN = 3
+        const val DICEWARE_PALABRAS_MAX = 12
         const val DICEWARE_SEPARADOR = "-"
         const val COPIAR_PORTAPAPELES = true
         const val MOSTRAR_TOAST = true
@@ -245,6 +278,9 @@ object AjustesDefaults {
         const val FORMATO_HORA = "24h"
         const val FORMATO_TELEFONO = "### ### ####"
         const val SEPARADOR_DECIMAL = "."
+        const val FORMATO_TARJETA = "4x4"
+        const val FORMATO_EXPIRACION_TARJETA = "MM/AA"
+        const val FORMATO_IBAN = "bloques_4"
     }
 
     // 13. Generador Manual 2FA
@@ -284,6 +320,7 @@ object AjustesDefaults {
         const val HAPTICA_APP = true
         const val HAPTICA_APP_INTENSIDAD = 0.10f
         const val MOSTRAR_IDS_AJUSTES = false
+        const val TOAST_DESCRIPTIVO = true
         val ORDEN_AJUSTES_PERSONALIZADO: List<String> = emptyList()
     }
 
@@ -338,6 +375,12 @@ object AjustesDefaults {
         const val CAPITALIZAR_FRASE = false
         const val MODO_PATRON = false
         const val PATRON = "XXXXX-XXXXX-XXXXX-XXXXX-XXXXX"
+        val DICCIONARIO_ANADIDAS_ES: Set<String> = emptySet()
+        val DICCIONARIO_EXCLUIDAS_ES: Set<String> = emptySet()
+        val DICCIONARIO_FAVORITAS_ES: Set<String> = emptySet()
+        val DICCIONARIO_ANADIDAS_EN: Set<String> = emptySet()
+        val DICCIONARIO_EXCLUIDAS_EN: Set<String> = emptySet()
+        val DICCIONARIO_FAVORITAS_EN: Set<String> = emptySet()
     }
 
     // 18. Importación CSV
@@ -363,13 +406,12 @@ object AjustesDefaults {
         const val MOSTRAR_CABECERA = true
         const val MOSTRAR_PIE = true
         const val MOSTRAR_BOTON_BLOQUEAR = true
-        const val AGRUPAR_ITEMS = true
-        const val SIN_BORDES = true
+        const val AGRUPAR_ITEMS = false
+        const val SIN_BORDES = false
         val ITEMS_PREDETERMINADOS = listOf(
             "04-HER-GEN",
+            "04-HER-QRS",
             "04-HER-HST",
-            "04-HER-PAS",
-            "04-HER-2FA",
             "03-LST-SLD",
             "03-LST-DUP",
             "03-LST-PAP",

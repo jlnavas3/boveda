@@ -1,3 +1,9 @@
+/*
+ * Copyright (C) 2026 Jose Luis Navas
+ * Licensed under the GNU General Public License v3.0 (GPLv3).
+ * See LICENSE file in the project root for full license information.
+ */
+
 package com.jlnavas3.bovedalocal.ui.pantallas.generador
 
 import androidx.compose.foundation.background
@@ -30,7 +36,9 @@ import com.jlnavas3.bovedalocal.ui.theme.FormaCampo
 import com.jlnavas3.bovedalocal.ui.theme.GrosorBorde
 import com.jlnavas3.bovedalocal.ui.theme.Superficie
 import com.jlnavas3.bovedalocal.ui.theme.TextoPrincipal
+import com.jlnavas3.bovedalocal.crypto.Wordlist
 import com.jlnavas3.bovedalocal.util.Haptica
+import java.util.Locale
 
 @Composable
 fun SelectorIdiomaFrase(
@@ -39,9 +47,11 @@ fun SelectorIdiomaFrase(
     haptica: Haptica?,
     modifier: Modifier = Modifier
 ) {
+    val totalEs = Wordlist.obtenerTamano("es")
+    val totalEn = Wordlist.obtenerTamano("en")
     val opciones = listOf(
-        "es" to "Español (1,290 palabras)",
-        "en" to "Inglés (2,048 palabras)"
+        "es" to "Español (${String.format(Locale.ROOT, "%,d", totalEs)} palabras)",
+        "en" to "Inglés (${String.format(Locale.ROOT, "%,d", totalEn)} palabras)"
     )
 
     Column(modifier = modifier.fillMaxWidth()) {

@@ -1,3 +1,9 @@
+/*
+ * Copyright (C) 2026 Jose Luis Navas
+ * Licensed under the GNU General Public License v3.0 (GPLv3).
+ * See LICENSE file in the project root for full license information.
+ */
+
 package com.jlnavas3.bovedalocal.ui
 
 import android.app.Application
@@ -26,7 +32,8 @@ interface VaultAjustesDelegate :
     VaultAjustesInteraccionDelegate,
     VaultAjustesTileTotpManualDelegate,
     VaultAjustesWidgetTotpDelegate,
-    VaultAjustesWidget1x1Delegate {
+    VaultAjustesWidget1x1Delegate,
+    VaultAjustesDiccionariosDelegate {
 
     override val repositorio: VaultRepository
     override fun obtenerApp(): Application

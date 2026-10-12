@@ -1,3 +1,9 @@
+/*
+ * Copyright (C) 2026 Jose Luis Navas
+ * Licensed under the GNU General Public License v3.0 (GPLv3).
+ * See LICENSE file in the project root for full license information.
+ */
+
 package com.jlnavas3.bovedalocal.ui.pantallas
 
 import androidx.compose.foundation.background
@@ -107,6 +113,14 @@ fun PantallaSeguridad(
                         idFila = "01-SEG-BIO-AUD",
                         mostrarId = ajustes.mostrarIdsAjustes,
                         alPulsar = { vm.ir(Pantalla.AuditoriaSeguridad()) }
+                    )
+                    ComponenteSeparador()
+                    ComponenteNavegacion(
+                        titulo = "Contraseñas comunes",
+                        icono = null,
+                        idFila = "01-SEG-COM",
+                        mostrarId = ajustes.mostrarIdsAjustes,
+                        alPulsar = { vm.ir(Pantalla.ContrasenasComunes()) }
                     )
                 }
 

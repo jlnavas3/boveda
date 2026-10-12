@@ -1,3 +1,9 @@
+/*
+ * Copyright (C) 2026 Jose Luis Navas
+ * Licensed under the GNU General Public License v3.0 (GPLv3).
+ * See LICENSE file in the project root for full license information.
+ */
+
 package com.jlnavas3.bovedalocal.ui.pantallas.generador
 
 import androidx.compose.foundation.background
@@ -13,6 +19,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
+import androidx.compose.material.icons.automirrored.filled.MenuBook
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -40,7 +49,8 @@ import kotlin.math.roundToInt
 fun PanelModoDiceware(
     opciones: OpcionesGenerador,
     alCambiarOpciones: (OpcionesGenerador) -> Unit,
-    haptica: Haptica
+    haptica: Haptica,
+    alAbrirDiccionario: (() -> Unit)? = null
 ) {
     Column(modifier = Modifier.fillMaxWidth()) {
         EtiquetaSeccion("Número de palabras: ${opciones.palabras}")
@@ -110,5 +120,45 @@ fun PanelModoDiceware(
             color = TextoSecundario,
             style = MaterialTheme.typography.bodySmall
         )
+        if (alAbrirDiccionario != null) {
+            Spacer(Modifier.height(12.dp))
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(FormaCampo)
+                    .background(com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorTarjetaAjustes)
+                    .clickable {
+                        haptica.toque()
+                        alAbrirDiccionario()
+                    }
+                    .padding(horizontal = 14.dp, vertical = 10.dp),
+                verticalAlignment = androidx.compose.ui.Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Row(
+                    verticalAlignment = androidx.compose.ui.Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(10.dp)
+                ) {
+                    androidx.compose.material3.Icon(
+                        Icons.AutoMirrored.Filled.MenuBook,
+                        contentDescription = null,
+                        tint = ColorAcento,
+                        modifier = Modifier.padding(2.dp)
+                    )
+                    Text(
+                        "Gestionar palabras del diccionario",
+                        style = MaterialTheme.typography.bodyMedium,
+                        fontWeight = androidx.compose.ui.text.font.FontWeight.SemiBold,
+                        color = TextoPrincipal
+                    )
+                }
+                androidx.compose.material3.Icon(
+                    Icons.AutoMirrored.Filled.ArrowForward,
+                    contentDescription = null,
+                    tint = TextoSecundario,
+                    modifier = Modifier.padding(2.dp)
+                )
+            }
+        }
     }
 }

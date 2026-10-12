@@ -1,3 +1,9 @@
+/*
+ * Copyright (C) 2026 Jose Luis Navas
+ * Licensed under the GNU General Public License v3.0 (GPLv3).
+ * See LICENSE file in the project root for full license information.
+ */
+
 package com.jlnavas3.bovedalocal.util
 
 import java.util.Locale
@@ -43,6 +49,30 @@ object FormateadorCampos {
     val OPCIONES_DECIMAL = listOf(
         "." to "Punto decimal (ej. 1250.50)",
         "," to "Coma decimal (ej. 1250,50)"
+    )
+
+    const val TARJETA_4X4 = "4x4"
+    const val TARJETA_SIN_ESPACIOS = "sin_espacios"
+
+    val OPCIONES_TARJETA = listOf(
+        TARJETA_4X4 to "Espaciado 4x4 (#### #### #### ####)",
+        TARJETA_SIN_ESPACIOS to "Continuo sin espacios (################)"
+    )
+
+    const val EXPIRACION_MMAA = "MM/AA"
+    const val EXPIRACION_MMAAAA = "MM/AAAA"
+
+    val OPCIONES_EXPIRACION = listOf(
+        EXPIRACION_MMAA to "Mes y Año corto (MM/AA)",
+        EXPIRACION_MMAAAA to "Mes y Año completo (MM/AAAA)"
+    )
+
+    const val IBAN_BLOQUES_4 = "bloques_4"
+    const val IBAN_CONTINUO = "continuo"
+
+    val OPCIONES_IBAN = listOf(
+        IBAN_BLOQUES_4 to "Bloques de 4 caracteres (ES91 2100 0418...)",
+        IBAN_CONTINUO to "Continuo sin espacios (ES9121000418...)"
     )
 
     fun formatearFecha(anio: Int, mes: Int, dia: Int, formato: String): String {
@@ -151,6 +181,42 @@ object FormateadorCampos {
         return resultado.toString().trim()
     }
 
+    fun aplicarMascaraTarjeta(digitosRaw: String, formato: String = TARJETA_4X4): String {
+        val soloDigitos = digitosRaw.filter { it.isDigit() }.take(19) // Soporta hasta 19 dígitos (estándar bancario)
+        if (formato == TARJETA_SIN_ESPACIOS || soloDigitos.isEmpty()) return soloDigitos
+        return soloDigitos.chunked(4).joinToString(" ")
+    }
+
+    fun aplicarMascaraExpiracion(raw: String, formato: String = EXPIRACION_MMAA): String {
+        val soloDigitos = raw.filter { it.isDigit() }
+        val maxDigitos = if (formato == EXPIRACION_MMAAAA) 6 else 4
+        val limitados = soloDigitos.take(maxDigitos)
+        if (limitados.isEmpty()) return ""
+        return if (limitados.length <= 2) {
+            limitados
+        } else {
+            "${limitados.substring(0, 2)}/${limitados.substring(2)}"
+        }
+    }
+
+    fun aplicarMascaraIban(raw: String, formato: String = IBAN_BLOQUES_4): String {
+        val alfanumerico = raw.filter { it.isLetterOrDigit() }.uppercase(Locale.ROOT).take(34) // IBAN máx 34 chars
+        if (formato == IBAN_CONTINUO || alfanumerico.isEmpty()) return alfanumerico
+        return alfanumerico.chunked(4).joinToString(" ")
+    }
+
+    fun sanitizarMayusculas(valor: String): String = valor.uppercase(Locale.ROOT)
+
+    fun sanitizarPuerto(valor: String): String {
+        val digitos = valor.filter { it.isDigit() }
+        if (digitos.isBlank()) return ""
+        val num = digitos.toLongOrNull() ?: return "65535"
+        return if (num > 65535) "65535" else digitos
+    }
+
+    fun sanitizarHostIp(valor: String): String = valor.trim().filterNot { it.isWhitespace() }
+
+
     /**
      * Procesa la entrada en un TextFieldValue aplicando una máscara formateadora
      * y recalculando de forma precisa la posición del cursor para evitar que salte
@@ -171,13 +237,13 @@ object FormateadorCampos {
 
         // Si el usuario borró caracteres con Backspace:
         if (nuevoTexto.length < textoAnterior.length) {
-            // Verificar si el carácter borrado era un separador/máscara (no dígito ni '+')
+            // Verificar si el carácter borrado era un separador/máscara (no alfanumérico ni '+')
             if (cursorNuevo in textoAnterior.indices) {
                 val charBorrado = textoAnterior[cursorNuevo]
-                if (!charBorrado.isDigit() && charBorrado != '+') {
-                    // El usuario pulsó backspace sobre un separador; también eliminamos el dígito anterior
+                if (!charBorrado.isLetterOrDigit() && charBorrado != '+') {
+                    // El usuario pulsó backspace sobre un separador; también eliminamos el carácter anterior
                     val partePrevia = nuevoTexto.substring(0, cursorNuevo)
-                    val ultimoDigitoIdx = partePrevia.indexOfLast { it.isDigit() }
+                    val ultimoDigitoIdx = partePrevia.indexOfLast { it.isLetterOrDigit() }
                     if (ultimoDigitoIdx >= 0) {
                         nuevoTexto = partePrevia.removeRange(ultimoDigitoIdx, ultimoDigitoIdx + 1) + 
                                      nuevoTexto.substring(cursorNuevo)
@@ -187,12 +253,12 @@ object FormateadorCampos {
             }
         }
 
-        // Contar cuántos caracteres de contenido (dígitos o '+' inicial) están antes del cursor en la entrada
+        // Contar cuántos caracteres de contenido (letras, dígitos o '+' inicial) están antes del cursor en la entrada
         var rawAntes = 0
         val limite = cursorNuevo.coerceIn(0, nuevoTexto.length)
         for (i in 0 until limite) {
             val c = nuevoTexto[i]
-            if (c.isDigit() || (c == '+' && i == 0)) {
+            if (c.isLetterOrDigit() || (c == '+' && i == 0)) {
                 rawAntes++
             }
         }
@@ -201,7 +267,7 @@ object FormateadorCampos {
 
         val nuevoCursor = if (rawAntes == 0) {
             var pos = 0
-            while (pos < formateado.length && !(formateado[pos].isDigit() || (formateado[pos] == '+' && pos == 0))) {
+            while (pos < formateado.length && !(formateado[pos].isLetterOrDigit() || (formateado[pos] == '+' && pos == 0))) {
                 pos++
             }
             pos
@@ -210,7 +276,7 @@ object FormateadorCampos {
             var pos = 0
             for (i in formateado.indices) {
                 val c = formateado[i]
-                if (c.isDigit() || (c == '+' && i == 0)) {
+                if (c.isLetterOrDigit() || (c == '+' && i == 0)) {
                     conteo++
                     if (conteo == rawAntes) {
                         pos = i + 1
@@ -222,7 +288,7 @@ object FormateadorCampos {
                 pos = formateado.length
             }
             // Avanzar sobre caracteres de formato inmediatos (ej. espacio o guión tras completar un bloque)
-            while (pos < formateado.length && !formateado[pos].isDigit()) {
+            while (pos < formateado.length && !formateado[pos].isLetterOrDigit()) {
                 pos++
             }
             pos

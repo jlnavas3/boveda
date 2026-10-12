@@ -1,3 +1,9 @@
+/*
+ * Copyright (C) 2026 Jose Luis Navas
+ * Licensed under the GNU General Public License v3.0 (GPLv3).
+ * See LICENSE file in the project root for full license information.
+ */
+
 package com.jlnavas3.bovedalocal.ui.pantallas.organizacion
 
 import androidx.compose.foundation.background
@@ -50,7 +56,7 @@ fun PantallaOrganizacionEstructura(
         ) {
             BarraSuperiorPantalla(
                 titulo = "Estructura y densidad",
-                idEtiqueta = "03-LST-DES-EST",
+                idEtiqueta = "02-APA-DES-EST",
                 mostrarId = ajustes.mostrarIdsAjustes,
                 alVolver = { vm.volverAtras() },
                 conSeparador = scrollState.value > 0,
@@ -58,9 +64,9 @@ fun PantallaOrganizacionEstructura(
                 acciones = {
                     BotonMenuOpcionesPantalla(
                         grupos = listOf(
-                            AccionSaltoGrupo("03-LST-DES-G01", "Agrupamiento"),
-                            AccionSaltoGrupo("03-LST-DES-G02", "Densidad"),
-                            AccionSaltoGrupo("03-LST-DES-G03", "Orden predeterminado")
+                            AccionSaltoGrupo("02-APA-DES-G01", "Agrupamiento"),
+                            AccionSaltoGrupo("02-APA-DES-G02", "Densidad"),
+                            AccionSaltoGrupo("02-APA-DES-G03", "Orden predeterminado")
                         ),
                         alRestablecerPantalla = {
                             haptica.tic()
@@ -83,14 +89,14 @@ fun PantallaOrganizacionEstructura(
                 // Agrupamiento
                 ComponenteGrupo(
                     etiqueta = "Agrupamiento",
-                    idGrupo = "03-LST-DES-G01",
+                    idGrupo = "02-APA-DES-G01",
                     mostrarId = ajustes.mostrarIdsAjustes
                 ) {
                     ComponenteSwitch(
                         titulo = "Agrupar cuentas por servicio",
                         icono = null,
                         activo = ajustes.agruparPorSitio,
-                        idFila = "03-LST-DES-GRP",
+                        idFila = "02-APA-DES-GRP",
                         mostrarId = ajustes.mostrarIdsAjustes,
                         alCambiar = {
                             haptica.tic()
@@ -145,7 +151,7 @@ private fun PantallaOrganizacionEstructuraPreview() {
         ) {
             BarraSuperiorPantalla(
                 titulo = "Estructura y densidad",
-                idEtiqueta = "03-LST-DES-EST",
+                idEtiqueta = "02-APA-DES-EST",
                 mostrarId = true,
                 alVolver = {},
                 conSeparador = false,

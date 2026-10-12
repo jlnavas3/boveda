@@ -1,3 +1,9 @@
+/*
+ * Copyright (C) 2026 Jose Luis Navas
+ * Licensed under the GNU General Public License v3.0 (GPLv3).
+ * See LICENSE file in the project root for full license information.
+ */
+
 package com.jlnavas3.bovedalocal.crypto
 
 import com.jlnavas3.bovedalocal.data.AjustesDefaults
@@ -19,7 +25,10 @@ data class OpcionesGenerador(
     val idiomaFrase: String = AjustesDefaults.Generador.IDIOMA_FRASE,
     val capitalizarFrase: Boolean = AjustesDefaults.Generador.CAPITALIZAR_FRASE,
     val modoPatron: Boolean = AjustesDefaults.Generador.MODO_PATRON,
-    val patron: String = AjustesDefaults.Generador.PATRON
+    val patron: String = AjustesDefaults.Generador.PATRON,
+    val palabrasAnadidas: Set<String> = emptySet(),
+    val palabrasExcluidas: Set<String> = emptySet(),
+    val palabrasFavoritas: Set<String> = emptySet()
 )
 
 object PasswordGenerator {
@@ -55,7 +64,9 @@ object PasswordGenerator {
             numeroPalabras = opciones.palabras.coerceIn(AjustesDefaults.Generador.PALABRAS_MIN, AjustesDefaults.Generador.PALABRAS_MAX),
             separador = opciones.separadorFrase,
             idioma = opciones.idiomaFrase,
-            capitalizar = opciones.capitalizarFrase
+            capitalizar = opciones.capitalizarFrase,
+            anadidas = opciones.palabrasAnadidas,
+            excluidas = opciones.palabrasExcluidas
         )
         else -> generarAleatoria(opciones)
     }
@@ -64,9 +75,12 @@ object PasswordGenerator {
         numeroPalabras: Int,
         separador: String = AjustesDefaults.Generador.SEPARADOR_FRASE,
         idioma: String = AjustesDefaults.Generador.IDIOMA_FRASE,
-        capitalizar: Boolean = AjustesDefaults.Generador.CAPITALIZAR_FRASE
+        capitalizar: Boolean = AjustesDefaults.Generador.CAPITALIZAR_FRASE,
+        anadidas: Set<String> = emptySet(),
+        excluidas: Set<String> = emptySet()
     ): String {
-        val lista = Wordlist.obtenerPalabras(idioma)
+        val lista = Wordlist.obtenerPalabrasEfectivas(idioma, anadidas, excluidas)
+        if (lista.isEmpty()) return ""
         val cant = numeroPalabras.coerceIn(AjustesDefaults.Generador.PALABRAS_MIN, AjustesDefaults.Generador.PALABRAS_MAX)
         return (0 until cant)
             .map {

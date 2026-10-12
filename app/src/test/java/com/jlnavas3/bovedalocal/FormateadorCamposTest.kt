@@ -1,3 +1,9 @@
+/*
+ * Copyright (C) 2026 Jose Luis Navas
+ * Licensed under the GNU General Public License v3.0 (GPLv3).
+ * See LICENSE file in the project root for full license information.
+ */
+
 package com.jlnavas3.bovedalocal
 
 import androidx.compose.ui.text.TextRange
@@ -158,5 +164,56 @@ class FormateadorCamposTest {
         }
         assertEquals("612 345", resMov.text)
         assertEquals(2, resMov.selection.end)
+    }
+
+    @Test
+    fun `aplicarMascaraTarjeta formatea en bloques de 4 o continuo`() {
+        assertEquals("4532 8910 2345 6789", FormateadorCampos.aplicarMascaraTarjeta("4532891023456789", FormateadorCampos.TARJETA_4X4))
+        assertEquals("4532891023456789", FormateadorCampos.aplicarMascaraTarjeta("4532891023456789", FormateadorCampos.TARJETA_SIN_ESPACIOS))
+        assertEquals("4532 89", FormateadorCampos.aplicarMascaraTarjeta("453289", FormateadorCampos.TARJETA_4X4))
+        assertEquals("", FormateadorCampos.aplicarMascaraTarjeta(""))
+    }
+
+    @Test
+    fun `aplicarMascaraExpiracion formatea MM barra AA`() {
+        assertEquals("12/28", FormateadorCampos.aplicarMascaraExpiracion("1228", FormateadorCampos.EXPIRACION_MMAA))
+        assertEquals("12/2028", FormateadorCampos.aplicarMascaraExpiracion("122028", FormateadorCampos.EXPIRACION_MMAAAA))
+        assertEquals("05", FormateadorCampos.aplicarMascaraExpiracion("05"))
+        assertEquals("", FormateadorCampos.aplicarMascaraExpiracion(""))
+    }
+
+    @Test
+    fun `aplicarMascaraIban agrupa en bloques de 4 en mayusculas`() {
+        assertEquals("ES91 2100 0418 4502", FormateadorCampos.aplicarMascaraIban("es91210004184502", FormateadorCampos.IBAN_BLOQUES_4))
+        assertEquals("ES91210004184502", FormateadorCampos.aplicarMascaraIban("es91 2100 0418 4502", FormateadorCampos.IBAN_CONTINUO))
+    }
+
+    @Test
+    fun `sanitizarPuerto limita a rango 1 a 65535`() {
+        assertEquals("8080", FormateadorCampos.sanitizarPuerto("8080"))
+        assertEquals("65535", FormateadorCampos.sanitizarPuerto("70000"))
+        assertEquals("", FormateadorCampos.sanitizarPuerto("abc"))
+    }
+
+    @Test
+    fun `transformarConMascara soporta caracteres alfanumericos como IBAN`() {
+        // Al tipear 'es912100' -> 'ES91 2100'
+        val tfv = TextFieldValue(text = "es912100", selection = TextRange(8))
+        val res = FormateadorCampos.transformarConMascara(tfv, "ES91 210") {
+            FormateadorCampos.aplicarMascaraIban(it, FormateadorCampos.IBAN_BLOQUES_4)
+        }
+        assertEquals("ES91 2100", res.text)
+        assertEquals(9, res.selection.end)
+    }
+
+    @Test
+    fun `transformarConMascara con expiracion separa mes y anio con slash`() {
+        // Al tipear '122' -> '12/2'
+        val tfv = TextFieldValue(text = "122", selection = TextRange(3))
+        val res = FormateadorCampos.transformarConMascara(tfv, "12") {
+            FormateadorCampos.aplicarMascaraExpiracion(it, FormateadorCampos.EXPIRACION_MMAA)
+        }
+        assertEquals("12/2", res.text)
+        assertEquals(4, res.selection.end)
     }
 }

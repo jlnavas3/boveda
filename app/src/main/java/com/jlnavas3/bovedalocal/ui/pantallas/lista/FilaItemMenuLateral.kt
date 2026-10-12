@@ -1,3 +1,9 @@
+/*
+ * Copyright (C) 2026 Jose Luis Navas
+ * Licensed under the GNU General Public License v3.0 (GPLv3).
+ * See LICENSE file in the project root for full license information.
+ */
+
 package com.jlnavas3.bovedalocal.ui.pantallas.lista
 
 import android.os.Build
@@ -40,7 +46,7 @@ fun FilaItemMenuLateral(
     ajustes: AjustesApp? = null,
     alIr: (Pantalla) -> Unit
 ) {
-    if ((id == "04-HER-PSK" || id == "04-HER-PAS") && Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+    if ((id == "04-HER-PSK" || id == "04-HER-PAS" || id == "03-LST-PAS") && Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
         return
     }
 
@@ -63,16 +69,16 @@ fun FilaItemMenuLateral(
             ajustes = ajustes
         ) { alIr(Pantalla.HistorialClaves) }
 
-        "04-HER-PAS", "04-HER-PSK" -> ItemMenu(
+        "03-LST-PAS", "04-HER-PAS", "04-HER-PSK" -> ItemMenu(
             texto = "Llaves de paso",
             icono = Icons.Filled.Fingerprint,
             colorIcono = ColorPasskeys,
             idEtiqueta = id,
             mostrarId = mostrarIds,
             ajustes = ajustes
-        ) { alIr(Pantalla.Passkeys) }
+        ) { alIr(Pantalla.Passkeys("03-LST-PAS")) }
 
-        "04-HER-2FA" -> ItemMenu(
+        "03-LST-2FA", "04-HER-2FA" -> ItemMenu(
             texto = "Verificación en dos pasos",
             icono = Icons.Filled.Timer,
             colorIcono = Color2FA,

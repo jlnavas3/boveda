@@ -1,8 +1,14 @@
+/*
+ * Copyright (C) 2026 Jose Luis Navas
+ * Licensed under the GNU General Public License v3.0 (GPLv3).
+ * See LICENSE file in the project root for full license information.
+ */
+
 @file:OptIn(ExperimentalFoundationApi::class)
 
 package com.jlnavas3.bovedalocal.ui.componentes.ajustes
 
-import android.widget.Toast
+import com.jlnavas3.bovedalocal.ui.componentes.LocalAvisador
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -73,6 +79,7 @@ fun ComponenteGrupo(
     contenido: @Composable ColumnScope.() -> Unit
 ) {
     val contexto = LocalContext.current
+    val avisador = LocalAvisador.current
     val tieneBadgeGrupo = mostrarId && !idGrupo.isNullOrBlank()
     val colorBadgeGrupo = colorParaGrupoId(idGrupo)
     val estadoAlumbrado = recordarEstadoAlumbrado(idGrupo)
@@ -145,7 +152,7 @@ fun ComponenteGrupo(
                                 Haptica(contexto).tic()
                                 alRestablecer()
                                 val mensaje = mensajeToastRestablecer ?: "Restablecido: ${etiqueta ?: "grupo"}"
-                                Toast.makeText(contexto, mensaje, Toast.LENGTH_SHORT).show()
+                                avisador(mensaje, "Ajustes")
                             },
                         contentAlignment = Alignment.Center
                     ) {

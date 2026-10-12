@@ -1,3 +1,9 @@
+/*
+ * Copyright (C) 2026 Jose Luis Navas
+ * Licensed under the GNU General Public License v3.0 (GPLv3).
+ * See LICENSE file in the project root for full license information.
+ */
+
 package com.jlnavas3.bovedalocal.ui
 
 import android.app.Application
@@ -19,7 +25,14 @@ interface VaultAjustesWidget1x1Delegate {
     }
 
     fun ajustarWidget1x1DicewarePalabras(palabras: Int) =
-        repositorio.ajustes.actualizar { it.copy(widget1x1DicewarePalabras = palabras) }
+        repositorio.ajustes.actualizar {
+            it.copy(
+                widget1x1DicewarePalabras = palabras.coerceIn(
+                    AjustesDefaults.Widget1x1.DICEWARE_PALABRAS_MIN,
+                    AjustesDefaults.Widget1x1.DICEWARE_PALABRAS_MAX
+                )
+            )
+        }
 
     fun ajustarWidget1x1DicewareSeparador(separador: String) =
         repositorio.ajustes.actualizar { it.copy(widget1x1DicewareSeparador = separador) }
@@ -34,7 +47,14 @@ interface VaultAjustesWidget1x1Delegate {
         repositorio.ajustes.actualizar { it.copy(widget1x1Modo = modo) }
 
     fun ajustarWidget1x1Longitud(longitud: Int) =
-        repositorio.ajustes.actualizar { it.copy(widget1x1Longitud = longitud) }
+        repositorio.ajustes.actualizar {
+            it.copy(
+                widget1x1Longitud = longitud.coerceIn(
+                    AjustesDefaults.Widget1x1.LONGITUD_MIN,
+                    AjustesDefaults.Widget1x1.LONGITUD_MAX
+                )
+            )
+        }
 
     fun ajustarWidget1x1Patron(patron: String) =
         repositorio.ajustes.actualizar { it.copy(widget1x1Patron = patron) }

@@ -1,3 +1,9 @@
+/*
+ * Copyright (C) 2026 Jose Luis Navas
+ * Licensed under the GNU General Public License v3.0 (GPLv3).
+ * See LICENSE file in the project root for full license information.
+ */
+
 package com.jlnavas3.bovedalocal.ui.pantallas.organizacion
 
 import androidx.compose.material.icons.Icons
@@ -22,7 +28,7 @@ fun GrupoDensidadFilas(
         etiqueta = "Densidad de lista",
         icono = Icons.Filled.Tune,
         colorIcono = ColorAcento,
-        idGrupo = "03-LST-DES-G02",
+        idGrupo = "02-APA-DES-G02",
         mostrarId = mostrarId,
         modifier = modifier
     ) {
@@ -30,7 +36,7 @@ fun GrupoDensidadFilas(
             titulo = "Predeterminada",
             icono = null,
             seleccionado = densidadLista == "predeterminada" || (densidadLista != "comoda" && densidadLista != "compacta"),
-            idFila = "03-LST-DES-DN1",
+            idFila = "02-APA-DES-DN1",
             mostrarId = mostrarId,
             alSeleccionar = { alSeleccionarDensidad("predeterminada") }
         )
@@ -39,7 +45,7 @@ fun GrupoDensidadFilas(
             titulo = "Cómoda",
             icono = null,
             seleccionado = densidadLista == "comoda",
-            idFila = "03-LST-DES-DN2",
+            idFila = "02-APA-DES-DN2",
             mostrarId = mostrarId,
             alSeleccionar = { alSeleccionarDensidad("comoda") }
         )
@@ -48,7 +54,7 @@ fun GrupoDensidadFilas(
             titulo = "Compacta",
             icono = null,
             seleccionado = densidadLista == "compacta",
-            idFila = "03-LST-DES-DN3",
+            idFila = "02-APA-DES-DN3",
             mostrarId = mostrarId,
             alSeleccionar = { alSeleccionarDensidad("compacta") }
         )

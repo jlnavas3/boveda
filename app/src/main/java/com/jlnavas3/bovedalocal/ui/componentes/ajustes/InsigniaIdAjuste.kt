@@ -1,9 +1,15 @@
+/*
+ * Copyright (C) 2026 Jose Luis Navas
+ * Licensed under the GNU General Public License v3.0 (GPLv3).
+ * See LICENSE file in the project root for full license information.
+ */
+
 package com.jlnavas3.bovedalocal.ui.componentes.ajustes
 
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
-import android.widget.Toast
+import com.jlnavas3.bovedalocal.ui.componentes.LocalAvisador
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -53,6 +59,7 @@ fun InsigniaIdAjuste(
     if (id.isBlank()) return
 
     val contexto = LocalContext.current
+    val avisador = LocalAvisador.current
     val prefijo = id.trimStart().take(2)
     val colorBase = colorForzado ?: when {
         ajustes != null -> when (prefijo) {
@@ -89,7 +96,7 @@ fun InsigniaIdAjuste(
                 .clickable {
                     val clipboard = contexto.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
                     clipboard.setPrimaryClip(ClipData.newPlainText("ID Ajuste", id))
-                    Toast.makeText(contexto, "ID copiado: $id", Toast.LENGTH_SHORT).show()
+                    avisador("ID copiado: $id", "Portapapeles")
                 }
                 .padding(2.5.dp),
             contentAlignment = Alignment.Center

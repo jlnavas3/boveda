@@ -1,3 +1,9 @@
+/*
+ * Copyright (C) 2026 Jose Luis Navas
+ * Licensed under the GNU General Public License v3.0 (GPLv3).
+ * See LICENSE file in the project root for full license information.
+ */
+
 package com.jlnavas3.bovedalocal.crypto
 
 object Wordlist {
@@ -147,4 +153,32 @@ object Wordlist {
     }
 
     fun obtenerTamano(idioma: String = "es"): Int = obtenerPalabras(idioma).size
+
+    fun obtenerPalabrasEfectivas(
+        idioma: String = "es",
+        anadidas: Set<String> = emptySet(),
+        excluidas: Set<String> = emptySet()
+    ): List<String> {
+        val base = obtenerPalabras(idioma)
+        val excluidasNormalizadas = excluidas.map { it.trim().lowercase() }.toSet()
+        val filtradas = if (excluidasNormalizadas.isEmpty()) base else base.filterNot { it in excluidasNormalizadas }
+        val anadidasNormalizadas = anadidas.map { it.trim().lowercase() }.filter { it.isNotBlank() }
+        val resultado = if (anadidasNormalizadas.isEmpty()) filtradas else (filtradas + anadidasNormalizadas).distinct()
+        return resultado.sorted()
+    }
+
+    fun calcularEntropiaPorPalabra(universoPalabras: Int): Double {
+        if (universoPalabras <= 1) return 0.0
+        return kotlin.math.ln(universoPalabras.toDouble()) / kotlin.math.ln(2.0)
+    }
+
+    fun esPalabraValida(palabra: String, idioma: String = "es"): Boolean {
+        val limpia = palabra.trim().lowercase()
+        if (limpia.length !in 2..24) return false
+        return if (idioma.lowercase() in listOf("en", "inglés", "ingles", "english")) {
+            limpia.all { it in 'a'..'z' }
+        } else {
+            limpia.all { it in 'a'..'z' || it == 'ñ' || it == 'á' || it == 'é' || it == 'í' || it == 'ó' || it == 'ú' }
+        }
+    }
 }

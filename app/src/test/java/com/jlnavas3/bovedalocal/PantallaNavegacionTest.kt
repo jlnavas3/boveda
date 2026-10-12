@@ -1,7 +1,15 @@
+/*
+ * Copyright (C) 2026 Jose Luis Navas
+ * Licensed under the GNU General Public License v3.0 (GPLv3).
+ * See LICENSE file in the project root for full license information.
+ */
+
 package com.jlnavas3.bovedalocal
 
 import com.jlnavas3.bovedalocal.ui.CriterioOrdenacion
 import com.jlnavas3.bovedalocal.ui.Pantalla
+import com.jlnavas3.bovedalocal.ui.VaultNavegacionDelegate
+import kotlinx.coroutines.flow.MutableStateFlow
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotEquals
 import org.junit.Assert.assertTrue
@@ -363,64 +371,84 @@ class PantallaNavegacionTest {
     }
 
     @Test
-    fun `todas las opciones abiertas desde el menu lateral regresan a Lista principal`() {
+    fun `todas las opciones abiertas desde el menu lateral regresan a Lista principal y abren el cajon`() {
         val rutasMenuLateral = listOf(
             Pantalla.Generador,
             Pantalla.HistorialClaves,
-            Pantalla.Passkeys,
+            Pantalla.Passkeys("03-LST-PAS"),
             Pantalla.Autenticador,
             Pantalla.SaludBoveda,
             Pantalla.Duplicados,
             Pantalla.Papelera,
+            Pantalla.Identidades(),
+            Pantalla.Categorias(),
             Pantalla.Ajustes,
-            Pantalla.Registro,
-            Pantalla.AcercaDe
+            Pantalla.Registro("06-SIS-LOG"),
+            Pantalla.AcercaDe("06-SIS-DGN"),
+            Pantalla.PersonalizarMenuLateral(),
+            Pantalla.Tema("02-APA-THM")
         )
 
-        fun padreDe(p: Pantalla): Pantalla? = when (p) {
-            is Pantalla.SaludBoveda -> if (!p.seccionId.isNullOrBlank()) Pantalla.Ajustes(p.seccionId) else Pantalla.Lista
-            is Pantalla.Duplicados -> if (!p.seccionId.isNullOrBlank()) Pantalla.Ajustes(p.seccionId) else Pantalla.Lista
-            is Pantalla.Papelera -> if (!p.seccionId.isNullOrBlank()) Pantalla.Ajustes(p.seccionId) else Pantalla.Lista
-            is Pantalla.HistorialClaves -> if (!p.seccionId.isNullOrBlank()) Pantalla.Ajustes(p.seccionId) else Pantalla.Lista
-            is Pantalla.Registro -> if (!p.seccionId.isNullOrBlank()) Pantalla.Ajustes(p.seccionId) else Pantalla.Lista
-            is Pantalla.AcercaDe -> if (!p.seccionId.isNullOrBlank()) Pantalla.Ajustes(p.seccionId) else Pantalla.Lista
-            is Pantalla.Ajustes -> Pantalla.Lista
-            is Pantalla.Generador -> Pantalla.Lista
-            is Pantalla.Passkeys -> Pantalla.Lista
-            is Pantalla.Autenticador -> Pantalla.Lista
-            else -> null
+        class TestNavegacionDelegate : VaultNavegacionDelegate {
+            override val pantallaInterna = MutableStateFlow<Pantalla>(Pantalla.Lista)
+            override val navegandoAtrasInterno = MutableStateFlow(false)
+            override val pilaNavegacion = ArrayDeque<Pantalla>()
+            override var ultimoWidgetAjustesSeleccionado: Int = 0
+            override var ultimoScrollAjustes: Int = 0
+            override var navegoDesdeMenuLateral: Boolean = false
+            override val abrirMenuLateralAlVolverALista = MutableStateFlow(false)
         }
 
         for (destino in rutasMenuLateral) {
-            val pila = ArrayDeque<Pantalla>()
-            var pantallaActual: Pantalla = Pantalla.Lista
+            val nav = TestNavegacionDelegate()
+            nav.irDesdeMenuLateral(destino)
 
-            // Simular irDesdeMenuLateral
-            pila.clear()
-            pila.addLast(Pantalla.Lista)
-            pantallaActual = destino
+            assertEquals("Debe navegar a la pantalla seleccionada", destino, nav.pantallaInterna.value)
+            assertTrue("Debe registrar que proviene del menú lateral", nav.navegoDesdeMenuLateral)
+            assertEquals("La base de la pila debe ser únicamente Lista", listOf(Pantalla.Lista), nav.pilaNavegacion.toList())
 
-            fun retroceder(): Boolean {
-                val anterior = pila.removeLastOrNull()
-                val padre = padreDe(pantallaActual)
-                val target = when {
-                    anterior is Pantalla.Ajustes && !anterior.seccionId.isNullOrBlank() -> anterior
-                    anterior is Pantalla.Lista -> Pantalla.Lista
-                    padre != null -> padre
-                    anterior != null -> anterior
-                    else -> null
-                }
-                if (target != null) {
-                    pantallaActual = target
-                    return true
-                }
-                return false
-            }
-
-            assertTrue("Debe retroceder exitosamente desde $destino", retroceder())
-            assertEquals("Al volver de $destino debe llegar a Lista principal", Pantalla.Lista, pantallaActual)
-            assertEquals("Estando en Lista, no debe retroceder más", false, retroceder())
+            assertTrue("Debe retroceder exitosamente desde $destino", nav.retroceder())
+            assertEquals("Al volver de $destino debe llegar a Lista principal", Pantalla.Lista, nav.pantallaInterna.value)
+            assertTrue("Debe ordenar abrir el menú lateral al regresar a Lista", nav.abrirMenuLateralAlVolverALista.value)
+            assertEquals("El flag navegoDesdeMenuLateral debe consumirse al llegar a Lista", false, nav.navegoDesdeMenuLateral)
+            assertEquals("Estando en Lista, no debe retroceder más", false, nav.retroceder())
         }
+    }
+
+    @Test
+    fun `navegacion multinivel desde menu lateral preserva retorno a subpantalla y finalmente a Lista con cajon`() {
+        class TestNavegacionDelegate : VaultNavegacionDelegate {
+            override val pantallaInterna = MutableStateFlow<Pantalla>(Pantalla.Lista)
+            override val navegandoAtrasInterno = MutableStateFlow(false)
+            override val pilaNavegacion = ArrayDeque<Pantalla>()
+            override var ultimoWidgetAjustesSeleccionado: Int = 0
+            override var ultimoScrollAjustes: Int = 0
+            override var navegoDesdeMenuLateral: Boolean = false
+            override val abrirMenuLateralAlVolverALista = MutableStateFlow(false)
+        }
+
+        val nav = TestNavegacionDelegate()
+        // 1. Abre Salud desde el menú lateral
+        nav.irDesdeMenuLateral(Pantalla.SaludBoveda)
+        assertTrue(nav.navegoDesdeMenuLateral)
+        assertEquals(Pantalla.SaludBoveda, nav.pantallaInterna.value)
+
+        // 2. Desde Salud navega a Editar una credencial
+        nav.ir(Pantalla.Editar("item-123"))
+        assertEquals(Pantalla.Editar("item-123"), nav.pantallaInterna.value)
+        assertTrue(nav.navegoDesdeMenuLateral)
+
+        // 3. Al volver de Editar, regresa a SaludBoveda (no a Ajustes ni a Lista)
+        assertTrue(nav.retroceder())
+        assertEquals(Pantalla.SaludBoveda, nav.pantallaInterna.value)
+        assertEquals(false, nav.abrirMenuLateralAlVolverALista.value)
+        assertTrue(nav.navegoDesdeMenuLateral)
+
+        // 4. Al volver de SaludBoveda, regresa a Lista y abre el menú lateral
+        assertTrue(nav.retroceder())
+        assertEquals(Pantalla.Lista, nav.pantallaInterna.value)
+        assertTrue(nav.abrirMenuLateralAlVolverALista.value)
+        assertEquals(false, nav.navegoDesdeMenuLateral)
     }
 
     @Test
@@ -487,11 +515,11 @@ class PantallaNavegacionTest {
 
         // Retroceso Nivel 3 -> Nivel 2 (NormalizadorTitulos -> OrganizacionLista)
         assertTrue(retroceder())
-        assertEquals(Pantalla.OrganizacionLista("03-LST-DES-TIT"), pantallaActual)
+        assertEquals(Pantalla.OrganizacionLista("02-APA-DES-TIT"), pantallaActual)
 
         // Retroceso Nivel 2 -> Nivel 1 (OrganizacionLista -> Ajustes)
         assertTrue(retroceder())
-        assertEquals(Pantalla.Ajustes("03-LST-DES"), pantallaActual)
+        assertEquals(Pantalla.Ajustes("02-APA-DES"), pantallaActual)
 
         // Retroceso Nivel 1 -> Nivel 0 (Ajustes -> Lista)
         assertTrue(retroceder())
@@ -521,5 +549,66 @@ class PantallaNavegacionTest {
         )
         // Verificamos que las consultas clave estén contempladas
         assertTrue(listaKeywords.isNotEmpty())
+    }
+
+    @Test
+    fun `navegar desde Ajustes a filas de Lista o Apariencia o Sistema guarda y restaura el id exacto de la fila`() {
+        val casos = listOf(
+            com.jlnavas3.bovedalocal.ui.Pantalla.ColoresDatos("02-APA-COL") to "02-APA-COL",
+            com.jlnavas3.bovedalocal.ui.Pantalla.EntradasTipo(com.jlnavas3.bovedalocal.data.TipoEntrada.LOGIN) to "03-LST-LOG",
+            com.jlnavas3.bovedalocal.ui.Pantalla.EntradasTipo(com.jlnavas3.bovedalocal.data.TipoEntrada.NOTA) to "03-LST-NOT",
+            com.jlnavas3.bovedalocal.ui.Pantalla.EntradasTipo(com.jlnavas3.bovedalocal.data.TipoEntrada.TARJETA) to "03-LST-TAR",
+            com.jlnavas3.bovedalocal.ui.Pantalla.EntradasTipo(com.jlnavas3.bovedalocal.data.TipoEntrada.CONTACTO) to "03-LST-CON",
+            com.jlnavas3.bovedalocal.ui.Pantalla.EntradasTipo(com.jlnavas3.bovedalocal.data.TipoEntrada.WIFI) to "03-LST-WIF",
+            com.jlnavas3.bovedalocal.ui.Pantalla.EntradasTipo(com.jlnavas3.bovedalocal.data.TipoEntrada.CUENTA_BANCARIA) to "03-LST-BNC",
+            com.jlnavas3.bovedalocal.ui.Pantalla.EntradasTipo(com.jlnavas3.bovedalocal.data.TipoEntrada.IDENTIDAD) to "03-LST-IDN",
+            com.jlnavas3.bovedalocal.ui.Pantalla.EntradasTipo(com.jlnavas3.bovedalocal.data.TipoEntrada.SERVIDOR) to "03-LST-SRV",
+            com.jlnavas3.bovedalocal.ui.Pantalla.EntradasTipo(com.jlnavas3.bovedalocal.data.TipoEntrada.WALLET) to "03-LST-WAL",
+            com.jlnavas3.bovedalocal.ui.Pantalla.Identidades("03-LST-IDE") to "03-LST-IDE",
+            com.jlnavas3.bovedalocal.ui.Pantalla.SaludBoveda("03-LST-SLD") to "03-LST-SLD",
+            com.jlnavas3.bovedalocal.ui.Pantalla.Duplicados("03-LST-DUP") to "03-LST-DUP",
+            com.jlnavas3.bovedalocal.ui.Pantalla.Papelera("03-LST-PAP") to "03-LST-PAP",
+            com.jlnavas3.bovedalocal.ui.Pantalla.Categorias("03-LST-CAT") to "03-LST-CAT",
+            com.jlnavas3.bovedalocal.ui.Pantalla.Registro("06-SIS-LOG") to "06-SIS-LOG",
+            com.jlnavas3.bovedalocal.ui.Pantalla.AcercaDe("06-SIS-DGN") to "06-SIS-DGN"
+        )
+
+        for ((pantalla, idEsperado) in casos) {
+            val pila = ArrayDeque<Pantalla>()
+            var pantallaActual: Pantalla = Pantalla.Ajustes()
+
+            // Simular lógica de origen en ir(pantalla) desde Ajustes
+            val idHijo = when (pantalla) {
+                is Pantalla.ColoresDatos -> pantalla.seccionId ?: "02-APA-COL"
+                is Pantalla.EntradasTipo -> when (pantalla.tipo) {
+                    com.jlnavas3.bovedalocal.data.TipoEntrada.LOGIN -> "03-LST-LOG"
+                    com.jlnavas3.bovedalocal.data.TipoEntrada.NOTA -> "03-LST-NOT"
+                    com.jlnavas3.bovedalocal.data.TipoEntrada.TARJETA -> "03-LST-TAR"
+                    com.jlnavas3.bovedalocal.data.TipoEntrada.CONTACTO -> "03-LST-CON"
+                    com.jlnavas3.bovedalocal.data.TipoEntrada.WIFI -> "03-LST-WIF"
+                    com.jlnavas3.bovedalocal.data.TipoEntrada.CUENTA_BANCARIA -> "03-LST-BNC"
+                    com.jlnavas3.bovedalocal.data.TipoEntrada.IDENTIDAD -> "03-LST-IDN"
+                    com.jlnavas3.bovedalocal.data.TipoEntrada.SERVIDOR -> "03-LST-SRV"
+                    com.jlnavas3.bovedalocal.data.TipoEntrada.WALLET -> "03-LST-WAL"
+                    com.jlnavas3.bovedalocal.data.TipoEntrada.PASSKEY -> "03-LST-PAS"
+                }
+                is Pantalla.Identidades -> pantalla.seccionId ?: "03-LST-IDE"
+                is Pantalla.SaludBoveda -> pantalla.seccionId ?: "03-LST-SLD"
+                is Pantalla.Duplicados -> pantalla.seccionId ?: "03-LST-DUP"
+                is Pantalla.Papelera -> pantalla.seccionId ?: "03-LST-PAP"
+                is Pantalla.Categorias -> pantalla.seccionId ?: "03-LST-CAT"
+                is Pantalla.Registro -> pantalla.seccionId ?: "06-SIS-LOG"
+                is Pantalla.AcercaDe -> pantalla.seccionId ?: "06-SIS-DGN"
+                else -> null
+            }
+            val origen = Pantalla.Ajustes(idHijo)
+            pila.addLast(origen)
+            pantallaActual = pantalla
+
+            // Retroceder
+            val anterior = pila.removeLastOrNull()
+            assertTrue("Debe retornar a Pantalla.Ajustes($idEsperado)", anterior is Pantalla.Ajustes)
+            assertEquals(idEsperado, (anterior as Pantalla.Ajustes).seccionId)
+        }
     }
 }

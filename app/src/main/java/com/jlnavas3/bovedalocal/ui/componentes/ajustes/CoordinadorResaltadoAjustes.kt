@@ -1,3 +1,9 @@
+/*
+ * Copyright (C) 2026 Jose Luis Navas
+ * Licensed under the GNU General Public License v3.0 (GPLv3).
+ * See LICENSE file in the project root for full license information.
+ */
+
 @file:OptIn(ExperimentalFoundationApi::class)
 
 package com.jlnavas3.bovedalocal.ui.componentes.ajustes
@@ -52,7 +58,7 @@ class CoordinadorResaltadoAjustes(
         if (dest == "04-HER-WGT-G01" && item == "04-HER-WGT-TOT") return true
         if ((dest == "03-COP-AUT" || dest == "05-COP-ATM") &&
             (item == "05-COP-ATM-G01" || item.startsWith("05-COP-ATM") || item == "03.2.1")) return true
-        if (dest == "03-LST-CAM" && (item == "03-LST-FMT" || item == "03-LST-FMT-G01" || item.startsWith("03-LST-FMT"))) return true
+        if (dest == "03-LST-CAM" && (item == "02-APA-FMT" || item == "02-APA-FMT-G01" || item.startsWith("02-APA-FMT") || item == "03-LST-FMT" || item.startsWith("03-LST-FMT"))) return true
         if (dest == "01-SEG-DAT" && (item == "01-SEG-DAT-G01" || item.startsWith("01-SEG-DAT"))) return true
         if (dest == "01-SEG-BIO" && (item == "01-SEG-BIO-G01" || item.startsWith("01-SEG-BIO"))) return true
         if (dest == "04-HER-CAM" && (item == "04-HER-CAM-G01" || item.startsWith("04-HER-CAM"))) return true

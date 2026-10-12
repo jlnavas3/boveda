@@ -1,3 +1,9 @@
+/*
+ * Copyright (C) 2026 Jose Luis Navas
+ * Licensed under the GNU General Public License v3.0 (GPLv3).
+ * See LICENSE file in the project root for full license information.
+ */
+
 package com.jlnavas3.bovedalocal.ui.pantallas.tema
 
 import android.content.Context
@@ -41,7 +47,8 @@ object ExportadorPaletaLaboratorio {
         lumTextoPrincipal: Float,
         tonoEfectivoTextoPrincipal: Float,
         lumTextoSecundario: Float,
-        tonoEfectivoTextoSecundario: Float
+        tonoEfectivoTextoSecundario: Float,
+        alAvisar: ((String, String?) -> Unit)? = null
     ) {
         haptica.exito()
         val (hAcento, sAcento, vAcento) = colorAhsv(colorAcentoActual)
@@ -103,6 +110,10 @@ object ExportadorPaletaLaboratorio {
         }
         """.trimIndent()
         portapapeles.setText(AnnotatedString(jsonDetallado))
-        Toast.makeText(contexto, "¡Paleta y parámetros copiados! Pégala en el chat.", Toast.LENGTH_LONG).show()
+        if (alAvisar != null) {
+            alAvisar("¡Paleta y parámetros copiados! Pégala en el chat.", "Portapapeles")
+        } else {
+            Toast.makeText(contexto, "¡Paleta y parámetros copiados! Pégala en el chat.", Toast.LENGTH_LONG).show()
+        }
     }
 }

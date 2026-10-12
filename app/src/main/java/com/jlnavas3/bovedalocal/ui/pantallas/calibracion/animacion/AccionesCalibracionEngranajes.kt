@@ -1,3 +1,9 @@
+/*
+ * Copyright (C) 2026 Jose Luis Navas
+ * Licensed under the GNU General Public License v3.0 (GPLv3).
+ * See LICENSE file in the project root for full license information.
+ */
+
 package com.jlnavas3.bovedalocal.ui.pantallas.calibracion.animacion
 
 import android.content.ClipData
@@ -56,7 +62,7 @@ fun AccionesCalibracionEngranajes(
                 }
                 val clipboard = contexto.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
                 clipboard.setPrimaryClip(ClipData.newPlainText("Configuración Engranajes", textoConfig))
-                Toast.makeText(contexto, "Configuración copiada al portapapeles", Toast.LENGTH_SHORT).show()
+                vm.avisar("Configuración copiada al portapapeles", "Portapapeles")
             }
         )
         ComponenteSeparador()
@@ -64,7 +70,7 @@ fun AccionesCalibracionEngranajes(
             titulo = "Restablecer módulo",
             alPulsar = {
                 vm.restablecerAjustesEngranajes()
-                Toast.makeText(contexto, "Engranajes restablecidos", Toast.LENGTH_SHORT).show()
+                vm.avisar("Engranajes restablecidos", "Animación")
             }
         )
     }

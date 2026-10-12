@@ -1,3 +1,9 @@
+/*
+ * Copyright (C) 2026 Jose Luis Navas
+ * Licensed under the GNU General Public License v3.0 (GPLv3).
+ * See LICENSE file in the project root for full license information.
+ */
+
 package com.jlnavas3.bovedalocal.ui.pantallas.ajustes.widget
 
 import androidx.compose.foundation.layout.Column
@@ -5,6 +11,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.MenuBook
 import androidx.compose.material.icons.filled.Key
 import androidx.compose.material.icons.filled.Pattern
 import androidx.compose.material3.MaterialTheme
@@ -17,11 +24,13 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.jlnavas3.bovedalocal.data.AjustesDefaults
+import com.jlnavas3.bovedalocal.ui.Pantalla
 import com.jlnavas3.bovedalocal.ui.VaultViewModel
 import com.jlnavas3.bovedalocal.ui.componentes.CampoBoveda
 import com.jlnavas3.bovedalocal.ui.componentes.ContenedorPrincipal
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteCampoTexto
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteGrupo
+import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteNavegacion
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteRadio
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteSelectorModal
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteSeparador
@@ -89,8 +98,8 @@ fun PantallaWidget1x1Modo(
                     icono = null,
                     valor = ajustes.widget1x1Longitud.toFloat(),
                     valorTexto = "${ajustes.widget1x1Longitud} caracteres",
-                    rango = 6f..64f,
-                    pasos = 57,
+                    rango = AjustesDefaults.Widget1x1.LONGITUD_MIN.toFloat()..AjustesDefaults.Widget1x1.LONGITUD_MAX.toFloat(),
+                    pasos = AjustesDefaults.Widget1x1.LONGITUD_MAX - AjustesDefaults.Widget1x1.LONGITUD_MIN - 1,
                     idFila = "04-HER-WGT-MOD-LEN",
                     mostrarId = ajustes.mostrarIdsAjustes,
                     alRestablecer = {
@@ -98,7 +107,11 @@ fun PantallaWidget1x1Modo(
                         vm.ajustarWidget1x1Longitud(AjustesDefaults.Widget1x1.LONGITUD)
                     },
                     alCambiar = {
-                        vm.ajustarWidget1x1Longitud(it.roundToInt())
+                        val nuevo = it.roundToInt().coerceIn(AjustesDefaults.Widget1x1.LONGITUD_MIN, AjustesDefaults.Widget1x1.LONGITUD_MAX)
+                        if (nuevo != ajustes.widget1x1Longitud) {
+                            haptica.toque()
+                            vm.ajustarWidget1x1Longitud(nuevo)
+                        }
                     }
                 )
 
@@ -136,8 +149,8 @@ fun PantallaWidget1x1Modo(
                     icono = null,
                     valor = ajustes.widget1x1DicewarePalabras.toFloat(),
                     valorTexto = "${ajustes.widget1x1DicewarePalabras} palabras",
-                    rango = 3f..12f,
-                    pasos = 8,
+                    rango = AjustesDefaults.Widget1x1.DICEWARE_PALABRAS_MIN.toFloat()..AjustesDefaults.Widget1x1.DICEWARE_PALABRAS_MAX.toFloat(),
+                    pasos = AjustesDefaults.Widget1x1.DICEWARE_PALABRAS_MAX - AjustesDefaults.Widget1x1.DICEWARE_PALABRAS_MIN - 1,
                     idFila = "04-HER-WGT-MOD-WRD",
                     mostrarId = ajustes.mostrarIdsAjustes,
                     alRestablecer = {
@@ -145,7 +158,11 @@ fun PantallaWidget1x1Modo(
                         vm.ajustarWidget1x1DicewarePalabras(AjustesDefaults.Widget1x1.DICEWARE_PALABRAS)
                     },
                     alCambiar = {
-                        vm.ajustarWidget1x1DicewarePalabras(it.roundToInt())
+                        val nuevo = it.roundToInt().coerceIn(AjustesDefaults.Widget1x1.DICEWARE_PALABRAS_MIN, AjustesDefaults.Widget1x1.DICEWARE_PALABRAS_MAX)
+                        if (nuevo != ajustes.widget1x1DicewarePalabras) {
+                            haptica.toque()
+                            vm.ajustarWidget1x1DicewarePalabras(nuevo)
+                        }
                     }
                 )
 
@@ -162,6 +179,17 @@ fun PantallaWidget1x1Modo(
                         haptica.tic()
                         vm.ajustarWidget1x1DicewareSeparador(it)
                     }
+                )
+
+                ComponenteSeparador(sangriaInicio = 16.dp)
+
+                ComponenteNavegacion(
+                    titulo = "Gestionar diccionario",
+                    subtitulo = "Palabras, favoritas y listas EFF",
+                    icono = Icons.AutoMirrored.Filled.MenuBook,
+                    idFila = "04-HER-WGT-MOD-DIC-CFG",
+                    mostrarId = ajustes.mostrarIdsAjustes,
+                    alPulsar = { vm.ir(Pantalla.DiccionarioPalabras()) }
                 )
             }
 

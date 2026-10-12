@@ -1,3 +1,9 @@
+/*
+ * Copyright (C) 2026 Jose Luis Navas
+ * Licensed under the GNU General Public License v3.0 (GPLv3).
+ * See LICENSE file in the project root for full license information.
+ */
+
 package com.jlnavas3.bovedalocal.ui.pantallas
 
 import androidx.activity.compose.BackHandler
@@ -71,7 +77,9 @@ fun PantallaSaludBoveda(
         entradas = entradas,
         umbralDias = ajustes.umbralAntiguedadDias,
         ahora = ahora,
-        contexto = contexto
+        contexto = contexto,
+        anadidasComunes = ajustes.contrasenasComunesAnadidas,
+        excluidasComunes = ajustes.contrasenasComunesExcluidas
     )
     val diagnosticoAccesibilidad = remember(contexto, ajustes.listaBlancaAccesibilidad) {
         com.jlnavas3.bovedalocal.util.DetectorServiciosAccesibilidad.evaluar(contexto, ajustes.listaBlancaAccesibilidad)
@@ -156,7 +164,8 @@ fun PantallaSaludBoveda(
                     alAbrirAuditoria = { mostrarModalAuditoria = true },
                     alIrDuplicados = { vm.ir(Pantalla.Duplicados) },
                     alIrSeguridad = { vm.ir(Pantalla.Seguridad("01-SEG")) },
-                    alIrGenerador = { vm.ir(Pantalla.Generador) }
+                    alIrGenerador = { vm.ir(Pantalla.Generador) },
+                    alIrContrasenasComunes = { vm.ir(Pantalla.ContrasenasComunes()) }
                 )
             }
 

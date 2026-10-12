@@ -1,3 +1,9 @@
+/*
+ * Copyright (C) 2026 Jose Luis Navas
+ * Licensed under the GNU General Public License v3.0 (GPLv3).
+ * See LICENSE file in the project root for full license information.
+ */
+
 package com.jlnavas3.bovedalocal.ui.pantallas.acercade
 
 import androidx.compose.foundation.layout.Arrangement
@@ -10,6 +16,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Verified
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -29,7 +36,9 @@ fun GrupoAcercaDeApp(
     alCopiarAuditoria: () -> Unit,
     alAbrirFichaApp: () -> Unit,
     modifier: Modifier = Modifier,
-    mostrarIdsAjustes: Boolean = false
+    mostrarIdsAjustes: Boolean = false,
+    alVerInformacionApp: (() -> Unit)? = null,
+    alVerLicencia: (() -> Unit)? = null
 ) {
     ComponenteGrupo(
         etiqueta = "Acerca de Bóveda Local",
@@ -51,6 +60,30 @@ fun GrupoAcercaDeApp(
                 color = TextoSecundario,
                 style = MaterialTheme.typography.bodySmall,
                 lineHeight = 16.sp
+            )
+        }
+
+        if (alVerInformacionApp != null) {
+            ComponenteSeparador()
+
+            ComponenteBotonFila(
+                titulo = "Información de la aplicación",
+                icono = Icons.Filled.Info,
+                colorIcono = ColorIconosInternos,
+                colorTinteIcono = androidx.compose.ui.graphics.Color.White,
+                alPulsar = alVerInformacionApp
+            )
+        }
+
+        if (alVerLicencia != null) {
+            ComponenteSeparador()
+
+            ComponenteBotonFila(
+                titulo = "Licencia de software (GNU GPLv3)",
+                icono = Icons.Filled.Verified,
+                colorIcono = ColorIconosInternos,
+                colorTinteIcono = androidx.compose.ui.graphics.Color.White,
+                alPulsar = alVerLicencia
             )
         }
 

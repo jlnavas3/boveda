@@ -1,3 +1,9 @@
+/*
+ * Copyright (C) 2026 Jose Luis Navas
+ * Licensed under the GNU General Public License v3.0 (GPLv3).
+ * See LICENSE file in the project root for full license information.
+ */
+
 package com.jlnavas3.bovedalocal.ui.pantallas.passkeys
 
 import androidx.compose.foundation.ScrollState
@@ -84,6 +90,6 @@ fun ContenidoListaPasskeys(
             }
         }
 
-        Spacer(Modifier.height(24.dp))
+        Spacer(Modifier.height(88.dp))
     }
 }

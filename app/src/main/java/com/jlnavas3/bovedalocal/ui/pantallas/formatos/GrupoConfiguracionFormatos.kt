@@ -1,3 +1,9 @@
+/*
+ * Copyright (C) 2026 Jose Luis Navas
+ * Licensed under the GNU General Public License v3.0 (GPLv3).
+ * See LICENSE file in the project root for full license information.
+ */
+
 package com.jlnavas3.bovedalocal.ui.pantallas.formatos
 
 import androidx.compose.material.icons.Icons
@@ -36,7 +42,7 @@ fun GrupoConfiguracionFormatos(
         icono = Icons.AutoMirrored.Filled.FormatListBulleted,
         colorIcono = Color(0xFFFFA000),
         alRestablecer = alRestablecerGrupo,
-        idGrupo = "03-LST-FMT-G02",
+        idGrupo = "02-APA-FMT-G02",
         mostrarId = mostrarIdsAjustes,
         modifier = modifier
     ) {
@@ -52,7 +58,7 @@ fun GrupoConfiguracionFormatos(
             titulo = "Formato de fecha",
             descripcionModal = "Elige cómo visualizar las fechas registradas en tus cuentas",
             icono = null,
-            idFila = "03-LST-FMT-FCH",
+            idFila = "02-APA-FMT-FCH",
             mostrarId = mostrarIdsAjustes,
             valorSeleccionado = formatoFecha,
             opciones = opcionesFecha,
@@ -71,7 +77,7 @@ fun GrupoConfiguracionFormatos(
             titulo = "Formato de hora",
             descripcionModal = "Selecciona el estándar de representación horaria",
             icono = null,
-            idFila = "03-LST-FMT-HOR",
+            idFila = "02-APA-FMT-HOR",
             mostrarId = mostrarIdsAjustes,
             valorSeleccionado = formatoHora,
             opciones = opcionesHora,
@@ -93,7 +99,7 @@ fun GrupoConfiguracionFormatos(
             titulo = "Máscara de teléfono",
             descripcionModal = "Máscara visual aplicada automáticamente en campos telefónicos",
             icono = null,
-            idFila = "03-LST-FMT-TEL",
+            idFila = "02-APA-FMT-TEL",
             mostrarId = mostrarIdsAjustes,
             valorSeleccionado = formatoTelefono,
             opciones = opcionesTelefono,
@@ -112,7 +118,7 @@ fun GrupoConfiguracionFormatos(
             titulo = "Separador decimal",
             descripcionModal = "Símbolo numérico para fracciones decimales en importes y notas",
             icono = null,
-            idFila = "03-LST-FMT-DEC",
+            idFila = "02-APA-FMT-DEC",
             mostrarId = mostrarIdsAjustes,
             valorSeleccionado = separadorDecimal,
             opciones = opcionesDecimal,

@@ -1,3 +1,9 @@
+/*
+ * Copyright (C) 2026 Jose Luis Navas
+ * Licensed under the GNU General Public License v3.0 (GPLv3).
+ * See LICENSE file in the project root for full license information.
+ */
+
 package com.jlnavas3.bovedalocal.ui.pantallas.indice
 
 import androidx.compose.foundation.layout.padding
@@ -36,7 +42,7 @@ fun PantallaIndiceOla(
 
     ContenedorPrincipal(
         titulo = "Efecto de ola",
-        idEtiqueta = "03-LST-AZX-OLA",
+        idEtiqueta = "02-APA-AZX-OLA",
         mostrarId = ajustes.mostrarIdsAjustes,
         alVolver = { vm.volverAtras() },
         cabeceraFlotante = {
@@ -66,13 +72,13 @@ fun PantallaIndiceOla(
                 vm.restablecerEscalaLetrasIndice()
                 vm.avisar("Valores de ola restablecidos")
             },
-            idGrupo = "03-LST-AZX-OLA-G01",
+            idGrupo = "02-APA-AZX-OLA-G01",
             mostrarId = ajustes.mostrarIdsAjustes
         ) {
             ComponenteSwitch(
                 titulo = "Efecto de ola al deslizar",
                 activo = ajustes.indiceEfectoOla,
-                idFila = "03-LST-AZX-OLA-SWT",
+                idFila = "02-APA-AZX-OLA-SWT",
                 mostrarId = ajustes.mostrarIdsAjustes,
                 alCambiar = {
                     haptica.tic()
@@ -88,7 +94,7 @@ fun PantallaIndiceOla(
                     valor = ajustes.indiceAmplitudOlaDp,
                     valorTexto = "${ajustes.indiceAmplitudOlaDp.roundToInt()} dp",
                     rango = 20f..160f,
-                    idFila = "03-LST-AZX-OLA-AMP",
+                    idFila = "02-APA-AZX-OLA-AMP",
                     mostrarId = ajustes.mostrarIdsAjustes,
                     alRestablecer = {
                         haptica.tic()
@@ -107,7 +113,7 @@ fun PantallaIndiceOla(
                     valor = ajustes.indiceRadioOlaDp,
                     valorTexto = "${ajustes.indiceRadioOlaDp.roundToInt()} dp",
                     rango = 60f..300f,
-                    idFila = "03-LST-AZX-OLA-RAD",
+                    idFila = "02-APA-AZX-OLA-RAD",
                     mostrarId = ajustes.mostrarIdsAjustes,
                     alRestablecer = {
                         haptica.tic()
@@ -127,7 +133,7 @@ fun PantallaIndiceOla(
                     valorTexto = String.format(Locale.US, "%.1fx", ajustes.indiceEscalaLetras),
                     rango = 1.0f..3.0f,
                     pasos = 20,
-                    idFila = "03-LST-AZX-OLA-ESC",
+                    idFila = "02-APA-AZX-OLA-ESC",
                     mostrarId = ajustes.mostrarIdsAjustes,
                     alRestablecer = {
                         haptica.tic()

@@ -1,3 +1,9 @@
+/*
+ * Copyright (C) 2026 Jose Luis Navas
+ * Licensed under the GNU General Public License v3.0 (GPLv3).
+ * See LICENSE file in the project root for full license information.
+ */
+
 package com.jlnavas3.bovedalocal.ui.pantallas.ajustes.widget
 
 import androidx.compose.foundation.background
@@ -87,13 +93,26 @@ fun PantallaAjustesWidget1x1(
                     ComponenteSeparador()
 
                     ComponenteNavegacion(
-                        titulo = "Añadir al escritorio",
+                        titulo = "Añadir widget al escritorio",
                         icono = null,
                         idFila = "04-HER-WGT-PIN-1X1",
                         mostrarId = ajustes.mostrarIdsAjustes,
                         alPulsar = {
                             haptica.tic()
                             WidgetPinHelper.solicitarColocarWidget(contexto, WidgetGeneradorRapido::class.java)
+                        }
+                    )
+
+                    ComponenteSeparador(sangriaInicio = 16.dp)
+
+                    ComponenteNavegacion(
+                        titulo = "Añadir acceso directo al escritorio",
+                        icono = null,
+                        idFila = "04-HER-WGT-PIN-SCT",
+                        mostrarId = ajustes.mostrarIdsAjustes,
+                        alPulsar = {
+                            haptica.tic()
+                            com.jlnavas3.bovedalocal.quicksettings.GeneradorRapidoShortcutHelper.anclarAlEscritorio(contexto)
                         }
                     )
 

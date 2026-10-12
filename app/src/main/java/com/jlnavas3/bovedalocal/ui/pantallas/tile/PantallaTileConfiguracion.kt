@@ -1,3 +1,9 @@
+/*
+ * Copyright (C) 2026 Jose Luis Navas
+ * Licensed under the GNU General Public License v3.0 (GPLv3).
+ * See LICENSE file in the project root for full license information.
+ */
+
 package com.jlnavas3.bovedalocal.ui.pantallas.tile
 
 import android.widget.Toast
@@ -99,11 +105,10 @@ fun PantallaTileConfiguracion(
                     alCambiarTileCopiarPortapapeles = {
                         haptica.toque()
                         vm.ajustarTileCopiarPortapapeles(it)
-                        Toast.makeText(
-                            contexto,
+                        vm.avisar(
                             if (it) "Copia al portapapeles activada" else "Copia al portapapeles desactivada",
-                            Toast.LENGTH_SHORT
-                        ).show()
+                            "Ajustes Rápidos"
+                        )
                     },
                     alCambiarTileMostrarToast = {
                         haptica.tic()

@@ -1,3 +1,9 @@
+/*
+ * Copyright (C) 2026 Jose Luis Navas
+ * Licensed under the GNU General Public License v3.0 (GPLv3).
+ * See LICENSE file in the project root for full license information.
+ */
+
 package com.jlnavas3.bovedalocal.util
 
 import android.content.Context
@@ -27,8 +33,31 @@ object ContrasenasComunes {
         }
     }
 
-    fun esComun(contexto: Context, contrasena: String): Boolean {
+    fun obtenerBase(contexto: Context): Set<String> = cargar(contexto)
+
+    fun obtenerListaCompleta(
+        contexto: Context,
+        anadidas: Set<String> = emptySet(),
+        excluidas: Set<String> = emptySet()
+    ): List<String> {
+        val base = cargar(contexto)
+        val excluidasNorm = excluidas.map { it.trim().lowercase() }.toSet()
+        val filtradas = if (excluidasNorm.isEmpty()) base else base.filterNot { it in excluidasNorm }
+        val anadidasNorm = anadidas.map { it.trim().lowercase() }.filter { it.isNotBlank() }
+        val todas = (filtradas + anadidasNorm).distinct()
+        return todas.sorted()
+    }
+
+    fun esComun(
+        contexto: Context,
+        contrasena: String,
+        anadidas: Set<String> = emptySet(),
+        excluidas: Set<String> = emptySet()
+    ): Boolean {
         if (contrasena.isBlank()) return false
-        return cargar(contexto).contains(contrasena.trim().lowercase())
+        val claveLimpia = contrasena.trim().lowercase()
+        if (anadidas.any { it.trim().lowercase() == claveLimpia }) return true
+        if (excluidas.any { it.trim().lowercase() == claveLimpia }) return false
+        return cargar(contexto).contains(claveLimpia)
     }
 }

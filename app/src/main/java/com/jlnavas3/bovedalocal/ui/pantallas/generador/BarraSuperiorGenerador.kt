@@ -1,8 +1,15 @@
+/*
+ * Copyright (C) 2026 Jose Luis Navas
+ * Licensed under the GNU General Public License v3.0 (GPLv3).
+ * See LICENSE file in the project root for full license information.
+ */
+
 package com.jlnavas3.bovedalocal.ui.pantallas.generador
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Timer
@@ -68,6 +75,16 @@ fun BarraSuperiorGenerador(
                         onClick = {
                             menuAbierto = false
                             alIrAjustesPortapapeles()
+                        }
+                    )
+                    val contexto = androidx.compose.ui.platform.LocalContext.current
+                    com.jlnavas3.bovedalocal.ui.componentes.SeparadorOpcionMenu()
+                    com.jlnavas3.bovedalocal.ui.componentes.ElementoMenuCompacto(
+                        texto = "Añadir acceso directo al escritorio...",
+                        icono = Icons.Filled.AutoAwesome,
+                        onClick = {
+                            menuAbierto = false
+                            com.jlnavas3.bovedalocal.quicksettings.GeneradorRapidoShortcutHelper.anclarAlEscritorio(contexto)
                         }
                     )
                 }

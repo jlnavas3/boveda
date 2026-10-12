@@ -1,3 +1,9 @@
+/*
+ * Copyright (C) 2026 Jose Luis Navas
+ * Licensed under the GNU General Public License v3.0 (GPLv3).
+ * See LICENSE file in the project root for full license information.
+ */
+
 package com.jlnavas3.bovedalocal.ui.pantallas
 
 import androidx.compose.foundation.background
@@ -75,7 +81,7 @@ fun PantallaPapelera(
             mostrarId = ajustes.mostrarIdsAjustes,
             alVolver = { vm.volverAtras() },
             alConfirmarVaciar = { confirmarVaciar = true },
-            alIrADisenoLista = { vm.ir(Pantalla.OrganizacionLista("03-LST-DES-GRP")) },
+            alIrADisenoLista = { vm.ir(Pantalla.OrganizacionLista("02-APA-DES-GRP")) },
             alIrAAutodestruccion = { vm.ir(Pantalla.AjustesAutodestruccion("01-SEG-DES")) },
             alCambiarRetencion = { mostrarDialogoRetencion = true }
         )

@@ -1,3 +1,9 @@
+/*
+ * Copyright (C) 2026 Jose Luis Navas
+ * Licensed under the GNU General Public License v3.0 (GPLv3).
+ * See LICENSE file in the project root for full license information.
+ */
+
 package com.jlnavas3.bovedalocal.ui.pantallas.lista
 
 import android.os.Build
@@ -67,7 +73,7 @@ fun MenuLateral(
     val itemsVisibles = remember(ajustes?.menuLateralItemsVisibles) {
         val listaCruda = ajustes?.menuLateralItemsVisibles ?: AjustesDefaults.MenuLateral.ITEMS_PREDETERMINADOS
         listaCruda.filter { id ->
-            !( (id == "04-HER-PSK" || id == "04-HER-PAS") && Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
+            !( (id == "04-HER-PSK" || id == "04-HER-PAS" || id == "03-LST-PAS") && Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
         }
     }
 

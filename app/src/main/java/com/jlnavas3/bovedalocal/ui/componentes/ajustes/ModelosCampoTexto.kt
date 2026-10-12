@@ -1,3 +1,9 @@
+/*
+ * Copyright (C) 2026 Jose Luis Navas
+ * Licensed under the GNU General Public License v3.0 (GPLv3).
+ * See LICENSE file in the project root for full license information.
+ */
+
 package com.jlnavas3.bovedalocal.ui.componentes.ajustes
 
 import androidx.compose.ui.text.AnnotatedString
@@ -36,10 +42,14 @@ enum class TipoCampoTexto {
  */
 internal object ConfiguradorCampoTexto {
 
-    fun resolverTransformacionVisual(esContrasena: Boolean, esVisible: Boolean): VisualTransformation {
+    fun resolverTransformacionVisual(
+        esContrasena: Boolean,
+        esVisible: Boolean,
+        colorearContrasena: Boolean = false
+    ): VisualTransformation {
         return when {
             esContrasena && !esVisible -> PasswordVisualTransformation()
-            esContrasena && esVisible -> ContrasenaColorVisualTransformation()
+            esContrasena && esVisible && colorearContrasena -> ContrasenaColorVisualTransformation()
             else -> VisualTransformation.None
         }
     }

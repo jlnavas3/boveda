@@ -1,3 +1,9 @@
+/*
+ * Copyright (C) 2026 Jose Luis Navas
+ * Licensed under the GNU General Public License v3.0 (GPLv3).
+ * See LICENSE file in the project root for full license information.
+ */
+
 package com.jlnavas3.bovedalocal.ui.pantallas.lista
 
 import androidx.compose.foundation.border
@@ -12,13 +18,15 @@ import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.SmallFloatingActionButton
+import com.jlnavas3.bovedalocal.ui.componentes.BotonFlotanteSecundario
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.unit.dp
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorTarjetaAjustes
+import com.jlnavas3.bovedalocal.ui.theme.Advertencia
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
 import com.jlnavas3.bovedalocal.ui.theme.ColorSobreAcento
@@ -48,48 +56,31 @@ fun ColumnaAccionesFlotantesLista(
         horizontalAlignment = Alignment.End,
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
+        val fondoBase = ColorTarjetaAjustes
+        val fondoBloquear = Peligro.copy(alpha = 0.14f).compositeOver(fondoBase)
+
         // FAB de advertencia: Alerta de servicios de accesibilidad no autorizados
         if (tieneAlertaAccesibilidad && alAbrirAuditoriaAccesibilidad != null) {
-            val colorAlerta = Color(0xFFF59E0B)
-            SmallFloatingActionButton(
+            val fondoAlerta = Advertencia.copy(alpha = 0.16f).compositeOver(fondoBase)
+            BotonFlotanteSecundario(
                 onClick = alAbrirAuditoriaAccesibilidad,
-                containerColor = colorAlerta.copy(alpha = 0.20f),
-                contentColor = colorAlerta,
-                shape = formaFab,
-                modifier = Modifier.then(
-                    if (GrosorBorde > 0.dp && EstiloBorde != "ninguno") {
-                        Modifier.border(GrosorBorde, colorAlerta.copy(alpha = 0.40f), formaFab)
-                    } else Modifier
-                )
-            ) {
-                Icon(
-                    imageVector = Icons.Filled.Warning,
-                    contentDescription = "Auditoría de accesibilidad",
-                    tint = colorAlerta,
-                    modifier = Modifier.size(22.dp)
-                )
-            }
+                icono = Icons.Filled.Warning,
+                descripcion = "Auditoría de accesibilidad",
+                containerColor = fondoAlerta,
+                contentColor = Advertencia,
+                colorBorde = Color.Transparent
+            )
         }
 
-        // FAB superior: Bloquear app (Candado) con estilo y color idéntico al menú lateral
-        SmallFloatingActionButton(
+        // FAB superior: Bloquear app (Candado en tono sobrio idéntico al menú lateral, sólido y sin borde)
+        BotonFlotanteSecundario(
             onClick = alBloquear,
-            containerColor = Peligro.copy(alpha = 0.15f),
+            icono = Icons.Filled.Lock,
+            descripcion = "Bloquear bóveda",
+            containerColor = fondoBloquear,
             contentColor = Peligro,
-            shape = formaFab,
-            modifier = Modifier.then(
-                if (GrosorBorde > 0.dp && EstiloBorde != "ninguno") {
-                    Modifier.border(GrosorBorde, Peligro.copy(alpha = 0.30f), formaFab)
-                } else Modifier
-            )
-        ) {
-            Icon(
-                imageVector = Icons.Filled.Lock,
-                contentDescription = "Bloquear bóveda",
-                tint = Peligro,
-                modifier = Modifier.size(22.dp)
-            )
-        }
+            colorBorde = Color.Transparent
+        )
 
         // FAB inferior: Nueva entrada (+)
         FloatingActionButton(

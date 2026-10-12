@@ -1,3 +1,9 @@
+/*
+ * Copyright (C) 2026 Jose Luis Navas
+ * Licensed under the GNU General Public License v3.0 (GPLv3).
+ * See LICENSE file in the project root for full license information.
+ */
+
 package com.jlnavas3.bovedalocal.ui.pantallas
 
 import androidx.compose.foundation.background
@@ -46,7 +52,7 @@ fun PantallaOrganizacionLista(
         ) {
             BarraSuperiorPantalla(
                 titulo = "Diseño de lista",
-                idEtiqueta = "03-LST-DES",
+                idEtiqueta = "02-APA-DES",
                 mostrarId = ajustes.mostrarIdsAjustes,
                 alVolver = { vm.volverAtras() },
                 conSeparador = scrollState.value > 0,
@@ -65,13 +71,13 @@ fun PantallaOrganizacionLista(
                 // Grupo: Estructura de visualización
                 ComponenteGrupo(
                     etiqueta = "Estructura de visualización",
-                    idGrupo = "03-LST-DES-G01",
+                    idGrupo = "02-APA-DES-G01",
                     mostrarId = ajustes.mostrarIdsAjustes
                 ) {
                     ComponenteNavegacion(
                         titulo = "Estructura y densidad",
                         icono = null,
-                        idFila = "03-LST-DES-EST",
+                        idFila = "02-APA-DES-EST",
                         mostrarId = ajustes.mostrarIdsAjustes,
                         alPulsar = { vm.ir(Pantalla.OrganizacionEstructura()) }
                     )
@@ -82,13 +88,13 @@ fun PantallaOrganizacionLista(
                 // Grupo: Identidades y jerarquía
                 ComponenteGrupo(
                     etiqueta = "Identidades y jerarquía",
-                    idGrupo = "03-LST-DES-G02",
+                    idGrupo = "02-APA-DES-G02",
                     mostrarId = ajustes.mostrarIdsAjustes
                 ) {
                     ComponenteNavegacion(
                         titulo = "Identidades y jerarquía",
                         icono = null,
-                        idFila = "03-LST-DES-JER",
+                        idFila = "02-APA-DES-JER",
                         mostrarId = ajustes.mostrarIdsAjustes,
                         alPulsar = { vm.ir(Pantalla.OrganizacionJerarquia()) }
                     )
@@ -99,13 +105,13 @@ fun PantallaOrganizacionLista(
                 // Grupo: Indicadores y datos
                 ComponenteGrupo(
                     etiqueta = "Indicadores y datos",
-                    idGrupo = "03-LST-DES-G03",
+                    idGrupo = "02-APA-DES-G03",
                     mostrarId = ajustes.mostrarIdsAjustes
                 ) {
                     ComponenteNavegacion(
                         titulo = "Indicadores de contenido",
                         icono = null,
-                        idFila = "03-LST-DES-IND",
+                        idFila = "02-APA-DES-IND",
                         mostrarId = ajustes.mostrarIdsAjustes,
                         alPulsar = { vm.ir(Pantalla.OrganizacionIndicadores()) }
                     )
@@ -116,13 +122,13 @@ fun PantallaOrganizacionLista(
                 // Grupo: Títulos y normalización
                 ComponenteGrupo(
                     etiqueta = "Títulos y normalización",
-                    idGrupo = "03-LST-DES-G04",
+                    idGrupo = "02-APA-DES-G04",
                     mostrarId = ajustes.mostrarIdsAjustes
                 ) {
                     ComponenteNavegacion(
                         titulo = "Asistente de títulos",
                         icono = null,
-                        idFila = "03-LST-DES-TIT",
+                        idFila = "02-APA-DES-TIT",
                         mostrarId = ajustes.mostrarIdsAjustes,
                         alPulsar = { vm.ir(Pantalla.NormalizadorTitulos()) }
                     )
@@ -145,7 +151,7 @@ private fun PantallaOrganizacionListaPreview() {
         ) {
             BarraSuperiorPantalla(
                 titulo = "Diseño de lista",
-                idEtiqueta = "03-LST-DES",
+                idEtiqueta = "02-APA-DES",
                 mostrarId = true,
                 alVolver = {},
                 conSeparador = false,

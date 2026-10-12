@@ -1,3 +1,9 @@
+/*
+ * Copyright (C) 2026 Jose Luis Navas
+ * Licensed under the GNU General Public License v3.0 (GPLv3).
+ * See LICENSE file in the project root for full license information.
+ */
+
 package com.jlnavas3.bovedalocal.ui.pantallas.tile
 
 import androidx.compose.foundation.layout.Box
@@ -6,6 +12,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.DashboardCustomize
 import androidx.compose.material.icons.filled.Key
 import androidx.compose.material.icons.filled.Tune
@@ -135,8 +142,8 @@ fun GrupoConfiguracionTile(
                     icono = null,
                     valor = ajustes.tileDicewarePalabras.toFloat(),
                     valorTexto = "${ajustes.tileDicewarePalabras} palabras",
-                    rango = 3f..12f,
-                    pasos = 8,
+                    rango = AjustesDefaults.Tile.DICEWARE_PALABRAS_MIN.toFloat()..AjustesDefaults.Tile.DICEWARE_PALABRAS_MAX.toFloat(),
+                    pasos = AjustesDefaults.Tile.DICEWARE_PALABRAS_MAX - AjustesDefaults.Tile.DICEWARE_PALABRAS_MIN - 1,
                     idFila = "04-HER-MSK-WRD",
                     mostrarId = mostrarIdsAjustes,
                     alRestablecer = {
@@ -144,7 +151,11 @@ fun GrupoConfiguracionTile(
                         vm.ajustarTileDicewarePalabras(AjustesDefaults.Tile.DICEWARE_PALABRAS)
                     },
                     alCambiar = {
-                        vm.ajustarTileDicewarePalabras(it.roundToInt())
+                        val nuevo = it.roundToInt().coerceIn(AjustesDefaults.Tile.DICEWARE_PALABRAS_MIN, AjustesDefaults.Tile.DICEWARE_PALABRAS_MAX)
+                        if (nuevo != ajustes.tileDicewarePalabras) {
+                            haptica.toque()
+                            vm.ajustarTileDicewarePalabras(nuevo)
+                        }
                     }
                 )
 
@@ -251,6 +262,18 @@ fun GrupoConfiguracionTile(
             alPulsar = {
                 haptica.toque()
                 com.jlnavas3.bovedalocal.quicksettings.GeneradorRapidoHelper.solicitarAgregarTile(contexto)
+            }
+        )
+
+        ComponenteSeparador(sangriaInicio = 16.dp)
+        com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteBotonFila(
+            titulo = "Añadir acceso directo al escritorio",
+            icono = Icons.Filled.AutoAwesome,
+            colorIcono = com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjusteGris.copy(alpha = 0.15f),
+            colorTinteIcono = com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos,
+            alPulsar = {
+                haptica.toque()
+                com.jlnavas3.bovedalocal.quicksettings.GeneradorRapidoShortcutHelper.anclarAlEscritorio(contexto)
             }
         )
     }

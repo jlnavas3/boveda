@@ -1,3 +1,9 @@
+/*
+ * Copyright (C) 2026 Jose Luis Navas
+ * Licensed under the GNU General Public License v3.0 (GPLv3).
+ * See LICENSE file in the project root for full license information.
+ */
+
 package com.jlnavas3.bovedalocal.ui.pantallas.avanzada
 
 import androidx.compose.foundation.background
@@ -163,7 +169,7 @@ fun PantallaColoresIds(
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            InsigniaIdAjuste(id = "03-LST-DES", ajustes = ajustes)
+                            InsigniaIdAjuste(id = "03-LST-LOG", ajustes = ajustes)
                             Spacer(Modifier.width(8.dp))
                         }
                         Spacer(Modifier.height(10.dp))

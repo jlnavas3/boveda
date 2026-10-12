@@ -1,3 +1,9 @@
+/*
+ * Copyright (C) 2026 Jose Luis Navas
+ * Licensed under the GNU General Public License v3.0 (GPLv3).
+ * See LICENSE file in the project root for full license information.
+ */
+
 package com.jlnavas3.bovedalocal.ui
 
 import android.content.Intent
@@ -61,6 +67,22 @@ class MainActivity : FragmentActivity() {
     override fun onResume() {
         super.onResume()
         vm.recargarAjustes()
+        vm.registrarInteraccion()
+    }
+
+    override fun onUserInteraction() {
+        super.onUserInteraction()
+        vm.registrarInteraccion()
+    }
+
+    override fun dispatchTouchEvent(ev: android.view.MotionEvent): Boolean {
+        vm.registrarInteraccion()
+        return super.dispatchTouchEvent(ev)
+    }
+
+    override fun dispatchKeyEvent(event: android.view.KeyEvent): Boolean {
+        vm.registrarInteraccion()
+        return super.dispatchKeyEvent(event)
     }
 
     override fun onNewIntent(intent: Intent) {
@@ -109,16 +131,6 @@ class MainActivity : FragmentActivity() {
                 })
                 .build()
 
-            val shortcutBuscar = ShortcutInfoCompat.Builder(this, "buscar")
-                .setShortLabel(getString(R.string.shortcut_buscar))
-                .setLongLabel(getString(R.string.shortcut_buscar))
-                .setIcon(IconCompat.createWithResource(this, R.drawable.ic_shortcut_buscar))
-                .setIntent(Intent(this, MainActivity::class.java).apply {
-                    action = Intent.ACTION_VIEW
-                    putExtra("accion_shortcut", "buscar")
-                })
-                .build()
-
             val shortcutEscanear = ShortcutInfoCompat.Builder(this, "escanear_qr")
                 .setShortLabel(getString(R.string.shortcut_escanear))
                 .setLongLabel(getString(R.string.shortcut_escanear))
@@ -133,13 +145,12 @@ class MainActivity : FragmentActivity() {
                 .setShortLabel(getString(R.string.shortcut_generador))
                 .setLongLabel(getString(R.string.shortcut_generador))
                 .setIcon(IconCompat.createWithResource(this, R.drawable.ic_shortcut_generador))
-                .setIntent(Intent(this, MainActivity::class.java).apply {
+                .setIntent(Intent(this, com.jlnavas3.bovedalocal.quicksettings.GeneradorRapidoShortcutActivity::class.java).apply {
                     action = Intent.ACTION_VIEW
-                    putExtra("accion_shortcut", "generador_rapido")
                 })
                 .build()
 
-            ShortcutManagerCompat.setDynamicShortcuts(this, listOf(shortcutNueva, shortcutBuscar, shortcutEscanear, shortcutGenerador))
+            ShortcutManagerCompat.setDynamicShortcuts(this, listOf(shortcutNueva, shortcutEscanear, shortcutGenerador))
         } catch (_: Exception) {}
     }
 

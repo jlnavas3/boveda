@@ -1,3 +1,9 @@
+/*
+ * Copyright (C) 2026 Jose Luis Navas
+ * Licensed under the GNU General Public License v3.0 (GPLv3).
+ * See LICENSE file in the project root for full license information.
+ */
+
 package com.jlnavas3.bovedalocal.ui.pantallas
 
 import androidx.activity.compose.BackHandler
@@ -48,9 +54,12 @@ import com.jlnavas3.bovedalocal.ui.pantallas.lista.rememberEstadoSeleccionLista
 import com.jlnavas3.bovedalocal.ui.componentes.cerrarTecladoAlTocarFuera
 import com.jlnavas3.bovedalocal.ui.theme.calcularEspaciadoFilas
 import com.jlnavas3.bovedalocal.util.DetectorServiciosAccesibilidad
+import com.jlnavas3.bovedalocal.util.DiagnosticoAccesibilidad
 import com.jlnavas3.bovedalocal.util.Haptica
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -71,8 +80,21 @@ fun PantallaLista(vm: VaultViewModel, estado: EstadoBoveda) {
         duenoCicloVida.lifecycle.addObserver(observador)
         onDispose { duenoCicloVida.lifecycle.removeObserver(observador) }
     }
-    val diagnosticoAccesibilidad = remember(contexto, ajustes.listaBlancaAccesibilidad, triggerCicloVida) {
-        DetectorServiciosAccesibilidad.evaluar(contexto, ajustes.listaBlancaAccesibilidad)
+    var diagnosticoAccesibilidad by remember {
+        mutableStateOf(
+            DiagnosticoAccesibilidad(
+                totalActivos = 0,
+                servicios = emptyList(),
+                serviciosSospechosos = emptyList(),
+                esSeguro = true
+            )
+        )
+    }
+    LaunchedEffect(ajustes.listaBlancaAccesibilidad, triggerCicloVida) {
+        val resultado = withContext(Dispatchers.IO) {
+            DetectorServiciosAccesibilidad.evaluar(contexto, ajustes.listaBlancaAccesibilidad)
+        }
+        diagnosticoAccesibilidad = resultado
     }
 
     val filtro by vm.filtroTipo.collectAsStateWithLifecycle()
@@ -313,8 +335,8 @@ fun PantallaLista(vm: VaultViewModel, estado: EstadoBoveda) {
                     alMostrarOrdenacion = { dialogos.mostrarOrdenacion = true },
                     alMostrarFiltros = { dialogos.mostrarFiltros = true },
                     alAlternarSoloFavoritos = { vm.alternarSoloFavoritos() },
-                    alIrOrganizacionGrupo = { vm.ir(Pantalla.OrganizacionLista("03-LST-DES-GRP")) },
-                    alIrOrganizacionIndicadores = { vm.ir(Pantalla.OrganizacionLista("03-LST-DES-IND")) },
+                    alIrOrganizacionGrupo = { vm.ir(Pantalla.OrganizacionLista("02-APA-DES-GRP")) },
+                    alIrOrganizacionIndicadores = { vm.ir(Pantalla.OrganizacionLista("02-APA-DES-IND")) },
                     alIrExportarSelectivo = { vm.ir(Pantalla.ExportarSelectivo("todos")) },
                     alIrCopiaSeguridadManual = { vm.ir(Pantalla.CopiaSeguridad("05-COP-MAN")) },
                     alIrCopiaSeguridad = { vm.ir(Pantalla.CopiaSeguridad("05-COP-MAN-IMP")) },
@@ -434,7 +456,7 @@ fun PantallaLista(vm: VaultViewModel, estado: EstadoBoveda) {
         },
         alGestionarIdentidades = {
             haptica.tic()
-            vm.ir(Pantalla.Identidades("03-LST-DES-GID"))
+            vm.ir(Pantalla.Identidades("02-APA-DES-GID"))
         },
         alCerrar = { mostrarSheetIdentidades = false }
     )

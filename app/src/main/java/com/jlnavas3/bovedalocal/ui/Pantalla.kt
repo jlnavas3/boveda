@@ -1,4 +1,12 @@
+/*
+ * Copyright (C) 2026 Jose Luis Navas
+ * Licensed under the GNU General Public License v3.0 (GPLv3).
+ * See LICENSE file in the project root for full license information.
+ */
+
 package com.jlnavas3.bovedalocal.ui
+
+import com.jlnavas3.bovedalocal.data.TipoEntrada
 
 sealed interface Pantalla {
     object Onboarding : Pantalla
@@ -13,10 +21,16 @@ sealed interface Pantalla {
         val id: String?,
         val contrasenaInicial: String = "",
         val tituloInicial: String = "",
-        val urlInicial: String = ""
+        val urlInicial: String = "",
+        val tipoInicial: TipoEntrada? = null
     ) : Pantalla
     object Generador : Pantalla
-    object Passkeys : Pantalla
+    open class Passkeys(val seccionId: String? = null) : Pantalla {
+        companion object : Passkeys(null)
+        override fun equals(other: Any?): Boolean = other is Passkeys && other.seccionId == seccionId
+        override fun hashCode(): Int = seccionId?.hashCode() ?: 0
+    }
+    data class EntradasTipo(val tipo: TipoEntrada) : Pantalla
     object Autenticador : Pantalla
     /** Si [entradaDestino] es null, el QR crea una entrada nueva de 2FA. */
     data class Escaner(
@@ -191,6 +205,16 @@ sealed interface Pantalla {
     open class AcercaDe(val seccionId: String? = null) : Pantalla {
         companion object : AcercaDe(null)
         override fun equals(other: Any?): Boolean = other is AcercaDe && other.seccionId == seccionId
+        override fun hashCode(): Int = seccionId?.hashCode() ?: 0
+    }
+    open class AcercaDeApp(val seccionId: String? = null) : Pantalla {
+        companion object : AcercaDeApp(null)
+        override fun equals(other: Any?): Boolean = other is AcercaDeApp && other.seccionId == seccionId
+        override fun hashCode(): Int = seccionId?.hashCode() ?: 0
+    }
+    open class Licencia(val seccionId: String? = null) : Pantalla {
+        companion object : Licencia(null)
+        override fun equals(other: Any?): Boolean = other is Licencia && other.seccionId == seccionId
         override fun hashCode(): Int = seccionId?.hashCode() ?: 0
     }
     open class Registro(val seccionId: String? = null) : Pantalla {
@@ -472,5 +496,15 @@ sealed interface Pantalla {
         override fun hashCode(): Int = seccionId?.hashCode() ?: 0
     }
     object ReorganizarAjustes : Pantalla
+    open class DiccionarioPalabras(val idiomaInicial: String = "es", val seccionId: String? = null) : Pantalla {
+        companion object : DiccionarioPalabras("es", null)
+        override fun equals(other: Any?): Boolean = other is DiccionarioPalabras && other.idiomaInicial == idiomaInicial && other.seccionId == seccionId
+        override fun hashCode(): Int = 31 * idiomaInicial.hashCode() + (seccionId?.hashCode() ?: 0)
+    }
+    open class ContrasenasComunes(val seccionId: String? = null) : Pantalla {
+        companion object : ContrasenasComunes(null)
+        override fun equals(other: Any?): Boolean = other is ContrasenasComunes && other.seccionId == seccionId
+        override fun hashCode(): Int = seccionId?.hashCode() ?: 0
+    }
 }
 

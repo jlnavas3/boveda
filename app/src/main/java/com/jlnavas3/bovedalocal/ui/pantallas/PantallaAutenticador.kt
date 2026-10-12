@@ -1,3 +1,9 @@
+/*
+ * Copyright (C) 2026 Jose Luis Navas
+ * Licensed under the GNU General Public License v3.0 (GPLv3).
+ * See LICENSE file in the project root for full license information.
+ */
+
 package com.jlnavas3.bovedalocal.ui.pantallas
 
 import androidx.activity.compose.BackHandler
@@ -138,7 +144,7 @@ fun PantallaAutenticador(vm: VaultViewModel, estado: EstadoBoveda) {
                     criterioOrdenacion = criterioOrdenacion,
                     conSeparador = scrollState.value > 0,
                     haptica = haptica,
-                    idEtiqueta = "04-HER-2FA",
+                    idEtiqueta = "03-LST-2FA",
                     mostrarId = ajustes.mostrarIdsAjustes,
                     alVolver = { vm.volverAtras() },
                     alAlternarBusqueda = {

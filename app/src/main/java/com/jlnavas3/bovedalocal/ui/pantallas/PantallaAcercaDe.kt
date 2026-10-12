@@ -1,3 +1,9 @@
+/*
+ * Copyright (C) 2026 Jose Luis Navas
+ * Licensed under the GNU General Public License v3.0 (GPLv3).
+ * See LICENSE file in the project root for full license information.
+ */
+
 package com.jlnavas3.bovedalocal.ui.pantallas
 
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -24,6 +30,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.jlnavas3.bovedalocal.ui.Pantalla
 import com.jlnavas3.bovedalocal.ui.VaultViewModel
 import com.jlnavas3.bovedalocal.ui.componentes.BarraSuperiorPantalla
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.AccionSaltoGrupo
@@ -180,6 +187,12 @@ fun PantallaAcercaDe(
                         if (!AjustesSistema.abrirFichaApp(contexto)) {
                             vm.avisar("No se pudo abrir la ficha del sistema")
                         }
+                    },
+                    alVerInformacionApp = {
+                        vm.ir(Pantalla.AcercaDeApp)
+                    },
+                    alVerLicencia = {
+                        vm.ir(Pantalla.Licencia)
                     },
                     mostrarIdsAjustes = ajustes.mostrarIdsAjustes
                 )

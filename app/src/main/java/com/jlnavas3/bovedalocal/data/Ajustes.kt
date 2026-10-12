@@ -1,3 +1,9 @@
+/*
+ * Copyright (C) 2026 Jose Luis Navas
+ * Licensed under the GNU General Public License v3.0 (GPLv3).
+ * See LICENSE file in the project root for full license information.
+ */
+
 package com.jlnavas3.bovedalocal.data
 
 import android.content.Context
@@ -7,6 +13,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import org.json.JSONObject
 
 private val jsonAjustes = Json { ignoreUnknownKeys = true }
 
@@ -115,11 +122,29 @@ private fun deserializarReparenting(raw: String): Map<String, String> = try {
     emptyMap()
 }
 
-private fun deserializarItemsMenuLateral(raw: String): List<String> = try {
-    if (raw.isBlank()) AjustesDefaults.MenuLateral.ITEMS_PREDETERMINADOS
+private val itemsMenuLateralAntiguos = listOf(
+    "04-HER-GEN", "04-HER-HST", "03-LST-PAS", "03-LST-2FA", "03-LST-SLD", "03-LST-DUP", "03-LST-PAP", "03-LST-IDE", "03-LST-CAT", "00-AJU"
+)
+private val itemsMenuLateralAntiguosLegacy = listOf(
+    "04-HER-GEN", "04-HER-HST", "04-HER-PSK", "04-HER-2FA", "03-LST-SLD", "03-LST-DUP", "03-LST-PAP", "03-LST-IDE", "03-LST-CAT", "00-AJU"
+)
+
+private fun deserializarItemsMenuLateral(raw: String, migradoV2: Boolean): List<String> = try {
+    if (raw.isBlank() || !migradoV2) AjustesDefaults.MenuLateral.ITEMS_PREDETERMINADOS
     else {
         val lista: List<String> = jsonAjustes.decodeFromString(raw)
-        lista.map { if (it == "04-HER-PSK") "04-HER-PAS" else it }
+        val normalizada = lista.map {
+            when (it) {
+                "04-HER-PSK", "04-HER-PAS" -> "03-LST-PAS"
+                "04-HER-2FA" -> "03-LST-2FA"
+                else -> it
+            }
+        }
+        if (normalizada == itemsMenuLateralAntiguos || normalizada == itemsMenuLateralAntiguosLegacy) {
+            AjustesDefaults.MenuLateral.ITEMS_PREDETERMINADOS
+        } else {
+            normalizada
+        }
     }
 } catch (_: Exception) {
     AjustesDefaults.MenuLateral.ITEMS_PREDETERMINADOS
@@ -176,6 +201,12 @@ data class AjustesApp(
     val generadorLongitudMax: Int = AjustesDefaults.Generador.LONGITUD_MAX,
     val generadorIdiomaFrases: String = AjustesDefaults.Generador.IDIOMA_FRASE,
     val generadorCapitalizarFrases: Boolean = AjustesDefaults.Generador.CAPITALIZAR_FRASE,
+    val diccionarioAnadidasEs: Set<String> = AjustesDefaults.Generador.DICCIONARIO_ANADIDAS_ES,
+    val diccionarioExcluidasEs: Set<String> = AjustesDefaults.Generador.DICCIONARIO_EXCLUIDAS_ES,
+    val diccionarioFavoritasEs: Set<String> = AjustesDefaults.Generador.DICCIONARIO_FAVORITAS_ES,
+    val diccionarioAnadidasEn: Set<String> = AjustesDefaults.Generador.DICCIONARIO_ANADIDAS_EN,
+    val diccionarioExcluidasEn: Set<String> = AjustesDefaults.Generador.DICCIONARIO_EXCLUIDAS_EN,
+    val diccionarioFavoritasEn: Set<String> = AjustesDefaults.Generador.DICCIONARIO_FAVORITAS_EN,
     // Diagnóstico y Registro de Eventos
     val diagnosticoMaxEventos: Int = AjustesDefaults.DiagnosticoConfig.MAX_EVENTOS_MEMORIA,
     // Personalización de formas y bordes
@@ -280,6 +311,9 @@ data class AjustesApp(
     val formatoHora: String = AjustesDefaults.ListaFormatos.FORMATO_HORA,
     val formatoTelefono: String = AjustesDefaults.ListaFormatos.FORMATO_TELEFONO,
     val separadorDecimal: String = AjustesDefaults.ListaFormatos.SEPARADOR_DECIMAL,
+    val formatoTarjeta: String = AjustesDefaults.ListaFormatos.FORMATO_TARJETA,
+    val formatoExpiracionTarjeta: String = AjustesDefaults.ListaFormatos.FORMATO_EXPIRACION_TARJETA,
+    val formatoIban: String = AjustesDefaults.ListaFormatos.FORMATO_IBAN,
     /** Perfil de derivación Argon2id: "estandar", "reforzado" o "ultraseguro". */
     val perfilArgon2: String = AjustesDefaults.Seguridad.PERFIL_ARGON2,
     /** FLAG_SECURE: protección anti-captura de pantalla y anti-recientes. Activa por defecto. */
@@ -288,6 +322,8 @@ data class AjustesApp(
     val proteccionTapjacking: Boolean = AjustesDefaults.Seguridad.PROTECCION_TAPJACKING,
     /** Paquetes de aplicaciones de confianza con permiso de accesibilidad (lista blanca). */
     val listaBlancaAccesibilidad: Set<String> = AjustesDefaults.Seguridad.LISTA_BLANCA_ACCESIBILIDAD,
+    val contrasenasComunesAnadidas: Set<String> = AjustesDefaults.Seguridad.CONTRASENAS_COMUNES_ANADIDAS,
+    val contrasenasComunesExcluidas: Set<String> = AjustesDefaults.Seguridad.CONTRASENAS_COMUNES_EXCLUIDAS,
     /** Umbral en días para advertir sobre contraseñas antiguas en Salud (0 = desactivado). */
     val umbralAntiguedadDias: Int = AjustesDefaults.Seguridad.UMBRAL_ANTIGUEDAD_DIAS,
     // Freno a fuerza bruta / Rate limiting
@@ -340,10 +376,15 @@ data class AjustesApp(
     val engranajesColorInterior: String = AjustesDefaults.Animacion.Engranajes.COLOR_INTERIOR,
     val engranajesColorCubo: String = AjustesDefaults.Animacion.Engranajes.COLOR_CUBO,
     val engranajesColorEje: String = AjustesDefaults.Animacion.Engranajes.COLOR_EJE,
+    val engranajesColoresClaroJson: String = "",
+    val engranajesColoresOscuroJson: String = "",
     // Configuración visual y física de la puerta de bóveda
     val puertaVelocidad: Float = AjustesDefaults.Animacion.Puerta.VELOCIDAD,
     val puertaGrosorAnillos: Float = AjustesDefaults.Animacion.Puerta.GROSOR_ANILLOS,
     val puertaColor: String = AjustesDefaults.Animacion.Puerta.COLOR,
+    val puertaColorDestello: String = "",
+    val puertaColoresClaroJson: String = "",
+    val puertaColoresOscuroJson: String = "",
     // Resaltado / Alumbrado visual de filas y grupos en navegación de ajustes
     val alumbradoActivo: Boolean = AjustesDefaults.Interaccion.ALUMBRADO_ACTIVO,
     val alumbradoIntensidad: Float = AjustesDefaults.Interaccion.ALUMBRADO_INTENSIDAD,
@@ -352,6 +393,8 @@ data class AjustesApp(
     // Vibración háptica global de la app
     val hapticaApp: Boolean = AjustesDefaults.Interaccion.HAPTICA_APP,
     val hapticaAppIntensidad: Float = AjustesDefaults.Interaccion.HAPTICA_APP_INTENSIDAD,
+    // Estilo de avisos emergentes (Toast interno de la app)
+    val toastDescriptivo: Boolean = AjustesDefaults.Interaccion.TOAST_DESCRIPTIVO,
     // Indicadores superiores o de fondo en tarjetas de la lista
     val mostrarIndicadoresContenido: Boolean = AjustesDefaults.ColoresDatos.MOSTRAR_INDICADORES,
     val alturaIndicadoresDp: Float = AjustesDefaults.ColoresDatos.ALTURA_INDICADORES_DP,
@@ -513,6 +556,12 @@ class AlmacenAjustes(contexto: Context) {
             generadorLongitudMax = prefs.getInt("generador_longitud_max", AjustesDefaults.Generador.LONGITUD_MAX),
             generadorIdiomaFrases = prefs.getString("generador_idioma_frases", AjustesDefaults.Generador.IDIOMA_FRASE) ?: AjustesDefaults.Generador.IDIOMA_FRASE,
             generadorCapitalizarFrases = prefs.getBoolean("generador_capitalizar_frases", AjustesDefaults.Generador.CAPITALIZAR_FRASE),
+            diccionarioAnadidasEs = prefs.getStringSet("diccionario_anadidas_es", AjustesDefaults.Generador.DICCIONARIO_ANADIDAS_ES) ?: emptySet(),
+            diccionarioExcluidasEs = prefs.getStringSet("diccionario_excluidas_es", AjustesDefaults.Generador.DICCIONARIO_EXCLUIDAS_ES) ?: emptySet(),
+            diccionarioFavoritasEs = prefs.getStringSet("diccionario_favoritas_es", AjustesDefaults.Generador.DICCIONARIO_FAVORITAS_ES) ?: emptySet(),
+            diccionarioAnadidasEn = prefs.getStringSet("diccionario_anadidas_en", AjustesDefaults.Generador.DICCIONARIO_ANADIDAS_EN) ?: emptySet(),
+            diccionarioExcluidasEn = prefs.getStringSet("diccionario_excluidas_en", AjustesDefaults.Generador.DICCIONARIO_EXCLUIDAS_EN) ?: emptySet(),
+            diccionarioFavoritasEn = prefs.getStringSet("diccionario_favoritas_en", AjustesDefaults.Generador.DICCIONARIO_FAVORITAS_EN) ?: emptySet(),
             diagnosticoMaxEventos = prefs.getInt("diagnostico_max_eventos", AjustesDefaults.DiagnosticoConfig.MAX_EVENTOS_MEMORIA),
             curvaturaEsquinasDp = prefs.getFloat("curvatura_esquinas_dp", AjustesDefaults.Formas.CURVATURA_ESQUINAS_DP),
             grosorBordeDp = prefs.getFloat("grosor_borde_dp", AjustesDefaults.Formas.GROSOR_BORDE_DP),
@@ -607,10 +656,15 @@ class AlmacenAjustes(contexto: Context) {
             formatoHora = prefs.getString("formato_hora", AjustesDefaults.ListaFormatos.FORMATO_HORA) ?: AjustesDefaults.ListaFormatos.FORMATO_HORA,
             formatoTelefono = prefs.getString("formato_telefono", AjustesDefaults.ListaFormatos.FORMATO_TELEFONO) ?: AjustesDefaults.ListaFormatos.FORMATO_TELEFONO,
             separadorDecimal = prefs.getString("separador_decimal", AjustesDefaults.ListaFormatos.SEPARADOR_DECIMAL) ?: AjustesDefaults.ListaFormatos.SEPARADOR_DECIMAL,
+            formatoTarjeta = prefs.getString("formato_tarjeta", AjustesDefaults.ListaFormatos.FORMATO_TARJETA) ?: AjustesDefaults.ListaFormatos.FORMATO_TARJETA,
+            formatoExpiracionTarjeta = prefs.getString("formato_expiracion_tarjeta", AjustesDefaults.ListaFormatos.FORMATO_EXPIRACION_TARJETA) ?: AjustesDefaults.ListaFormatos.FORMATO_EXPIRACION_TARJETA,
+            formatoIban = prefs.getString("formato_iban", AjustesDefaults.ListaFormatos.FORMATO_IBAN) ?: AjustesDefaults.ListaFormatos.FORMATO_IBAN,
             perfilArgon2 = prefs.getString("perfil_argon2", AjustesDefaults.Seguridad.PERFIL_ARGON2) ?: AjustesDefaults.Seguridad.PERFIL_ARGON2,
             proteccionPantalla = prefs.getBoolean("proteccion_pantalla", AjustesDefaults.Seguridad.PROTECCION_PANTALLA),
             proteccionTapjacking = prefs.getBoolean("proteccion_tapjacking", AjustesDefaults.Seguridad.PROTECCION_TAPJACKING),
             listaBlancaAccesibilidad = prefs.getStringSet("lista_blanca_accesibilidad", AjustesDefaults.Seguridad.LISTA_BLANCA_ACCESIBILIDAD) ?: emptySet(),
+            contrasenasComunesAnadidas = prefs.getStringSet("contrasenas_comunes_anadidas", AjustesDefaults.Seguridad.CONTRASENAS_COMUNES_ANADIDAS) ?: emptySet(),
+            contrasenasComunesExcluidas = prefs.getStringSet("contrasenas_comunes_excluidas", AjustesDefaults.Seguridad.CONTRASENAS_COMUNES_EXCLUIDAS) ?: emptySet(),
             umbralAntiguedadDias = prefs.getInt("umbral_antiguedad_dias", AjustesDefaults.Seguridad.UMBRAL_ANTIGUEDAD_DIAS),
             frenoIntentosGratis = prefs.getInt("freno_intentos_gratis", AjustesDefaults.Seguridad.FRENO_INTENTOS_GRATIS),
             frenoSegundosBase = prefs.getLong("freno_segundos_base", AjustesDefaults.Seguridad.FRENO_SEGUNDOS_BASE),
@@ -662,15 +716,21 @@ class AlmacenAjustes(contexto: Context) {
             engranajesColorInterior = prefs.getString("engranajes_color_interior", AjustesDefaults.Animacion.Engranajes.COLOR_INTERIOR) ?: AjustesDefaults.Animacion.Engranajes.COLOR_INTERIOR,
             engranajesColorCubo = prefs.getString("engranajes_color_cubo", AjustesDefaults.Animacion.Engranajes.COLOR_CUBO) ?: AjustesDefaults.Animacion.Engranajes.COLOR_CUBO,
             engranajesColorEje = prefs.getString("engranajes_color_eje", AjustesDefaults.Animacion.Engranajes.COLOR_EJE) ?: AjustesDefaults.Animacion.Engranajes.COLOR_EJE,
+            engranajesColoresClaroJson = prefs.getString("engranajes_colores_claro_json", "") ?: "",
+            engranajesColoresOscuroJson = prefs.getString("engranajes_colores_oscuro_json", "") ?: "",
             puertaVelocidad = prefs.getFloat("puerta_velocidad", AjustesDefaults.Animacion.Puerta.VELOCIDAD),
             puertaGrosorAnillos = prefs.getFloat("puerta_grosor_anillos", AjustesDefaults.Animacion.Puerta.GROSOR_ANILLOS),
             puertaColor = prefs.getString("puerta_color", AjustesDefaults.Animacion.Puerta.COLOR) ?: AjustesDefaults.Animacion.Puerta.COLOR,
+            puertaColorDestello = prefs.getString("puerta_color_destello", "") ?: "",
+            puertaColoresClaroJson = prefs.getString("puerta_colores_claro_json", "") ?: "",
+            puertaColoresOscuroJson = prefs.getString("puerta_colores_oscuro_json", "") ?: "",
             alumbradoActivo = prefs.getBoolean("alumbrado_activo", AjustesDefaults.Interaccion.ALUMBRADO_ACTIVO),
             alumbradoIntensidad = prefs.getFloat("alumbrado_intensidad", AjustesDefaults.Interaccion.ALUMBRADO_INTENSIDAD),
             alumbradoRepeticiones = prefs.getInt("alumbrado_repeticiones", AjustesDefaults.Interaccion.ALUMBRADO_REPETICIONES),
             alumbradoDuracionMs = prefs.getInt("alumbrado_duracion_ms", AjustesDefaults.Interaccion.ALUMBRADO_DURACION_MS),
             hapticaApp = prefs.getBoolean("haptica_app", AjustesDefaults.Interaccion.HAPTICA_APP),
             hapticaAppIntensidad = prefs.getFloat("haptica_app_intensidad", AjustesDefaults.Interaccion.HAPTICA_APP_INTENSIDAD),
+            toastDescriptivo = prefs.getBoolean("toast_descriptivo", AjustesDefaults.Interaccion.TOAST_DESCRIPTIVO),
             mostrarIndicadoresContenido = prefs.getBoolean("mostrar_indicadores_contenido", AjustesDefaults.ColoresDatos.MOSTRAR_INDICADORES),
             alturaIndicadoresDp = prefs.getFloat("altura_indicadores_dp", AjustesDefaults.ColoresDatos.ALTURA_INDICADORES_DP),
             opacidadIndicadores = prefs.getFloat("opacidad_indicadores", AjustesDefaults.ColoresDatos.OPACIDAD_INDICADORES),
@@ -710,9 +770,9 @@ class AlmacenAjustes(contexto: Context) {
             menuLateralMostrarCabecera = prefs.getBoolean("menu_lateral_mostrar_cabecera", AjustesDefaults.MenuLateral.MOSTRAR_CABECERA),
             menuLateralMostrarPie = prefs.getBoolean("menu_lateral_mostrar_pie", AjustesDefaults.MenuLateral.MOSTRAR_PIE),
             menuLateralMostrarBotonBloquear = prefs.getBoolean("menu_lateral_mostrar_boton_bloquear", AjustesDefaults.MenuLateral.MOSTRAR_BOTON_BLOQUEAR),
-            menuLateralAgruparItems = prefs.getBoolean("menu_lateral_agrupar_items", AjustesDefaults.MenuLateral.AGRUPAR_ITEMS),
-            menuLateralSinBordes = prefs.getBoolean("menu_lateral_sin_bordes", AjustesDefaults.MenuLateral.SIN_BORDES),
-            menuLateralItemsVisibles = deserializarItemsMenuLateral(prefs.getString("menu_lateral_items_visibles_json", "") ?: "")
+            menuLateralAgruparItems = if (!prefs.getBoolean("menu_lateral_migrado_v2", false)) AjustesDefaults.MenuLateral.AGRUPAR_ITEMS else prefs.getBoolean("menu_lateral_agrupar_items", AjustesDefaults.MenuLateral.AGRUPAR_ITEMS),
+            menuLateralSinBordes = if (!prefs.getBoolean("menu_lateral_migrado_v2", false)) AjustesDefaults.MenuLateral.SIN_BORDES else prefs.getBoolean("menu_lateral_sin_bordes", AjustesDefaults.MenuLateral.SIN_BORDES),
+            menuLateralItemsVisibles = deserializarItemsMenuLateral(prefs.getString("menu_lateral_items_visibles_json", "") ?: "", prefs.getBoolean("menu_lateral_migrado_v2", false))
         )
     }
 
@@ -747,6 +807,12 @@ class AlmacenAjustes(contexto: Context) {
             .putInt("generador_longitud_max", nuevo.generadorLongitudMax)
             .putString("generador_idioma_frases", nuevo.generadorIdiomaFrases)
             .putBoolean("generador_capitalizar_frases", nuevo.generadorCapitalizarFrases)
+            .putStringSet("diccionario_anadidas_es", nuevo.diccionarioAnadidasEs)
+            .putStringSet("diccionario_excluidas_es", nuevo.diccionarioExcluidasEs)
+            .putStringSet("diccionario_favoritas_es", nuevo.diccionarioFavoritasEs)
+            .putStringSet("diccionario_anadidas_en", nuevo.diccionarioAnadidasEn)
+            .putStringSet("diccionario_excluidas_en", nuevo.diccionarioExcluidasEn)
+            .putStringSet("diccionario_favoritas_en", nuevo.diccionarioFavoritasEn)
             .putInt("diagnostico_max_eventos", nuevo.diagnosticoMaxEventos)
             .putFloat("curvatura_esquinas_dp", nuevo.curvaturaEsquinasDp)
             .putFloat("grosor_borde_dp", nuevo.grosorBordeDp)
@@ -841,10 +907,15 @@ class AlmacenAjustes(contexto: Context) {
             .putString("formato_hora", nuevo.formatoHora)
             .putString("formato_telefono", nuevo.formatoTelefono)
             .putString("separador_decimal", nuevo.separadorDecimal)
+            .putString("formato_tarjeta", nuevo.formatoTarjeta)
+            .putString("formato_expiracion_tarjeta", nuevo.formatoExpiracionTarjeta)
+            .putString("formato_iban", nuevo.formatoIban)
             .putString("perfil_argon2", nuevo.perfilArgon2)
             .putBoolean("proteccion_pantalla", nuevo.proteccionPantalla)
             .putBoolean("proteccion_tapjacking", nuevo.proteccionTapjacking)
             .putStringSet("lista_blanca_accesibilidad", nuevo.listaBlancaAccesibilidad)
+            .putStringSet("contrasenas_comunes_anadidas", nuevo.contrasenasComunesAnadidas)
+            .putStringSet("contrasenas_comunes_excluidas", nuevo.contrasenasComunesExcluidas)
             .putInt("umbral_antiguedad_dias", nuevo.umbralAntiguedadDias)
             .putInt("freno_intentos_gratis", nuevo.frenoIntentosGratis)
             .putLong("freno_segundos_base", nuevo.frenoSegundosBase)
@@ -889,15 +960,21 @@ class AlmacenAjustes(contexto: Context) {
             .putString("engranajes_color_interior", nuevo.engranajesColorInterior)
             .putString("engranajes_color_cubo", nuevo.engranajesColorCubo)
             .putString("engranajes_color_eje", nuevo.engranajesColorEje)
+            .putString("engranajes_colores_claro_json", nuevo.engranajesColoresClaroJson)
+            .putString("engranajes_colores_oscuro_json", nuevo.engranajesColoresOscuroJson)
             .putFloat("puerta_velocidad", nuevo.puertaVelocidad)
             .putFloat("puerta_grosor_anillos", nuevo.puertaGrosorAnillos)
             .putString("puerta_color", nuevo.puertaColor)
+            .putString("puerta_color_destello", nuevo.puertaColorDestello)
+            .putString("puerta_colores_claro_json", nuevo.puertaColoresClaroJson)
+            .putString("puerta_colores_oscuro_json", nuevo.puertaColoresOscuroJson)
             .putBoolean("alumbrado_activo", nuevo.alumbradoActivo)
             .putFloat("alumbrado_intensidad", nuevo.alumbradoIntensidad)
             .putInt("alumbrado_repeticiones", nuevo.alumbradoRepeticiones)
             .putInt("alumbrado_duracion_ms", nuevo.alumbradoDuracionMs)
             .putBoolean("haptica_app", nuevo.hapticaApp)
             .putFloat("haptica_app_intensidad", nuevo.hapticaAppIntensidad)
+            .putBoolean("toast_descriptivo", nuevo.toastDescriptivo)
             .putBoolean("mostrar_indicadores_contenido", nuevo.mostrarIndicadoresContenido)
             .putFloat("altura_indicadores_dp", nuevo.alturaIndicadoresDp)
             .putFloat("opacidad_indicadores", nuevo.opacidadIndicadores)
@@ -940,6 +1017,7 @@ class AlmacenAjustes(contexto: Context) {
             .putBoolean("menu_lateral_agrupar_items", nuevo.menuLateralAgruparItems)
             .putBoolean("menu_lateral_sin_bordes", nuevo.menuLateralSinBordes)
             .putString("menu_lateral_items_visibles_json", jsonAjustes.encodeToString(nuevo.menuLateralItemsVisibles))
+            .putBoolean("menu_lateral_migrado_v2", true)
             .apply()
         _ajustes.value = nuevo
         com.jlnavas3.bovedalocal.util.Haptica.sincronizar(nuevo)
@@ -949,8 +1027,9 @@ class AlmacenAjustes(contexto: Context) {
 
     companion object {
         val OPCIONES_ANIMACION_DESBLOQUEO = listOf(
-            "puerta" to "Puerta de bóveda",
-            "engranajes" to "Mecanismo de engranajes"
+            "ninguna" to "Ninguna (Ahorro de energía)",
+            "engranajes" to "Mecanismo de engranajes",
+            "puerta" to "Puerta de bóveda"
         )
         val OPCIONES_AUTO_BLOQUEO = listOf(
             5 to "5 segundos",
@@ -983,7 +1062,9 @@ class AlmacenAjustes(contexto: Context) {
             10 to "10 caracteres",
             15 to "15 caracteres",
             20 to "20 caracteres",
-            30 to "30 caracteres"
+            30 to "30 caracteres",
+            64 to "64 caracteres",
+            128 to "128 caracteres"
         )
         val OPCIONES_PORTAPAPELES = listOf(
             15 to "15 segundos",
@@ -1114,6 +1195,91 @@ class AlmacenAjustes(contexto: Context) {
             15 to "15 intentos fallidos",
             20 to "20 intentos fallidos"
         )
+    }
+}
+
+fun obtenerColorDesdeJson(jsonStr: String, clave: String): String {
+    if (jsonStr.isBlank()) return ""
+    return try {
+        JSONObject(jsonStr).optString(clave, "")
+    } catch (_: Exception) {
+        ""
+    }
+}
+
+fun actualizarColorEnJson(jsonStr: String, clave: String, valor: String): String {
+    val obj = try {
+        if (jsonStr.isNotBlank()) JSONObject(jsonStr) else JSONObject()
+    } catch (_: Exception) {
+        JSONObject()
+    }
+    obj.put(clave, valor)
+    return obj.toString()
+}
+
+/**
+ * Obtiene el color correspondiente a una pieza de los engranajes según si el modo visual es oscuro o claro.
+ */
+fun AjustesApp.obtenerEngranajesColor(campo: String, esOscuro: Boolean): String {
+    return if (esOscuro) {
+        val colorJson = obtenerColorDesdeJson(engranajesColoresOscuroJson, campo)
+        if (colorJson.isNotBlank()) {
+            colorJson
+        } else {
+            when (campo) {
+                "brillo" -> engranajesColorBrillo.ifBlank { AjustesDefaults.Animacion.Engranajes.COLOR_BRILLO }
+                "principal" -> engranajesColorPrincipal.ifBlank { AjustesDefaults.Animacion.Engranajes.COLOR_PRINCIPAL }
+                "sombra_medio" -> engranajesColorSombraMedio.ifBlank { AjustesDefaults.Animacion.Engranajes.COLOR_SOMBRA_MEDIO }
+                "sombra_oscuro" -> engranajesColorSombraOscuro.ifBlank { AjustesDefaults.Animacion.Engranajes.COLOR_SOMBRA_OSCURO }
+                "bisel" -> engranajesColorBisel.ifBlank { AjustesDefaults.Animacion.Engranajes.COLOR_BISEL }
+                "interior" -> engranajesColorInterior.ifBlank { AjustesDefaults.Animacion.Engranajes.COLOR_INTERIOR }
+                "cubo" -> engranajesColorCubo.ifBlank { AjustesDefaults.Animacion.Engranajes.COLOR_CUBO }
+                "eje" -> engranajesColorEje.ifBlank { AjustesDefaults.Animacion.Engranajes.COLOR_EJE }
+                else -> ""
+            }
+        }
+    } else {
+        val colorJson = obtenerColorDesdeJson(engranajesColoresClaroJson, campo)
+        if (colorJson.isNotBlank()) {
+            colorJson
+        } else {
+            when (campo) {
+                "brillo" -> AjustesDefaults.Animacion.Engranajes.COLOR_BRILLO_CLARO
+                "principal" -> AjustesDefaults.Animacion.Engranajes.COLOR_PRINCIPAL_CLARO
+                "sombra_medio" -> AjustesDefaults.Animacion.Engranajes.COLOR_SOMBRA_MEDIO_CLARO
+                "sombra_oscuro" -> AjustesDefaults.Animacion.Engranajes.COLOR_SOMBRA_OSCURO_CLARO
+                "bisel" -> AjustesDefaults.Animacion.Engranajes.COLOR_BISEL_CLARO
+                "interior" -> AjustesDefaults.Animacion.Engranajes.COLOR_INTERIOR_CLARO
+                "cubo" -> AjustesDefaults.Animacion.Engranajes.COLOR_CUBO_CLARO
+                "eje" -> AjustesDefaults.Animacion.Engranajes.COLOR_EJE_CLARO
+                else -> ""
+            }
+        }
+    }
+}
+
+/**
+ * Obtiene el color de los anillos de la puerta de bóveda según si el modo visual es oscuro o claro.
+ */
+fun AjustesApp.obtenerPuertaColor(esOscuro: Boolean): String {
+    return if (esOscuro) {
+        val c = obtenerColorDesdeJson(puertaColoresOscuroJson, "puerta")
+        c.ifBlank { puertaColor }
+    } else {
+        obtenerColorDesdeJson(puertaColoresClaroJson, "puerta")
+    }
+}
+
+/**
+ * Obtiene el color de destello y rayos centrales de la puerta de bóveda según si el modo visual es oscuro o claro.
+ */
+fun AjustesApp.obtenerPuertaColorDestello(esOscuro: Boolean): String {
+    return if (esOscuro) {
+        val c = obtenerColorDesdeJson(puertaColoresOscuroJson, "destello")
+        c.ifBlank { puertaColorDestello }
+    } else {
+        val c = obtenerColorDesdeJson(puertaColoresClaroJson, "destello")
+        c.ifBlank { puertaColorDestello }
     }
 }
 

@@ -1,3 +1,9 @@
+/*
+ * Copyright (C) 2026 Jose Luis Navas
+ * Licensed under the GNU General Public License v3.0 (GPLv3).
+ * See LICENSE file in the project root for full license information.
+ */
+
 package com.jlnavas3.bovedalocal.ui.pantallas.edicion
 
 import androidx.compose.foundation.ScrollState
@@ -77,6 +83,8 @@ fun FormularioEdicionEntrada(
     haptica: Haptica,
     alGuardarPlantillaCampos: ((com.jlnavas3.bovedalocal.data.PlantillaCamposPersonalizada) -> Unit)? = null,
     alEliminarPlantillaCampos: ((String) -> Unit)? = null,
+    alAbrirDiccionario: (() -> Unit)? = null,
+    alAbrirContrasenasComunes: (() -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
     val focusManager = LocalFocusManager.current
@@ -137,7 +145,9 @@ fun FormularioEdicionEntrada(
             alCambiarCamposPersonalizados = alCambiarCamposPersonalizados,
             listaEnlaces = listaEnlaces,
             ajustes = ajustes,
-            haptica = haptica
+            haptica = haptica,
+            alAbrirDiccionario = alAbrirDiccionario,
+            alAbrirContrasenasComunes = alAbrirContrasenasComunes
         )
 
         // Sitios o aplicaciones y 2FA

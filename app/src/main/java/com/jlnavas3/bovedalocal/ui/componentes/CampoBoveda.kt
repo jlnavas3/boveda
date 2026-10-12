@@ -1,3 +1,9 @@
+/*
+ * Copyright (C) 2026 Jose Luis Navas
+ * Licensed under the GNU General Public License v3.0 (GPLv3).
+ * See LICENSE file in the project root for full license information.
+ */
+
 package com.jlnavas3.bovedalocal.ui.componentes
 
 import androidx.compose.runtime.Composable
@@ -23,7 +29,8 @@ fun CampoBoveda(
     readOnly: Boolean = false,
     trailingIcon: (@Composable () -> Unit)? = null,
     alPulsar: (() -> Unit)? = null,
-    formateadorMascara: ((String) -> String)? = null
+    formateadorMascara: ((String) -> String)? = null,
+    colorearContrasena: Boolean = false
 ) {
     val tipo = when {
         esContrasena -> TipoCampoTexto.CONTRASENA
@@ -47,7 +54,8 @@ fun CampoBoveda(
         readOnly = readOnly,
         trailingIcon = trailingIcon,
         alPulsar = alPulsar,
-        formateadorMascara = formateadorMascara
+        formateadorMascara = formateadorMascara,
+        colorearContrasena = colorearContrasena
     )
 }
 

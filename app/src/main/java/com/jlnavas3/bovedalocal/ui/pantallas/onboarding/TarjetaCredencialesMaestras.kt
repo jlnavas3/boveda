@@ -1,3 +1,9 @@
+/*
+ * Copyright (C) 2026 Jose Luis Navas
+ * Licensed under the GNU General Public License v3.0 (GPLv3).
+ * See LICENSE file in the project root for full license information.
+ */
+
 package com.jlnavas3.bovedalocal.ui.pantallas.onboarding
 
 import androidx.compose.foundation.layout.Arrangement
@@ -57,7 +63,8 @@ fun TarjetaCredencialesMaestras(
                 colorIcono = ColorIconosInternos,
                 mostrarContrasena = mostrarContrasena,
                 alAlternarMostrarContrasena = alAlternarMostrarContrasena,
-                monoespaciada = mostrarContrasena
+                monoespaciada = mostrarContrasena,
+                colorearContrasena = true
             )
 
             Spacer(Modifier.height(10.dp))
@@ -72,7 +79,8 @@ fun TarjetaCredencialesMaestras(
                 colorIcono = ColorIconosInternos,
                 mostrarContrasena = mostrarRepetida,
                 alAlternarMostrarContrasena = alAlternarMostrarRepetida,
-                monoespaciada = mostrarRepetida
+                monoespaciada = mostrarRepetida,
+                colorearContrasena = true
             )
 
             if (contrasena.isNotEmpty()) {

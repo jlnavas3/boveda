@@ -1,3 +1,9 @@
+/*
+ * Copyright (C) 2026 Jose Luis Navas
+ * Licensed under the GNU General Public License v3.0 (GPLv3).
+ * See LICENSE file in the project root for full license information.
+ */
+
 package com.jlnavas3.bovedalocal.ui.pantallas.lista
 
 import androidx.compose.foundation.background
@@ -80,7 +86,6 @@ fun BarraSuperiorLista(
             modifier = Modifier
                 .size(40.dp)
                 .clip(CircleShape)
-                .background(ColorTarjetaAjustes)
         ) {
             Icon(
                 imageVector = Icons.Filled.Menu,
@@ -115,7 +120,11 @@ fun BarraSuperiorLista(
             modifier = Modifier
                 .size(40.dp)
                 .clip(CircleShape)
-                .background(if (busquedaVisible || busquedaActiva) ColorAcento.copy(alpha = 0.16f) else ColorTarjetaAjustes)
+                .then(
+                    if (busquedaVisible || busquedaActiva) {
+                        Modifier.background(ColorAcento.copy(alpha = 0.16f))
+                    } else Modifier
+                )
         ) {
             Icon(
                 imageVector = Icons.Filled.Search,
@@ -137,7 +146,11 @@ fun BarraSuperiorLista(
                 modifier = Modifier
                     .size(40.dp)
                     .clip(CircleShape)
-                    .background(if (tieneFiltrosActivos) ColorAcento.copy(alpha = 0.16f) else ColorTarjetaAjustes)
+                    .then(
+                        if (tieneFiltrosActivos) {
+                            Modifier.background(ColorAcento.copy(alpha = 0.16f))
+                        } else Modifier
+                    )
             ) {
                 Icon(
                     imageVector = Icons.Filled.MoreVert,

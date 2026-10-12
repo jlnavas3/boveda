@@ -1,11 +1,18 @@
+/*
+ * Copyright (C) 2026 Jose Luis Navas
+ * Licensed under the GNU General Public License v3.0 (GPLv3).
+ * See LICENSE file in the project root for full license information.
+ */
+
 package com.jlnavas3.bovedalocal.ui.componentes.ajustes
 
-import android.widget.Toast
+import com.jlnavas3.bovedalocal.ui.componentes.LocalAvisador
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
+import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.RestartAlt
 import androidx.compose.material3.DropdownMenuItem
@@ -36,6 +43,8 @@ data class AccionSaltoGrupo(
 fun BotonMenuOpcionesPantalla(
     modifier: Modifier = Modifier,
     grupos: List<AccionSaltoGrupo> = emptyList(),
+    alCopiarConfiguracion: (() -> Unit)? = null,
+    textoCopiarConfiguracion: String = "Copiar configuración",
     alRestablecerPantalla: (() -> Unit)? = null,
     textoRestablecer: String = "Restablecer pantalla",
     mensajeToastRestablecer: String? = null
@@ -43,8 +52,9 @@ fun BotonMenuOpcionesPantalla(
     val contexto = LocalContext.current
     var menuAbierto by remember { mutableStateOf(false) }
     val coordinador = LocalCoordinadorResaltado.current
+    val avisador = LocalAvisador.current
 
-    if (grupos.isEmpty() && alRestablecerPantalla == null) return
+    if (grupos.isEmpty() && alRestablecerPantalla == null && alCopiarConfiguracion == null) return
 
     Box(modifier = modifier) {
         BotonIconoCabecera(
@@ -71,7 +81,25 @@ fun BotonMenuOpcionesPantalla(
                 )
             }
 
-            if (grupos.isNotEmpty() && alRestablecerPantalla != null) {
+            if (grupos.isNotEmpty() && (alCopiarConfiguracion != null || alRestablecerPantalla != null)) {
+                SeparadorOpcionMenu()
+            }
+
+            if (alCopiarConfiguracion != null) {
+                com.jlnavas3.bovedalocal.ui.componentes.ElementoMenuCompacto(
+                    texto = textoCopiarConfiguracion,
+                    icono = Icons.Filled.ContentCopy,
+                    colorIcono = ColorIconosInternos,
+                    colorTexto = TextoPrincipal,
+                    onClick = {
+                        menuAbierto = false
+                        Haptica(contexto).tic()
+                        alCopiarConfiguracion()
+                    }
+                )
+            }
+
+            if (alCopiarConfiguracion != null && alRestablecerPantalla != null) {
                 SeparadorOpcionMenu()
             }
 
@@ -86,7 +114,7 @@ fun BotonMenuOpcionesPantalla(
                         Haptica(contexto).tic()
                         alRestablecerPantalla()
                         val mensaje = mensajeToastRestablecer ?: "Ajustes de pantalla restablecidos"
-                        Toast.makeText(contexto, mensaje, Toast.LENGTH_SHORT).show()
+                        avisador(mensaje, "Ajustes")
                     }
                 )
             }

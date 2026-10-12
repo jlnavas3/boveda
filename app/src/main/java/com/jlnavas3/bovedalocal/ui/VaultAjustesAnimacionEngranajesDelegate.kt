@@ -1,3 +1,9 @@
+/*
+ * Copyright (C) 2026 Jose Luis Navas
+ * Licensed under the GNU General Public License v3.0 (GPLv3).
+ * See LICENSE file in the project root for full license information.
+ */
+
 package com.jlnavas3.bovedalocal.ui
 
 import com.jlnavas3.bovedalocal.data.AjustesDefaults
@@ -48,21 +54,48 @@ interface VaultAjustesAnimacionEngranajesDelegate {
     fun ajustarEngranajesSombraIntensidad(valor: Float) {
         repositorio.ajustes.actualizar { it.copy(engranajesSombraIntensidad = valor) }
     }
-    fun ajustarEngranajesColor(campo: String, hex: String) {
+    fun ajustarEngranajesColor(campo: String, hex: String, esOscuro: Boolean = true) {
         repositorio.ajustes.actualizar {
-            when (campo) {
-                "brillo" -> it.copy(engranajesColorBrillo = hex)
-                "principal" -> it.copy(engranajesColorPrincipal = hex)
-                "sombra_medio" -> it.copy(engranajesColorSombraMedio = hex)
-                "sombra_oscuro" -> it.copy(engranajesColorSombraOscuro = hex)
-                "bisel" -> it.copy(engranajesColorBisel = hex)
-                "interior" -> it.copy(engranajesColorInterior = hex)
-                "cubo" -> it.copy(engranajesColorCubo = hex)
-                "eje" -> it.copy(engranajesColorEje = hex)
-                else -> it
+            if (esOscuro) {
+                val nuevoJson = com.jlnavas3.bovedalocal.data.actualizarColorEnJson(it.engranajesColoresOscuroJson, campo, hex)
+                when (campo) {
+                    "brillo" -> it.copy(engranajesColoresOscuroJson = nuevoJson, engranajesColorBrillo = hex)
+                    "principal" -> it.copy(engranajesColoresOscuroJson = nuevoJson, engranajesColorPrincipal = hex)
+                    "sombra_medio" -> it.copy(engranajesColoresOscuroJson = nuevoJson, engranajesColorSombraMedio = hex)
+                    "sombra_oscuro" -> it.copy(engranajesColoresOscuroJson = nuevoJson, engranajesColorSombraOscuro = hex)
+                    "bisel" -> it.copy(engranajesColoresOscuroJson = nuevoJson, engranajesColorBisel = hex)
+                    "interior" -> it.copy(engranajesColoresOscuroJson = nuevoJson, engranajesColorInterior = hex)
+                    "cubo" -> it.copy(engranajesColoresOscuroJson = nuevoJson, engranajesColorCubo = hex)
+                    "eje" -> it.copy(engranajesColoresOscuroJson = nuevoJson, engranajesColorEje = hex)
+                    else -> it.copy(engranajesColoresOscuroJson = nuevoJson)
+                }
+            } else {
+                val nuevoJson = com.jlnavas3.bovedalocal.data.actualizarColorEnJson(it.engranajesColoresClaroJson, campo, hex)
+                it.copy(engranajesColoresClaroJson = nuevoJson)
             }
         }
     }
+
+    fun restablecerColoresEngranajes(esOscuro: Boolean = true) {
+        repositorio.ajustes.actualizar {
+            if (esOscuro) {
+                it.copy(
+                    engranajesColoresOscuroJson = "",
+                    engranajesColorBrillo = AjustesDefaults.Animacion.Engranajes.COLOR_BRILLO,
+                    engranajesColorPrincipal = AjustesDefaults.Animacion.Engranajes.COLOR_PRINCIPAL,
+                    engranajesColorSombraMedio = AjustesDefaults.Animacion.Engranajes.COLOR_SOMBRA_MEDIO,
+                    engranajesColorSombraOscuro = AjustesDefaults.Animacion.Engranajes.COLOR_SOMBRA_OSCURO,
+                    engranajesColorBisel = AjustesDefaults.Animacion.Engranajes.COLOR_BISEL,
+                    engranajesColorInterior = AjustesDefaults.Animacion.Engranajes.COLOR_INTERIOR,
+                    engranajesColorCubo = AjustesDefaults.Animacion.Engranajes.COLOR_CUBO,
+                    engranajesColorEje = AjustesDefaults.Animacion.Engranajes.COLOR_EJE
+                )
+            } else {
+                it.copy(engranajesColoresClaroJson = "")
+            }
+        }
+    }
+
     fun restablecerAjustesEngranajes() {
         repositorio.ajustes.actualizar {
             it.copy(
@@ -83,7 +116,9 @@ interface VaultAjustesAnimacionEngranajesDelegate {
                 engranajesColorBisel = AjustesDefaults.Animacion.Engranajes.COLOR_BISEL,
                 engranajesColorInterior = AjustesDefaults.Animacion.Engranajes.COLOR_INTERIOR,
                 engranajesColorCubo = AjustesDefaults.Animacion.Engranajes.COLOR_CUBO,
-                engranajesColorEje = AjustesDefaults.Animacion.Engranajes.COLOR_EJE
+                engranajesColorEje = AjustesDefaults.Animacion.Engranajes.COLOR_EJE,
+                engranajesColoresClaroJson = "",
+                engranajesColoresOscuroJson = ""
             )
         }
     }
@@ -95,15 +130,37 @@ interface VaultAjustesAnimacionEngranajesDelegate {
     fun ajustarPuertaGrosorAnillos(valor: Float) {
         repositorio.ajustes.actualizar { it.copy(puertaGrosorAnillos = valor) }
     }
-    fun ajustarPuertaColor(hex: String) {
-        repositorio.ajustes.actualizar { it.copy(puertaColor = hex) }
+    fun ajustarPuertaColor(hex: String, esOscuro: Boolean = true) {
+        repositorio.ajustes.actualizar {
+            if (esOscuro) {
+                val nuevoJson = com.jlnavas3.bovedalocal.data.actualizarColorEnJson(it.puertaColoresOscuroJson, "puerta", hex)
+                it.copy(puertaColoresOscuroJson = nuevoJson, puertaColor = hex)
+            } else {
+                val nuevoJson = com.jlnavas3.bovedalocal.data.actualizarColorEnJson(it.puertaColoresClaroJson, "puerta", hex)
+                it.copy(puertaColoresClaroJson = nuevoJson)
+            }
+        }
+    }
+    fun ajustarPuertaColorDestello(hex: String, esOscuro: Boolean = true) {
+        repositorio.ajustes.actualizar {
+            if (esOscuro) {
+                val nuevoJson = com.jlnavas3.bovedalocal.data.actualizarColorEnJson(it.puertaColoresOscuroJson, "destello", hex)
+                it.copy(puertaColoresOscuroJson = nuevoJson, puertaColorDestello = hex)
+            } else {
+                val nuevoJson = com.jlnavas3.bovedalocal.data.actualizarColorEnJson(it.puertaColoresClaroJson, "destello", hex)
+                it.copy(puertaColoresClaroJson = nuevoJson)
+            }
+        }
     }
     fun restablecerAjustesPuerta() {
         repositorio.ajustes.actualizar {
             it.copy(
                 puertaVelocidad = AjustesDefaults.Animacion.Puerta.VELOCIDAD,
                 puertaGrosorAnillos = AjustesDefaults.Animacion.Puerta.GROSOR_ANILLOS,
-                puertaColor = AjustesDefaults.Animacion.Puerta.COLOR
+                puertaColor = AjustesDefaults.Animacion.Puerta.COLOR,
+                puertaColorDestello = "",
+                puertaColoresClaroJson = "",
+                puertaColoresOscuroJson = ""
             )
         }
     }
@@ -117,5 +174,13 @@ interface VaultAjustesAnimacionEngranajesDelegate {
         }
     }
 
-    fun restablecerColorPuerta() = ajustarPuertaColor(AjustesDefaults.Animacion.Puerta.COLOR)
+    fun restablecerColorPuerta(esOscuro: Boolean = true) {
+        repositorio.ajustes.actualizar {
+            if (esOscuro) {
+                it.copy(puertaColoresOscuroJson = "", puertaColor = "", puertaColorDestello = "")
+            } else {
+                it.copy(puertaColoresClaroJson = "")
+            }
+        }
+    }
 }

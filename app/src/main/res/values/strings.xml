@@ -5,6 +5,6 @@
     <string name="autofill_sugerencia">Bóveda local</string>
     <string name="shortcut_nueva_entrada">Nueva entrada</string>
     <string name="shortcut_buscar">Buscar en la bóveda</string>
-    <string name="shortcut_escanear">Escanear QR de verificación</string>
+    <string name="shortcut_escanear">Escanear QR</string>
     <string name="shortcut_generador">Generador rápido</string>
 </resources>

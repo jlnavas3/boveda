@@ -1,3 +1,9 @@
+/*
+ * Copyright (C) 2026 Jose Luis Navas
+ * Licensed under the GNU General Public License v3.0 (GPLv3).
+ * See LICENSE file in the project root for full license information.
+ */
+
 package com.jlnavas3.bovedalocal.ui.pantallas.salud
 
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -103,7 +109,15 @@ fun FilaProblemaAgil(
     val estiloOcultamiento = ajustes?.estiloOcultamientoVisual ?: "desenfoque"
     val tiempoAutoOcultar = ajustes?.tiempoAutoOcultarSegundos ?: 10
 
+    var mostrarUsuario by rememberSaveable { mutableStateOf(false) }
     var mostrarContrasena by rememberSaveable { mutableStateOf(false) }
+
+    TemporizadorAutoOcultar(
+        revelado = mostrarUsuario,
+        tiempoSegundos = if (seguridadVisualActiva) tiempoAutoOcultar else 0
+    ) {
+        mostrarUsuario = false
+    }
 
     TemporizadorAutoOcultar(
         revelado = mostrarContrasena,
@@ -224,7 +238,9 @@ fun FilaProblemaAgil(
                         ocultarUsuario = ocultarUsuario,
                         estiloOcultamiento = estiloOcultamiento,
                         seguridadVisualActiva = seguridadVisualActiva,
+                        mostrarUsuario = mostrarUsuario,
                         mostrarContrasena = mostrarContrasena,
+                        alAlternarMostrarUsuario = { mostrarUsuario = !mostrarUsuario },
                         alAlternarMostrarContrasena = { mostrarContrasena = !mostrarContrasena }
                     )
                 }

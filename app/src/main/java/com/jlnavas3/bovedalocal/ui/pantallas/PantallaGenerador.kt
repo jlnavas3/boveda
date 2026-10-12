@@ -1,3 +1,9 @@
+/*
+ * Copyright (C) 2026 Jose Luis Navas
+ * Licensed under the GNU General Public License v3.0 (GPLv3).
+ * See LICENSE file in the project root for full license information.
+ */
+
 package com.jlnavas3.bovedalocal.ui.pantallas
 
 import androidx.compose.foundation.background
@@ -19,7 +25,7 @@ import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.SmallFloatingActionButton
+import com.jlnavas3.bovedalocal.ui.componentes.BotonFlotanteSecundario
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -137,7 +143,8 @@ fun PantallaGenerador(vm: VaultViewModel) {
                                 PanelModoDiceware(
                                     opciones = opciones,
                                     alCambiarOpciones = { opciones = it },
-                                    haptica = haptica
+                                    haptica = haptica,
+                                    alAbrirDiccionario = { vm.ir(Pantalla.DiccionarioPalabras(opciones.idiomaFrase)) }
                                 )
                             }
                         }
@@ -171,27 +178,18 @@ fun PantallaGenerador(vm: VaultViewModel) {
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             // FAB superior: Copiar contraseña
-            SmallFloatingActionButton(
+            BotonFlotanteSecundario(
                 onClick = {
                     haptica.exito()
                     GeneradorRapidoHelper.registrarEnHistorial(contexto, generada, "Generador")
                     vm.copiar("Contraseña", generada, sensible = true)
                 },
+                icono = Icons.Filled.ContentCopy,
+                descripcion = "Copiar contraseña",
                 containerColor = ColorTarjetaAjustes,
                 contentColor = ColorAcento,
-                shape = formaFab,
-                modifier = Modifier.then(
-                    if (GrosorBorde > 0.dp && EstiloBorde != "ninguno") {
-                        Modifier.border(GrosorBorde, ColorBordeActual, formaFab)
-                    } else Modifier
-                )
-            ) {
-                Icon(
-                    imageVector = Icons.Filled.ContentCopy,
-                    contentDescription = "Copiar contraseña",
-                    modifier = Modifier.size(22.dp)
-                )
-            }
+                colorBorde = ColorBordeActual
+            )
 
             // FAB inferior: Regenerar contraseña (Principal)
             FloatingActionButton(

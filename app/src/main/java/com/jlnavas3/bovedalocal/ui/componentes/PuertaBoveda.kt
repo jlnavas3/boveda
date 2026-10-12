@@ -1,3 +1,9 @@
+/*
+ * Copyright (C) 2026 Jose Luis Navas
+ * Licensed under the GNU General Public License v3.0 (GPLv3).
+ * See LICENSE file in the project root for full license information.
+ */
+
 package com.jlnavas3.bovedalocal.ui.componentes
 
 import android.os.SystemClock
@@ -21,8 +27,13 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.graphics.lerp
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcentoFuerte
+import com.jlnavas3.bovedalocal.ui.theme.PaletaSobriaDefaults
+import com.jlnavas3.bovedalocal.ui.theme.esOscuroActivo
+import com.jlnavas3.bovedalocal.ui.theme.paletaSobriaGuardadaClara
+import com.jlnavas3.bovedalocal.ui.theme.paletaSobriaGuardadaOscura
 import kotlinx.coroutines.isActive
 import kotlin.math.cos
 import kotlin.math.sin
@@ -35,7 +46,10 @@ fun PuertaBoveda(
     tamano: Int = 200,
     velocidadFactor: Float = 1.0f,
     grosorFactor: Float = 1.0f,
-    colorPersonalizado: Color? = null
+    colorPersonalizado: Color? = null,
+    colorDestello: Color? = null,
+    esOscuro: Boolean = esOscuroActivo,
+    colorFondo: Color? = null
 ) {
     var progreso by remember { mutableFloatStateOf(0f) }
     var tiempoSegundos by remember { mutableFloatStateOf(0f) }
@@ -72,9 +86,20 @@ fun PuertaBoveda(
             val radioBase = size.minDimension / 2
             val p = progreso
 
-            val colorBase = colorPersonalizado ?: ColorAcento
-            val colorClaro = if (colorPersonalizado != null) Color.White else Color(0xFFFFD54F)
-            val colorSecundario = if (colorPersonalizado != null) colorPersonalizado.copy(alpha = 0.75f) else ColorAcentoFuerte
+            val paletaSobria = if (esOscuro) {
+                paletaSobriaGuardadaOscura ?: PaletaSobriaDefaults.OSCURA
+            } else {
+                paletaSobriaGuardadaClara ?: PaletaSobriaDefaults.CLARA
+            }
+            val fondoEfectivo = colorFondo ?: paletaSobria.fondo
+
+            val colorBase = colorPersonalizado ?: paletaSobria.acento
+            val colorClaro = if (esOscuro) {
+                lerp(colorBase, Color.White, 0.65f)
+            } else {
+                lerp(colorBase, Color.White, 0.45f)
+            }
+            val colorSecundario = colorBase.copy(alpha = 0.75f)
 
             // Velocidades angulares individuales continuas en grados por segundo (°/s)
             val velocidadesGrados = listOf(80f * velocidadFactor, -105f * velocidadFactor, 135f * velocidadFactor)
@@ -138,8 +163,9 @@ fun PuertaBoveda(
                     center = centro,
                     alpha = alphaNucleo
                 )
+                val colorCavidadCentral = if (esOscuro) Color(0xFF1E232E) else fondoEfectivo
                 drawCircle(
-                    color = Color(0xFF1E232E).copy(alpha = alphaNucleo),
+                    color = colorCavidadCentral.copy(alpha = alphaNucleo),
                     radius = radioNucleo * 0.52f,
                     center = centro
                 )
@@ -148,7 +174,7 @@ fun PuertaBoveda(
                     val finX = centro.x + (radioNucleo * 0.88f) * cos(radAngulo).toFloat()
                     val finY = centro.y + (radioNucleo * 0.88f) * sin(radAngulo).toFloat()
                     drawLine(
-                        color = ColorAcento.copy(alpha = alphaNucleo),
+                        color = (colorDestello ?: paletaSobria.acento).copy(alpha = alphaNucleo),
                         start = centro,
                         end = Offset(finX, finY),
                         strokeWidth = 2.5.dp.toPx(),

@@ -1,3 +1,9 @@
+/*
+ * Copyright (C) 2026 Jose Luis Navas
+ * Licensed under the GNU General Public License v3.0 (GPLv3).
+ * See LICENSE file in the project root for full license information.
+ */
+
 package com.jlnavas3.bovedalocal.ui.pantallas.ajustes.widget
 
 import android.widget.Toast
@@ -77,7 +83,7 @@ fun PantallaWidget1x1Comportamiento(
                     haptica.tic()
                     vm.ajustarWidget1x1MostrarToast(it)
                     if (it) {
-                        Toast.makeText(contexto, "Notificación emergente (Toast) activada", Toast.LENGTH_SHORT).show()
+                        vm.avisar("Notificación emergente (Toast) activada", "Widget 1x1")
                     }
                 }
             )

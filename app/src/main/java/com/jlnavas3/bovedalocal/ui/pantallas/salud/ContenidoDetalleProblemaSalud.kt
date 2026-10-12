@@ -1,3 +1,9 @@
+/*
+ * Copyright (C) 2026 Jose Luis Navas
+ * Licensed under the GNU General Public License v3.0 (GPLv3).
+ * See LICENSE file in the project root for full license information.
+ */
+
 package com.jlnavas3.bovedalocal.ui.pantallas.salud
 
 import androidx.compose.foundation.background
@@ -49,7 +55,9 @@ fun ColumnScope.ContenidoDetalleProblemaSalud(
     ocultarUsuario: Boolean,
     estiloOcultamiento: String,
     seguridadVisualActiva: Boolean,
+    mostrarUsuario: Boolean = false,
     mostrarContrasena: Boolean,
+    alAlternarMostrarUsuario: () -> Unit = {},
     alAlternarMostrarContrasena: () -> Unit
 ) {
     // Fila 1: Título y Badge de diagnóstico
@@ -84,17 +92,19 @@ fun ColumnScope.ContenidoDetalleProblemaSalud(
 
     Spacer(Modifier.height(2.dp))
 
-    // Fila 2: Usuario / Correo
+    // Fila 2: Usuario / Correo con revelado y ofuscación
     val usuarioTexto = entrada.usuario.ifBlank { "Sin usuario" }
     if (entrada.usuario.isNotBlank() && ocultarUsuario) {
-        TextoSeguroVisual(
+        com.jlnavas3.bovedalocal.ui.componentes.seguridad.DatoSensibleConRevelado(
             texto = entrada.usuario,
-            oculto = true,
+            oculto = !mostrarUsuario,
             estilo = estiloOcultamiento,
             estiloTexto = MaterialTheme.typography.bodySmall.copy(fontSize = 11.5.sp),
             colorTexto = ColorTextoAjustes.copy(alpha = 0.85f),
             maxLines = 1,
-            overflow = TextOverflow.Ellipsis
+            overflow = TextOverflow.Ellipsis,
+            alAlternarRevelado = alAlternarMostrarUsuario,
+            descripcionAccesible = "usuario o correo"
         )
     } else {
         Text(

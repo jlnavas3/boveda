@@ -1,3 +1,9 @@
+/*
+ * Copyright (C) 2026 Jose Luis Navas
+ * Licensed under the GNU General Public License v3.0 (GPLv3).
+ * See LICENSE file in the project root for full license information.
+ */
+
 package com.jlnavas3.bovedalocal.ui.pantallas.salud
 
 import android.content.Context
@@ -28,7 +34,9 @@ fun rememberDatosSaludBoveda(
     entradas: List<Entrada>,
     umbralDias: Int,
     ahora: Long,
-    contexto: Context
+    contexto: Context,
+    anadidasComunes: Set<String> = emptySet(),
+    excluidasComunes: Set<String> = emptySet()
 ): DatosSaludBoveda {
     val claves = remember(entradas) {
         entradas.filter { it.tipo == TipoEntrada.LOGIN && it.contrasena.isNotBlank() && !it.ignoradaEnSalud }
@@ -43,8 +51,8 @@ fun rememberDatosSaludBoveda(
         claves.filter { MedidorFuerza.medir(it.contrasena).puntuacion <= 1 }
             .sortedBy { MedidorFuerza.medir(it.contrasena).puntuacion }
     }
-    val muyComunes = remember(claves) {
-        claves.filter { ContrasenasComunes.esComun(contexto, it.contrasena) }
+    val muyComunes = remember(claves, anadidasComunes, excluidasComunes) {
+        claves.filter { ContrasenasComunes.esComun(contexto, it.contrasena, anadidasComunes, excluidasComunes) }
     }
     val antiguas = remember(claves, umbralDias) {
         if (umbralDias <= 0) emptyList()

@@ -1,3 +1,9 @@
+/*
+ * Copyright (C) 2026 Jose Luis Navas
+ * Licensed under the GNU General Public License v3.0 (GPLv3).
+ * See LICENSE file in the project root for full license information.
+ */
+
 package com.jlnavas3.bovedalocal.ui.pantallas.indice
 
 import androidx.compose.foundation.layout.padding
@@ -36,7 +42,7 @@ fun PantallaIndiceHaptica(
 
     ContenedorPrincipal(
         titulo = "Tacto y háptica",
-        idEtiqueta = "03-LST-AZX-HAP",
+        idEtiqueta = "02-APA-AZX-HAP",
         mostrarId = ajustes.mostrarIdsAjustes,
         alVolver = { vm.volverAtras() },
         cabeceraFlotante = {
@@ -66,13 +72,13 @@ fun PantallaIndiceHaptica(
                 vm.restablecerTonoLetrasIndice()
                 vm.avisar("Valores de tacto restablecidos")
             },
-            idGrupo = "03-LST-AZX-HAP-G01",
+            idGrupo = "02-APA-AZX-HAP-G01",
             mostrarId = ajustes.mostrarIdsAjustes
         ) {
             ComponenteSwitch(
                 titulo = "Vibración háptica al deslizar",
                 activo = ajustes.indiceHaptica,
-                idFila = "03-LST-AZX-HAP-SWT",
+                idFila = "02-APA-AZX-HAP-SWT",
                 mostrarId = ajustes.mostrarIdsAjustes,
                 alCambiar = {
                     haptica.tic()
@@ -85,7 +91,7 @@ fun PantallaIndiceHaptica(
             ComponenteSwitch(
                 titulo = "Incluir letra Ñ en el abecedario",
                 activo = ajustes.indiceIncluirEnie,
-                idFila = "03-LST-AZX-HAP-ENI",
+                idFila = "02-APA-AZX-HAP-ENI",
                 mostrarId = ajustes.mostrarIdsAjustes,
                 alCambiar = {
                     haptica.tic()
@@ -100,7 +106,7 @@ fun PantallaIndiceHaptica(
                 valor = ajustes.indiceAnchoTactilDp,
                 valorTexto = "${ajustes.indiceAnchoTactilDp.roundToInt()} dp",
                 rango = 20f..60f,
-                idFila = "03-LST-AZX-HAP-ZON",
+                idFila = "02-APA-AZX-HAP-ZON",
                 mostrarId = ajustes.mostrarIdsAjustes,
                 alRestablecer = {
                     haptica.tic()
@@ -120,7 +126,7 @@ fun PantallaIndiceHaptica(
                 valorTexto = "${ajustes.indiceTonoLetras.roundToInt()}%",
                 rango = 10f..100f,
                 pasos = 90,
-                idFila = "03-LST-AZX-HAP-LUM",
+                idFila = "02-APA-AZX-HAP-LUM",
                 mostrarId = ajustes.mostrarIdsAjustes,
                 alRestablecer = {
                     haptica.tic()

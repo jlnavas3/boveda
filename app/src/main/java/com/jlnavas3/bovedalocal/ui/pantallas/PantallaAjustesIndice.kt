@@ -1,3 +1,9 @@
+/*
+ * Copyright (C) 2026 Jose Luis Navas
+ * Licensed under the GNU General Public License v3.0 (GPLv3).
+ * See LICENSE file in the project root for full license information.
+ */
+
 package com.jlnavas3.bovedalocal.ui.pantallas
 
 import androidx.compose.foundation.background
@@ -66,7 +72,7 @@ fun PantallaAjustesIndice(
             ) {
                 BarraSuperiorPantalla(
                     titulo = "Índice A-Z",
-                    idEtiqueta = "03-LST-AZX",
+                    idEtiqueta = "02-APA-AZX",
                     mostrarId = ajustes.mostrarIdsAjustes,
                     alVolver = { vm.volverAtras() },
                     conSeparador = scrollState.value > 0,
@@ -74,7 +80,7 @@ fun PantallaAjustesIndice(
                     acciones = {
                         BotonMenuOpcionesPantalla(
                             grupos = listOf(
-                                AccionSaltoGrupo("03-LST-AZX-G02", "Calibración lateral")
+                                AccionSaltoGrupo("02-APA-AZX-G02", "Calibración lateral")
                             ),
                             alRestablecerPantalla = {
                                 haptica.tic()
@@ -109,18 +115,18 @@ fun PantallaAjustesIndice(
                             vm.restablecerAjustesIndiceAlfabetico()
                             vm.avisar("Índice A-Z restablecido")
                         },
-                        idGrupo = "03-LST-AZX-G02",
+                        idGrupo = "02-APA-AZX-G02",
                         mostrarId = ajustes.mostrarIdsAjustes
                     ) {
                         ComponenteNavegacion(
                             titulo = "Efecto de ola",
                             icono = null,
-                            idFila = "03-LST-AZX-OLA",
+                            idFila = "02-APA-AZX-OLA",
                             mostrarId = ajustes.mostrarIdsAjustes,
                             valorTexto = if (ajustes.indiceEfectoOla) "${ajustes.indiceAmplitudOlaDp}dp" else "Desactivado",
                             alPulsar = {
                                 haptica.tic()
-                                vm.ir(Pantalla.IndiceOla("03-LST-AZX-OLA"))
+                                vm.ir(Pantalla.IndiceOla("02-APA-AZX-OLA"))
                             }
                         )
 
@@ -129,12 +135,12 @@ fun PantallaAjustesIndice(
                         ComponenteNavegacion(
                             titulo = "Círculo y cresta",
                             icono = null,
-                            idFila = "03-LST-AZX-CRE",
+                            idFila = "02-APA-AZX-CRE",
                             mostrarId = ajustes.mostrarIdsAjustes,
                             valorTexto = if (ajustes.indiceMostrarCirculo) "${ajustes.indiceTamanoCirculoDp}dp" else "Desactivado",
                             alPulsar = {
                                 haptica.tic()
-                                vm.ir(Pantalla.IndiceCresta("03-LST-AZX-CRE"))
+                                vm.ir(Pantalla.IndiceCresta("02-APA-AZX-CRE"))
                             }
                         )
 
@@ -143,12 +149,12 @@ fun PantallaAjustesIndice(
                         ComponenteNavegacion(
                             titulo = "Tacto y háptica",
                             icono = null,
-                            idFila = "03-LST-AZX-HAP",
+                            idFila = "02-APA-AZX-HAP",
                             mostrarId = ajustes.mostrarIdsAjustes,
                             valorTexto = if (ajustes.indiceHaptica) "Activa" else "Muda",
                             alPulsar = {
                                 haptica.tic()
-                                vm.ir(Pantalla.IndiceHaptica("03-LST-AZX-HAP"))
+                                vm.ir(Pantalla.IndiceHaptica("02-APA-AZX-HAP"))
                             }
                         )
 
@@ -157,12 +163,12 @@ fun PantallaAjustesIndice(
                         ComponenteNavegacion(
                             titulo = "Resaltado y selección",
                             icono = null,
-                            idFila = "03-LST-AZX-RES",
+                            idFila = "02-APA-AZX-RES",
                             mostrarId = ajustes.mostrarIdsAjustes,
                             valorTexto = if (ajustes.indiceResaltarEntradas) "Activo" else "Desactivado",
                             alPulsar = {
                                 haptica.tic()
-                                vm.ir(Pantalla.IndiceResaltado("03-LST-AZX-RES"))
+                                vm.ir(Pantalla.IndiceResaltado("02-APA-AZX-RES"))
                             }
                         )
                     }

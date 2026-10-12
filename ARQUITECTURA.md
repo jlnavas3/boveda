@@ -22,7 +22,7 @@ flowchart TD
         Tokens["Tokens de Diseño Dinámicos<br/>(Bordes, Curvatura, Espaciado, Tipografía)"]
     end
 
-    subgraph State_Coordination ["Capa de Coordinación y Estado (MVI Facade & 15 Delegados)"]
+    subgraph State_Coordination ["Capa de Coordinación y Estado (MVI Facade & 16 Delegados)"]
         VM["VaultViewModel (Facade Central Liviano)"]
         
         subgraph Sub_Ciclo ["Ciclo de Vida y Dominio"]
@@ -41,6 +41,7 @@ flowchart TD
             DelGeo["VaultAjustesFormasTipografiaDelegate"]
             DelEng["VaultAjustesAnimacionEngranajesDelegate"]
             DelInt["VaultAjustesInteraccionDelegate"]
+            DelDic["VaultAjustesDiccionariosDelegate"]
             DelWid["VaultAjustesWidgetTotpDelegate / 1x1"]
             DelTil["VaultAjustesTileTotpManualDelegate"]
         end
@@ -93,9 +94,9 @@ flowchart TD
 
 ---
 
-## 2. Orquestación del Estado: Patrón Facade y 15 Delegados Reactivos
+## 2. Orquestación del Estado: Patrón Facade y 16 Delegados Reactivos
 
-Para evitar la sobrecarga del controlador central (`VaultViewModel`), se implementó el patrón **Facade con Composición de Delegados**. El ViewModel central actúa como un orquestador liviano que expone el estado global e intercomunica **15 delegados y sub-delegados especializados**:
+Para evitar la sobrecarga del controlador central (`VaultViewModel`), se implementó el patrón **Facade con Composición de Delegados**. El ViewModel central actúa como un orquestador liviano que expone el estado global e intercomunica **16 delegados y sub-delegados especializados**:
 
 | Delegado | Archivo | Responsabilidad Arquitectónica |
 | :--- | :--- | :--- |
@@ -111,8 +112,9 @@ Para evitar la sobrecarga del controlador central (`VaultViewModel`), se impleme
 | **`VaultAjustesFormasTipografiaDelegate`** | [`VaultAjustesFormasTipografiaDelegate.kt`](file:///home/jln/BovedaLocal/app/src/main/java/com/jlnavas3/bovedalocal/ui/VaultAjustesFormasTipografiaDelegate.kt) | Curvatura de esquinas (0–32 dp), grosor de borde, espaciado entre tarjetas, escala tipográfica, familias de fuente e interlineado proporcional. |
 | **`VaultAjustesAnimacionEngranajesDelegate`**| [`VaultAjustesAnimacionEngranajesDelegate.kt`](file:///home/jln/BovedaLocal/app/src/main/java/com/jlnavas3/bovedalocal/ui/VaultAjustesAnimacionEngranajesDelegate.kt)| Física y renderizado vectorial del mecanismo de engranajes relojeros y anillos concéntricos de la puerta de bóveda. |
 | **`VaultAjustesInteraccionDelegate`** | [`VaultAjustesInteraccionDelegate.kt`](file:///home/jln/BovedaLocal/app/src/main/java/com/jlnavas3/bovedalocal/ui/VaultAjustesInteraccionDelegate.kt) | Respuesta háptica global de la app, destello/alumbrado visual de filas en deep-links y capacidad en memoria del buffer de eventos. |
+| **`VaultAjustesDiccionariosDelegate`** | [`VaultAjustesDiccionariosDelegate.kt`](file:///home/jln/BovedaLocal/app/src/main/java/com/jlnavas3/bovedalocal/ui/VaultAjustesDiccionariosDelegate.kt) | Gestión reactiva de diccionarios Diceware BIP-39 (Español e Inglés), catálogo de contraseñas comunes, adición/edición de términos y cálculo de entropía. |
 | **`VaultAjustesWidgetTotpDelegate`** | [`VaultAjustesWidgetTotpDelegate.kt`](file:///home/jln/BovedaLocal/app/src/main/java/com/jlnavas3/bovedalocal/ui/VaultAjustesWidgetTotpDelegate.kt) | Calibración de bordes, curvaturas, transparencia, efecto vidrio esmerilado (*frosted glass*) y háptica en el widget de favoritos 2FA. |
-| **`VaultAjustesWidget1x1Delegate`** | [`VaultAjustesWidget1x1Delegate.kt`](file:///home/jln/BovedaLocal/app/src/main/java/com/jlnavas3/bovedalocal/ui/VaultAjustesWidget1x1Delegate.kt) | Modo de generación (aleatoria/Diceware/patrón), dimensiones asimétricas, offsets y apariencia del widget de escritorio 1x1. |
+| **`VaultAjustesWidget1x1Delegate`** | [`VaultAjustesWidget1x1Delegate.kt`](file:///home/jln/BovedaLocal/app/src/main/java/com/jlnavas3/bovedalocal/ui/VaultAjustesWidget1x1Delegate.kt) | Modo de generación (aleatoria/Diceware/patrón), dimensiones asimétricas, offsets y sincronización con longitud máxima (hasta 128 caracteres). |
 | **`VaultAjustesTileTotpManualDelegate`** | [`VaultAjustesTileTotpManualDelegate.kt`](file:///home/jln/BovedaLocal/app/src/main/java/com/jlnavas3/bovedalocal/ui/VaultAjustesTileTotpManualDelegate.kt) | Parámetros del Quick Settings Tile de Android y algoritmos/períodos del generador manual de códigos TOTP. |
 
 ---
@@ -216,6 +218,7 @@ flowchart TD
     B01 --> B01_SNU["01-SEG-SNU (Bóveda Señuelo)"]
     B01 --> B01_DES["01-SEG-DES (Autodestrucción: PIN e Intentos)"]
     B01 --> B01_ARG["01-SEG-ARG (Perfil Argon2id)"]
+    B01 --> B01_COM["01-SEG-COM (Contraseñas Comunes y Prohibidas)"]
 
     %% Submódulos 02
     B02 --> B02_THM["02-APA-THM (Tema y 20 Paletas)"]
@@ -237,6 +240,7 @@ flowchart TD
     B04 --> B04_2FA["04-HER-2FA (Autenticador TOTP)"]
     B04 --> B04_HST["04-HER-HST (Historial Temporal)"]
     B04 --> B04_WGT["04-HER-WGT (Widgets TOTP y 1x1)"]
+    B04 --> B04_DIC["04-HER-DIC (Diccionarios de Palabras BIP-39)"]
 
     %% Submódulos 05
     B05 --> B05_EXP["05-COP-EXP (Exportación .bvda)"]
@@ -248,7 +252,8 @@ flowchart TD
     B06_AVZ --> B06_AVZ_ORG["06-SIS-AVZ-ORG (Reorganizar Ajustes Drag & Drop)"]
     B06 --> B06_DGN["06-SIS-DGN (Diagnóstico Hardware/RAM)"]
     B06 --> B06_LOG["06-SIS-LOG (Registro de Eventos y Capacidad)"]
-    B06 --> B06_ACR["06-SIS-ACR (Acerca de la Bóveda)"]
+    B06 --> B06_APP["06-SIS-APP (Acerca de Bóveda Local)"]
+    B06 --> B06_LIC["06-SIS-LIC (Licencia de Software GNU GPLv3)"]
 ```
 
 ### 4.1 Arquitectura Fractal de Ajustes y Mapa Centralizado (`MapaAjustes.kt`)
@@ -523,7 +528,7 @@ com.jlnavas3.bovedalocal/
 │   ├── VaultTitulosDelegate.kt           # Delegado de normalización de marcas y homelab
 │   ├── VaultDuplicadosPapeleraDelegate.kt# Delegado de auditoría de duplicados y papelera
 │   ├── VaultAjustes*Delegate.kt          # Sub-delegados especializados de configuración (Seguridad,
-│   │                                     # Organización, Tema, Formas, Engranajes, Interacción, Widgets, Tile)
+│   │                                     # Organización, Tema, Formas, Engranajes, Interacción, Diccionarios, Widgets, Tile)
 │   ├── componentes/                      # Catálogo de micro-componentes atómicos de Compose
 │   │   ├── InsigniaValorBoveda.kt        # Badges semánticos cromáticos
 │   │   ├── BotonBoveda.kt / BotonColorido# Botones de tema dinámico y háptica
@@ -539,30 +544,35 @@ com.jlnavas3.bovedalocal/
 │   │   ├── autodestruccion/              # Alerta crítica, PIN de emergencia e intentos fallidos
 │   │   ├── calibracion/                  # Simuladores de engranajes relojeros y widgets
 │   │   ├── detalle/                      # Ficha de credencial con swipe y comparación
-│   │   ├── duplicados/                   # Selector y fusión de credenciales duplicadas
+│   │   ├── duplicados/                   # Selector y fusión de credenciales duplicadas estilo Windows
 │   │   ├── edicion/                      # Edición reactiva con plantillas de campos personalizadas
 │   │   ├── generador/                    # Generador visual con zxcvbn y modo Diceware bilingüe
 │   │   ├── passkeys/                     # Gestor de llaves de acceso FIDO2
 │   │   ├── registro/                     # Visor de eventos y selector modal de capacidad
 │   │   ├── titulos/                      # Normalizador de títulos, subdominios y homelab
+│   │   ├── acercade/                     # Identidad de la app y visor legal oficial de Licencia GNU GPLv3
+│   │   ├── herramientas/                 # Gestión interactiva de diccionarios Diceware BIP-39 (ES/EN)
+│   │   ├── seguridad/                    # Catálogo y edición de contraseñas comunes / vulnerables
 │   │   └── ...                           # (Formas, Tipografía, Colores, Papelera, Salud, Copia, etc.)
 │   ├── preview/                          # Anotaciones @BovedaPreview para previsualización Compose
 │   └── theme/                            # Tokens dinámicos (Colores, Formas, Tipografía, Tema)
 ├── util/                                 # Utilidades transversales (Diagnóstico, Háptica, Hardware)
-└── widget/                               # Implementación de AppWidgets de escritorio (2FA y 1x1)
+└── widget/                               # Implementación de AppWidgets de escritorio (2FA y 1x1 hasta 128 caracteres)
 ```
 
 ---
 
 ## 10. Directrices de Calidad y Verificación
 
-1. **Batería de Pruebas Unitarias Automatizadas:** El repositorio incluye **346 pruebas unitarias** ejecutadas bajo `./gradlew testDebugUnitTest`. Estas verifican:
+1. **Batería de Pruebas Unitarias Automatizadas:** El repositorio incluye **397 pruebas unitarias** ejecutadas bajo `./gradlew testDebugUnitTest`. Estas verifican:
    - Derivación y cifrado NIST AES-256-GCM y RFC 9106 Argon2id.
    - Generación TOTP RFC 6238 con verificación de ventanas de sincronización.
-   - Enrutamiento jerárquico Tri-Grama `padreDe()`.
+   - Enrutamiento jerárquico Tri-Grama `padreDe()`, deep-links y persistencia de pila.
    - Normalización de títulos y reglas de subdominios.
    - Detección automática de delimitadores CSV (coma, punto y coma, tabulador) y parsing seguro con comillas.
-   - Diccionario BIP-39 bilingüe (Español/Inglés) y exclusión de ambiguos en el generador.
+   - Diccionario BIP-39 bilingüe (Español/Inglés), mutabilidad de términos y exclusión de ambiguos en el generador.
+   - Catálogo de contraseñas comunes y validación contra listas de contraseñas inseguras.
+   - Sincronización del límite de 128 caracteres en todos los generadores (app, widget 1x1, Quick Settings).
    - Ajuste dinámico en memoria de la capacidad del buffer de diagnóstico.
    - Serialización de plantillas de campos personalizadas y combinación con presets estándar.
    - Tasa de limitación exponencial y cálculo de umbral de autodestrucción por intentos fallidos.

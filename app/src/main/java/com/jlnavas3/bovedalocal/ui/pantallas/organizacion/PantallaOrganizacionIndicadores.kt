@@ -1,3 +1,9 @@
+/*
+ * Copyright (C) 2026 Jose Luis Navas
+ * Licensed under the GNU General Public License v3.0 (GPLv3).
+ * See LICENSE file in the project root for full license information.
+ */
+
 package com.jlnavas3.bovedalocal.ui.pantallas.organizacion
 
 import androidx.compose.foundation.background
@@ -53,7 +59,7 @@ fun PantallaOrganizacionIndicadores(
         ) {
             BarraSuperiorPantalla(
                 titulo = "Indicadores de contenido",
-                idEtiqueta = "03-LST-DES-IND",
+                idEtiqueta = "02-APA-DES-IND",
                 mostrarId = ajustes.mostrarIdsAjustes,
                 alVolver = { vm.volverAtras() },
                 conSeparador = scrollState.value > 0,
@@ -61,7 +67,7 @@ fun PantallaOrganizacionIndicadores(
                 acciones = {
                     BotonMenuOpcionesPantalla(
                         grupos = listOf(
-                            AccionSaltoGrupo("03-LST-DES-G04", "Indicadores de tarjetas")
+                            AccionSaltoGrupo("02-APA-DES-G04", "Indicadores de tarjetas")
                         ),
                         alRestablecerPantalla = {
                             haptica.tic()
@@ -83,14 +89,14 @@ fun PantallaOrganizacionIndicadores(
 
                 ComponenteGrupo(
                     etiqueta = "Indicadores de tarjetas",
-                    idGrupo = "03-LST-DES-G04",
+                    idGrupo = "02-APA-DES-G04",
                     mostrarId = ajustes.mostrarIdsAjustes
                 ) {
                     ComponenteSwitch(
                         titulo = "Mostrar pastillas de campos",
                         icono = null,
                         activo = ajustes.mostrarIndicadoresContenido,
-                        idFila = "03-LST-DES-IND-SW",
+                        idFila = "02-APA-DES-IND-SW",
                         mostrarId = ajustes.mostrarIdsAjustes,
                         alCambiar = {
                             haptica.tic()
@@ -129,7 +135,7 @@ private fun PantallaOrganizacionIndicadoresPreview() {
         ) {
             BarraSuperiorPantalla(
                 titulo = "Indicadores de contenido",
-                idEtiqueta = "03-LST-DES-IND",
+                idEtiqueta = "02-APA-DES-IND",
                 mostrarId = true,
                 alVolver = {},
                 conSeparador = false,

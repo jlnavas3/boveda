@@ -3,10 +3,10 @@
 [![Kotlin](https://img.shields.io/badge/Kotlin-2.x-7F52FF?logo=kotlin&logoColor=white)](https://kotlinlang.org/)
 [![Jetpack Compose](https://img.shields.io/badge/Jetpack%20Compose-Material%203-4285F4?logo=jetpackcompose&logoColor=white)](https://developer.android.com/jetpack/compose)
 [![Platform](https://img.shields.io/badge/Android-Min%2029%20%7C%20Target%2035%20%7C%20Compile%2036-3DDC84?logo=android&logoColor=white)](https://developer.android.com/)
-[![Tests](https://img.shields.io/badge/Tests-386%2F386%20Passing-brightgreen?logo=gradle)](https://gradle.org/)
-[![Version](https://img.shields.io/badge/Version-v1.10.11-blue?logo=android)](https://github.com/)
+[![Tests](https://img.shields.io/badge/Tests-397%2F397%20Passing-brightgreen?logo=gradle)](https://gradle.org/)
+[![Version](https://img.shields.io/badge/Version-v1.10.30-blue?logo=android)](https://github.com/)
 [![Architecture](https://img.shields.io/badge/Architecture-Clean%20%7C%20Micro--Design%20%7C%20MVI-blueviolet)](https://github.com/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 
 **Bóveda Local** (`com.jlnavas3.bovedalocal`) es una plataforma de alta seguridad criptográfica y privacidad absoluta para la custodia local de credenciales, autenticación de dos factores (**TOTP RFC 6238**), proveedor nativo de llaves de acceso (**Passkeys / WebAuthn FIDO2**) y normalización inteligente de identidades en Android.
 
@@ -103,6 +103,7 @@ flowchart TD
         VM --> D_Geo["VaultAjustesFormasTipografiaDelegate<br/>Curvatura, Grosor, Tipografía"]
         VM --> D_Eng["VaultAjustesAnimacionEngranajesDelegate<br/>Física y Visual de Engranajes/Puerta"]
         VM --> D_Int["VaultAjustesInteraccionDelegate<br/>Háptica Global, Alumbrado, Registro"]
+        VM --> D_Dic["VaultAjustesDiccionariosDelegate<br/>Gestión Diccionarios BIP-39 y Comunes"]
         VM --> D_Wid["VaultAjustesWidgetTotpDelegate / 1x1<br/>Calibración y Vidrio Esmerilado"]
         VM --> D_Til["VaultAjustesTileTotpManualDelegate<br/>Quick Settings Tile y 2FA Manual"]
     end
@@ -116,7 +117,7 @@ Todos los valores predeterminados de la aplicación residen de forma canónica e
 
 1. **Normalización de Títulos y Homelab:** Catálogo dinámico de marcas (`marcasPersonalizadas`), mapeo de puertos y servicios locales (`puertosServiciosLocales`), y octetos de router (`octetosRouter`).
 2. **Autocompletado y Ecosistema Android:** Mapeo configurable de paquetes de apps a dominios (`mapeoPaquetesPersonalizados`), lista editable de navegadores web (`navegadoresPersonalizados`), y selector de límite de sugerencias de Autofill (`maxSugerenciasAutofill`).
-3. **Generador y Frases de Paso:** Exclusión de caracteres ambiguos (`excluirAmbiguos`), longitud extendida hasta 128 caracteres, diccionario bilingüe BIP-39 (Español / Inglés con 2,048 palabras) y opción de capitalización de palabras (`Capitalize Words`).
+3. **Generador y Frases de Paso:** Exclusión de caracteres ambiguos (`excluirAmbiguos`), longitud extendida hasta 128 caracteres (unificada en toda la app principal, widget 1x1 de escritorio y Quick Settings Tile), gestión completa de diccionarios BIP-39 (Español e Inglés) con CRUD de palabras personalizadas, recuentos dinámicos, panel desplegable de entropía Diceware e índice lateral Niagara sincronizado.
 4. **Importación CSV Universal:** Motor con autodetección de delimitadores (coma `,`, punto y coma `;` y tabulador `\t`), compatible con Bitwarden, KeePass, Google Passwords y Excel en español.
 5. **Diagnóstico y Capacidad del Registro:** Capacidad en memoria parametrizable (`diagnosticoMaxEventos`: 100, 200, 500, 1000) con sincronización reactiva inmediata.
 6. **Plantillas de Campos Personalizadas:** Creación y guardado de esquemas recurrentes de campos (`PlantillaCamposPersonalizada.kt`) integradas en el selector rápido de presets.
@@ -126,6 +127,8 @@ Todos los valores predeterminados de la aplicación residen de forma canónica e
 10. **Ventana de Auto-Bloqueo Ampliada:** Opciones de inactividad extendidas incorporando **10 minutos (600s)** y **20 minutos (1200s)** para sesiones de trabajo prolongadas.
 11. **Elevación de Notificaciones sobre el Teclado (`imePadding`):** Todos los mensajes informativos, advertencias y Snackbars se posicionan automáticamente por encima del teclado virtual cuando este se encuentra desplegado.
 12. **Reactividad Dinámica al Tema del Sistema:** Los títulos, tarjetas e íconos responden en tiempo real al conmutar entre modo oscuro y claro de Android sin necesidad de reconfiguración manual en la app.
+13. **Catálogo de Contraseñas Comunes / Prohibidas (`01-SEG-COM`):** Base de contraseñas vulnerables y de uso común con pantalla dedicada para que el usuario pueda agregar, editar, buscar o restaurar palabras y patrones bloqueados.
+14. **Licencia GPLv3 y 'Acerca de' Desacoplada (`06-SIS-APP`, `06-SIS-LIC`):** Visualización íntegra offline de los términos legales de la GNU GPLv3 y protección de marca de la Sección 7(e), accesible desde Ajustes > Sistema y desde la pantalla de bienvenida.
 
 ---
 
@@ -136,12 +139,12 @@ Todos los módulos, submódulos y grupos de ajustes responden al estándar semá
 | Bloque Canónico | Mnemónico | Identificadores Destacados | Capacidades Principales |
 | :--- | :--- | :--- | :--- |
 | **00** | `AJU` | `00-AJU` | **Hub Central de Ajustes:** Vista unificada de las secciones de ajustes con tarjetas redondeadas estilo Samsung One UI 6, buscador en vivo y deep-linking con destello visual puro (sin mutaciones no deseadas). |
-| **01** | `SEG` | `01-SEG-BIO`, `01-SEG-PAS`, `01-SEG-SNU`, `01-SEG-DES` | **Seguridad y Criptografía:** Biometría StrongBox, cambio de contraseña maestra, bóveda señuelo contra coacción, PIN de autodestrucción y límite configurable de intentos fallidos antes de purga total. |
+| **01** | `SEG` | `01-SEG-BIO`, `01-SEG-PAS`, `01-SEG-SNU`, `01-SEG-DES`, `01-SEG-COM` | **Seguridad y Criptografía:** Biometría StrongBox, cambio de clave maestra, bóveda señuelo contra coacción, PIN de autodestrucción, límite de intentos fallidos antes de purga y catálogo editable de contraseñas comunes. |
 | **02** | `APA` | `02-APA-THM`, `02-APA-GEO`, `02-APA-TYP`, `02-APA-ANI` | **Personalización Visual:** 20 paletas de acento, curvatura de esquinas (0–32 dp), grosor de borde (0–4 dp), espaciado dinámico (6–24 dp), tipografías del sistema con interlineado proporcional dinámico y animación relojera de engranajes o puerta de bóveda. |
 | **03** | `LST` | `03-LST-AZX`, `03-LST-SLD`, `03-LST-DUP`, `03-LST-PAP`, `03-LST-TIT`, `03-LST-PLT` | **Gestión de Bóveda:** Doble FAB vertical inferior (Bloquear / Añadir), índice alfabético lateral estilo Niagara con física de ola interactiva, menú multinivel "Importar/exportar", swipe horizontal y modo comparación entre cuentas, auditoría de salud, normalizador de títulos/redes locales, papelera con retención programada y pantalla dedicada de plantillas de campos (creación, edición e importación desde entradas existentes). |
-| **04** | `HER` | `04-HER-GEN`, `04-HER-2FA`, `04-HER-HST`, `04-HER-WGT` | **Herramientas de Productividad:** Generador CSPRNG con doble FAB vertical (Generar principal / Copiar secundario), soporte Diceware BIP-39 multi-idioma; Autenticador TOTP RFC 6238 con doble FAB (Escanear QR / Ingreso manual); historial temporal de contraseñas y calibrador de widgets. |
+| **04** | `HER` | `04-HER-GEN`, `04-HER-2FA`, `04-HER-HST`, `04-HER-WGT`, `04-HER-DIC` | **Herramientas de Productividad:** Generador CSPRNG con doble FAB vertical (Generar principal / Copiar secundario) y sincronización a 128 caracteres; gestión integral de diccionarios Diceware BIP-39 (Español/Inglés) con CRUD completo; Autenticador TOTP RFC 6238; historial temporal y calibrador de widgets. |
 | **05** | `COP` | `05-COP-EXP`, `05-COP-ATM`, `05-COP-MAN` | **Copias de Seguridad:** Exportación selectiva y manual (.bvda), asociación de archivos `.bvda` en el sistema para importación y apertura directa protegida por autenticación, copias automáticas SAF e importador CSV universal autodetectable. |
-| **06** | `SIS` | `06-SIS-DGN`, `06-SIS-LOG`, `06-SIS-ACR` | **Sistema y Auditoría:** Diagnóstico de hardware, SoC, RAM y TEE, registro de eventos exclusivamente local con buffer en memoria configurable y kit de emergencia imprimible. |
+| **06** | `SIS` | `06-SIS-DGN`, `06-SIS-LOG`, `06-SIS-APP`, `06-SIS-LIC` | **Sistema y Auditoría:** Diagnóstico de hardware, SoC, RAM y TEE; registro de eventos exclusivamente local con buffer en memoria configurable; pantalla "Acerca de Bóveda Local"; visor legal completo de Licencia GNU GPLv3 y kit de emergencia imprimible. |
 
 ---
 
@@ -209,6 +212,9 @@ com.jlnavas3.bovedalocal/
 │   │   ├── passkeys/                     # Gestor de llaves de acceso FIDO2
 │   │   ├── registro/                     # Visor de eventos y selector modal de capacidad
 │   │   ├── titulos/                      # Normalizador de títulos, subdominios y homelab
+│   │   ├── acercade/                     # Información de la app y visor oficial de Licencia GNU GPLv3
+│   │   ├── herramientas/                 # Gestión interactiva de diccionarios Diceware BIP-39 (ES/EN)
+│   │   ├── seguridad/                    # Catálogo y edición de contraseñas comunes / prohibidas
 │   │   └── ...                           # (Formas, Tipografía, Colores, Papelera, Salud, Copia)
 │   ├── preview/                          # Anotaciones @BovedaPreview para previsualización Compose
 │   └── theme/                            # Sistema de tokens dinámicos (Colores, Formas, Tipografía, Tema)
@@ -228,7 +234,7 @@ com.jlnavas3.bovedalocal/
 ### Comandos de Gradle
 
 ```bash
-# Ejecutar la batería de pruebas unitarias automatizadas (346 tests)
+# Ejecutar la batería de pruebas unitarias automatizadas (397 tests)
 ./gradlew testDebugUnitTest
 
 # Construir binario de depuración (Debug APK)
@@ -268,4 +274,10 @@ adb -s <SERIAL> push app/build/outputs/apk/release/app-arm64-v8a-release.apk /sd
 
 ## 📄 Licencia
 
-Este proyecto se distribuye bajo la licencia de código abierto **MIT**. Consulta el archivo `LICENSE` para más detalles.
+Este proyecto se distribuye bajo la licencia de código abierto **GNU General Public License v3.0 (GPLv3)**. Consulta el archivo [`LICENSE`](LICENSE) para ver los términos legales completos.
+
+### 🛡️ Política de Atribución y Protección de Marca
+* **Atribución Inviolable**: La autoría original a **Jose Luis Navas** debe permanecer explícita en cualquier redistribución o trabajo derivado.
+* **Copyleft Fuerte**: Cualquier modificación, biblioteca o proyecto derivado que utilice este código debe publicarse obligatoriamente bajo los términos de la misma licencia GPLv3 y con código fuente abierto. Queda terminantemente prohibido cerrar o privatizar el código derivado.
+* **Protección de Marca e Identidad Visual (Sección 7(e) GPLv3)**: El nombre comercial *"Bóveda Local"*, el identificador de paquete `com.jlnavas3.bovedalocal`, el logotipo oficial, la iconografía y la identidad visual de la aplicación son marcas y propiedad intelectual exclusiva de Jose Luis Navas. Esta licencia **no autoriza** el uso del nombre ni del logotipo para denominar, promocionar o distribuir proyectos derivados o forks sin consentimiento previo por escrito.
+

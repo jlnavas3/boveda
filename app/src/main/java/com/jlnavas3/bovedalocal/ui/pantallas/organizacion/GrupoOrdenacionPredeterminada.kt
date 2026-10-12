@@ -1,3 +1,9 @@
+/*
+ * Copyright (C) 2026 Jose Luis Navas
+ * Licensed under the GNU General Public License v3.0 (GPLv3).
+ * See LICENSE file in the project root for full license information.
+ */
+
 package com.jlnavas3.bovedalocal.ui.pantallas.organizacion
 
 import androidx.compose.material.icons.Icons
@@ -26,7 +32,7 @@ fun GrupoOrdenacionPredeterminada(
         icono = Icons.AutoMirrored.Filled.Sort,
         colorIcono = ColorAcento,
         alRestablecer = alRestablecerGrupo,
-        idGrupo = "03-LST-DES-G03",
+        idGrupo = "02-APA-DES-G03",
         mostrarId = mostrarId,
         modifier = modifier
     ) {
@@ -36,7 +42,7 @@ fun GrupoOrdenacionPredeterminada(
                 titulo = criterio.etiqueta,
                 icono = null,
                 seleccionado = criterioSeleccionado == criterio.name,
-                idFila = "03-LST-DES-ORD-${index + 1}",
+                idFila = "02-APA-DES-ORD-${index + 1}",
                 mostrarId = mostrarId,
                 alSeleccionar = { alSeleccionarCriterio(criterio) }
             )

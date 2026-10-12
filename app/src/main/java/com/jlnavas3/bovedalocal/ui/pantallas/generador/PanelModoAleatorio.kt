@@ -1,6 +1,12 @@
+/*
+ * Copyright (C) 2026 Jose Luis Navas
+ * Licensed under the GNU General Public License v3.0 (GPLv3).
+ * See LICENSE file in the project root for full license information.
+ */
+
 package com.jlnavas3.bovedalocal.ui.pantallas.generador
 
-import android.widget.Toast
+import com.jlnavas3.bovedalocal.ui.componentes.LocalAvisador
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -51,6 +57,7 @@ fun PanelModoAleatorio(
     alCambiarOpciones: (OpcionesGenerador) -> Unit,
     haptica: Haptica
 ) {
+    val avisador = LocalAvisador.current
     Column(modifier = Modifier.fillMaxWidth()) {
         EtiquetaSeccion("Longitud: ${opciones.longitud} caracteres")
         SliderBoveda(
@@ -120,7 +127,7 @@ fun PanelModoAleatorio(
                                 .clickable {
                                     haptica.exito()
                                     alCambiarOpciones(opciones.copy(simbolosPersonalizados = PasswordGenerator.SIMBOLOS))
-                                    Toast.makeText(contexto, "Símbolos por defecto restaurados", Toast.LENGTH_SHORT).show()
+                                    avisador("Símbolos por defecto restaurados", "Generador")
                                 }
                         )
                     }

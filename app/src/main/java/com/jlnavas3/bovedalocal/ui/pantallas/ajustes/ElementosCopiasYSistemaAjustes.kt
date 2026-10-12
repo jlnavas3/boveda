@@ -1,3 +1,9 @@
+/*
+ * Copyright (C) 2026 Jose Luis Navas
+ * Licensed under the GNU General Public License v3.0 (GPLv3).
+ * See LICENSE file in the project root for full license information.
+ */
+
 package com.jlnavas3.bovedalocal.ui.pantallas.ajustes
 
 import androidx.compose.material.icons.Icons
@@ -5,6 +11,7 @@ import androidx.compose.material.icons.filled.Backup
 import androidx.compose.material.icons.filled.Description
 import androidx.compose.material.icons.filled.FileDownload
 import androidx.compose.material.icons.filled.History
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Security
 import androidx.compose.material.icons.filled.Tune
 import androidx.compose.ui.graphics.Color
@@ -69,17 +76,27 @@ fun crearElementosCopiasYSistemaAjustes(
             idEtiqueta = "06-SIS-LOG",
             grupo = "Sistema",
             palabrasClave = "registro eventos logs historial auditoria fallos accesos",
-            alPulsar = { vm.ir(Pantalla.Registro()) }
+            alPulsar = { vm.ir(Pantalla.Registro("06-SIS-LOG")) }
         ),
         ElementoMenuAjustes(
             titulo = "Diagnóstico de seguridad",
-            subtitulo = "Auditoría de integridad, versión y licencias",
+            subtitulo = "Auditoría de integridad, aislamiento y hardware",
             icono = Icons.Filled.Security,
             colorIcono = Color(0xFF607D8B),
             idEtiqueta = "06-SIS-DGN",
             grupo = "Sistema",
-            palabrasClave = "diagnostico seguridad acerca de version info auditoria integridad",
-            alPulsar = { vm.ir(Pantalla.AcercaDe()) }
+            palabrasClave = "diagnostico seguridad auditoria integridad hardware aislamiento sensores",
+            alPulsar = { vm.ir(Pantalla.AcercaDe("06-SIS-DGN")) }
+        ),
+        ElementoMenuAjustes(
+            titulo = "Acerca de Bóveda Local",
+            subtitulo = "Versión, autor, filosofía y licencia GPLv3",
+            icono = Icons.Filled.Info,
+            colorIcono = Color(0xFF3F51B5),
+            idEtiqueta = "06-SIS-APP",
+            grupo = "Sistema",
+            palabrasClave = "acerca de boveda local version autor creador jlnavas3 licencia gplv3 terminos software libre",
+            alPulsar = { vm.ir(Pantalla.AcercaDeApp("06-SIS-APP")) }
         )
     )
 

@@ -493,6 +493,20 @@
             </intent-filter>
         </activity>
 
+        <!-- Actividad trampolín invisible para el acceso directo "Generador rápido" -->
+        <activity
+            android:name=".quicksettings.GeneradorRapidoShortcutActivity"
+            android:exported="true"
+            android:excludeFromRecents="true"
+            android:noHistory="true"
+            android:taskAffinity=""
+            android:theme="@style/Theme.BovedaLocal.Invisible">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
         <!-- Servicio para atender solicitudes de transferencia directa (Credential Transfer / Exporter) -->
         <service
             android:name=".cxf.BovedaDeviceSetupService"

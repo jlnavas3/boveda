@@ -1,3 +1,9 @@
+/*
+ * Copyright (C) 2026 Jose Luis Navas
+ * Licensed under the GNU General Public License v3.0 (GPLv3).
+ * See LICENSE file in the project root for full license information.
+ */
+
 package com.jlnavas3.bovedalocal.ui.pantallas.autenticador
 
 import androidx.compose.foundation.background
@@ -66,7 +72,7 @@ fun BarraSuperiorAutenticador(
     alIrAjustesAutenticador: () -> Unit,
     alIrAjustesWidgetTotp: () -> Unit,
     alRestablecerFiltros: () -> Unit,
-    idEtiqueta: String = "04-HER-2FA",
+    idEtiqueta: String = "03-LST-2FA",
     mostrarId: Boolean = false
 ) {
     var menuOpcionesDesplegado by remember { mutableStateOf(false) }
@@ -89,7 +95,11 @@ fun BarraSuperiorAutenticador(
                 modifier = Modifier
                     .size(38.dp)
                     .clip(CircleShape)
-                    .background(if (busquedaVisible || textoBusqueda.isNotBlank()) Color2FA.copy(alpha = 0.16f) else ColorTarjetaAjustes)
+                    .then(
+                        if (busquedaVisible || textoBusqueda.isNotBlank()) {
+                            Modifier.background(Color2FA.copy(alpha = 0.16f))
+                        } else Modifier
+                    )
             ) {
                 Icon(
                     imageVector = Icons.Filled.Search,
@@ -111,7 +121,11 @@ fun BarraSuperiorAutenticador(
                     modifier = Modifier
                         .size(38.dp)
                         .clip(CircleShape)
-                        .background(if (tieneFiltrosActivos) Color2FA.copy(alpha = 0.16f) else ColorTarjetaAjustes)
+                        .then(
+                            if (tieneFiltrosActivos) {
+                                Modifier.background(Color2FA.copy(alpha = 0.16f))
+                            } else Modifier
+                        )
                 ) {
                     Icon(
                         imageVector = Icons.Filled.MoreVert,

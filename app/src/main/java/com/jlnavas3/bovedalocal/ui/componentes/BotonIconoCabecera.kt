@@ -1,3 +1,9 @@
+/*
+ * Copyright (C) 2026 Jose Luis Navas
+ * Licensed under the GNU General Public License v3.0 (GPLv3).
+ * See LICENSE file in the project root for full license information.
+ */
+
 package com.jlnavas3.bovedalocal.ui.componentes
 
 import androidx.compose.foundation.background
@@ -16,6 +22,7 @@ import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
 
 /**
  * Botón de icono estandarizado para las cabeceras de pantalla (40.dp, recorte circular, icono de 20.dp).
+ * En reposo es limpio y transparente; al hacer tap muestra sutilmente el efecto ripple circular nativo.
  */
 @Composable
 fun BotonIconoCabecera(
@@ -24,7 +31,7 @@ fun BotonIconoCabecera(
     descripcion: String,
     modifier: Modifier = Modifier,
     tint: Color = ColorIconosInternos,
-    colorFondo: Color = ColorTarjetaAjustes,
+    colorFondo: Color = Color.Transparent,
     habilitado: Boolean = true
 ) {
     IconButton(
@@ -33,7 +40,11 @@ fun BotonIconoCabecera(
         modifier = modifier
             .size(40.dp)
             .clip(CircleShape)
-            .background(if (habilitado) colorFondo else colorFondo.copy(alpha = 0.5f))
+            .then(
+                if (colorFondo != Color.Transparent) {
+                    Modifier.background(if (habilitado) colorFondo else colorFondo.copy(alpha = 0.5f))
+                } else Modifier
+            )
     ) {
         Icon(
             imageVector = icono,

@@ -1,3 +1,9 @@
+/*
+ * Copyright (C) 2026 Jose Luis Navas
+ * Licensed under the GNU General Public License v3.0 (GPLv3).
+ * See LICENSE file in the project root for full license information.
+ */
+
 package com.jlnavas3.bovedalocal.ui.pantallas.passkeys
 
 import androidx.compose.foundation.background
@@ -73,22 +79,6 @@ fun EstadoVacioPasskeys(
             textAlign = TextAlign.Center
         )
 
-        if (sinPasskeysEnTotal && alImportarPasskeys != null) {
-            Spacer(Modifier.height(16.dp))
-            androidx.compose.material3.OutlinedButton(
-                onClick = alImportarPasskeys,
-                shape = androidx.compose.foundation.shape.RoundedCornerShape(12.dp),
-                colors = androidx.compose.material3.ButtonDefaults.outlinedButtonColors(contentColor = ColorPasskeys)
-            ) {
-                Icon(
-                    imageVector = androidx.compose.material.icons.Icons.Filled.VpnKey,
-                    contentDescription = null,
-                    modifier = Modifier.size(18.dp)
-                )
-                Spacer(Modifier.width(8.dp))
-                Text("Importar llaves de paso", fontWeight = FontWeight.SemiBold)
-            }
-        }
     }
 }
 

@@ -1,3 +1,9 @@
+/*
+ * Copyright (C) 2026 Jose Luis Navas
+ * Licensed under the GNU General Public License v3.0 (GPLv3).
+ * See LICENSE file in the project root for full license information.
+ */
+
 package com.jlnavas3.bovedalocal.ui.pantallas.organizacion
 
 import androidx.compose.material.icons.Icons
@@ -27,7 +33,7 @@ fun GrupoAgrupamientoEIndicadores(
         etiqueta = "Agrupamiento",
         icono = Icons.Filled.Layers,
         colorIcono = ColorAcento,
-        idGrupo = "03-LST-DES-G01",
+        idGrupo = "02-APA-DES-G01",
         mostrarId = mostrarId,
         modifier = modifier
     ) {
@@ -35,7 +41,7 @@ fun GrupoAgrupamientoEIndicadores(
             titulo = "Agrupar cuentas",
             icono = null,
             activo = agruparPorSitio,
-            idFila = "03-LST-DES-GRP",
+            idFila = "02-APA-DES-GRP",
             mostrarId = mostrarId,
             alCambiar = alCambiarAgruparPorSitio
         )
@@ -44,7 +50,7 @@ fun GrupoAgrupamientoEIndicadores(
             titulo = "Indicadores de contenido en tarjetas",
             icono = null,
             activo = mostrarIndicadoresContenido,
-            idFila = "03-LST-DES-IND",
+            idFila = "02-APA-DES-IND",
             mostrarId = mostrarId,
             alCambiar = alCambiarMostrarIndicadores
         )
@@ -63,7 +69,7 @@ fun GrupoAgrupamientoEIndicadores(
             titulo = "Asistente de títulos de sitios web",
             subtitulo = "Limpiar nombres técnicos de Google / URLs",
             icono = null,
-            idFila = "03-LST-DES-TIT",
+            idFila = "02-APA-DES-TIT",
             mostrarId = mostrarId,
             alPulsar = alIrANormalizadorTitulos
         )

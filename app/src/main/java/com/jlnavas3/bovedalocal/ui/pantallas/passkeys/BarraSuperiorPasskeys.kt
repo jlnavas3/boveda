@@ -1,3 +1,9 @@
+/*
+ * Copyright (C) 2026 Jose Luis Navas
+ * Licensed under the GNU General Public License v3.0 (GPLv3).
+ * See LICENSE file in the project root for full license information.
+ */
+
 package com.jlnavas3.bovedalocal.ui.pantallas.passkeys
 
 import androidx.compose.animation.AnimatedVisibility
@@ -76,7 +82,7 @@ fun BarraSuperiorPasskeys(
     alExportarDirectoCxf: () -> Unit = {},
     alRestablecerFiltros: () -> Unit,
     modifier: Modifier = Modifier,
-    idEtiqueta: String = "04-HER-PSK",
+    idEtiqueta: String = "03-LST-PAS",
     mostrarId: Boolean = false
 ) {
     Column(modifier = modifier) {
@@ -97,7 +103,11 @@ fun BarraSuperiorPasskeys(
                     modifier = Modifier
                         .size(40.dp)
                         .clip(CircleShape)
-                        .background(if (busquedaVisible || textoBusqueda.isNotBlank()) ColorPasskeys.copy(alpha = 0.16f) else ColorTarjetaAjustes)
+                        .then(
+                            if (busquedaVisible || textoBusqueda.isNotBlank()) {
+                                Modifier.background(ColorPasskeys.copy(alpha = 0.16f))
+                            } else Modifier
+                        )
                 ) {
                     Icon(
                         imageVector = Icons.Filled.Search,
@@ -120,7 +130,11 @@ fun BarraSuperiorPasskeys(
                         modifier = Modifier
                             .size(40.dp)
                             .clip(CircleShape)
-                            .background(if (tieneFiltrosActivos) ColorPasskeys.copy(alpha = 0.16f) else ColorTarjetaAjustes)
+                            .then(
+                                if (tieneFiltrosActivos) {
+                                    Modifier.background(ColorPasskeys.copy(alpha = 0.16f))
+                                } else Modifier
+                            )
                     ) {
                         Icon(
                             imageVector = Icons.Filled.MoreVert,

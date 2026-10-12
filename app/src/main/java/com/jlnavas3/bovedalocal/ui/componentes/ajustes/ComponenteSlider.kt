@@ -1,8 +1,14 @@
+/*
+ * Copyright (C) 2026 Jose Luis Navas
+ * Licensed under the GNU General Public License v3.0 (GPLv3).
+ * See LICENSE file in the project root for full license information.
+ */
+
 @file:OptIn(androidx.compose.foundation.ExperimentalFoundationApi::class)
 
 package com.jlnavas3.bovedalocal.ui.componentes.ajustes
 
-import android.widget.Toast
+import com.jlnavas3.bovedalocal.ui.componentes.LocalAvisador
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -79,6 +85,7 @@ fun ComponenteSlider(
     val contexto = LocalContext.current
     val estadoAlumbrado = recordarEstadoAlumbrado(idFila)
     val coordinador = LocalCoordinadorResaltado.current
+    val avisador = LocalAvisador.current
     val tieneBadgeId = mostrarId && !idFila.isNullOrBlank()
 
     Column(
@@ -163,7 +170,7 @@ fun ComponenteSlider(
                         Haptica(contexto).tic()
                         alRestablecer()
                         val mensaje = mensajeToastRestablecer ?: "Restablecido: $titulo"
-                        Toast.makeText(contexto, mensaje, Toast.LENGTH_SHORT).show()
+                        avisador(mensaje, "Ajustes")
                     },
                     modifier = Modifier.size(28.dp),
                     enabled = habilitado

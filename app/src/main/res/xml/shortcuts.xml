@@ -14,19 +14,6 @@
         </intent>
     </shortcut>
     <shortcut
-        android:shortcutId="buscar"
-        android:enabled="true"
-        android:icon="@drawable/ic_shortcut_buscar"
-        android:shortcutShortLabel="@string/shortcut_buscar"
-        android:shortcutLongLabel="@string/shortcut_buscar">
-        <intent
-            android:action="android.intent.action.VIEW"
-            android:targetPackage="com.jlnavas3.bovedalocal"
-            android:targetClass="com.jlnavas3.bovedalocal.ui.MainActivity">
-            <extra android:name="accion_shortcut" android:value="buscar" />
-        </intent>
-    </shortcut>
-    <shortcut
         android:shortcutId="escanear_qr"
         android:enabled="true"
         android:icon="@drawable/ic_shortcut_escanear"
@@ -48,8 +35,6 @@
         <intent
             android:action="android.intent.action.VIEW"
             android:targetPackage="com.jlnavas3.bovedalocal"
-            android:targetClass="com.jlnavas3.bovedalocal.ui.MainActivity">
-            <extra android:name="accion_shortcut" android:value="generador_rapido" />
-        </intent>
+            android:targetClass="com.jlnavas3.bovedalocal.quicksettings.GeneradorRapidoShortcutActivity" />
     </shortcut>
 </shortcuts>

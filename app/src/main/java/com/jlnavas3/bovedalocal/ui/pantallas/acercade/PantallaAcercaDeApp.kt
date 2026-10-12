@@ -1,3 +1,9 @@
+/*
+ * Copyright (C) 2026 Jose Luis Navas
+ * Licensed under the GNU General Public License v3.0 (GPLv3).
+ * See LICENSE file in the project root for full license information.
+ */
+
 package com.jlnavas3.bovedalocal.ui.pantallas.acercade
 
 import androidx.compose.foundation.background
@@ -54,7 +60,10 @@ import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
  */
 @Composable
 fun PantallaAcercaDeApp(
-    alVolver: () -> Unit
+    alVolver: () -> Unit,
+    alVerLicencia: () -> Unit = {},
+    idEtiqueta: String? = "06-SIS-APP",
+    mostrarId: Boolean = false
 ) {
     val scrollState = rememberScrollState()
 
@@ -64,7 +73,9 @@ fun PantallaAcercaDeApp(
             .background(ColorAjustesFondo)
     ) {
         BarraSuperiorPantalla(
-            titulo = "Acerca de",
+            titulo = "Acerca de Bóveda Local",
+            idEtiqueta = idEtiqueta,
+            mostrarId = mostrarId,
             alVolver = alVolver,
             conSeparador = scrollState.value > 0,
             colorFondo = ColorAjustesFondo
@@ -155,11 +166,13 @@ fun PantallaAcercaDeApp(
                 ComponenteSeparador()
 
                 ComponenteFila(
-                    titulo = "Licencia",
-                    valorTexto = "Local-First / Privado",
+                    titulo = "Licencia de software",
+                    subtitulo = "Código abierto copyleft y protección de marca",
+                    valorTexto = "GNU GPLv3",
                     icono = Icons.Filled.Verified,
                     colorIcono = ColorAjusteGris.copy(alpha = 0.15f),
-                    colorTinteIcono = ColorIconosInternos
+                    colorTinteIcono = ColorIconosInternos,
+                    alPulsar = alVerLicencia
                 )
             }
 

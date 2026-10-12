@@ -1,3 +1,9 @@
+/*
+ * Copyright (C) 2026 Jose Luis Navas
+ * Licensed under the GNU General Public License v3.0 (GPLv3).
+ * See LICENSE file in the project root for full license information.
+ */
+
 package com.jlnavas3.bovedalocal.ui.pantallas.formatos
 
 import androidx.compose.foundation.layout.Arrangement
@@ -22,13 +28,16 @@ fun GrupoPreviaFormatos(
     ejemploHora: String,
     ejemploTel: String,
     ejemploDecimal: String,
+    ejemploTarjeta: String = "4532 8910 2345 6789",
+    ejemploExpiracion: String = "12/28",
+    ejemploIban: String = "ES91 2100 0418 4502",
     modifier: Modifier = Modifier
 ) {
     ComponenteGrupo(
         etiqueta = "Vista previa",
         icono = Icons.Filled.Visibility,
         colorIcono = Color(0xFFFFA000),
-        idGrupo = "03-LST-FMT-G01",
+        idGrupo = "02-APA-FMT-G01",
         mostrarId = mostrarIdsAjustes,
         modifier = modifier
     ) {
@@ -64,6 +73,28 @@ fun GrupoPreviaFormatos(
                     modifier = Modifier.weight(0.9f)
                 )
             }
+            Spacer(Modifier.height(8.dp))
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                FilaEjemploChip(
+                    etiqueta = "Tarjeta",
+                    valor = ejemploTarjeta,
+                    modifier = Modifier.weight(1.4f)
+                )
+                FilaEjemploChip(
+                    etiqueta = "Vence",
+                    valor = ejemploExpiracion,
+                    modifier = Modifier.weight(0.8f)
+                )
+            }
+            Spacer(Modifier.height(8.dp))
+            FilaEjemploChip(
+                etiqueta = "IBAN",
+                valor = ejemploIban,
+                modifier = Modifier.fillMaxWidth()
+            )
         }
     }
 }

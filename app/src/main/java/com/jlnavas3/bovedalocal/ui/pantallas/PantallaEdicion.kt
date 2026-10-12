@@ -1,3 +1,9 @@
+/*
+ * Copyright (C) 2026 Jose Luis Navas
+ * Licensed under the GNU General Public License v3.0 (GPLv3).
+ * See LICENSE file in the project root for full license information.
+ */
+
 package com.jlnavas3.bovedalocal.ui.pantallas
 
 import androidx.compose.foundation.background
@@ -28,12 +34,14 @@ import androidx.compose.material.icons.filled.Check
 import com.jlnavas3.bovedalocal.ui.componentes.BarraSuperiorPantalla
 import com.jlnavas3.bovedalocal.ui.componentes.BotonIconoCabecera
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjustesFondo
-import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorTarjetaAjustes
+import androidx.compose.ui.graphics.Color
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
 import com.jlnavas3.bovedalocal.ui.theme.ColorSobreAcento
 import com.jlnavas3.bovedalocal.ui.pantallas.edicion.FormularioEdicionEntrada
 import com.jlnavas3.bovedalocal.ui.pantallas.edicion.ModalesEdicion
+import com.jlnavas3.bovedalocal.ui.pantallas.herramientas.PantallaDiccionarioPalabras
+import com.jlnavas3.bovedalocal.ui.pantallas.seguridad.PantallaContrasenasComunes
 import com.jlnavas3.bovedalocal.util.AppInstalada
 import com.jlnavas3.bovedalocal.util.EnlaceEditable
 import com.jlnavas3.bovedalocal.util.GestorAppsInstaladas
@@ -46,14 +54,15 @@ fun PantallaEdicion(
     id: String?,
     contrasenaInicial: String = "",
     tituloInicial: String = "",
-    urlInicial: String = ""
+    urlInicial: String = "",
+    tipoInicial: TipoEntrada? = null
 ) {
     val contexto = LocalContext.current
     val haptica = remember { Haptica(contexto) }
     val ajustes by vm.ajustes.collectAsStateWithLifecycle()
     val original = remember(id) { id?.let { vm.entrada(it) } }
 
-    var tipo by remember { mutableStateOf(original?.tipo ?: TipoEntrada.LOGIN) }
+    var tipo by remember { mutableStateOf(original?.tipo ?: (tipoInicial ?: TipoEntrada.LOGIN)) }
     var titulo by remember { mutableStateOf(original?.titulo ?: tituloInicial) }
     var usuario by remember { mutableStateOf(original?.usuario ?: "") }
     var contrasena by remember { mutableStateOf(original?.contrasena ?: contrasenaInicial) }
@@ -106,6 +115,8 @@ fun PantallaEdicion(
     var etiquetas by remember { mutableStateOf(original?.etiquetas ?: emptyList()) }
     var camposPersonalizados by remember { mutableStateOf(original?.camposPersonalizados ?: emptyList()) }
     var opcionesGenerador by remember { mutableStateOf(OpcionesGenerador()) }
+    var mostrarDiccionarioModal by remember { mutableStateOf(false) }
+    var mostrarComunesModal by remember { mutableStateOf(false) }
     val etiquetasSugeridas = remember { vm.etiquetasUsadas() }
 
     val totpValido = totp.isBlank() || Base32.esValido(totp)
@@ -172,7 +183,7 @@ fun PantallaEdicion(
                         },
                         icono = Icons.Filled.Check,
                         descripcion = "Guardar",
-                        colorFondo = if (puedeGuardar) ColorAcento else ColorTarjetaAjustes,
+                        colorFondo = if (puedeGuardar) ColorAcento else Color.Transparent,
                         tint = if (puedeGuardar) ColorSobreAcento else ColorIconosInternos
                     )
                 }
@@ -233,6 +244,8 @@ fun PantallaEdicion(
                 haptica = haptica,
                 alGuardarPlantillaCampos = { vm.guardarPlantillaCampos(it) },
                 alEliminarPlantillaCampos = { vm.eliminarPlantillaCampos(it) },
+                alAbrirDiccionario = { mostrarDiccionarioModal = true },
+                alAbrirContrasenasComunes = { mostrarComunesModal = true },
                 modifier = Modifier.weight(1f)
             )
         }
@@ -263,10 +276,29 @@ fun PantallaEdicion(
             mostrarSelectorApp = false
         },
         alDescartarNuevaCategoria = { mostrarDialogoNuevaCategoria = false },
-        alGuardarNuevaCategoria = { nombreCat, iconoCat, colorHexCat ->
+        alGuardarNuevaCategoria = { nombreCat: String, iconoCat: String, colorHexCat: String? ->
             val nueva = vm.crearCategoria(nombreCat, iconoCat, colorHexCat)
             categorias = categorias + nueva.id
             mostrarDialogoNuevaCategoria = false
         }
     )
+
+    if (mostrarDiccionarioModal) {
+        Box(modifier = Modifier.fillMaxSize()) {
+            PantallaDiccionarioPalabras(
+                vm = vm,
+                idiomaInicial = opcionesGenerador.idiomaFrase,
+                alVolverManual = { mostrarDiccionarioModal = false }
+            )
+        }
+    }
+
+    if (mostrarComunesModal) {
+        Box(modifier = Modifier.fillMaxSize()) {
+            PantallaContrasenasComunes(
+                vm = vm,
+                alVolverManual = { mostrarComunesModal = false }
+            )
+        }
+    }
 }

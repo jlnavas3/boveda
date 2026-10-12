@@ -1,3 +1,9 @@
+/*
+ * Copyright (C) 2026 Jose Luis Navas
+ * Licensed under the GNU General Public License v3.0 (GPLv3).
+ * See LICENSE file in the project root for full license information.
+ */
+
 package com.jlnavas3.bovedalocal.ui
 
 import androidx.activity.compose.BackHandler
@@ -23,6 +29,9 @@ import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.runtime.CompositionLocalProvider
+import com.jlnavas3.bovedalocal.ui.componentes.AvisoFlotanteBoveda
+import com.jlnavas3.bovedalocal.ui.componentes.LocalAvisador
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -46,6 +55,9 @@ import com.jlnavas3.bovedalocal.data.EstadoBoveda
 import com.jlnavas3.bovedalocal.ui.componentes.DialogoConfirmacionBoveda
 import com.jlnavas3.bovedalocal.ui.componentes.TipoBotonTexto
 import com.jlnavas3.bovedalocal.ui.pantallas.PantallaAcercaDe
+import com.jlnavas3.bovedalocal.ui.pantallas.acercade.PantallaAcercaDeApp
+import com.jlnavas3.bovedalocal.ui.pantallas.acercade.PantallaLicencia
+import com.jlnavas3.bovedalocal.ui.pantallas.tipos.PantallaEntradasTipo
 import com.jlnavas3.bovedalocal.ui.pantallas.PantallaAjustes
 import com.jlnavas3.bovedalocal.ui.pantallas.PantallaAjustesAutenticador
 import com.jlnavas3.bovedalocal.ui.pantallas.titulos.PantallaNormalizadorTitulos
@@ -139,6 +151,8 @@ import com.jlnavas3.bovedalocal.ui.pantallas.indice.PantallaIndiceCresta
 import com.jlnavas3.bovedalocal.ui.pantallas.indice.PantallaIndiceHaptica
 import com.jlnavas3.bovedalocal.ui.pantallas.indice.PantallaIndiceOla
 import com.jlnavas3.bovedalocal.ui.pantallas.indice.PantallaIndiceResaltado
+import com.jlnavas3.bovedalocal.ui.pantallas.herramientas.PantallaDiccionarioPalabras
+import com.jlnavas3.bovedalocal.ui.pantallas.seguridad.PantallaContrasenasComunes
 import com.jlnavas3.bovedalocal.ui.pantallas.tema.PantallaLaboratorioTemas
 import com.jlnavas3.bovedalocal.ui.pantallas.tipografia.PantallaTipografiaEscala
 import com.jlnavas3.bovedalocal.ui.pantallas.tipografia.PantallaTipografiaEspaciado
@@ -243,30 +257,36 @@ fun RaizBoveda(vm: VaultViewModel, actividad: FragmentActivity) {
         }
     }
 
-    LaunchedEffect(aviso) {
-        aviso?.let {
-            anfitrion.showSnackbar(it)
-            vm.limpiarAviso()
-        }
-    }
-
-    Scaffold(
-        containerColor = Obsidiana,
-        snackbarHost = { SnackbarHost(anfitrion, modifier = Modifier.imePadding()) }
-    ) { relleno ->
+    CompositionLocalProvider(
+        LocalAvisador provides { mensaje, titulo -> vm.avisar(mensaje, titulo) }
+    ) {
+        Scaffold(
+            containerColor = Obsidiana,
+            snackbarHost = { SnackbarHost(anfitrion, modifier = Modifier.imePadding()) }
+        ) { relleno ->
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(relleno)
-                .imePadding()
                 .pointerInput(Unit) {
-                    awaitPointerEventScope {
-                        while (true) {
-                            awaitPointerEvent(PointerEventPass.Initial)
-                            vm.registrarInteraccion()
+                    while (true) {
+                        try {
+                            awaitPointerEventScope {
+                                while (true) {
+                                    val ev = awaitPointerEvent(PointerEventPass.Initial)
+                                    if (ev.changes.isNotEmpty()) {
+                                        vm.registrarInteraccion()
+                                    }
+                                }
+                            }
+                        } catch (e: kotlinx.coroutines.CancellationException) {
+                            throw e
+                        } catch (_: Throwable) {
+                            // Reintentar si se reinicia el contexto de puntero
                         }
                     }
                 }
+                .padding(relleno)
+                .imePadding()
         ) {
             AnimatedContent(
                 targetState = pantalla,
@@ -296,10 +316,12 @@ fun RaizBoveda(vm: VaultViewModel, actividad: FragmentActivity) {
                         destino.id,
                         destino.contrasenaInicial,
                         destino.tituloInicial,
-                        destino.urlInicial
+                        destino.urlInicial,
+                        destino.tipoInicial
                     )
+                    is Pantalla.EntradasTipo -> PantallaEntradasTipo(tipo = destino.tipo, vm = vm)
                     Pantalla.Generador -> PantallaGenerador(vm)
-                    Pantalla.Passkeys -> PantallaPasskeys(vm)
+                    is Pantalla.Passkeys -> PantallaPasskeys(vm, destino.seccionId)
                     Pantalla.Autenticador -> PantallaAutenticador(vm, estado)
                     is Pantalla.Escaner -> PantallaEscaner(vm, actividad, destino.entradaDestino, destino.soloManual)
                     is Pantalla.CamaraQr -> PantallaCamaraQr(vm, actividad, destino.entradaDestino)
@@ -331,6 +353,16 @@ fun RaizBoveda(vm: VaultViewModel, actividad: FragmentActivity) {
                     is Pantalla.TipografiaEspaciado -> PantallaTipografiaEspaciado(vm)
                     is Pantalla.OrganizacionLista -> PantallaOrganizacionLista(vm, destino.seccionId)
                     is Pantalla.AcercaDe -> PantallaAcercaDe(vm, destino.seccionId)
+                    is Pantalla.AcercaDeApp -> PantallaAcercaDeApp(
+                        alVolver = { vm.volverAtras() },
+                        alVerLicencia = { vm.ir(Pantalla.Licencia) },
+                        idEtiqueta = destino.seccionId ?: "06-SIS-APP",
+                        mostrarId = ajustes.mostrarIdsAjustes
+                    )
+                    is Pantalla.Licencia -> PantallaLicencia(
+                        alVolver = { vm.volverAtras() },
+                        mostrarIdsAjustes = ajustes.mostrarIdsAjustes
+                    )
                     is Pantalla.Registro -> PantallaRegistro(vm, destino.seccionId)
                     is Pantalla.SaludBoveda -> PantallaSaludBoveda(vm, estado, destino.seccionId)
                     is Pantalla.Duplicados -> PantallaDuplicados(vm, estado, destino.seccionId)
@@ -391,6 +423,8 @@ fun RaizBoveda(vm: VaultViewModel, actividad: FragmentActivity) {
                     is Pantalla.NormalizadorTitulos -> PantallaNormalizadorTitulos(vm, destino.esPostImportacion)
                     Pantalla.ReglasNormalizacion -> PantallaReglasNormalizacion(vm)
                     Pantalla.ReglasAutocompletado -> PantallaReglasAutocompletado(vm)
+                    is Pantalla.DiccionarioPalabras -> PantallaDiccionarioPalabras(vm, destino.idiomaInicial, destino.seccionId)
+                    is Pantalla.ContrasenasComunes -> PantallaContrasenasComunes(vm, destino.seccionId)
                 }
             }
 
@@ -419,7 +453,18 @@ fun RaizBoveda(vm: VaultViewModel, actividad: FragmentActivity) {
                     )
                 }
             }
+
+            AvisoFlotanteBoveda(
+                aviso = aviso,
+                toastDescriptivo = ajustes.toastDescriptivo,
+                alCerrar = { vm.limpiarAviso() },
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .padding(horizontal = 16.dp, vertical = 20.dp)
+                    .imePadding()
+            )
         }
+    }
     }
 }
 

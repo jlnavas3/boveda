@@ -1,3 +1,9 @@
+/*
+ * Copyright (C) 2026 Jose Luis Navas
+ * Licensed under the GNU General Public License v3.0 (GPLv3).
+ * See LICENSE file in the project root for full license information.
+ */
+
 package com.jlnavas3.bovedalocal.ui.pantallas.edicion
 
 import androidx.compose.animation.AnimatedVisibility
@@ -96,6 +102,8 @@ fun TarjetaCredencialesUnificada(
     alCambiarOpcionesGenerador: (OpcionesGenerador) -> Unit,
     passkey: DatosPasskey? = null,
     haptica: Haptica,
+    alAbrirDiccionario: (() -> Unit)? = null,
+    alAbrirContrasenasComunes: (() -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
     val contexto = LocalContext.current
@@ -218,6 +226,7 @@ fun TarjetaCredencialesUnificada(
                 etiqueta = "Contraseña",
                 alCambiar = alCambiarContrasena,
                 tipo = TipoCampoTexto.CONTRASENA,
+                colorearContrasena = true,
                 sinFondo = true,
                 mostrarIcono = true,
                 icono = Icons.Filled.Lock,
@@ -276,11 +285,26 @@ fun TarjetaCredencialesUnificada(
             )
             if (esComun) {
                 Spacer(Modifier.height(4.dp))
-                Text(
-                    text = "Está entre las contraseñas más repetidas en filtraciones conocidas: cualquiera la prueba primero.",
-                    color = Peligro,
-                    style = MaterialTheme.typography.bodySmall
-                )
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "Contraseña común conocida (vulnerable).",
+                        color = Peligro,
+                        style = MaterialTheme.typography.bodySmall,
+                        modifier = Modifier.weight(1f)
+                    )
+                    if (alAbrirContrasenasComunes != null) {
+                        androidx.compose.material3.TextButton(
+                            onClick = alAbrirContrasenasComunes,
+                            contentPadding = androidx.compose.foundation.layout.PaddingValues(horizontal = 4.dp, vertical = 0.dp)
+                        ) {
+                            Text("Ver lista", color = Peligro, style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Bold)
+                        }
+                    }
+                }
             }
         }
 
@@ -340,7 +364,8 @@ fun TarjetaCredencialesUnificada(
                         if (!mostrarContrasena) alAlternarMostrarContrasena()
                         alCambiarContrasena(nueva)
                     },
-                    haptica = haptica
+                    haptica = haptica,
+                    alAbrirDiccionario = alAbrirDiccionario
                 )
             }
         }

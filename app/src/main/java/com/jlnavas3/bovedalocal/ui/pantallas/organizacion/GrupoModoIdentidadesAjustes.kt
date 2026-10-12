@@ -1,3 +1,9 @@
+/*
+ * Copyright (C) 2026 Jose Luis Navas
+ * Licensed under the GNU General Public License v3.0 (GPLv3).
+ * See LICENSE file in the project root for full license information.
+ */
+
 package com.jlnavas3.bovedalocal.ui.pantallas.organizacion
 
 import androidx.compose.material.icons.Icons
@@ -29,7 +35,7 @@ fun GrupoModoIdentidadesAjustes(
         etiqueta = "Identidades en lista principal",
         icono = Icons.Filled.AccountCircle,
         colorIcono = Color(0xFF0284C7),
-        idGrupo = "03-LST-DES-GID",
+        idGrupo = "02-APA-DES-GID",
         mostrarId = mostrarId,
         modifier = modifier
     ) {
@@ -37,7 +43,7 @@ fun GrupoModoIdentidadesAjustes(
             titulo = "Chips de filtro superior (Recomendado)",
             seleccionado = modoActual == ModoVisualizacionIdentidades.CHIPS,
             alSeleccionar = { alSeleccionarModo(ModoVisualizacionIdentidades.CHIPS) },
-            idFila = "03-LST-DES-CHP",
+            idFila = "02-APA-DES-CHP",
             mostrarId = mostrarId,
             colorAcento = ColorAcento
         )
@@ -46,7 +52,7 @@ fun GrupoModoIdentidadesAjustes(
             titulo = "Secciones agrupadas plegables",
             seleccionado = modoActual == ModoVisualizacionIdentidades.SECCIONES,
             alSeleccionar = { alSeleccionarModo(ModoVisualizacionIdentidades.SECCIONES) },
-            idFila = "03-LST-DES-SEC",
+            idFila = "02-APA-DES-SEC",
             mostrarId = mostrarId,
             colorAcento = ColorAcento
         )
@@ -55,7 +61,7 @@ fun GrupoModoIdentidadesAjustes(
             titulo = "Desactivado",
             seleccionado = modoActual == ModoVisualizacionIdentidades.DESACTIVADO,
             alSeleccionar = { alSeleccionarModo(ModoVisualizacionIdentidades.DESACTIVADO) },
-            idFila = "03-LST-DES-OFF",
+            idFila = "02-APA-DES-OFF",
             mostrarId = mostrarId,
             colorAcento = ColorAcento
         )

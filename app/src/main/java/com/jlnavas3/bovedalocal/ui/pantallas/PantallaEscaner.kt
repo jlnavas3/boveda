@@ -1,3 +1,9 @@
+/*
+ * Copyright (C) 2026 Jose Luis Navas
+ * Licensed under the GNU General Public License v3.0 (GPLv3).
+ * See LICENSE file in the project root for full license information.
+ */
+
 package com.jlnavas3.bovedalocal.ui.pantallas
 
 import android.Manifest
@@ -135,7 +141,7 @@ fun PantallaEscaner(
         titulo = "Añadir Doble Factor",
         subtitulo = "Escaneo seguro offline de QR o introducción manual",
         alVolver = { vm.volverAtras() },
-        idEtiqueta = "04-HER-2FA-ADD",
+        idEtiqueta = "03-LST-2FA-ADD",
         mostrarId = ajustes.mostrarIdsAjustes,
         conScroll = true,
         espaciado = 16.dp

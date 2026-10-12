@@ -1,3 +1,9 @@
+/*
+ * Copyright (C) 2026 Jose Luis Navas
+ * Licensed under the GNU General Public License v3.0 (GPLv3).
+ * See LICENSE file in the project root for full license information.
+ */
+
 package com.jlnavas3.bovedalocal.ui.pantallas
 
 import androidx.compose.foundation.background
@@ -39,10 +45,12 @@ import com.jlnavas3.bovedalocal.ui.VaultViewModel
 import com.jlnavas3.bovedalocal.ui.componentes.BarraSuperiorPantalla
 import com.jlnavas3.bovedalocal.ui.componentes.BotonBorde
 import com.jlnavas3.bovedalocal.ui.componentes.BotonColorido
+import com.jlnavas3.bovedalocal.ui.componentes.EstadoVacioPantalla
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.AccionSaltoGrupo
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.BotonMenuOpcionesPantalla
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteGrupo
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ProveedorResaltadoAjustes
+import com.jlnavas3.bovedalocal.ui.componentes.cerrarTecladoAlTocarFuera
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjustesFondo
 import com.jlnavas3.bovedalocal.ui.pantallas.plantillas.DialogoEditorPlantillaCampos
 import com.jlnavas3.bovedalocal.ui.pantallas.plantillas.DialogoImportarEntradaAPlantilla
@@ -55,7 +63,7 @@ import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
 import com.jlnavas3.bovedalocal.util.Haptica
 
 /**
- * Pantalla de configuración para administrar plantillas de campos personalizadas y del sistema (03-LST-PLT).
+ * Pantalla de configuración para administrar plantillas de campos personalizadas y del sistema (02-APA-PLT).
  */
 @Composable
 fun PantallaPlantillasCampos(
@@ -81,10 +89,11 @@ fun PantallaPlantillasCampos(
             modifier = Modifier
                 .fillMaxSize()
                 .background(ColorAjustesFondo)
+                .cerrarTecladoAlTocarFuera()
         ) {
             BarraSuperiorPantalla(
                 titulo = "Plantillas de campos",
-                idEtiqueta = "03-LST-PLT",
+                idEtiqueta = "02-APA-PLT",
                 mostrarId = ajustes.mostrarIdsAjustes,
                 alVolver = { vm.volverAtras() },
                 conSeparador = scrollState.value > 0,
@@ -92,8 +101,8 @@ fun PantallaPlantillasCampos(
                 acciones = {
                     BotonMenuOpcionesPantalla(
                         grupos = listOf(
-                            AccionSaltoGrupo("03-LST-PLT-G01", "Personalizadas"),
-                            AccionSaltoGrupo("03-LST-PLT-G02", "Del sistema")
+                            AccionSaltoGrupo("02-APA-PLT-G01", "Personalizadas"),
+                            AccionSaltoGrupo("02-APA-PLT-G02", "Del sistema")
                         ),
                         alRestablecerPantalla = {
                             haptica.tic()
@@ -146,7 +155,7 @@ fun PantallaPlantillasCampos(
                 ComponenteGrupo(
                     etiqueta = "Plantillas personalizadas (${ajustes.plantillasCamposPersonalizadas.size})",
                     icono = Icons.Filled.FolderSpecial,
-                    idGrupo = "03-LST-PLT-G01",
+                    idGrupo = "02-APA-PLT-G01",
                     mostrarId = ajustes.mostrarIdsAjustes,
                     alRestablecer = if (ajustes.plantillasCamposPersonalizadas.isNotEmpty()) {
                         {
@@ -157,31 +166,11 @@ fun PantallaPlantillasCampos(
                     } else null
                 ) {
                     if (ajustes.plantillasCamposPersonalizadas.isEmpty()) {
-                        Column(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(16.dp),
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.spacedBy(8.dp)
-                        ) {
-                            Icon(
-                                imageVector = Icons.Filled.BookmarkBorder,
-                                contentDescription = null,
-                                tint = TextoSecundario,
-                                modifier = Modifier.size(36.dp)
-                            )
-                            Text(
-                                text = "Sin plantillas personalizadas",
-                                color = TextoPrincipal,
-                                style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold)
-                            )
-                            Text(
-                                text = "Crea un conjunto reusable o impórtalo desde una cuenta existente para aplicarlo con 1 clic al crear entradas.",
-                                color = TextoSecundario,
-                                style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp),
-                                modifier = Modifier.padding(horizontal = 12.dp)
-                            )
-                        }
+                        EstadoVacioPantalla(
+                            icono = Icons.Filled.BookmarkBorder,
+                            titulo = "Sin plantillas personalizadas",
+                            subtitulo = "Crea un conjunto reusable o impórtalo desde una cuenta existente para aplicarlo con 1 clic al crear entradas."
+                        )
                     } else {
                         Column(
                             modifier = Modifier
@@ -266,7 +255,7 @@ private fun PantallaPlantillasCamposPreview() {
         ComponenteGrupo(
             etiqueta = "Plantillas personalizadas (1)",
             icono = Icons.Filled.FolderSpecial,
-            idGrupo = "03-LST-PLT-G01",
+            idGrupo = "02-APA-PLT-G01",
             mostrarId = true
         ) {
             Box(modifier = Modifier.padding(12.dp)) {

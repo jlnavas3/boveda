@@ -1,3 +1,9 @@
+/*
+ * Copyright (C) 2026 Jose Luis Navas
+ * Licensed under the GNU General Public License v3.0 (GPLv3).
+ * See LICENSE file in the project root for full license information.
+ */
+
 package com.jlnavas3.bovedalocal.ui.pantallas.registro
 
 import androidx.compose.foundation.background
@@ -80,7 +86,11 @@ fun BarraSuperiorRegistro(
                 modifier = Modifier
                     .size(38.dp)
                     .clip(CircleShape)
-                    .background(if (busquedaVisible || filtroTexto.isNotBlank()) ColorAcento.copy(alpha = 0.16f) else ColorTarjetaAjustes)
+                    .then(
+                        if (busquedaVisible || filtroTexto.isNotBlank()) {
+                            Modifier.background(ColorAcento.copy(alpha = 0.16f))
+                        } else Modifier
+                    )
             ) {
                 Icon(
                     imageVector = Icons.Filled.Search,
@@ -99,7 +109,11 @@ fun BarraSuperiorRegistro(
                 modifier = Modifier
                     .size(38.dp)
                     .clip(CircleShape)
-                    .background(if (categoriaSeleccionada != "Todos") ColorAcento.copy(alpha = 0.16f) else ColorTarjetaAjustes)
+                    .then(
+                        if (categoriaSeleccionada != "Todos") {
+                            Modifier.background(ColorAcento.copy(alpha = 0.16f))
+                        } else Modifier
+                    )
             ) {
                 Icon(
                     imageVector = Icons.Filled.FilterList,
@@ -119,7 +133,11 @@ fun BarraSuperiorRegistro(
                     modifier = Modifier
                         .size(38.dp)
                         .clip(CircleShape)
-                        .background(if (tieneFiltrosActivos) ColorAcento.copy(alpha = 0.16f) else ColorTarjetaAjustes)
+                        .then(
+                            if (tieneFiltrosActivos) {
+                                Modifier.background(ColorAcento.copy(alpha = 0.16f))
+                            } else Modifier
+                        )
                 ) {
                     Icon(
                         imageVector = Icons.Filled.MoreVert,

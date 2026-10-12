@@ -1,6 +1,12 @@
+/*
+ * Copyright (C) 2026 Jose Luis Navas
+ * Licensed under the GNU General Public License v3.0 (GPLv3).
+ * See LICENSE file in the project root for full license information.
+ */
+
 package com.jlnavas3.bovedalocal.ui.pantallas.historial
 
-import android.widget.Toast
+import com.jlnavas3.bovedalocal.ui.componentes.LocalAvisador
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -47,6 +53,7 @@ fun DialogoAjustesHistorial(
     alRestablecer: () -> Unit
 ) {
     val contexto = LocalContext.current
+    val avisador = LocalAvisador.current
 
     DialogoBoveda(
         abierto = true,
@@ -63,7 +70,7 @@ fun DialogoAjustesHistorial(
             IconButton(onClick = {
                 Haptica(contexto).tic()
                 alRestablecer()
-                Toast.makeText(contexto, "Ajustes del historial restablecidos", Toast.LENGTH_SHORT).show()
+                avisador("Ajustes del historial restablecidos", "Historial")
             }) {
                 Icon(
                     imageVector = Icons.Filled.RestartAlt,

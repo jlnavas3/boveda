@@ -1,3 +1,9 @@
+/*
+ * Copyright (C) 2026 Jose Luis Navas
+ * Licensed under the GNU General Public License v3.0 (GPLv3).
+ * See LICENSE file in the project root for full license information.
+ */
+
 package com.jlnavas3.bovedalocal.ui.pantallas.passkeys
 
 import androidx.compose.foundation.background
@@ -19,6 +25,10 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -175,16 +185,30 @@ fun FilaPasskey(
                 val seguridadVisualActiva = ajustes?.seguridadVisualActiva == true
                 val ocultarUsuario = seguridadVisualActiva && (ajustes?.ocultarUsuario == true)
                 val estiloOcultamiento = ajustes?.estiloOcultamientoVisual ?: "desenfoque"
+                val tiempoAutoOcultar = ajustes?.tiempoAutoOcultarSegundos ?: 10
+
+                var usuarioRevelado by rememberSaveable { mutableStateOf(false) }
+
+                if (ocultarUsuario) {
+                    com.jlnavas3.bovedalocal.ui.componentes.seguridad.TemporizadorAutoOcultar(
+                        revelado = usuarioRevelado,
+                        tiempoSegundos = if (seguridadVisualActiva) tiempoAutoOcultar else 0
+                    ) {
+                        usuarioRevelado = false
+                    }
+                }
 
                 if (tieneUsuarioReal && ocultarUsuario) {
-                    TextoSeguroVisual(
+                    com.jlnavas3.bovedalocal.ui.componentes.seguridad.DatoSensibleConRevelado(
                         texto = textoUsuario,
-                        oculto = true,
+                        oculto = !usuarioRevelado,
                         estilo = estiloOcultamiento,
                         estiloTexto = MaterialTheme.typography.bodyMedium,
                         colorTexto = TextoSecundario,
                         maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
+                        overflow = TextOverflow.Ellipsis,
+                        alAlternarRevelado = { usuarioRevelado = !usuarioRevelado },
+                        descripcionAccesible = "usuario de passkey"
                     )
                 } else {
                     Text(

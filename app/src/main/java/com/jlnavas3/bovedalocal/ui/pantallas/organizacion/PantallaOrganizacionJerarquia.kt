@@ -1,3 +1,9 @@
+/*
+ * Copyright (C) 2026 Jose Luis Navas
+ * Licensed under the GNU General Public License v3.0 (GPLv3).
+ * See LICENSE file in the project root for full license information.
+ */
+
 package com.jlnavas3.bovedalocal.ui.pantallas.organizacion
 
 import androidx.compose.foundation.background
@@ -50,7 +56,7 @@ fun PantallaOrganizacionJerarquia(
         ) {
             BarraSuperiorPantalla(
                 titulo = "Identidades y jerarquía",
-                idEtiqueta = "03-LST-DES-JER",
+                idEtiqueta = "02-APA-DES-JER",
                 mostrarId = ajustes.mostrarIdsAjustes,
                 alVolver = { vm.volverAtras() },
                 conSeparador = scrollState.value > 0,
@@ -58,8 +64,8 @@ fun PantallaOrganizacionJerarquia(
                 acciones = {
                     BotonMenuOpcionesPantalla(
                         grupos = listOf(
-                            AccionSaltoGrupo("03-LST-DES-GID", "Modo de identidades"),
-                            AccionSaltoGrupo("03-LST-DES-GJR", "Jerarquía de organización")
+                            AccionSaltoGrupo("02-APA-DES-GID", "Modo de identidades"),
+                            AccionSaltoGrupo("02-APA-DES-GJR", "Jerarquía de organización")
                         ),
                         alRestablecerPantalla = {
                             haptica.tic()
@@ -89,7 +95,7 @@ fun PantallaOrganizacionJerarquia(
                     },
                     alGestionarIdentidades = {
                         haptica.tic()
-                        vm.ir(Pantalla.Identidades("03-LST-DES-GID"))
+                        vm.ir(Pantalla.Identidades("02-APA-DES-GID"))
                     }
                 )
 
@@ -127,7 +133,7 @@ private fun PantallaOrganizacionJerarquiaPreview() {
         ) {
             BarraSuperiorPantalla(
                 titulo = "Identidades y jerarquía",
-                idEtiqueta = "03-LST-DES-JER",
+                idEtiqueta = "02-APA-DES-JER",
                 mostrarId = true,
                 alVolver = {},
                 conSeparador = false,

@@ -1,9 +1,16 @@
+/*
+ * Copyright (C) 2026 Jose Luis Navas
+ * Licensed under the GNU General Public License v3.0 (GPLv3).
+ * See LICENSE file in the project root for full license information.
+ */
+
 package com.jlnavas3.bovedalocal.cxf
 
 import android.app.Activity
 import androidx.credentials.providerevents.ProviderEventsManager
 import androidx.credentials.providerevents.exception.ImportCredentialsCancellationException
 import androidx.credentials.providerevents.exception.ImportCredentialsNoExportOptionException
+import androidx.credentials.providerevents.exception.ImportCredentialsUnknownErrorException
 import androidx.credentials.providerevents.transfer.CredentialTypes
 import androidx.credentials.providerevents.transfer.ImportCredentialsRequest
 import com.jlnavas3.bovedalocal.util.Diagnostico
@@ -71,6 +78,9 @@ object CxfGestorTransferencia {
         } catch (e: ImportCredentialsNoExportOptionException) {
             Diagnostico.apuntar("cxf", "No se encontraron gestores con credenciales exportables", e)
             ResultadoImportacionCxf.SinOpciones("No se encontraron gestores de contraseñas con credenciales listas para transferir en este dispositivo.")
+        } catch (e: ImportCredentialsUnknownErrorException) {
+            Diagnostico.apuntar("cxf", "El gestor externo o el sistema no completó la transferencia (error desconocido)", e)
+            ResultadoImportacionCxf.Error("El gestor externo o el servicio del sistema interrumpió la transferencia sin proporcionar detalles.", e)
         } catch (e: Exception) {
             Diagnostico.apuntar("cxf", "Fallo al importar credenciales: ${e.message ?: "error desconocido"}", e)
             ResultadoImportacionCxf.Error("Fallo en la transferencia de credenciales: ${e.message ?: "error desconocido"}", e)
