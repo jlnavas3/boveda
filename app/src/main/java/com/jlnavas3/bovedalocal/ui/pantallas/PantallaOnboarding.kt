@@ -157,7 +157,9 @@ fun PantallaOnboarding(vm: VaultViewModel, actividad: FragmentActivity) {
                 perfil = perfilSeleccionado,
                 ajustes = ajustes,
                 alIniciarForja = {
-                    vm.crearBoveda(contrasenaMaestra, identidadInicial) { haptica.exito() }
+                    val pass = contrasenaMaestra
+                    contrasenaMaestra = ""
+                    vm.crearBoveda(pass, identidadInicial) { haptica.exito() }
                 }
             )
         }

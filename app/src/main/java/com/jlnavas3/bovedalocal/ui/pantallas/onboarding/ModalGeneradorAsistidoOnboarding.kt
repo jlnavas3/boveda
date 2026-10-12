@@ -92,9 +92,14 @@ fun ModalGeneradorAsistidoOnboarding(
 
     val bits = PasswordGenerator.entropiaBits(opciones)
 
+    val cerrarYLimpiar = {
+        generada = ""
+        alCerrar()
+    }
+
     ModalInferiorBoveda(
         abierto = true,
-        alCerrar = alCerrar,
+        alCerrar = cerrarYLimpiar,
         fijarAbajo = false,
         titulo = "Generador Asistido",
         descripcion = "Elige la estrategia para tu contraseña maestra",
@@ -223,7 +228,9 @@ fun ModalGeneradorAsistidoOnboarding(
                 modifier = Modifier.fillMaxWidth(),
                 alPulsar = {
                     haptica.exito()
-                    alSeleccionarContrasena(generada)
+                    val seleccionada = generada
+                    generada = ""
+                    alSeleccionarContrasena(seleccionada)
                 }
             )
         }
