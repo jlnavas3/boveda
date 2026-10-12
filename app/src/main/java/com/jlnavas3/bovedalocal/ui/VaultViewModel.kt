@@ -21,11 +21,14 @@ import com.jlnavas3.bovedalocal.data.VaultRepository
 import com.jlnavas3.bovedalocal.util.Diagnostico
 import com.jlnavas3.bovedalocal.util.GestorAppsInstaladas
 import com.jlnavas3.bovedalocal.util.Portapapeles
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -46,26 +49,10 @@ class VaultViewModel(app: Application) : AndroidViewModel(app),
     VaultImportacionQrDelegate,
     VaultAvisosDelegate {
 
-    override val avisosInternosFlow = MutableStateFlow<List<com.jlnavas3.bovedalocal.data.AvisoInterno>>(emptyList())
-
-    init {
-        viewModelScope.launch(Dispatchers.IO) {
-            GestorAppsInstaladas.precargar(app)
-        }
-        viewModelScope.launch {
-            repositorio.estado.collect {
-                recalcularAvisosInternos()
-            }
-        }
-        viewModelScope.launch {
-            repositorio.ajustes.ajustes.collect {
-                recalcularAvisosInternos()
-            }
-        }
-    }
-
     override val repositorio = VaultRepository.obtener(app)
     override fun obtenerApp(): Application = getApplication()
+    override val scopeAvisos: CoroutineScope get() = viewModelScope
+    override val avisosInternosFlow = MutableStateFlow<List<com.jlnavas3.bovedalocal.data.AvisoInterno>>(emptyList())
 
     override fun procesarImportacionQrPendiente() {
         super<VaultImportacionQrDelegate>.procesarImportacionQrPendiente()
@@ -90,17 +77,6 @@ class VaultViewModel(app: Application) : AndroidViewModel(app),
     val aviso: StateFlow<DatosAviso?> = _aviso
     private val _avisoInternoString = MutableStateFlow<String?>(null)
     override val avisoInterno: MutableStateFlow<String?> get() = _avisoInternoString
-
-    init {
-        viewModelScope.launch {
-            _avisoInternoString.collect { texto ->
-                if (texto != null) {
-                    avisar(texto)
-                    _avisoInternoString.value = null
-                }
-            }
-        }
-    }
 
     fun mostrarAviso(mensaje: String) { avisar(mensaje) }
     fun mostrarError(mensaje: String) { _error.value = mensaje }
@@ -286,6 +262,41 @@ class VaultViewModel(app: Application) : AndroidViewModel(app),
 
     fun cerrarOfertaGestor() {
         _ofrecerGestor.value = false
+    }
+
+    init {
+        viewModelScope.launch(Dispatchers.IO) {
+            GestorAppsInstaladas.precargar(app)
+        }
+        viewModelScope.launch {
+            _avisoInternoString.collect { texto ->
+                if (texto != null) {
+                    avisar(texto)
+                    _avisoInternoString.value = null
+                }
+            }
+        }
+        viewModelScope.launch {
+            repositorio.estado.collect {
+                recalcularAvisosInternos()
+            }
+        }
+        viewModelScope.launch {
+            repositorio.ajustes.ajustes
+                .map {
+                    listOf(
+                        it.avisos.avisarTitulosSinNormalizar,
+                        it.avisos.avisarRespaldoPendiente,
+                        it.avisos.avisarSaludContrasenas,
+                        it.avisos.avisarDuplicados,
+                        it.avisos.avisosIgnorados
+                    )
+                }
+                .distinctUntilChanged()
+                .collect {
+                    recalcularAvisosInternos()
+                }
+        }
     }
 
     override fun ejecutar(bloque: suspend () -> Unit) {
