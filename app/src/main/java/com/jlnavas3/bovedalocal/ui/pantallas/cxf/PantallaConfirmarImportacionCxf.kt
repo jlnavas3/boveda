@@ -68,6 +68,11 @@ fun PantallaConfirmarImportacionCxf(
     var resultadoCxf by remember { mutableStateOf<ResultadoConversionCxf?>(null) }
     val items = remember { mutableStateListOf<ItemSeleccionableCxf>() }
 
+    var mostrarDialogoPostImportacion by remember { mutableStateOf(false) }
+    var totalImportadasPost by remember { mutableStateOf(0) }
+    var comprometidasPost by remember { mutableStateOf(0) }
+    var entradasImportadasParaNormalizar by remember { mutableStateOf<List<com.jlnavas3.bovedalocal.data.Entrada>>(emptyList()) }
+
     LaunchedEffect(jsonCxf, entradasExistentes) {
         cargando = true
         withContext(Dispatchers.Default) {
@@ -211,7 +216,17 @@ fun PantallaConfirmarImportacionCxf(
                     if (seleccionadas.isNotEmpty()) {
                         haptica.exito()
                         vm.importarEntradasCxf(seleccionadas) {
-                            vm.irRaiz(Pantalla.Lista)
+                            val comprometidas = seleccionadas.count {
+                                com.jlnavas3.bovedalocal.util.CalculadorAvisosInternos.esTituloComprometido(it, ajustes.tldsDescartables)
+                            }
+                            if (ajustes.sugerirNormalizarTrasImportar && comprometidas > 0) {
+                                totalImportadasPost = seleccionadas.size
+                                comprometidasPost = comprometidas
+                                entradasImportadasParaNormalizar = seleccionadas
+                                mostrarDialogoPostImportacion = true
+                            } else {
+                                vm.irRaiz(Pantalla.Lista)
+                            }
                         }
                     } else {
                         haptica.error()
@@ -219,6 +234,23 @@ fun PantallaConfirmarImportacionCxf(
                     }
                 },
                 modifier = Modifier.align(Alignment.BottomEnd)
+            )
+        }
+
+        if (mostrarDialogoPostImportacion) {
+            DialogoPostImportacionTitulos(
+                totalImportadas = totalImportadasPost,
+                cantidadComprometidas = comprometidasPost,
+                alNormalizar = {
+                    mostrarDialogoPostImportacion = false
+                    vm.prepararNormalizacionTitulos(entradasImportadasParaNormalizar)
+                    vm.irRaiz(Pantalla.Lista)
+                    vm.ir(Pantalla.NormalizadorTitulos(esPostImportacion = true))
+                },
+                alDescartar = {
+                    mostrarDialogoPostImportacion = false
+                    vm.irRaiz(Pantalla.Lista)
+                }
             )
         }
     }

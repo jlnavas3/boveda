@@ -19,6 +19,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -69,7 +70,10 @@ fun BarraSuperiorLista(
     alIrCsvGoogle: () -> Unit,
     alImportarDirectoCxf: () -> Unit = {},
     alExportarDirectoCxf: () -> Unit = {},
-    alRestablecerFiltros: () -> Unit
+    alRestablecerFiltros: () -> Unit,
+    mostrarCampanaAvisos: Boolean = true,
+    cantidadAvisos: Int = 0,
+    alAbrirAvisos: () -> Unit = {}
 ) {
     val contexto = LocalContext.current
     val haptica = remember { Haptica(contexto) }
@@ -109,6 +113,38 @@ fun BarraSuperiorLista(
                 color = TextoSecundario,
                 maxLines = 1
             )
+        }
+
+        // Botón Campana de Avisos (con badge si hay recomendaciones)
+        if (mostrarCampanaAvisos && cantidadAvisos > 0) {
+            androidx.compose.material3.BadgedBox(
+                badge = {
+                    androidx.compose.material3.Badge(
+                        containerColor = ColorAcento,
+                        contentColor = com.jlnavas3.bovedalocal.ui.theme.ColorSobreAcento
+                    ) {
+                        Text("$cantidadAvisos")
+                    }
+                }
+            ) {
+                IconButton(
+                    onClick = {
+                        haptica.tic()
+                        alAbrirAvisos()
+                    },
+                    modifier = Modifier
+                        .size(40.dp)
+                        .clip(CircleShape)
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.Notifications,
+                        contentDescription = "Avisos y recomendaciones ($cantidadAvisos)",
+                        tint = ColorAcento,
+                        modifier = Modifier.size(20.dp)
+                    )
+                }
+            }
+            Spacer(Modifier.width(6.dp))
         }
 
         // Botón Búsqueda (Lupa)

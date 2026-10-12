@@ -127,6 +127,7 @@ interface VaultNavegacionDelegate {
             limpio.startsWith("02-APA-COL") || limpio.startsWith("02-APA-THM-DAT") || limpio.startsWith("02-APA-THM-G04") || limpio.startsWith("03.2.1") -> Pantalla.ColoresDatos(limpio)
             limpio.startsWith("02-APA-THM") || limpio.startsWith("02.1") || limpio.startsWith("09.2") -> Pantalla.Tema(limpio)
             limpio.startsWith("02-APA-MNL") -> Pantalla.PersonalizarMenuLateral(limpio)
+            limpio.startsWith("02-AVI-ASI") || limpio.startsWith("02-APA-AVI") -> Pantalla.AjustesAvisos(limpio)
 
             limpio.startsWith("02-APA-GEO-PRE") -> Pantalla.FormasPresets(limpio)
             limpio.startsWith("02-APA-GEO-CRV") -> Pantalla.FormasCurvatura(limpio)

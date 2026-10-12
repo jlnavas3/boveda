@@ -13,6 +13,7 @@ import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.Badge
 import androidx.compose.material.icons.filled.DynamicForm
 import androidx.compose.material.icons.filled.Layers
+import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Palette
 import androidx.compose.material.icons.filled.SquareFoot
 import androidx.compose.material.icons.filled.TextFields
@@ -129,5 +130,15 @@ fun crearElementosAparienciaAjustes(
         palabrasClave = "nombre personalizada titulo encabezado boveda local",
         valorTexto = ajustes.nombrePersonalizado.ifBlank { "Bóveda local" },
         alPulsar = alAbrirNombreBoveda
+    ),
+    ElementoMenuAjustes(
+        titulo = "Avisos y asistencia",
+        subtitulo = "Alertas internas, normalizador y recordatorios",
+        icono = Icons.Filled.Notifications,
+        colorIcono = Color(0xFFF59E0B),
+        idEtiqueta = "02-AVI-ASI",
+        grupo = "Apariencia",
+        palabrasClave = "avisos asistencia campana notificaciones alertas ayuda recomendaciones normalizar duplicados",
+        alPulsar = { vm.ir(Pantalla.AjustesAvisos()) }
     )
 )

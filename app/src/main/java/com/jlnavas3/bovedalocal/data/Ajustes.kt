@@ -444,14 +444,31 @@ data class AjustesApp(
     val menuLateralMostrarBotonBloquear: Boolean = AjustesDefaults.MenuLateral.MOSTRAR_BOTON_BLOQUEAR,
     val menuLateralAgruparItems: Boolean = AjustesDefaults.MenuLateral.AGRUPAR_ITEMS,
     val menuLateralSinBordes: Boolean = AjustesDefaults.MenuLateral.SIN_BORDES,
-    val menuLateralItemsVisibles: List<String> = AjustesDefaults.MenuLateral.ITEMS_PREDETERMINADOS
+    val menuLateralItemsVisibles: List<String> = AjustesDefaults.MenuLateral.ITEMS_PREDETERMINADOS,
+    // Avisos y Asistencia interna (In-App)
+    val avisos: AjustesAvisos = AjustesAvisos()
 ) {
     val modoVisualizacionIdentidades: ModoVisualizacionIdentidades
         get() = ModoVisualizacionIdentidades.desde(modoIdentidades)
 
     val jerarquiaOrganizacionEfectiva: JerarquiaOrganizacion
         get() = JerarquiaOrganizacion.desdeClave(jerarquiaOrganizacion)
+
+    val mostrarCampanaAvisosCabecera: Boolean get() = avisos.mostrarCampanaCabecera
+    val mostrarAvisosEnPantallaBloqueo: Boolean get() = avisos.mostrarAvisosPantallaBloqueo
+    val sugerirNormalizarTrasImportar: Boolean get() = avisos.sugerirNormalizarTrasImportar
+    val avisarDuplicados: Boolean get() = avisos.avisarDuplicados
+    val avisarTitulosSinNormalizar: Boolean get() = avisos.avisarTitulosSinNormalizar
+    val avisarSaludContrasenas: Boolean get() = avisos.avisarSaludContrasenas
+    val avisarRespaldoPendiente: Boolean get() = avisos.avisarRespaldoPendiente
+    val fechaCreacionBovedaLocal: Long get() = avisos.fechaCreacionBovedaLocal
+    val avisosIgnorados: Set<String> get() = avisos.avisosIgnorados
+    val conteoAvisosEnBloqueo: Int get() = avisos.conteoAvisosEnBloqueo
+
+    fun actualizarAvisos(modificar: (AjustesAvisos) -> AjustesAvisos): AjustesApp =
+        copy(avisos = modificar(avisos))
 }
+
 
 
 class AlmacenAjustes(contexto: Context) {
@@ -772,7 +789,19 @@ class AlmacenAjustes(contexto: Context) {
             menuLateralMostrarBotonBloquear = prefs.getBoolean("menu_lateral_mostrar_boton_bloquear", AjustesDefaults.MenuLateral.MOSTRAR_BOTON_BLOQUEAR),
             menuLateralAgruparItems = if (!prefs.getBoolean("menu_lateral_migrado_v2", false)) AjustesDefaults.MenuLateral.AGRUPAR_ITEMS else prefs.getBoolean("menu_lateral_agrupar_items", AjustesDefaults.MenuLateral.AGRUPAR_ITEMS),
             menuLateralSinBordes = if (!prefs.getBoolean("menu_lateral_migrado_v2", false)) AjustesDefaults.MenuLateral.SIN_BORDES else prefs.getBoolean("menu_lateral_sin_bordes", AjustesDefaults.MenuLateral.SIN_BORDES),
-            menuLateralItemsVisibles = deserializarItemsMenuLateral(prefs.getString("menu_lateral_items_visibles_json", "") ?: "", prefs.getBoolean("menu_lateral_migrado_v2", false))
+            menuLateralItemsVisibles = deserializarItemsMenuLateral(prefs.getString("menu_lateral_items_visibles_json", "") ?: "", prefs.getBoolean("menu_lateral_migrado_v2", false)),
+            avisos = AjustesAvisos(
+                mostrarCampanaCabecera = prefs.getBoolean("mostrar_campana_avisos_cabecera", true),
+                mostrarAvisosPantallaBloqueo = prefs.getBoolean("mostrar_avisos_pantalla_bloqueo", false),
+                sugerirNormalizarTrasImportar = prefs.getBoolean("sugerir_normalizar_tras_importar", true),
+                avisarDuplicados = prefs.getBoolean("avisar_duplicados", true),
+                avisarTitulosSinNormalizar = prefs.getBoolean("avisar_titulos_sin_normalizar", true),
+                avisarSaludContrasenas = prefs.getBoolean("avisar_salud_contrasenas", true),
+                avisarRespaldoPendiente = prefs.getBoolean("avisar_respaldo_pendiente", true),
+                fechaCreacionBovedaLocal = prefs.getLong("fecha_creacion_boveda_local", 0L),
+                avisosIgnorados = prefs.getStringSet("avisos_ignorados", emptySet()) ?: emptySet(),
+                conteoAvisosEnBloqueo = prefs.getInt("conteo_avisos_en_bloqueo", 0)
+            )
         )
     }
 
@@ -1018,6 +1047,16 @@ class AlmacenAjustes(contexto: Context) {
             .putBoolean("menu_lateral_sin_bordes", nuevo.menuLateralSinBordes)
             .putString("menu_lateral_items_visibles_json", jsonAjustes.encodeToString(nuevo.menuLateralItemsVisibles))
             .putBoolean("menu_lateral_migrado_v2", true)
+            .putBoolean("mostrar_campana_avisos_cabecera", nuevo.avisos.mostrarCampanaCabecera)
+            .putBoolean("mostrar_avisos_pantalla_bloqueo", nuevo.avisos.mostrarAvisosPantallaBloqueo)
+            .putBoolean("sugerir_normalizar_tras_importar", nuevo.avisos.sugerirNormalizarTrasImportar)
+            .putBoolean("avisar_duplicados", nuevo.avisos.avisarDuplicados)
+            .putBoolean("avisar_titulos_sin_normalizar", nuevo.avisos.avisarTitulosSinNormalizar)
+            .putBoolean("avisar_salud_contrasenas", nuevo.avisos.avisarSaludContrasenas)
+            .putBoolean("avisar_respaldo_pendiente", nuevo.avisos.avisarRespaldoPendiente)
+            .putLong("fecha_creacion_boveda_local", nuevo.avisos.fechaCreacionBovedaLocal)
+            .putStringSet("avisos_ignorados", nuevo.avisos.avisosIgnorados)
+            .putInt("conteo_avisos_en_bloqueo", nuevo.avisos.conteoAvisosEnBloqueo)
             .apply()
         _ajustes.value = nuevo
         com.jlnavas3.bovedalocal.util.Haptica.sincronizar(nuevo)

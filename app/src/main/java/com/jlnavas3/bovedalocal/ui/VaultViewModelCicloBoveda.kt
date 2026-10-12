@@ -285,9 +285,11 @@ interface VaultCicloBovedaDelegate {
             val entradas = repositorio.entradas()
             if (entradas.isEmpty()) return null
 
-            val tiempoBase = entradas.minOfOrNull { it.creadaEn }
-                ?: repositorio.archivoBoveda.lastModified().takeIf { it > 0L }
-                ?: ahora
+            val tiempoBase = if (ajustes.fechaCreacionBovedaLocal > 0L) {
+                ajustes.fechaCreacionBovedaLocal
+            } else {
+                repositorio.archivoBoveda.lastModified().takeIf { it > 0L } ?: ahora
+            }
 
             val transcurridoMs = ahora - tiempoBase
             if (transcurridoMs >= umbralMs) {

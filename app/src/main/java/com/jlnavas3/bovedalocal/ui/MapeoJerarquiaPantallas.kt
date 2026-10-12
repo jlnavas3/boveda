@@ -43,6 +43,7 @@ object MapeoJerarquiaPantallas {
         is Pantalla.CalibracionAnimacion -> Pantalla.AnimacionDesbloqueo("02-APA-THM-ANI")
         is Pantalla.LaboratorioTemas -> Pantalla.Tema("02-APA-THM-LAB")
         is Pantalla.PersonalizarMenuLateral -> Pantalla.Ajustes("02-APA-MNL")
+        is Pantalla.AjustesAvisos -> Pantalla.Ajustes("02-APA-AVI")
 
         // Bloque 02: Apariencia
         is Pantalla.OrganizacionEstructura -> Pantalla.OrganizacionLista("02-APA-DES-EST")

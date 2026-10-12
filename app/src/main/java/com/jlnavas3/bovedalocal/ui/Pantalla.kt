@@ -52,6 +52,11 @@ sealed interface Pantalla {
         override fun equals(other: Any?): Boolean = other is AjustesIndice && other.seccionId == seccionId
         override fun hashCode(): Int = seccionId?.hashCode() ?: 0
     }
+    open class AjustesAvisos(val seccionId: String? = null) : Pantalla {
+        companion object : AjustesAvisos(null)
+        override fun equals(other: Any?): Boolean = other is AjustesAvisos && other.seccionId == seccionId
+        override fun hashCode(): Int = seccionId?.hashCode() ?: 0
+    }
     open class IndiceOla(val seccionId: String? = null) : Pantalla {
         companion object : IndiceOla(null)
         override fun equals(other: Any?): Boolean = other is IndiceOla && other.seccionId == seccionId

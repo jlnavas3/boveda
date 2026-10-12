@@ -420,6 +420,17 @@ object AjustesDefaults {
             "00-AJU"
         )
     }
+
+    // 22. Avisos y Asistencia Interna
+    object Avisos {
+        const val MOSTRAR_CAMPANA_CABECERA = true
+        const val MOSTRAR_AVISOS_PANTALLA_BLOQUEO = false
+        const val SUGERIR_NORMALIZAR_TRAS_IMPORTAR = true
+        const val AVISAR_DUPLICADOS = true
+        const val AVISAR_TITULOS_SIN_NORMALIZAR = true
+        const val AVISAR_SALUD_CONTRASENAS = true
+        const val AVISAR_RESPALDO_PENDIENTE = true
+    }
 }
 
 

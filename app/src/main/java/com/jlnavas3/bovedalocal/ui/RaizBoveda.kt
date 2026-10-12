@@ -327,6 +327,7 @@ fun RaizBoveda(vm: VaultViewModel, actividad: FragmentActivity) {
                     is Pantalla.CamaraQr -> PantallaCamaraQr(vm, actividad, destino.entradaDestino)
                     is Pantalla.Ajustes -> PantallaAjustes(vm, actividad, destino.seccionId)
                     is Pantalla.AjustesIndice -> PantallaAjustesIndice(vm, destino.seccionId)
+                    is Pantalla.AjustesAvisos -> com.jlnavas3.bovedalocal.ui.pantallas.ajustes.PantallaAjustesAvisos(vm)
                     is Pantalla.IndiceOla -> PantallaIndiceOla(vm)
                     is Pantalla.IndiceCresta -> PantallaIndiceCresta(vm)
                     is Pantalla.IndiceHaptica -> PantallaIndiceHaptica(vm)

@@ -43,11 +43,24 @@ class VaultViewModel(app: Application) : AndroidViewModel(app),
     VaultIdentidadesDelegate,
     VaultCicloBovedaDelegate,
     VaultTitulosDelegate,
-    VaultImportacionQrDelegate {
+    VaultImportacionQrDelegate,
+    VaultAvisosDelegate {
+
+    override val avisosInternosFlow = MutableStateFlow<List<com.jlnavas3.bovedalocal.data.AvisoInterno>>(emptyList())
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
             GestorAppsInstaladas.precargar(app)
+        }
+        viewModelScope.launch {
+            repositorio.estado.collect {
+                recalcularAvisosInternos()
+            }
+        }
+        viewModelScope.launch {
+            repositorio.ajustes.ajustes.collect {
+                recalcularAvisosInternos()
+            }
         }
     }
 

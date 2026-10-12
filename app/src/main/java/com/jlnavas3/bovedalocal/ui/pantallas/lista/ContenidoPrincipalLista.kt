@@ -58,18 +58,6 @@ fun ColumnScope.ContenidoPrincipalLista(
     identidades: List<Identidad> = emptyList(),
     categorias: List<Categoria> = emptyList()
 ) {
-    val recordatorio = remember(ajustes, entradas) { vm.recordatorioExportacionInfo() }
-    if (recordatorio != null) {
-        Spacer(Modifier.height((EspaciadoComponentes * 0.8f).coerceAtLeast(6.dp)))
-        Box(modifier = Modifier.padding(horizontal = 20.dp)) {
-            BannerRecordatorioExportacion(
-                info = recordatorio,
-                alIr = { vm.ir(Pantalla.CopiaSeguridad("05-COP-MAN")) }
-            )
-        }
-    }
-
-
     if (visibles.isEmpty()) {
         EstadoVacioLista(
             entradasVacias = entradas.isEmpty(),

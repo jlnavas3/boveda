@@ -37,6 +37,7 @@ import androidx.compose.material.icons.filled.Layers
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Memory
 import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Palette
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.QrCodeScanner
@@ -276,6 +277,18 @@ object MapaAjustes {
             icono = Icons.Filled.Menu,
             colorIcono = Color(0xFF6366F1),
             palabrasClave = listOf("menu", "lateral", "barra", "sidebar", "bloquear", "agrupar", "bordes", "accesos", "reorganizar")
+        ),
+        NodoAjuste(
+            id = "02-AVI-ASI",
+            titulo = "Avisos y asistencia",
+            subtitulo = "Alertas internas, normalizador y recordatorios",
+            ruta = "Apariencia > Avisos y asistencia",
+            grupo = "Apariencia",
+            pantallaDestino = Pantalla.AjustesAvisos(),
+            padreId = "02-APA",
+            icono = Icons.Filled.Notifications,
+            colorIcono = Color(0xFFF59E0B),
+            palabrasClave = listOf("avisos", "asistencia", "campana", "notificaciones", "alertas", "ayuda", "recomendaciones", "normalizar", "duplicados")
         ),
 
         // ==========================================

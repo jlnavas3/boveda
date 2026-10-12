@@ -91,6 +91,14 @@ interface VaultTitulosDelegate {
         gruposTitulosInterno.value = resultadoGrupos
     }
 
+    fun esGrupoComprometido(grupo: GrupoTitulosSitio): Boolean {
+        val tlds = repositorio.ajustes.actual.tldsDescartables
+        return grupo.entradas.any { e ->
+            com.jlnavas3.bovedalocal.util.CalculadorAvisosInternos.esTituloComprometido(e, tlds) ||
+                !e.titulo.equals(grupo.nombreSugerido, ignoreCase = true)
+        }
+    }
+
     fun actualizarNombreGrupo(idGrupo: String, nuevoNombre: String) {
         gruposTitulosInterno.value = gruposTitulosInterno.value.map { g ->
             if (g.id == idGrupo) g.copy(nombrePersonalizado = nuevoNombre) else g

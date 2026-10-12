@@ -89,6 +89,9 @@ fun CabeceraPrincipalLista(
     alAbrirSelectorEtiqueta: () -> Unit = {},
     alSeleccionarEtiqueta: (String?) -> Unit = {},
     alLimpiarTipo: () -> Unit = {},
+    mostrarCampanaAvisos: Boolean = true,
+    cantidadAvisos: Int = 0,
+    alAbrirAvisos: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier.fillMaxWidth()) {
@@ -124,7 +127,10 @@ fun CabeceraPrincipalLista(
                 alIrCsvGoogle = alIrCsvGoogle,
                 alImportarDirectoCxf = alImportarDirectoCxf,
                 alExportarDirectoCxf = alExportarDirectoCxf,
-                alRestablecerFiltros = alRestablecerFiltros
+                alRestablecerFiltros = alRestablecerFiltros,
+                mostrarCampanaAvisos = mostrarCampanaAvisos,
+                cantidadAvisos = cantidadAvisos,
+                alAbrirAvisos = alAbrirAvisos
             )
 
             AnimatedVisibility(

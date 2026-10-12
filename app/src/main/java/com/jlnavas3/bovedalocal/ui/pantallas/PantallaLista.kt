@@ -283,6 +283,9 @@ fun PantallaLista(vm: VaultViewModel, estado: EstadoBoveda) {
         AnalizadorDuplicados.analizar(entradas).sumOf { it.entradasSecundarias.size }
     }
 
+    val avisos by vm.avisosInternos.collectAsStateWithLifecycle()
+    var mostrarModalAvisos by remember { mutableStateOf(false) }
+
     CajonLateralLista(
         estadoCajon = estadoCajon,
         ajustes = ajustes,
@@ -343,6 +346,9 @@ fun PantallaLista(vm: VaultViewModel, estado: EstadoBoveda) {
                     alIrCsvGoogle = { vm.ir(Pantalla.CsvGoogle("05-COP-CSV-IMP")) },
                     alImportarDirectoCxf = dispararImportacionDirectoCxf,
                     alExportarDirectoCxf = { dialogos.exportarCxf = true },
+                    mostrarCampanaAvisos = ajustes.mostrarCampanaAvisosCabecera,
+                    cantidadAvisos = avisos.size,
+                    alAbrirAvisos = { mostrarModalAvisos = true },
                     alRestablecerFiltros = {
                         vm.filtrarPorTipo(null)
                         if (soloFavoritos) vm.alternarSoloFavoritos()
@@ -489,4 +495,17 @@ fun PantallaLista(vm: VaultViewModel, estado: EstadoBoveda) {
         },
         alCerrar = { mostrarSheetEtiquetas = false }
     )
+
+    if (mostrarModalAvisos) {
+        com.jlnavas3.bovedalocal.ui.pantallas.avisos.ModalAvisosInternos(
+            avisos = avisos,
+            alCerrar = { mostrarModalAvisos = false },
+            alEjecutarAviso = { aviso ->
+                vm.ir(aviso.pantallaDestino)
+            },
+            alIgnorarAviso = { tipo ->
+                vm.ignorarAviso(tipo)
+            }
+        )
+    }
 }

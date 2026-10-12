@@ -18,13 +18,19 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.Tune
+import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -47,12 +53,15 @@ fun PantallaNormalizadorTitulos(
     val modo by vm.modoFormatoTitulos.collectAsStateWithLifecycle()
     val respetarManuales by vm.respetarTitulosManuales.collectAsStateWithLifecycle()
     val listState = rememberLazyListState()
+    var soloComprometidos by rememberSaveable { mutableStateOf(true) }
 
     LaunchedEffect(Unit) {
         vm.prepararNormalizacionTitulos()
     }
 
-    val totalCuentas = grupos.sumOf { it.entradas.size }
+    val gruposComprometidos = remember(grupos) { grupos.filter { vm.esGrupoComprometido(it) } }
+    val gruposVisibles = if (soloComprometidos) gruposComprometidos else grupos
+    val totalCuentas = gruposVisibles.sumOf { it.entradas.size }
 
     Scaffold(
         topBar = {
@@ -64,6 +73,13 @@ fun PantallaNormalizadorTitulos(
                 conSeparador = listState.firstVisibleItemIndex > 0 || listState.firstVisibleItemScrollOffset > 0,
                 colorFondo = ColorAjustesFondo,
                 acciones = {
+                    IconButton(onClick = { soloComprometidos = !soloComprometidos }) {
+                        Icon(
+                            imageVector = if (soloComprometidos) Icons.Filled.FilterList else Icons.Filled.Visibility,
+                            contentDescription = if (soloComprometidos) "Mostrar todos (${grupos.size})" else "Mostrar solo pendientes (${gruposComprometidos.size})",
+                            tint = if (soloComprometidos) ColorAcento else com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
+                        )
+                    }
                     IconButton(onClick = { vm.ir(Pantalla.ReglasNormalizacion) }) {
                         Icon(
                             imageVector = Icons.Filled.Tune,
@@ -109,18 +125,26 @@ fun PantallaNormalizadorTitulos(
                 )
             }
 
-            itemsIndexed(
-                items = grupos,
-                key = { indice, grupo -> "${indice}_${grupo.id}" }
-            ) { _, grupo ->
-                TarjetaGrupoTitulos(
-                    grupo = grupo,
-                    modo = modo,
-                    alCambiarNombre = { nuevoNombre ->
-                        vm.actualizarNombreGrupo(grupo.id, nuevoNombre)
-                    },
-                    modifier = Modifier.fillMaxWidth()
-                )
+            if (gruposVisibles.isEmpty()) {
+                item(key = "estado_vacio_limpios") {
+                    EstadoVacioTitulosLimpios(
+                        alVerTodos = { soloComprometidos = false }
+                    )
+                }
+            } else {
+                itemsIndexed(
+                    items = gruposVisibles,
+                    key = { indice, grupo -> "${indice}_${grupo.id}" }
+                ) { _, grupo ->
+                    TarjetaGrupoTitulos(
+                        grupo = grupo,
+                        modo = modo,
+                        alCambiarNombre = { nuevoNombre ->
+                            vm.actualizarNombreGrupo(grupo.id, nuevoNombre)
+                        },
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
             }
         }
     }
