@@ -227,7 +227,7 @@ com.jlnavas3.bovedalocal/
 ## 🛠️ Ingeniería de Compilación y Calidad
 
 ### Requisitos del Entorno
-* **JDK:** Java 17 o Java 21 LTS (compatible hasta OpenJDK 25 gracias a Gradle 9.8 + AGP 9.4).
+* **JDK:** OpenJDK 25 (o Java 17 / 21 LTS) verificado y compilado bajo Gradle 9.8 + AGP 9.4.
 * **Android SDK:** `compileSdk = 36`, `minSdk = 29` (Android 10+), `targetSdk = 35` (Android 15).
 * **Compilador:** Kotlin 2.4 (Plugins Compose Compiler y Serialization v2.4.21).
 
@@ -247,9 +247,9 @@ com.jlnavas3.bovedalocal/
 ./gradlew mostrarVersion
 
 # Actualización semántica de versión (SemVer)
-./gradlew bumpPatch   # 1.9.47 -> 1.9.48
-./gradlew bumpMinor   # 1.9.48 -> 1.10.0
-./gradlew bumpMajor   # 1.9.48 -> 2.0.0
+./gradlew bumpPatch   # 1.10.30 -> 1.10.31
+./gradlew bumpMinor   # 1.10.30 -> 1.11.0
+./gradlew bumpMajor   # 1.10.30 -> 2.0.0
 ```
 
 ### Configuración del Keystore de Release
@@ -267,7 +267,7 @@ adb -s <SERIAL_PRIMARIO> install -r app/build/outputs/apk/release/app-arm64-v8a-
 adb -s <SERIAL_SECUNDARIO> install -r app/build/outputs/apk/release/app-arm64-v8a-release.apk
 
 # Copia de los 5 APKs versionados a la carpeta de descargas del dispositivo
-adb -s <SERIAL> push app/build/outputs/apk/release/app-arm64-v8a-release.apk /sdcard/Download/boveda-local-1.9.48-arm64-v8a.apk
+adb -s <SERIAL> push app/build/outputs/apk/release/app-arm64-v8a-release.apk /sdcard/Download/boveda-local-1.10.30-arm64-v8a.apk
 ```
 
 ---
