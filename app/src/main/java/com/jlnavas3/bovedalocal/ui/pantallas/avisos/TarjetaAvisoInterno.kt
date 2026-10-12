@@ -153,22 +153,14 @@ fun TarjetaAvisoInterno(
                 Column(
                     modifier = Modifier.weight(1f)
                 ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        Text(
-                            text = aviso.titulo,
-                            style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
-                            color = ColorTitulos
-                        )
-                        Text(
-                            text = aviso.categoria.etiqueta,
-                            style = MaterialTheme.typography.labelSmall,
-                            color = ColorAcento
-                        )
-                    }
-                    Spacer(Modifier.height(2.dp))
+                    Text(
+                        text = aviso.titulo,
+                        style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
+                        color = ColorTitulos,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                    Spacer(Modifier.height(3.dp))
                     Text(
                         text = aviso.descripcion,
                         style = MaterialTheme.typography.bodySmall,
