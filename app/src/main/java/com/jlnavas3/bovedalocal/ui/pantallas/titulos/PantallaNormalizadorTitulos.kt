@@ -61,7 +61,13 @@ fun PantallaNormalizadorTitulos(
 
     val gruposComprometidos = remember(grupos) { grupos.filter { vm.esGrupoComprometido(it) } }
     val gruposVisibles = if (soloComprometidos) gruposComprometidos else grupos
-    val totalCuentas = gruposVisibles.sumOf { it.entradas.size }
+    val tlds = ajustes.tldsDescartables
+    val totalComprometidas = remember(gruposVisibles, tlds) {
+        gruposVisibles.sumOf { g ->
+            g.entradas.count { com.jlnavas3.bovedalocal.util.CalculadorAvisosInternos.esTituloComprometido(it, tlds) }
+        }
+    }
+    val totalCuentas = if (soloComprometidos) totalComprometidas else gruposVisibles.sumOf { it.entradas.size }
 
     Scaffold(
         topBar = {

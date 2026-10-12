@@ -94,8 +94,7 @@ interface VaultTitulosDelegate {
     fun esGrupoComprometido(grupo: GrupoTitulosSitio): Boolean {
         val tlds = repositorio.ajustes.actual.tldsDescartables
         return grupo.entradas.any { e ->
-            com.jlnavas3.bovedalocal.util.CalculadorAvisosInternos.esTituloComprometido(e, tlds) ||
-                !e.titulo.equals(grupo.nombreSugerido, ignoreCase = true)
+            com.jlnavas3.bovedalocal.util.CalculadorAvisosInternos.esTituloComprometido(e, tlds)
         }
     }
 

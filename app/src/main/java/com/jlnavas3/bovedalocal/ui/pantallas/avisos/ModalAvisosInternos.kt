@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -22,6 +23,8 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
 import com.jlnavas3.bovedalocal.data.AvisoInterno
 import com.jlnavas3.bovedalocal.data.TipoAvisoInterno
@@ -37,16 +40,20 @@ fun ModalAvisosInternos(
     alIgnorarAviso: (TipoAvisoInterno) -> Unit
 ) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    val configuracion = LocalConfiguration.current
+    val alturaMaxima = (configuracion.screenHeightDp * 0.60f).dp
 
     ModalBottomSheet(
         onDismissRequest = alCerrar,
         sheetState = sheetState,
         shape = RoundedCornerShape(topStart = CurvaturaEsquinas, topEnd = CurvaturaEsquinas),
-        containerColor = ColorAjustesFondo
+        containerColor = ColorAjustesFondo,
+        scrimColor = Color.Black.copy(alpha = 0.55f)
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
+                .heightIn(max = alturaMaxima)
                 .navigationBarsPadding()
         ) {
             CabeceraAvisosInternos(
@@ -55,9 +62,11 @@ fun ModalAvisosInternos(
             )
 
             LazyColumn(
-                modifier = Modifier.fillMaxWidth(),
-                contentPadding = PaddingValues(start = 20.dp, end = 20.dp, top = 8.dp, bottom = 24.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f, fill = false),
+                contentPadding = PaddingValues(start = 20.dp, end = 20.dp, top = 4.dp, bottom = 24.dp),
+                verticalArrangement = Arrangement.spacedBy(10.dp)
             ) {
                 items(avisos, key = { it.tipo.name }) { aviso ->
                     TarjetaAvisoInterno(
