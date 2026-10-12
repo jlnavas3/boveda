@@ -1,6 +1,6 @@
 # Bóveda Local
 
-[![Kotlin](https://img.shields.io/badge/Kotlin-2.x-7F52FF?logo=kotlin&logoColor=white)](https://kotlinlang.org/)
+[![Kotlin](https://img.shields.io/badge/Kotlin-2.4.21-7F52FF?logo=kotlin&logoColor=white)](https://kotlinlang.org/)
 [![Jetpack Compose](https://img.shields.io/badge/Jetpack%20Compose-Material%203-4285F4?logo=jetpackcompose&logoColor=white)](https://developer.android.com/jetpack/compose)
 [![Platform](https://img.shields.io/badge/Android-Min%2029%20%7C%20Target%2035%20%7C%20Compile%2036-3DDC84?logo=android&logoColor=white)](https://developer.android.com/)
 [![Tests](https://img.shields.io/badge/Tests-397%2F397%20Passing-brightgreen?logo=gradle)](https://gradle.org/)
@@ -229,7 +229,7 @@ com.jlnavas3.bovedalocal/
 ### Requisitos del Entorno
 * **JDK:** Java 17 o Java 21 LTS (compatible hasta OpenJDK 25 gracias a Gradle 9.8 + AGP 9.4).
 * **Android SDK:** `compileSdk = 36`, `minSdk = 29` (Android 10+), `targetSdk = 35` (Android 15).
-* **Compilador:** Kotlin 2.x con optimizaciones Compose Compiler integradas.
+* **Compilador:** Kotlin 2.4 (Plugins Compose Compiler y Serialization v2.4.21).
 
 ### Comandos de Gradle
 
