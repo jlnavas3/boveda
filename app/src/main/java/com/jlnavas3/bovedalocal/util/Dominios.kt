@@ -7,8 +7,12 @@
 package com.jlnavas3.bovedalocal.util
 
 import com.google.common.net.InternetDomainName
+import java.util.concurrent.ConcurrentHashMap
 
 object Dominios {
+
+    private val cacheRaiz = ConcurrentHashMap<String, String>()
+    private val cacheSitioAgrupacion = ConcurrentHashMap<String, String>()
 
     fun host(entrada: String): String {
         val texto = entrada.trim().lowercase()
@@ -24,9 +28,11 @@ object Dominios {
         val h = host(entrada)
         if (h.isEmpty() || !h.contains('.')) return h
         if (h.split('.').all { it.toIntOrNull() != null }) return h
-        return runCatching {
-            InternetDomainName.from(h).topPrivateDomain().toString()
-        }.getOrDefault(h)
+        return cacheRaiz.getOrPut(h) {
+            runCatching {
+                InternetDomainName.from(h).topPrivateDomain().toString()
+            }.getOrDefault(h)
+        }
     }
 
     /**
@@ -50,15 +56,17 @@ object Dominios {
         val h = host(entrada)
         if (h.isEmpty() || !h.contains('.')) return h.ifBlank { entrada.trim().lowercase() }
         if (h.split('.').all { it.toIntOrNull() != null }) return h
-        return runCatching {
-            val idn = InternetDomainName.from(h)
-            val suffix = idn.publicSuffix()?.toString()
-            if (!suffix.isNullOrEmpty() && h.endsWith(".$suffix")) {
-                h.removeSuffix(".$suffix")
-            } else {
-                h
-            }
-        }.getOrDefault(h)
+        return cacheSitioAgrupacion.getOrPut(h) {
+            runCatching {
+                val idn = InternetDomainName.from(h)
+                val suffix = idn.publicSuffix()?.toString()
+                if (!suffix.isNullOrEmpty() && h.endsWith(".$suffix")) {
+                    h.removeSuffix(".$suffix")
+                } else {
+                    h
+                }
+            }.getOrDefault(h)
+        }
     }
 
     /** Coincidencia inteligente: mismo dominio raíz, mismo paquete de aplicación o equivalencia de catálogo/marca. */

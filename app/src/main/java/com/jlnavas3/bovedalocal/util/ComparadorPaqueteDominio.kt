@@ -83,16 +83,20 @@ object ComparadorPaqueteDominio {
         return false
     }
 
+    private val cacheTokens = java.util.concurrent.ConcurrentHashMap<String, Set<String>>()
+
     private fun extraerTokensSignificativos(texto: String): Set<String> {
         val limpio = if (texto.startsWith("android://")) {
             LanzadorEnlaces.extraerPaquete(texto) ?: texto.removePrefix("android://")
         } else {
             texto
         }
-        return limpio
-            .split('.', '/', ':', '@', '-', '_', '?')
-            .map { it.trim().lowercase() }
-            .filter { it.length >= 4 && it !in tokensGenericos }
-            .toSet()
+        return cacheTokens.getOrPut(limpio) {
+            limpio
+                .split('.', '/', ':', '@', '-', '_', '?')
+                .map { it.trim().lowercase() }
+                .filter { it.length >= 4 && it !in tokensGenericos }
+                .toSet()
+        }
     }
 }
