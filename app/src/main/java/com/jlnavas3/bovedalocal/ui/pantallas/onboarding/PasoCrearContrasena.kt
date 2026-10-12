@@ -49,6 +49,8 @@ fun PasoCrearContrasena(
 
     var mostrarModalConsejo by remember { mutableStateOf(false) }
     var mostrarDialogoCompartir by remember { mutableStateOf(false) }
+    var mostrarConfirmarGenerador by remember { mutableStateOf(false) }
+    var mostrarModalGenerador by remember { mutableStateOf(false) }
 
     val fuerza = remember(contrasena) { MedidorFuerza.medir(contrasena) }
     val coinciden = contrasena.isNotEmpty() && contrasena == repetida
@@ -96,7 +98,8 @@ fun PasoCrearContrasena(
                 alAlternarMostrarRepetida = { mostrarRepetida = !mostrarRepetida },
                 fuerza = fuerza,
                 coinciden = coinciden,
-                alCompartir = { mostrarDialogoCompartir = true }
+                alCompartir = { mostrarDialogoCompartir = true },
+                alAbrirGeneradorAsistido = { mostrarConfirmarGenerador = true }
             )
 
             // Tarjeta 2: Parámetros de derivación y botón "Forjar la bóveda"
@@ -107,6 +110,29 @@ fun PasoCrearContrasena(
                 alForjarBoveda = { if (valida) alConfirmar(contrasena) }
             )
         }
+    }
+
+    if (mostrarConfirmarGenerador) {
+        DialogoConfirmarGeneradorAsistido(
+            alConfirmar = {
+                mostrarConfirmarGenerador = false
+                mostrarModalGenerador = true
+            },
+            alDescartar = { mostrarConfirmarGenerador = false }
+        )
+    }
+
+    if (mostrarModalGenerador) {
+        ModalGeneradorAsistidoOnboarding(
+            alSeleccionarContrasena = { generada ->
+                contrasena = generada
+                repetida = generada
+                mostrarContrasena = true
+                mostrarRepetida = true
+                mostrarModalGenerador = false
+            },
+            alCerrar = { mostrarModalGenerador = false }
+        )
     }
 
     if (mostrarModalConsejo) {

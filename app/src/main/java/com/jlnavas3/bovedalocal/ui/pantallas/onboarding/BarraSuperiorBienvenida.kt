@@ -48,12 +48,9 @@ fun BarraSuperiorBienvenida(
 ) {
     var menuAbierto by remember { mutableStateOf(false) }
 
-    Row(
+    Box(
         modifier = modifier
-            .fillMaxWidth()
-            .padding(horizontal = 12.dp, vertical = 6.dp),
-        horizontalArrangement = Arrangement.End,
-        verticalAlignment = Alignment.CenterVertically
+            .padding(horizontal = 12.dp, vertical = 6.dp)
     ) {
         Box {
             BotonIconoCabecera(

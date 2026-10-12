@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AutoFixHigh
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.runtime.Composable
@@ -46,6 +47,7 @@ fun TarjetaCredencialesMaestras(
     fuerza: Fuerza,
     coinciden: Boolean,
     alCompartir: () -> Unit,
+    alAbrirGeneradorAsistido: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     ComponenteGrupo(
@@ -116,12 +118,23 @@ fun TarjetaCredencialesMaestras(
                     estado = estadoValidacion
                 )
 
-                if (contrasena.isNotEmpty()) {
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
                     BotonIconoSuperficie(
-                        icono = Icons.Filled.Share,
-                        descripcion = "Compartir",
-                        alPulsar = alCompartir
+                        icono = Icons.Filled.AutoFixHigh,
+                        descripcion = "Generador asistido",
+                        alPulsar = alAbrirGeneradorAsistido
                     )
+
+                    if (contrasena.isNotEmpty()) {
+                        BotonIconoSuperficie(
+                            icono = Icons.Filled.Share,
+                            descripcion = "Compartir",
+                            alPulsar = alCompartir
+                        )
+                    }
                 }
             }
         }

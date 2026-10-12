@@ -8,12 +8,14 @@ package com.jlnavas3.bovedalocal.ui.pantallas.onboarding
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -51,24 +53,17 @@ fun PasoBienvenida(
 ) {
     var mostrarModalGarantias by remember { mutableStateOf(false) }
 
-    Column(
+    Box(
         modifier = Modifier
             .fillMaxSize()
             .background(ColorAjustesFondo)
     ) {
-        // Cabecera superior desacoplada con menú contextual de opciones
-        BarraSuperiorBienvenida(
-            alAbrirGarantias = { mostrarModalGarantias = true },
-            alAbrirAcercaDe = alAbrirAcercaDe,
-            alSalir = alSalir
-        )
-
-        // Contenido con scroll
+        // Contenido principal con scroll
         Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f)
+                .fillMaxSize()
                 .verticalScroll(rememberScrollState())
+                .statusBarsPadding()
                 .padding(horizontal = 20.dp, vertical = 12.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(18.dp)
@@ -112,6 +107,16 @@ fun PasoBienvenida(
             // Pie de página con versión y autoría
             PieVersionOnboarding()
         }
+
+        // Menú de opciones contextual flotante sin empujar el flujo de animaciones
+        BarraSuperiorBienvenida(
+            alAbrirGarantias = { mostrarModalGarantias = true },
+            alAbrirAcercaDe = alAbrirAcercaDe,
+            alSalir = alSalir,
+            modifier = Modifier
+                .align(Alignment.TopEnd)
+                .statusBarsPadding()
+        )
     }
 
     if (mostrarModalGarantias) {
