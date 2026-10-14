@@ -7,6 +7,7 @@
 package com.jlnavas3.bovedalocal.util
 
 import com.jlnavas3.bovedalocal.data.AjustesApp
+import com.jlnavas3.bovedalocal.data.AjustesDefaults
 import com.jlnavas3.bovedalocal.data.AnalizadorDuplicados
 import com.jlnavas3.bovedalocal.data.AvisoInterno
 import com.jlnavas3.bovedalocal.data.CategoriaAvisoInterno
@@ -24,14 +25,34 @@ object CalculadorAvisosInternos {
     fun esTituloComprometido(entrada: Entrada, tlds: List<String> = emptyList()): Boolean {
         val t = entrada.titulo.trim()
         if (t.isBlank()) return true
-        if (t.startsWith("http://", ignoreCase = true) ||
-            t.startsWith("https://", ignoreCase = true) ||
-            t.startsWith("android://", ignoreCase = true)
+        val tBase = t.substringBefore('(').substringBefore('·').substringBefore('[').trim()
+        if (tBase.isBlank()) return true
+        if (tBase.equals("localhost", ignoreCase = true) || tBase.startsWith("localhost :", ignoreCase = true)) return false
+        if (tBase.startsWith("http://", ignoreCase = true) ||
+            tBase.startsWith("https://", ignoreCase = true) ||
+            tBase.startsWith("android://", ignoreCase = true) ||
+            tBase.startsWith("androidapp://", ignoreCase = true) ||
+            tBase.startsWith("app://", ignoreCase = true)
         ) return true
-        if (LanzadorEnlaces.esNombrePaquete(t)) return true
-        if (t.contains('/') || t.contains('?') || t.contains('#') || t.contains(':')) return true
-        val tldList = if (tlds.isNotEmpty()) tlds else listOf(".com", ".org", ".net", ".io", ".app", ".dev", ".es", ".ec", ".co")
-        return tldList.any { t.endsWith(it, ignoreCase = true) }
+        if (LanzadorEnlaces.esNombrePaquete(tBase) || LanzadorEnlaces.extraerPaquete(tBase) != null) return true
+        if (!tBase.contains(' ') && (tBase.contains('/') || tBase.contains('?') || tBase.contains('#'))) return true
+        if (tBase.contains(Regex("""(?<!\s):\d{2,5}"""))) return true
+        if (tBase.matches(Regex("""^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}.*"""))) return true
+        val tldList = if (tlds.isNotEmpty()) tlds else AjustesDefaults.NormalizacionTitulos.TLDS_DESCARTABLES
+        val tldsConPunto = tldList.map { if (it.startsWith(".")) it.lowercase() else ".${it.lowercase()}" }
+        if (tldsConPunto.any { tBase.endsWith(it, ignoreCase = true) }) return true
+        if (!tBase.contains(' ') && tBase.contains('.')) {
+            val esDominioValido = runCatching {
+                val idn = com.google.common.net.InternetDomainName.from(tBase)
+                idn.hasPublicSuffix()
+            }.getOrDefault(false)
+            if (esDominioValido) return true
+        }
+        val hostCoincidente = entrada.urls.firstOrNull { u ->
+            val h = Dominios.host(u)
+            h.isNotBlank() && h.contains('.') && (h.equals(tBase, ignoreCase = true) || h.removePrefix("www.").equals(tBase, ignoreCase = true))
+        }
+        return hostCoincidente != null
     }
 
     fun calcular(
@@ -52,7 +73,7 @@ object CalculadorAvisosInternos {
                     AvisoInterno(
                         tipo = TipoAvisoInterno.TITULOS_SIN_NORMALIZAR,
                         categoria = CategoriaAvisoInterno.ORGANIZACION,
-                        titulo = "Títulos no estandarizados",
+                        titulo = "Nombres no amigables",
                         descripcion = "Detectamos $totalComprometidos ${if (totalComprometidos == 1) "título con formato de enlace o paquete" else "títulos con formato de enlace o paquete"}.",
                         accionTexto = "Normalizar títulos",
                         pantallaDestino = Pantalla.NormalizadorTitulos,

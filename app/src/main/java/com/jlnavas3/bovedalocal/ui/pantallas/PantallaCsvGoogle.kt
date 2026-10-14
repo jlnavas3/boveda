@@ -99,17 +99,20 @@ fun PantallaCsvGoogle(
                 }
             } catch (_: Exception) {}
 
-            vm.importarCsv({
-                contexto.contentResolver.openInputStream(uri)?.use { it.readBytes() }
-                    ?: throw IllegalStateException("No se pudo leer el archivo")
-            }) { nuevas ->
+            vm.irRaiz(Pantalla.Lista)
+            vm.importarCsv(
+                nombreArchivo = nombreArchivo,
+                lector = {
+                    contexto.contentResolver.openInputStream(uri)?.use { it.readBytes() }
+                        ?: throw IllegalStateException("No se pudo leer el archivo")
+                }
+            ) { nuevas ->
                 if (nuevas > 0) {
                     vm.registrarCsvGoogleImportado(
                         ruta = nombreArchivo,
                         uri = uri.toString(),
                         cuentas = nuevas
                     )
-                    vm.ir(Pantalla.NormalizadorTitulos(esPostImportacion = true))
                 }
             }
         }

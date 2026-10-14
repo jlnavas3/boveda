@@ -41,11 +41,12 @@ import com.jlnavas3.bovedalocal.data.TipoDuplicado
 import com.jlnavas3.bovedalocal.ui.Pantalla
 import com.jlnavas3.bovedalocal.ui.VaultViewModel
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjustesFondo
-import com.jlnavas3.bovedalocal.ui.pantallas.duplicados.BarraAccionesSeleccionDuplicados
+import com.jlnavas3.bovedalocal.ui.pantallas.duplicados.BarraAccionesDuplicados
 import com.jlnavas3.bovedalocal.ui.pantallas.duplicados.BarraChipsFiltroDuplicados
 import com.jlnavas3.bovedalocal.ui.pantallas.duplicados.BarraSuperiorDuplicados
 import com.jlnavas3.bovedalocal.ui.pantallas.duplicados.BotonLimpiezaMasivaFab
 import com.jlnavas3.bovedalocal.ui.pantallas.duplicados.ContenidoListaDuplicados
+import com.jlnavas3.bovedalocal.ui.pantallas.duplicados.DialogoAdvertenciaUnificarUsuarios
 import com.jlnavas3.bovedalocal.ui.pantallas.duplicados.DialogosDuplicados
 import com.jlnavas3.bovedalocal.ui.pantallas.duplicados.FiltroDuplicados
 import com.jlnavas3.bovedalocal.ui.pantallas.duplicados.IlustracionSinDuplicados
@@ -92,6 +93,62 @@ fun PantallaDuplicados(
     var seleccionados by rememberSaveable { mutableStateOf(emptySet<String>()) }
     val modoSeleccion = seleccionados.isNotEmpty()
     var confirmarBorradoSeleccion by remember { mutableStateOf(false) }
+    var usuariosConflicto by remember { mutableStateOf<List<String>?>(null) }
+
+    val ejecutarUnificacion: (String?) -> Unit = { usuarioElegido ->
+        val seleccionadasList = entradas.filter { seleccionados.contains(it.id) }
+        if (seleccionadasList.size >= 2) {
+            val principal = AnalizadorDuplicados.seleccionarMejorEntrada(seleccionadasList)
+            val secundarias = seleccionadasList.filterNot { it.id == principal.id }
+            vm.unificarEntradas(principal = principal, secundarias = secundarias, usuarioElegido = usuarioElegido)
+            seleccionados = emptySet()
+        }
+    }
+
+    val alSolicitarUnificar: () -> Unit = {
+        val seleccionadasList = entradas.filter { seleccionados.contains(it.id) }
+
+        // Identificar los grupos que tienen 2 o más entradas seleccionadas
+        val gruposAfectados = grupos.mapNotNull { grupo ->
+            val seleccionadasEnGrupo = grupo.entradas.filter { seleccionados.contains(it.id) }
+            if (seleccionadasEnGrupo.size >= 2) {
+                val principal = if (seleccionadasEnGrupo.any { it.id == grupo.sugeridaPrincipal.id }) {
+                    grupo.sugeridaPrincipal
+                } else {
+                    AnalizadorDuplicados.seleccionarMejorEntrada(seleccionadasEnGrupo)
+                }
+                val secundarias = seleccionadasEnGrupo.filterNot { it.id == principal.id }
+                Pair(principal, secundarias)
+            } else null
+        }
+
+        if (gruposAfectados.size > 1) {
+            // Múltiples grupos seleccionados: cada grupo se unifica independientemente
+            vm.unificarMultiplesGrupos(gruposAfectados)
+            seleccionados = emptySet()
+        } else if (gruposAfectados.size == 1) {
+            // Un solo grupo con 2 o más entradas seleccionadas
+            val (principal, secundarias) = gruposAfectados.first()
+            val usuariosDistintos = (listOf(principal) + secundarias)
+                .map { it.usuario.trim() }
+                .filter { it.isNotBlank() }
+                .distinct()
+            if (usuariosDistintos.size > 1) {
+                usuariosConflicto = usuariosDistintos
+            } else {
+                vm.unificarEntradas(principal, secundarias, null)
+                seleccionados = emptySet()
+            }
+        } else if (seleccionadasList.size >= 2) {
+            // Caso manual: entradas sueltas seleccionadas entre grupos
+            val usuariosDistintos = seleccionadasList.map { it.usuario.trim() }.filter { it.isNotBlank() }.distinct()
+            if (usuariosDistintos.size > 1) {
+                usuariosConflicto = usuariosDistintos
+            } else {
+                ejecutarUnificacion(null)
+            }
+        }
+    }
 
     BackHandler(enabled = modoSeleccion) {
         seleccionados = emptySet()
@@ -222,16 +279,20 @@ fun PantallaDuplicados(
                                 gruposExpandidos + idGrupo
                             }
                         },
-                        alConservarCopia = { elegida, grupo ->
-                            val secundarias = grupo.entradas.filterNot { it.id == elegida.id }
-                            vm.eliminarVarias(secundarias.map { it.id }.toSet())
-                            vm.avisar("Copia seleccionada conservada")
-                        },
                         alVerDetalle = { id, idsContexto ->
                             vm.ir(Pantalla.Detalle(id, idsContexto = idsContexto))
                         },
                         alAlternarSeleccion = { id ->
                             seleccionados = if (seleccionados.contains(id)) seleccionados - id else seleccionados + id
+                        },
+                        alAlternarSeleccionGrupo = { idsGrupo ->
+                            haptica.tic()
+                            val todosYa = idsGrupo.all { seleccionados.contains(it) }
+                            seleccionados = if (todosYa) {
+                                seleccionados - idsGrupo
+                            } else {
+                                seleccionados + idsGrupo
+                            }
                         },
                         alPulsarLargo = { id ->
                             seleccionados = seleccionados + id
@@ -239,24 +300,23 @@ fun PantallaDuplicados(
                     )
 
                     if (modoSeleccion) {
-                        BarraAccionesSeleccionDuplicados(
-                            seleccionados = seleccionados,
-                            entradas = entradas,
-                            haptica = haptica,
-                            alAlternarFavoritos = { ids ->
-                                vm.alternarFavoritosVarias(ids)
-                                seleccionados = emptySet()
-                            },
-                            alComparar = { primera, todos ->
-                                vm.ir(
-                                    Pantalla.Detalle(
-                                        id = primera,
-                                        idsContexto = todos,
-                                        modoComparacion = true
+                        BarraAccionesDuplicados(
+                            cantidad = seleccionados.size,
+                            alComparar = {
+                                val listaComparar = seleccionados.toList()
+                                if (listaComparar.size >= 2) {
+                                    val primera = listaComparar.first()
+                                    vm.ir(
+                                        Pantalla.Detalle(
+                                            id = primera,
+                                            idsContexto = listaComparar,
+                                            modoComparacion = true
+                                        )
                                     )
-                                )
+                                }
                             },
-                            alAbrirBorrado = { confirmarBorradoSeleccion = true },
+                            alUnificar = alSolicitarUnificar,
+                            alEliminar = { confirmarBorradoSeleccion = true },
                             modifier = Modifier.align(Alignment.BottomCenter)
                         )
                     } else {
@@ -278,7 +338,7 @@ fun PantallaDuplicados(
         totalSobrantesIdenticas = totalSobrantesIdenticas,
         alConfirmarLimpiezaMasiva = {
             confirmarLimpiezaMasiva = false
-            vm.eliminarDuplicadasExactasMasivo(gruposIdenticos)
+            vm.unificarDuplicadasExactasMasivo(gruposIdenticos)
         },
         alDescartarLimpiezaMasiva = { confirmarLimpiezaMasiva = false },
         confirmarBorradoSeleccion = confirmarBorradoSeleccion,
@@ -292,4 +352,17 @@ fun PantallaDuplicados(
         },
         alDescartarBorradoSeleccion = { confirmarBorradoSeleccion = false }
     )
+
+    usuariosConflicto?.let { listaUsuarios ->
+        DialogoAdvertenciaUnificarUsuarios(
+            usuarios = listaUsuarios,
+            alConfirmar = { usuarioElegido ->
+                usuariosConflicto = null
+                ejecutarUnificacion(usuarioElegido)
+            },
+            alDescartar = {
+                usuariosConflicto = null
+            }
+        )
+    }
 }

@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Inbox
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
@@ -34,7 +35,8 @@ import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
 
 @Composable
 fun EstadoVacioTitulosLimpios(
-    alVerTodos: () -> Unit,
+    alVerTodos: (() -> Unit)? = null,
+    esVacioTotal: Boolean = false,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -45,38 +47,44 @@ fun EstadoVacioTitulosLimpios(
         verticalArrangement = Arrangement.Center
     ) {
         Icon(
-            imageVector = Icons.Filled.CheckCircle,
+            imageVector = if (esVacioTotal) Icons.Filled.Inbox else Icons.Filled.CheckCircle,
             contentDescription = null,
             tint = ColorAcento,
             modifier = Modifier.size(64.dp)
         )
         Spacer(Modifier.height(16.dp))
         Text(
-            text = "¡Todos tus títulos están estandarizados!",
+            text = if (esVacioTotal) "No hay entradas para renombrar" else "¡Todos tus títulos están estandarizados!",
             style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
             color = TextoPrincipal,
             textAlign = TextAlign.Center
         )
         Spacer(Modifier.height(8.dp))
         Text(
-            text = "No se detectaron enlaces crudos, nombres de paquetes ni títulos no amigables en esta selección.",
+            text = if (esVacioTotal) {
+                "Tu bóveda no contiene entradas en este momento."
+            } else {
+                "No se detectaron enlaces crudos, nombres de paquetes ni títulos no amigables en esta selección."
+            },
             style = MaterialTheme.typography.bodyMedium,
             color = TextoSecundario,
             textAlign = TextAlign.Center
         )
-        Spacer(Modifier.height(24.dp))
-        Button(
-            onClick = alVerTodos,
-            shape = FormaBoton,
-            colors = ButtonDefaults.buttonColors(
-                containerColor = ColorAcento,
-                contentColor = ColorSobreAcento
-            )
-        ) {
-            Text(
-                text = "Ver todos los títulos",
-                style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold)
-            )
+        if (!esVacioTotal && alVerTodos != null) {
+            Spacer(Modifier.height(24.dp))
+            Button(
+                onClick = alVerTodos,
+                shape = FormaBoton,
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = ColorAcento,
+                    contentColor = ColorSobreAcento
+                )
+            ) {
+                Text(
+                    text = "Ver todos los títulos",
+                    style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold)
+                )
+            }
         }
     }
 }

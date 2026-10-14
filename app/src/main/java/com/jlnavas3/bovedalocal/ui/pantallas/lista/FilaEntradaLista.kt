@@ -115,12 +115,11 @@ fun FilaEntrada(
         }
         val domPaquete = remember(paquete) { if (paquete != null) Dominios.dominioDePaquete(paquete) else null }
         val marcaPaquete = remember(domPaquete) { if (domPaquete != null) Dominios.marca(domPaquete) else null }
-        val tituloMostrar = remember(entrada.titulo, nombreApp, domPaquete, marcaPaquete, paquete) {
+        val tituloMostrar = remember(entrada.titulo, nombreApp) {
             val tit = entrada.titulo.trim()
             when {
-                tit.isNotBlank() && !com.jlnavas3.bovedalocal.util.NormalizadorTitulosSitios.esTituloTecnico(tit, entrada.urls) -> tit
-                !nombreApp.isNullOrBlank() -> nombreApp
                 tit.isNotBlank() -> tit
+                !nombreApp.isNullOrBlank() -> nombreApp
                 else -> "Sin título"
             }
         }

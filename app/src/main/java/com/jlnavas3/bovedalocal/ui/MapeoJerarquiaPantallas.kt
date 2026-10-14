@@ -20,7 +20,7 @@ object MapeoJerarquiaPantallas {
         alRetrocederWidget1x1: () -> Unit = {}
     ): Pantalla? = when (pantalla) {
         // Nivel 4 -> Nivel 3
-        is Pantalla.ReglasNormalizacion -> Pantalla.NormalizadorTitulos()
+        is Pantalla.ReglasNormalizacion -> Pantalla.NormalizadorTitulos(idsEspecificos = pantalla.idsEspecificos)
         is Pantalla.AjustesBiometria -> Pantalla.BloqueoBiometria("01-SEG-BIO-BIO")
         is Pantalla.BloqueoApp -> Pantalla.BloqueoBiometria("01-SEG-BIO-APP")
         is Pantalla.FuerzaBruta -> Pantalla.BloqueoBiometria("01-SEG-BIO-BRU")

@@ -153,8 +153,13 @@ fun ColumnScope.ContenidoDetalleProblemaSalud(
             )
         }
         if (entrada.contrasena.isNotBlank()) {
+            val contexto = androidx.compose.ui.platform.LocalContext.current
+            val haptica = androidx.compose.runtime.remember { com.jlnavas3.bovedalocal.util.Haptica(contexto) }
             IconButton(
-                onClick = alAlternarMostrarContrasena,
+                onClick = {
+                    haptica.toque()
+                    alAlternarMostrarContrasena()
+                },
                 modifier = Modifier.size(22.dp)
             ) {
                 Icon(

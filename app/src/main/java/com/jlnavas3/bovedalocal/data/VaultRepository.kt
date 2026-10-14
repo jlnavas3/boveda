@@ -250,6 +250,63 @@ class VaultRepository private constructor(contexto: Context) {
         }
     }
 
+    /**
+     * Guarda y elimina colecciones de entradas en lote de forma atómica.
+     * Realiza un único cifrado AES-GCM y una sola sincronización a disco (fsync),
+     * reduciendo tiempos de 20s a milisegundos en operaciones masivas.
+     */
+    fun sincronizarLote(
+        entradasAGuardar: List<Entrada> = emptyList(),
+        idsAEliminar: Set<String> = emptySet()
+    ) {
+        if (entradasAGuardar.isEmpty() && idsAEliminar.isEmpty()) return
+        synchronized(candado) {
+            val ahora = System.currentTimeMillis()
+            var lista = contenido.entradas.toMutableList()
+            val maxHistorial = ajustes.actual.maxHistorialContrasenasPorEntrada
+
+            // 1. Guardar / actualizar entradas
+            for (entrada in entradasAGuardar) {
+                val idx = lista.indexOfFirst { it.id == entrada.id }
+                if (idx >= 0) {
+                    val previa = lista[idx]
+                    val historial = if (previa.contrasena.isNotBlank() && previa.contrasena != entrada.contrasena && maxHistorial > 0) {
+                        val base = if (entrada.historialContrasenas.isNotEmpty()) entrada.historialContrasenas else previa.historialContrasenas
+                        val baseSinDuplicados = base
+                            .distinctBy { it.contrasena }
+                            .filterNot { it.contrasena == previa.contrasena || it.contrasena == entrada.contrasena }
+                        (listOf(CambioContrasena(previa.contrasena, previa.modificadaEn.takeIf { it > 0 } ?: ahora)) + baseSinDuplicados)
+                            .take(maxHistorial)
+                    } else if (maxHistorial <= 0) {
+                        emptyList()
+                    } else {
+                        entrada.historialContrasenas
+                            .distinctBy { it.contrasena }
+                            .filterNot { it.contrasena == entrada.contrasena }
+                            .take(maxHistorial)
+                    }
+                    lista[idx] = entrada.copy(modificadaEn = ahora, creadaEn = previa.creadaEn, historialContrasenas = historial)
+                } else {
+                    lista.add(entrada.copy(creadaEn = ahora, modificadaEn = ahora))
+                }
+            }
+
+            // 2. Eliminar enviando a la papelera si se solicitaron IDs
+            var nuevaPapelera = contenido.papelera
+            if (idsAEliminar.isNotEmpty()) {
+                val (aBorrar, resto) = lista.partition { idsAEliminar.contains(it.id) }
+                lista = resto.toMutableList()
+                if (aBorrar.isNotEmpty()) {
+                    nuevaPapelera = nuevaPapelera + aBorrar.map { it.copy(eliminadaEn = ahora) }
+                }
+            }
+
+            contenido = contenido.copy(entradas = lista, papelera = nuevaPapelera)
+            persistir()
+            publicar()
+        }
+    }
+
     /** Registra la marca de tiempo de último uso de una credencial sin alterar su fecha de edición. */
     fun registrarUsoEntrada(id: String, momento: Long = System.currentTimeMillis()) {
         synchronized(candado) {
@@ -827,9 +884,12 @@ class VaultRepository private constructor(contexto: Context) {
     }
 
     /** Importa un CSV plano (Google, Chrome, Bitwarden, LastPass...). Siempre añade entradas nuevas. */
-    fun importarCsv(datos: ByteArray): Int {
+    fun importarCsv(
+        datos: ByteArray,
+        onProgreso: ((procesadas: Int, total: Int, entrada: Entrada) -> Unit)? = null
+    ): Int {
         if (claveMaestra == null) throw IllegalStateException("La bóveda está bloqueada")
-        val nuevasEntradas = ImportadorCsv.parsear(datos)
+        val nuevasEntradas = ImportadorCsv.parsear(datos, onProgreso = onProgreso)
         synchronized(candado) {
             if (claveMaestra == null) throw IllegalStateException("La bóveda está bloqueada")
             val lista = contenido.entradas.toMutableList()

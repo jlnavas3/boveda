@@ -89,10 +89,20 @@ fun BoxScope.CapaInferiorAccionesLista(
                 alTransferirCxf(copia)
             },
             alRenombrar = {
-                val primera = entradas.firstOrNull { estadoSeleccion.seleccionados.contains(it.id) }
-                alRenombrar(primera?.titulo ?: "")
+                val ids = estadoSeleccion.seleccionados.toList()
+                estadoSeleccion.salirDeSeleccion()
+                vm.ir(Pantalla.NormalizadorTitulos(idsEspecificos = ids))
             },
             alAsignarCategoria = alAsignarCategoria,
+            alUnificar = {
+                val copia = itemsSeleccionados.toList()
+                if (copia.size >= 2) {
+                    estadoSeleccion.salirDeSeleccion()
+                    val principal = com.jlnavas3.bovedalocal.data.AnalizadorDuplicados.seleccionarMejorEntrada(copia)
+                    val secundarias = copia.filterNot { it.id == principal.id }
+                    vm.unificarEntradas(principal = principal, secundarias = secundarias)
+                }
+            },
             alBorrar = alBorrar,
             modifier = Modifier.align(Alignment.BottomCenter)
         )

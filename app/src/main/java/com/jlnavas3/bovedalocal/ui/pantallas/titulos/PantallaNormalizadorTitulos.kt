@@ -37,6 +37,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.jlnavas3.bovedalocal.ui.Pantalla
 import com.jlnavas3.bovedalocal.ui.VaultViewModel
 import com.jlnavas3.bovedalocal.ui.componentes.BarraSuperiorPantalla
+import com.jlnavas3.bovedalocal.ui.componentes.CerrarTecladoAlHacerScroll
+import com.jlnavas3.bovedalocal.ui.componentes.cerrarTecladoAlTocarFuera
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjustesFondo
 import com.jlnavas3.bovedalocal.ui.preview.BovedaPantallaPreview
 import com.jlnavas3.bovedalocal.ui.theme.BovedaTheme
@@ -46,6 +48,7 @@ import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 fun PantallaNormalizadorTitulos(
     vm: VaultViewModel,
     esPostImportacion: Boolean = false,
+    idsEspecificos: List<String>? = null,
     alVolver: () -> Unit = { vm.volverAtras() }
 ) {
     val ajustes by vm.ajustes.collectAsStateWithLifecycle()
@@ -53,10 +56,18 @@ fun PantallaNormalizadorTitulos(
     val modo by vm.modoFormatoTitulos.collectAsStateWithLifecycle()
     val respetarManuales by vm.respetarTitulosManuales.collectAsStateWithLifecycle()
     val listState = rememberLazyListState()
-    var soloComprometidos by rememberSaveable { mutableStateOf(true) }
+    val esSeleccionEspecifica = idsEspecificos != null
+    var soloComprometidos by rememberSaveable(esSeleccionEspecifica) { mutableStateOf(!esSeleccionEspecifica) }
+    var modoAvanzado by rememberSaveable(esSeleccionEspecifica) { mutableStateOf(esSeleccionEspecifica) }
 
-    LaunchedEffect(Unit) {
-        vm.prepararNormalizacionTitulos()
+    LaunchedEffect(idsEspecificos) {
+        val entradasParaNormalizar = if (idsEspecificos != null) {
+            val todas = (vm.estado.value as? com.jlnavas3.bovedalocal.data.EstadoBoveda.Desbloqueada)?.entradas ?: emptyList()
+            todas.filter { it.id in idsEspecificos }
+        } else {
+            null
+        }
+        vm.prepararNormalizacionTitulos(entradasParaNormalizar)
     }
 
     val gruposComprometidos = remember(grupos) { grupos.filter { vm.esGrupoComprometido(it) } }
@@ -68,47 +79,69 @@ fun PantallaNormalizadorTitulos(
         }
     }
     val totalCuentas = if (soloComprometidos) totalComprometidas else gruposVisibles.sumOf { it.entradas.size }
+    val ejemplos = remember(gruposComprometidos) { vm.obtenerEjemplosNormalizacion() }
+
+    val mostrarVistaRapida = !modoAvanzado && totalComprometidas > 0
 
     Scaffold(
         topBar = {
             BarraSuperiorPantalla(
-                titulo = if (esPostImportacion) "Revisar títulos importados" else "Normalizador de Títulos",
+                titulo = when {
+                    idsEspecificos != null -> "Renombrar (${idsEspecificos.size})"
+                    mostrarVistaRapida -> "Renombrar Títulos"
+                    esPostImportacion -> "Revisar títulos importados"
+                    else -> "Renombrar"
+                },
                 idEtiqueta = "03-LST-TIT",
                 mostrarId = ajustes.mostrarIdsAjustes,
                 alVolver = alVolver,
                 conSeparador = listState.firstVisibleItemIndex > 0 || listState.firstVisibleItemScrollOffset > 0,
                 colorFondo = ColorAjustesFondo,
                 acciones = {
-                    IconButton(onClick = { soloComprometidos = !soloComprometidos }) {
-                        Icon(
-                            imageVector = if (soloComprometidos) Icons.Filled.FilterList else Icons.Filled.Visibility,
-                            contentDescription = if (soloComprometidos) "Mostrar todos (${grupos.size})" else "Mostrar solo pendientes (${gruposComprometidos.size})",
-                            tint = if (soloComprometidos) ColorAcento else com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
-                        )
-                    }
-                    IconButton(onClick = { vm.ir(Pantalla.ReglasNormalizacion) }) {
-                        Icon(
-                            imageVector = Icons.Filled.Tune,
-                            contentDescription = "Reglas de URLs y redes",
-                            tint = ColorAcento
-                        )
+                    if (!mostrarVistaRapida) {
+                        IconButton(onClick = { soloComprometidos = !soloComprometidos }) {
+                            Icon(
+                                imageVector = if (soloComprometidos) Icons.Filled.FilterList else Icons.Filled.Visibility,
+                                contentDescription = if (soloComprometidos) "Mostrar todos (${grupos.size})" else "Mostrar solo pendientes (${gruposComprometidos.size})",
+                                tint = if (soloComprometidos) ColorAcento else com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
+                            )
+                        }
+                        IconButton(onClick = { vm.ir(Pantalla.ReglasNormalizacion(idsEspecificos)) }) {
+                            Icon(
+                                imageVector = Icons.Filled.Tune,
+                                contentDescription = "Reglas de URLs y redes",
+                                tint = ColorAcento
+                            )
+                        }
+                    } else {
+                        IconButton(onClick = { modoAvanzado = true }) {
+                            Icon(
+                                imageVector = Icons.Filled.Tune,
+                                contentDescription = "Opciones avanzadas",
+                                tint = ColorAcento
+                            )
+                        }
                     }
                 }
             )
         },
         bottomBar = {
-            BarraInferiorAccionNormalizador(
-                totalCuentas = totalCuentas,
-                alAplicar = {
-                    vm.aplicarNormalizacionTitulos {
-                        alVolver()
-                    }
-                },
-                alCancelar = alVolver
-            )
+            if (!mostrarVistaRapida) {
+                BarraInferiorAccionNormalizador(
+                    totalCuentas = totalCuentas,
+                    alAplicar = {
+                        vm.aplicarNormalizacionTitulos {
+                            alVolver()
+                        }
+                    },
+                    alCancelar = alVolver
+                )
+            }
         },
+        modifier = Modifier.cerrarTecladoAlTocarFuera(),
         containerColor = ColorAjustesFondo
     ) { relleno ->
+        CerrarTecladoAlHacerScroll(listState.isScrollInProgress)
         LazyColumn(
             state = listState,
             contentPadding = PaddingValues(
@@ -118,38 +151,66 @@ fun PantallaNormalizadorTitulos(
                 bottom = relleno.calculateBottomPadding() + 16.dp
             ),
             verticalArrangement = Arrangement.spacedBy(12.dp),
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier
+                .fillMaxSize()
+                .cerrarTecladoAlTocarFuera()
         ) {
-            item(key = "selector_modo") {
-                SelectorModoFormatoTitulos(
-                    modoActual = modo,
-                    respetarManuales = respetarManuales,
-                    alCambiarModo = { vm.cambiarModoFormatoTitulos(it) },
-                    alCambiarRespetarManuales = { vm.cambiarRespetarTitulosManuales(it) },
-                    mostrarId = ajustes.mostrarIdsAjustes,
-                    modifier = Modifier.fillMaxWidth()
-                )
-            }
-
-            if (gruposVisibles.isEmpty()) {
-                item(key = "estado_vacio_limpios") {
-                    EstadoVacioTitulosLimpios(
-                        alVerTodos = { soloComprometidos = false }
+            if (mostrarVistaRapida) {
+                item(key = "vista_rapida_1toque") {
+                    VistaEstandarizacionRapida(
+                        totalComprometidas = totalComprometidas,
+                        ejemplos = ejemplos,
+                        alEstandarizarTodo = {
+                            vm.estandarizarTitulosRapido {
+                                alVolver()
+                            }
+                        },
+                        alIrAvanzado = { modoAvanzado = true }
                     )
                 }
             } else {
-                itemsIndexed(
-                    items = gruposVisibles,
-                    key = { indice, grupo -> "${indice}_${grupo.id}" }
-                ) { _, grupo ->
-                    TarjetaGrupoTitulos(
-                        grupo = grupo,
-                        modo = modo,
-                        alCambiarNombre = { nuevoNombre ->
-                            vm.actualizarNombreGrupo(grupo.id, nuevoNombre)
-                        },
+                item(key = "selector_modo") {
+                    SelectorModoFormatoTitulos(
+                        modoActual = modo,
+                        respetarManuales = respetarManuales,
+                        alCambiarModo = { vm.cambiarModoFormatoTitulos(it) },
+                        alCambiarRespetarManuales = { vm.cambiarRespetarTitulosManuales(it) },
+                        mostrarId = ajustes.mostrarIdsAjustes,
                         modifier = Modifier.fillMaxWidth()
                     )
+                }
+
+                if (gruposVisibles.isEmpty()) {
+                    item(key = "estado_vacio_limpios") {
+                        EstadoVacioTitulosLimpios(
+                            alVerTodos = { soloComprometidos = false },
+                            esVacioTotal = grupos.isEmpty()
+                        )
+                    }
+                } else {
+                    itemsIndexed(
+                        items = gruposVisibles,
+                        key = { indice, grupo -> "${indice}_${grupo.id}" }
+                    ) { _, grupo ->
+                        TarjetaGrupoTitulos(
+                            grupo = grupo,
+                            modo = modo,
+                            alCambiarNombre = { nuevoNombre ->
+                                vm.actualizarNombreGrupo(grupo.id, nuevoNombre)
+                            },
+                            prefijosSubdominios = ajustes.prefijosSubdominios,
+                            tldsConfigurados = ajustes.tldsDescartables,
+                            alSeleccionarSegmento = { seleccionado, descartados ->
+                                vm.eliminarPrefijoSubdominio(seleccionado)
+                                vm.agregarPrefijosSubdominios(descartados)
+                            },
+                            alAlternarReglaPrefijo = { prefijo ->
+                                vm.alternarPrefijoSubdominio(prefijo)
+                            },
+                            esSeleccionEspecifica = esSeleccionEspecifica,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                    }
                 }
             }
         }

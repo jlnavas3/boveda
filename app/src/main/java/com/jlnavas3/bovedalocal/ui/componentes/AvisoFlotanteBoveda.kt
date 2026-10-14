@@ -15,6 +15,7 @@ import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -91,10 +92,11 @@ fun AvisoFlotanteBoveda(
     val contexto = LocalContext.current
     val haptica = remember { Haptica(contexto) }
 
-    // Temporizador de auto-cierre tras 3.2 segundos
+    // Temporizador de auto-cierre tras 3.2 segundos (o 5 segundos si tiene opción deshacer)
     LaunchedEffect(aviso) {
         if (aviso != null) {
-            delay(3200L)
+            val tiempoEspera = if (aviso.alDeshacer != null) 5000L else 3200L
+            delay(tiempoEspera)
             alCerrar()
         }
     }
@@ -195,14 +197,39 @@ fun AvisoFlotanteBoveda(
 
                             // Cuerpo con mensaje descriptivo
                             Text(
-                                text = aviso.mensaje,
-                                fontSize = 13.sp,
-                                color = colorMensaje,
-                                lineHeight = 18.sp,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(horizontal = 14.dp, vertical = 10.dp)
+                                 text = aviso.mensaje,
+                                 fontSize = 13.sp,
+                                 color = colorMensaje,
+                                 lineHeight = 18.sp,
+                                 modifier = Modifier
+                                     .fillMaxWidth()
+                                     .padding(horizontal = 14.dp, vertical = 10.dp)
                             )
+
+                            if (aviso.alDeshacer != null) {
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(start = 14.dp, end = 14.dp, bottom = 10.dp),
+                                    horizontalArrangement = Arrangement.End
+                                ) {
+                                    Text(
+                                        text = aviso.accionTexto ?: "Deshacer",
+                                        color = ColorAcento,
+                                        fontSize = 13.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        modifier = Modifier
+                                            .clip(RoundedCornerShape(6.dp))
+                                            .clickable {
+                                                haptica.toque()
+                                                val accion = aviso.alDeshacer
+                                                alCerrar()
+                                                accion()
+                                            }
+                                            .padding(horizontal = 10.dp, vertical = 4.dp)
+                                    )
+                                }
+                            }
                         }
                     }
                 } else {
@@ -237,6 +264,24 @@ fun AvisoFlotanteBoveda(
                                 modifier = Modifier.weight(1f)
                             )
                             Spacer(Modifier.width(6.dp))
+                            if (aviso.alDeshacer != null) {
+                                Text(
+                                    text = aviso.accionTexto ?: "Deshacer",
+                                    color = ColorAcento,
+                                    fontSize = 12.5.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    modifier = Modifier
+                                        .clip(RoundedCornerShape(6.dp))
+                                        .clickable {
+                                            haptica.toque()
+                                            val accion = aviso.alDeshacer
+                                            alCerrar()
+                                            accion()
+                                        }
+                                        .padding(horizontal = 8.dp, vertical = 4.dp)
+                                )
+                                Spacer(Modifier.width(6.dp))
+                            }
                             // Botón '✕' de cierre rápido
                             Box(
                                 modifier = Modifier

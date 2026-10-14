@@ -71,7 +71,7 @@ class AgrupadorSitiosTest {
     }
 
     @Test
-    fun `subdominios de un mismo servicio se unifican bajo la marca oficial`() {
+    fun `subdominios de un mismo servicio sin normalizar se unifican bajo el dominio comun`() {
         val eAccount1 = Entrada("1", titulo = "account.xiaomi.com (personal)", urls = listOf("https://account.xiaomi.com"))
         val eAccount2 = Entrada("2", titulo = "account.xiaomi.com (trabajo)", urls = listOf("https://account.xiaomi.com"))
         val eXiaomi1 = Entrada("3", titulo = "xiaomi.com (tienda)", urls = listOf("https://xiaomi.com"))
@@ -83,12 +83,29 @@ class AgrupadorSitiosTest {
             agrupar = true
         ) { false }
 
-        // Se unifican en 1 solo grupo bajo el nombre de marca "Xiaomi"
+        // Se unifican en 1 solo grupo bajo el dominio base "xiaomi.com"
         assertEquals(1, items.size)
         val g1 = items[0] as ItemAgrupado.Grupo
 
-        assertEquals("Xiaomi", g1.clave)
+        assertEquals("xiaomi.com", g1.clave)
         assertEquals(4, g1.entradas.size)
+    }
+
+    @Test
+    fun `entradas normalizadas se muestran bajo el nombre de marca oficial`() {
+        val e1 = Entrada("1", titulo = "Xiaomi", urls = listOf("https://account.xiaomi.com"))
+        val e2 = Entrada("2", titulo = "Xiaomi (Comunidad)", urls = listOf("https://xiaomi.com"))
+
+        val items = construirItemsAgrupadosPorSitio(
+            listOf(e1, e2),
+            criterio = CriterioOrdenacion.NOMBRE_AZ,
+            agrupar = true
+        ) { false }
+
+        assertEquals(1, items.size)
+        val g1 = items[0] as ItemAgrupado.Grupo
+        assertEquals("Xiaomi", g1.clave)
+        assertEquals(2, g1.entradas.size)
     }
 
     @Test

@@ -216,9 +216,9 @@ class AnalizadorDuplicadosTest {
         val fusionada = AnalizadorDuplicados.fusionar(principal, listOf(secundaria))
 
         assertEquals("claveActual", fusionada.contrasena)
-        assertTrue(fusionada.camposPersonalizados.any { it.valor == "claveAntigua999" && it.esSensible })
-        assertTrue(fusionada.historialContrasenas.any { it.contrasena == "claveAntigua999" })
-        assertTrue(fusionada.notas.contains("clave(s) alternativa(s) guardada(s)"))
+        assertTrue("No debe haber campo personalizado redundante de la clave", fusionada.camposPersonalizados.none { it.valor == "claveAntigua999" })
+        assertTrue("La clave alternativa debe estar en el historial", fusionada.historialContrasenas.any { it.contrasena == "claveAntigua999" })
+        assertTrue(fusionada.notas.contains("clave(s) alternativa(s) respaldada(s)"))
     }
 
     @Test
@@ -320,9 +320,143 @@ class AnalizadorDuplicadosTest {
         assertEquals("SuperSecretaPayPal2026!", fusionada.contrasena)
         assertNotNull(fusionada.passkey)
         assertEquals("cred-abc", fusionada.passkey?.credId)
-        assertEquals(TipoEntrada.LOGIN, fusionada.tipo)
-        assertTrue(fusionada.urls.contains("paypal.com"))
-        assertTrue(fusionada.urls.contains("https://www.paypal.com"))
+        assertEquals(1, fusionada.urls.size)
+        assertEquals("https://www.paypal.com", fusionada.urls.first())
+    }
+
+    @Test
+    fun `entradas con contrasena igual o vacia pero distinto TOTP no son identicas`() {
+        val e1 = Entrada(
+            id = "1",
+            titulo = "X (Twitter)",
+            usuario = "jolunavi",
+            contrasena = "",
+            secretoTotp = "JBSWY3DPEHPK3PXP"
+        )
+        val e2 = Entrada(
+            id = "2",
+            titulo = "X (Twitter)",
+            usuario = "jolunavi",
+            contrasena = "",
+            secretoTotp = "KRSXG5CTMVRXEZLU"
+        )
+
+        val grupos = AnalizadorDuplicados.analizar(listOf(e1, e2))
+        assertFalse(
+            "Entradas con TOTP distinto nunca deben agruparse como IDENTICO",
+            grupos.any { it.tipo == TipoDuplicado.IDENTICO }
+        )
+    }
+
+    @Test
+    fun `entradas con contrasena igual pero distinto Passkey credId no son identicas`() {
+        val e1 = Entrada(
+            id = "1",
+            titulo = "Google",
+            usuario = "test@gmail.com",
+            contrasena = "clave123",
+            passkey = DatosPasskey("google.com", "Google", "user1", "cred-1", "priv-1")
+        )
+        val e2 = Entrada(
+            id = "2",
+            titulo = "Google",
+            usuario = "test@gmail.com",
+            contrasena = "clave123",
+            passkey = DatosPasskey("google.com", "Google", "user1", "cred-2", "priv-2")
+        )
+
+        val grupos = AnalizadorDuplicados.analizar(listOf(e1, e2))
+        assertFalse(
+            "Entradas con Passkey distinto nunca deben agruparse como IDENTICO",
+            grupos.any { it.tipo == TipoDuplicado.IDENTICO }
+        )
+    }
+
+    @Test
+    fun `entradas de Aldiko con app Android, portal SSO de Google y web se detectan como duplicadas`() {
+        val email = "jolunavi@gmail.com"
+        val entradaApp = Entrada(
+            id = "a1",
+            titulo = "Aldiko",
+            usuario = email,
+            contrasena = "claveAldiko",
+            urls = listOf("android://hash@com.aldiko.android/")
+        )
+        val entradaSso = Entrada(
+            id = "a2",
+            titulo = "Aldiko",
+            usuario = email,
+            contrasena = "claveAldiko",
+            urls = listOf("https://accounts.google.com")
+        )
+        val entradaWeb = Entrada(
+            id = "a3",
+            titulo = "Aldiko",
+            usuario = email,
+            contrasena = "claveAldiko",
+            urls = listOf("https://aldiko.com")
+        )
+        val entradaSimple = Entrada(
+            id = "a4",
+            titulo = "Aldiko",
+            usuario = email,
+            contrasena = "claveAldiko",
+            urls = emptyList()
+        )
+
+        val grupos = AnalizadorDuplicados.analizar(listOf(entradaApp, entradaSso, entradaWeb, entradaSimple))
+        assertEquals(1, grupos.size)
+        val grupo = grupos.first()
+        assertEquals(4, grupo.entradas.size)
+        assertTrue(grupo.claveVisual.contains("Aldiko"))
+    }
+
+    @Test
+    fun `cuentas de microsoft con dominios de correo distintos como outlook y hotmail no se consideran duplicados`() {
+        val outlook = Entrada(
+            id = "m1",
+            titulo = "Microsoft",
+            usuario = "jlnavas3@outlook.com",
+            contrasena = "",
+            urls = listOf("https://login.microsoft.com"),
+            passkey = com.jlnavas3.bovedalocal.data.DatosPasskey("login.microsoft.com", "Microsoft", "jlnavas3@outlook.com", "cred-1", "priv-1")
+        )
+        val hotmail = Entrada(
+            id = "m2",
+            titulo = "Microsoft",
+            usuario = "jlnavas3@hotmail.com",
+            contrasena = "claveHotmail123",
+            urls = listOf("https://signup.live.com/signup")
+        )
+
+        val grupos = AnalizadorDuplicados.analizar(listOf(outlook, hotmail))
+        assertTrue("Cuentas con dominios de correo diferentes (@outlook.com vs @hotmail.com) nunca deben agruparse", grupos.isEmpty())
+    }
+
+    @Test
+    fun `detecta como duplicados de variante de usuario entradas con misma clave y servicio donde una no tiene usuario`() {
+        val entradaConUsuario = Entrada(
+            id = "claro-1",
+            titulo = "Claro Video",
+            usuario = "jolunavi@gmail.com",
+            contrasena = "ClaveSecreta123*",
+            urls = listOf("https://www.clarovideo.com/")
+        )
+        val entradaSinUsuario = Entrada(
+            id = "claro-2",
+            titulo = "Claro Video",
+            usuario = "",
+            contrasena = "ClaveSecreta123*",
+            urls = listOf("https://www.clarovideo.com/ecuador/login")
+        )
+
+        val grupos = AnalizadorDuplicados.analizar(listOf(entradaConUsuario, entradaSinUsuario))
+        assertEquals(1, grupos.size)
+        val grupo = grupos.first()
+        assertEquals(TipoDuplicado.VARIANTE_USUARIO, grupo.tipo)
+        assertEquals(2, grupo.entradas.size)
+        assertEquals("claro-1", grupo.sugeridaPrincipal.id)
+        assertEquals("jolunavi@gmail.com", grupo.sugeridaPrincipal.usuario)
     }
 }
 

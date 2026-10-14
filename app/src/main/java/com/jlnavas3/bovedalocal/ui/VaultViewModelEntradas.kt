@@ -124,9 +124,28 @@ interface VaultEntradasDelegate : VaultDuplicadosPapeleraDelegate {
     fun eliminarVarias(ids: Set<String>) {
         if (ids.isEmpty()) return
         ejecutar {
+            val entradasOriginales = withContext(Dispatchers.IO) {
+                ids.mapNotNull { repositorio.entrada(it) }
+            }
             withContext(Dispatchers.IO) { repositorio.eliminarEntradas(ids) }
             Diagnostico.apuntar("papelera", "${ids.size} entradas enviadas a la papelera")
-            avisoInterno.value = if (ids.size == 1) "Entrada movida a la papelera" else "${ids.size} entradas movidas a la papelera"
+            val textoMsg = if (ids.size == 1) "Entrada movida a la papelera" else "${ids.size} entradas movidas a la papelera"
+            if (entradasOriginales.isNotEmpty()) {
+                avisarConDeshacer(
+                    mensaje = textoMsg,
+                    titulo = "Papelera",
+                    alDeshacer = {
+                        ejecutar {
+                            withContext(Dispatchers.IO) {
+                                entradasOriginales.forEach { repositorio.guardarEntrada(it) }
+                            }
+                            avisoInterno.value = "Eliminación deshecha"
+                        }
+                    }
+                )
+            } else {
+                avisoInterno.value = textoMsg
+            }
         }
     }
 
@@ -289,17 +308,51 @@ interface VaultEntradasDelegate : VaultDuplicadosPapeleraDelegate {
         if (entradas.isEmpty()) return 0
         ejecutar {
             var importadas = 0
+            val total = entradas.size
+            com.jlnavas3.bovedalocal.ui.progreso.GestorProgresoOperaciones.iniciar(
+                id = "importar_contactos",
+                titulo = "Contactos del teléfono",
+                faseInicial = "Importando $total contactos...",
+                totalEstimado = total
+            )
+            val delayMs = (2000L / total.coerceAtLeast(1)).coerceIn(1L, 25L)
             withContext(Dispatchers.IO) {
                 val titulosExistentes = repositorio.entradas().map { it.titulo }.toMutableList()
-                entradas.forEach { e ->
+                entradas.forEachIndexed { index, e ->
+                    val procesadas = index + 1
                     val ajustada = com.jlnavas3.bovedalocal.util.ResolverTituloDuplicado.resolverEntrada(e, titulosExistentes)
                     repositorio.guardarEntrada(ajustada)
                     titulosExistentes.add(ajustada.titulo)
                     importadas++
+                    val item = com.jlnavas3.bovedalocal.data.ItemProgresoEntrada(
+                        id = ajustada.id,
+                        titulo = ajustada.titulo.ifBlank { "Contacto" },
+                        subtitulo = ajustada.camposPersonalizados.firstOrNull()?.valor ?: "",
+                        progreso = 1.0f,
+                        completado = true
+                    )
+                    com.jlnavas3.bovedalocal.ui.progreso.GestorProgresoOperaciones.reportarItem(
+                        item = item,
+                        progresoGlobal = 0.1f + 0.85f * (procesadas.toFloat() / total),
+                        procesadas = procesadas
+                    )
+                    if (delayMs > 0) {
+                        kotlinx.coroutines.delay(delayMs)
+                    }
                 }
             }
             Diagnostico.apuntar("contactos", "$importadas contactos importados a la bóveda")
-            avisar(if (importadas == 1) "1 contacto importado a la bóveda" else "$importadas contactos importados a la bóveda")
+            val mensaje = if (importadas == 1) "1 contacto importado a la bóveda" else "$importadas contactos importados a la bóveda"
+            avisar(mensaje)
+            com.jlnavas3.bovedalocal.ui.progreso.GestorProgresoOperaciones.completar(
+                mensajeExito = mensaje,
+                totalCuentas = importadas,
+                textoAccionResultado = "Ver en la lista",
+                textoAccionSecundaria = null,
+                accionResultado = {
+                    (this as? com.jlnavas3.bovedalocal.ui.VaultNavegacionDelegate)?.irRaiz(Pantalla.Lista)
+                }
+            )
         }
         return entradas.size
     }

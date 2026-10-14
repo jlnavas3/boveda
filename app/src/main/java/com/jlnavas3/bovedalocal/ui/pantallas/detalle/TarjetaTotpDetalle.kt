@@ -6,42 +6,20 @@
 
 package com.jlnavas3.bovedalocal.ui.pantallas.detalle
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Visibility
-import androidx.compose.material.icons.filled.VisibilityOff
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableLongStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import com.jlnavas3.bovedalocal.crypto.Base32
-import com.jlnavas3.bovedalocal.crypto.Totp
 import com.jlnavas3.bovedalocal.data.AjustesApp
 import com.jlnavas3.bovedalocal.data.Entrada
-import com.jlnavas3.bovedalocal.ui.componentes.IndicadorTotpTarta
-import com.jlnavas3.bovedalocal.ui.componentes.seguridad.TemporizadorAutoOcultar
-import com.jlnavas3.bovedalocal.ui.componentes.seguridad.TextoSeguroVisual
-import com.jlnavas3.bovedalocal.ui.theme.Color2FA
-import com.jlnavas3.bovedalocal.ui.theme.ColorDatos2FA
-import com.jlnavas3.bovedalocal.ui.theme.ColorTitulos
-import com.jlnavas3.bovedalocal.ui.theme.EstiloMonoGrande
-import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
 import com.jlnavas3.bovedalocal.util.Haptica
 import kotlinx.coroutines.delay
 
@@ -50,124 +28,62 @@ fun TarjetaTotpDetalle(
     entrada: Entrada,
     ajustes: AjustesApp,
     haptica: Haptica,
-    alCopiarTotp: (String) -> Unit
+    alCopiarTotp: (String) -> Unit,
+    alIntercambiarTotp: ((String) -> Unit)? = null
 ) {
-    val secreto = entrada.secretoTotp?.takeIf { it.isNotBlank() } ?: return
-    val periodo = entrada.totpPeriodo.toLong().coerceAtLeast(10L)
+    val tienePrincipal = !entrada.secretoTotp.isNullOrBlank()
+    val camposTotp = remember(entrada.camposPersonalizados) {
+        entrada.camposPersonalizados.filter {
+            it.etiqueta.contains("TOTP", ignoreCase = true) && it.valor.isNotBlank()
+        }
+    }
+
+    if (!tienePrincipal && camposTotp.isEmpty()) return
+
     var ahora by remember { mutableLongStateOf(System.currentTimeMillis() / 1000) }
 
-    LaunchedEffect(secreto) {
+    LaunchedEffect(Unit) {
         while (true) {
             ahora = System.currentTimeMillis() / 1000
             delay(500)
         }
     }
 
-    val codigo = remember(ahora / periodo, secreto, entrada.totpDigitos, entrada.totpAlgoritmo) {
-        try {
-            Totp.codigo(
-                secreto = Base32.decodificar(secreto),
-                segundosUnix = ahora,
-                digitos = entrada.totpDigitos,
-                periodo = periodo,
-                algoritmo = entrada.totpAlgoritmo
-            )
-        } catch (e: Exception) {
-            "------"
-        }
-    }
-
-    val segundosRestantes = Totp.segundosRestantes(ahora, periodo)
-    val codigoVisible = if (ajustes.totpSepararDigitos && codigo.length == 6) {
-        "${codigo.take(3)} ${codigo.drop(3)}"
-    } else {
-        codigo
-    }
-
-    val protegerTotp = ajustes.seguridadVisualActiva && ajustes.ocultarTotp
-    var totpRevelado by remember(entrada.id, protegerTotp) { mutableStateOf(!protegerTotp) }
-
-    TemporizadorAutoOcultar(
-        revelado = totpRevelado && protegerTotp,
-        tiempoSegundos = ajustes.tiempoAutoOcultarSegundos,
-        alAutoOcultar = { totpRevelado = false }
-    )
-
-    var copiado by remember { mutableStateOf(false) }
-    LaunchedEffect(copiado) {
-        if (copiado) {
-            delay(1500)
-            copiado = false
-        }
-    }
-
     Column(modifier = Modifier.fillMaxWidth()) {
         EtiquetaSeccionDetalle(texto = "Verificación en dos pasos")
 
-        TarjetaDatoDetalle(
-            colorBorde = ColorDatos2FA,
-            alPulsar = {
-                haptica.exito()
-                copiado = true
-                alCopiarTotp(codigo)
+        if (tienePrincipal) {
+            BloqueTotpItem(
+                etiqueta = "CÓDIGO TEMPORAL (TOTP)",
+                secreto = entrada.secretoTotp,
+                digitos = entrada.totpDigitos,
+                periodo = entrada.totpPeriodo.toLong(),
+                algoritmo = entrada.totpAlgoritmo,
+                ajustes = ajustes,
+                haptica = haptica,
+                ahora = ahora,
+                alCopiar = alCopiarTotp
+            )
+        }
+
+        camposTotp.forEachIndexed { index, campo ->
+            if (tienePrincipal || index > 0) {
+                Spacer(Modifier.height(10.dp))
             }
-        ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 16.dp, end = 10.dp, top = 14.dp, bottom = 14.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Column(modifier = Modifier.weight(1f)) {
-                    Text(
-                        text = "CÓDIGO TEMPORAL (TOTP)",
-                        style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
-                        color = Color2FA
-                    )
-                    Spacer(Modifier.height(4.dp))
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(10.dp)
-                    ) {
-                        TextoSeguroVisual(
-                            texto = codigoVisible,
-                            oculto = protegerTotp && !totpRevelado,
-                            estilo = ajustes.estiloOcultamientoVisual,
-                            estiloTexto = EstiloMonoGrande.copy(fontWeight = FontWeight.Bold, fontSize = 26.sp),
-                            colorTexto = ColorTitulos
-                        )
-                        IndicadorTotpTarta(
-                            segundosRestantes = segundosRestantes,
-                            periodo = periodo,
-                            tamano = 18.dp
-                        )
-                    }
-                    Spacer(Modifier.height(3.dp))
-                    Text(
-                        text = "Toca para copiar · Se renueva en $segundosRestantes s",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = TextoSecundario
-                    )
-                }
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    if (protegerTotp) {
-                        BotonIconoDetalle(
-                            icono = if (totpRevelado) Icons.Filled.VisibilityOff else Icons.Filled.Visibility,
-                            descripcion = if (totpRevelado) "Ocultar código" else "Mostrar código",
-                            alPulsar = { totpRevelado = !totpRevelado }
-                        )
-                    }
-                    BotonCopiarDetalle(
-                        copiado = copiado,
-                        alPulsar = {
-                            haptica.exito()
-                            copiado = true
-                            alCopiarTotp(codigo)
-                        }
-                    )
-                }
-            }
+            BloqueTotpItem(
+                etiqueta = campo.etiqueta.uppercase(),
+                secreto = campo.valor.trim(),
+                digitos = 6,
+                periodo = 30L,
+                algoritmo = "HmacSHA1",
+                ajustes = ajustes,
+                haptica = haptica,
+                ahora = ahora,
+                alCopiar = alCopiarTotp,
+                alIntercambiar = if (alIntercambiarTotp != null) {
+                    { alIntercambiarTotp(campo.id) }
+                } else null
+            )
         }
     }
 }
@@ -189,4 +105,3 @@ private fun TarjetaTotpDetallePreview() {
         )
     }
 }
-

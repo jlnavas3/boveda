@@ -17,8 +17,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 
 import com.jlnavas3.bovedalocal.ui.componentes.blindajeSemanticoSensible
 
@@ -68,9 +70,17 @@ fun TextoSeguroVisual(
         } else {
             texto
         }
+        val estiloEfectivo = if (oculto) {
+            estiloTexto.copy(
+                fontFamily = FontFamily.Monospace,
+                letterSpacing = 2.sp
+            )
+        } else {
+            estiloTexto
+        }
         Text(
             text = textoAMostrar,
-            style = estiloTexto,
+            style = estiloEfectivo,
             color = colorTexto,
             maxLines = maxLines,
             overflow = overflow,

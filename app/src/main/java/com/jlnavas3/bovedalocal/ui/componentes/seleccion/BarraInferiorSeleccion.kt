@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.CallMerge
 import androidx.compose.material.icons.automirrored.filled.CompareArrows
 import androidx.compose.material.icons.filled.Backup
 import androidx.compose.material.icons.filled.Delete
@@ -58,6 +59,7 @@ fun BarraInferiorSeleccion(
     alRenombrar: (() -> Unit)? = null,
     alAsignarCategoria: (() -> Unit)? = null,
     alAsignarColeccion: (() -> Unit)? = null,
+    alUnificar: (() -> Unit)? = null,
     alBorrar: (() -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
@@ -104,12 +106,12 @@ fun BarraInferiorSeleccion(
                 )
             }
 
-            // 2. Comparar (habilitado solo cuando exactamente 2 están seleccionados)
+            // 2. Comparar (habilitado cuando 2 o más están seleccionados)
             if (alComparar != null) {
-                val puedeComparar = cantidad == 2
+                val puedeComparar = cantidad >= 2
                 ItemAccionSeleccion(
                     icono = Icons.AutoMirrored.Filled.CompareArrows,
-                    texto = "Compara",
+                    texto = "Comparar",
                     habilitado = puedeComparar,
                     colorIcono = ColorAcento,
                     alPulsar = {
@@ -153,11 +155,25 @@ fun BarraInferiorSeleccion(
                     habilitado = habilitado,
                     alRespaldar = alRespaldar,
                     alTransferirCxf = alTransferirCxf,
+                    alUnificar = alUnificar,
                     alBorrar = alBorrar,
                     haptica = haptica
                 )
             } else {
                 // Modo sin overflow (p. ej. en Salud y Duplicados)
+                if (alUnificar != null) {
+                    val puedeUnificar = cantidad >= 2
+                    ItemAccionSeleccion(
+                        icono = Icons.AutoMirrored.Filled.CallMerge,
+                        texto = "Unificar",
+                        habilitado = puedeUnificar,
+                        colorIcono = ColorAcento,
+                        alPulsar = {
+                            haptica.toque()
+                            alUnificar()
+                        }
+                    )
+                }
                 if (alRespaldar != null) {
                     ItemAccionSeleccion(
                         icono = Icons.Filled.Backup,

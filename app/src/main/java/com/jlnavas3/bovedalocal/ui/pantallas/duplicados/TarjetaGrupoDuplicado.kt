@@ -22,27 +22,35 @@ fun TarjetaGrupoDuplicado(
     grupo: GrupoDuplicado,
     expandido: Boolean,
     alAlternar: () -> Unit,
-    alConservar: (Entrada) -> Unit,
     alVerDetalle: (String) -> Unit,
     ajustes: AjustesApp? = null,
     mostrarIndicadores: Boolean = false,
     seleccionActiva: Boolean = false,
     seleccionados: Set<String> = emptySet(),
     alAlternarSeleccion: (String) -> Unit = {},
+    alAlternarSeleccionGrupo: (Set<String>) -> Unit = {},
     alPulsarLargo: (String) -> Unit = {},
     modifier: Modifier = Modifier
 ) {
+    val idsGrupo = androidx.compose.runtime.remember(grupo.entradas) { grupo.entradas.map { it.id }.toSet() }
+    val todosSeleccionados = idsGrupo.isNotEmpty() && idsGrupo.all { seleccionados.contains(it) }
+    val parcialmenteSeleccionado = !todosSeleccionados && idsGrupo.any { seleccionados.contains(it) }
+
     ComponenteGrupoLista(
         clave = grupo.claveVisual,
         entradas = grupo.entradas,
         expandido = expandido,
-        alAlternar = alAlternar,
+        alAlternar = if (seleccionActiva) { { alAlternarSeleccionGrupo(idsGrupo) } } else alAlternar,
+        alAlternarExpansion = alAlternar,
+        seleccionActiva = seleccionActiva,
+        seleccionado = todosSeleccionados,
+        parcialmenteSeleccionado = parcialmenteSeleccionado,
+        alPulsarLargo = { alAlternarSeleccionGrupo(idsGrupo) },
         modifier = modifier,
         contenidoEntrada = { entrada, _, _ ->
             FilaEntradaDuplicada(
                 entrada = entrada,
                 esSugerida = entrada.id == grupo.sugeridaPrincipal.id,
-                alConservar = { alConservar(entrada) },
                 alVerDetalle = { alVerDetalle(entrada.id) },
                 ajustes = ajustes,
                 mostrarIndicadores = mostrarIndicadores,
@@ -77,7 +85,6 @@ private fun TarjetaGrupoDuplicadoPreview() {
             grupo = grupo,
             expandido = true,
             alAlternar = {},
-            alConservar = {},
             alVerDetalle = {}
         )
     }

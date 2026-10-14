@@ -34,7 +34,9 @@ import kotlinx.coroutines.withContext
 
 data class DatosAviso(
     val mensaje: String,
-    val titulo: String? = null
+    val titulo: String? = null,
+    val accionTexto: String? = null,
+    val alDeshacer: (() -> Unit)? = null
 )
 
 class VaultViewModel(app: Application) : AndroidViewModel(app),
@@ -121,13 +123,17 @@ class VaultViewModel(app: Application) : AndroidViewModel(app),
     val gruposTitulos: StateFlow<List<GrupoTitulosSitio>> = _gruposTitulos
     override val gruposTitulosInterno: MutableStateFlow<List<GrupoTitulosSitio>> get() = _gruposTitulos
 
-    private val _modoFormatoTitulos = MutableStateFlow(ModoFormatoTitulos.EXPLICITO_PARENTESIS)
+    private val _modoFormatoTitulos = MutableStateFlow(ModoFormatoTitulos.MINIMALISTA)
     val modoFormatoTitulos: StateFlow<ModoFormatoTitulos> = _modoFormatoTitulos
     override val modoFormatoTitulosInterno: MutableStateFlow<ModoFormatoTitulos> get() = _modoFormatoTitulos
 
     private val _respetarTitulosManuales = MutableStateFlow(true)
     val respetarTitulosManuales: StateFlow<Boolean> = _respetarTitulosManuales
     override val respetarTitulosManualesInterno: MutableStateFlow<Boolean> get() = _respetarTitulosManuales
+
+    private val _esSeleccionEspecificaTitulos = MutableStateFlow(false)
+    val esSeleccionEspecificaTitulos: StateFlow<Boolean> = _esSeleccionEspecificaTitulos
+    override val esSeleccionEspecificaTitulosInterno: MutableStateFlow<Boolean> get() = _esSeleccionEspecificaTitulos
 
     private var trabajoPortapapeles: Job? = null
 
@@ -201,6 +207,20 @@ class VaultViewModel(app: Application) : AndroidViewModel(app),
         _aviso.value = DatosAviso(mensaje = mensaje, titulo = titulo)
     }
 
+    override fun avisarConDeshacer(
+        mensaje: String,
+        titulo: String?,
+        accionTexto: String,
+        alDeshacer: () -> Unit
+    ) {
+        _aviso.value = DatosAviso(
+            mensaje = mensaje,
+            titulo = titulo,
+            accionTexto = accionTexto,
+            alDeshacer = alDeshacer
+        )
+    }
+
     override fun avisar(texto: String) {
         avisar(mensaje = texto, titulo = null)
     }
@@ -218,6 +238,10 @@ class VaultViewModel(app: Application) : AndroidViewModel(app),
     override fun irRaiz(pantalla: Pantalla) {
         registrarInteraccion()
         super<VaultNavegacionDelegate>.irRaiz(pantalla)
+    }
+
+    override fun prepararNormalizacionTitulos(entradasEspecificas: List<Entrada>?) {
+        super<VaultTitulosDelegate>.prepararNormalizacionTitulos(entradasEspecificas)
     }
 
     // ------------------------------------------------------------ portapapeles

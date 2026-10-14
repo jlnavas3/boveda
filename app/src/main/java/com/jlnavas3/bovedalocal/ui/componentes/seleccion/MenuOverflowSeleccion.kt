@@ -9,6 +9,7 @@ package com.jlnavas3.bovedalocal.ui.componentes.seleccion
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.CallMerge
 import androidx.compose.material.icons.filled.Backup
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.MoreVert
@@ -38,6 +39,7 @@ fun MenuOverflowSeleccion(
     habilitado: Boolean,
     alRespaldar: (() -> Unit)?,
     alTransferirCxf: (() -> Unit)?,
+    alUnificar: (() -> Unit)? = null,
     alBorrar: (() -> Unit)?,
     haptica: Haptica,
     modifier: Modifier = Modifier
@@ -61,7 +63,20 @@ fun MenuOverflowSeleccion(
             onDismissRequest = { menuMasAbierto = false },
             modifier = Modifier.widthIn(min = 200.dp, max = 260.dp)
         ) {
+            if (alUnificar != null) {
+                ElementoMenuCompacto(
+                    texto = "Unificar",
+                    icono = Icons.AutoMirrored.Filled.CallMerge,
+                    colorIcono = ColorAcento,
+                    onClick = {
+                        menuMasAbierto = false
+                        haptica.toque()
+                        alUnificar()
+                    }
+                )
+            }
             if (alRespaldar != null) {
+                if (alUnificar != null) SeparadorOpcionMenu()
                 ElementoMenuCompacto(
                     texto = "Respaldar",
                     icono = Icons.Filled.Backup,

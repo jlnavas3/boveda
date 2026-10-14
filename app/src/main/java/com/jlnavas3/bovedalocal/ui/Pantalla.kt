@@ -339,12 +339,24 @@ sealed interface Pantalla {
         override fun equals(other: Any?): Boolean = other is Avanzada && other.seccionId == seccionId
         override fun hashCode(): Int = seccionId?.hashCode() ?: 0
     }
-    open class NormalizadorTitulos(val esPostImportacion: Boolean = false) : Pantalla {
-        companion object : NormalizadorTitulos(false)
-        override fun equals(other: Any?): Boolean = other is NormalizadorTitulos && other.esPostImportacion == esPostImportacion
-        override fun hashCode(): Int = esPostImportacion.hashCode()
+    open class NormalizadorTitulos(
+        val esPostImportacion: Boolean = false,
+        val idsEspecificos: List<String>? = null
+    ) : Pantalla {
+        companion object : NormalizadorTitulos(false, null)
+        override fun equals(other: Any?): Boolean = other is NormalizadorTitulos &&
+            other.esPostImportacion == esPostImportacion &&
+            other.idsEspecificos == idsEspecificos
+        override fun hashCode(): Int = 31 * esPostImportacion.hashCode() + (idsEspecificos?.hashCode() ?: 0)
     }
-    object ReglasNormalizacion : Pantalla
+    open class ReglasNormalizacion(
+        val idsEspecificos: List<String>? = null
+    ) : Pantalla {
+        companion object : ReglasNormalizacion(null)
+        override fun equals(other: Any?): Boolean = other is ReglasNormalizacion &&
+            other.idsEspecificos == idsEspecificos
+        override fun hashCode(): Int = idsEspecificos?.hashCode() ?: 0
+    }
     object ReglasAutocompletado : Pantalla
     open class BloqueoBiometria(val seccionId: String? = null) : Pantalla {
         companion object : BloqueoBiometria(null)

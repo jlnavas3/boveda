@@ -61,41 +61,18 @@ fun ColumnScope.ContenidoDetalleFilaDuplicada(
     alAlternarMostrarContrasena: () -> Unit,
     alAlternarMostrarTotp: () -> Unit
 ) {
-    // Título y badge Sugerida
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(6.dp)
-    ) {
-        Text(
-            text = entrada.titulo.ifBlank { "Sin título" },
-            color = ColorTextoAjustes,
-            style = MaterialTheme.typography.bodySmall.copy(
-                fontWeight = FontWeight.SemiBold,
-                fontSize = 13.sp
-            ),
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-            modifier = Modifier.weight(1f, fill = false)
-        )
-        if (esSugerida) {
-            Box(
-                modifier = Modifier
-                    .clip(FormaPequena)
-                    .background(ColorCampoAjustes)
-                    .border(0.8.dp, ColorSeparadorAjustes, FormaPequena)
-                    .padding(horizontal = 6.dp, vertical = 1.5.dp)
-            ) {
-                Text(
-                    "Sugerida",
-                    style = MaterialTheme.typography.labelSmall.copy(
-                        fontWeight = FontWeight.SemiBold,
-                        fontSize = 10.sp
-                    ),
-                    color = ColorAcento
-                )
-            }
-        }
-    }
+    // Título de la entrada
+    Text(
+        text = entrada.titulo.ifBlank { "Sin título" },
+        color = ColorTextoAjustes,
+        style = MaterialTheme.typography.bodySmall.copy(
+            fontWeight = FontWeight.SemiBold,
+            fontSize = 13.sp
+        ),
+        maxLines = 1,
+        overflow = TextOverflow.Ellipsis,
+        modifier = Modifier.fillMaxWidth()
+    )
 
     Spacer(Modifier.height(2.dp))
 
@@ -106,6 +83,7 @@ fun ColumnScope.ContenidoDetalleFilaDuplicada(
             texto = entrada.usuario,
             oculto = !mostrarUsuario,
             estilo = estiloOcultamiento,
+            modifier = Modifier.fillMaxWidth(),
             estiloTexto = MaterialTheme.typography.bodySmall.copy(fontSize = 11.5.sp),
             colorTexto = ColorTextoAjustes.copy(alpha = 0.85f),
             maxLines = 1,
@@ -119,7 +97,8 @@ fun ColumnScope.ContenidoDetalleFilaDuplicada(
             color = if (entrada.usuario.isNotBlank()) ColorTextoAjustes.copy(alpha = 0.85f) else ColorAjusteGris,
             style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.5.sp),
             maxLines = 1,
-            overflow = TextOverflow.Ellipsis
+            overflow = TextOverflow.Ellipsis,
+            modifier = Modifier.fillMaxWidth()
         )
     }
 
@@ -156,12 +135,17 @@ fun ColumnScope.ContenidoDetalleFilaDuplicada(
                 colorTexto = ColorTextoAjustes.copy(alpha = 0.9f),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
-                modifier = Modifier.weight(1f, fill = false)
+                modifier = Modifier.weight(1f)
             )
         }
         if (entrada.contrasena.isNotBlank()) {
+            val contexto = androidx.compose.ui.platform.LocalContext.current
+            val haptica = androidx.compose.runtime.remember { com.jlnavas3.bovedalocal.util.Haptica(contexto) }
             IconButton(
-                onClick = alAlternarMostrarContrasena,
+                onClick = {
+                    haptica.toque()
+                    alAlternarMostrarContrasena()
+                },
                 modifier = Modifier.size(22.dp)
             ) {
                 Icon(

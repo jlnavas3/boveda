@@ -57,7 +57,11 @@ object ImportadorCsv {
         }
     }
 
-    fun parsear(datos: ByteArray, delimitadorManual: Char? = null): List<Entrada> {
+    fun parsear(
+        datos: ByteArray,
+        delimitadorManual: Char? = null,
+        onProgreso: ((procesadas: Int, total: Int, entradaActual: Entrada) -> Unit)? = null
+    ): List<Entrada> {
         val texto = String(datos, Charsets.UTF_8).removePrefix("\uFEFF")
         val delimitador = delimitadorManual ?: detectarDelimitador(texto)
         val filas = tokenizar(texto, delimitador)
@@ -74,6 +78,9 @@ object ImportadorCsv {
         }
 
         val ahora = System.currentTimeMillis()
+        val totalFilasDatos = filas.size - 1
+        var procesadas = 0
+
         return filas.drop(1).mapNotNull { fila ->
             fun campo(idx: Int) = if (idx in fila.indices) fila[idx].trim() else ""
             val usuario = campo(idxUsuario)
@@ -101,7 +108,7 @@ object ImportadorCsv {
                 else -> url.ifBlank { usuario }
             }
 
-            Entrada(
+            val entrada = Entrada(
                 id = UUID.randomUUID().toString(),
                 titulo = titulo,
                 usuario = usuario,
@@ -111,6 +118,9 @@ object ImportadorCsv {
                 creadaEn = ahora,
                 modificadaEn = ahora
             )
+            procesadas++
+            onProgreso?.invoke(procesadas, totalFilasDatos, entrada)
+            entrada
         }
     }
 

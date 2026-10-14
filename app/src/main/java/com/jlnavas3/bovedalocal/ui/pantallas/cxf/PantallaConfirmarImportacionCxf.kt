@@ -68,11 +68,6 @@ fun PantallaConfirmarImportacionCxf(
     var resultadoCxf by remember { mutableStateOf<ResultadoConversionCxf?>(null) }
     val items = remember { mutableStateListOf<ItemSeleccionableCxf>() }
 
-    var mostrarDialogoPostImportacion by remember { mutableStateOf(false) }
-    var totalImportadasPost by remember { mutableStateOf(0) }
-    var comprometidasPost by remember { mutableStateOf(0) }
-    var entradasImportadasParaNormalizar by remember { mutableStateOf<List<com.jlnavas3.bovedalocal.data.Entrada>>(emptyList()) }
-
     LaunchedEffect(jsonCxf, entradasExistentes) {
         cargando = true
         withContext(Dispatchers.Default) {
@@ -215,42 +210,18 @@ fun PantallaConfirmarImportacionCxf(
                     val seleccionadas = items.filter { it.seleccionada }.map { it.entrada }
                     if (seleccionadas.isNotEmpty()) {
                         haptica.exito()
-                        vm.importarEntradasCxf(seleccionadas) {
-                            val comprometidas = seleccionadas.count {
-                                com.jlnavas3.bovedalocal.util.CalculadorAvisosInternos.esTituloComprometido(it, ajustes.tldsDescartables)
-                            }
-                            if (ajustes.sugerirNormalizarTrasImportar && comprometidas > 0) {
-                                totalImportadasPost = seleccionadas.size
-                                comprometidasPost = comprometidas
-                                entradasImportadasParaNormalizar = seleccionadas
-                                mostrarDialogoPostImportacion = true
-                            } else {
-                                vm.irRaiz(Pantalla.Lista)
-                            }
-                        }
+                        val exportadorNombre = resultadoCxf?.exportador?.ifBlank { "Google Password Manager" } ?: "Google Password Manager"
+                        vm.irRaiz(Pantalla.Lista)
+                        vm.importarEntradasCxf(
+                            entradas = seleccionadas,
+                            origen = exportadorNombre
+                        )
                     } else {
                         haptica.error()
                         vm.mostrarAviso("Selecciona al menos una credencial para importar")
                     }
                 },
                 modifier = Modifier.align(Alignment.BottomEnd)
-            )
-        }
-
-        if (mostrarDialogoPostImportacion) {
-            DialogoPostImportacionTitulos(
-                totalImportadas = totalImportadasPost,
-                cantidadComprometidas = comprometidasPost,
-                alNormalizar = {
-                    mostrarDialogoPostImportacion = false
-                    vm.prepararNormalizacionTitulos(entradasImportadasParaNormalizar)
-                    vm.irRaiz(Pantalla.Lista)
-                    vm.ir(Pantalla.NormalizadorTitulos(esPostImportacion = true))
-                },
-                alDescartar = {
-                    mostrarDialogoPostImportacion = false
-                    vm.irRaiz(Pantalla.Lista)
-                }
             )
         }
     }

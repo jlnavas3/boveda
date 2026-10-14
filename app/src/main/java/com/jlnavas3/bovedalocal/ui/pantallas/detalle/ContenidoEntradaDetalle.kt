@@ -107,6 +107,9 @@ fun ContenidoEntradaDetalle(
         }
 
         // Grupo 2: 2FA / TOTP modular
+        val tieneTotp = !entrada.secretoTotp.isNullOrBlank() ||
+            entrada.camposPersonalizados.any { it.etiqueta.contains("TOTP", ignoreCase = true) && it.valor.isNotBlank() }
+
         TarjetaTotpDetalle(
             entrada = entrada,
             ajustes = ajustes,
@@ -114,9 +117,35 @@ fun ContenidoEntradaDetalle(
             alCopiarTotp = { codigo ->
                 vm.copiar("Código TOTP", codigo, sensible = true)
                 vm.registrarUsoEntrada(entrada.id)
+            },
+            alIntercambiarTotp = { idCampo ->
+                haptica.exito()
+                val campo = entrada.camposPersonalizados.firstOrNull { it.id == idCampo }
+                if (campo != null) {
+                    val actual = entrada.secretoTotp ?: ""
+                    val nuevo = campo.valor.trim()
+                    val nuevosCampos = entrada.camposPersonalizados.map { c ->
+                        if (c.id == idCampo) {
+                            if (actual.isNotBlank()) {
+                                c.copy(valor = actual)
+                            } else {
+                                null
+                            }
+                        } else {
+                            c
+                        }
+                    }.filterNotNull()
+                    val actualizada = entrada.copy(
+                        secretoTotp = nuevo,
+                        camposPersonalizados = nuevosCampos,
+                        modificadaEn = System.currentTimeMillis()
+                    )
+                    vm.guardar(actualizada)
+                    vm.avisar("TOTP alternativo establecido como principal")
+                }
             }
         )
-        if (!entrada.secretoTotp.isNullOrBlank()) {
+        if (tieneTotp) {
             Spacer(Modifier.height(16.dp))
         }
 
@@ -133,16 +162,21 @@ fun ContenidoEntradaDetalle(
             Spacer(Modifier.height(16.dp))
         }
 
-        // Grupo 4: Campos personalizados
+        // Grupo 4: Campos personalizados (excluyendo TOTP alternativo que ya se muestra arriba)
+        val camposVisibles = remember(entrada.camposPersonalizados) {
+            entrada.camposPersonalizados.filterNot {
+                it.etiqueta.contains("TOTP", ignoreCase = true) && it.valor.isNotBlank()
+            }
+        }
         TarjetaCamposDetalle(
-            campos = entrada.camposPersonalizados,
+            campos = camposVisibles,
             vm = vm,
             ajustes = ajustes,
             haptica = haptica,
             ultimaCopia = ultimaCopia,
             alCopiarCampo = { idCampo -> ultimaCopia = idCampo }
         )
-        if (entrada.camposPersonalizados.isNotEmpty()) {
+        if (camposVisibles.isNotEmpty()) {
             Spacer(Modifier.height(16.dp))
         }
 

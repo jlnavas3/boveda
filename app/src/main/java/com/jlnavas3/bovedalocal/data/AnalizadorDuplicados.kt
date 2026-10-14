@@ -31,7 +31,9 @@ object AnalizadorDuplicados {
                 val serv = NormalizadorDuplicados.normalizarServicio(entrada)
                 val usr = entrada.usuario.trim().lowercase()
                 val pwd = entrada.contrasena
-                "$serv|||$usr|||$pwd"
+                val totp = entrada.secretoTotp?.replace(" ", "")?.trim()?.uppercase() ?: ""
+                val pk = entrada.passkey?.credId?.trim() ?: ""
+                "$serv|||$usr|||$pwd|||$totp|||$pk"
             }
             .filter { it.value.size > 1 }
 
@@ -146,14 +148,16 @@ object AnalizadorDuplicados {
             idsProcesados.addAll(lista.map { it.id })
         }
 
-        // 3. Entradas sin usuario pero con misma contraseña y servicio (copias anónimas exactas)
+        // 5. Entradas sin usuario pero con misma contraseña y servicio (copias anónimas exactas)
         val restantesSinUsuario = activas.filterNot { it.id in idsProcesados }
         val gruposSinUsuario = restantesSinUsuario
             .filter { it.usuario.isBlank() && it.contrasena.isNotBlank() }
             .groupBy { entrada ->
                 val serv = NormalizadorDuplicados.normalizarServicio(entrada)
                 val pwd = entrada.contrasena
-                "$serv|||__sin_usuario__|||$pwd"
+                val totp = entrada.secretoTotp?.replace(" ", "")?.trim()?.uppercase() ?: ""
+                val pk = entrada.passkey?.credId?.trim() ?: ""
+                "$serv|||__sin_usuario__|||$pwd|||$totp|||$pk"
             }
             .filter { it.value.size > 1 }
 
@@ -164,6 +168,37 @@ object AnalizadorDuplicados {
                 GrupoDuplicado(
                     idGrupo = "anonimo_${clave.hashCode()}",
                     tipo = TipoDuplicado.IDENTICO,
+                    claveVisual = claveVisual,
+                    entradas = lista,
+                    sugeridaPrincipal = principal,
+                    esAppAndroid = lista.any { NormalizadorDuplicados.esAppAndroid(it) }
+                )
+            )
+            idsProcesados.addAll(lista.map { it.id })
+        }
+
+        // 6. Entradas en el mismo servicio con la misma contraseña donde una tiene usuario y la otra está vacía (completar usuario)
+        val restantesParaCompletar = activas.filterNot { it.id in idsProcesados }
+        val gruposMismaClaveServicio = restantesParaCompletar
+            .filter { it.contrasena.isNotBlank() }
+            .groupBy { entrada ->
+                val serv = NormalizadorDuplicados.normalizarServicio(entrada)
+                "$serv|||${entrada.contrasena}"
+            }
+            .filter { entry ->
+                val lista = entry.value
+                val hayConUsuario = lista.any { it.usuario.isNotBlank() }
+                val haySinUsuario = lista.any { it.usuario.isBlank() }
+                lista.size > 1 && hayConUsuario && haySinUsuario
+            }
+
+        for ((clave, lista) in gruposMismaClaveServicio) {
+            val principal = seleccionarMejorEntrada(lista)
+            val claveVisual = NormalizadorDuplicados.armarClaveVisual(principal)
+            resultado.add(
+                GrupoDuplicado(
+                    idGrupo = "variante_vacia_${clave.hashCode()}",
+                    tipo = TipoDuplicado.VARIANTE_USUARIO,
                     claveVisual = claveVisual,
                     entradas = lista,
                     sugeridaPrincipal = principal,
@@ -200,7 +235,7 @@ object AnalizadorDuplicados {
     /**
      * Delega la fusión segura de entradas secundarias a FusionadorEntradas
      */
-    fun fusionar(principal: Entrada, secundarias: List<Entrada>): Entrada {
-        return FusionadorEntradas.fusionar(principal, secundarias)
+    fun fusionar(principal: Entrada, secundarias: List<Entrada>, usuarioElegido: String? = null): Entrada {
+        return FusionadorEntradas.fusionar(principal, secundarias, usuarioElegido)
     }
 }

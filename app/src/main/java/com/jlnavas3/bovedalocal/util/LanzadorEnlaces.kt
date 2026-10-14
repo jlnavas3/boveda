@@ -17,7 +17,8 @@ object LanzadorEnlaces {
         "com", "org", "net", "edu", "gov", "mil", "int", "eu", "ar", "es", "mx", "co", "pe", "cl",
         "ec", "ve", "uy", "br", "uk", "de", "fr", "it", "ca", "us", "cn", "jp", "ru", "in", "info",
         "biz", "pro", "xyz", "online", "site", "website", "tech", "store", "shop", "blog", "app",
-        "dev", "io", "ai", "tv", "me", "cc", "ws", "to", "ly", "local", "lan"
+        "dev", "io", "ai", "tv", "me", "cc", "ws", "to", "ly", "local", "lan", "art", "design",
+        "studio", "space", "pub", "live", "work", "fit", "zone", "link", "help", "world", "club"
     )
 
     private val prefijosPaqueteComunes = setOf(
@@ -41,19 +42,27 @@ object LanzadorEnlaces {
         val primerParte = partes.first().lowercase()
         val ultimaParte = partes.last().lowercase()
 
+        // Un paquete Android NUNCA empieza por "www"
+        if (primerParte == "www") return false
+
+        val esTldConocido = tldsWeb.contains(ultimaParte) || runCatching {
+            val idn = com.google.common.net.InternetDomainName.from(limpio)
+            idn.hasPublicSuffix() && idn.publicSuffix()?.toString()?.equals(ultimaParte, ignoreCase = true) == true
+        }.getOrDefault(false)
+
         // Si tiene 2 partes y la última es un TLD web común (ej: github.com, google.es), es un dominio web
-        if (partes.size == 2 && tldsWeb.contains(ultimaParte) && !tldsWeb.contains(primerParte)) {
+        if (partes.size == 2 && esTldConocido && !tldsWeb.contains(primerParte)) {
             return false
         }
 
         // Si tiene 2 partes (ej: com.whatsapp), la primera parte debe ser un prefijo de paquete
         if (partes.size == 2) {
-            return prefijosPaqueteComunes.contains(primerParte) && !tldsWeb.contains(ultimaParte)
+            return prefijosPaqueteComunes.contains(primerParte) && !esTldConocido
         }
 
         // Para 3 o más partes (ej: com.brakefield.painter, org.mozilla.firefox):
-        // Si termina en un TLD web y no empieza con un prefijo típico de paquete, es un subdominio web (ej: api.github.com)
-        if (tldsWeb.contains(ultimaParte) && !prefijosPaqueteComunes.contains(primerParte)) {
+        // Si termina en un TLD web y no empieza con un prefijo típico de paquete, es un subdominio web (ej: api.github.com, www.infinitestudio.art)
+        if (esTldConocido && !prefijosPaqueteComunes.contains(primerParte)) {
             return false
         }
 

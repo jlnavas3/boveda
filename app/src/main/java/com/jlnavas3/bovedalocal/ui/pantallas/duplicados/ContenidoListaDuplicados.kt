@@ -35,9 +35,9 @@ fun ContenidoListaDuplicados(
     seleccionados: Set<String>,
     haptica: Haptica,
     alAlternarGrupo: (String) -> Unit,
-    alConservarCopia: (Entrada, GrupoDuplicado) -> Unit,
     alVerDetalle: (String, List<String>) -> Unit,
     alAlternarSeleccion: (String) -> Unit,
+    alAlternarSeleccionGrupo: (Set<String>) -> Unit,
     alPulsarLargo: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -56,7 +56,6 @@ fun ContenidoListaDuplicados(
                 FilaEntradaDuplicada(
                     entrada = entrada,
                     esSugerida = esSugerida,
-                    alConservar = { alConservarCopia(entrada, grupo) },
                     alVerDetalle = { alVerDetalle(entrada.id, grupo.entradas.map { it.id }) },
                     ajustes = ajustes,
                     mostrarIndicadores = ajustes.mostrarIndicadoresContenido,
@@ -76,13 +75,13 @@ fun ContenidoListaDuplicados(
                     grupo = grupo,
                     expandido = gruposExpandidos.contains(grupo.idGrupo),
                     alAlternar = { alAlternarGrupo(grupo.idGrupo) },
-                    alConservar = { elegida -> alConservarCopia(elegida, grupo) },
                     alVerDetalle = { id -> alVerDetalle(id, grupo.entradas.map { it.id }) },
                     ajustes = ajustes,
                     mostrarIndicadores = ajustes.mostrarIndicadoresContenido,
                     seleccionActiva = modoSeleccion,
                     seleccionados = seleccionados,
                     alAlternarSeleccion = alAlternarSeleccion,
+                    alAlternarSeleccionGrupo = alAlternarSeleccionGrupo,
                     alPulsarLargo = { id ->
                         haptica.toque()
                         alPulsarLargo(id)

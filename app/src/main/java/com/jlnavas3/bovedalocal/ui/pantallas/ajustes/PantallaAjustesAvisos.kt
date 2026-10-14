@@ -160,7 +160,7 @@ fun PantallaAjustesAvisos(
                     mostrarId = ajustes.mostrarIdsAjustes
                 ) {
                     ComponenteSwitch(
-                        titulo = "Títulos no estandarizados",
+                        titulo = "Nombres no amigables",
                         subtitulo = "Avisar cuando existan credenciales con URLs o nombres de paquetes en lugar de un nombre amigable.",
                         icono = null,
                         activo = ajustes.avisos.avisarTitulosSinNormalizar,

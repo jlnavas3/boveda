@@ -52,6 +52,7 @@ fun ContenidoPestanaSalud(
     seleccionActiva: Boolean = false,
     seleccionados: Set<String> = emptySet(),
     alAlternarSeleccion: ((String) -> Unit)? = null,
+    alAlternarSeleccionGrupo: ((Set<String>) -> Unit)? = null,
     alPulsarLargo: ((String) -> Unit)? = null
 ) {
     val consulta = textoBusqueda.trim()
@@ -75,6 +76,7 @@ fun ContenidoPestanaSalud(
                     alVerDetalle = alVerDetalle,
                     alIgnorar = alIgnorar,
                     alAlternarSeleccion = alAlternarSeleccion,
+                    alAlternarSeleccionGrupo = alAlternarSeleccionGrupo,
                     alPulsarLargo = alPulsarLargo
                 )
             }

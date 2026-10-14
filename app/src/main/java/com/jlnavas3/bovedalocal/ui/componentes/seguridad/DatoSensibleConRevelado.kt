@@ -8,6 +8,7 @@ package com.jlnavas3.bovedalocal.ui.componentes.seguridad
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
@@ -35,7 +36,7 @@ fun DatoSensibleConRevelado(
     oculto: Boolean,
     estilo: String = "desenfoque",
     alAlternarRevelado: (() -> Unit)? = null,
-    modifier: Modifier = Modifier,
+    modifier: Modifier = Modifier.fillMaxWidth(),
     estiloTexto: TextStyle = LocalTextStyle.current,
     colorTexto: Color = Color.Unspecified,
     colorIcono: Color = ColorAjusteGris,
@@ -57,12 +58,17 @@ fun DatoSensibleConRevelado(
             colorTexto = colorTexto,
             maxLines = maxLines,
             overflow = overflow,
-            modifier = Modifier.weight(1f, fill = false)
+            modifier = Modifier.weight(1f)
         )
 
         if (alAlternarRevelado != null) {
+            val contexto = androidx.compose.ui.platform.LocalContext.current
+            val haptica = androidx.compose.runtime.remember { com.jlnavas3.bovedalocal.util.Haptica(contexto) }
             IconButton(
-                onClick = alAlternarRevelado,
+                onClick = {
+                    haptica.toque()
+                    alAlternarRevelado()
+                },
                 modifier = Modifier.size(tamanoIconoDp)
             ) {
                 Icon(

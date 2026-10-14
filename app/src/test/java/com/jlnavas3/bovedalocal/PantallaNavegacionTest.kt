@@ -7,6 +7,7 @@
 package com.jlnavas3.bovedalocal
 
 import com.jlnavas3.bovedalocal.ui.CriterioOrdenacion
+import com.jlnavas3.bovedalocal.ui.MapeoJerarquiaPantallas
 import com.jlnavas3.bovedalocal.ui.Pantalla
 import com.jlnavas3.bovedalocal.ui.VaultNavegacionDelegate
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -610,5 +611,13 @@ class PantallaNavegacionTest {
             assertTrue("Debe retornar a Pantalla.Ajustes($idEsperado)", anterior is Pantalla.Ajustes)
             assertEquals(idEsperado, (anterior as Pantalla.Ajustes).seccionId)
         }
+    }
+
+    @Test
+    fun retrocesoReglasNormalizacionConservaSeleccion() {
+        val ids = listOf("cuenta-1", "cuenta-2")
+        val reglas = Pantalla.ReglasNormalizacion(ids)
+        val padre = MapeoJerarquiaPantallas.resolverPadre(reglas)
+        assertEquals(Pantalla.NormalizadorTitulos(idsEspecificos = ids), padre)
     }
 }

@@ -7,6 +7,7 @@
 package com.jlnavas3.bovedalocal.ui.pantallas
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -108,9 +109,31 @@ fun PantallaAjustes(
                 idEtiqueta = "00-AJU",
                 mostrarId = ajustes.mostrarIdsAjustes,
                 alVolver = { vm.volverAtras() },
-                conSeparador = scrollState.value > 0,
+                conSeparador = false,
                 colorFondo = ColorAjustesFondo
             )
+
+            // Campo de búsqueda fijo en el encabezado para que persista al scrollear
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 6.dp)
+            ) {
+                BarraBusquedaAjustes(
+                    texto = textoBusqueda,
+                    alCambiarTexto = { textoBusqueda = it },
+                    placeholder = "Buscar en ajustes..."
+                )
+            }
+
+            if (scrollState.value > 0) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(1.dp)
+                        .background(com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual.copy(alpha = 0.35f))
+                )
+            }
 
             CerrarTecladoAlHacerScroll(scrollState.isScrollInProgress)
 
@@ -123,13 +146,6 @@ fun PantallaAjustes(
                     .cerrarTecladoAlTocarFuera()
                     .padding(horizontal = 16.dp, vertical = 8.dp)
             ) {
-                BarraBusquedaAjustes(
-                    texto = textoBusqueda,
-                    alCambiarTexto = { textoBusqueda = it },
-                    placeholder = "Buscar en ajustes..."
-                )
-
-                Spacer(Modifier.height(14.dp))
 
                 if (textoBusqueda.isNotBlank()) {
                     VistaResultadosBusquedaAjustes(

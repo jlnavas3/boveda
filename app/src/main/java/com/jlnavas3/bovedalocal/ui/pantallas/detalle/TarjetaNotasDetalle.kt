@@ -73,10 +73,15 @@ fun TarjetaNotasDetalle(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     if (protegerNotas) {
+                        val contexto = androidx.compose.ui.platform.LocalContext.current
+                        val haptica = androidx.compose.runtime.remember { com.jlnavas3.bovedalocal.util.Haptica(contexto) }
                         BotonIconoDetalle(
                             icono = if (notasReveladas) Icons.Filled.VisibilityOff else Icons.Filled.Visibility,
                             descripcion = if (notasReveladas) "Ocultar notas" else "Mostrar notas",
-                            alPulsar = { notasReveladas = !notasReveladas }
+                            alPulsar = {
+                                haptica.toque()
+                                notasReveladas = !notasReveladas
+                            }
                         )
                     }
                     BotonCopiarDetalle(copiado = ultimaCopia == "notas", alPulsar = alCopiarNotas)

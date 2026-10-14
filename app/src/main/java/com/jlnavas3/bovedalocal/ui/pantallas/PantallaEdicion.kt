@@ -126,14 +126,16 @@ fun PantallaEdicion(
     fun guardarEntrada() {
         if (!puedeGuardar) return
         haptica.exito()
-        val urlsGuardadas = listaEnlaces.flatMap { enlace ->
-            val reconstruido = LanzadorEnlaces.reconstruirDesdeEdicion(enlace)
-            if (enlace.hashOriginal != null) {
-                listOf(reconstruido)
-            } else {
-                reconstruido.split(",", "\n", ";").map { it.trim() }
-            }
-        }.filter { it.isNotBlank() }
+        val urlsGuardadas = com.jlnavas3.bovedalocal.util.DeduplicadorUrls.deduplicar(
+            listaEnlaces.flatMap { enlace ->
+                val reconstruido = LanzadorEnlaces.reconstruirDesdeEdicion(enlace)
+                if (enlace.hashOriginal != null) {
+                    listOf(reconstruido)
+                } else {
+                    reconstruido.split(",", "\n", ";").map { it.trim() }
+                }
+            }.filter { it.isNotBlank() }
+        )
 
         val entrada = Entrada(
             id = original?.id ?: vm.nuevoId(),

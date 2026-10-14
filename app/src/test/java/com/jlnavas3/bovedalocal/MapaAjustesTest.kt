@@ -108,4 +108,22 @@ class MapaAjustesTest {
         assertTrue("03-LST-2FA debe estar en Lista de cuentas", hijosLista.contains("03-LST-2FA"))
         assertTrue("03-LST-PAS debe estar en Lista de cuentas", hijosLista.contains("03-LST-PAS"))
     }
+
+    @Test
+    fun `buscarNodos encuentra pantallas modificadas y creadas recientemente`() {
+        val buscarRenombrar = MapaAjustes.buscarNodos("renombrar")
+        assertTrue("Debe encontrar Renombrar Títulos", buscarRenombrar.any { it.id == "02-APA-DES-TIT" })
+
+        val buscarReglas = MapaAjustes.buscarNodos("reglas")
+        assertTrue("Debe encontrar Reglas de URLs y redes", buscarReglas.any { it.id == "02-APA-DES-RGL" })
+
+        val buscarNoAmigables = MapaAjustes.buscarNodos("nombres no amigables")
+        assertTrue("Debe encontrar Nombres no amigables", buscarNoAmigables.any { it.id == "02-AVI-ASI-TIT" })
+
+        val buscarDuplicados = MapaAjustes.buscarNodos("duplicadas")
+        assertTrue("Debe encontrar Credenciales duplicadas o Cuentas duplicadas", buscarDuplicados.any { it.id == "02-AVI-ASI-DUP" || it.id == "03-LST-DUP" })
+
+        val buscarFormas = MapaAjustes.buscarNodos("formas y bordes")
+        assertTrue("Debe encontrar Formas y bordes", buscarFormas.any { it.id == "02-APA-GEO" })
+    }
 }

@@ -64,7 +64,9 @@ fun TarjetaSitiosYAppsDetalle(
     val haptica = remember { Haptica(contexto) }
 
     val listaUrls = remember(urls) {
-        urls.flatMap { it.split(",", "\n", ";") }.map { it.trim() }.filter { it.isNotEmpty() }
+        com.jlnavas3.bovedalocal.util.DeduplicadorUrls.deduplicar(
+            urls.flatMap { it.split(",", "\n", ";") }.map { it.trim() }.filter { it.isNotEmpty() }
+        )
     }
     if (listaUrls.isEmpty()) return
 

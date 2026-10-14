@@ -43,6 +43,7 @@ import com.jlnavas3.bovedalocal.data.Entrada
 import com.jlnavas3.bovedalocal.data.GrupoTitulosSitio
 import com.jlnavas3.bovedalocal.data.ModoFormatoTitulos
 import com.jlnavas3.bovedalocal.ui.componentes.CampoBoveda
+import com.jlnavas3.bovedalocal.ui.componentes.cerrarTecladoAlTocarFuera
 import com.jlnavas3.bovedalocal.ui.preview.BovedaPreview
 import com.jlnavas3.bovedalocal.ui.theme.BovedaTheme
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
@@ -50,6 +51,7 @@ import com.jlnavas3.bovedalocal.ui.theme.Superficie
 import com.jlnavas3.bovedalocal.ui.theme.SuperficieAlta
 import com.jlnavas3.bovedalocal.ui.theme.TextoPrincipal
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
+import com.jlnavas3.bovedalocal.util.ExtractorSegmentosHost
 import com.jlnavas3.bovedalocal.util.IconosMarcas
 import com.jlnavas3.bovedalocal.util.NormalizadorTitulosSitios
 
@@ -58,11 +60,22 @@ fun TarjetaGrupoTitulos(
     grupo: GrupoTitulosSitio,
     modo: ModoFormatoTitulos,
     alCambiarNombre: (String) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    esSeleccionEspecifica: Boolean = false,
+    prefijosSubdominios: List<String> = emptyList(),
+    tldsConfigurados: List<String> = emptyList(),
+    alSeleccionarSegmento: ((seleccionado: String, descartados: List<String>) -> Unit)? = null,
+    alAlternarReglaPrefijo: ((prefijo: String) -> Unit)? = null
 ) {
-    var expandido by remember { mutableStateOf(false) }
+    var expandido by remember { mutableStateOf(true) }
     val infoMarca = remember(grupo.dominioClave) {
         IconosMarcas.buscarInfo(grupo.dominioClave, grupo.nombreEfectivo)
+    }
+    val primeraUrl = remember(grupo) {
+        grupo.entradas.firstOrNull { it.urls.isNotEmpty() }?.urls?.firstOrNull() ?: grupo.dominioClave
+    }
+    val segmentos = remember(primeraUrl, tldsConfigurados) {
+        ExtractorSegmentosHost.extraer(primeraUrl, tldsConfigurados)
     }
 
     Column(
@@ -71,6 +84,7 @@ fun TarjetaGrupoTitulos(
             .clip(RoundedCornerShape(14.dp))
             .background(Superficie)
             .border(1.dp, ColorAcento.copy(alpha = 0.2f), RoundedCornerShape(14.dp))
+            .cerrarTecladoAlTocarFuera()
             .padding(14.dp)
     ) {
         // Cabecera del grupo
@@ -138,6 +152,24 @@ fun TarjetaGrupoTitulos(
 
         Spacer(modifier = Modifier.height(12.dp))
 
+        if (segmentos.size >= 2) {
+            FilaChipsSegmentosUrl(
+                segmentos = segmentos,
+                nombreSeleccionado = grupo.nombreEfectivo,
+                prefijosEnReglas = prefijosSubdominios,
+                alSeleccionarSegmento = { seleccionado, descartados ->
+                    alCambiarNombre(seleccionado)
+                    alSeleccionarSegmento?.invoke(seleccionado, descartados)
+                },
+                alAlternarRegla = { prefijo ->
+                    alAlternarReglaPrefijo?.invoke(prefijo)
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 10.dp)
+            )
+        }
+
         // Campo para editar el nombre del servicio para todo el grupo
         CampoBoveda(
             valor = grupo.nombrePersonalizado,
@@ -165,7 +197,8 @@ fun TarjetaGrupoTitulos(
                         nombreBase = grupo.nombreEfectivo,
                         usuario = entrada.usuario,
                         modo = modo,
-                        tieneColision = grupo.tieneColision
+                        tieneColision = grupo.tieneColision,
+                        forzarFormato = esSeleccionEspecifica
                     )
                     FilaPreviaCuentaNormalizada(
                         usuario = entrada.usuario,

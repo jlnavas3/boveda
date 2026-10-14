@@ -63,7 +63,8 @@ fun construirItemsAgrupadosPorSitio(
         if (clave != null && delMismoSitio != null && delMismoSitio.size > 1) {
             if (vistos.add(clave)) {
                 val hijosOrdenados = ordenarEntradasInternas(delMismoSitio, criterio)
-                itemsPrincipales.add(ItemAgrupado.Grupo(clave, hijosOrdenados))
+                val tituloGrupo = resolverTituloVisualGrupo(clave, delMismoSitio, tldsConfigurados)
+                itemsPrincipales.add(ItemAgrupado.Grupo(tituloGrupo, hijosOrdenados))
             }
         } else {
             itemsPrincipales.add(ItemAgrupado.Suelto(entrada))
@@ -157,3 +158,50 @@ fun construirItemsAgrupadosPorSitio(
         }
     }
 }
+
+/**
+ * Resuelve el título visible de la cabecera del grupo en la lista principal.
+ * Si las entradas aún no han sido normalizadas por el usuario (todas son técnicas/dominios),
+ * preserva el dominio o host técnico común (ej. "adobe.com", "discord.com", "activestate.com", "192.168.1.1").
+ * Solo si el usuario ha normalizado los títulos (o al menos una entrada tiene nombre amigable),
+ * se muestra la marca oficial o nombre limpio normalizado.
+ */
+private fun resolverTituloVisualGrupo(
+    claveNormalizada: String,
+    entradas: List<Entrada>,
+    tldsConfigurados: List<String>
+): String {
+    val tieneTituloAmigable = entradas.any { entrada ->
+        val tit = entrada.titulo.trim()
+        tit.isNotBlank() && !NormalizadorTitulosSitios.esTituloTecnico(tit, entrada.urls, tldsConfigurados)
+    }
+    if (tieneTituloAmigable) {
+        return claveNormalizada
+    }
+
+    val dominioRaw = resolverDominioRawGrupo(entradas)
+    return dominioRaw ?: claveNormalizada
+}
+
+private fun resolverDominioRawGrupo(entradas: List<Entrada>): String? {
+    val candidatos = entradas.mapNotNull { entrada ->
+        val web = entrada.urls.asSequence()
+            .filterNot { it.trim().lowercase().startsWith("android://") }
+            .firstOrNull { it.isNotBlank() }
+        val target = web ?: entrada.titulo.takeIf { it.isNotBlank() } ?: return@mapNotNull null
+
+        val host = Dominios.host(target)
+        if (host.isNotBlank()) {
+            if (host.equals("localhost", ignoreCase = true) || host.split('.').all { it.toIntOrNull() != null }) {
+                return@mapNotNull host
+            }
+            val raiz = Dominios.raiz(target)
+            if (raiz.isNotBlank()) return@mapNotNull raiz.lowercase()
+            return@mapNotNull host.lowercase()
+        }
+        null
+    }
+    if (candidatos.isEmpty()) return null
+    return candidatos.groupingBy { it }.eachCount().maxByOrNull { it.value }?.key
+}
+

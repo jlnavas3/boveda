@@ -23,6 +23,7 @@ fun BarraAccionesSeleccionSalud(
     haptica: Haptica,
     alAlternarFavoritos: (Set<String>) -> Unit,
     alComparar: (String, List<String>) -> Unit,
+    alUnificar: (() -> Unit)? = null,
     alAbrirBorrado: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -45,6 +46,7 @@ fun BarraAccionesSeleccionSalud(
             val primera = seleccionados.first()
             alComparar(primera, seleccionados.toList())
         },
+        alUnificar = alUnificar,
         alBorrar = {
             haptica.error()
             alAbrirBorrado()

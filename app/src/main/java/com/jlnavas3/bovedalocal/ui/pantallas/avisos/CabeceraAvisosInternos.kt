@@ -69,7 +69,7 @@ fun CabeceraAvisosInternos(
             Spacer(Modifier.width(12.dp))
             Column {
                 Text(
-                    text = "Asistente y Recomendaciones",
+                    text = "Asistente",
                     style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
                     color = ColorTitulos
                 )

@@ -1083,13 +1083,23 @@ object MapaAjustes {
         ),
         NodoAjuste(
             id = "02-APA-DES-TIT",
-            titulo = "Asistente de títulos",
-            subtitulo = "Normalizar nombres web y reglas de URLs",
+            titulo = "Renombrar Títulos",
+            subtitulo = "Convertir URLs y nombres técnicos en títulos limpios y legibles",
             ruta = "Apariencia > Diseño de lista",
             grupo = "Apariencia",
             pantallaDestino = Pantalla.NormalizadorTitulos(),
             padreId = "02-APA-DES",
-            palabrasClave = listOf("asistente", "titulos", "normalizador", "urls", "reglas")
+            palabrasClave = listOf("renombrar", "titulos", "renombrar titulos", "nombres no amigables", "estandarizar", "normalizador", "urls", "reglas")
+        ),
+        NodoAjuste(
+            id = "02-APA-DES-RGL",
+            titulo = "Reglas de URLs y redes",
+            subtitulo = "Subdominios filtrados, extensiones, marcas y puertos homelab RFC 1918",
+            ruta = "Apariencia > Diseño de lista",
+            grupo = "Apariencia",
+            pantallaDestino = Pantalla.ReglasNormalizacion,
+            padreId = "02-APA-DES",
+            palabrasClave = listOf("reglas", "urls", "redes", "subdominios", "homelab", "puertos", "rfc 1918", "marcas", "ip privadas")
         ),
 
         // ==========================================
@@ -1134,6 +1144,40 @@ object MapaAjustes {
             pantallaDestino = Pantalla.IndiceResaltado(),
             padreId = "02-APA-AZX",
             palabrasClave = listOf("resaltado", "letra", "pastilla", "flotante")
+        ),
+
+        // ==========================================
+        // Hijos de Avisos y asistencia (02-AVI-ASI)
+        // ==========================================
+        NodoAjuste(
+            id = "02-AVI-ASI-SUG",
+            titulo = "Sugerir normalización tras importar",
+            subtitulo = "Preguntar si deseas renombrar títulos después de importar",
+            ruta = "Apariencia > Avisos y asistencia > Flujos inteligentes",
+            grupo = "Apariencia",
+            pantallaDestino = Pantalla.AjustesAvisos("02-AVI-ASI-SUG"),
+            padreId = "02-AVI-ASI",
+            palabrasClave = listOf("sugerir", "normalizar", "importar", "renombrar", "flujos", "inteligente", "postimportacion")
+        ),
+        NodoAjuste(
+            id = "02-AVI-ASI-TIT",
+            titulo = "Nombres no amigables",
+            subtitulo = "Avisar cuando existan credenciales con URLs o nombres de paquetes",
+            ruta = "Apariencia > Avisos y asistencia > Recomendaciones",
+            grupo = "Apariencia",
+            pantallaDestino = Pantalla.AjustesAvisos("02-AVI-ASI-TIT"),
+            padreId = "02-AVI-ASI",
+            palabrasClave = listOf("nombres no amigables", "titulos no estandarizados", "urls", "paquetes", "aviso titulos", "normalizar", "renombrar", "recomendaciones")
+        ),
+        NodoAjuste(
+            id = "02-AVI-ASI-DUP",
+            titulo = "Credenciales duplicadas",
+            subtitulo = "Avisar cuando se detecten cuentas con el mismo usuario o dominio repetido",
+            ruta = "Apariencia > Avisos y asistencia > Recomendaciones",
+            grupo = "Apariencia",
+            pantallaDestino = Pantalla.AjustesAvisos("02-AVI-ASI-DUP"),
+            padreId = "02-AVI-ASI",
+            palabrasClave = listOf("credenciales duplicadas", "duplicados", "repetidas", "aviso", "alertas", "unificar")
         ),
 
         // ==========================================

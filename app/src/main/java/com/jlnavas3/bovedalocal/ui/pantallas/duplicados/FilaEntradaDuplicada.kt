@@ -22,6 +22,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForwardIos
+import androidx.compose.material.icons.automirrored.filled.CallMerge
 import androidx.compose.material.icons.filled.AccountBalance
 import androidx.compose.material.icons.filled.AccountBalanceWallet
 import androidx.compose.material.icons.filled.Badge
@@ -48,8 +49,6 @@ import androidx.compose.ui.unit.dp
 import com.jlnavas3.bovedalocal.data.AjustesApp
 import com.jlnavas3.bovedalocal.data.Entrada
 import com.jlnavas3.bovedalocal.data.TipoEntrada
-import com.jlnavas3.bovedalocal.ui.componentes.AccionDeslizamiento
-import com.jlnavas3.bovedalocal.ui.componentes.ContenedorDeslizamientoBoveda
 import com.jlnavas3.bovedalocal.ui.componentes.seguridad.TemporizadorAutoOcultar
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorCampoAjustes
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorSeparadorAjustes
@@ -76,7 +75,6 @@ import com.jlnavas3.bovedalocal.util.rememberIconoAppInstalada
 fun FilaEntradaDuplicada(
     entrada: Entrada,
     esSugerida: Boolean,
-    alConservar: () -> Unit,
     alVerDetalle: () -> Unit,
     modifier: Modifier = Modifier,
     ajustes: AjustesApp? = null,
@@ -104,7 +102,7 @@ fun FilaEntradaDuplicada(
     }
 
     val seguridadVisualActiva = ajustes?.seguridadVisualActiva == true
-    val ocultarUsuario = seguridadVisualActiva && (ajustes?.ocultarUsuario == true)
+    val ocultarUsuario = seguridadVisualActiva && (ajustes.ocultarUsuario)
     val estiloOcultamiento = ajustes?.estiloOcultamientoVisual ?: "desenfoque"
     val tiempoAutoOcultar = ajustes?.tiempoAutoOcultarSegundos ?: 10
 
@@ -133,36 +131,18 @@ fun FilaEntradaDuplicada(
         mostrarTotp = false
     }
 
-    ContenedorDeslizamientoBoveda(
-        idItem = entrada.id,
-        modifier = modifier,
-        forma = forma,
-        enGrupo = enGrupo,
-        accionIzquierda = AccionDeslizamiento(
-            texto = "Conservar\nCopia",
-            icono = Icons.Filled.DoneAll,
-            color = Menta,
-            alEjecutar = alConservar
-        ),
-        accionDerecha = AccionDeslizamiento(
-            texto = "Ver\nDetalle",
-            icono = Icons.AutoMirrored.Filled.ArrowForwardIos,
-            color = ColorAcento,
-            alEjecutar = alVerDetalle
-        )
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .clip(forma)
+            .background(fondo)
+            .then(
+                if (seleccionado) Modifier.border(1.dp, ColorAcento.copy(alpha = 0.5f), forma)
+                else if (!enGrupo && GrosorBorde > 0.dp && EstiloBorde != "ninguno") {
+                    Modifier.border(GrosorBorde, ColorBordeActual, forma)
+                } else Modifier
+            )
     ) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clip(forma)
-                .background(fondo)
-                .then(
-                    if (seleccionado) Modifier.border(1.dp, ColorAcento.copy(alpha = 0.5f), forma)
-                    else if (!enGrupo && GrosorBorde > 0.dp && EstiloBorde != "ninguno") {
-                        Modifier.border(GrosorBorde, ColorBordeActual, forma)
-                    } else Modifier
-                )
-        ) {
             if (mostrarIndicadores) {
                 IndicadorContenidoTarjeta(
                     entrada = entrada,
@@ -255,5 +235,4 @@ fun FilaEntradaDuplicada(
                 }
             }
         }
-    }
 }

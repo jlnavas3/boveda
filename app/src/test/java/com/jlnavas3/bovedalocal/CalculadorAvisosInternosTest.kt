@@ -37,16 +37,41 @@ class CalculadorAvisosInternosTest {
 
     @Test
     fun deteccionTitulosComprometidos() {
-        assertTrue(CalculadorAvisosInternos.esTituloComprometido(crearEntrada("1", "https://github.com/login")))
-        assertTrue(CalculadorAvisosInternos.esTituloComprometido(crearEntrada("2", "http://mibase.net")))
-        assertTrue(CalculadorAvisosInternos.esTituloComprometido(crearEntrada("3", "android://com.twitter.android")))
-        assertTrue(CalculadorAvisosInternos.esTituloComprometido(crearEntrada("4", "com.whatsapp")))
-        assertTrue(CalculadorAvisosInternos.esTituloComprometido(crearEntrada("5", "miempresa.com")))
-        assertTrue(CalculadorAvisosInternos.esTituloComprometido(crearEntrada("6", "")))
+        val tldsConfig = AjustesApp().tldsDescartables // contains "es", "co", "ar", "me", "ec", etc. without dots
+        assertTrue(CalculadorAvisosInternos.esTituloComprometido(crearEntrada("1", "https://github.com/login"), tldsConfig))
+        assertTrue(CalculadorAvisosInternos.esTituloComprometido(crearEntrada("2", "http://mibase.net"), tldsConfig))
+        assertTrue(CalculadorAvisosInternos.esTituloComprometido(crearEntrada("3", "android://com.twitter.android"), tldsConfig))
+        assertTrue(CalculadorAvisosInternos.esTituloComprometido(crearEntrada("4", "com.whatsapp"), tldsConfig))
+        assertTrue(CalculadorAvisosInternos.esTituloComprometido(crearEntrada("5", "miempresa.com"), tldsConfig))
+        assertTrue(CalculadorAvisosInternos.esTituloComprometido(crearEntrada("6", "banco.com.ec"), tldsConfig))
+        assertTrue(CalculadorAvisosInternos.esTituloComprometido(crearEntrada("7", "192.168.1.1"), tldsConfig))
+        assertTrue(CalculadorAvisosInternos.esTituloComprometido(crearEntrada("8", ""), tldsConfig))
+        assertTrue(CalculadorAvisosInternos.esTituloComprometido(crearEntrada("9", "google.com (admin)"), tldsConfig))
 
-        assertFalse(CalculadorAvisosInternos.esTituloComprometido(crearEntrada("7", "GitHub")))
-        assertFalse(CalculadorAvisosInternos.esTituloComprometido(crearEntrada("8", "Banco Pichincha")))
-        assertFalse(CalculadorAvisosInternos.esTituloComprometido(crearEntrada("9", "Netflix")))
+        // Palabras legítimas en español que terminan en "es", "co", "ar", "me" NO deben considerarse comprometidas
+        assertFalse(CalculadorAvisosInternos.esTituloComprometido(crearEntrada("10", "GitHub"), tldsConfig))
+        assertFalse(CalculadorAvisosInternos.esTituloComprometido(crearEntrada("11", "Banco Pichincha"), tldsConfig))
+        assertFalse(CalculadorAvisosInternos.esTituloComprometido(crearEntrada("12", "Banco"), tldsConfig)) // termina en "co"
+        assertFalse(CalculadorAvisosInternos.esTituloComprometido(crearEntrada("13", "Ajustes"), tldsConfig)) // termina en "es"
+        assertFalse(CalculadorAvisosInternos.esTituloComprometido(crearEntrada("14", "Mercedes"), tldsConfig)) // termina en "es"
+        assertFalse(CalculadorAvisosInternos.esTituloComprometido(crearEntrada("15", "Redes"), tldsConfig)) // termina en "es"
+        assertFalse(CalculadorAvisosInternos.esTituloComprometido(crearEntrada("16", "Celular"), tldsConfig)) // termina en "ar"
+        assertFalse(CalculadorAvisosInternos.esTituloComprometido(crearEntrada("17", "Hogar"), tldsConfig)) // termina en "ar"
+        assertFalse(CalculadorAvisosInternos.esTituloComprometido(crearEntrada("18", "Chrome"), tldsConfig)) // termina en "me"
+        assertFalse(CalculadorAvisosInternos.esTituloComprometido(crearEntrada("19", "Google (admin)"), tldsConfig))
+        assertFalse(CalculadorAvisosInternos.esTituloComprometido(crearEntrada("20", "Envato / CodeCanyon"), tldsConfig)) // marca con slash y espacios
+        assertFalse(CalculadorAvisosInternos.esTituloComprometido(crearEntrada("21", "Max (HBO)"), tldsConfig))
+        assertFalse(CalculadorAvisosInternos.esTituloComprometido(crearEntrada("22", "X (Twitter)"), tldsConfig))
+        assertFalse(CalculadorAvisosInternos.esTituloComprometido(crearEntrada("23", "Trabajo: VPN"), tldsConfig)) // dos puntos con texto
+        assertFalse(CalculadorAvisosInternos.esTituloComprometido(crearEntrada("26", "Localhost", urls = listOf("http://localhost")), tldsConfig)) // Entorno local con nombre limpio
+        assertFalse(CalculadorAvisosInternos.esTituloComprometido(crearEntrada("27", "Localhost", urls = listOf("http://localhost:8080")), tldsConfig))
+        assertFalse(CalculadorAvisosInternos.esTituloComprometido(crearEntrada("30", "Localhost :631", urls = listOf("http://localhost:631")), tldsConfig)) // Servicio local con puerto formateado
+        assertFalse(CalculadorAvisosInternos.esTituloComprometido(crearEntrada("31", "Localhost :63342", urls = listOf("http://localhost:63342")), tldsConfig))
+        assertFalse(CalculadorAvisosInternos.esTituloComprometido(crearEntrada("32", "Localhost :631"), tldsConfig))
+        assertTrue(CalculadorAvisosInternos.esTituloComprometido(crearEntrada("24", "codecanyon.net/item/test"), tldsConfig)) // URL con path sin espacios
+        assertTrue(CalculadorAvisosInternos.esTituloComprometido(crearEntrada("25", "192.168.1.1:8080"), tldsConfig)) // puerto numérico
+        assertTrue(CalculadorAvisosInternos.esTituloComprometido(crearEntrada("28", "http://localhost"), tldsConfig)) // URL sin protocolo limpio
+        assertTrue(CalculadorAvisosInternos.esTituloComprometido(crearEntrada("29", "localhost:8080"), tldsConfig)) // host con puerto numérico
     }
 
     @Test

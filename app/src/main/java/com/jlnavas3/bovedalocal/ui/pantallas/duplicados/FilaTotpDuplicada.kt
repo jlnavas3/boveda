@@ -101,8 +101,13 @@ fun FilaTotpDuplicada(
                 overflow = TextOverflow.Ellipsis
             )
         }
+        val contexto = androidx.compose.ui.platform.LocalContext.current
+        val haptica = androidx.compose.runtime.remember { com.jlnavas3.bovedalocal.util.Haptica(contexto) }
         IconButton(
-            onClick = alAlternarMostrarTotp,
+            onClick = {
+                haptica.toque()
+                alAlternarMostrarTotp()
+            },
             modifier = Modifier.size(22.dp)
         ) {
             Icon(

@@ -7,6 +7,7 @@
 package com.jlnavas3.bovedalocal.ui.pantallas.duplicados
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AutoFixHigh
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.runtime.Composable
 import com.jlnavas3.bovedalocal.ui.componentes.DialogoConfirmacionBoveda
@@ -29,11 +30,11 @@ fun DialogosDuplicados(
 ) {
     if (confirmarLimpiezaMasiva) {
         DialogoConfirmacionBoveda(
-            titulo = "Limpiar $totalSobrantesIdenticas copias idénticas",
-            mensaje = "Se enviarán $totalSobrantesIdenticas entradas duplicadas a la papelera, conservando automáticamente la copia más completa y reciente de cada servicio. Podrás recuperarlas de la papelera en los próximos 30 días si lo necesitas.",
-            textoConfirmar = "Limpiar ahora",
+            titulo = "Unificar $totalSobrantesIdenticas copias idénticas",
+            mensaje = "Se consolidarán en una sola entrada sin perder datos.",
+            textoConfirmar = "Unificar todo",
             tipoConfirmacion = TipoBotonTexto.PRIMARIO,
-            iconoHeader = Icons.Filled.Delete,
+            iconoHeader = Icons.Filled.AutoFixHigh,
             alConfirmar = alConfirmarLimpiezaMasiva,
             alDescartar = alDescartarLimpiezaMasiva
         )

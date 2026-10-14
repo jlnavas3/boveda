@@ -23,33 +23,221 @@ interface VaultDuplicadosPapeleraDelegate {
     val repositorio: VaultRepository
     val avisoInterno: MutableStateFlow<String?>
     fun ejecutar(bloque: suspend () -> Unit)
+    fun avisarConDeshacer(
+        mensaje: String,
+        titulo: String? = null,
+        accionTexto: String = "Deshacer",
+        alDeshacer: () -> Unit
+    ) {
+        avisoInterno.value = mensaje
+    }
 
     // ------------------------------------------------------------- duplicados y salud
-    fun eliminarDuplicadasExactasMasivo(grupos: List<GrupoDuplicado>) {
-        val idsABorrar = grupos
-            .filter { it.tipo == TipoDuplicado.IDENTICO }
-            .flatMap { it.entradasSecundarias.map { ent -> ent.id } }
-            .toSet()
+    fun unificarDuplicadasExactasMasivo(grupos: List<GrupoDuplicado>) {
+        val gruposIdenticos = grupos.filter { it.tipo == TipoDuplicado.IDENTICO && it.entradasSecundarias.isNotEmpty() }
+        if (gruposIdenticos.isEmpty()) return
 
-        if (idsABorrar.isEmpty()) return
         ejecutar {
-            withContext(Dispatchers.IO) { repositorio.eliminarEntradas(idsABorrar) }
-            Diagnostico.apuntar("duplicados", "Limpieza masiva: ${idsABorrar.size} copias idénticas movidas a la papelera")
-            avisoInterno.value = "${idsABorrar.size} copias idénticas movidas a la papelera"
+            val totalGrupos = gruposIdenticos.size
+            com.jlnavas3.bovedalocal.ui.progreso.GestorProgresoOperaciones.iniciar(
+                id = "unificar_duplicados_masivo",
+                titulo = "Unificación de duplicados",
+                faseInicial = "Consolidando credenciales idénticas...",
+                totalEstimado = totalGrupos
+            )
+
+            val originalesPrincipales = mutableListOf<Entrada>()
+            val originalesSecundarias = mutableListOf<Entrada>()
+            val unificadas = mutableListOf<Entrada>()
+            val idsABorrar = mutableSetOf<String>()
+
+            for ((indice, grupo) in gruposIdenticos.withIndex()) {
+                originalesPrincipales.add(grupo.sugeridaPrincipal)
+                originalesSecundarias.addAll(grupo.entradasSecundarias)
+                val unificada = AnalizadorDuplicados.fusionar(grupo.sugeridaPrincipal, grupo.entradasSecundarias)
+                unificadas.add(unificada)
+                idsABorrar.addAll(grupo.entradasSecundarias.map { it.id })
+
+                val progreso = (indice + 1).toFloat() / totalGrupos
+                com.jlnavas3.bovedalocal.ui.progreso.GestorProgresoOperaciones.reportarItem(
+                    item = com.jlnavas3.bovedalocal.data.ItemProgresoEntrada(
+                        id = unificada.id,
+                        titulo = unificada.titulo,
+                        subtitulo = unificada.usuario,
+                        progreso = 1f,
+                        completado = true
+                    ),
+                    progresoGlobal = progreso,
+                    procesadas = indice + 1
+                )
+            }
+
+            com.jlnavas3.bovedalocal.ui.progreso.GestorProgresoOperaciones.actualizarFase("Escribiendo bóveda cifrada...", 0.95f)
+
+            withContext(Dispatchers.IO) {
+                repositorio.sincronizarLote(
+                    entradasAGuardar = unificadas,
+                    idsAEliminar = idsABorrar
+                )
+            }
+
+            Diagnostico.apuntar("duplicados", "Unificación inteligente masiva: ${unificadas.size} grupos consolidados (${idsABorrar.size} duplicados unificados)")
+
+            com.jlnavas3.bovedalocal.ui.progreso.GestorProgresoOperaciones.completar(
+                mensajeExito = "${unificadas.size} grupos unificados (${idsABorrar.size} duplicados)",
+                totalCuentas = totalGrupos,
+                textoAccionResultado = "Deshacer",
+                textoAccionSecundaria = "Aceptar",
+                accionResultado = {
+                    ejecutar {
+                        withContext(Dispatchers.IO) {
+                            repositorio.sincronizarLote(
+                                entradasAGuardar = originalesPrincipales + originalesSecundarias
+                            )
+                        }
+                        avisoInterno.value = "Unificación masiva deshecha"
+                    }
+                }
+            )
+
+            avisarConDeshacer(
+                mensaje = "${unificadas.size} grupo${if (unificadas.size > 1) "s" else ""} unificado${if (unificadas.size > 1) "s" else ""}",
+                titulo = "Unificación masiva",
+                alDeshacer = {
+                    ejecutar {
+                        withContext(Dispatchers.IO) {
+                            repositorio.sincronizarLote(
+                                entradasAGuardar = originalesPrincipales + originalesSecundarias
+                            )
+                        }
+                        avisoInterno.value = "Unificación masiva deshecha"
+                    }
+                }
+            )
         }
     }
 
-    fun unificarEntradas(principal: Entrada, secundarias: List<Entrada>) {
+    fun eliminarDuplicadasExactasMasivo(grupos: List<GrupoDuplicado>) {
+        unificarDuplicadasExactasMasivo(grupos)
+    }
+
+    fun unificarEntradas(
+        principal: Entrada,
+        secundarias: List<Entrada>,
+        usuarioElegido: String? = null
+    ) {
         val idsSecundarias = secundarias.map { it.id }.toSet()
         if (idsSecundarias.isEmpty()) return
         ejecutar {
-            val unificada = AnalizadorDuplicados.fusionar(principal, secundarias)
+            val principalOriginal = principal
+            val secundariasOriginales = secundarias
+            val unificada = AnalizadorDuplicados.fusionar(principal, secundarias, usuarioElegido)
             withContext(Dispatchers.IO) {
-                repositorio.guardarEntrada(unificada)
-                repositorio.eliminarEntradas(idsSecundarias)
+                repositorio.sincronizarLote(
+                    entradasAGuardar = listOf(unificada),
+                    idsAEliminar = idsSecundarias
+                )
             }
             Diagnostico.apuntar("duplicados", "Entrada unificada y ${idsSecundarias.size} duplicadas enviadas a la papelera")
-            avisoInterno.value = "Entradas unificadas con éxito"
+            avisarConDeshacer(
+                mensaje = "Entradas unificadas con éxito",
+                titulo = "Unificación",
+                alDeshacer = {
+                    ejecutar {
+                        withContext(Dispatchers.IO) {
+                            repositorio.sincronizarLote(
+                                entradasAGuardar = listOf(principalOriginal) + secundariasOriginales
+                            )
+                        }
+                        avisoInterno.value = "Unificación deshecha"
+                    }
+                }
+            )
+        }
+    }
+
+    fun unificarMultiplesGrupos(gruposAUnificar: List<Pair<Entrada, List<Entrada>>>) {
+        if (gruposAUnificar.isEmpty()) return
+        ejecutar {
+            val totalGrupos = gruposAUnificar.size
+            com.jlnavas3.bovedalocal.ui.progreso.GestorProgresoOperaciones.iniciar(
+                id = "unificar_multiples_grupos",
+                titulo = "Unificación de duplicados",
+                faseInicial = "Fusionando grupos seleccionados...",
+                totalEstimado = totalGrupos
+            )
+
+            val originalesPrincipales = mutableListOf<Entrada>()
+            val originalesSecundarias = mutableListOf<Entrada>()
+            val unificadas = mutableListOf<Entrada>()
+            val idsABorrar = mutableSetOf<String>()
+
+            for ((indice, par) in gruposAUnificar.withIndex()) {
+                val (principal, secundarias) = par
+                if (secundarias.isEmpty()) continue
+                originalesPrincipales.add(principal)
+                originalesSecundarias.addAll(secundarias)
+                val unificada = AnalizadorDuplicados.fusionar(principal, secundarias)
+                unificadas.add(unificada)
+                idsABorrar.addAll(secundarias.map { it.id })
+
+                val progreso = (indice + 1).toFloat() / totalGrupos
+                com.jlnavas3.bovedalocal.ui.progreso.GestorProgresoOperaciones.reportarItem(
+                    item = com.jlnavas3.bovedalocal.data.ItemProgresoEntrada(
+                        id = unificada.id,
+                        titulo = unificada.titulo,
+                        subtitulo = unificada.usuario,
+                        progreso = 1f,
+                        completado = true
+                    ),
+                    progresoGlobal = progreso,
+                    procesadas = indice + 1
+                )
+            }
+
+            com.jlnavas3.bovedalocal.ui.progreso.GestorProgresoOperaciones.actualizarFase("Escribiendo bóveda cifrada...", 0.95f)
+
+            withContext(Dispatchers.IO) {
+                repositorio.sincronizarLote(
+                    entradasAGuardar = unificadas,
+                    idsAEliminar = idsABorrar
+                )
+            }
+
+            val cantGrupos = unificadas.size
+            Diagnostico.apuntar("duplicados", "Unificación múltiple por grupos: $cantGrupos grupos consolidados (${idsABorrar.size} duplicados unificados)")
+
+            com.jlnavas3.bovedalocal.ui.progreso.GestorProgresoOperaciones.completar(
+                mensajeExito = "$cantGrupos grupos consolidados (${idsABorrar.size} duplicados)",
+                totalCuentas = cantGrupos,
+                textoAccionResultado = "Deshacer",
+                textoAccionSecundaria = "Aceptar",
+                accionResultado = {
+                    ejecutar {
+                        withContext(Dispatchers.IO) {
+                            repositorio.sincronizarLote(
+                                entradasAGuardar = originalesPrincipales + originalesSecundarias
+                            )
+                        }
+                        avisoInterno.value = "Unificación deshecha"
+                    }
+                }
+            )
+
+            avisarConDeshacer(
+                mensaje = "$cantGrupos grupo${if (cantGrupos > 1) "s" else ""} unificado${if (cantGrupos > 1) "s" else ""} con éxito",
+                titulo = "Unificación",
+                alDeshacer = {
+                    ejecutar {
+                        withContext(Dispatchers.IO) {
+                            repositorio.sincronizarLote(
+                                entradasAGuardar = originalesPrincipales + originalesSecundarias
+                            )
+                        }
+                        avisoInterno.value = "Unificación deshecha"
+                    }
+                }
+            )
         }
     }
 

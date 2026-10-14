@@ -13,6 +13,7 @@ import androidx.compose.material.icons.filled.Backup
 import androidx.compose.material.icons.filled.CameraAlt
 import androidx.compose.material.icons.filled.DeleteForever
 import androidx.compose.material.icons.filled.Description
+import androidx.compose.material.icons.filled.DriveFileRenameOutline
 import androidx.compose.material.icons.filled.Fingerprint
 import androidx.compose.material.icons.filled.Folder
 import androidx.compose.material.icons.filled.History
@@ -204,6 +205,16 @@ fun crearIndiceBusquedaAjustes(
         colorIcono = Color(0xFF10B981),
         palabrasClave = "categorias carpetas etiquetas clasificar grupos organizar cuentas",
         alPulsar = { vm.ir(Pantalla.Categorias()) }
+    )
+    agregarGranular(
+        id = "03-LST-TIT-GRN",
+        titulo = "Renombrar Títulos",
+        subtitulo = "Convertir URLs y formatos técnicos en nombres limpios y legibles",
+        ruta = "Lista de cuentas > Renombrar",
+        icono = Icons.Filled.DriveFileRenameOutline,
+        colorIcono = Color(0xFF6366F1),
+        palabrasClave = "renombrar titulos nombres no amigables estandarizar normalizador cuentas urls marcas servicios",
+        alPulsar = { vm.ir(Pantalla.NormalizadorTitulos()) }
     )
 
     return items

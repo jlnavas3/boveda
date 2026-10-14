@@ -421,8 +421,8 @@ fun RaizBoveda(vm: VaultViewModel, actividad: FragmentActivity) {
                     is Pantalla.AjustesAutocompletado -> PantallaAjustesAutocompletado(vm, actividad, destino.seccionId)
                     is Pantalla.TileRapido -> PantallaTileRapido(vm, destino.seccionId)
                     is Pantalla.Avanzada -> PantallaAvanzada(vm, destino.seccionId)
-                    is Pantalla.NormalizadorTitulos -> PantallaNormalizadorTitulos(vm, destino.esPostImportacion)
-                    Pantalla.ReglasNormalizacion -> PantallaReglasNormalizacion(vm)
+                    is Pantalla.NormalizadorTitulos -> PantallaNormalizadorTitulos(vm, destino.esPostImportacion, destino.idsEspecificos)
+                    is Pantalla.ReglasNormalizacion -> PantallaReglasNormalizacion(vm)
                     Pantalla.ReglasAutocompletado -> PantallaReglasAutocompletado(vm)
                     is Pantalla.DiccionarioPalabras -> PantallaDiccionarioPalabras(vm, destino.idiomaInicial, destino.seccionId)
                     is Pantalla.ContrasenasComunes -> PantallaContrasenasComunes(vm, destino.seccionId)
@@ -463,6 +463,10 @@ fun RaizBoveda(vm: VaultViewModel, actividad: FragmentActivity) {
                     .align(Alignment.BottomCenter)
                     .padding(horizontal = 16.dp, vertical = 20.dp)
                     .imePadding()
+            )
+
+            com.jlnavas3.bovedalocal.ui.progreso.HojaProgresoOperaciones(
+                modifier = Modifier.align(Alignment.BottomCenter)
             )
         }
     }

@@ -22,7 +22,12 @@ fun IconoAlternarContrasena(
     esVisible: Boolean,
     onToggle: () -> Unit
 ) {
-    IconButton(onClick = onToggle) {
+    val contexto = androidx.compose.ui.platform.LocalContext.current
+    val haptica = androidx.compose.runtime.remember { com.jlnavas3.bovedalocal.util.Haptica(contexto) }
+    IconButton(onClick = {
+        haptica.toque()
+        onToggle()
+    }) {
         Icon(
             imageVector = if (esVisible) Icons.Filled.VisibilityOff else Icons.Filled.Visibility,
             contentDescription = if (esVisible) "Ocultar contraseña" else "Mostrar contraseña",

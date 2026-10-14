@@ -32,15 +32,25 @@ fun TarjetaGrupoRepetido(
     seleccionActiva: Boolean = false,
     seleccionados: Set<String> = emptySet(),
     alAlternarSeleccion: ((String) -> Unit)? = null,
+    alAlternarSeleccionGrupo: ((Set<String>) -> Unit)? = null,
     alPulsarLargo: ((String) -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
     val claveTitulo = grupo.firstOrNull()?.titulo?.ifBlank { "Clave repetida" } ?: "Clave repetida"
+    val idsGrupo = androidx.compose.runtime.remember(grupo) { grupo.map { it.id }.toSet() }
+    val todosSeleccionados = idsGrupo.isNotEmpty() && idsGrupo.all { seleccionados.contains(it) }
+    val parcialmenteSeleccionado = !todosSeleccionados && idsGrupo.any { seleccionados.contains(it) }
+
     ComponenteGrupoLista(
         clave = claveTitulo,
         entradas = grupo,
         expandido = expandido,
-        alAlternar = alAlternar,
+        alAlternar = if (seleccionActiva && alAlternarSeleccionGrupo != null) { { alAlternarSeleccionGrupo(idsGrupo) } } else alAlternar,
+        alAlternarExpansion = alAlternar,
+        seleccionActiva = seleccionActiva,
+        seleccionado = todosSeleccionados,
+        parcialmenteSeleccionado = parcialmenteSeleccionado,
+        alPulsarLargo = { alAlternarSeleccionGrupo?.invoke(idsGrupo) ?: alPulsarLargo?.invoke(grupo.firstOrNull()?.id ?: "") },
         modifier = modifier,
         contenidoEntrada = { entrada, _, _ ->
             FilaProblemaAgil(

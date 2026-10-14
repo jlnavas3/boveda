@@ -329,12 +329,15 @@ object AjustesDefaults {
         val PREFIJOS_SUBDOMINIOS = listOf(
             "account", "accounts", "access", "login", "signin", "auth", "sso",
             "myaccount", "identity", "id", "passport", "portal", "webmail",
-            "clientes", "servicios", "online", "banca", "app", "mobile", "m", "www"
+            "clientes", "servicios", "online", "banca", "app", "mobile", "m", "www",
+            "api", "api-dashboard", "search", "my", "secure", "connect", "admin",
+            "dashboard", "cloud", "console", "member", "members", "user", "users",
+            "dev", "stage", "staging", "test", "beta", "oauth"
         )
         val TLDS_DESCARTABLES = listOf(
             "com", "net", "org", "io", "co", "ec", "es", "pe", "cl", "ar", "mx",
             "app", "dev", "ai", "tech", "me", "info", "online", "tv", "it",
-            "edu", "gob", "guru", "cloud"
+            "edu", "gob", "guru", "cloud", "art", "store", "shop", "xyz", "site", "design"
         )
         val MARCAS_PERSONALIZADAS: Map<String, String> = emptyMap()
         val PUERTOS_SERVICIOS_LOCALES: Map<String, String> = mapOf(
@@ -351,7 +354,7 @@ object AjustesDefaults {
         val OCTETOS_ROUTER: List<Int> = listOf(1, 254)
         const val PLANTILLA_ROUTER_IP = "Router ({ip})"
         const val PLANTILLA_SERVIDOR_IP = "Servidor ({ip})"
-        const val FORMATO_COLISION_TITULOS = "EXPLICITO_PARENTESIS"
+        const val FORMATO_COLISION_TITULOS = "MINIMALISTA"
         const val RESPETAR_TITULOS_PERSONALIZADOS = true
     }
 

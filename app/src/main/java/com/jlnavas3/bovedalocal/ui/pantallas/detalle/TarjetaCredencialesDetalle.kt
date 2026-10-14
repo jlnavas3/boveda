@@ -27,6 +27,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.jlnavas3.bovedalocal.data.AjustesApp
 import com.jlnavas3.bovedalocal.data.Entrada
 import com.jlnavas3.bovedalocal.ui.componentes.contrasenaColoreada
@@ -97,16 +98,25 @@ fun TarjetaCredencialesDetalle(
                             texto = entrada.usuario,
                             oculto = protegerUsuario && !usuarioRevelado,
                             estilo = estiloOcultamiento,
-                            estiloTexto = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Medium),
+                            estiloTexto = if (protegerUsuario && !usuarioRevelado) {
+                                EstiloMono.copy(letterSpacing = 2.sp)
+                            } else {
+                                MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Medium)
+                            },
                             colorTexto = TextoPrincipal
                         )
                     }
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         if (protegerUsuario) {
+                            val contexto = androidx.compose.ui.platform.LocalContext.current
+                            val haptica = androidx.compose.runtime.remember { com.jlnavas3.bovedalocal.util.Haptica(contexto) }
                             BotonIconoDetalle(
                                 icono = if (usuarioRevelado) Icons.Filled.VisibilityOff else Icons.Filled.Visibility,
                                 descripcion = if (usuarioRevelado) "Ocultar usuario" else "Mostrar usuario",
-                                alPulsar = { usuarioRevelado = !usuarioRevelado }
+                                alPulsar = {
+                                    haptica.toque()
+                                    usuarioRevelado = !usuarioRevelado
+                                }
                             )
                         }
                         BotonCopiarDetalle(copiado = ultimaCopia == "usuario", alPulsar = alCopiarUsuario)
@@ -148,7 +158,7 @@ fun TarjetaCredencialesDetalle(
                                 texto = entrada.contrasena,
                                 oculto = true,
                                 estilo = estiloOcultamiento,
-                                estiloTexto = EstiloMono,
+                                estiloTexto = EstiloMono.copy(letterSpacing = 2.sp),
                                 colorTexto = TextoPrincipal
                             )
                         }

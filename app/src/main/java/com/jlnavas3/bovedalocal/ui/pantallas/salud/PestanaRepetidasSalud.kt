@@ -46,6 +46,7 @@ fun PestanaRepetidasSalud(
     alVerDetalle: (String) -> Unit,
     alIgnorar: (Entrada) -> Unit,
     alAlternarSeleccion: ((String) -> Unit)?,
+    alAlternarSeleccionGrupo: ((Set<String>) -> Unit)? = null,
     alPulsarLargo: ((String) -> Unit)?
 ) {
     var gruposExpandidos by rememberSaveable { mutableStateOf(emptySet<String>()) }
@@ -127,6 +128,7 @@ fun PestanaRepetidasSalud(
                         seleccionActiva = seleccionActiva,
                         seleccionados = seleccionados,
                         alAlternarSeleccion = alAlternarSeleccion,
+                        alAlternarSeleccionGrupo = alAlternarSeleccionGrupo,
                         alPulsarLargo = alPulsarLargo
                     )
                 }

@@ -89,7 +89,14 @@ object NormalizadorTitulosSitios {
         "aliexpress" to "AliExpress",
         "alibaba" to "Alibaba",
         "proton" to "Proton",
-        "mega" to "MEGA"
+        "mega" to "MEGA",
+        "brave" to "Brave",
+        "sony" to "Sony",
+        "sonyentertainmentnetwork" to "Sony",
+        "tunemymusic" to "TuneMyMusic",
+        "epicgames" to "Epic Games",
+        "bitwarden" to "Bitwarden",
+        "fastmail" to "Fastmail"
     )
 
     fun podarPrefijos(host: String, prefijos: List<String>): String {
@@ -100,9 +107,14 @@ object NormalizadorTitulosSitios {
             for (p in prefijos) {
                 val prefijoConPunto = "${p.trim().lowercase()}."
                 if (h.startsWith(prefijoConPunto) && h.length > prefijoConPunto.length) {
-                    h = h.removePrefix(prefijoConPunto).removePrefix("www.")
-                    huboCambio = true
-                    break
+                    val restante = h.removePrefix(prefijoConPunto).removePrefix("www.")
+                    // Salvaguarda: solo podar si lo que queda aún contiene un punto
+                    // (es decir, preserva al menos 'marca.tld' y nunca reduce a solo el TLD)
+                    if (restante.contains('.')) {
+                        h = restante
+                        huboCambio = true
+                        break
+                    }
                 }
             }
         }
@@ -112,14 +124,45 @@ object NormalizadorTitulosSitios {
     fun podarTlds(host: String, tlds: List<String>): String {
         var h = host.trim().lowercase()
         val listaTlds = tlds.ifEmpty { AjustesDefaults.NormalizacionTitulos.TLDS_DESCARTABLES }
-        for (tld in listaTlds) {
-            val tldConPunto = if (tld.startsWith(".")) tld.lowercase() else ".${tld.lowercase()}"
-            if (h.endsWith(tldConPunto) && h.length > tldConPunto.length) {
-                h = h.removeSuffix(tldConPunto)
-                break
+        var huboCambio = true
+        while (huboCambio) {
+            huboCambio = false
+            for (tld in listaTlds) {
+                val tldConPunto = if (tld.startsWith(".")) tld.lowercase() else ".${tld.lowercase()}"
+                if (h.endsWith(tldConPunto) && h.length > tldConPunto.length) {
+                    h = h.removeSuffix(tldConPunto)
+                    huboCambio = true
+                    break
+                }
             }
         }
         return h
+    }
+
+    private val PROVEEDORES_SSO = setOf(
+        "accounts.google.com",
+        "login.microsoftonline.com",
+        "login.live.com",
+        "appleid.apple.com",
+        "auth0.com",
+        "auth.atlassian.com",
+        "oauth.telegram.org",
+        "api.twitter.com"
+    )
+
+    fun esProveedorSso(urlODominio: String): Boolean {
+        val host = Dominios.host(urlODominio).lowercase()
+        return PROVEEDORES_SSO.any { host == it || host.endsWith(".$it") }
+    }
+
+    fun esNombreDeProveedorSso(titulo: String): Boolean {
+        val t = titulo.trim().lowercase()
+        return t.contains("google") ||
+               t.contains("microsoft") ||
+               t.contains("apple") ||
+               t.contains("atlassian") ||
+               t.contains("auth0") ||
+               t.contains("twitter")
     }
 
     fun extraerNombreBase(
@@ -134,7 +177,15 @@ object NormalizadorTitulosSitios {
         octetosRouter: List<Int> = listOf(1, 254)
     ): String {
         val tituloLimpio = rawTitulo.substringBefore('(').substringBefore('·').substringBefore('[').trim()
-        val entradaAnalisis = if (urlODominio.isNotBlank()) urlODominio else tituloLimpio
+        val esHostSso = urlODominio.isNotBlank() && esProveedorSso(urlODominio)
+        val tituloEsProveedor = esNombreDeProveedorSso(tituloLimpio)
+        val entradaAnalisis = if (esHostSso && tituloLimpio.isNotBlank() && !tituloEsProveedor) {
+            tituloLimpio
+        } else if (urlODominio.isNotBlank()) {
+            urlODominio
+        } else {
+            tituloLimpio
+        }
         if (entradaAnalisis.isBlank()) return tituloLimpio.ifBlank { "Cuenta" }
 
         // 1. Redes locales / IPs (públicas o privadas) / Localhost
@@ -145,6 +196,27 @@ object NormalizadorTitulosSitios {
         )
         if (infoRed != null) {
             return ClasificadorRedLocal.formatearNombre(infoRed, plantillaRouter, plantillaServidor)
+        }
+
+        // 1b. Paquetes de apps de Android (ej: com.whatsapp, com.google.android.youtube)
+        val paquete = LanzadorEnlaces.extraerPaquete(entradaAnalisis)
+            ?: (if (!entradaAnalisis.startsWith("http://", ignoreCase = true) && !entradaAnalisis.startsWith("https://", ignoreCase = true)) {
+                LanzadorEnlaces.extraerPaquete(tituloLimpio)
+            } else null)
+        if (paquete != null) {
+            val partes = paquete.split('.').filter { it.isNotBlank() }
+            val marcaPers = marcasPersonalizadas[paquete.lowercase()]
+                ?: partes.firstNotNullOfOrNull { marcasPersonalizadas[it.lowercase()] }
+            if (marcaPers != null) return marcaPers
+
+            val marcaOficial = partes.reversed().firstNotNullOfOrNull { MAPA_MARCAS_OFICIALES[it.lowercase()] }
+            if (marcaOficial != null) return marcaOficial
+
+            val segmentosGenericos = setOf("com", "org", "net", "io", "es", "de", "fr", "android", "app", "mobile", "client", "lite", "free", "pro", "www")
+            val segmentoSignificativo = partes.reversed().firstOrNull { it.lowercase() !in segmentosGenericos }
+                ?: partes.lastOrNull()
+                ?: paquete
+            return capitalizarAmigable(segmentoSignificativo)
         }
 
         // 2. Extraer Host limpio
@@ -165,7 +237,20 @@ object NormalizadorTitulosSitios {
         val hostPodado = podarPrefijos(host, prefijosConfigurados)
 
         // 4. Marca o nombre raíz
-        val marcaKey = Dominios.marca(hostPodado).lowercase()
+        val marcaKeyRaw = Dominios.marca(hostPodado).lowercase()
+        val marcaKey = if (prefijosConfigurados.any { it.equals(marcaKeyRaw, ignoreCase = true) }) {
+            val segmentosSinTld = Dominios.sitioAgrupacion(host)
+                .split('.')
+                .filter { it.isNotBlank() && !it.equals("www", ignoreCase = true) }
+            val candidato = segmentosSinTld.lastOrNull { seg ->
+                !prefijosConfigurados.any { it.equals(seg, ignoreCase = true) }
+            } ?: segmentosSinTld.firstOrNull { seg ->
+                !prefijosConfigurados.any { it.equals(seg, ignoreCase = true) }
+            }
+            candidato?.lowercase() ?: marcaKeyRaw
+        } else {
+            marcaKeyRaw
+        }
 
         // 5. Diccionario de marcas personalizadas (prioridad sobre diccionario oficial)
         val marcaPers = marcasPersonalizadas[marcaKey] ?: marcasPersonalizadas[hostPodado.lowercase()]
@@ -175,10 +260,15 @@ object NormalizadorTitulosSitios {
         val nombreOficial = MAPA_MARCAS_OFICIALES[marcaKey]
         if (nombreOficial != null) return nombreOficial
 
-        // 7. Si es un dominio genérico con extensiones compuestas (.gob.ec, .edu.ec, etc.)
+        // 7. Usar la marca del dominio registrable
+        if (marcaKey.isNotBlank()) {
+            return capitalizarAmigable(marcaKey)
+        }
+
+        // 8. Fallback si no se pudo determinar la marca del dominio
         val hostSinTld = podarTlds(hostPodado, tldsConfigurados)
         val nombreLimpio = when {
-            hostSinTld.contains('.') -> hostSinTld.substringBefore('.')
+            hostSinTld.contains('.') -> hostSinTld.substringAfterLast('.')
             else -> hostSinTld
         }
 
@@ -190,26 +280,10 @@ object NormalizadorTitulosSitios {
         urls: List<String> = emptyList(),
         tldsConfigurados: List<String> = emptyList()
     ): Boolean {
-        val t = titulo.trim().lowercase()
-        if (t.startsWith("http://") || t.startsWith("https://") || t.startsWith("android://") || t.startsWith("androidapp://")) {
-            return true
-        }
-        if (t.startsWith("192.168.") || t.startsWith("10.") || t.startsWith("172.") || t.startsWith("localhost")) {
-            return true
-        }
-        if (t.matches(Regex("""^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}(:\d+)?.*"""))) {
-            return true
-        }
-        val listaTlds = tldsConfigurados.ifEmpty { AjustesDefaults.NormalizacionTitulos.TLDS_DESCARTABLES }
-        val tlds = listaTlds.map { if (it.startsWith(".")) it.lowercase() else ".${it.lowercase()}" }
-        if (tlds.any { t.contains(it) }) {
-            return true
-        }
-        val hostCoincidente = urls.firstOrNull { u ->
-            val h = Dominios.host(u)
-            h.equals(t, ignoreCase = true) || h.removePrefix("www.").equals(t, ignoreCase = true)
-        }
-        return hostCoincidente != null
+        return CalculadorAvisosInternos.esTituloComprometido(
+            entrada = com.jlnavas3.bovedalocal.data.Entrada(id = "", titulo = titulo, urls = urls),
+            tlds = tldsConfigurados
+        )
     }
 
     fun esTituloGeneradoOModificable(
@@ -234,9 +308,10 @@ object NormalizadorTitulosSitios {
         nombreBase: String,
         usuario: String,
         modo: ModoFormatoTitulos,
-        tieneColision: Boolean
+        tieneColision: Boolean,
+        forzarFormato: Boolean = false
     ): String {
-        if (!tieneColision || usuario.isBlank()) return nombreBase
+        if (usuario.isBlank() || (!tieneColision && !forzarFormato)) return nombreBase
         return when (modo) {
             ModoFormatoTitulos.MINIMALISTA -> nombreBase
             ModoFormatoTitulos.EXPLICITO_PARENTESIS -> "$nombreBase ($usuario)"

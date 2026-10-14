@@ -236,6 +236,15 @@ fun PantallaSaludBoveda(
                     alAlternarSeleccion = { id ->
                         seleccionados = if (seleccionados.contains(id)) seleccionados - id else seleccionados + id
                     },
+                    alAlternarSeleccionGrupo = { idsGrupo ->
+                        haptica.toque()
+                        val todosSeleccionados = idsGrupo.isNotEmpty() && idsGrupo.all { seleccionados.contains(it) }
+                        seleccionados = if (todosSeleccionados) {
+                            seleccionados - idsGrupo
+                        } else {
+                            seleccionados + idsGrupo
+                        }
+                    },
                     alPulsarLargo = { id ->
                         haptica.toque()
                         seleccionados = seleccionados + id
@@ -261,6 +270,15 @@ fun PantallaSaludBoveda(
                             modoComparacion = true
                         )
                     )
+                },
+                alUnificar = {
+                    val seleccionadasList = entradas.filter { seleccionados.contains(it.id) }
+                    if (seleccionadasList.size >= 2) {
+                        val principal = AnalizadorDuplicados.seleccionarMejorEntrada(seleccionadasList)
+                        val secundarias = seleccionadasList.filterNot { it.id == principal.id }
+                        vm.unificarEntradas(principal = principal, secundarias = secundarias)
+                        seleccionados = emptySet()
+                    }
                 },
                 alAbrirBorrado = { confirmarBorradoSeleccion = true },
                 modifier = Modifier.align(Alignment.BottomCenter)

@@ -87,16 +87,38 @@ interface VaultCicloBovedaDelegate {
 
     fun reForjarBoveda(password: String, nuevoPerfil: PerfilArgon2, alTerminar: (Boolean) -> Unit = {}) {
         ejecutar {
+            com.jlnavas3.bovedalocal.ui.progreso.GestorProgresoOperaciones.iniciar(
+                id = "reforjar_argon2",
+                titulo = "Ajustando seguridad Argon2id",
+                faseInicial = "Verificando contraseña actual...",
+                totalEstimado = 1
+            )
+            com.jlnavas3.bovedalocal.ui.progreso.GestorProgresoOperaciones.actualizarFase(
+                "Derivando clave KDF (${nuevoPerfil.titulo})...",
+                0.35f
+            )
+
             val chars = password.toCharArray()
             try {
                 withContext(Dispatchers.Default) {
                     repositorio.reForjarBovedaConPerfil(chars, nuevoPerfil)
                 }
+                com.jlnavas3.bovedalocal.ui.progreso.GestorProgresoOperaciones.actualizarFase(
+                    "Re-cifrando bóveda...",
+                    0.85f
+                )
                 Diagnostico.apuntar("bóveda", "Bóveda re-forjada con perfil ${nuevoPerfil.titulo} (${nuevoPerfil.memoriaKiB / 1024} MiB RAM, ${nuevoPerfil.iteraciones} pasadas, ${nuevoPerfil.paralelismo} hilos)")
                 registrarInteraccion()
                 avisoInterno.value = "Bóveda re-cifrada con perfil ${nuevoPerfil.titulo}"
+                com.jlnavas3.bovedalocal.ui.progreso.GestorProgresoOperaciones.completar(
+                    mensajeExito = "Perfil ${nuevoPerfil.titulo} aplicado con éxito",
+                    totalCuentas = 1,
+                    textoAccionResultado = null,
+                    textoAccionSecundaria = "Aceptar"
+                )
                 alTerminar(true)
             } catch (e: Exception) {
+                com.jlnavas3.bovedalocal.ui.progreso.GestorProgresoOperaciones.fallar("Contraseña incorrecta o fallo al re-cifrar")
                 Diagnostico.apuntar("bóveda", "Fallo al re-forjar bóveda: ${e.message}")
                 errorInterno.value = "Contraseña incorrecta o fallo al re-cifrar"
                 alTerminar(false)

@@ -21,14 +21,19 @@ interface VaultTitulosDelegate {
     val gruposTitulosInterno: MutableStateFlow<List<GrupoTitulosSitio>>
     val modoFormatoTitulosInterno: MutableStateFlow<ModoFormatoTitulos>
     val respetarTitulosManualesInterno: MutableStateFlow<Boolean>
+    val esSeleccionEspecificaTitulosInterno: MutableStateFlow<Boolean>
     fun ejecutar(bloque: suspend () -> Unit)
     fun avisar(texto: String)
 
     fun prepararNormalizacionTitulos(entradasEspecificas: List<Entrada>? = null) {
+        if (repositorio.ajustes.actual.prefijosSubdominios.any { it.equals("acorn", ignoreCase = true) }) {
+            eliminarPrefijoSubdominio("acorn")
+        }
         val ajustes = repositorio.ajustes.actual
         val modo = ModoFormatoTitulos.desde(ajustes.formatoColisionTitulos)
         modoFormatoTitulosInterno.value = modo
         respetarTitulosManualesInterno.value = ajustes.respetarTitulosPersonalizados
+        esSeleccionEspecificaTitulosInterno.value = entradasEspecificas != null
 
         val entradas = entradasEspecificas ?: when (val estado = repositorio.estado.value) {
             is EstadoBoveda.Desbloqueada -> estado.entradas
@@ -119,6 +124,7 @@ interface VaultTitulosDelegate {
             val grupos = gruposTitulosInterno.value
             val modo = modoFormatoTitulosInterno.value
             val respetarManuales = respetarTitulosManualesInterno.value
+            val esSeleccionManual = esSeleccionEspecificaTitulosInterno.value
             val tldsActuales = repositorio.ajustes.actual.tldsDescartables
 
             var modificadas = 0
@@ -126,7 +132,8 @@ interface VaultTitulosDelegate {
 
             for (grupo in grupos) {
                 for (entrada in grupo.entradas) {
-                    if (respetarManuales && !NormalizadorTitulosSitios.esTituloGeneradoOModificable(
+                    val esCambioManualGrupo = grupo.nombrePersonalizado != grupo.nombreSugerido
+                    if (!esSeleccionManual && !esCambioManualGrupo && respetarManuales && !NormalizadorTitulosSitios.esTituloGeneradoOModificable(
                             titulo = entrada.titulo,
                             nombreBase = grupo.nombreEfectivo,
                             usuario = entrada.usuario,
@@ -140,10 +147,14 @@ interface VaultTitulosDelegate {
                         nombreBase = grupo.nombreEfectivo,
                         usuario = entrada.usuario,
                         modo = modo,
-                        tieneColision = grupo.tieneColision
+                        tieneColision = grupo.tieneColision,
+                        forzarFormato = esSeleccionManual
                     )
                     if (tituloFinal != entrada.titulo) {
-                        mapaReemplazo[entrada.id] = entrada.copy(titulo = tituloFinal)
+                        mapaReemplazo[entrada.id] = entrada.copy(
+                            titulo = tituloFinal,
+                            modificadaEn = System.currentTimeMillis()
+                        )
                         modificadas++
                     }
                 }
@@ -155,7 +166,7 @@ interface VaultTitulosDelegate {
                     else -> emptyList()
                 }
                 val nuevas = entradasActuales.map { e -> mapaReemplazo[e.id] ?: e }
-                repositorio.importarEntradas(nuevas)
+                repositorio.sincronizarLote(entradasAGuardar = nuevas)
             }
 
             avisar("Se han actualizado $modificadas títulos")
@@ -163,14 +174,230 @@ interface VaultTitulosDelegate {
         }
     }
 
+    fun estandarizarTitulosRapido(alTerminar: () -> Unit = {}) {
+        ejecutar {
+            val ajustes = repositorio.ajustes.actual
+            val modo = ModoFormatoTitulos.desde(ajustes.formatoColisionTitulos)
+            val tldsActuales = ajustes.tldsDescartables
+            val entradasActuales = when (val estado = repositorio.estado.value) {
+                is EstadoBoveda.Desbloqueada -> estado.entradas
+                else -> emptyList()
+            }
+
+            val gruposPorSitio = entradasActuales.groupBy { e ->
+                val u = e.urls.firstOrNull() ?: ""
+                NormalizadorTitulosSitios.extraerNombreBase(
+                    urlODominio = u,
+                    rawTitulo = e.titulo,
+                    prefijosConfigurados = ajustes.prefijosSubdominios,
+                    plantillaRouter = ajustes.plantillaRouterIp,
+                    plantillaServidor = ajustes.plantillaServidorIp,
+                    tldsConfigurados = tldsActuales,
+                    marcasPersonalizadas = ajustes.marcasPersonalizadas,
+                    puertosConfigurados = ajustes.puertosServiciosLocales,
+                    octetosRouter = ajustes.octetosRouter
+                ).lowercase()
+            }
+
+            val comprometidas = entradasActuales.filter { entrada ->
+                if (!com.jlnavas3.bovedalocal.util.CalculadorAvisosInternos.esTituloComprometido(entrada, tldsActuales)) {
+                    return@filter false
+                }
+                val primeraUrl = entrada.urls.firstOrNull() ?: ""
+                val nombreBase = NormalizadorTitulosSitios.extraerNombreBase(
+                    urlODominio = primeraUrl,
+                    rawTitulo = entrada.titulo,
+                    prefijosConfigurados = ajustes.prefijosSubdominios,
+                    plantillaRouter = ajustes.plantillaRouterIp,
+                    plantillaServidor = ajustes.plantillaServidorIp,
+                    tldsConfigurados = tldsActuales,
+                    marcasPersonalizadas = ajustes.marcasPersonalizadas,
+                    puertosConfigurados = ajustes.puertosServiciosLocales,
+                    octetosRouter = ajustes.octetosRouter
+                )
+                val tieneColision = (gruposPorSitio[nombreBase.lowercase()]?.size ?: 1) > 1
+                val tituloFinal = NormalizadorTitulosSitios.generarTituloFinal(
+                    nombreBase = nombreBase,
+                    usuario = entrada.usuario,
+                    modo = modo,
+                    tieneColision = tieneColision
+                )
+                tituloFinal != entrada.titulo
+            }
+
+            if (comprometidas.isEmpty()) {
+                avisar("No hay títulos pendientes por estandarizar")
+                alTerminar()
+                return@ejecutar
+            }
+
+            val mapaReemplazo = mutableMapOf<String, Entrada>()
+            var modificadas = 0
+            val totalComprometidas = comprometidas.size
+
+            com.jlnavas3.bovedalocal.ui.progreso.GestorProgresoOperaciones.iniciar(
+                id = "renombrar_titulos_masivo",
+                titulo = "Renombrando títulos",
+                faseInicial = "Normalizando nombres no amigables...",
+                totalEstimado = totalComprometidas
+            )
+
+            for ((indice, entrada) in comprometidas.withIndex()) {
+                val primeraUrl = entrada.urls.firstOrNull() ?: ""
+                val nombreBase = NormalizadorTitulosSitios.extraerNombreBase(
+                    urlODominio = primeraUrl,
+                    rawTitulo = entrada.titulo,
+                    prefijosConfigurados = ajustes.prefijosSubdominios,
+                    plantillaRouter = ajustes.plantillaRouterIp,
+                    plantillaServidor = ajustes.plantillaServidorIp,
+                    tldsConfigurados = tldsActuales,
+                    marcasPersonalizadas = ajustes.marcasPersonalizadas,
+                    puertosConfigurados = ajustes.puertosServiciosLocales,
+                    octetosRouter = ajustes.octetosRouter
+                )
+                val tieneColision = (gruposPorSitio[nombreBase.lowercase()]?.size ?: 1) > 1
+                val tituloFinal = NormalizadorTitulosSitios.generarTituloFinal(
+                    nombreBase = nombreBase,
+                    usuario = entrada.usuario,
+                    modo = modo,
+                    tieneColision = tieneColision
+                )
+                if (tituloFinal != entrada.titulo) {
+                    val actualizada = entrada.copy(
+                        titulo = tituloFinal,
+                        modificadaEn = System.currentTimeMillis()
+                    )
+                    mapaReemplazo[entrada.id] = actualizada
+                    modificadas++
+
+                    val progreso = (indice + 1).toFloat() / totalComprometidas
+                    com.jlnavas3.bovedalocal.ui.progreso.GestorProgresoOperaciones.reportarItem(
+                        item = com.jlnavas3.bovedalocal.data.ItemProgresoEntrada(
+                            id = entrada.id,
+                            titulo = "${entrada.titulo} → $tituloFinal",
+                            subtitulo = entrada.usuario,
+                            progreso = 1f,
+                            completado = true
+                        ),
+                        progresoGlobal = progreso,
+                        procesadas = modificadas
+                    )
+                }
+            }
+
+            if (mapaReemplazo.isNotEmpty()) {
+                com.jlnavas3.bovedalocal.ui.progreso.GestorProgresoOperaciones.actualizarFase("Escribiendo bóveda cifrada...", 0.95f)
+                val nuevas = entradasActuales.map { e -> mapaReemplazo[e.id] ?: e }
+                repositorio.sincronizarLote(entradasAGuardar = nuevas)
+            }
+
+            com.jlnavas3.bovedalocal.ui.progreso.GestorProgresoOperaciones.completar(
+                mensajeExito = "Se han estandarizado $modificadas títulos",
+                totalCuentas = modificadas,
+                textoAccionResultado = null,
+                textoAccionSecundaria = "Ver listado"
+            )
+
+            avisar("¡Listo! Se han estandarizado $modificadas títulos")
+            prepararNormalizacionTitulos()
+            alTerminar()
+        }
+    }
+
+    fun obtenerEjemplosNormalizacion(limite: Int = 4): List<com.jlnavas3.bovedalocal.data.EjemploNormalizacion> {
+        val ajustes = repositorio.ajustes.actual
+        val modo = ModoFormatoTitulos.desde(ajustes.formatoColisionTitulos)
+        val tldsActuales = ajustes.tldsDescartables
+        val entradasActuales = when (val estado = repositorio.estado.value) {
+            is EstadoBoveda.Desbloqueada -> estado.entradas
+            else -> emptyList()
+        }
+
+        val gruposPorSitio = entradasActuales.groupBy { e ->
+            val u = e.urls.firstOrNull() ?: ""
+            NormalizadorTitulosSitios.extraerNombreBase(
+                urlODominio = u,
+                rawTitulo = e.titulo,
+                prefijosConfigurados = ajustes.prefijosSubdominios,
+                plantillaRouter = ajustes.plantillaRouterIp,
+                plantillaServidor = ajustes.plantillaServidorIp,
+                tldsConfigurados = tldsActuales,
+                marcasPersonalizadas = ajustes.marcasPersonalizadas,
+                puertosConfigurados = ajustes.puertosServiciosLocales,
+                octetosRouter = ajustes.octetosRouter
+            ).lowercase()
+        }
+
+        return entradasActuales.asSequence().filter { entrada ->
+            com.jlnavas3.bovedalocal.util.CalculadorAvisosInternos.esTituloComprometido(entrada, tldsActuales)
+        }.mapNotNull { entrada ->
+            val primeraUrl = entrada.urls.firstOrNull() ?: ""
+            val nombreBase = NormalizadorTitulosSitios.extraerNombreBase(
+                urlODominio = primeraUrl,
+                rawTitulo = entrada.titulo,
+                prefijosConfigurados = ajustes.prefijosSubdominios,
+                plantillaRouter = ajustes.plantillaRouterIp,
+                plantillaServidor = ajustes.plantillaServidorIp,
+                tldsConfigurados = tldsActuales,
+                marcasPersonalizadas = ajustes.marcasPersonalizadas,
+                puertosConfigurados = ajustes.puertosServiciosLocales,
+                octetosRouter = ajustes.octetosRouter
+            )
+            val tieneColision = (gruposPorSitio[nombreBase.lowercase()]?.size ?: 1) > 1
+            val tituloFinal = NormalizadorTitulosSitios.generarTituloFinal(
+                nombreBase = nombreBase,
+                usuario = entrada.usuario,
+                modo = modo,
+                tieneColision = tieneColision
+            )
+            if (tituloFinal != entrada.titulo) {
+                com.jlnavas3.bovedalocal.data.EjemploNormalizacion(
+                    id = entrada.id,
+                    tituloOriginal = entrada.titulo.ifBlank { "Sin título" },
+                    tituloSugerido = tituloFinal,
+                    subtitulo = entrada.usuario.ifBlank { primeraUrl }
+                )
+            } else null
+        }.take(limite).toList()
+    }
+
     fun agregarPrefijoSubdominio(prefijo: String) {
         val limpio = prefijo.trim().lowercase().removePrefix(".").removeSuffix(".")
         if (limpio.isNotBlank()) {
+            if (gruposTitulosInterno.value.any { it.nombreEfectivo.equals(limpio, ignoreCase = true) }) {
+                return
+            }
             repositorio.ajustes.actualizar {
                 if (!it.prefijosSubdominios.contains(limpio)) {
                     it.copy(prefijosSubdominios = it.prefijosSubdominios + limpio)
                 } else it
             }
+        }
+    }
+
+    fun alternarPrefijoSubdominio(prefijo: String) {
+        val limpio = prefijo.trim().lowercase().removePrefix(".").removeSuffix(".")
+        if (limpio.isBlank()) return
+        if (gruposTitulosInterno.value.any { it.nombreEfectivo.equals(limpio, ignoreCase = true) }) {
+            eliminarPrefijoSubdominio(limpio)
+            return
+        }
+        val actuales = repositorio.ajustes.actual.prefijosSubdominios
+        if (actuales.any { it.equals(limpio, ignoreCase = true) }) {
+            eliminarPrefijoSubdominio(limpio)
+        } else {
+            agregarPrefijoSubdominio(limpio)
+        }
+    }
+
+    fun agregarPrefijosSubdominios(prefijos: List<String>) {
+        val nombresActivos = gruposTitulosInterno.value.map { it.nombreEfectivo.lowercase() }.toSet()
+        val limpios = prefijos.map { it.trim().lowercase().removePrefix(".").removeSuffix(".") }
+            .filter { it.isNotBlank() && !nombresActivos.contains(it) }
+        if (limpios.isEmpty()) return
+        repositorio.ajustes.actualizar {
+            val nuevos = (it.prefijosSubdominios + limpios).distinct()
+            it.copy(prefijosSubdominios = nuevos)
         }
     }
 
