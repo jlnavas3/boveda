@@ -101,7 +101,7 @@ android {
                 storePassword = propsFirma.getProperty("storePassword")
                 keyAlias = propsFirma.getProperty("keyAlias")
                 keyPassword = propsFirma.getProperty("keyPassword")
-                enableV1Signing = false
+                enableV1Signing = true
                 enableV2Signing = true
                 enableV3Signing = true
                 enableV4Signing = false
