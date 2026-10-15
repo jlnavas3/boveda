@@ -7,6 +7,7 @@
 package com.jlnavas3.bovedalocal.ui.pantallas.titulos
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -31,6 +32,10 @@ import androidx.compose.ui.unit.sp
 import com.jlnavas3.bovedalocal.ui.preview.BovedaPreview
 import com.jlnavas3.bovedalocal.ui.theme.BovedaTheme
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
+import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
+import com.jlnavas3.bovedalocal.ui.theme.EstiloBorde
+import com.jlnavas3.bovedalocal.ui.theme.FormaPequena
+import com.jlnavas3.bovedalocal.ui.theme.GrosorBorde
 import com.jlnavas3.bovedalocal.ui.theme.SuperficieAlta
 import com.jlnavas3.bovedalocal.ui.theme.TextoPrincipal
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
@@ -43,13 +48,19 @@ fun FilaPreviaCuentaNormalizada(
     modifier: Modifier = Modifier
 ) {
     val haCambiado = tituloActual != tituloNuevo
+    val forma = FormaPequena
+    val tieneBorde = GrosorBorde > 0.dp && EstiloBorde != "ninguno"
 
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(8.dp))
+            .clip(forma)
             .background(SuperficieAlta)
+            .then(
+                if (tieneBorde) Modifier.border(GrosorBorde, ColorBordeActual.copy(alpha = 0.5f), forma)
+                else Modifier
+            )
             .padding(horizontal = 12.dp, vertical = 8.dp)
     ) {
         Column(modifier = Modifier.weight(1f)) {

@@ -29,6 +29,11 @@ import com.jlnavas3.bovedalocal.ui.componentes.VarianteBoton
 import com.jlnavas3.bovedalocal.ui.preview.BovedaPreview
 import com.jlnavas3.bovedalocal.ui.theme.BovedaTheme
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
+import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
+import com.jlnavas3.bovedalocal.ui.theme.ColorTarjetas
+import com.jlnavas3.bovedalocal.ui.theme.CurvaturaEsquinas
+import com.jlnavas3.bovedalocal.ui.theme.EstiloBorde
+import com.jlnavas3.bovedalocal.ui.theme.GrosorBorde
 import com.jlnavas3.bovedalocal.ui.theme.SuperficieAlta
 
 @Composable
@@ -38,13 +43,19 @@ fun BarraInferiorAccionNormalizador(
     alCancelar: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val formaBarra = RoundedCornerShape(topStart = CurvaturaEsquinas, topEnd = CurvaturaEsquinas)
+    val tieneBorde = GrosorBorde > 0.dp && EstiloBorde != "ninguno"
+
     Surface(
-        color = SuperficieAlta,
+        color = ColorTarjetas,
         tonalElevation = 8.dp,
         modifier = modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
-            .border(1.dp, ColorAcento.copy(alpha = 0.2f), RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
+            .clip(formaBarra)
+            .then(
+                if (tieneBorde) Modifier.border(GrosorBorde, ColorBordeActual, formaBarra)
+                else Modifier
+            )
     ) {
         Column(
             modifier = Modifier

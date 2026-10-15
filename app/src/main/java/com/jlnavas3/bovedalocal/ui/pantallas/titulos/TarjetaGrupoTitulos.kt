@@ -54,6 +54,12 @@ import com.jlnavas3.bovedalocal.ui.theme.Superficie
 import com.jlnavas3.bovedalocal.ui.theme.SuperficieAlta
 import com.jlnavas3.bovedalocal.ui.theme.TextoPrincipal
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
+import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
+import com.jlnavas3.bovedalocal.ui.theme.ColorTarjetas
+import com.jlnavas3.bovedalocal.ui.theme.CurvaturaEsquinas
+import com.jlnavas3.bovedalocal.ui.theme.EstiloBorde
+import com.jlnavas3.bovedalocal.ui.theme.FormaTarjeta
+import com.jlnavas3.bovedalocal.ui.theme.GrosorBorde
 import com.jlnavas3.bovedalocal.util.ExtractorSegmentosHost
 import com.jlnavas3.bovedalocal.util.IconosMarcas
 import com.jlnavas3.bovedalocal.util.NormalizadorTitulosSitios
@@ -81,13 +87,19 @@ fun TarjetaGrupoTitulos(
     val segmentos = remember(primeraUrl, tldsConfigurados) {
         ExtractorSegmentosHost.extraer(primeraUrl, tldsConfigurados)
     }
+    val forma = FormaTarjeta
+    val tieneBorde = GrosorBorde > 0.dp && EstiloBorde != "ninguno"
+    val formaIcono = if (CurvaturaEsquinas == 0.dp) RoundedCornerShape(0.dp) else CircleShape
 
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(14.dp))
-            .background(Superficie)
-            .border(1.dp, ColorAcento.copy(alpha = 0.2f), RoundedCornerShape(14.dp))
+            .clip(forma)
+            .background(ColorTarjetas)
+            .then(
+                if (tieneBorde) Modifier.border(GrosorBorde, ColorBordeActual, forma)
+                else Modifier
+            )
             .padding(14.dp)
     ) {
         // Cabecera del grupo
@@ -100,7 +112,7 @@ fun TarjetaGrupoTitulos(
                 contentAlignment = Alignment.Center,
                 modifier = Modifier
                     .size(36.dp)
-                    .clip(CircleShape)
+                    .clip(formaIcono)
                     .background(SuperficieAlta)
             ) {
                 if (infoMarca != null) {

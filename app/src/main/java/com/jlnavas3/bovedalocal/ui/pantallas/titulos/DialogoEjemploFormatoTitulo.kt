@@ -6,6 +6,7 @@
 
 package com.jlnavas3.bovedalocal.ui.pantallas.titulos
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -14,7 +15,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material3.BasicAlertDialog
@@ -36,7 +36,11 @@ import com.jlnavas3.bovedalocal.data.ModoFormatoTitulos
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorTarjetaAjustes
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorTextoAjustes
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
+import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
+import com.jlnavas3.bovedalocal.ui.theme.EstiloBorde
+import com.jlnavas3.bovedalocal.ui.theme.FormaPequena
 import com.jlnavas3.bovedalocal.ui.theme.FormaTarjeta
+import com.jlnavas3.bovedalocal.ui.theme.GrosorBorde
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -64,10 +68,12 @@ fun DialogoEjemploFormatoTitulo(
     }
 
     BasicAlertDialog(onDismissRequest = alCerrar) {
+        val tieneBorde = GrosorBorde > 0.dp && EstiloBorde != "ninguno"
         Surface(
             shape = FormaTarjeta,
             color = ColorTarjetaAjustes,
-            tonalElevation = 6.dp
+            tonalElevation = 6.dp,
+            border = if (tieneBorde) BorderStroke(GrosorBorde, ColorBordeActual) else null
         ) {
             Column(
                 modifier = Modifier
@@ -104,7 +110,7 @@ fun DialogoEjemploFormatoTitulo(
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clip(RoundedCornerShape(8.dp))
+                        .clip(FormaPequena)
                         .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f))
                         .padding(12.dp),
                     verticalArrangement = Arrangement.spacedBy(6.dp)

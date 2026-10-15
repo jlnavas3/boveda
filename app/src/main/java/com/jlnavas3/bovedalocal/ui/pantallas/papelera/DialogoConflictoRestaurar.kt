@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.dp
 import com.jlnavas3.bovedalocal.data.Entrada
 import com.jlnavas3.bovedalocal.ui.componentes.BotonTextoBoveda
 import com.jlnavas3.bovedalocal.ui.componentes.TipoBotonTexto
+import com.jlnavas3.bovedalocal.ui.theme.FormaTarjeta
 import com.jlnavas3.bovedalocal.ui.theme.TextoPrincipal
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
 import com.jlnavas3.bovedalocal.ui.theme.esOscuroActivo
@@ -41,7 +42,7 @@ fun DialogoConflictoRestaurar(
     val fondoDialogo = if (esOscuroActivo) Color(0xFF212023) else Color(0xFFFFFFFF)
     AlertDialog(
         onDismissRequest = alCerrar,
-        shape = RoundedCornerShape(20.dp),
+        shape = FormaTarjeta,
         containerColor = fondoDialogo,
         tonalElevation = 0.dp,
         title = {

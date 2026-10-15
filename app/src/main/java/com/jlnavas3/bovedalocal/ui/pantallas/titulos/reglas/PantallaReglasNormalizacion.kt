@@ -65,7 +65,8 @@ fun PantallaReglasNormalizacion(
             modifier = Modifier
                 .fillMaxSize()
                 .verticalScroll(scrollState)
-                .padding(horizontal = 16.dp, vertical = 12.dp)
+                .padding(horizontal = 16.dp, vertical = 12.dp),
+            verticalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(com.jlnavas3.bovedalocal.ui.theme.EspaciadoComponentes)
         ) {
             SeccionChipsPrefijos(
                 prefijos = ajustes.prefijosSubdominios,
@@ -75,8 +76,6 @@ fun PantallaReglasNormalizacion(
                 modifier = Modifier.fillMaxWidth()
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
-
             SeccionChipsTldsDescartables(
                 tlds = ajustes.tldsDescartables,
                 alAgregarClick = { mostrarDialogoAgregarTld = true },
@@ -84,8 +83,6 @@ fun PantallaReglasNormalizacion(
                 mostrarId = ajustes.mostrarIdsAjustes,
                 modifier = Modifier.fillMaxWidth()
             )
-
-            Spacer(modifier = Modifier.height(16.dp))
 
             SeccionMarcasPersonalizadas(
                 marcasPersonalizadas = ajustes.marcasPersonalizadas,
@@ -95,8 +92,6 @@ fun PantallaReglasNormalizacion(
                 modifier = Modifier.fillMaxWidth()
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
-
             SeccionPuertosRedLocal(
                 puertosServicios = ajustes.puertosServiciosLocales,
                 alAgregarClick = { mostrarDialogoAgregarPuerto = true },
@@ -104,8 +99,6 @@ fun PantallaReglasNormalizacion(
                 mostrarId = ajustes.mostrarIdsAjustes,
                 modifier = Modifier.fillMaxWidth()
             )
-
-            Spacer(modifier = Modifier.height(16.dp))
 
             SeccionConfiguracionRedLocal(
                 plantillaRouter = ajustes.plantillaRouterIp,
@@ -123,7 +116,7 @@ fun PantallaReglasNormalizacion(
                 modifier = Modifier.fillMaxWidth()
             )
 
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(8.dp))
 
             BotonBoveda(
                 texto = "Restablecer reglas por defecto",
@@ -133,7 +126,7 @@ fun PantallaReglasNormalizacion(
                 modifier = Modifier.fillMaxWidth()
             )
 
-            Spacer(modifier = Modifier.height(32.dp))
+            Spacer(modifier = Modifier.height(16.dp))
         }
     }
 

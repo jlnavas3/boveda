@@ -37,6 +37,7 @@ import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteGrupo
 import com.jlnavas3.bovedalocal.ui.preview.BovedaPreview
 import com.jlnavas3.bovedalocal.ui.theme.BovedaTheme
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
+import com.jlnavas3.bovedalocal.ui.theme.FormaChip
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
 
 @OptIn(ExperimentalLayoutApi::class)
@@ -79,7 +80,7 @@ fun SeccionNavegadoresPersonalizados(
                 Box(
                     contentAlignment = Alignment.Center,
                     modifier = Modifier
-                        .clip(RoundedCornerShape(8.dp))
+                        .clip(FormaChip)
                         .background(ColorAcento.copy(alpha = 0.15f))
                         .clickable { alAgregarClick() }
                         .padding(horizontal = 12.dp, vertical = 6.dp)

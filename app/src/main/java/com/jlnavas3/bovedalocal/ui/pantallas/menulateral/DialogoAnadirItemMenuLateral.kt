@@ -6,6 +6,7 @@
 
 package com.jlnavas3.bovedalocal.ui.pantallas.menulateral
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -53,7 +54,13 @@ import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorTextoAjustes
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.MapaAjustes
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.NodoAjuste
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
+import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
+import com.jlnavas3.bovedalocal.ui.theme.EstiloBorde
 import com.jlnavas3.bovedalocal.ui.theme.EstiloMono
+import com.jlnavas3.bovedalocal.ui.theme.FormaCampo
+import com.jlnavas3.bovedalocal.ui.theme.FormaPequena
+import com.jlnavas3.bovedalocal.ui.theme.FormaTarjeta
+import com.jlnavas3.bovedalocal.ui.theme.GrosorBorde
 
 /**
  * Diálogo modal para explorar el catálogo de opciones y añadir un acceso directo a la barra lateral.
@@ -82,9 +89,11 @@ fun DialogoAnadirItemMenuLateral(
     BasicAlertDialog(
         onDismissRequest = alCerrar
     ) {
+        val tieneBorde = GrosorBorde > 0.dp && EstiloBorde != "ninguno"
         Surface(
-            shape = RoundedCornerShape(20.dp),
+            shape = FormaTarjeta,
             color = ColorTarjetaAjustes,
+            border = if (tieneBorde) BorderStroke(GrosorBorde, ColorBordeActual) else null,
             modifier = Modifier.fillMaxWidth()
         ) {
             Column(
@@ -111,7 +120,7 @@ fun DialogoAnadirItemMenuLateral(
                         Icon(Icons.Filled.Search, contentDescription = null, tint = ColorAjusteGris, modifier = Modifier.size(18.dp))
                     },
                     modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(12.dp),
+                    shape = FormaCampo,
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedBorderColor = ColorAcento,
                         unfocusedBorderColor = ColorAjusteGris.copy(alpha = 0.3f),
@@ -143,7 +152,7 @@ fun DialogoAnadirItemMenuLateral(
                             Box(
                                 modifier = Modifier
                                     .size(32.dp)
-                                    .clip(RoundedCornerShape(8.dp))
+                                    .clip(FormaPequena)
                                     .background(color),
                                 contentAlignment = Alignment.Center
                             ) {

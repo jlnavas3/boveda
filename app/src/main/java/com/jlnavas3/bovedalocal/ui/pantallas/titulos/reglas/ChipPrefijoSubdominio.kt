@@ -31,6 +31,11 @@ import androidx.compose.ui.unit.sp
 import com.jlnavas3.bovedalocal.ui.preview.BovedaPreview
 import com.jlnavas3.bovedalocal.ui.theme.BovedaTheme
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
+import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
+import com.jlnavas3.bovedalocal.ui.theme.CurvaturaEsquinas
+import com.jlnavas3.bovedalocal.ui.theme.EstiloBorde
+import com.jlnavas3.bovedalocal.ui.theme.FormaChip
+import com.jlnavas3.bovedalocal.ui.theme.GrosorBorde
 import com.jlnavas3.bovedalocal.ui.theme.SuperficieAlta
 import com.jlnavas3.bovedalocal.ui.theme.TextoPrincipal
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
@@ -41,12 +46,18 @@ fun ChipPrefijoSubdominio(
     alEliminar: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val forma = FormaChip
+    val tieneBorde = GrosorBorde > 0.dp && EstiloBorde != "ninguno"
+    val colorBorde = if (tieneBorde) ColorBordeActual else ColorAcento.copy(alpha = 0.25f)
+    val grosorEfectivo = if (tieneBorde) GrosorBorde else 1.dp
+    val formaIcono = if (CurvaturaEsquinas == 0.dp) RoundedCornerShape(0.dp) else CircleShape
+
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
-            .clip(RoundedCornerShape(8.dp))
+            .clip(forma)
             .background(SuperficieAlta)
-            .border(1.dp, ColorAcento.copy(alpha = 0.25f), RoundedCornerShape(8.dp))
+            .border(grosorEfectivo, colorBorde, forma)
             .padding(horizontal = 10.dp, vertical = 6.dp)
     ) {
         Text(
@@ -60,7 +71,7 @@ fun ChipPrefijoSubdominio(
             contentAlignment = Alignment.Center,
             modifier = Modifier
                 .size(18.dp)
-                .clip(CircleShape)
+                .clip(formaIcono)
                 .clickable { alEliminar(prefijo) }
         ) {
             Icon(

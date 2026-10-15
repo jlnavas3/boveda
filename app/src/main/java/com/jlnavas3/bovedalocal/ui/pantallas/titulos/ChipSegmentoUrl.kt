@@ -28,6 +28,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
+import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
+import com.jlnavas3.bovedalocal.ui.theme.CurvaturaEsquinas
+import com.jlnavas3.bovedalocal.ui.theme.EstiloBorde
+import com.jlnavas3.bovedalocal.ui.theme.FormaChip
+import com.jlnavas3.bovedalocal.ui.theme.GrosorBorde
 import com.jlnavas3.bovedalocal.ui.theme.Menta
 import com.jlnavas3.bovedalocal.ui.theme.SuperficieAlta
 import com.jlnavas3.bovedalocal.ui.theme.TextoPrincipal
@@ -42,17 +47,22 @@ fun ChipSegmentoUrl(
     alAlternarRegla: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val forma = FormaChip
+    val colorBorde = if (seleccionado) ColorAcento else if (GrosorBorde > 0.dp && EstiloBorde != "ninguno") ColorBordeActual else ColorAcento.copy(alpha = 0.25f)
+    val grosorEfectivo = if (seleccionado) 1.5.dp else if (GrosorBorde > 0.dp && EstiloBorde != "ninguno") GrosorBorde else 1.dp
+    val formaIconoRegla = if (CurvaturaEsquinas == 0.dp) RoundedCornerShape(0.dp) else CircleShape
+
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
-            .clip(RoundedCornerShape(6.dp))
+            .clip(forma)
             .background(
                 if (seleccionado) ColorAcento.copy(alpha = 0.22f) else SuperficieAlta
             )
             .border(
-                width = 1.dp,
-                color = if (seleccionado) ColorAcento else ColorAcento.copy(alpha = 0.2f),
-                shape = RoundedCornerShape(6.dp)
+                width = grosorEfectivo,
+                color = colorBorde,
+                shape = forma
             )
     ) {
         // Área principal del chip: selecciona el nombre para el servicio
@@ -81,7 +91,7 @@ fun ChipSegmentoUrl(
                 contentAlignment = Alignment.Center,
                 modifier = Modifier
                     .padding(end = 4.dp)
-                    .clip(CircleShape)
+                    .clip(formaIconoRegla)
                     .clickable(onClick = alAlternarRegla)
                     .padding(2.dp)
             ) {

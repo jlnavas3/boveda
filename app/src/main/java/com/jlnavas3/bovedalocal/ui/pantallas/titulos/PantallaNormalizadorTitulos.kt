@@ -167,7 +167,7 @@ fun PantallaNormalizadorTitulos(
                 top = relleno.calculateTopPadding() + 8.dp,
                 bottom = relleno.calculateBottomPadding() + 16.dp
             ),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
+            verticalArrangement = Arrangement.spacedBy((com.jlnavas3.bovedalocal.ui.theme.EspaciadoComponentes * 0.85f).coerceIn(8.dp, 20.dp)),
             modifier = Modifier.fillMaxSize()
         ) {
             if (mostrarVistaRapida) {

@@ -80,7 +80,7 @@ fun SeccionChipsPrefijos(
                 Box(
                     contentAlignment = Alignment.Center,
                     modifier = Modifier
-                        .clip(RoundedCornerShape(8.dp))
+                        .clip(com.jlnavas3.bovedalocal.ui.theme.FormaChip)
                         .background(ColorAcento.copy(alpha = 0.15f))
                         .clickable { alAgregarClick() }
                         .padding(horizontal = 12.dp, vertical = 6.dp)

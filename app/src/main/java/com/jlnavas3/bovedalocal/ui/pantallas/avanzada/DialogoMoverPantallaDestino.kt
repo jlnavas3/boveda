@@ -6,6 +6,7 @@
 
 package com.jlnavas3.bovedalocal.ui.pantallas.avanzada
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -42,6 +43,12 @@ import com.jlnavas3.bovedalocal.ui.componentes.ajustes.InsigniaIdAjuste
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorTarjetaAjustes
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.NodoAjuste
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
+import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
+import com.jlnavas3.bovedalocal.ui.theme.EstiloBorde
+import com.jlnavas3.bovedalocal.ui.theme.FormaCampo
+import com.jlnavas3.bovedalocal.ui.theme.FormaPequena
+import com.jlnavas3.bovedalocal.ui.theme.FormaTarjeta
+import com.jlnavas3.bovedalocal.ui.theme.GrosorBorde
 
 /**
  * Diálogo modal interactivo para seleccionar la pantalla contenedora destino
@@ -55,12 +62,16 @@ fun DialogoMoverPantallaDestino(
     alSeleccionarDestino: (NodoAjuste?) -> Unit, // null representa la raíz (Ajustes)
     alDescartar: () -> Unit
 ) {
+    val tieneBorde = GrosorBorde > 0.dp && EstiloBorde != "ninguno"
+    val bordeGeneral = if (tieneBorde) BorderStroke(GrosorBorde, ColorBordeActual) else null
+
     Dialog(onDismissRequest = alDescartar) {
         Card(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp),
-            shape = RoundedCornerShape(20.dp),
+            shape = FormaTarjeta,
+            border = bordeGeneral,
             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
         ) {
             Column(
@@ -111,7 +122,8 @@ fun DialogoMoverPantallaDestino(
                                 .fillMaxWidth()
                                 .padding(vertical = 4.dp)
                                 .clickable { alSeleccionarDestino(null) },
-                            shape = RoundedCornerShape(12.dp),
+                            shape = FormaCampo,
+                            border = bordeGeneral,
                             colors = CardDefaults.cardColors(containerColor = ColorTarjetaAjustes)
                         ) {
                             Row(
@@ -123,7 +135,7 @@ fun DialogoMoverPantallaDestino(
                                 Box(
                                     modifier = Modifier
                                         .size(36.dp)
-                                        .background(ColorAcento.copy(alpha = 0.15f), RoundedCornerShape(8.dp)),
+                                        .background(ColorAcento.copy(alpha = 0.15f), FormaPequena),
                                     contentAlignment = Alignment.Center
                                 ) {
                                     Icon(
@@ -158,7 +170,8 @@ fun DialogoMoverPantallaDestino(
                                 .fillMaxWidth()
                                 .padding(vertical = 4.dp)
                                 .clickable { alSeleccionarDestino(destino) },
-                            shape = RoundedCornerShape(12.dp),
+                            shape = FormaCampo,
+                            border = bordeGeneral,
                             colors = CardDefaults.cardColors(containerColor = ColorTarjetaAjustes)
                         ) {
                             Row(
@@ -170,7 +183,7 @@ fun DialogoMoverPantallaDestino(
                                 Box(
                                     modifier = Modifier
                                         .size(36.dp)
-                                        .background(MaterialTheme.colorScheme.primaryContainer, RoundedCornerShape(8.dp)),
+                                        .background(MaterialTheme.colorScheme.primaryContainer, FormaPequena),
                                     contentAlignment = Alignment.Center
                                 ) {
                                     Icon(

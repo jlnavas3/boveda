@@ -29,6 +29,8 @@ import com.jlnavas3.bovedalocal.data.Identidad
 import com.jlnavas3.bovedalocal.ui.componentes.TamanoCuerpo
 import com.jlnavas3.bovedalocal.ui.componentes.TextoCuerpo
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
+import com.jlnavas3.bovedalocal.ui.theme.CurvaturaEsquinas
+import com.jlnavas3.bovedalocal.ui.theme.FormaChip
 import com.jlnavas3.bovedalocal.ui.theme.parsearColorO
 
 /**
@@ -42,7 +44,8 @@ fun InsigniaIdentidadEntrada(
     modifier: Modifier = Modifier
 ) {
     val colorBase = parsearColorO(identidad.colorHex ?: "", ColorAcento)
-    val forma = RoundedCornerShape(12.dp)
+    val forma = FormaChip
+    val formaPunto = if (CurvaturaEsquinas == 0.dp) RoundedCornerShape(0.dp) else CircleShape
 
     val paddingH = if (compacta) 5.dp else 7.dp
     val paddingV = if (compacta) 0.5.dp else 2.dp
@@ -59,7 +62,7 @@ fun InsigniaIdentidadEntrada(
         Box(
             modifier = Modifier
                 .size(tamanoPunto)
-                .clip(CircleShape)
+                .clip(formaPunto)
                 .background(colorBase)
         )
         Spacer(Modifier.width(if (compacta) 3.5.dp else 5.dp))
