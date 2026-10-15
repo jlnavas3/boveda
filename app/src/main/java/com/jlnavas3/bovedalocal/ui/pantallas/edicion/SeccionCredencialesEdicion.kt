@@ -138,7 +138,19 @@ fun SeccionCredencialesEdicion(
         mostrarIcono = true,
         icono = Icons.Filled.Person,
         colorBordeIzquierdo = ColorDatosUsuario,
-        botonLimpiar = true
+        trailingIcon = {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                if (usuario.isNotEmpty()) {
+                    com.jlnavas3.bovedalocal.ui.componentes.ajustes.BotonLimpiarTexto(onLimpiar = { alCambiarUsuario("") })
+                }
+                BotonAliasCorreo(
+                    usuarioActual = usuario,
+                    tituloEntrada = "",
+                    alSeleccionarAlias = alCambiarUsuario,
+                    haptica = haptica
+                )
+            }
+        }
     )
 
     Spacer(Modifier.height(12.dp))

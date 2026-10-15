@@ -8,6 +8,7 @@ package com.jlnavas3.bovedalocal.ui.pantallas.tipos
 
 import com.jlnavas3.bovedalocal.data.Entrada
 import com.jlnavas3.bovedalocal.ui.CriterioOrdenacion
+import com.jlnavas3.bovedalocal.util.FiltroSintaxisBusqueda
 
 /**
  * Filtra y ordena las entradas de un tipo específico según la búsqueda y el criterio de ordenación.
@@ -18,20 +19,13 @@ fun filtrarYOrdenarEntradasTipo(
     soloFavoritos: Boolean,
     criterioOrdenacion: CriterioOrdenacion
 ): List<Entrada> {
-    val q = textoBusqueda.trim().lowercase()
-    return entradas
-        .filter { entrada ->
-            val coincideTexto = if (q.isBlank()) true else {
-                entrada.titulo.lowercase().contains(q) ||
-                entrada.usuario.lowercase().contains(q) ||
-                entrada.notas.lowercase().contains(q) ||
-                entrada.urls.any { it.lowercase().contains(q) } ||
-                entrada.etiquetas.any { it.lowercase().contains(q) } ||
-                entrada.camposPersonalizados.any { it.etiqueta.lowercase().contains(q) || it.valor.lowercase().contains(q) }
-            }
-            val coincideFavorito = if (soloFavoritos) entrada.favorito else true
-            coincideTexto && coincideFavorito
-        }
+    val filtradasPorBase = if (soloFavoritos) entradas.filter { it.favorito } else entradas
+    val filtradas = if (textoBusqueda.isBlank()) {
+        filtradasPorBase
+    } else {
+        FiltroSintaxisBusqueda.filtrar(filtradasPorBase, textoBusqueda)
+    }
+    return filtradas
         .sortedWith { a, b ->
             when (criterioOrdenacion) {
                 CriterioOrdenacion.NOMBRE_AZ -> a.titulo.compareTo(b.titulo, ignoreCase = true)

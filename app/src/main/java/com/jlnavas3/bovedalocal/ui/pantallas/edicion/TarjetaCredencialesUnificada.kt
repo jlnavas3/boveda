@@ -206,7 +206,19 @@ fun TarjetaCredencialesUnificada(
                 mostrarIcono = true,
                 icono = Icons.Filled.Person,
                 colorIcono = ColorDatosUsuario,
-                botonLimpiar = true,
+                trailingIcon = {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        if (usuario.isNotEmpty()) {
+                            com.jlnavas3.bovedalocal.ui.componentes.ajustes.BotonLimpiarTexto(onLimpiar = { alCambiarUsuario("") })
+                        }
+                        BotonAliasCorreo(
+                            usuarioActual = usuario,
+                            tituloEntrada = titulo,
+                            alSeleccionarAlias = alCambiarUsuario,
+                            haptica = haptica
+                        )
+                    }
+                },
                 imeAction = ImeAction.Next,
                 keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Down) })
             )
