@@ -31,6 +31,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.rememberCoroutineScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -57,6 +60,7 @@ fun PantallaNormalizadorTitulos(
     val modo by vm.modoFormatoTitulos.collectAsStateWithLifecycle()
     val respetarManuales by vm.respetarTitulosManuales.collectAsStateWithLifecycle()
     val listState = rememberLazyListState()
+    val coroutineScope = rememberCoroutineScope()
     val esSeleccionEspecifica = idsEspecificos != null
     var soloComprometidos by rememberSaveable(esSeleccionEspecifica) { mutableStateOf(!esSeleccionEspecifica) }
     var modoAvanzado by rememberSaveable(esSeleccionEspecifica) { mutableStateOf(esSeleccionEspecifica) }
@@ -197,7 +201,7 @@ fun PantallaNormalizadorTitulos(
                     itemsIndexed(
                         items = gruposVisibles,
                         key = { indice, grupo -> "${indice}_${grupo.id}" }
-                    ) { _, grupo ->
+                    ) { indice, grupo ->
                         TarjetaGrupoTitulos(
                             grupo = grupo,
                             modo = modo,
@@ -214,6 +218,12 @@ fun PantallaNormalizadorTitulos(
                                 vm.alternarPrefijoSubdominio(prefijo)
                             },
                             esSeleccionEspecifica = esSeleccionEspecifica,
+                            alEnfocarCampo = {
+                                coroutineScope.launch {
+                                    delay(100)
+                                    listState.animateScrollToItem(index = 1 + indice, scrollOffset = 0)
+                                }
+                            },
                             modifier = Modifier.fillMaxWidth()
                         )
                     }

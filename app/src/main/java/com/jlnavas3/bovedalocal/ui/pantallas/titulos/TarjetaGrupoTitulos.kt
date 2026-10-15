@@ -4,8 +4,6 @@
  * See LICENSE file in the project root for full license information.
  */
 
-@file:OptIn(androidx.compose.foundation.ExperimentalFoundationApi::class)
-
 package com.jlnavas3.bovedalocal.ui.pantallas.titulos
 
 import androidx.compose.animation.AnimatedVisibility
@@ -42,11 +40,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.relocation.BringIntoViewRequester
-import androidx.compose.foundation.relocation.bringIntoViewRequester
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.focus.onFocusChanged
 import com.jlnavas3.bovedalocal.data.Entrada
 import com.jlnavas3.bovedalocal.data.GrupoTitulosSitio
@@ -62,8 +57,6 @@ import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
 import com.jlnavas3.bovedalocal.util.ExtractorSegmentosHost
 import com.jlnavas3.bovedalocal.util.IconosMarcas
 import com.jlnavas3.bovedalocal.util.NormalizadorTitulosSitios
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 
 @Composable
 fun TarjetaGrupoTitulos(
@@ -75,11 +68,10 @@ fun TarjetaGrupoTitulos(
     prefijosSubdominios: List<String> = emptyList(),
     tldsConfigurados: List<String> = emptyList(),
     alSeleccionarSegmento: ((seleccionado: String, descartados: List<String>) -> Unit)? = null,
-    alAlternarReglaPrefijo: ((prefijo: String) -> Unit)? = null
+    alAlternarReglaPrefijo: ((prefijo: String) -> Unit)? = null,
+    alEnfocarCampo: (() -> Unit)? = null
 ) {
     var expandido by remember { mutableStateOf(true) }
-    val bringIntoViewRequester = remember { BringIntoViewRequester() }
-    val coroutineScope = rememberCoroutineScope()
     val infoMarca = remember(grupo.dominioClave) {
         IconosMarcas.buscarInfo(grupo.dominioClave, grupo.nombreEfectivo)
     }
@@ -181,27 +173,19 @@ fun TarjetaGrupoTitulos(
             )
         }
 
-        // Bloque de edición y previsualización sincronizados sobre el teclado
-        Column(
+        // Campo para editar el nombre del servicio para todo el grupo
+        CampoBoveda(
+            valor = grupo.nombrePersonalizado,
+            alCambiar = alCambiarNombre,
+            etiqueta = "Nombre del servicio",
             modifier = Modifier
                 .fillMaxWidth()
-                .bringIntoViewRequester(bringIntoViewRequester)
-        ) {
-            CampoBoveda(
-                valor = grupo.nombrePersonalizado,
-                alCambiar = alCambiarNombre,
-                etiqueta = "Nombre del servicio",
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .onFocusChanged { estadoFoco ->
-                        if (estadoFoco.isFocused) {
-                            coroutineScope.launch {
-                                delay(220)
-                                bringIntoViewRequester.bringIntoView()
-                            }
-                        }
+                .onFocusChanged { estadoFoco ->
+                    if (estadoFoco.isFocused) {
+                        alEnfocarCampo?.invoke()
                     }
-            )
+                }
+        )
 
             // Detalle de cuentas expandible
             AnimatedVisibility(visible = expandido) {
@@ -243,7 +227,6 @@ fun TarjetaGrupoTitulos(
             }
         }
     }
-}
 
 @BovedaPreview
 @Composable
