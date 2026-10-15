@@ -128,7 +128,7 @@ object AnalizadorDuplicados {
             val todasMismaClave = lista.map { it.contrasena }.distinct().size == 1
 
             // Si tienen la misma clave pero llegaron aquí, es porque su usuario literal tiene variantes
-            // (ej. "jlnavas3.utpl.edu.ec" vs "jlnavas3.utpl.edu.ec@gmail.com")
+            // (ej. "usuario.demo" vs "usuario.demo@gmail.com")
             val tipo = if (todasMismaClave) {
                 TipoDuplicado.VARIANTE_USUARIO
             } else {

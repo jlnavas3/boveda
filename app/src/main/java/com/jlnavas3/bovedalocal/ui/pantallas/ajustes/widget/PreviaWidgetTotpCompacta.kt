@@ -156,7 +156,7 @@ fun PreviaWidgetTotpCompacta(
             }
 
             val itemsEjemplo = listOf(
-                Triple("GitHub", "jlnavas3", "482 190"),
+                Triple("GitHub", "usuario.demo", "482 190"),
                 Triple("Google", "correo@gmail.com", "731 564")
             )
             Column(

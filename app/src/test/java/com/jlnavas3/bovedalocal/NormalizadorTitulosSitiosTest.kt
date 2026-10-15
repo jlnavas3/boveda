@@ -69,15 +69,15 @@ class NormalizadorTitulosSitiosTest {
     @Test
     fun formateoColisiones_modosMinimalistaYExplicitos() {
         val base = "Instagram"
-        val usuario = "jolunavi"
+        val usuario = "alex_dev"
 
         // Sin colisión (cuenta única)
         assertEquals("Instagram", NormalizadorTitulosSitios.generarTituloFinal(base, usuario, ModoFormatoTitulos.EXPLICITO_PARENTESIS, tieneColision = false))
 
         // Con colisión
         assertEquals("Instagram", NormalizadorTitulosSitios.generarTituloFinal(base, usuario, ModoFormatoTitulos.MINIMALISTA, tieneColision = true))
-        assertEquals("Instagram (jolunavi)", NormalizadorTitulosSitios.generarTituloFinal(base, usuario, ModoFormatoTitulos.EXPLICITO_PARENTESIS, tieneColision = true))
-        assertEquals("Instagram · jolunavi", NormalizadorTitulosSitios.generarTituloFinal(base, usuario, ModoFormatoTitulos.EXPLICITO_SEPARADOR, tieneColision = true))
+        assertEquals("Instagram (alex_dev)", NormalizadorTitulosSitios.generarTituloFinal(base, usuario, ModoFormatoTitulos.EXPLICITO_PARENTESIS, tieneColision = true))
+        assertEquals("Instagram · alex_dev", NormalizadorTitulosSitios.generarTituloFinal(base, usuario, ModoFormatoTitulos.EXPLICITO_SEPARADOR, tieneColision = true))
     }
 
     @Test

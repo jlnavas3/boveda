@@ -249,8 +249,8 @@ private fun PreviaTarjetaGrupoTitulos() {
                 dominioClave = "account.lenovo.com",
                 nombreSugerido = "Lenovo",
                 entradas = listOf(
-                    Entrada(id = "1", titulo = "account.lenovo.com", usuario = "jolunavi"),
-                    Entrada(id = "2", titulo = "account.lenovo.com", usuario = "jlnavas3")
+                    Entrada(id = "1", titulo = "account.lenovo.com", usuario = "usuario_uno"),
+                    Entrada(id = "2", titulo = "account.lenovo.com", usuario = "usuario_dos")
                 )
             ),
             modo = ModoFormatoTitulos.EXPLICITO_PARENTESIS,

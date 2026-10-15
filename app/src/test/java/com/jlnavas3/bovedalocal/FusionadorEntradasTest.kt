@@ -94,10 +94,10 @@ class FusionadorEntradasTest {
 
     @Test
     fun fusionar_distintosTotp_preservaSegundoComoTotpAlternativo() {
-        val principal = crearEntrada("1", "X (Twitter)", "jolunavi", "Clave123").copy(
+        val principal = crearEntrada("1", "X (Twitter)", "usuario_demo", "Clave123").copy(
             secretoTotp = "JBSWY3DPEHPK3PXP"
         )
-        val secundaria = crearEntrada("2", "X (Twitter)", "jolunavi", "Clave123").copy(
+        val secundaria = crearEntrada("2", "X (Twitter)", "usuario_demo", "Clave123").copy(
             secretoTotp = "KRSXG5CTMVRXEZLU"
         )
 

@@ -121,9 +121,9 @@ fun FilaPreviaCuentaNormalizada(
 private fun PreviaFilaPreviaCuentaNormalizada() {
     BovedaTheme {
         FilaPreviaCuentaNormalizada(
-            usuario = "jolunavi",
+            usuario = "alex_dev",
             tituloActual = "account.lenovo.com",
-            tituloNuevo = "Lenovo (jolunavi)"
+            tituloNuevo = "Lenovo (alex_dev)"
         )
     }
 }

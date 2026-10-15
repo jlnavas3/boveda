@@ -130,7 +130,7 @@ class ResolverIdentidadTest {
         val identidadInicial = Identidad(
             id = "id-init",
             nombre = "Personal",
-            correoPrincipal = "jolunavi@gmail.com",
+            correoPrincipal = "ejemplo.personal@gmail.com",
             colorHex = "#0284C7"
         )
         val boveda = ContenidoBoveda(
@@ -142,6 +142,6 @@ class ResolverIdentidadTest {
 
         assertEquals(1, recuperada.identidades.size)
         assertEquals("Personal", recuperada.identidades[0].nombre)
-        assertEquals("jolunavi@gmail.com", recuperada.identidades[0].correoPrincipal)
+        assertEquals("ejemplo.personal@gmail.com", recuperada.identidades[0].correoPrincipal)
     }
 }

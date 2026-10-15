@@ -77,8 +77,8 @@ object NormalizadorDuplicados {
      * - Si el correo termina en @<dominioServicio> (ej. en spotify.com "juan@spotify.com" y "juan").
      * - Números telefónicos: unifica formato internacional y local (ej. +593991234567 y 0991234567).
      *
-     * IMPORTANTE: Cuentas con usuarios completamente distintos (ej. "curtain.cross" vs "fregenavi")
-     * o correos con dominios institucionales distintos (ej. "jlnavas3@utpl.edu.ec" vs "jlnavas3.utpl.edu.ec@gmail.com")
+     * IMPORTANTE: Cuentas con usuarios completamente distintos (ej. "usuario_uno" vs "usuario_dos")
+     * o correos con dominios institucionales distintos (ej. "estudiante@universidad.edu" vs "estudiante@gmail.com")
      * NUNCA son equivalentes y se mantienen estrictamente separadas.
      */
     fun normalizarUsuario(usuario: String, servicio: String): String {

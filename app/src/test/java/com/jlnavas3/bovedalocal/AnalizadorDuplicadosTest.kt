@@ -60,7 +60,7 @@ class AnalizadorDuplicadosTest {
 
     @Test
     fun `apps de Android diferentes con el mismo correo no se agrupan juntas como misma cuenta`() {
-        val email = "jolunavi@gmail.com"
+        val email = "usuario.ejemplo@gmail.com"
 
         val xiaomi = Entrada(
             id = "1",
@@ -111,7 +111,7 @@ class AnalizadorDuplicadosTest {
 
     @Test
     fun `copias repetidas de la misma app de Android se detectan como identicas y con esAppAndroid true`() {
-        val email = "jolunavi@gmail.com"
+        val email = "usuario.ejemplo@gmail.com"
         val solid1 = Entrada(
             id = "s1",
             titulo = "Solid Explorer File Manager",
@@ -226,21 +226,21 @@ class AnalizadorDuplicadosTest {
         val googleSinDominio = Entrada(
             id = "g1",
             titulo = "accounts.google.com",
-            usuario = "jlnavas3.utpl.edu.ec",
+            usuario = "estudiante.demo",
             contrasena = "claveGoogle123",
             urls = listOf("https://accounts.google.com")
         )
         val googleConGmail = Entrada(
             id = "g2",
             titulo = "accounts.google.com",
-            usuario = "jlnavas3.utpl.edu.ec@gmail.com",
+            usuario = "estudiante.demo@gmail.com",
             contrasena = "claveGoogle123",
             urls = listOf("https://accounts.google.com")
         )
         val googleInstitucional = Entrada(
             id = "g3",
             titulo = "accounts.google.com",
-            usuario = "jlnavas3@utpl.edu.ec",
+            usuario = "estudiante.demo@universidad.edu",
             contrasena = "claveGoogle123", // Misma clave que las otras
             urls = listOf("https://accounts.google.com")
         )
@@ -263,21 +263,21 @@ class AnalizadorDuplicadosTest {
         val u1 = Entrada(
             id = "ig1",
             titulo = "instagram.com",
-            usuario = "curtain.cross",
+            usuario = "usuario_uno",
             contrasena = "mismaClaveParaTodos",
             urls = listOf("https://instagram.com")
         )
         val u2 = Entrada(
             id = "ig2",
             titulo = "instagram.com",
-            usuario = "fregenavi",
+            usuario = "usuario_dos",
             contrasena = "mismaClaveParaTodos",
             urls = listOf("https://instagram.com")
         )
         val u3 = Entrada(
             id = "ig3",
             titulo = "instagram.com",
-            usuario = "its.spoky",
+            usuario = "usuario_tres",
             contrasena = "mismaClaveParaTodos",
             urls = listOf("https://instagram.com")
         )
@@ -294,7 +294,7 @@ class AnalizadorDuplicadosTest {
             id = "pk1",
             tipo = TipoEntrada.PASSKEY,
             titulo = "PayPal",
-            usuario = "jolunavi@gmail.com",
+            usuario = "usuario.ejemplo@gmail.com",
             contrasena = "",
             urls = listOf("paypal.com"),
             passkey = DatosPasskey(
@@ -310,7 +310,7 @@ class AnalizadorDuplicadosTest {
             id = "pwd1",
             tipo = TipoEntrada.LOGIN,
             titulo = "paypal.com",
-            usuario = "jolunavi@gmail.com",
+            usuario = "usuario.ejemplo@gmail.com",
             contrasena = "SuperSecretaPayPal2026!",
             urls = listOf("https://www.paypal.com")
         )
@@ -329,14 +329,14 @@ class AnalizadorDuplicadosTest {
         val e1 = Entrada(
             id = "1",
             titulo = "X (Twitter)",
-            usuario = "jolunavi",
+            usuario = "usuario_ejemplo",
             contrasena = "",
             secretoTotp = "JBSWY3DPEHPK3PXP"
         )
         val e2 = Entrada(
             id = "2",
             titulo = "X (Twitter)",
-            usuario = "jolunavi",
+            usuario = "usuario_ejemplo",
             contrasena = "",
             secretoTotp = "KRSXG5CTMVRXEZLU"
         )
@@ -374,7 +374,7 @@ class AnalizadorDuplicadosTest {
 
     @Test
     fun `entradas de Aldiko con app Android, portal SSO de Google y web se detectan como duplicadas`() {
-        val email = "jolunavi@gmail.com"
+        val email = "usuario.ejemplo@gmail.com"
         val entradaApp = Entrada(
             id = "a1",
             titulo = "Aldiko",
@@ -416,15 +416,15 @@ class AnalizadorDuplicadosTest {
         val outlook = Entrada(
             id = "m1",
             titulo = "Microsoft",
-            usuario = "jlnavas3@outlook.com",
+            usuario = "cuenta.demo@outlook.com",
             contrasena = "",
             urls = listOf("https://login.microsoft.com"),
-            passkey = com.jlnavas3.bovedalocal.data.DatosPasskey("login.microsoft.com", "Microsoft", "jlnavas3@outlook.com", "cred-1", "priv-1")
+            passkey = com.jlnavas3.bovedalocal.data.DatosPasskey("login.microsoft.com", "Microsoft", "cuenta.demo@outlook.com", "cred-1", "priv-1")
         )
         val hotmail = Entrada(
             id = "m2",
             titulo = "Microsoft",
-            usuario = "jlnavas3@hotmail.com",
+            usuario = "cuenta.demo@hotmail.com",
             contrasena = "claveHotmail123",
             urls = listOf("https://signup.live.com/signup")
         )
@@ -438,7 +438,7 @@ class AnalizadorDuplicadosTest {
         val entradaConUsuario = Entrada(
             id = "claro-1",
             titulo = "Claro Video",
-            usuario = "jolunavi@gmail.com",
+            usuario = "usuario.ejemplo@gmail.com",
             contrasena = "ClaveSecreta123*",
             urls = listOf("https://www.clarovideo.com/")
         )
@@ -456,7 +456,7 @@ class AnalizadorDuplicadosTest {
         assertEquals(TipoDuplicado.VARIANTE_USUARIO, grupo.tipo)
         assertEquals(2, grupo.entradas.size)
         assertEquals("claro-1", grupo.sugeridaPrincipal.id)
-        assertEquals("jolunavi@gmail.com", grupo.sugeridaPrincipal.usuario)
+        assertEquals("usuario.ejemplo@gmail.com", grupo.sugeridaPrincipal.usuario)
     }
 }
 

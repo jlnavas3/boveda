@@ -53,12 +53,12 @@ fun DialogoEjemploFormatoTitulo(
         ModoFormatoTitulos.EXPLICITO_PARENTESIS -> Triple(
             "Servicio (usuario)",
             "Añade el usuario o correo entre paréntesis al final del nombre.",
-            listOf("Instagram (jolunavi)", "Google (cuenta@gmail.com)", "GitHub (dev_jose)")
+            listOf("Instagram (alex_dev)", "Google (cuenta@gmail.com)", "GitHub (usuario_demo)")
         )
         ModoFormatoTitulos.EXPLICITO_SEPARADOR -> Triple(
             "Servicio · usuario",
             "Separa el nombre del servicio y el usuario con un punto medio.",
-            listOf("Instagram · jolunavi", "Google · cuenta@gmail.com", "GitHub · dev_jose")
+            listOf("Instagram · alex_dev", "Google · cuenta@gmail.com", "GitHub · usuario_demo")
         )
         ModoFormatoTitulos.MINIMALISTA -> Triple(
             "Solo servicio (Minimalista)",
