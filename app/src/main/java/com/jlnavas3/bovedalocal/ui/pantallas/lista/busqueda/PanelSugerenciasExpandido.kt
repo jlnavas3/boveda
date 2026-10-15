@@ -57,22 +57,22 @@ fun PanelSugerenciasExpandido(
             .clip(forma)
             .background(ColorTarjetaAjustes.copy(alpha = 0.85f))
             .border(1.dp, ColorBordeActual.copy(alpha = 0.4f), forma)
-            .padding(12.dp)
+            .padding(8.dp)
     ) {
         ProveedorSugerenciasBusqueda.todasPorCategoria.forEach { (categoria, items) ->
             Text(
                 text = categoria.uppercase(),
-                fontSize = 11.sp,
+                fontSize = 10.sp,
                 fontWeight = FontWeight.Bold,
                 color = TextoSecundario,
-                letterSpacing = 0.6.sp,
-                modifier = Modifier.padding(start = 2.dp, bottom = 6.dp, top = 4.dp)
+                letterSpacing = 0.5.sp,
+                modifier = Modifier.padding(start = 2.dp, bottom = 4.dp, top = 2.dp)
             )
 
             FlowRow(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(6.dp),
-                verticalArrangement = Arrangement.spacedBy(6.dp)
+                horizontalArrangement = Arrangement.spacedBy(4.dp),
+                verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
                 items.forEach { item ->
                     val activo = ManejadorInsercionFiltro.estaActivo(textoBusqueda, item.comando)

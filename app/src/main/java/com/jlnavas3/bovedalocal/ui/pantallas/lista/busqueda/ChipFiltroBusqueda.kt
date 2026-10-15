@@ -68,22 +68,22 @@ fun ChipFiltroBusqueda(
         modifier = modifier
             .clip(forma)
             .background(fondoColor)
-            .border(1.dp, bordeColor, forma)
+            .border(0.75.dp, bordeColor, forma)
             .clickable(onClick = alPulsar)
-            .padding(horizontal = 10.dp, vertical = 6.dp),
+            .padding(horizontal = 6.dp, vertical = 2.5.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Icon(
             imageVector = item.icono,
             contentDescription = null,
             tint = iconoColor,
-            modifier = Modifier.size(14.dp)
+            modifier = Modifier.size(11.dp)
         )
-        Spacer(Modifier.width(6.dp))
+        Spacer(Modifier.width(4.dp))
         Text(
             text = item.etiqueta,
             color = textoColor,
-            fontSize = 12.sp,
+            fontSize = 10.5.sp,
             fontWeight = if (estaActivo) FontWeight.SemiBold else FontWeight.Normal
         )
     }

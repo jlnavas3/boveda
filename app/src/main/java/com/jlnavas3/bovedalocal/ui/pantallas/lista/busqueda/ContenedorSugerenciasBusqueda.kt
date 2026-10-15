@@ -55,7 +55,7 @@ fun ContenedorSugerenciasBusqueda(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 2.dp, end = 4.dp),
+                .padding(top = 0.dp, end = 2.dp),
             horizontalArrangement = Arrangement.End,
             verticalAlignment = Alignment.CenterVertically
         ) {

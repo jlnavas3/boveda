@@ -180,7 +180,7 @@ fun BarraSuperiorEntradasTipo(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 6.dp)
+                    .padding(horizontal = 16.dp, vertical = 3.dp)
             ) {
                 BarraBusquedaAnimada(
                     valor = textoBusqueda,
@@ -188,7 +188,7 @@ fun BarraSuperiorEntradasTipo(
                     alCerrar = alCerrarBusqueda
                 )
 
-                Spacer(Modifier.height(6.dp))
+                Spacer(Modifier.height(3.dp))
 
                 com.jlnavas3.bovedalocal.ui.pantallas.lista.busqueda.ContenedorSugerenciasBusqueda(
                     textoBusqueda = textoBusqueda,

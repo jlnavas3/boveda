@@ -27,8 +27,8 @@ fun FilaSugerenciasBusqueda(
 ) {
     LazyRow(
         modifier = modifier.fillMaxWidth(),
-        contentPadding = PaddingValues(horizontal = 4.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
+        contentPadding = PaddingValues(horizontal = 2.dp),
+        horizontalArrangement = Arrangement.spacedBy(5.dp)
     ) {
         items(sugerencias, key = { it.comando }) { item ->
             val activo = ManejadorInsercionFiltro.estaActivo(textoBusqueda, item.comando)

@@ -147,7 +147,7 @@ fun CabeceraPrincipalLista(
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(start = 20.dp, end = 20.dp, top = 6.dp, bottom = 2.dp)
+                        .padding(start = 20.dp, end = 20.dp, top = 4.dp, bottom = 0.dp)
                 ) {
                     BarraBusquedaAnimada(
                         valor = busqueda,
@@ -155,7 +155,7 @@ fun CabeceraPrincipalLista(
                         alCerrar = alCerrarBusqueda
                     )
 
-                    Spacer(Modifier.height(6.dp))
+                    Spacer(Modifier.height(3.dp))
 
                     com.jlnavas3.bovedalocal.ui.pantallas.lista.busqueda.ContenedorSugerenciasBusqueda(
                         textoBusqueda = busqueda,

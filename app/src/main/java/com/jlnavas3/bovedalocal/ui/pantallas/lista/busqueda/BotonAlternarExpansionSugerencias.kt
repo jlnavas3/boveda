@@ -41,24 +41,24 @@ fun BotonAlternarExpansionSugerencias(
         modifier = modifier
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },
-                indication = ripple(bounded = false, radius = 16.dp),
+                indication = ripple(bounded = false, radius = 12.dp),
                 onClick = alAlternar
             )
-            .padding(horizontal = 6.dp, vertical = 4.dp),
+            .padding(horizontal = 4.dp, vertical = 1.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
             text = if (expandido) "Menos" else "Más filtros",
             color = ColorAcento,
-            fontSize = 12.sp,
+            fontSize = 11.sp,
             fontWeight = FontWeight.Medium
         )
-        Spacer(Modifier.width(2.dp))
+        Spacer(Modifier.width(1.dp))
         Icon(
             imageVector = if (expandido) Icons.Filled.KeyboardArrowUp else Icons.Filled.KeyboardArrowDown,
             contentDescription = if (expandido) "Contraer filtros" else "Expandir más filtros",
             tint = ColorAcento,
-            modifier = Modifier.size(16.dp)
+            modifier = Modifier.size(13.dp)
         )
     }
 }
