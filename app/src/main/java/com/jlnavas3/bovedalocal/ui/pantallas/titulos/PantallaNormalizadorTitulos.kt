@@ -40,6 +40,11 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.jlnavas3.bovedalocal.ui.Pantalla
 import com.jlnavas3.bovedalocal.ui.VaultViewModel
 import com.jlnavas3.bovedalocal.ui.componentes.BarraSuperiorPantalla
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.ime
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.foundation.interaction.collectIsDraggedAsState
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -220,13 +225,21 @@ fun PantallaNormalizadorTitulos(
                             esSeleccionEspecifica = esSeleccionEspecifica,
                             alEnfocarCampo = {
                                 coroutineScope.launch {
-                                    delay(100)
+                                    delay(200)
                                     listState.animateScrollToItem(index = 1 + indice, scrollOffset = 0)
                                 }
                             },
                             modifier = Modifier.fillMaxWidth()
                         )
                     }
+                }
+
+                item(key = "espaciador_final_scroll") {
+                    val insetsIme = WindowInsets.ime
+                    val density = LocalDensity.current
+                    val alturaIme = with(density) { insetsIme.getBottom(density).toDp() }
+                    val alturaEspaciador = if (alturaIme > 0.dp) 450.dp else 80.dp
+                    Spacer(modifier = Modifier.height(alturaEspaciador))
                 }
             }
         }
