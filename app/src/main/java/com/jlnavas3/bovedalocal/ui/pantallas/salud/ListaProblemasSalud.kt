@@ -57,7 +57,7 @@ fun ListaProblemasSalud(
             verticalArrangement = Arrangement.spacedBy(espaciadoFilas),
             contentPadding = rellenoInferior
         ) {
-            items(entradas, key = { it.id }) { entrada ->
+            items(entradas, key = { it.id }, contentType = { "problema_fila" }) { entrada ->
                 val (etiqueta, color) = infoDetalle(entrada)
                 FilaProblemaAgil(
                     entrada = entrada,
@@ -90,13 +90,23 @@ fun ListaProblemasSalud(
             verticalArrangement = Arrangement.spacedBy(espaciadoFilas),
             contentPadding = rellenoInferior
         ) {
-            items(itemsAgrupados, key = { item ->
-                when (item) {
-                    is ItemAgrupado.Grupo -> "grupo_${item.clave}"
-                    is ItemAgrupado.Suelto -> "suelto_${item.entrada.id}"
-                    is ItemAgrupado.Hijo -> "hijo_${item.entrada.id}"
+            items(
+                itemsAgrupados,
+                key = { item ->
+                    when (item) {
+                        is ItemAgrupado.Grupo -> "grupo_${item.clave}"
+                        is ItemAgrupado.Suelto -> "suelto_${item.entrada.id}"
+                        is ItemAgrupado.Hijo -> "hijo_${item.entrada.id}"
+                    }
+                },
+                contentType = { item ->
+                    when (item) {
+                        is ItemAgrupado.Grupo -> 0
+                        is ItemAgrupado.Suelto -> 1
+                        is ItemAgrupado.Hijo -> 2
+                    }
                 }
-            }) { item ->
+            ) { item ->
                 when (item) {
                     is ItemAgrupado.Grupo -> {
                         ComponenteGrupoLista(

@@ -45,7 +45,7 @@ fun ColumnaDetallesFilaEntrada(
     compacta: Boolean,
     tieneTotp: Boolean,
     secreto: String?,
-    segundosUnix: Long,
+    segundosUnix: Long? = null,
     separarDigitosTotp: Boolean,
     alCopiarCodigo: (String) -> Unit,
     ocultarUsuario: Boolean,
@@ -93,18 +93,32 @@ fun ColumnaDetallesFilaEntrada(
 
             if (tieneTotp && secreto != null) {
                 Spacer(Modifier.width(8.dp))
-                ContenidoTotpEnFila(
-                    secreto = secreto,
-                    segundosUnix = segundosUnix,
-                    periodo = entrada.totpPeriodo.toLong().coerceAtLeast(10L),
-                    digitos = entrada.totpDigitos,
-                    algoritmo = entrada.totpAlgoritmo,
-                    separarDigitosTotp = separarDigitosTotp,
-                    compacta = compacta,
-                    alCopiarCodigo = alCopiarCodigo,
-                    ocultarTotp = ocultarTotp,
-                    estiloOcultamiento = estiloOcultamiento
-                )
+                if (segundosUnix != null) {
+                    ContenidoTotpEnFila(
+                        secreto = secreto,
+                        segundosUnix = segundosUnix,
+                        periodo = entrada.totpPeriodo.toLong().coerceAtLeast(10L),
+                        digitos = entrada.totpDigitos,
+                        algoritmo = entrada.totpAlgoritmo,
+                        separarDigitosTotp = separarDigitosTotp,
+                        compacta = compacta,
+                        alCopiarCodigo = alCopiarCodigo,
+                        ocultarTotp = ocultarTotp,
+                        estiloOcultamiento = estiloOcultamiento
+                    )
+                } else {
+                    ContenidoTotpEnFila(
+                        secreto = secreto,
+                        periodo = entrada.totpPeriodo.toLong().coerceAtLeast(10L),
+                        digitos = entrada.totpDigitos,
+                        algoritmo = entrada.totpAlgoritmo,
+                        separarDigitosTotp = separarDigitosTotp,
+                        compacta = compacta,
+                        alCopiarCodigo = alCopiarCodigo,
+                        ocultarTotp = ocultarTotp,
+                        estiloOcultamiento = estiloOcultamiento
+                    )
+                }
             }
         }
 

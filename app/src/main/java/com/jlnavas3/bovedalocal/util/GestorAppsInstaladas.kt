@@ -56,6 +56,14 @@ object GestorAppsInstaladas {
     }
 
     /**
+     * Limpia únicamente las cachés que contienen referencias a entradas sensibles de la bóveda
+     * al bloquearse, preservando la lista de aplicaciones del sistema para arranques rápidos.
+     */
+    fun limpiarCachesSensibles() {
+        cachePaqueteResueltoPorEntrada.clear()
+    }
+
+    /**
      * Comprueba de manera instantánea si un paquete está instalado usando un Set en memoria.
      * Cero llamadas Binder IPC repetitivas a PackageManager.
      */

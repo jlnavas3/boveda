@@ -6,6 +6,7 @@
 
 package com.jlnavas3.bovedalocal.data
 
+import androidx.compose.runtime.Immutable
 import kotlinx.serialization.Serializable
 import java.util.UUID
 
@@ -13,6 +14,7 @@ import java.util.UUID
  * Representa una Categoria o carpeta tematica definida por el usuario
  * (ej. Finanzas, Trabajo, Entretenimiento, Redes Sociales).
  */
+@Immutable
 @Serializable
 data class Categoria(
     val id: String = UUID.randomUUID().toString(),

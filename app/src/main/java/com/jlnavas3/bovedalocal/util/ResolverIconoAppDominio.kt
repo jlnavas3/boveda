@@ -91,4 +91,9 @@ object ResolverIconoAppDominio {
         }
         return bitmap
     }
+
+    fun limpiarCaches() {
+        synchronized(cachePaquetes) { cachePaquetes.evictAll() }
+        synchronized(cacheBitmaps) { cacheBitmaps.evictAll() }
+    }
 }

@@ -6,8 +6,10 @@
 
 package com.jlnavas3.bovedalocal.data
 
+import androidx.compose.runtime.Immutable
 import kotlinx.serialization.Serializable
 
 /** Una contraseña anterior de una entrada, con la fecha en la que dejó de usarse. */
+@Immutable
 @Serializable
 data class CambioContrasena(val contrasena: String, val cambiadaEn: Long)

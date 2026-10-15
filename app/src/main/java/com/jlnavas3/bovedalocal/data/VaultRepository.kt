@@ -13,8 +13,14 @@ import com.jlnavas3.bovedalocal.crypto.PerfilArgon2
 import com.jlnavas3.bovedalocal.crypto.VaultCrypto
 import com.jlnavas3.bovedalocal.crypto.Zeroizar
 import com.jlnavas3.bovedalocal.util.Diagnostico
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 import java.io.File
 import java.util.UUID
@@ -54,12 +60,22 @@ class VaultRepository private constructor(contexto: Context) {
     @Volatile private var contenido: ContenidoBoveda = ContenidoBoveda()
 
     @Volatile private var sincronizandoDesdeBoveda = false
+    private val scopePersistencia = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+    private var trabajoPersistenciaAjustes: Job? = null
 
     init {
         ajustes.alActualizar = {
             synchronized(candado) {
                 if (!sincronizandoDesdeBoveda && claveMaestra != null) {
-                    persistir()
+                    trabajoPersistenciaAjustes?.cancel()
+                    trabajoPersistenciaAjustes = scopePersistencia.launch {
+                        delay(350L)
+                        synchronized(candado) {
+                            if (!sincronizandoDesdeBoveda && claveMaestra != null) {
+                                persistir()
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -196,6 +212,7 @@ class VaultRepository private constructor(contexto: Context) {
     }
 
     fun bloquear() {
+        trabajoPersistenciaAjustes?.cancel()
         synchronized(candado) {
             esModoSenuelo = false
             Zeroizar.borrar(claveMaestra)

@@ -262,6 +262,8 @@ interface VaultCicloBovedaDelegate {
         val estabaDesbloqueada = repositorio.estaDesbloqueada
         repositorio.bloquear()
         limpiarMemoriaScroll()
+        com.jlnavas3.bovedalocal.util.GestorAppsInstaladas.limpiarCachesSensibles()
+        com.jlnavas3.bovedalocal.util.ResolverIconoAppDominio.limpiarCaches()
         if (estabaDesbloqueada) {
             val limite = repositorio.ajustes.actual.autoBloqueoSegundos
             val mensaje = if (porInactividad) "Bloqueada por caducidad de tiempo (${limite}s de inactividad)" else "Bloqueada manualmente"

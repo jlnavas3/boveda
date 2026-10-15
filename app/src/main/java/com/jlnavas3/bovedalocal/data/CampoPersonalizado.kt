@@ -6,9 +6,11 @@
 
 package com.jlnavas3.bovedalocal.data
 
+import androidx.compose.runtime.Immutable
 import kotlinx.serialization.Serializable
 import java.util.UUID
 
+@Immutable
 @Serializable
 data class CampoPersonalizado(
     val id: String = UUID.randomUUID().toString(),

@@ -6,10 +6,13 @@
 
 package com.jlnavas3.bovedalocal.data
 
+import androidx.compose.runtime.Immutable
+
 /**
  * Agrupa la configuración del Centro de Asistencia y Avisos Internos (In-App).
  * Encapsulado para mantener los slots del constructor de [AjustesApp] dentro de los límites del JVM.
  */
+@Immutable
 data class AjustesAvisos(
     val mostrarCampanaCabecera: Boolean = AjustesDefaults.Avisos.MOSTRAR_CAMPANA_CABECERA,
     val mostrarAvisosPantallaBloqueo: Boolean = AjustesDefaults.Avisos.MOSTRAR_AVISOS_PANTALLA_BLOQUEO,

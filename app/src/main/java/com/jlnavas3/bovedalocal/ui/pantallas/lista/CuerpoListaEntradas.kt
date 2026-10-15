@@ -154,14 +154,6 @@ fun CuerpoListaEntradas(
         } else null
     }
 
-    var segundosUnix by remember { mutableStateOf(System.currentTimeMillis() / 1000) }
-    LaunchedEffect(Unit) {
-        while (true) {
-            segundosUnix = System.currentTimeMillis() / 1000
-            delay(1000)
-        }
-    }
-
     if (esModoSecciones) {
         val alPulsarLargoLote: (Set<String>) -> Unit = { ids ->
             if (!modoSeleccion) {
@@ -207,6 +199,13 @@ fun CuerpoListaEntradas(
                                 "subcab-${item.claveGrupo}"
                             is com.jlnavas3.bovedalocal.util.ItemAgrupadoJerarquico.EntradaHoja ->
                                 "ent-hoja-${item.clavePadre}-${item.entrada.id}"
+                        }
+                    },
+                    contentType = { item ->
+                        when (item) {
+                            is com.jlnavas3.bovedalocal.util.ItemAgrupadoJerarquico.CabeceraPrincipal -> 0
+                            is com.jlnavas3.bovedalocal.util.ItemAgrupadoJerarquico.Subcabecera -> 1
+                            is com.jlnavas3.bovedalocal.util.ItemAgrupadoJerarquico.EntradaHoja -> 2
                         }
                     }
                 ) { item ->
@@ -310,7 +309,6 @@ fun CuerpoListaEntradas(
                                     alCopiarCodigo = { alCopiarCodigoTotp(item.entrada.id, it) },
                                     alPulsarLargo = { alEntrarEnSeleccion(item.entrada.id) },
                                     alAlternarSeleccion = { alAlternarSeleccion(item.entrada.id) },
-                                    segundosUnix = segundosUnix,
                                     alturaFila = densidadAltura,
                                     tamanoMonograma = densidadMonograma,
                                     resaltado = false,
@@ -442,7 +440,6 @@ fun CuerpoListaEntradas(
                                 alCopiarCodigo = { alCopiarCodigoTotp(entradaHija.id, it) },
                                 alPulsarLargo = { alEntrarEnSeleccion(entradaHija.id) },
                                 alAlternarSeleccion = { alAlternarSeleccion(entradaHija.id) },
-                                segundosUnix = segundosUnix,
                                 alturaFila = densidadAltura,
                                 tamanoMonograma = densidadMonograma,
                                 resaltado = coincideLetraHijo,
@@ -469,7 +466,6 @@ fun CuerpoListaEntradas(
                         alCopiarCodigo = { alCopiarCodigoTotp(item.entrada.id, it) },
                         alPulsarLargo = { alEntrarEnSeleccion(item.entrada.id) },
                         alAlternarSeleccion = { alAlternarSeleccion(item.entrada.id) },
-                        segundosUnix = segundosUnix,
                         alturaFila = densidadAltura,
                         tamanoMonograma = densidadMonograma,
                         resaltado = coincideLetra,

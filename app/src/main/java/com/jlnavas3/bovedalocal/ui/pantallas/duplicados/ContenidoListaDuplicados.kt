@@ -56,7 +56,7 @@ fun ContenidoListaDuplicados(
                     Triple(entrada, entrada.id == grupo.sugeridaPrincipal.id, grupo)
                 }
             }
-            items(todasEntradas, key = { it.first.id }) { (entrada, esSugerida, grupo) ->
+            items(todasEntradas, key = { it.first.id }, contentType = { "duplicado_fila" }) { (entrada, esSugerida, grupo) ->
                 FilaEntradaDuplicada(
                     entrada = entrada,
                     esSugerida = esSugerida,
@@ -74,7 +74,7 @@ fun ContenidoListaDuplicados(
                 )
             }
         } else {
-            items(gruposFiltrados, key = { it.idGrupo }) { grupo ->
+            items(gruposFiltrados, key = { it.idGrupo }, contentType = { "duplicado_grupo" }) { grupo ->
                 TarjetaGrupoDuplicado(
                     grupo = grupo,
                     expandido = gruposExpandidos.contains(grupo.idGrupo),

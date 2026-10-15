@@ -77,7 +77,7 @@ fun FilaEntrada(
     alCopiarCodigo: (String) -> Unit = {},
     alPulsarLargo: () -> Unit,
     alAlternarSeleccion: () -> Unit,
-    segundosUnix: Long = System.currentTimeMillis() / 1000,
+    segundosUnix: Long? = null,
     alturaFila: Dp = 74.dp,
     tamanoMonograma: Int = 46,
     resaltado: Boolean = false,

@@ -6,9 +6,11 @@
 
 package com.jlnavas3.bovedalocal.data
 
+import androidx.compose.runtime.Immutable
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
+@Immutable
 @Serializable
 data class Entrada(
     val id: String,

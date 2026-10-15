@@ -6,6 +6,7 @@
 
 package com.jlnavas3.bovedalocal.data
 
+import androidx.compose.runtime.Immutable
 import kotlinx.serialization.Serializable
 import java.util.UUID
 
@@ -13,6 +14,7 @@ import java.util.UUID
  * Representa una Identidad o perfil de usuario (ej. Personal, Trabajo, Compras)
  * vinculado a una dirección de correo principal y alias/correos secundarios.
  */
+@Immutable
 @Serializable
 data class Identidad(
     val id: String = UUID.randomUUID().toString(),

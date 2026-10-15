@@ -56,7 +56,7 @@ fun ContenidoListaPapelera(
             verticalArrangement = Arrangement.spacedBy(espaciadoFilas)
         ) {
             if (!ajustes.agruparPorSitio) {
-                items(ordenadas, key = { it.id }) { entrada ->
+                items(ordenadas, key = { it.id }, contentType = { "papelera_entrada" }) { entrada ->
                     val diasRestantes = if (ajustes.diasRetencionPapelera <= 0) {
                         -1L
                     } else {
@@ -73,13 +73,23 @@ fun ContenidoListaPapelera(
                     )
                 }
             } else {
-                items(itemsAgrupados, key = { item ->
-                    when (item) {
-                        is ItemAgrupado.Grupo -> "grupo_${item.clave}"
-                        is ItemAgrupado.Suelto -> "suelto_${item.entrada.id}"
-                        is ItemAgrupado.Hijo -> "hijo_${item.entrada.id}"
+                items(
+                    itemsAgrupados,
+                    key = { item ->
+                        when (item) {
+                            is ItemAgrupado.Grupo -> "grupo_${item.clave}"
+                            is ItemAgrupado.Suelto -> "suelto_${item.entrada.id}"
+                            is ItemAgrupado.Hijo -> "hijo_${item.entrada.id}"
+                        }
+                    },
+                    contentType = { item ->
+                        when (item) {
+                            is ItemAgrupado.Grupo -> 0
+                            is ItemAgrupado.Suelto -> 1
+                            is ItemAgrupado.Hijo -> 2
+                        }
                     }
-                }) { item ->
+                ) { item ->
                     when (item) {
                         is ItemAgrupado.Grupo -> {
                             ComponenteGrupoLista(

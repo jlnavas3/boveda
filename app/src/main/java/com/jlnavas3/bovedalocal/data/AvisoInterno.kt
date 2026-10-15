@@ -6,11 +6,13 @@
 
 package com.jlnavas3.bovedalocal.data
 
+import androidx.compose.runtime.Immutable
 import com.jlnavas3.bovedalocal.ui.Pantalla
 
 /**
  * Representa una recomendación o aviso interno accionable para el usuario dentro de la bóveda.
  */
+@Immutable
 data class AvisoInterno(
     val tipo: TipoAvisoInterno,
     val categoria: CategoriaAvisoInterno,

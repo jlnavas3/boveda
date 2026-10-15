@@ -26,10 +26,12 @@ import com.jlnavas3.bovedalocal.ui.componentes.seguridad.TextoSeguroVisual
 import com.jlnavas3.bovedalocal.ui.theme.ColorTitulos
 import com.jlnavas3.bovedalocal.ui.theme.EstiloMono
 
+import com.jlnavas3.bovedalocal.ui.totp.rememberSegundosTotpTicker
+
 @Composable
 fun ContenidoTotpEnFila(
     secreto: String,
-    segundosUnix: Long,
+    segundosUnix: Long = rememberSegundosTotpTicker(),
     periodo: Long,
     digitos: Int,
     algoritmo: String,

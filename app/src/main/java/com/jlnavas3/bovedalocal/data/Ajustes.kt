@@ -8,6 +8,7 @@ package com.jlnavas3.bovedalocal.data
 
 import android.content.Context
 import android.content.SharedPreferences
+import androidx.compose.runtime.Immutable
 import com.jlnavas3.bovedalocal.crypto.BiometricKeyStore
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -154,6 +155,7 @@ private fun deserializarItemsMenuLateral(raw: String, migradoV2: Boolean): List<
 val AjustesApp.modoBiometriaActivo: BiometricKeyStore.Modo?
     get() = if (biometriaActiva) BiometricKeyStore.Modo.desde(biometriaModo) else null
 
+@Immutable
 data class AjustesApp(
     val autoBloqueoSegundos: Int = AjustesDefaults.Seguridad.AUTO_BLOQUEO_SEGUNDOS,
     val portapapelesSegundos: Int = AjustesDefaults.Seguridad.PORTAPAPELES_SEGUNDOS,
