@@ -10,7 +10,9 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -37,7 +39,8 @@ fun ContenidoListaPapelera(
     alAlternarGrupo: (String) -> Unit,
     alRestaurar: (Entrada) -> Unit,
     alBorrarDefinitivo: (Entrada) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    estadoLista: LazyListState = rememberLazyListState()
 ) {
     if (papelera.isEmpty()) {
         Box(
@@ -48,6 +51,7 @@ fun ContenidoListaPapelera(
         }
     } else {
         LazyColumn(
+            state = estadoLista,
             modifier = modifier.fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(espaciadoFilas)
         ) {

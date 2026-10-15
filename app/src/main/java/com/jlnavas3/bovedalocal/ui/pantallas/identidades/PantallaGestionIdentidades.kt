@@ -35,6 +35,7 @@ import com.jlnavas3.bovedalocal.ui.componentes.BarraSuperiorPantalla
 import com.jlnavas3.bovedalocal.ui.componentes.TamanoCuerpo
 import com.jlnavas3.bovedalocal.ui.componentes.TextoCuerpo
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjustesFondo
+import com.jlnavas3.bovedalocal.ui.scroll.rememberLazyListStatePersistente
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.ColorSobreAcento
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
@@ -117,7 +118,7 @@ fun PantallaGestionIdentidades(
     var identidadAEditar by remember { mutableStateOf<Identidad?>(null) }
     var identidadAEliminar by remember { mutableStateOf<Identidad?>(null) }
 
-    val listState = rememberLazyListState()
+    val listState = rememberLazyListStatePersistente("identidades", vm.gestorScroll)
 
     CerrarTecladoAlHacerScroll(listState.isScrollInProgress)
 

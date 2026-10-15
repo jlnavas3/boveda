@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.rememberLazyListState
+import com.jlnavas3.bovedalocal.ui.scroll.rememberLazyListStatePersistente
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -50,7 +51,7 @@ fun PantallaEntradasTipo(tipo: TipoEntrada, vm: VaultViewModel) {
     val todasLasEntradasDelTipo = remember(todasLasEntradas, tipo) {
         todasLasEntradas.filter { it.tipo == tipo }
     }
-    val lazyListState = rememberLazyListState()
+    val lazyListState = rememberLazyListStatePersistente("tipo_${tipo.name}", vm.gestorScroll)
     val conSeparador by remember {
         derivedStateOf { lazyListState.firstVisibleItemIndex > 0 || lazyListState.firstVisibleItemScrollOffset > 0 }
     }

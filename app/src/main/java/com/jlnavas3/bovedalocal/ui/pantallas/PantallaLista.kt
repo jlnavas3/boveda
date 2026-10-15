@@ -51,6 +51,7 @@ import com.jlnavas3.bovedalocal.ui.pantallas.lista.bottomsheets.BottomSheetFiltr
 import com.jlnavas3.bovedalocal.ui.pantallas.lista.bottomsheets.BottomSheetFiltroIdentidades
 import com.jlnavas3.bovedalocal.ui.pantallas.lista.rememberEstadoDialogosLista
 import com.jlnavas3.bovedalocal.ui.pantallas.lista.rememberEstadoSeleccionLista
+import com.jlnavas3.bovedalocal.ui.scroll.rememberGruposExpandidosPersistentes
 import com.jlnavas3.bovedalocal.ui.componentes.cerrarTecladoAlTocarFuera
 import com.jlnavas3.bovedalocal.ui.theme.calcularEspaciadoFilas
 import com.jlnavas3.bovedalocal.util.DetectorServiciosAccesibilidad
@@ -269,7 +270,7 @@ fun PantallaLista(vm: VaultViewModel, estado: EstadoBoveda) {
     val dialogos = rememberEstadoDialogosLista()
     val visiblesIds = remember(visibles) { visibles.map { it.id } }
     val todoSeleccionado = visiblesIds.isNotEmpty() && estadoSeleccion.seleccionados.containsAll(visiblesIds)
-    var gruposExpandidos by remember { mutableStateOf(setOf<String>()) }
+    var gruposExpandidos by rememberGruposExpandidosPersistentes("lista_principal", vm.gestorGrupos)
 
     BackHandler(enabled = estadoCajon.isOpen || estadoSeleccion.modoSeleccion || busqueda.isNotEmpty()) {
         when {

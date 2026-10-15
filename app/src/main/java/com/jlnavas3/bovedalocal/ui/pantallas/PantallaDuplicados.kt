@@ -43,6 +43,8 @@ import com.jlnavas3.bovedalocal.ui.VaultViewModel
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjustesFondo
 import com.jlnavas3.bovedalocal.ui.pantallas.duplicados.BarraAccionesDuplicados
 import com.jlnavas3.bovedalocal.ui.pantallas.duplicados.BarraChipsFiltroDuplicados
+import com.jlnavas3.bovedalocal.ui.scroll.rememberGruposExpandidosPersistentes
+import com.jlnavas3.bovedalocal.ui.scroll.rememberLazyListStatePersistente
 import com.jlnavas3.bovedalocal.ui.pantallas.duplicados.BarraSuperiorDuplicados
 import com.jlnavas3.bovedalocal.ui.pantallas.duplicados.BotonLimpiezaMasivaFab
 import com.jlnavas3.bovedalocal.ui.pantallas.duplicados.ContenidoListaDuplicados
@@ -158,7 +160,8 @@ fun PantallaDuplicados(
     val espaciadoFilas = remember(ajustes.densidadLista) {
         calcularEspaciadoFilas(ajustes.densidadLista)
     }
-    var gruposExpandidos by rememberSaveable { mutableStateOf(emptySet<String>()) }
+    val estadoLista = rememberLazyListStatePersistente("duplicados", vm.gestorScroll)
+    var gruposExpandidos by rememberGruposExpandidosPersistentes("duplicados", vm.gestorGrupos)
 
     val gruposFiltrados = remember(grupos, filtroActivo, textoBusqueda, ajustes.agruparPorSitio) {
         val filtrados = grupos.filter { grupo ->
@@ -296,7 +299,8 @@ fun PantallaDuplicados(
                         },
                         alPulsarLargo = { id ->
                             seleccionados = seleccionados + id
-                        }
+                        },
+                        estadoLista = estadoLista
                     )
 
                     if (modoSeleccion) {

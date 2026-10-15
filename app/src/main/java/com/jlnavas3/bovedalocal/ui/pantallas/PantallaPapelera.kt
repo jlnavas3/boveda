@@ -31,6 +31,8 @@ import com.jlnavas3.bovedalocal.ui.pantallas.papelera.BarraSuperiorPapelera
 import com.jlnavas3.bovedalocal.ui.pantallas.papelera.ContenidoListaPapelera
 import com.jlnavas3.bovedalocal.ui.pantallas.papelera.DialogoAjustesRetencionPapelera
 import com.jlnavas3.bovedalocal.ui.pantallas.papelera.DialogosPapelera
+import com.jlnavas3.bovedalocal.ui.scroll.rememberGruposExpandidosPersistentes
+import com.jlnavas3.bovedalocal.ui.scroll.rememberLazyListStatePersistente
 import com.jlnavas3.bovedalocal.ui.theme.calcularEspaciadoFilas
 import com.jlnavas3.bovedalocal.util.construirItemsAgrupadosPorTitulo
 
@@ -48,7 +50,8 @@ fun PantallaPapelera(
     var mostrarDialogoRetencion by remember { mutableStateOf(false) }
     var aBorrarDefinitivo by remember { mutableStateOf<Entrada?>(null) }
     var conflictoRestaurar by remember { mutableStateOf<Entrada?>(null) }
-    var gruposExpandidos by rememberSaveable { mutableStateOf(emptySet<String>()) }
+    val estadoLista = rememberLazyListStatePersistente("papelera", vm.gestorScroll)
+    var gruposExpandidos by rememberGruposExpandidosPersistentes("papelera", vm.gestorGrupos)
     val espaciadoFilas = calcularEspaciadoFilas(ajustes.densidadLista)
 
     val ordenadas = remember(papelera) { papelera.sortedByDescending { it.eliminadaEn } }
@@ -120,7 +123,8 @@ fun PantallaPapelera(
                 },
                 alRestaurar = alRestaurarEntrada,
                 alBorrarDefinitivo = { aBorrarDefinitivo = it },
-                modifier = Modifier.weight(1f)
+                modifier = Modifier.weight(1f),
+                estadoLista = estadoLista
             )
         }
     }

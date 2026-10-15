@@ -10,7 +10,9 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
@@ -39,9 +41,11 @@ fun ContenidoListaDuplicados(
     alAlternarSeleccion: (String) -> Unit,
     alAlternarSeleccionGrupo: (Set<String>) -> Unit,
     alPulsarLargo: (String) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    estadoLista: LazyListState = rememberLazyListState()
 ) {
     LazyColumn(
+        state = estadoLista,
         modifier = modifier.fillMaxSize(),
         verticalArrangement = Arrangement.spacedBy(espaciadoFilas),
         contentPadding = PaddingValues(bottom = if (modoSeleccion) 96.dp else if (totalSobrantesIdenticas > 0) 88.dp else 16.dp)

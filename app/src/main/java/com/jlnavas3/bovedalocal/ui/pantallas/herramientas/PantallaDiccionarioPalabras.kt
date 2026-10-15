@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import com.jlnavas3.bovedalocal.ui.scroll.rememberLazyListStatePersistente
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.MenuBook
@@ -136,7 +137,7 @@ fun PantallaDiccionarioPalabras(
         mapa
     }
 
-    val estadoLista = rememberLazyListState()
+    val estadoLista = rememberLazyListStatePersistente("diccionario_palabras", vm.gestorScroll)
     CerrarTecladoAlHacerScroll(estadoLista.isScrollInProgress)
 
     var letraArrastrada by remember { mutableStateOf<Char?>(null) }

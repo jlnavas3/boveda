@@ -116,7 +116,8 @@ fun ColumnScope.ContenidoPrincipalLista(
             alAlternarSeleccion = alAlternarSeleccion,
             alEntrarEnSeleccionLote = alEntrarEnSeleccionLote,
             alAlternarSeleccionLote = alAlternarSeleccionLote,
-            alAlternarGrupo = alAlternarGrupo
+            alAlternarGrupo = alAlternarGrupo,
+            gestorScroll = vm.gestorScroll
         )
     }
 }

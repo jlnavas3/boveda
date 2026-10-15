@@ -10,7 +10,9 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -43,12 +45,14 @@ fun ListaProblemasSalud(
     seleccionActiva: Boolean = false,
     seleccionados: Set<String> = emptySet(),
     alAlternarSeleccion: ((String) -> Unit)? = null,
-    alPulsarLargo: ((String) -> Unit)? = null
+    alPulsarLargo: ((String) -> Unit)? = null,
+    estadoLista: LazyListState = rememberLazyListState()
 ) {
     val rellenoInferior = PaddingValues(bottom = if (seleccionActiva) 96.dp else 16.dp)
 
     if (!agruparPorSitio) {
         LazyColumn(
+            state = estadoLista,
             modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.spacedBy(espaciadoFilas),
             contentPadding = rellenoInferior
@@ -81,6 +85,7 @@ fun ListaProblemasSalud(
             )
         }
         LazyColumn(
+            state = estadoLista,
             modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.spacedBy(espaciadoFilas),
             contentPadding = rellenoInferior

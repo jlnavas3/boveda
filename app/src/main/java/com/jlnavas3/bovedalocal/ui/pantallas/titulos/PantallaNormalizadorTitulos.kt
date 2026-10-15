@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
+import com.jlnavas3.bovedalocal.ui.scroll.rememberLazyListStatePersistente
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.Tune
@@ -64,7 +65,7 @@ fun PantallaNormalizadorTitulos(
     val grupos by vm.gruposTitulos.collectAsStateWithLifecycle()
     val modo by vm.modoFormatoTitulos.collectAsStateWithLifecycle()
     val respetarManuales by vm.respetarTitulosManuales.collectAsStateWithLifecycle()
-    val listState = rememberLazyListState()
+    val listState = rememberLazyListStatePersistente("normalizador_titulos", vm.gestorScroll)
     val coroutineScope = rememberCoroutineScope()
     val esSeleccionEspecifica = idsEspecificos != null
     var soloComprometidos by rememberSaveable(esSeleccionEspecifica) { mutableStateOf(!esSeleccionEspecifica) }

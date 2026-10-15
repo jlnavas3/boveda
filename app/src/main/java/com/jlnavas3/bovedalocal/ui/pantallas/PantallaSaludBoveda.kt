@@ -248,7 +248,9 @@ fun PantallaSaludBoveda(
                     alPulsarLargo = { id ->
                         haptica.toque()
                         seleccionados = seleccionados + id
-                    }
+                    },
+                    gestorScroll = vm.gestorScroll,
+                    gestorGrupos = vm.gestorGrupos
                 )
             }
         }

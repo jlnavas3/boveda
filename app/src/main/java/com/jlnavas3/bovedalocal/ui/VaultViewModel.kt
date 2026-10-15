@@ -68,6 +68,14 @@ class VaultViewModel(app: Application) : AndroidViewModel(app),
     )
     val pantalla: StateFlow<Pantalla> = _pantalla
 
+    val gestorScroll = com.jlnavas3.bovedalocal.ui.scroll.GestorPosicionScroll()
+    val gestorGrupos = com.jlnavas3.bovedalocal.ui.scroll.GestorGruposExpandidos()
+
+    override fun limpiarMemoriaScroll() {
+        gestorScroll.limpiarTodo()
+        gestorGrupos.limpiarTodo()
+    }
+
     private val _trabajando = MutableStateFlow(false)
     val trabajando: StateFlow<Boolean> = _trabajando
 

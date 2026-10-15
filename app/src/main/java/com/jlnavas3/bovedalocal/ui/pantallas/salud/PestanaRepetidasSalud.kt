@@ -10,7 +10,9 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.SearchOff
@@ -47,7 +49,8 @@ fun PestanaRepetidasSalud(
     alIgnorar: (Entrada) -> Unit,
     alAlternarSeleccion: ((String) -> Unit)?,
     alAlternarSeleccionGrupo: ((Set<String>) -> Unit)? = null,
-    alPulsarLargo: ((String) -> Unit)?
+    alPulsarLargo: ((String) -> Unit)?,
+    estadoLista: LazyListState = rememberLazyListState()
 ) {
     var gruposExpandidos by rememberSaveable { mutableStateOf(emptySet<String>()) }
 
@@ -79,6 +82,7 @@ fun PestanaRepetidasSalud(
         }
     } else {
         LazyColumn(
+            state = estadoLista,
             modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.spacedBy(espaciadoFilas),
             contentPadding = rellenoInferior

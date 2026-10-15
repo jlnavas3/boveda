@@ -15,6 +15,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
+import com.jlnavas3.bovedalocal.ui.scroll.GestorPosicionScroll
+import com.jlnavas3.bovedalocal.ui.scroll.rememberLazyListStatePersistente
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Security
 import androidx.compose.runtime.Composable
@@ -65,7 +67,8 @@ fun CuerpoListaEntradas(
     alEntrarEnSeleccionLote: ((Set<String>) -> Unit)? = null,
     alAlternarSeleccionLote: ((Set<String>) -> Unit)? = null,
     identidades: List<com.jlnavas3.bovedalocal.data.Identidad> = emptyList(),
-    categorias: List<com.jlnavas3.bovedalocal.data.Categoria> = emptyList()
+    categorias: List<com.jlnavas3.bovedalocal.data.Categoria> = emptyList(),
+    gestorScroll: com.jlnavas3.bovedalocal.ui.scroll.GestorPosicionScroll? = null
 ) {
     val ambitoCorutina = rememberCoroutineScope()
     val densidad = LocalDensity.current
@@ -126,7 +129,7 @@ fun CuerpoListaEntradas(
         )
     }
 
-    val estadoLista = rememberLazyListState()
+    val estadoLista = rememberLazyListStatePersistente("lista_principal", gestorScroll)
     CerrarTecladoAlHacerScroll(estadoLista.isScrollInProgress)
     val mostrarIndice = ajustes.mostrarIndiceAlfabetico &&
         itemsAMostrar.size >= 5 &&

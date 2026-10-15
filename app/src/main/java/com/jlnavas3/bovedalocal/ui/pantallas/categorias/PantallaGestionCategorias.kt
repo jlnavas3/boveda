@@ -35,6 +35,7 @@ import com.jlnavas3.bovedalocal.ui.componentes.BarraSuperiorPantalla
 import com.jlnavas3.bovedalocal.ui.componentes.TamanoCuerpo
 import com.jlnavas3.bovedalocal.ui.componentes.TextoCuerpo
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjustesFondo
+import com.jlnavas3.bovedalocal.ui.scroll.rememberLazyListStatePersistente
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.ColorSobreAcento
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
@@ -112,7 +113,7 @@ fun PantallaGestionCategorias(
     var categoriaAEditar by remember { mutableStateOf<Categoria?>(null) }
     var categoriaAEliminar by remember { mutableStateOf<Categoria?>(null) }
 
-    val listState = rememberLazyListState()
+    val listState = rememberLazyListStatePersistente("categorias", vm.gestorScroll)
 
     CerrarTecladoAlHacerScroll(listState.isScrollInProgress)
 

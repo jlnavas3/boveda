@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import com.jlnavas3.bovedalocal.ui.scroll.rememberLazyListStatePersistente
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -113,7 +114,7 @@ fun PantallaContrasenasComunes(
         listaFiltrada.sorted().groupBy { it.firstOrNull()?.uppercaseChar() ?: '#' }
     }
 
-    val estadoLista = rememberLazyListState()
+    val estadoLista = rememberLazyListStatePersistente("contrasenas_comunes", vm.gestorScroll)
     CerrarTecladoAlHacerScroll(estadoLista.isScrollInProgress)
 
     val formaBorde = RoundedCornerShape(CurvaturaEsquinas)

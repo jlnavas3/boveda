@@ -38,6 +38,7 @@ interface VaultCicloBovedaDelegate {
     fun ejecutar(bloque: suspend () -> Unit)
     fun ir(pantalla: Pantalla)
     fun irRaiz(pantalla: Pantalla)
+    fun limpiarMemoriaScroll() {}
     fun procesarImportacionQrPendiente() {}
 
     val contextoApp: Application get() = obtenerApp()
@@ -260,6 +261,7 @@ interface VaultCicloBovedaDelegate {
     fun bloquear(porInactividad: Boolean = false) {
         val estabaDesbloqueada = repositorio.estaDesbloqueada
         repositorio.bloquear()
+        limpiarMemoriaScroll()
         if (estabaDesbloqueada) {
             val limite = repositorio.ajustes.actual.autoBloqueoSegundos
             val mensaje = if (porInactividad) "Bloqueada por caducidad de tiempo (${limite}s de inactividad)" else "Bloqueada manualmente"

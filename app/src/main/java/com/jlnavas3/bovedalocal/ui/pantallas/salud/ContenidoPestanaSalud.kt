@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.SearchOff
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -23,6 +24,10 @@ import androidx.compose.ui.unit.dp
 import com.jlnavas3.bovedalocal.data.AjustesApp
 import com.jlnavas3.bovedalocal.data.Entrada
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjusteGris
+import com.jlnavas3.bovedalocal.ui.scroll.GestorGruposExpandidos
+import com.jlnavas3.bovedalocal.ui.scroll.GestorPosicionScroll
+import com.jlnavas3.bovedalocal.ui.scroll.rememberGruposExpandidosPersistentes
+import com.jlnavas3.bovedalocal.ui.scroll.rememberLazyListStatePersistente
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.Peligro
 import com.jlnavas3.bovedalocal.ui.theme.calcularEspaciadoFilas
@@ -53,15 +58,22 @@ fun ContenidoPestanaSalud(
     seleccionados: Set<String> = emptySet(),
     alAlternarSeleccion: ((String) -> Unit)? = null,
     alAlternarSeleccionGrupo: ((Set<String>) -> Unit)? = null,
-    alPulsarLargo: ((String) -> Unit)? = null
+    alPulsarLargo: ((String) -> Unit)? = null,
+    gestorScroll: GestorPosicionScroll? = null,
+    gestorGrupos: GestorGruposExpandidos? = null
 ) {
     val consulta = textoBusqueda.trim()
-    var gruposExpandidos by rememberSaveable { mutableStateOf(emptySet<String>()) }
+    var gruposExpandidos by if (gestorGrupos != null) {
+        rememberGruposExpandidosPersistentes("salud_grupos", gestorGrupos)
+    } else {
+        rememberSaveable { mutableStateOf(emptySet<String>()) }
+    }
     val rellenoInferior = PaddingValues(bottom = if (seleccionActiva) 96.dp else 16.dp)
 
     Box(modifier = modifier) {
         when (pestanaActiva) {
             PestanaSalud.REPETIDAS -> {
+                val estadoRepetidas = rememberLazyListStatePersistente("salud_repetidas", gestorScroll)
                 PestanaRepetidasSalud(
                     duplicadas = duplicadas,
                     consulta = consulta,
@@ -72,6 +84,7 @@ fun ContenidoPestanaSalud(
                     mostrarIndicadores = mostrarIndicadores,
                     seleccionActiva = seleccionActiva,
                     seleccionados = seleccionados,
+                    estadoLista = estadoRepetidas,
                     alCambiarClave = alCambiarClave,
                     alVerDetalle = alVerDetalle,
                     alIgnorar = alIgnorar,
@@ -103,6 +116,7 @@ fun ContenidoPestanaSalud(
                         )
                     }
                 } else {
+                    val estadoComunes = rememberLazyListStatePersistente("salud_comunes", gestorScroll)
                     ListaProblemasSalud(
                         entradas = filtradas,
                         agruparPorSitio = agruparPorSitio,
@@ -110,6 +124,7 @@ fun ContenidoPestanaSalud(
                         gruposExpandidos = gruposExpandidos,
                         espaciadoFilas = espaciadoFilas,
                         ajustes = ajustes,
+                        estadoLista = estadoComunes,
                         alAlternarGrupo = { clave ->
                             gruposExpandidos = if (gruposExpandidos.contains(clave)) {
                                 gruposExpandidos - clave
@@ -151,6 +166,7 @@ fun ContenidoPestanaSalud(
                         )
                     }
                 } else {
+                    val estadoDebiles = rememberLazyListStatePersistente("salud_debiles", gestorScroll)
                     ListaProblemasSalud(
                         entradas = filtradas,
                         agruparPorSitio = agruparPorSitio,
@@ -158,6 +174,7 @@ fun ContenidoPestanaSalud(
                         gruposExpandidos = gruposExpandidos,
                         espaciadoFilas = espaciadoFilas,
                         ajustes = ajustes,
+                        estadoLista = estadoDebiles,
                         alAlternarGrupo = { clave ->
                             gruposExpandidos = if (gruposExpandidos.contains(clave)) {
                                 gruposExpandidos - clave
@@ -202,6 +219,7 @@ fun ContenidoPestanaSalud(
                         )
                     }
                 } else {
+                    val estadoAntiguas = rememberLazyListStatePersistente("salud_antiguas", gestorScroll)
                     ListaProblemasSalud(
                         entradas = filtradas,
                         agruparPorSitio = agruparPorSitio,
@@ -209,6 +227,7 @@ fun ContenidoPestanaSalud(
                         gruposExpandidos = gruposExpandidos,
                         espaciadoFilas = espaciadoFilas,
                         ajustes = ajustes,
+                        estadoLista = estadoAntiguas,
                         alAlternarGrupo = { clave ->
                             gruposExpandidos = if (gruposExpandidos.contains(clave)) {
                                 gruposExpandidos - clave
@@ -253,6 +272,7 @@ fun ContenidoPestanaSalud(
                         )
                     }
                 } else {
+                    val estadoIgnoradas = rememberLazyListStatePersistente("salud_ignoradas", gestorScroll)
                     ListaProblemasSalud(
                         entradas = filtradas,
                         agruparPorSitio = agruparPorSitio,
@@ -260,6 +280,7 @@ fun ContenidoPestanaSalud(
                         gruposExpandidos = gruposExpandidos,
                         espaciadoFilas = espaciadoFilas,
                         ajustes = ajustes,
+                        estadoLista = estadoIgnoradas,
                         alAlternarGrupo = { clave ->
                             gruposExpandidos = if (gruposExpandidos.contains(clave)) {
                                 gruposExpandidos - clave
