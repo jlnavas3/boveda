@@ -365,8 +365,14 @@ fun RaizBoveda(vm: VaultViewModel, actividad: FragmentActivity) {
                         mostrarIdsAjustes = ajustes.mostrarIdsAjustes
                     )
                     is Pantalla.Ayuda -> com.jlnavas3.bovedalocal.ui.pantallas.ayuda.PantallaAyuda(
+                        vm = vm,
                         alVolver = { vm.volverAtras() },
                         seccionInicial = destino.seccionId
+                    )
+                    is Pantalla.ArticuloAyudaDetalle -> com.jlnavas3.bovedalocal.ui.pantallas.ayuda.EnrutadorArticuloAyuda(
+                        idArticulo = destino.idArticulo,
+                        vm = vm,
+                        alVolver = { vm.volverAtras() }
                     )
                     is Pantalla.Registro -> PantallaRegistro(vm, destino.seccionId)
                     is Pantalla.SaludBoveda -> PantallaSaludBoveda(vm, estado, destino.seccionId)

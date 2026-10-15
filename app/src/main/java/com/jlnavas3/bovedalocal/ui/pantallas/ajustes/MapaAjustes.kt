@@ -8,6 +8,7 @@ package com.jlnavas3.bovedalocal.ui.pantallas.ajustes
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.FormatListBulleted
+import androidx.compose.material.icons.automirrored.filled.HelpOutline
 import androidx.compose.material.icons.automirrored.filled.MenuBook
 import androidx.compose.material.icons.automirrored.filled.Sort
 import androidx.compose.material.icons.filled.AccountBalance
@@ -749,6 +750,18 @@ object MapaAjustes {
             icono = Icons.Filled.Security,
             colorIcono = Color(0xFF607D8B),
             palabrasClave = listOf("diagnostico", "seguridad", "auditoria", "integridad", "hardware", "aislamiento")
+        ),
+        NodoAjuste(
+            id = "06-SIS-AYU",
+            titulo = "Ayuda y manual de uso",
+            subtitulo = "Guía completa de funciones, búsqueda y herramientas",
+            ruta = "Sistema > Ayuda y manual de uso",
+            grupo = "Sistema",
+            pantallaDestino = Pantalla.Ayuda("06-SIS-AYU"),
+            padreId = "06-SIS",
+            icono = Icons.AutoMirrored.Filled.HelpOutline,
+            colorIcono = Color(0xFF00ACC1),
+            palabrasClave = listOf("ayuda", "manual", "guia", "preguntas", "como usar", "tutorial", "documentacion", "faq")
         ),
         NodoAjuste(
             id = "06-SIS-APP",
