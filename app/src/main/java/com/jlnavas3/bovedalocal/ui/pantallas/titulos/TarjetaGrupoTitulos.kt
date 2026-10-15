@@ -4,6 +4,8 @@
  * See LICENSE file in the project root for full license information.
  */
 
+@file:OptIn(androidx.compose.foundation.ExperimentalFoundationApi::class)
+
 package com.jlnavas3.bovedalocal.ui.pantallas.titulos
 
 import androidx.compose.animation.AnimatedVisibility
@@ -39,11 +41,17 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.relocation.BringIntoViewRequester
+import androidx.compose.foundation.relocation.bringIntoViewRequester
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.focus.onFocusChanged
 import com.jlnavas3.bovedalocal.data.Entrada
 import com.jlnavas3.bovedalocal.data.GrupoTitulosSitio
 import com.jlnavas3.bovedalocal.data.ModoFormatoTitulos
 import com.jlnavas3.bovedalocal.ui.componentes.CampoBoveda
-import com.jlnavas3.bovedalocal.ui.componentes.cerrarTecladoAlTocarFuera
 import com.jlnavas3.bovedalocal.ui.preview.BovedaPreview
 import com.jlnavas3.bovedalocal.ui.theme.BovedaTheme
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
@@ -54,6 +62,8 @@ import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
 import com.jlnavas3.bovedalocal.util.ExtractorSegmentosHost
 import com.jlnavas3.bovedalocal.util.IconosMarcas
 import com.jlnavas3.bovedalocal.util.NormalizadorTitulosSitios
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @Composable
 fun TarjetaGrupoTitulos(
@@ -68,6 +78,8 @@ fun TarjetaGrupoTitulos(
     alAlternarReglaPrefijo: ((prefijo: String) -> Unit)? = null
 ) {
     var expandido by remember { mutableStateOf(true) }
+    val bringIntoViewRequester = remember { BringIntoViewRequester() }
+    val coroutineScope = rememberCoroutineScope()
     val infoMarca = remember(grupo.dominioClave) {
         IconosMarcas.buscarInfo(grupo.dominioClave, grupo.nombreEfectivo)
     }
@@ -84,7 +96,6 @@ fun TarjetaGrupoTitulos(
             .clip(RoundedCornerShape(14.dp))
             .background(Superficie)
             .border(1.dp, ColorAcento.copy(alpha = 0.2f), RoundedCornerShape(14.dp))
-            .cerrarTecladoAlTocarFuera()
             .padding(14.dp)
     ) {
         // Cabecera del grupo
@@ -170,42 +181,64 @@ fun TarjetaGrupoTitulos(
             )
         }
 
-        // Campo para editar el nombre del servicio para todo el grupo
-        CampoBoveda(
-            valor = grupo.nombrePersonalizado,
-            alCambiar = alCambiarNombre,
-            etiqueta = "Nombre del servicio",
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        // Detalle de cuentas expandible
-        AnimatedVisibility(visible = expandido) {
-            Column(
+        // Bloque de edición y previsualización sincronizados sobre el teclado
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .bringIntoViewRequester(bringIntoViewRequester)
+        ) {
+            CampoBoveda(
+                valor = grupo.nombrePersonalizado,
+                alCambiar = alCambiarNombre,
+                etiqueta = "Nombre del servicio",
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 10.dp)
-            ) {
-                Text(
-                    text = "Previsualización de cuentas:",
-                    color = TextoSecundario,
-                    fontSize = 12.sp,
-                    fontWeight = FontWeight.Medium,
-                    modifier = Modifier.padding(bottom = 6.dp)
-                )
-                grupo.entradas.forEach { entrada ->
-                    val tituloNuevo = NormalizadorTitulosSitios.generarTituloFinal(
-                        nombreBase = grupo.nombreEfectivo,
-                        usuario = entrada.usuario,
-                        modo = modo,
-                        tieneColision = grupo.tieneColision,
-                        forzarFormato = esSeleccionEspecifica
+                    .onFocusChanged { estadoFoco ->
+                        if (estadoFoco.isFocused) {
+                            coroutineScope.launch {
+                                delay(220)
+                                bringIntoViewRequester.bringIntoView()
+                            }
+                        }
+                    }
+            )
+
+            // Detalle de cuentas expandible
+            AnimatedVisibility(visible = expandido) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 10.dp)
+                ) {
+                    Text(
+                        text = "Previsualización de cuentas:",
+                        color = TextoSecundario,
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Medium,
+                        modifier = Modifier.padding(bottom = 6.dp)
                     )
-                    FilaPreviaCuentaNormalizada(
-                        usuario = entrada.usuario,
-                        tituloActual = entrada.titulo,
-                        tituloNuevo = tituloNuevo,
-                        modifier = Modifier.padding(vertical = 3.dp)
-                    )
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .heightIn(max = 160.dp)
+                            .verticalScroll(rememberScrollState())
+                    ) {
+                        grupo.entradas.forEach { entrada ->
+                            val tituloNuevo = NormalizadorTitulosSitios.generarTituloFinal(
+                                nombreBase = grupo.nombreEfectivo,
+                                usuario = entrada.usuario,
+                                modo = modo,
+                                tieneColision = grupo.tieneColision,
+                                forzarFormato = esSeleccionEspecifica
+                            )
+                            FilaPreviaCuentaNormalizada(
+                                usuario = entrada.usuario,
+                                tituloActual = entrada.titulo,
+                                tituloNuevo = tituloNuevo,
+                                modifier = Modifier.padding(vertical = 3.dp)
+                            )
+                        }
+                    }
                 }
             }
         }

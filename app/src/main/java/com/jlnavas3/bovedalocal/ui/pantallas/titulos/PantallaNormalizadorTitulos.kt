@@ -37,8 +37,9 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.jlnavas3.bovedalocal.ui.Pantalla
 import com.jlnavas3.bovedalocal.ui.VaultViewModel
 import com.jlnavas3.bovedalocal.ui.componentes.BarraSuperiorPantalla
-import com.jlnavas3.bovedalocal.ui.componentes.CerrarTecladoAlHacerScroll
-import com.jlnavas3.bovedalocal.ui.componentes.cerrarTecladoAlTocarFuera
+import androidx.compose.foundation.interaction.collectIsDraggedAsState
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjustesFondo
 import com.jlnavas3.bovedalocal.ui.preview.BovedaPantallaPreview
 import com.jlnavas3.bovedalocal.ui.theme.BovedaTheme
@@ -138,10 +139,17 @@ fun PantallaNormalizadorTitulos(
                 )
             }
         },
-        modifier = Modifier.cerrarTecladoAlTocarFuera(),
         containerColor = ColorAjustesFondo
     ) { relleno ->
-        CerrarTecladoAlHacerScroll(listState.isScrollInProgress)
+        val focusManager = LocalFocusManager.current
+        val keyboardController = LocalSoftwareKeyboardController.current
+        val isDragged by listState.interactionSource.collectIsDraggedAsState()
+        LaunchedEffect(isDragged) {
+            if (isDragged) {
+                focusManager.clearFocus()
+                keyboardController?.hide()
+            }
+        }
         LazyColumn(
             state = listState,
             contentPadding = PaddingValues(
@@ -151,9 +159,7 @@ fun PantallaNormalizadorTitulos(
                 bottom = relleno.calculateBottomPadding() + 16.dp
             ),
             verticalArrangement = Arrangement.spacedBy(12.dp),
-            modifier = Modifier
-                .fillMaxSize()
-                .cerrarTecladoAlTocarFuera()
+            modifier = Modifier.fillMaxSize()
         ) {
             if (mostrarVistaRapida) {
                 item(key = "vista_rapida_1toque") {
