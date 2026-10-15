@@ -8,6 +8,7 @@ package com.jlnavas3.bovedalocal.data
 
 import android.content.Context
 import com.jlnavas3.bovedalocal.crypto.BiometricKeyStore
+import com.jlnavas3.bovedalocal.crypto.CompresorBoveda
 import com.jlnavas3.bovedalocal.crypto.KdfParams
 import com.jlnavas3.bovedalocal.crypto.PerfilArgon2
 import com.jlnavas3.bovedalocal.crypto.VaultCrypto
@@ -138,8 +139,10 @@ class VaultRepository private constructor(contexto: Context) {
             Zeroizar.borrar(clave)
             throw e
         }
-        val leido = json.decodeFromString(ContenidoBoveda.serializer(), String(plano, Charsets.UTF_8))
+        val descomprimido = CompresorBoveda.descomprimir(plano)
+        val leido = json.decodeFromString(ContenidoBoveda.serializer(), String(descomprimido, Charsets.UTF_8))
         Zeroizar.borrar(plano)
+        if (descomprimido !== plano) Zeroizar.borrar(descomprimido)
         synchronized(candado) {
             if (claveMaestra != null) {
                 // Alguien ha abierto la bóveda mientras derivábamos: otra pantalla, el
@@ -174,8 +177,10 @@ class VaultRepository private constructor(contexto: Context) {
         val bytes = archivoBoveda.readBytes()
         val cabecera = VaultCrypto.leerCabecera(bytes)
         val plano = VaultCrypto.descifrar(bytes, clave)
-        val leido = json.decodeFromString(ContenidoBoveda.serializer(), String(plano, Charsets.UTF_8))
+        val descomprimido = CompresorBoveda.descomprimir(plano)
+        val leido = json.decodeFromString(ContenidoBoveda.serializer(), String(descomprimido, Charsets.UTF_8))
         Zeroizar.borrar(plano)
+        if (descomprimido !== plano) Zeroizar.borrar(descomprimido)
         synchronized(candado) {
             // Misma guarda que en desbloquear(): aqui no hay Argon2, pero leer y
             // descifrar el archivo tampoco es instantaneo y la carrera es la misma.
@@ -566,6 +571,21 @@ class VaultRepository private constructor(contexto: Context) {
         }
     }
 
+    fun alternarIgnorarSaludVarias(ids: Set<String>, forzarMarcar: Boolean? = null) {
+        if (ids.isEmpty()) return
+        synchronized(candado) {
+            val entradasObjetivo = contenido.entradas.filter { it.id in ids }
+            if (entradasObjetivo.isEmpty()) return
+            val marcar = forzarMarcar ?: entradasObjetivo.any { !it.ignoradaEnSalud }
+            val ahora = System.currentTimeMillis()
+            val mapaModificadas = entradasObjetivo.associate { it.id to it.copy(ignoradaEnSalud = marcar, modificadaEn = ahora) }
+            val nuevaLista = contenido.entradas.map { mapaModificadas[it.id] ?: it }
+            contenido = contenido.copy(entradas = nuevaLista)
+            persistir()
+            publicar()
+        }
+    }
+
     fun passkeys(): List<Entrada> = contenido.entradas.filter { it.eliminadaEn == 0L && it.passkey != null }
 
     fun passkeysDe(rpId: String): List<Entrada> =
@@ -758,9 +778,11 @@ class VaultRepository private constructor(contexto: Context) {
         }
         val clave = claveMaestra ?: throw IllegalStateException("La bóveda está bloqueada")
         contenido = contenido.copy(configuracion = ajustes.actual.aConfiguracionExportable())
-        val plano = json.encodeToString(ContenidoBoveda.serializer(), contenido).toByteArray(Charsets.UTF_8)
+        val jsonBytes = json.encodeToString(ContenidoBoveda.serializer(), contenido).toByteArray(Charsets.UTF_8)
+        val plano = CompresorBoveda.comprimir(jsonBytes)
         val archivo = VaultCrypto.cifrar(plano, clave, salt, params)
         VaultCrypto.escribirAtomico(archivoBoveda, archivo)
+        Zeroizar.borrar(jsonBytes)
         Zeroizar.borrar(plano)
     }
 
@@ -804,8 +826,10 @@ class VaultRepository private constructor(contexto: Context) {
         }
         val saltExport = VaultCrypto.nuevoSalt()
         val clave = VaultCrypto.derivarClave(passwordExportacion, saltExport, KdfParams.PREDETERMINADOS)
-        val plano = json.encodeToString(ContenidoBoveda.serializer(), instantanea).toByteArray(Charsets.UTF_8)
+        val jsonBytes = json.encodeToString(ContenidoBoveda.serializer(), instantanea).toByteArray(Charsets.UTF_8)
+        val plano = CompresorBoveda.comprimir(jsonBytes)
         val salida = VaultCrypto.cifrar(plano, clave, saltExport, KdfParams.PREDETERMINADOS)
+        Zeroizar.borrar(jsonBytes)
         Zeroizar.borrar(plano)
         Zeroizar.borrar(clave)
         return salida
@@ -825,11 +849,33 @@ class VaultRepository private constructor(contexto: Context) {
         }
         val saltExport = VaultCrypto.nuevoSalt()
         val clave = VaultCrypto.derivarClave(passwordExportacion, saltExport, KdfParams.PREDETERMINADOS)
-        val plano = json.encodeToString(ContenidoBoveda.serializer(), instantanea).toByteArray(Charsets.UTF_8)
+        val jsonBytes = json.encodeToString(ContenidoBoveda.serializer(), instantanea).toByteArray(Charsets.UTF_8)
+        val plano = CompresorBoveda.comprimir(jsonBytes)
         val salida = VaultCrypto.cifrar(plano, clave, saltExport, KdfParams.PREDETERMINADOS)
+        Zeroizar.borrar(jsonBytes)
         Zeroizar.borrar(plano)
         Zeroizar.borrar(clave)
         return salida
+    }
+
+    fun inspeccionarCopia(archivo: ByteArray, passwordExportacion: CharArray): InfoRespaldoPrevisualizado {
+        val cabecera = VaultCrypto.leerCabecera(archivo)
+        val clave = VaultCrypto.derivarClave(passwordExportacion, cabecera.salt, cabecera.params)
+        val plano = try {
+            VaultCrypto.descifrar(archivo, clave)
+        } finally {
+            Zeroizar.borrar(clave)
+        }
+        val descomprimido = CompresorBoveda.descomprimir(plano)
+        val importado = json.decodeFromString(ContenidoBoveda.serializer(), String(descomprimido, Charsets.UTF_8))
+        Zeroizar.borrar(plano)
+        if (descomprimido !== plano) Zeroizar.borrar(descomprimido)
+        return InfoRespaldoPrevisualizado(
+            totalEntradas = importado.entradas.size,
+            totalCategorias = importado.categorias.size,
+            totalIdentidades = importado.identidades.size,
+            fechaMasReciente = importado.entradas.maxOfOrNull { it.modificadaEn } ?: 0L
+        )
     }
 
     /** Devuelve el número de entradas importadas (fusiona por id). */
@@ -843,8 +889,10 @@ class VaultRepository private constructor(contexto: Context) {
         } finally {
             Zeroizar.borrar(clave)
         }
-        val importado = json.decodeFromString(ContenidoBoveda.serializer(), String(plano, Charsets.UTF_8))
+        val descomprimido = CompresorBoveda.descomprimir(plano)
+        val importado = json.decodeFromString(ContenidoBoveda.serializer(), String(descomprimido, Charsets.UTF_8))
         Zeroizar.borrar(plano)
+        if (descomprimido !== plano) Zeroizar.borrar(descomprimido)
         var nuevas = 0
         synchronized(candado) {
             if (claveMaestra == null) throw IllegalStateException("La bóveda está bloqueada")

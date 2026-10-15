@@ -73,7 +73,9 @@ fun BarraSuperiorLista(
     alRestablecerFiltros: () -> Unit,
     mostrarCampanaAvisos: Boolean = true,
     cantidadAvisos: Int = 0,
-    alAbrirAvisos: () -> Unit = {}
+    alAbrirAvisos: () -> Unit = {},
+    alAbrirSalud: () -> Unit = {},
+    cantidadProblemasSalud: Int = 0
 ) {
     val contexto = LocalContext.current
     val haptica = remember { Haptica(contexto) }
@@ -113,6 +115,18 @@ fun BarraSuperiorLista(
                 color = TextoSecundario,
                 maxLines = 1
             )
+        }
+
+        // Insignia de salud de la bóveda
+        if (totalEntradas > 0) {
+            InsigniaSaludBoveda(
+                alAbrirSalud = {
+                    haptica.tic()
+                    alAbrirSalud()
+                },
+                cantidadProblemas = cantidadProblemasSalud
+            )
+            Spacer(Modifier.width(4.dp))
         }
 
         // Botón Campana de Avisos (con badge si hay recomendaciones)

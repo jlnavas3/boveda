@@ -28,7 +28,7 @@ object FiltradorEntradas {
     ): List<Entrada> {
         val texto = busqueda.trim().lowercase()
         val catEfectiva = filtroCategoria ?: filtroColeccion
-        val filtradas = entradas.filter { entrada ->
+        val filtradasPorBase = entradas.filter { entrada ->
             val coincideIdentidad = when (filtroIdentidad) {
                 null -> true
                 "__SIN_IDENTIDAD__" -> com.jlnavas3.bovedalocal.util.resolverIdentidadParaEntrada(entrada, identidades) == null
@@ -38,12 +38,13 @@ object FiltradorEntradas {
                 (filtroTipo == null || entrada.tipo == filtroTipo) &&
                 (!soloFavoritos || entrada.favorito) &&
                 (filtroEtiqueta == null || entrada.etiquetas.contains(filtroEtiqueta)) &&
-                (catEfectiva == null || entrada.categorias.contains(catEfectiva)) &&
-                (texto.isEmpty() ||
-                    entrada.titulo.lowercase().contains(texto) ||
-                    entrada.usuario.lowercase().contains(texto) ||
-                    entrada.urls.any { it.lowercase().contains(texto) } ||
-                    entrada.etiquetas.any { it.lowercase().contains(texto) })
+                (catEfectiva == null || entrada.categorias.contains(catEfectiva))
+        }
+
+        val filtradas = if (busqueda.isBlank()) {
+            filtradasPorBase
+        } else {
+            com.jlnavas3.bovedalocal.util.FiltroSintaxisBusqueda.filtrar(filtradasPorBase, busqueda)
         }
 
         val comparador: Comparator<Entrada> = when (criterioOrdenacion) {

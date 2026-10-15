@@ -33,6 +33,9 @@ import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
 import com.jlnavas3.bovedalocal.ui.theme.ColorTitulos
 import com.jlnavas3.bovedalocal.ui.theme.Obsidiana
 
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.zIndex
+
 /**
  * Barra superior fija de navegación (Sticky Top Bar) para pantallas secundarias.
  * Queda anclada arriba, fuera del scroll, con botón atrás, título y espacio para acciones.
@@ -52,6 +55,7 @@ fun BarraSuperiorPantalla(
     Column(
         modifier = modifier
             .fillMaxWidth()
+            .zIndex(10f)
             .background(fondoBarra)
     ) {
         Row(
@@ -94,8 +98,15 @@ fun BarraSuperiorPantalla(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(1.dp)
-                    .background(ColorBordeActual.copy(alpha = 0.35f))
+                    .height(4.dp)
+                    .background(
+                        Brush.verticalGradient(
+                            listOf(
+                                Color.Black.copy(alpha = 0.20f),
+                                Color.Transparent
+                            )
+                        )
+                    )
             )
         }
     }

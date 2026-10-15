@@ -205,6 +205,26 @@ interface VaultEntradasDelegate : VaultDuplicadosPapeleraDelegate {
         }
     }
 
+    fun alternarIgnorarSaludVarias(ids: Set<String>, forzarMarcar: Boolean? = null) {
+        if (ids.isEmpty()) return
+        ejecutar {
+            val entradasObjetivo = withContext(Dispatchers.IO) {
+                repositorio.entradas().filter { it.id in ids }
+            }
+            val marcar = forzarMarcar ?: entradasObjetivo.any { !it.ignoradaEnSalud }
+            withContext(Dispatchers.IO) {
+                repositorio.alternarIgnorarSaludVarias(ids, marcar)
+            }
+            val texto = if (marcar) {
+                if (ids.size == 1) "Excluida de la auditoría de salud" else "${ids.size} excluidas de la auditoría"
+            } else {
+                if (ids.size == 1) "Incluida en la auditoría de salud" else "${ids.size} incluidas en la auditoría"
+            }
+            Diagnostico.apuntar("salud", "$texto (${ids.size} entradas)")
+            avisoInterno.value = texto
+        }
+    }
+
     fun nuevoId(): String = repositorio.nuevoId()
 
     // -------------------------------------------------------------- 2FA (TOTP)

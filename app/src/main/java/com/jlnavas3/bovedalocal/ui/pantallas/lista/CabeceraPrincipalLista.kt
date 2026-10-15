@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import com.jlnavas3.bovedalocal.data.Categoria
 import com.jlnavas3.bovedalocal.data.Identidad
 import com.jlnavas3.bovedalocal.data.JerarquiaOrganizacion
@@ -92,9 +93,11 @@ fun CabeceraPrincipalLista(
     mostrarCampanaAvisos: Boolean = true,
     cantidadAvisos: Int = 0,
     alAbrirAvisos: () -> Unit = {},
+    alAbrirSalud: () -> Unit = {},
+    cantidadProblemasSalud: Int = 0,
     modifier: Modifier = Modifier
 ) {
-    Column(modifier = modifier.fillMaxWidth()) {
+    Column(modifier = modifier.fillMaxWidth().zIndex(10f)) {
         if (modoSeleccion) {
             BarraSuperiorSeleccion(
                 cantidad = cantidadSeleccionados,
@@ -130,7 +133,9 @@ fun CabeceraPrincipalLista(
                 alRestablecerFiltros = alRestablecerFiltros,
                 mostrarCampanaAvisos = mostrarCampanaAvisos,
                 cantidadAvisos = cantidadAvisos,
-                alAbrirAvisos = alAbrirAvisos
+                alAbrirAvisos = alAbrirAvisos,
+                alAbrirSalud = alAbrirSalud,
+                cantidadProblemasSalud = cantidadProblemasSalud
             )
 
             AnimatedVisibility(

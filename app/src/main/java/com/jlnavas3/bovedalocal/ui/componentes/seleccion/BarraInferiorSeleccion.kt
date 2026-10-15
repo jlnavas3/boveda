@@ -59,6 +59,8 @@ fun BarraInferiorSeleccion(
     alRenombrar: (() -> Unit)? = null,
     alAsignarCategoria: (() -> Unit)? = null,
     alAsignarColeccion: (() -> Unit)? = null,
+    alAlternarIgnorarAuditoria: (() -> Unit)? = null,
+    todosIgnorados: Boolean = false,
     alUnificar: (() -> Unit)? = null,
     alBorrar: (() -> Unit)? = null,
     modifier: Modifier = Modifier
@@ -156,6 +158,8 @@ fun BarraInferiorSeleccion(
                     alRespaldar = alRespaldar,
                     alTransferirCxf = alTransferirCxf,
                     alUnificar = alUnificar,
+                    alAlternarIgnorarAuditoria = alAlternarIgnorarAuditoria,
+                    todosIgnorados = todosIgnorados,
                     alBorrar = alBorrar,
                     haptica = haptica
                 )

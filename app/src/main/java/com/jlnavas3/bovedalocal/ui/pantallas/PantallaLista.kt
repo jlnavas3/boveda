@@ -284,6 +284,13 @@ fun PantallaLista(vm: VaultViewModel, estado: EstadoBoveda) {
         AnalizadorDuplicados.analizar(entradas).sumOf { it.entradasSecundarias.size }
     }
 
+    val totalProblemasSalud = remember(entradas) {
+        val claves = entradas.filter { it.tipo == com.jlnavas3.bovedalocal.data.TipoEntrada.LOGIN && it.contrasena.isNotBlank() && !it.ignoradaEnSalud }
+        val repetidas = claves.groupBy { it.contrasena }.values.count { it.size > 1 }
+        val muyCortas = claves.count { it.contrasena.length < 8 }
+        repetidas + muyCortas
+    }
+
     val avisos by vm.avisosInternos.collectAsStateWithLifecycle()
     var mostrarModalAvisos by remember { mutableStateOf(false) }
 
@@ -350,6 +357,8 @@ fun PantallaLista(vm: VaultViewModel, estado: EstadoBoveda) {
                     mostrarCampanaAvisos = ajustes.mostrarCampanaAvisosCabecera,
                     cantidadAvisos = avisos.size,
                     alAbrirAvisos = { mostrarModalAvisos = true },
+                    alAbrirSalud = { vm.ir(com.jlnavas3.bovedalocal.ui.Pantalla.SaludBoveda) },
+                    cantidadProblemasSalud = totalProblemasSalud,
                     alRestablecerFiltros = {
                         vm.filtrarPorTipo(null)
                         if (soloFavoritos) vm.alternarSoloFavoritos()

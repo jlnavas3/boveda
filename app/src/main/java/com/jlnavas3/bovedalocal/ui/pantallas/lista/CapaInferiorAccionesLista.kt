@@ -56,6 +56,9 @@ fun BoxScope.CapaInferiorAccionesLista(
         val todosSonFavoritos = remember(itemsSeleccionados) {
             itemsSeleccionados.isNotEmpty() && itemsSeleccionados.all { it.favorito }
         }
+        val todosIgnorados = remember(itemsSeleccionados) {
+            itemsSeleccionados.isNotEmpty() && itemsSeleccionados.all { it.ignoradaEnSalud }
+        }
 
         BarraInferiorSeleccion(
             cantidad = estadoSeleccion.seleccionados.size,
@@ -65,6 +68,12 @@ fun BoxScope.CapaInferiorAccionesLista(
                 estadoSeleccion.salirDeSeleccion()
                 vm.alternarFavoritosVarias(ids)
             },
+            alAlternarIgnorarAuditoria = {
+                val ids = estadoSeleccion.seleccionados.toSet()
+                estadoSeleccion.salirDeSeleccion()
+                vm.alternarIgnorarSaludVarias(ids)
+            },
+            todosIgnorados = todosIgnorados,
             alComparar = {
                 val listaComparar = estadoSeleccion.seleccionados.toList()
                 if (listaComparar.size >= 2) {
