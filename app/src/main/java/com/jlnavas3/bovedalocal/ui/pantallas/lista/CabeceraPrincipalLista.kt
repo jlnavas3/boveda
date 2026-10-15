@@ -95,6 +95,7 @@ fun CabeceraPrincipalLista(
     alAbrirAvisos: () -> Unit = {},
     alAbrirSalud: () -> Unit = {},
     cantidadProblemasSalud: Int = 0,
+    alAbrirAyuda: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier.fillMaxWidth().zIndex(10f)) {
@@ -143,7 +144,7 @@ fun CabeceraPrincipalLista(
                 enter = expandVertically() + fadeIn(),
                 exit = shrinkVertically() + fadeOut()
             ) {
-                Box(
+                Column(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(start = 20.dp, end = 20.dp, top = 6.dp, bottom = 2.dp)
@@ -152,6 +153,14 @@ fun CabeceraPrincipalLista(
                         valor = busqueda,
                         alCambiar = alCambiarBusqueda,
                         alCerrar = alCerrarBusqueda
+                    )
+
+                    Spacer(Modifier.height(6.dp))
+
+                    com.jlnavas3.bovedalocal.ui.pantallas.lista.busqueda.ContenedorSugerenciasBusqueda(
+                        textoBusqueda = busqueda,
+                        alCambiarTextoBusqueda = alCambiarBusqueda,
+                        alAbrirAyuda = alAbrirAyuda
                     )
                 }
             }

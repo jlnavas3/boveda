@@ -61,6 +61,9 @@ fun ColumnScope.ContenidoPrincipalLista(
     if (visibles.isEmpty()) {
         EstadoVacioLista(
             entradasVacias = entradas.isEmpty(),
+            textoBusqueda = busqueda,
+            alCambiarBusqueda = { vm.buscar(it) },
+            alAbrirAyuda = { vm.ir(Pantalla.Ayuda()) },
             alImportarCopia = {
                 haptica.tic()
                 vm.ir(Pantalla.CopiaSeguridad("05-COP-MAN-IMP"))

@@ -7,6 +7,7 @@
 package com.jlnavas3.bovedalocal.ui.pantallas.ajustes
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.HelpOutline
 import androidx.compose.material.icons.filled.Backup
 import androidx.compose.material.icons.filled.Description
 import androidx.compose.material.icons.filled.FileDownload
@@ -87,6 +88,16 @@ fun crearElementosCopiasYSistemaAjustes(
             grupo = "Sistema",
             palabrasClave = "diagnostico seguridad auditoria integridad hardware aislamiento sensores",
             alPulsar = { vm.ir(Pantalla.AcercaDe("06-SIS-DGN")) }
+        ),
+        ElementoMenuAjustes(
+            titulo = "Ayuda y manual de uso",
+            subtitulo = "Búsqueda avanzada, comandos rápidos y funciones",
+            icono = Icons.AutoMirrored.Filled.HelpOutline,
+            colorIcono = Color(0xFF00ACC1),
+            idEtiqueta = "06-SIS-AYU",
+            grupo = "Sistema",
+            palabrasClave = "ayuda manual guia busqueda comandos sintaxis filtros preguntas tutorial",
+            alPulsar = { vm.ir(Pantalla.Ayuda("06-SIS-AYU")) }
         ),
         ElementoMenuAjustes(
             titulo = "Acerca de Bóveda Local",

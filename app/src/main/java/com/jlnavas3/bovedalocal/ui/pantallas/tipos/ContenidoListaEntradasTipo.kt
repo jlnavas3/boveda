@@ -47,6 +47,9 @@ fun ContenidoListaEntradasTipo(
     alAlternarSeleccion: (String) -> Unit,
     alPulsarEntrada: (Entrada) -> Unit,
     alAlternarFavorito: (String) -> Unit,
+    textoBusqueda: String = "",
+    alCambiarBusqueda: (String) -> Unit = {},
+    alAbrirAyuda: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     CerrarTecladoAlHacerScroll(lazyListState.isScrollInProgress)
@@ -74,7 +77,10 @@ fun ContenidoListaEntradasTipo(
                 Spacer(Modifier.height(10.dp))
                 EstadoVacioEntradasTipo(
                     infoTipo = infoTipo,
-                    sinEntradasEnTotal = todasLasEntradas.isEmpty()
+                    sinEntradasEnTotal = todasLasEntradas.isEmpty(),
+                    textoBusqueda = textoBusqueda,
+                    alCambiarBusqueda = alCambiarBusqueda,
+                    alAbrirAyuda = alAbrirAyuda
                 )
             }
         } else {

@@ -18,24 +18,44 @@ import com.jlnavas3.bovedalocal.ui.componentes.EstadoVacioPantalla
 fun EstadoVacioEntradasTipo(
     infoTipo: InfoTipoEntrada,
     sinEntradasEnTotal: Boolean,
+    textoBusqueda: String = "",
+    alCambiarBusqueda: (String) -> Unit = {},
+    alAbrirAyuda: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
-    val titulo = if (sinEntradasEnTotal) {
-        "Todavía no hay ${infoTipo.tituloPlural.lowercase()}"
+    if (textoBusqueda.isNotBlank() && !sinEntradasEnTotal) {
+        com.jlnavas3.bovedalocal.ui.componentes.busqueda.EstadoVacioBusquedaSugerencias(
+            textoBusqueda = textoBusqueda,
+            alSeleccionarSugerencia = { item ->
+                alCambiarBusqueda(
+                    com.jlnavas3.bovedalocal.ui.pantallas.lista.busqueda.ManejadorInsercionFiltro.alternarFiltro(
+                        textoBusqueda,
+                        item.comando
+                    )
+                )
+            },
+            alLimpiarBusqueda = { alCambiarBusqueda("") },
+            alAbrirAyuda = alAbrirAyuda,
+            modifier = modifier
+        )
     } else {
-        "No se encontraron ${infoTipo.tituloPlural.lowercase()}"
-    }
+        val titulo = if (sinEntradasEnTotal) {
+            "Todavía no hay ${infoTipo.tituloPlural.lowercase()}"
+        } else {
+            "No se encontraron ${infoTipo.tituloPlural.lowercase()}"
+        }
 
-    val subtitulo = if (sinEntradasEnTotal) {
-        infoTipo.textoVacioTotal
-    } else {
-        "Ninguna entrada coincide con la búsqueda o filtro aplicado."
-    }
+        val subtitulo = if (sinEntradasEnTotal) {
+            infoTipo.textoVacioTotal
+        } else {
+            "Ninguna entrada coincide con la búsqueda o filtro aplicado."
+        }
 
-    EstadoVacioPantalla(
-        icono = infoTipo.icono,
-        titulo = titulo,
-        subtitulo = subtitulo,
-        modifier = modifier
-    )
+        EstadoVacioPantalla(
+            icono = infoTipo.icono,
+            titulo = titulo,
+            subtitulo = subtitulo,
+            modifier = modifier
+        )
+    }
 }

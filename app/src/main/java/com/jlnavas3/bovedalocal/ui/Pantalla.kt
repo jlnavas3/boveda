@@ -217,6 +217,11 @@ sealed interface Pantalla {
         override fun equals(other: Any?): Boolean = other is AcercaDeApp && other.seccionId == seccionId
         override fun hashCode(): Int = seccionId?.hashCode() ?: 0
     }
+    open class Ayuda(val seccionId: String? = null) : Pantalla {
+        companion object : Ayuda(null)
+        override fun equals(other: Any?): Boolean = other is Ayuda && other.seccionId == seccionId
+        override fun hashCode(): Int = seccionId?.hashCode() ?: 0
+    }
     open class Licencia(val seccionId: String? = null) : Pantalla {
         companion object : Licencia(null)
         override fun equals(other: Any?): Boolean = other is Licencia && other.seccionId == seccionId

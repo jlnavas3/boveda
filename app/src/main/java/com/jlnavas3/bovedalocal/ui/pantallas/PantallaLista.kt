@@ -359,6 +359,7 @@ fun PantallaLista(vm: VaultViewModel, estado: EstadoBoveda) {
                     alAbrirAvisos = { mostrarModalAvisos = true },
                     alAbrirSalud = { vm.ir(com.jlnavas3.bovedalocal.ui.Pantalla.SaludBoveda) },
                     cantidadProblemasSalud = totalProblemasSalud,
+                    alAbrirAyuda = { vm.ir(com.jlnavas3.bovedalocal.ui.Pantalla.Ayuda()) },
                     alRestablecerFiltros = {
                         vm.filtrarPorTipo(null)
                         if (soloFavoritos) vm.alternarSoloFavoritos()

@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -74,6 +75,7 @@ fun BarraSuperiorEntradasTipo(
     alAbrirOrdenacion: () -> Unit,
     alAlternarFavoritos: () -> Unit,
     alRestablecerFiltros: () -> Unit,
+    alAbrirAyuda: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier) {
@@ -175,7 +177,7 @@ fun BarraSuperiorEntradasTipo(
             enter = expandVertically() + fadeIn(),
             exit = shrinkVertically() + fadeOut()
         ) {
-            Box(
+            Column(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp, vertical = 6.dp)
@@ -184,6 +186,14 @@ fun BarraSuperiorEntradasTipo(
                     valor = textoBusqueda,
                     alCambiar = alCambiarTextoBusqueda,
                     alCerrar = alCerrarBusqueda
+                )
+
+                Spacer(Modifier.height(6.dp))
+
+                com.jlnavas3.bovedalocal.ui.pantallas.lista.busqueda.ContenedorSugerenciasBusqueda(
+                    textoBusqueda = textoBusqueda,
+                    alCambiarTextoBusqueda = alCambiarTextoBusqueda,
+                    alAbrirAyuda = alAbrirAyuda
                 )
             }
         }

@@ -145,7 +145,8 @@ fun PantallaEntradasTipo(tipo: TipoEntrada, vm: VaultViewModel) {
                         textoBusqueda = ""
                         soloFavoritos = false
                         criterioOrdenacion = CriterioOrdenacion.NOMBRE_AZ
-                    }
+                    },
+                    alAbrirAyuda = { vm.ir(com.jlnavas3.bovedalocal.ui.Pantalla.Ayuda()) }
                 )
             }
 
@@ -175,7 +176,10 @@ fun PantallaEntradasTipo(tipo: TipoEntrada, vm: VaultViewModel) {
                 alAlternarFavorito = { id ->
                     haptica.tic()
                     vm.alternarFavorito(id)
-                }
+                },
+                textoBusqueda = textoBusqueda,
+                alCambiarBusqueda = { textoBusqueda = it },
+                alAbrirAyuda = { vm.ir(Pantalla.Ayuda()) }
             )
 
             if (modoSeleccion) {

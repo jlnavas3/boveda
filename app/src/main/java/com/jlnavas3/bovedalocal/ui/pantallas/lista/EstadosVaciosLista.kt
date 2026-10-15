@@ -38,6 +38,9 @@ import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
 @Composable
 fun EstadoVacioLista(
     entradasVacias: Boolean,
+    textoBusqueda: String = "",
+    alCambiarBusqueda: (String) -> Unit = {},
+    alAbrirAyuda: () -> Unit = {},
     alImportarCopia: () -> Unit,
     alImportarCsvGoogle: () -> Unit,
     alImportarGoogleAuthenticator: () -> Unit,
@@ -93,19 +96,20 @@ fun EstadoVacioLista(
             Spacer(Modifier.height(88.dp))
         }
     } else {
-        Column(
-            modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text(
-                "Nada coincide con esa búsqueda",
-                style = MaterialTheme.typography.bodyLarge,
-                color = TextoSecundario,
-                modifier = Modifier.padding(horizontal = 24.dp),
-                textAlign = TextAlign.Center
-            )
-        }
+        com.jlnavas3.bovedalocal.ui.componentes.busqueda.EstadoVacioBusquedaSugerencias(
+            textoBusqueda = textoBusqueda,
+            alSeleccionarSugerencia = { item ->
+                alCambiarBusqueda(
+                    com.jlnavas3.bovedalocal.ui.pantallas.lista.busqueda.ManejadorInsercionFiltro.alternarFiltro(
+                        textoBusqueda,
+                        item.comando
+                    )
+                )
+            },
+            alLimpiarBusqueda = { alCambiarBusqueda("") },
+            alAbrirAyuda = alAbrirAyuda,
+            modifier = Modifier.fillMaxSize()
+        )
     }
 }
 
