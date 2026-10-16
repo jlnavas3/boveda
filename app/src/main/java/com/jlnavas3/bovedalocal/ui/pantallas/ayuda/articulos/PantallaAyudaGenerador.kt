@@ -29,7 +29,7 @@ fun PantallaAyudaGenerador(vm: VaultViewModel, alVolver: () -> Unit) {
     ) {
         TarjetaInformativaAyuda(titulo = "Generador de contraseñas de alta entropía") {
             Text(
-                text = "Permite generar combinaciones aleatorias criptográficamente seguras con longitud regulable (hasta 64 caracteres), permitiendo alternar mayúsculas, minúsculas, números y símbolos especiales.",
+                text = "Permite generar combinaciones aleatorias criptográficamente seguras con longitud regulable (hasta 128 caracteres), permitiendo alternar mayúsculas, minúsculas, números y símbolos especiales.",
                 fontSize = 13.sp,
                 color = TextoSecundario,
                 lineHeight = 18.sp

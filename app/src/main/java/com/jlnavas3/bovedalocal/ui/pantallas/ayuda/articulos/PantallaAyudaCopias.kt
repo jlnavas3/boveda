@@ -27,9 +27,9 @@ fun PantallaAyudaCopias(vm: VaultViewModel, alVolver: () -> Unit) {
         iconoAccion = Icons.Filled.Backup,
         alEjecutarAccion = { vm.ir(Pantalla.CopiaSeguridad()) }
     ) {
-        TarjetaInformativaAyuda(titulo = "Formato seguro .cxf con compresión BLZ1") {
+        TarjetaInformativaAyuda(titulo = "Formato seguro .bvda con compresión BLZ1") {
             Text(
-                text = "Tus copias de seguridad se exportan en formato .cxf. Antes de cifrarse con AES-256-GCM, los datos se comprimen con el algoritmo Deflate (BLZ1), reduciendo su tamaño en más de un 60% y agilizando las copias.",
+                text = "Tus copias de seguridad se exportan en formato cifrado nativo .bvda. Antes de cifrarse con AES-256-GCM, los datos se comprimen con el algoritmo Deflate (BLZ1), reduciendo su tamaño en más de un 60% y agilizando las copias.",
                 fontSize = 13.sp,
                 color = TextoSecundario,
                 lineHeight = 18.sp

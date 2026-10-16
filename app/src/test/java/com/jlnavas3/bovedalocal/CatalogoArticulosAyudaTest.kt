@@ -27,8 +27,11 @@ class CatalogoArticulosAyudaTest {
         assertTrue("La búsqueda de totp debe arrojar resultados", resultadosTotp.isNotEmpty())
         assertTrue(resultadosTotp.any { it.id == "autenticador" || it.id == "escaner" })
 
-        val resultadosCopia = CatalogoArticulosAyuda.buscar("cxf")
-        assertTrue("La búsqueda de cxf debe encontrar copias", resultadosCopia.any { it.id == "copias" })
+        val resultadosCopia = CatalogoArticulosAyuda.buscar("bvda")
+        assertTrue("La búsqueda de bvda debe encontrar copias", resultadosCopia.any { it.id == "copias" })
+
+        val resultadosCxf = CatalogoArticulosAyuda.buscar("cxf")
+        assertTrue("La búsqueda de cxf debe encontrar passkeys", resultadosCxf.any { it.id == "passkeys" })
 
         val resultadosVacio = CatalogoArticulosAyuda.buscar("zzzzzzinvalido")
         assertTrue("Búsqueda inválida debe devolver lista vacía", resultadosVacio.isEmpty())

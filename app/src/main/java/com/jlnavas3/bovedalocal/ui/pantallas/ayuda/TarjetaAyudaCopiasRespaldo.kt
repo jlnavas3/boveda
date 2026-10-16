@@ -41,7 +41,7 @@ fun TarjetaAyudaCopiasRespaldo(modifier: Modifier = Modifier) {
             )
             Spacer(Modifier.height(4.dp))
             Text(
-                text = "Al restaurar un archivo de respaldo (.cxf), la aplicación te mostrará primero un resumen con el número de entradas, categorías e identidades antes de aplicar cualquier cambio sobre tu base de datos actual.",
+                text = "Al restaurar un archivo de respaldo (.bvda), la aplicación te mostrará primero un resumen con el número de entradas, categorías e identidades antes de aplicar cualquier cambio sobre tu base de datos actual.",
                 fontSize = 12.sp,
                 color = TextoSecundario,
                 lineHeight = 17.sp

@@ -87,7 +87,7 @@ object CatalogoArticulosAyuda {
             titulo = "Llaves de paso (Passkeys / FIDO2)",
             subtitulo = "Inicio de sesión biométrico sin contraseñas con el estándar WebAuthn",
             grupo = "Herramientas integradas",
-            palabrasClave = listOf("passkeys", "llaves", "fido2", "webauthn", "biometria", "sin contrasena")
+            palabrasClave = listOf("passkeys", "llaves", "fido2", "webauthn", "biometria", "sin contrasena", "cxf")
         ),
         ArticuloAyuda(
             id = "historial",
@@ -156,9 +156,9 @@ object CatalogoArticulosAyuda {
         ArticuloAyuda(
             id = "copias",
             titulo = "Copias de seguridad cifradas y Dry-Run",
-            subtitulo = "Exportación .cxf con compresión BLZ1, inspección previa y copias automáticas",
+            subtitulo = "Exportación .bvda con compresión BLZ1, inspección previa y copias automáticas",
             grupo = "Sistema y ajustes",
-            palabrasClave = listOf("copia", "respaldo", "cxf", "blz1", "compresion", "dry-run", "exportar", "restaurar")
+            palabrasClave = listOf("copia", "respaldo", "bvda", "boveda", "blz1", "compresion", "dry-run", "exportar", "restaurar")
         ),
         ArticuloAyuda(
             id = "kit_emergencia",

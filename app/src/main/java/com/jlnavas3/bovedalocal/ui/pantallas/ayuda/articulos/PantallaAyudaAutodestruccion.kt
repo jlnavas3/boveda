@@ -38,7 +38,7 @@ fun PantallaAyudaAutodestruccion(vm: VaultViewModel, alVolver: () -> Unit) {
 
         TarjetaInformativaAyuda(titulo = "Recomendación vital") {
             Text(
-                text = "Ten siempre una copia de seguridad externa (.cxf) o tu Kit de Emergencia impreso en un lugar seguro antes de activar umbrales de autodestrucción estrictos.",
+                text = "Ten siempre una copia de seguridad externa (.bvda) o tu Kit de Emergencia impreso en un lugar seguro antes de activar umbrales de autodestrucción estrictos.",
                 fontSize = 13.sp,
                 color = TextoPrincipal,
                 lineHeight = 18.sp
