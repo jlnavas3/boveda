@@ -82,10 +82,8 @@ fun SeccionIconoLauncher(
                                 shape = CircleShape
                             )
                             .clickable {
-                                if (ajustes.iconoLauncher != paleta.clave) {
-                                    haptica.tic()
-                                    alSolicitarCambioIcono(paleta)
-                                }
+                                haptica.tic()
+                                alSolicitarCambioIcono(paleta)
                             },
                         contentAlignment = Alignment.Center
                     ) {

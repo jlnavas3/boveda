@@ -11,6 +11,7 @@ import android.app.Application
 import android.content.Context
 import android.os.Bundle
 import com.jlnavas3.bovedalocal.data.VaultRepository
+import com.jlnavas3.bovedalocal.util.CambiadorIcono
 import com.jlnavas3.bovedalocal.util.Diagnostico
 import java.io.File
 import java.util.concurrent.atomic.AtomicInteger
@@ -49,7 +50,8 @@ class BovedaApp : Application(), Application.ActivityLifecycleCallbacks {
     override fun onCreate() {
         super.onCreate()
         Diagnostico.iniciar(File(filesDir, "diagnostico.log"))
-        VaultRepository.obtener(this)
+        val repo = VaultRepository.obtener(this)
+        CambiadorIcono.sincronizar(this, repo.ajustes.actual.iconoLauncher)
         Diagnostico.apuntar("app", "Bóveda local iniciada")
         registerActivityLifecycleCallbacks(this)
     }

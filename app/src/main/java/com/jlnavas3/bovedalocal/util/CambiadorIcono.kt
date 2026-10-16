@@ -53,12 +53,31 @@ object CambiadorIcono {
         val componentes = aliasPorClave.mapValues { ComponentName(contexto.packageName, it.value) }
         val elegido = componentes[clave] ?: componentes.getValue("gris")
 
-        // Primero se enciende el elegido y solo después se apagan los otros cuatro: así
+        // Primero se enciende el elegido y solo después se apagan los otros: así
         // nunca hay una ventana sin ningún icono de lanzador visible.
         pm.setComponentEnabledSetting(elegido, PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP)
         componentes.filterValues { it != elegido }.values.forEach { componente ->
             pm.setComponentEnabledSetting(componente, PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP)
         }
+    }
+
+    /**
+     * Sincroniza al iniciar la aplicación para garantizar que el alias activado
+     * en el PackageManager coincida exactamente con la preferencia guardada en Ajustes.
+     */
+    fun sincronizar(contexto: Context, clave: String) {
+        try {
+            val pm = contexto.packageManager
+            val componentes = aliasPorClave.mapValues { ComponentName(contexto.packageName, it.value) }
+            val elegido = componentes[clave] ?: componentes.getValue("gris")
+            val estadoElegido = pm.getComponentEnabledSetting(elegido)
+            val algunOtroHabilitado = componentes.filterValues { it != elegido }.values.any {
+                pm.getComponentEnabledSetting(it) == PackageManager.COMPONENT_ENABLED_STATE_ENABLED
+            }
+            if (estadoElegido != PackageManager.COMPONENT_ENABLED_STATE_ENABLED || algunOtroHabilitado) {
+                aplicar(contexto, clave)
+            }
+        } catch (_: Exception) {}
     }
 }
 
