@@ -33,6 +33,15 @@ class CatalogoArticulosAyudaTest {
         val resultadosCxf = CatalogoArticulosAyuda.buscar("cxf")
         assertTrue("La búsqueda de cxf debe encontrar passkeys", resultadosCxf.any { it.id == "passkeys" })
 
+        val resultadosSsh = CatalogoArticulosAyuda.buscar("ssh")
+        assertTrue("La búsqueda de ssh debe encontrar claves_ssh", resultadosSsh.any { it.id == "claves_ssh" })
+
+        val resultadosAdjuntos = CatalogoArticulosAyuda.buscar("adjuntos")
+        assertTrue("La búsqueda de adjuntos debe encontrar adjuntos", resultadosAdjuntos.any { it.id == "adjuntos" })
+
+        val resultadosBooleano = CatalogoArticulosAyuda.buscar("booleano")
+        assertTrue("La búsqueda de booleano debe encontrar campos_personalizados", resultadosBooleano.any { it.id == "campos_personalizados" })
+
         val resultadosVacio = CatalogoArticulosAyuda.buscar("zzzzzzinvalido")
         assertTrue("Búsqueda inválida debe devolver lista vacía", resultadosVacio.isEmpty())
     }

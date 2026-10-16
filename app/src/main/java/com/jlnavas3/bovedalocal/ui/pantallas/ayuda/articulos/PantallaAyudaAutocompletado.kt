@@ -44,5 +44,14 @@ fun PantallaAyudaAutocompletado(vm: VaultViewModel, alVolver: () -> Unit) {
                 lineHeight = 18.sp
             )
         }
+
+        TarjetaInformativaAyuda(titulo = "Copia automática de TOTP (Segundo factor)") {
+            Text(
+                text = "Al habilitar la opción 'Copiar TOTP automáticamente tras autocompletar' en Ajustes de Autocompletado, la bóveda colocará de inmediato en el portapapeles el código de 6 dígitos si la entrada tiene 2FA configurado. Así, cuando la web o app te pida el segundo factor en el siguiente paso, solo tendrás que pulsar 'Pegar' sin necesidad de volver a abrir la bóveda. El portapapeles se vacía solo automáticamente tras el tiempo configurado para máxima seguridad.",
+                fontSize = 13.sp,
+                color = TextoSecundario,
+                lineHeight = 18.sp
+            )
+        }
     }
 }

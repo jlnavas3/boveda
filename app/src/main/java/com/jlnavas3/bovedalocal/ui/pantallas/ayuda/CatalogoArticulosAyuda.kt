@@ -50,6 +50,13 @@ object CatalogoArticulosAyuda {
             grupo = "Búsqueda y organización",
             palabrasClave = listOf("orden", "ordenar", "alfabetico", "favoritos", "frecuente", "agrupar", "sitio")
         ),
+        ArticuloAyuda(
+            id = "campos_personalizados",
+            titulo = "Campos personalizados y tipos ricos",
+            subtitulo = "Interruptores Booleanos (Sí/No), PIN, fechas, formatos y plantillas reutilizables",
+            grupo = "Búsqueda y organización",
+            palabrasClave = listOf("campos", "personalizados", "booleano", "switch", "pin", "fecha", "plantillas", "oculto")
+        ),
 
         // ==========================================
         // 2. HERRAMIENTAS INTEGRADAS
@@ -60,6 +67,20 @@ object CatalogoArticulosAyuda {
             subtitulo = "Contraseñas aleatorias seguras, frases memorables y entropía",
             grupo = "Herramientas integradas",
             palabrasClave = listOf("generador", "crear", "contrasena", "diceware", "frases", "segura", "entropia")
+        ),
+        ArticuloAyuda(
+            id = "claves_ssh",
+            titulo = "Generador de claves SSH para servidores",
+            subtitulo = "Pares Ed25519, RSA, ECDSA, claves OpenSSH, PEM y huellas digitales SHA-256",
+            grupo = "Herramientas integradas",
+            palabrasClave = listOf("ssh", "claves", "servidor", "ed25519", "rsa", "ecdsa", "pem", "openssh", "huella", "fingerprint")
+        ),
+        ArticuloAyuda(
+            id = "adjuntos",
+            titulo = "Archivos adjuntos cifrados (.bvda)",
+            subtitulo = "Almacenamiento cifrado de archivos (hasta 2 MB), visor offline y exportación SAF",
+            grupo = "Herramientas integradas",
+            palabrasClave = listOf("adjuntos", "archivos", "fotos", "documentos", "pdf", "saf", "exportar", "visor", "2mb", "cifrado")
         ),
         ArticuloAyuda(
             id = "alias_correo",

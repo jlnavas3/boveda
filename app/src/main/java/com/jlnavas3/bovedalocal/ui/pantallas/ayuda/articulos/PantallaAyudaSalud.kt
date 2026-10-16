@@ -38,9 +38,27 @@ fun PantallaAyudaSalud(vm: VaultViewModel, alVolver: () -> Unit) {
 
         TarjetaInformativaAyuda(titulo = "Categorías de análisis") {
             Text(
-                text = "• Contraseñas vulnerables o débiles: Menos de 8 caracteres o patrones predecibles.\n• Contraseñas reutilizadas: Misma clave usada en múltiples sitios web (un peligro si uno es hackeado).\n• Contraseñas muy antiguas: Claves que no se han actualizado en más de 1 año.\n• Cuentas sin segundo factor (2FA): Servicios donde convendría añadir TOTP.",
+                text = "• Contraseñas vulnerables o débiles: Menos de 8 caracteres o patrones predecibles.\n• Contraseñas reutilizadas: Misma clave usada en múltiples sitios web (un peligro si uno es hackeado).\n• Contraseñas caducadas: Claves que han superado su fecha límite fijada o requieren renovación periódica.\n• Contraseñas muy antiguas: Claves que no se han actualizado en más de 1 año.\n• Cuentas sin segundo factor (2FA): Servicios donde convendría añadir TOTP.",
                 fontSize = 13.sp,
                 color = TextoPrincipal,
+                lineHeight = 18.sp
+            )
+        }
+
+        TarjetaInformativaAyuda(titulo = "Caducidad y expiración programada") {
+            Text(
+                text = "Al crear o editar cualquier entrada puedes asignarle una fecha de expiración con accesos rápidos (30 días, 90 días, 6 meses, 1 año o fecha personalizada). La pantalla de Salud cuenta con una pestaña dedicada 'Caducadas' que te avisa con insignias preventivas cuándo es momento de cambiar la contraseña.",
+                fontSize = 13.sp,
+                color = TextoSecundario,
+                lineHeight = 18.sp
+            )
+        }
+
+        TarjetaInformativaAyuda(titulo = "Auditoría de filtraciones con Filtro de Bloom offline") {
+            Text(
+                text = "A diferencia de otros gestores que envían hashes de tus claves a servidores en internet, Bóveda Local incluye un Filtro de Bloom binario precompilado dentro de la propia aplicación. Comprueba al instante si tu contraseña aparece en filtraciones públicas masivas conocidas con cero consumo de datos móviles y absoluta privacidad.",
+                fontSize = 13.sp,
+                color = TextoSecundario,
                 lineHeight = 18.sp
             )
         }

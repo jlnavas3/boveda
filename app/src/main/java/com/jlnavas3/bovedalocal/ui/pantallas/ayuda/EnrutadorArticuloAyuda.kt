@@ -8,6 +8,7 @@ package com.jlnavas3.bovedalocal.ui.pantallas.ayuda
 
 import androidx.compose.runtime.Composable
 import com.jlnavas3.bovedalocal.ui.VaultViewModel
+import com.jlnavas3.bovedalocal.ui.pantallas.ayuda.articulos.PantallaAyudaAdjuntos
 import com.jlnavas3.bovedalocal.ui.pantallas.ayuda.articulos.PantallaAyudaAliasCorreo
 import com.jlnavas3.bovedalocal.ui.pantallas.ayuda.articulos.PantallaAyudaApariencia
 import com.jlnavas3.bovedalocal.ui.pantallas.ayuda.articulos.PantallaAyudaArquitectura
@@ -15,7 +16,9 @@ import com.jlnavas3.bovedalocal.ui.pantallas.ayuda.articulos.PantallaAyudaAutent
 import com.jlnavas3.bovedalocal.ui.pantallas.ayuda.articulos.PantallaAyudaAutocompletado
 import com.jlnavas3.bovedalocal.ui.pantallas.ayuda.articulos.PantallaAyudaAutodestruccion
 import com.jlnavas3.bovedalocal.ui.pantallas.ayuda.articulos.PantallaAyudaBusqueda
+import com.jlnavas3.bovedalocal.ui.pantallas.ayuda.articulos.PantallaAyudaCamposPersonalizados
 import com.jlnavas3.bovedalocal.ui.pantallas.ayuda.articulos.PantallaAyudaCategorias
+import com.jlnavas3.bovedalocal.ui.pantallas.ayuda.articulos.PantallaAyudaClavesSsh
 import com.jlnavas3.bovedalocal.ui.pantallas.ayuda.articulos.PantallaAyudaCopias
 import com.jlnavas3.bovedalocal.ui.pantallas.ayuda.articulos.PantallaAyudaDuplicados
 import com.jlnavas3.bovedalocal.ui.pantallas.ayuda.articulos.PantallaAyudaEscaner
@@ -50,10 +53,13 @@ fun EnrutadorArticuloAyuda(
         "etiquetas" -> PantallaAyudaEtiquetas(vm, alVolver)
         "ordenacion" -> PantallaAyudaOrdenacion(vm, alVolver)
         "generador" -> PantallaAyudaGenerador(vm, alVolver)
+        "claves_ssh" -> PantallaAyudaClavesSsh(vm, alVolver)
         "alias_correo" -> PantallaAyudaAliasCorreo(vm, alVolver)
         "autenticador" -> PantallaAyudaAutenticador(vm, alVolver)
         "escaner" -> PantallaAyudaEscaner(vm, alVolver)
         "passkeys" -> PantallaAyudaPasskeys(vm, alVolver)
+        "adjuntos" -> PantallaAyudaAdjuntos(vm, alVolver)
+        "campos_personalizados" -> PantallaAyudaCamposPersonalizados(vm, alVolver)
         "historial" -> PantallaAyudaHistorial(vm, alVolver)
         "salud" -> PantallaAyudaSalud(vm, alVolver)
         "duplicados" -> PantallaAyudaDuplicados(vm, alVolver)
