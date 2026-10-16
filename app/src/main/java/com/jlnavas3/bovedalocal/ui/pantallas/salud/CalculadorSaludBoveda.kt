@@ -76,10 +76,15 @@ fun rememberDatosSaludBoveda(
                     .sortedBy { it.modificadaEn }
             }
 
+            val caducadas = claves.filter {
+                it.fechaCaducidad != null && com.jlnavas3.bovedalocal.data.EvaluadorCaducidadClaves.evaluar(it.fechaCaducidad, ahora) != com.jlnavas3.bovedalocal.data.EstadoCaducidad.VIGENTE
+            }.sortedBy { it.fechaCaducidad }
+
             val gruposDuplicados = AnalizadorDuplicados.analizar(entradas)
             val totalSobrantesDuplicadas = gruposDuplicados.sumOf { it.entradasSecundarias.size }
 
             val pestanasConDatos = buildList {
+                if (caducadas.isNotEmpty()) add(PestanaSalud.CADUCADAS)
                 if (duplicadas.isNotEmpty()) add(PestanaSalud.REPETIDAS)
                 if (muyComunes.isNotEmpty()) add(PestanaSalud.COMUNES)
                 if (debiles.isNotEmpty()) add(PestanaSalud.DEBILES)
@@ -90,6 +95,7 @@ fun rememberDatosSaludBoveda(
             DatosSaludBoveda(
                 claves = claves,
                 ignoradas = ignoradas,
+                caducadas = caducadas,
                 duplicadas = duplicadas,
                 debiles = debiles,
                 muyComunes = muyComunes,

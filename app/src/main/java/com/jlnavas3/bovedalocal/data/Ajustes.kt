@@ -417,6 +417,7 @@ data class AjustesApp(
     val colorIdSistema: String = AjustesDefaults.ColoresIds.SISTEMA,
     // Autocompletado de Android e Inline Suggestions
     val autofillSugerenciasTeclado: Boolean = AjustesDefaults.Autocompletado.SUGERENCIAS_TECLADO,
+    val autofillCopiarTotpAutomatico: Boolean = AjustesDefaults.Autocompletado.COPIAR_TOTP_AUTOMATICO,
     val autofillPistasUsuario: List<String> = AjustesDefaults.Autocompletado.PISTAS_USUARIO,
     val autofillPistasContrasena: List<String> = AjustesDefaults.Autocompletado.PISTAS_CONTRASENA,
     val autofillPistasOtp: List<String> = AjustesDefaults.Autocompletado.PISTAS_OTP,
@@ -766,6 +767,7 @@ class AlmacenAjustes(contexto: Context) {
             colorIdCopias = prefs.getString("color_id_copias", AjustesDefaults.ColoresIds.COPIAS) ?: AjustesDefaults.ColoresIds.COPIAS,
             colorIdSistema = prefs.getString("color_id_sistema", AjustesDefaults.ColoresIds.SISTEMA) ?: AjustesDefaults.ColoresIds.SISTEMA,
             autofillSugerenciasTeclado = prefs.getBoolean("autofill_sugerencias_teclado", AjustesDefaults.Autocompletado.SUGERENCIAS_TECLADO),
+            autofillCopiarTotpAutomatico = prefs.getBoolean("autofill_copiar_totp_automatico", AjustesDefaults.Autocompletado.COPIAR_TOTP_AUTOMATICO),
             autofillPistasUsuario = deserializarPistasUsuario(prefs.getString("autofill_pistas_usuario_json", "") ?: ""),
             autofillPistasContrasena = deserializarPistasContrasena(prefs.getString("autofill_pistas_contrasena_json", "") ?: ""),
             autofillPistasOtp = deserializarPistasOtp(prefs.getString("autofill_pistas_otp_json", "") ?: ""),
@@ -1022,6 +1024,7 @@ class AlmacenAjustes(contexto: Context) {
             .putString("color_id_copias", nuevo.colorIdCopias)
             .putString("color_id_sistema", nuevo.colorIdSistema)
             .putBoolean("autofill_sugerencias_teclado", nuevo.autofillSugerenciasTeclado)
+            .putBoolean("autofill_copiar_totp_automatico", nuevo.autofillCopiarTotpAutomatico)
             .putString("autofill_pistas_usuario_json", jsonAjustes.encodeToString(nuevo.autofillPistasUsuario))
             .putString("autofill_pistas_contrasena_json", jsonAjustes.encodeToString(nuevo.autofillPistasContrasena))
             .putString("autofill_pistas_otp_json", jsonAjustes.encodeToString(nuevo.autofillPistasOtp))

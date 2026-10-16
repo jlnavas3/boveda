@@ -207,6 +207,14 @@ fun ContenidoEntradaDetalle(
             Spacer(Modifier.height(16.dp))
         }
 
+        // Grupo: Archivos adjuntos cifrados
+        TarjetaAdjuntosDetalle(
+            adjuntos = entrada.adjuntos
+        )
+        if (entrada.adjuntos.isNotEmpty()) {
+            Spacer(Modifier.height(16.dp))
+        }
+
         // Grupo 7: Passkey
         entrada.passkey?.let { passkey ->
             TarjetaPasskeyDetalle(passkey = passkey, usuarioEntrada = entrada.usuario)

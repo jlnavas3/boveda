@@ -82,6 +82,7 @@ fun PantallaAjustesAutocompletado(
                 GrupoSugerenciasTeclado(
                     sugerenciasTeclado = ajustes.autofillSugerenciasTeclado,
                     maxSugerencias = ajustes.maxSugerenciasAutofill,
+                    copiarTotp = ajustes.autofillCopiarTotpAutomatico,
                     mostrarIdsAjustes = ajustes.mostrarIdsAjustes,
                     alCambiarSugerenciasTeclado = { valor ->
                         haptica.tic()
@@ -91,9 +92,14 @@ fun PantallaAjustesAutocompletado(
                         haptica.tic()
                         vm.ajustarMaxSugerenciasAutofill(valor)
                     },
+                    alCambiarCopiarTotp = { valor ->
+                        haptica.tic()
+                        vm.ajustarAutofillCopiarTotp(valor)
+                    },
                     alRestablecer = {
                         vm.ajustarAutofillSugerenciasTeclado(true)
                         vm.ajustarMaxSugerenciasAutofill(5)
+                        vm.ajustarAutofillCopiarTotp(true)
                     }
                 )
 

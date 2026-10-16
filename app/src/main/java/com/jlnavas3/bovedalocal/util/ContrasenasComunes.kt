@@ -7,6 +7,7 @@
 package com.jlnavas3.bovedalocal.util
 
 import android.content.Context
+import com.jlnavas3.bovedalocal.data.AuditorContrasenasFiltradas
 
 /**
  * Comprueba si una contraseña está entre las que más se repiten en filtraciones
@@ -58,6 +59,7 @@ object ContrasenasComunes {
         val claveLimpia = contrasena.trim().lowercase()
         if (anadidas.any { it.trim().lowercase() == claveLimpia }) return true
         if (excluidas.any { it.trim().lowercase() == claveLimpia }) return false
-        return cargar(contexto).contains(claveLimpia)
+        if (cargar(contexto).contains(claveLimpia)) return true
+        return AuditorContrasenasFiltradas.esFiltrada(contexto, claveLimpia, anadidas, excluidas)
     }
 }

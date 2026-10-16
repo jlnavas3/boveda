@@ -21,6 +21,7 @@ enum class TipoCampo {
     HORA,
     LISTA,
     NOTAS,
+    BOOLEANO,
     @Deprecated("Usar TEXTO con esSensible = true")
     OCULTO;
 
@@ -37,6 +38,7 @@ enum class TipoCampo {
             HORA -> "Hora"
             LISTA -> "Lista"
             NOTAS -> "Notas"
+            BOOLEANO -> "Sí/No (Booleano)"
             @Suppress("DEPRECATION")
             OCULTO -> "Oculto"
         }

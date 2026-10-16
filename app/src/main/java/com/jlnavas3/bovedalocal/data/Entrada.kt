@@ -44,7 +44,11 @@ data class Entrada(
     @SerialName("colecciones")
     val categorias: List<String> = emptyList(),
     /** ID de la identidad vinculada explícitamente (si es null, se usa vinculación inteligente por correo). */
-    val identidadId: String? = null
+    val identidadId: String? = null,
+    /** Fecha límite de expiración o caducidad en milisegundos Unix, o null si no caduca. */
+    val fechaCaducidad: Long? = null,
+    /** Archivos adjuntos cifrados localmente dentro del contenedor de la entrada. */
+    val adjuntos: List<AdjuntoBoveda> = emptyList()
 ) {
     /** Alias de compatibilidad hacia atrás durante la migración */
     val colecciones: List<String> get() = categorias

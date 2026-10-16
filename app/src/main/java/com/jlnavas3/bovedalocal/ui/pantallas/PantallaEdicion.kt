@@ -85,6 +85,7 @@ fun PantallaEdicion(
     var totp by remember { mutableStateOf(original?.secretoTotp ?: "") }
     var mostrarSecretoTotp by remember { mutableStateOf(false) }
     var favorito by remember { mutableStateOf(original?.favorito ?: false) }
+    var fechaCaducidad by remember { mutableStateOf<Long?>(original?.fechaCaducidad) }
     var ignoradaEnSalud by remember { mutableStateOf(original?.ignoradaEnSalud ?: false) }
     val estadoBoveda by vm.estado.collectAsStateWithLifecycle()
     val categoriasDisponibles = remember(estadoBoveda) {
@@ -114,6 +115,7 @@ fun PantallaEdicion(
 
     var etiquetas by remember { mutableStateOf(original?.etiquetas ?: emptyList()) }
     var camposPersonalizados by remember { mutableStateOf(original?.camposPersonalizados ?: emptyList()) }
+    var adjuntos by remember { mutableStateOf(original?.adjuntos ?: emptyList()) }
     var opcionesGenerador by remember { mutableStateOf(OpcionesGenerador()) }
     var mostrarDiccionarioModal by remember { mutableStateOf(false) }
     var mostrarComunesModal by remember { mutableStateOf(false) }
@@ -154,7 +156,9 @@ fun PantallaEdicion(
             camposPersonalizados = camposPersonalizados.filter { it.etiqueta.isNotBlank() || it.valor.isNotBlank() },
             ignoradaEnSalud = ignoradaEnSalud,
             categorias = categorias,
-            identidadId = identidadId
+            identidadId = identidadId,
+            fechaCaducidad = fechaCaducidad,
+            adjuntos = adjuntos
         )
         vm.guardar(entrada)
         vm.volverAtras()
@@ -208,6 +212,8 @@ fun PantallaEdicion(
                 alCambiarOpcionesGenerador = { opcionesGenerador = it },
                 camposPersonalizados = camposPersonalizados,
                 alCambiarCamposPersonalizados = { camposPersonalizados = it },
+                adjuntos = adjuntos,
+                alCambiarAdjuntos = { adjuntos = it },
                 listaEnlaces = listaEnlaces,
                 alSolicitarExplorarApp = { idx ->
                     indiceEnlaceSeleccionado = idx
@@ -221,6 +227,8 @@ fun PantallaEdicion(
                     mostrarSecretoTotp = !mostrarSecretoTotp
                 },
                 totpValido = totpValido,
+                fechaCaducidad = fechaCaducidad,
+                alCambiarFechaCaducidad = { fechaCaducidad = it },
                 notas = notas,
                 alCambiarNotas = { notas = it },
                 categoriasDisponibles = categoriasDisponibles,

@@ -88,7 +88,8 @@ fun DialogoNuevoCampo(
             TipoCampo.FECHA,
             TipoCampo.HORA,
             TipoCampo.LISTA,
-            TipoCampo.NOTAS
+            TipoCampo.NOTAS,
+            TipoCampo.BOOLEANO
         )
     }
 

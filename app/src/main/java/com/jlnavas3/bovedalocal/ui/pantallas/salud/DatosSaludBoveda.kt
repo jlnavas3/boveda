@@ -14,6 +14,7 @@ import com.jlnavas3.bovedalocal.data.Entrada
 data class DatosSaludBoveda(
     val claves: List<Entrada> = emptyList(),
     val ignoradas: List<Entrada> = emptyList(),
+    val caducadas: List<Entrada> = emptyList(),
     val duplicadas: List<List<Entrada>> = emptyList(),
     val debiles: List<Entrada> = emptyList(),
     val muyComunes: List<Entrada> = emptyList(),

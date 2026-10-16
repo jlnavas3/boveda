@@ -290,7 +290,7 @@ class AutofillAuthActivity : FragmentActivity() {
 
         sugerencias.forEachIndexed { indice, entrada ->
             val spec = specs.getOrElse(indice) { specs.lastOrNull() }
-            AutofillUtiles.dataset(this, entrada, campos, spec, paquete)?.let {
+            AutofillUtiles.dataset(this, entrada, campos, spec, paquete, ajustes.autofillCopiarTotpAutomatico)?.let {
                 respuesta.addDataset(it)
                 alguno = true
             }
@@ -310,7 +310,9 @@ class AutofillAuthActivity : FragmentActivity() {
         if (alguno || tipos != 0) {
             val fillRes = respuesta.build()
             val primerDataset = if (compatibles.size == 1) {
-                AutofillUtiles.dataset(this, compatibles.first(), campos, specs.firstOrNull(), paquete)
+                val primeraEntrada = compatibles.first()
+                CopiadorTotpAutofill.copiarSiAplica(this, primeraEntrada, ajustes)
+                AutofillUtiles.dataset(this, primeraEntrada, campos, specs.firstOrNull(), paquete, copiarTotp = false)
             } else null
             if (primerDataset != null) {
                 datos.putExtra(AutofillManager.EXTRA_AUTHENTICATION_RESULT, primerDataset)

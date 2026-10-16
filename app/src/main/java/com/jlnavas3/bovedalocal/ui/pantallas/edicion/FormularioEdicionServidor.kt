@@ -17,6 +17,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Dns
 import com.jlnavas3.bovedalocal.data.CampoPersonalizado
 import com.jlnavas3.bovedalocal.data.TipoCampo
 import com.jlnavas3.bovedalocal.ui.componentes.CampoBoveda
@@ -79,5 +81,27 @@ fun FormularioEdicionServidor(
             monoespaciada = true,
             varias = true
         )
+
+        var mostrarDialogoSsh by remember { mutableStateOf(false) }
+
+        com.jlnavas3.bovedalocal.ui.componentes.BotonBorde(
+            texto = "Generar claves SSH (Ed25519 / RSA)",
+            icono = Icons.Filled.Dns,
+            color = com.jlnavas3.bovedalocal.ui.theme.ColorAcento,
+            alPulsar = { mostrarDialogoSsh = true }
+        )
+
+        if (mostrarDialogoSsh) {
+            DialogoGeneradorClavesSsh(
+                alCerrar = { mostrarDialogoSsh = false },
+                alAplicar = { privadaPem, publicaSsh ->
+                    var actualizados = GestorCamposBase.actualizarValor(campos, "Clave privada / Password", privadaPem, TipoCampo.NOTAS, sensible = true)
+                    actualizados = GestorCamposBase.actualizarValor(actualizados, "Clave pública SSH", publicaSsh, TipoCampo.TEXTO, sensible = false)
+                    alCambiarCampos(actualizados)
+                    mostrarClave = true
+                    mostrarDialogoSsh = false
+                }
+            )
+        }
     }
 }

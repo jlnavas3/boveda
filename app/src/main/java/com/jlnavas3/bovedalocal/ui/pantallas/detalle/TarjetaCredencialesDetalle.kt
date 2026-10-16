@@ -174,5 +174,10 @@ fun TarjetaCredencialesDetalle(
                 }
             }
         }
+
+        if (entrada.fechaCaducidad != null) {
+            Spacer(Modifier.height(8.dp))
+            InsigniaCaducidadDetalle(fechaCaducidad = entrada.fechaCaducidad)
+        }
     }
 }

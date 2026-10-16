@@ -71,15 +71,19 @@ fun TarjetaCamposDetalle(
             if (index > 0) {
                 Spacer(Modifier.height(EspaciadoDetalle))
             }
-            FilaCampoPersonalizadoDetalle(
-                campo = campo,
-                vm = vm,
-                ajustes = ajustes,
-                haptica = haptica,
-                copiado = ultimaCopia == "campo_${campo.id}",
-                alCopiar = { alCopiarCampo("campo_${campo.id}") },
-                alCopiarValor = alCopiarValor
-            )
+            if (campo.tipo == TipoCampo.BOOLEANO) {
+                FilaCampoBooleanoDetalle(campo = campo)
+            } else {
+                FilaCampoPersonalizadoDetalle(
+                    campo = campo,
+                    vm = vm,
+                    ajustes = ajustes,
+                    haptica = haptica,
+                    copiado = ultimaCopia == "campo_${campo.id}",
+                    alCopiar = { alCopiarCampo("campo_${campo.id}") },
+                    alCopiarValor = alCopiarValor
+                )
+            }
         }
     }
 }

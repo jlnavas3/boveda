@@ -56,6 +56,8 @@ fun FormularioEdicionEntrada(
     alCambiarOpcionesGenerador: (OpcionesGenerador) -> Unit,
     camposPersonalizados: List<CampoPersonalizado>,
     alCambiarCamposPersonalizados: (List<CampoPersonalizado>) -> Unit,
+    adjuntos: List<com.jlnavas3.bovedalocal.data.AdjuntoBoveda> = emptyList(),
+    alCambiarAdjuntos: (List<com.jlnavas3.bovedalocal.data.AdjuntoBoveda>) -> Unit = {},
     listaEnlaces: SnapshotStateList<EnlaceEditable>,
     alSolicitarExplorarApp: (Int?) -> Unit,
     totp: String,
@@ -63,6 +65,8 @@ fun FormularioEdicionEntrada(
     mostrarSecretoTotp: Boolean,
     alAlternarMostrarSecretoTotp: () -> Unit,
     totpValido: Boolean,
+    fechaCaducidad: Long? = null,
+    alCambiarFechaCaducidad: (Long?) -> Unit = {},
     notas: String,
     alCambiarNotas: (String) -> Unit,
     categoriasDisponibles: List<Categoria>,
@@ -166,6 +170,12 @@ fun FormularioEdicionEntrada(
                 alAlternarMostrarSecreto = alAlternarMostrarSecretoTotp,
                 totpValido = totpValido
             )
+
+            Spacer(Modifier.height(10.dp))
+            CampoCaducidadEntrada(
+                fechaCaducidad = fechaCaducidad,
+                alCambiarFecha = alCambiarFechaCaducidad
+            )
         }
 
         // Notas
@@ -186,6 +196,13 @@ fun FormularioEdicionEntrada(
             haptica = haptica,
             alGuardarPlantilla = alGuardarPlantillaCampos,
             alEliminarPlantilla = alEliminarPlantillaCampos
+        )
+
+        // Archivos adjuntos cifrados
+        Spacer(Modifier.height(10.dp))
+        SeccionAdjuntosEdicion(
+            adjuntos = adjuntos,
+            alCambiarAdjuntos = alCambiarAdjuntos
         )
 
         // Organización (Identidad, Categorías, Etiquetas, Favorito, Ignorar en salud)

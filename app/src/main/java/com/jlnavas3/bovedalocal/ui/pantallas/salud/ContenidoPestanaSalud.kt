@@ -28,6 +28,7 @@ import com.jlnavas3.bovedalocal.ui.scroll.GestorGruposExpandidos
 import com.jlnavas3.bovedalocal.ui.scroll.GestorPosicionScroll
 import com.jlnavas3.bovedalocal.ui.scroll.rememberGruposExpandidosPersistentes
 import com.jlnavas3.bovedalocal.ui.scroll.rememberLazyListStatePersistente
+import com.jlnavas3.bovedalocal.ui.theme.Advertencia
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.Peligro
 import com.jlnavas3.bovedalocal.ui.theme.calcularEspaciadoFilas
@@ -39,6 +40,7 @@ import com.jlnavas3.bovedalocal.util.MedidorFuerza
 @Composable
 fun ContenidoPestanaSalud(
     pestanaActiva: PestanaSalud,
+    caducadas: List<Entrada> = emptyList(),
     duplicadas: List<List<Entrada>>,
     muyComunes: List<Entrada>,
     debiles: List<Entrada>,
@@ -72,6 +74,62 @@ fun ContenidoPestanaSalud(
 
     Box(modifier = modifier) {
         when (pestanaActiva) {
+            PestanaSalud.CADUCADAS -> {
+                val filtradas = remember(caducadas, consulta) {
+                    if (consulta.isEmpty()) caducadas
+                    else caducadas.filter { coincideBusquedaSalud(it, consulta) }
+                }
+
+                if (filtradas.isEmpty()) {
+                    if (consulta.isNotEmpty()) {
+                        MensajeExitoPestana(
+                            icono = Icons.Filled.SearchOff,
+                            titulo = "Sin resultados",
+                            subtitulo = "No se encontraron contraseñas caducadas para \"$consulta\".",
+                            colorIcono = ColorAcento
+                        )
+                    } else {
+                        MensajeExitoPestana(
+                            icono = Icons.Filled.Check,
+                            titulo = "Sin contraseñas caducadas",
+                            subtitulo = "Todas tus contraseñas con caducidad se encuentran vigentes."
+                        )
+                    }
+                } else {
+                    val estadoCaducadas = rememberLazyListStatePersistente("salud_caducadas", gestorScroll)
+                    ListaProblemasSalud(
+                        entradas = filtradas,
+                        agruparPorSitio = agruparPorSitio,
+                        mostrarIndicadores = mostrarIndicadores,
+                        gruposExpandidos = gruposExpandidos,
+                        espaciadoFilas = espaciadoFilas,
+                        ajustes = ajustes,
+                        estadoLista = estadoCaducadas,
+                        alAlternarGrupo = { clave ->
+                            gruposExpandidos = if (gruposExpandidos.contains(clave)) {
+                                gruposExpandidos - clave
+                            } else {
+                                gruposExpandidos + clave
+                            }
+                        },
+                        alCambiarClave = alCambiarClave,
+                        alVerDetalle = alVerDetalle,
+                        alIgnorar = alIgnorar,
+                        infoDetalle = { entrada ->
+                            val dias = com.jlnavas3.bovedalocal.data.EvaluadorCaducidadClaves.diasRestantes(entrada.fechaCaducidad ?: 0L, ahora)
+                            val estado = com.jlnavas3.bovedalocal.data.EvaluadorCaducidadClaves.evaluar(entrada.fechaCaducidad, ahora)
+                            val color = if (estado == com.jlnavas3.bovedalocal.data.EstadoCaducidad.EXPIRADA) Peligro else Advertencia
+                            val texto = if (dias < 0) "expiró hace ${-dias} d" else "expira en $dias d"
+                            texto to color
+                        },
+                        seleccionActiva = seleccionActiva,
+                        seleccionados = seleccionados,
+                        alAlternarSeleccion = alAlternarSeleccion,
+                        alPulsarLargo = alPulsarLargo
+                    )
+                }
+            }
+
             PestanaSalud.REPETIDAS -> {
                 val estadoRepetidas = rememberLazyListStatePersistente("salud_repetidas", gestorScroll)
                 PestanaRepetidasSalud(

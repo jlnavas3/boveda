@@ -11,6 +11,7 @@ import java.util.concurrent.TimeUnit
 const val DIAS_AVISO_ANTIGUEDAD = 180L
 
 enum class PestanaSalud(val titulo: String) {
+    CADUCADAS("Caducadas"),
     REPETIDAS("Repetidas"),
     COMUNES("Filtradas"),
     DEBILES("Débiles"),

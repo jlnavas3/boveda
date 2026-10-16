@@ -86,6 +86,7 @@ fun PantallaSaludBoveda(
     }
     val claves = datosSalud.claves
     val ignoradas = datosSalud.ignoradas
+    val caducadas = datosSalud.caducadas
     val duplicadas = datosSalud.duplicadas
     val debiles = datosSalud.debiles
     val muyComunes = datosSalud.muyComunes
@@ -118,8 +119,9 @@ fun PantallaSaludBoveda(
         Diagnostico.apuntar("salud", resumen)
     }
 
-    val entradasVisiblesPestana = remember(pestanaActiva, duplicadas, muyComunes, debiles, antiguas, ignoradas, textoBusqueda) {
+    val entradasVisiblesPestana = remember(pestanaActiva, caducadas, duplicadas, muyComunes, debiles, antiguas, ignoradas, textoBusqueda) {
         val lista = when (pestanaActiva) {
+            PestanaSalud.CADUCADAS -> caducadas
             PestanaSalud.REPETIDAS -> duplicadas.flatten()
             PestanaSalud.COMUNES -> muyComunes
             PestanaSalud.DEBILES -> debiles
@@ -202,6 +204,7 @@ fun PantallaSaludBoveda(
                             pestanaActiva = it
                             seleccionados = emptySet()
                         },
+                        caducadas = caducadas,
                         duplicadas = duplicadas,
                         muyComunes = muyComunes,
                         debiles = debiles,
@@ -214,6 +217,7 @@ fun PantallaSaludBoveda(
 
                 ContenidoPestanaSalud(
                     pestanaActiva = pestanaActiva,
+                    caducadas = caducadas,
                     duplicadas = duplicadas,
                     muyComunes = muyComunes,
                     debiles = debiles,

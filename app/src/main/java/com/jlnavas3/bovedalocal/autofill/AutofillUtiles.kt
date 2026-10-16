@@ -8,6 +8,7 @@ package com.jlnavas3.bovedalocal.autofill
 
 import android.app.assist.AssistStructure
 import android.content.Context
+import android.content.Intent
 import android.service.autofill.Dataset
 import android.text.InputType
 import android.view.View
@@ -224,7 +225,8 @@ object AutofillUtiles {
         entrada: Entrada,
         campos: CamposDetectados,
         inlineSpec: android.widget.inline.InlinePresentationSpec? = null,
-        paqueteSolicitante: String? = null
+        paqueteSolicitante: String? = null,
+        copiarTotp: Boolean = false
     ): Dataset? {
         if (!campos.hayAlgo) return null
 
@@ -342,11 +344,42 @@ object AutofillUtiles {
 
         if (camposAsignados == 0) return null
 
-        return try {
+        val datasetReal = try {
             constructor.build()
         } catch (e: Exception) {
             null
+        } ?: return null
+
+        if (copiarTotp && !entrada.secretoTotp.isNullOrBlank()) {
+            try {
+                val intent = Intent(contexto, AutofillTrampolineActivity::class.java).apply {
+                    putExtra(AutofillTrampolineActivity.EXTRA_ENTRADA_ID, entrada.id)
+                    putExtra(AutofillTrampolineActivity.EXTRA_DATASET, datasetReal)
+                }
+                val pendingIntent = android.app.PendingIntent.getActivity(
+                    contexto,
+                    entrada.id.hashCode(),
+                    intent,
+                    android.app.PendingIntent.FLAG_UPDATE_CURRENT or android.app.PendingIntent.FLAG_MUTABLE
+                )
+                val constructorAutenticado = Dataset.Builder(vista)
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R && inlinePres != null) {
+                    constructorAutenticado.setInlinePresentation(inlinePres)
+                }
+                constructorAutenticado.setAuthentication(pendingIntent.intentSender)
+                campos.usuario?.let {
+                    constructorAutenticado.setValue(it, AutofillValue.forText(entrada.usuario))
+                }
+                campos.contrasena?.let {
+                    constructorAutenticado.setValue(it, AutofillValue.forText(entrada.contrasena))
+                }
+                return constructorAutenticado.build()
+            } catch (_: Exception) {
+                return datasetReal
+            }
         }
+
+        return datasetReal
     }
 
     /** Identificador del contexto que pide el relleno: dominio web o paquete de la app. */

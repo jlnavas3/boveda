@@ -478,6 +478,13 @@
             android:theme="@style/Theme.BovedaLocal.Transparent" />
 
         <activity
+            android:name=".autofill.AutofillTrampolineActivity"
+            android:exported="false"
+            android:excludeFromRecents="true"
+            android:configChanges="orientation|screenSize|keyboardHidden|uiMode"
+            android:theme="@style/Theme.BovedaLocal.Transparent" />
+
+        <activity
             android:name=".passkey.PasskeyCreateActivity"
             android:exported="false"
             android:excludeFromRecents="true"

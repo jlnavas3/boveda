@@ -84,7 +84,8 @@ fun DialogoConfigurarCampoPersonalizado(
             TipoCampo.FECHA,
             TipoCampo.HORA,
             TipoCampo.LISTA,
-            TipoCampo.NOTAS
+            TipoCampo.NOTAS,
+            TipoCampo.BOOLEANO
         )
     }
 

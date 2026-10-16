@@ -252,6 +252,14 @@ fun EntradaValorCampoPersonalizado(
     }
 
     when (campo.tipo) {
+        TipoCampo.BOOLEANO -> {
+            FilaCampoBooleanoEdicion(
+                campo = campo,
+                etiqueta = etiquetaFinal ?: campo.etiqueta,
+                alModificar = alModificar,
+                modifier = modifier
+            )
+        }
         TipoCampo.NOTAS -> {
             ComponenteCampoTexto(
                 valor = campo.valor,

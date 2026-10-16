@@ -115,6 +115,7 @@ object AjustesDefaults {
     // 8. Autocompletado e Inline Suggestions
     object Autocompletado {
         const val SUGERENCIAS_TECLADO = true
+        const val COPIAR_TOTP_AUTOMATICO = true
         val PISTAS_USUARIO = listOf(
             "username", "email", "user", "correo", "usuario", "login", "identifier", "phone", "celular", "cedula", "dni", "ruc"
         )

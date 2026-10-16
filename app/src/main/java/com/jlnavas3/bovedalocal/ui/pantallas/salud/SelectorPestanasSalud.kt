@@ -31,6 +31,7 @@ import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
 fun SelectorPestanasSalud(
     pestanaActiva: PestanaSalud,
     alSeleccionarPestana: (PestanaSalud) -> Unit,
+    caducadasCount: Int = 0,
     gruposDuplicadosCount: Int,
     totalDuplicadasCount: Int,
     muyComunesCount: Int,
@@ -38,6 +39,7 @@ fun SelectorPestanasSalud(
     antiguasCount: Int,
     ignoradasCount: Int = 0,
     textoBusqueda: String = "",
+    caducadasFiltradas: Int = caducadasCount,
     gruposDuplicadosFiltrados: Int = gruposDuplicadosCount,
     totalDuplicadasFiltradas: Int = totalDuplicadasCount,
     muyComunesFiltrados: Int = muyComunesCount,
@@ -46,8 +48,9 @@ fun SelectorPestanasSalud(
     ignoradasFiltradas: Int = ignoradasCount,
     modifier: Modifier = Modifier
 ) {
-    val pestanasVisibles = remember(gruposDuplicadosCount, muyComunesCount, debilesCount, antiguasCount, ignoradasCount) {
+    val pestanasVisibles = remember(caducadasCount, gruposDuplicadosCount, muyComunesCount, debilesCount, antiguasCount, ignoradasCount) {
         buildList {
+            if (caducadasCount > 0) add(PestanaSalud.CADUCADAS)
             if (gruposDuplicadosCount > 0) add(PestanaSalud.REPETIDAS)
             if (muyComunesCount > 0) add(PestanaSalud.COMUNES)
             if (debilesCount > 0) add(PestanaSalud.DEBILES)
@@ -79,6 +82,17 @@ fun SelectorPestanasSalud(
     ) {
         items(pestanasVisibles.size, key = { pestanasVisibles[it].name }) { index ->
             when (pestanasVisibles[index]) {
+                PestanaSalud.CADUCADAS -> {
+                    val textoLabel = if (buscando) "Caducadas ($caducadasFiltradas)" else "Caducadas ($caducadasCount)"
+                    FilterChip(
+                        selected = pestanaActiva == PestanaSalud.CADUCADAS,
+                        onClick = { alSeleccionarPestana(PestanaSalud.CADUCADAS) },
+                        label = { Text(textoLabel) },
+                        shape = forma,
+                        border = bordeChip,
+                        colors = coloresChip
+                    )
+                }
                 PestanaSalud.REPETIDAS -> {
                     val textoLabel = if (buscando) {
                         "Repetidas ($gruposDuplicadosFiltrados g / $totalDuplicadasFiltradas)"
@@ -147,6 +161,7 @@ fun SelectorPestanasSalud(
 fun SelectorPestanasSalud(
     pestanaActiva: PestanaSalud,
     alSeleccionarPestana: (PestanaSalud) -> Unit,
+    caducadas: List<Entrada> = emptyList(),
     duplicadas: List<List<Entrada>>,
     muyComunes: List<Entrada>,
     debiles: List<Entrada>,
@@ -156,6 +171,10 @@ fun SelectorPestanasSalud(
     modifier: Modifier = Modifier
 ) {
     val q = textoBusqueda.trim()
+    val caducadasFiltradas = remember(caducadas, q) {
+        if (q.isEmpty()) caducadas.size
+        else caducadas.count { coincideBusquedaSalud(it, q) }
+    }
     val gruposDuplicadosFiltrados = remember(duplicadas, q) {
         if (q.isEmpty()) duplicadas.size
         else duplicadas.count { grupo -> grupo.any { coincideBusquedaSalud(it, q) } }
@@ -184,6 +203,7 @@ fun SelectorPestanasSalud(
     SelectorPestanasSalud(
         pestanaActiva = pestanaActiva,
         alSeleccionarPestana = alSeleccionarPestana,
+        caducadasCount = caducadas.size,
         gruposDuplicadosCount = duplicadas.size,
         totalDuplicadasCount = duplicadas.sumOf { it.size },
         muyComunesCount = muyComunes.size,
@@ -191,6 +211,7 @@ fun SelectorPestanasSalud(
         antiguasCount = antiguas.size,
         ignoradasCount = ignoradas.size,
         textoBusqueda = textoBusqueda,
+        caducadasFiltradas = caducadasFiltradas,
         gruposDuplicadosFiltrados = gruposDuplicadosFiltrados,
         totalDuplicadasFiltradas = totalDuplicadasFiltradas,
         muyComunesFiltrados = muyComunesFiltrados,

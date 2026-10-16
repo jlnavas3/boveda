@@ -31,9 +31,11 @@ import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
 fun GrupoSugerenciasTeclado(
     sugerenciasTeclado: Boolean,
     maxSugerencias: Int,
+    copiarTotp: Boolean = true,
     mostrarIdsAjustes: Boolean,
     alCambiarSugerenciasTeclado: (Boolean) -> Unit,
     alCambiarMaxSugerencias: (Int) -> Unit,
+    alCambiarCopiarTotp: (Boolean) -> Unit = {},
     alRestablecer: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -84,6 +86,14 @@ fun GrupoSugerenciasTeclado(
             colorIcono = Color(0xFF3B82F6),
             idFila = "04-HER-PSK-MAX",
             mostrarId = mostrarIdsAjustes
+        )
+
+        Spacer(modifier = Modifier.height(10.dp))
+
+        FilaAjusteAutofillCopiarTotp(
+            activo = copiarTotp,
+            mostrarIdsAjustes = mostrarIdsAjustes,
+            alCambiar = alCambiarCopiarTotp
         )
     }
 }

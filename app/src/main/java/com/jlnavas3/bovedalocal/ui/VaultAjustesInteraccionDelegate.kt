@@ -45,6 +45,10 @@ interface VaultAjustesInteraccionDelegate {
         repositorio.ajustes.actualizar { it.copy(autofillSugerenciasTeclado = activado) }
     }
 
+    fun ajustarAutofillCopiarTotp(activado: Boolean) {
+        repositorio.ajustes.actualizar { it.copy(autofillCopiarTotpAutomatico = activado) }
+    }
+
     fun agregarPistaUsuario(pista: String) {
         val limpio = pista.trim().lowercase()
         if (limpio.isNotBlank()) {
@@ -144,6 +148,7 @@ interface VaultAjustesInteraccionDelegate {
                 autofillPistasContrasena = AjustesDefaults.Autocompletado.PISTAS_CONTRASENA,
                 autofillPistasOtp = AjustesDefaults.Autocompletado.PISTAS_OTP,
                 autofillSugerenciasTeclado = AjustesDefaults.Autocompletado.SUGERENCIAS_TECLADO,
+                autofillCopiarTotpAutomatico = AjustesDefaults.Autocompletado.COPIAR_TOTP_AUTOMATICO,
                 mapeoPaquetesPersonalizados = AjustesDefaults.Autocompletado.MAPEO_PAQUETES_PERSONALIZADOS,
                 navegadoresPersonalizados = AjustesDefaults.Autocompletado.NAVEGADORES_PERSONALIZADOS,
                 maxSugerenciasAutofill = AjustesDefaults.Autocompletado.MAX_SUGERENCIAS_AUTOFILL

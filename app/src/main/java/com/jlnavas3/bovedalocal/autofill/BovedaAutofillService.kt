@@ -182,7 +182,7 @@ class BovedaAutofillService : AutofillService() {
             } else {
                 sugerencias.forEachIndexed { indice, entrada ->
                     val spec = specs.getOrElse(indice) { specs.lastOrNull() }
-                    AutofillUtiles.dataset(this, entrada, campos, spec, paquete)?.let { respuesta.addDataset(it) }
+                    AutofillUtiles.dataset(this, entrada, campos, spec, paquete, ajustes.autofillCopiarTotpAutomatico)?.let { respuesta.addDataset(it) }
                     if (campos.otp != null && !entrada.secretoTotp.isNullOrBlank()) {
                         AutofillOtpUtiles.datasetTotp(this, entrada, campos.otp, spec, paquete)?.let { respuesta.addDataset(it) }
                     }
