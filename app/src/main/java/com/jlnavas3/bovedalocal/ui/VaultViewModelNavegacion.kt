@@ -57,7 +57,8 @@ interface VaultNavegacionDelegate {
                             TipoEntrada.WALLET -> "03-LST-WAL"
                             TipoEntrada.PASSKEY -> "03-LST-PAS"
                         }
-                        is Pantalla.Identidades -> pantalla.seccionId ?: "03-LST-IDE"
+                        is Pantalla.Perfiles -> pantalla.seccionId ?: "03-LST-IDE"
+                        is Pantalla.EditarPerfil -> "03-LST-IDE-EDT"
                         is Pantalla.SaludBoveda -> pantalla.seccionId ?: "03-LST-SLD"
                         is Pantalla.Duplicados -> pantalla.seccionId ?: "03-LST-DUP"
                         is Pantalla.Papelera -> pantalla.seccionId ?: "03-LST-PAP"
@@ -109,7 +110,21 @@ interface VaultNavegacionDelegate {
     fun irPorId(id: String) {
         val limpio = id.trim()
         val destino = when {
-            limpio.startsWith("01-SEG-BIO-BLO") -> Pantalla.BloqueoBiometria(limpio)
+            limpio.startsWith("01-SEG-BIO-BLO") ||
+            limpio.startsWith("01-SEG-BIO-BIO") ||
+            limpio.startsWith("01-SEG-BIO-APP") ||
+            limpio.startsWith("01-SEG-BIO-TAP") ||
+            limpio.startsWith("01-SEG-BIO-BRU") ||
+            limpio.startsWith("01-SEG-BIO-SWT") ||
+            limpio.startsWith("01-SEG-BIO-MOD") ||
+            limpio.startsWith("01-SEG-BIO-TIM") ||
+            limpio.startsWith("01-SEG-BIO-SEC") ||
+            limpio.startsWith("01-SEG-BIO-TRY") ||
+            limpio.startsWith("01-SEG-BIO-MAX") ||
+            limpio.startsWith("01-SEG-BIO-INA") ||
+            limpio == "01-SEG-BIO-G01" ||
+            limpio == "01-SEG-BIO-G02" ||
+            limpio == "01-SEG-BIO-G05" -> Pantalla.BloqueoBiometria(limpio)
             limpio.startsWith("01-SEG-BIO-VIS") -> Pantalla.SeguridadVisual(limpio)
             limpio.startsWith("01-SEG-BIO-CLP") -> Pantalla.Portapapeles(limpio)
             limpio.startsWith("01-SEG-BIO-AUD") -> Pantalla.AuditoriaSeguridad(limpio)
@@ -128,6 +143,7 @@ interface VaultNavegacionDelegate {
             limpio.startsWith("02-APA-THM") || limpio.startsWith("02.1") || limpio.startsWith("09.2") -> Pantalla.Tema(limpio)
             limpio.startsWith("02-APA-MNL") -> Pantalla.PersonalizarMenuLateral(limpio)
             limpio.startsWith("02-AVI-ASI") || limpio.startsWith("02-APA-AVI") -> Pantalla.AjustesAvisos(limpio)
+            limpio.startsWith("02-APA-TRN") -> Pantalla.AjustesTransiciones(limpio)
 
             limpio.startsWith("02-APA-GEO-PRE") -> Pantalla.FormasPresets(limpio)
             limpio.startsWith("02-APA-GEO-CRV") -> Pantalla.FormasCurvatura(limpio)
@@ -144,7 +160,7 @@ interface VaultNavegacionDelegate {
 
             limpio.startsWith("02-APA-DES-EST") || limpio.startsWith("03-LST-DES-EST") -> Pantalla.OrganizacionEstructura(limpio)
             limpio.startsWith("02-APA-DES-JER") || limpio.startsWith("03-LST-DES-JER") -> Pantalla.OrganizacionJerarquia(limpio)
-            limpio.startsWith("02-APA-DES-IND") || limpio.startsWith("03-LST-DES-IND") -> Pantalla.OrganizacionIndicadores(limpio)
+            limpio.startsWith("02-APA-DES-IND") || limpio.startsWith("03-LST-DES-IND") -> Pantalla.ColoresDatos(limpio)
             limpio.startsWith("02-APA-DES") || limpio.startsWith("03-LST-DES") || limpio.startsWith("03.1") || limpio.startsWith("09.6") -> Pantalla.OrganizacionLista(limpio)
             limpio.startsWith("02-APA-AZX-OLA") || limpio.startsWith("03-LST-AZX-OLA") -> Pantalla.IndiceOla(limpio)
             limpio.startsWith("02-APA-AZX-CRE") || limpio.startsWith("03-LST-AZX-CRE") -> Pantalla.IndiceCresta(limpio)
@@ -162,7 +178,7 @@ interface VaultNavegacionDelegate {
             limpio.startsWith("03-LST-IDN") -> Pantalla.EntradasTipo(TipoEntrada.IDENTIDAD)
             limpio.startsWith("03-LST-SRV") -> Pantalla.EntradasTipo(TipoEntrada.SERVIDOR)
             limpio.startsWith("03-LST-WAL") -> Pantalla.EntradasTipo(TipoEntrada.WALLET)
-            limpio.startsWith("03-LST-IDE") -> Pantalla.Identidades(limpio)
+            limpio.startsWith("03-LST-IDE") -> Pantalla.Perfiles(limpio)
             limpio.startsWith("03-LST-SLD") -> Pantalla.SaludBoveda(limpio)
             limpio.startsWith("03-LST-DUP") -> Pantalla.Duplicados(limpio)
             limpio.startsWith("03-LST-PAP") -> Pantalla.Papelera(limpio)
@@ -196,6 +212,7 @@ interface VaultNavegacionDelegate {
             limpio.startsWith("06-SIS-AVZ-LGT") -> Pantalla.AvanzadaAlumbrado(limpio)
             limpio.startsWith("06-SIS-AVZ-ORG") -> Pantalla.ReorganizarAjustes
             limpio.startsWith("06-SIS-AVZ-HAP") -> Pantalla.AvanzadaHaptica(limpio)
+            limpio.startsWith("06-SIS-AVZ-TST") -> Pantalla.AjustesAvisosEmergentes(limpio)
             limpio.startsWith("06-SIS-AVZ-PEL") -> Pantalla.AvanzadaZonaPeligro(limpio)
             limpio.startsWith("06-SIS-AVZ-COL") || limpio.startsWith("06.1.2b") || limpio.contains("COL-IDS") -> Pantalla.ColoresIdentificadores(limpio)
             limpio.startsWith("06-SIS-AVZ") || limpio.startsWith("06.1") || limpio.startsWith("11.1") || limpio == "11" -> Pantalla.Avanzada(limpio)

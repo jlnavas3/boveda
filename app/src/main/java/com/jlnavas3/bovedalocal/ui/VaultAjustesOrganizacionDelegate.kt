@@ -25,6 +25,9 @@ interface VaultAjustesOrganizacionDelegate {
     fun ajustarAgruparPorSitio(activo: Boolean) =
         repositorio.ajustes.actualizar { it.copy(agruparPorSitio = activo) }
 
+    fun ajustarFijarAncladosArriba(activo: Boolean) =
+        repositorio.ajustes.actualizar { it.copy(fijarAncladosArriba = activo) }
+
     fun ajustarJerarquiaOrganizacion(jerarquia: com.jlnavas3.bovedalocal.data.JerarquiaOrganizacion) =
         repositorio.ajustes.actualizar { it.copy(jerarquiaOrganizacion = jerarquia.clave) }
 
@@ -32,6 +35,7 @@ interface VaultAjustesOrganizacionDelegate {
         repositorio.ajustes.actualizar {
             it.copy(
                 agruparPorSitio = AjustesDefaults.ListaFormatos.AGRUPAR_POR_SITIO,
+                fijarAncladosArriba = AjustesDefaults.ListaFormatos.FIJAR_ANCLADOS_ARRIBA,
                 mostrarIndicadoresContenido = AjustesDefaults.ColoresDatos.MOSTRAR_INDICADORES,
                 densidadLista = AjustesDefaults.ListaFormatos.DENSIDAD_LISTA,
                 criterioOrdenacion = AjustesDefaults.ListaFormatos.CRITERIO_ORDENACION
@@ -173,6 +177,44 @@ interface VaultAjustesOrganizacionDelegate {
     fun ajustarFormatoIban(formato: String) {
         repositorio.ajustes.actualizar { it.copy(formatoIban = formato) }
         Diagnostico.apuntar("formatos", "Formato IBAN establecido en $formato")
+    }
+
+    // --- Comunicaciones Seguras y Contactos ---
+    fun ajustarPrefijoNumeroOculto(prefijo: String) {
+        repositorio.ajustes.actualizar { it.actualizarComunicaciones { c -> c.copy(prefijoNumeroOculto = prefijo) } }
+        Diagnostico.apuntar("comunicaciones", "Prefijo de llamada oculta establecido en $prefijo")
+    }
+
+    fun ajustarHabilitarLlamadaOculta(habilitar: Boolean) {
+        repositorio.ajustes.actualizar { it.actualizarComunicaciones { c -> c.copy(habilitarLlamadaOculta = habilitar) } }
+        Diagnostico.apuntar("comunicaciones", "Llamada oculta ${if (habilitar) "habilitada" else "deshabilitada"}")
+    }
+
+    fun ajustarHabilitarWhatsappDirecto(habilitar: Boolean) {
+        repositorio.ajustes.actualizar { it.actualizarComunicaciones { c -> c.copy(habilitarWhatsappDirecto = habilitar) } }
+        Diagnostico.apuntar("comunicaciones", "WhatsApp directo ${if (habilitar) "habilitado" else "deshabilitado"}")
+    }
+
+    fun ajustarPaisPredeterminadoTelefono(pais: String) {
+        repositorio.ajustes.actualizar { it.actualizarComunicaciones { c -> c.copy(paisPredeterminadoTelefono = pais) } }
+        Diagnostico.apuntar("comunicaciones", "País predeterminado establecido en $pais")
+    }
+
+    fun ajustarModoEnvioMensajeSeguro(modo: String) {
+        repositorio.ajustes.actualizar { it.actualizarComunicaciones { c -> c.copy(modoEnvioMensajeSeguro = modo) } }
+        Diagnostico.apuntar("comunicaciones", "Modo de mensaje seguro establecido en $modo")
+    }
+
+    fun ajustarPreguntarPurgaAgenda(preguntar: Boolean) {
+        repositorio.ajustes.actualizar { it.actualizarComunicaciones { c -> c.copy(preguntarPurgaAgenda = preguntar) } }
+        Diagnostico.apuntar("comunicaciones", "Preguntar purga de agenda: $preguntar")
+    }
+
+    fun restablecerComunicaciones() {
+        repositorio.ajustes.actualizar {
+            it.copy(comunicaciones = com.jlnavas3.bovedalocal.data.AjustesComunicaciones())
+        }
+        Diagnostico.apuntar("comunicaciones", "Comunicaciones restablecidas a valores predeterminados")
     }
 
     // --- Plantillas de Campos Personalizadas ---

@@ -12,6 +12,7 @@ import com.jlnavas3.bovedalocal.data.Entrada
 import com.jlnavas3.bovedalocal.data.EstadoBoveda
 import com.jlnavas3.bovedalocal.data.TipoEntrada
 import com.jlnavas3.bovedalocal.ui.CriterioOrdenacion
+import com.jlnavas3.bovedalocal.ui.Pantalla
 import com.jlnavas3.bovedalocal.ui.VaultViewModel
 import com.jlnavas3.bovedalocal.util.Haptica
 
@@ -70,6 +71,11 @@ fun DialogosPantallaLista(
         alDescartarRenombrarSeleccion = { dialogos.renombrarSeleccion = false },
         entradasParaTransferirCxf = dialogos.entradasParaTransferirCxf,
         alDescartarTransferirCxf = { dialogos.entradasParaTransferirCxf = null },
+        alAbrirAjustesCxf = {
+            dialogos.entradasParaTransferirCxf = null
+            dialogos.exportarCxf = false
+            vm.ir(Pantalla.AjustesTransferenciaCxf("05-COP-CXF-AJU"))
+        },
         mostrarDialogoExportarCxf = dialogos.exportarCxf,
         estado = estado,
         alDescartarExportarCxf = { dialogos.exportarCxf = false },
@@ -109,6 +115,16 @@ fun DialogosPantallaLista(
             vm.eliminarCategoria(id)
             haptica.exito()
         },
-        alDescartarEliminarCategoria = { dialogos.categoriaParaEliminar = null }
+        alDescartarEliminarCategoria = { dialogos.categoriaParaEliminar = null },
+        entradasParaUnificar = dialogos.entradasParaUnificar,
+        alConfirmarUnificar = { principal, secundarias ->
+            dialogos.entradasParaUnificar = null
+            estadoSeleccion.salirDeSeleccion()
+            vm.unificarEntradas(principal = principal, secundarias = secundarias)
+            haptica.exito()
+        },
+        alDescartarUnificar = {
+            dialogos.entradasParaUnificar = null
+        }
     )
 }

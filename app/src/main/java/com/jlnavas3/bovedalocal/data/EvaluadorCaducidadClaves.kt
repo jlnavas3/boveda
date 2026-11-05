@@ -48,9 +48,15 @@ object EvaluadorCaducidadClaves {
         }
     }
 
-    fun formatearFecha(fechaMs: Long): String {
+    fun formatearFecha(fechaMs: Long, formatoFecha: String = "DD/MM/AAAA"): String {
         return try {
-            val formato = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+            val patron = when (formatoFecha) {
+                "AAAA-MM-DD" -> "yyyy-MM-dd"
+                "MM/DD/AAAA" -> "MM/dd/yyyy"
+                "DD-MM-AAAA" -> "dd-MM-yyyy"
+                else -> "dd/MM/yyyy"
+            }
+            val formato = SimpleDateFormat(patron, Locale.getDefault())
             formato.format(Date(fechaMs))
         } catch (_: Exception) {
             ""

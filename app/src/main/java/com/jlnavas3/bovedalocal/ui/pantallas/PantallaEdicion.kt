@@ -24,8 +24,15 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.jlnavas3.bovedalocal.crypto.Base32
 import com.jlnavas3.bovedalocal.crypto.OpcionesGenerador
+import com.jlnavas3.bovedalocal.data.DatosCuentaBancaria
+import com.jlnavas3.bovedalocal.data.DatosCriptoWallet
+import com.jlnavas3.bovedalocal.data.DatosDocumentoIdentidad
+import com.jlnavas3.bovedalocal.data.DatosRedWifi
+import com.jlnavas3.bovedalocal.data.DatosServidorSsh
+import com.jlnavas3.bovedalocal.data.DatosTarjetaBancaria
 import com.jlnavas3.bovedalocal.data.Entrada
 import com.jlnavas3.bovedalocal.data.EstadoBoveda
+import com.jlnavas3.bovedalocal.data.MigradorEntradasNativas
 import com.jlnavas3.bovedalocal.data.TipoEntrada
 import com.jlnavas3.bovedalocal.data.normalizarEtiqueta
 import com.jlnavas3.bovedalocal.ui.VaultViewModel
@@ -55,7 +62,8 @@ fun PantallaEdicion(
     contrasenaInicial: String = "",
     tituloInicial: String = "",
     urlInicial: String = "",
-    tipoInicial: TipoEntrada? = null
+    tipoInicial: TipoEntrada? = null,
+    telefonoInicial: String = ""
 ) {
     val contexto = LocalContext.current
     val haptica = remember { Haptica(contexto) }
@@ -64,9 +72,17 @@ fun PantallaEdicion(
 
     var tipo by remember { mutableStateOf(original?.tipo ?: (tipoInicial ?: TipoEntrada.LOGIN)) }
     var titulo by remember { mutableStateOf(original?.titulo ?: tituloInicial) }
-    var usuario by remember { mutableStateOf(original?.usuario ?: "") }
+    var usuario by remember {
+        mutableStateOf(
+            original?.usuario
+                ?: if (tipoInicial == TipoEntrada.CONTACTO && telefonoInicial.isNotBlank()) {
+                    com.jlnavas3.bovedalocal.data.contactos.FormateadorTelefonoInternacional.formatear(telefonoInicial)
+                } else ""
+        )
+    }
     var contrasena by remember { mutableStateOf(original?.contrasena ?: contrasenaInicial) }
-    var mostrarContrasena by remember { mutableStateOf(false) }
+    val ocultarContrasenaPorDefecto = ajustes.seguridadVisualActiva && ajustes.ocultarContrasena
+    var mostrarContrasena by remember(ajustes.seguridadVisualActiva, ajustes.ocultarContrasena) { mutableStateOf(!ocultarContrasenaPorDefecto) }
     val listaEnlaces = remember(original) {
         val items = original?.urls?.map { LanzadorEnlaces.desglosarParaEdicion(it) }
             ?: if (urlInicial.isNotBlank()) listOf(LanzadorEnlaces.desglosarParaEdicion(urlInicial)) else emptyList()
@@ -83,8 +99,9 @@ fun PantallaEdicion(
     }
     var notas by remember { mutableStateOf(original?.notas ?: "") }
     var totp by remember { mutableStateOf(original?.secretoTotp ?: "") }
-    var mostrarSecretoTotp by remember { mutableStateOf(false) }
+    var mostrarSecretoTotp by remember(ajustes.seguridadVisualActiva, ajustes.ocultarContrasena) { mutableStateOf(!ocultarContrasenaPorDefecto) }
     var favorito by remember { mutableStateOf(original?.favorito ?: false) }
+    var anclado by remember { mutableStateOf(original?.anclado ?: false) }
     var fechaCaducidad by remember { mutableStateOf<Long?>(original?.fechaCaducidad) }
     var ignoradaEnSalud by remember { mutableStateOf(original?.ignoradaEnSalud ?: false) }
     val estadoBoveda by vm.estado.collectAsStateWithLifecycle()
@@ -105,7 +122,7 @@ fun PantallaEdicion(
         if (original == null && usuario.isBlank() && identidadId != null) {
             val iden = identidadesDisponibles.firstOrNull { it.id == identidadId }
             if (iden != null) {
-                usuario = iden.correoPrincipal
+                usuario = iden.identificadorPreferido
             }
         }
     }
@@ -113,12 +130,26 @@ fun PantallaEdicion(
     var categorias by remember { mutableStateOf(original?.categorias ?: emptyList()) }
     var mostrarDialogoNuevaCategoria by remember { mutableStateOf(false) }
 
+    val entradaMigradaInicial = remember(original) {
+        original?.let { MigradorEntradasNativas.migrarEntrada(it) }
+    }
+    var datosTarjeta by remember { mutableStateOf(entradaMigradaInicial?.datosTarjeta ?: original?.datosTarjeta ?: DatosTarjetaBancaria()) }
+    var datosWifi by remember { mutableStateOf(entradaMigradaInicial?.datosWifi ?: original?.datosWifi ?: DatosRedWifi()) }
+    var datosCuentaBancaria by remember { mutableStateOf(entradaMigradaInicial?.datosCuentaBancaria ?: original?.datosCuentaBancaria ?: DatosCuentaBancaria()) }
+    var datosIdentidad by remember { mutableStateOf(entradaMigradaInicial?.datosIdentidad ?: original?.datosIdentidad ?: DatosDocumentoIdentidad()) }
+    var datosServidor by remember { mutableStateOf(entradaMigradaInicial?.datosServidor ?: original?.datosServidor ?: DatosServidorSsh()) }
+    var datosWallet by remember { mutableStateOf(entradaMigradaInicial?.datosWallet ?: original?.datosWallet ?: DatosCriptoWallet()) }
+    var datosContacto by remember { mutableStateOf(entradaMigradaInicial?.datosContacto ?: original?.datosContacto ?: com.jlnavas3.bovedalocal.data.DatosContacto()) }
+
     var etiquetas by remember { mutableStateOf(original?.etiquetas ?: emptyList()) }
-    var camposPersonalizados by remember { mutableStateOf(original?.camposPersonalizados ?: emptyList()) }
+    var camposPersonalizados by remember {
+        mutableStateOf(entradaMigradaInicial?.camposPersonalizados ?: original?.camposPersonalizados ?: emptyList())
+    }
     var adjuntos by remember { mutableStateOf(original?.adjuntos ?: emptyList()) }
     var opcionesGenerador by remember { mutableStateOf(OpcionesGenerador()) }
     var mostrarDiccionarioModal by remember { mutableStateOf(false) }
     var mostrarComunesModal by remember { mutableStateOf(false) }
+    var contactoParaPurga by remember { mutableStateOf<com.jlnavas3.bovedalocal.data.contactos.ContactoDispositivo?>(null) }
     val etiquetasSugeridas = remember { vm.etiquetasUsadas() }
 
     val totpValido = totp.isBlank() || Base32.esValido(totp)
@@ -149,16 +180,25 @@ fun PantallaEdicion(
             notas = notas,
             secretoTotp = totp.trim().ifBlank { null },
             favorito = favorito,
+            anclado = anclado,
             creadaEn = original?.creadaEn ?: 0L,
             etiquetas = etiquetas.map(::normalizarEtiqueta).filter { it.isNotEmpty() }.distinct(),
             historialContrasenas = original?.historialContrasenas ?: emptyList(),
             passkey = original?.passkey,
             camposPersonalizados = camposPersonalizados.filter { it.etiqueta.isNotBlank() || it.valor.isNotBlank() },
+            datosTarjeta = if (tipo == TipoEntrada.TARJETA) datosTarjeta else null,
+            datosWifi = if (tipo == TipoEntrada.WIFI) datosWifi else null,
+            datosCuentaBancaria = if (tipo == TipoEntrada.CUENTA_BANCARIA) datosCuentaBancaria else null,
+            datosIdentidad = if (tipo == TipoEntrada.IDENTIDAD) datosIdentidad else null,
+            datosServidor = if (tipo == TipoEntrada.SERVIDOR) datosServidor else null,
+            datosWallet = if (tipo == TipoEntrada.WALLET) datosWallet else null,
+            datosContacto = if (tipo == TipoEntrada.CONTACTO) datosContacto else null,
             ignoradaEnSalud = ignoradaEnSalud,
             categorias = categorias,
-            identidadId = identidadId,
+            perfilId = identidadId,
             fechaCaducidad = fechaCaducidad,
-            adjuntos = adjuntos
+            adjuntos = adjuntos,
+            tituloPersonalizado = true
         )
         vm.guardar(entrada)
         vm.volverAtras()
@@ -212,6 +252,45 @@ fun PantallaEdicion(
                 alCambiarOpcionesGenerador = { opcionesGenerador = it },
                 camposPersonalizados = camposPersonalizados,
                 alCambiarCamposPersonalizados = { camposPersonalizados = it },
+                datosTarjeta = datosTarjeta,
+                alCambiarDatosTarjeta = { datosTarjeta = it },
+                datosWifi = datosWifi,
+                alCambiarDatosWifi = { datosWifi = it },
+                datosCuentaBancaria = datosCuentaBancaria,
+                alCambiarDatosCuentaBancaria = { datosCuentaBancaria = it },
+                datosIdentidad = datosIdentidad,
+                alCambiarDatosIdentidad = { datosIdentidad = it },
+                datosServidor = datosServidor,
+                alCambiarDatosServidor = { datosServidor = it },
+                datosWallet = datosWallet,
+                alCambiarDatosWallet = { datosWallet = it },
+                datosContacto = datosContacto,
+                alCambiarDatosContacto = { datosContacto = it },
+                alImportarContacto = { c ->
+                    haptica.exito()
+                    val convertida = com.jlnavas3.bovedalocal.data.contactos.ConversorContactoEntrada.convertir(c)
+                    if (convertida.titulo.isNotBlank()) {
+                        titulo = convertida.titulo
+                    }
+                    if (convertida.usuario.isNotBlank()) {
+                        usuario = convertida.usuario
+                    }
+                    val datosCont = convertida.datosContacto ?: com.jlnavas3.bovedalocal.data.DatosContacto()
+                    val telSec = datosCont.telefonoSecundario
+                    val telSecLimpio = if (com.jlnavas3.bovedalocal.data.contactos.FormateadorTelefonoInternacional.sonNumerosEquivalentes(convertida.usuario, telSec)) {
+                        ""
+                    } else {
+                        telSec
+                    }
+                    datosContacto = datosCont.copy(telefonoSecundario = telSecLimpio)
+                    camposPersonalizados = (camposPersonalizados + convertida.camposPersonalizados).distinctBy { it.etiqueta }
+                    if (convertida.notas.isNotBlank()) {
+                        notas = if (notas.isBlank()) convertida.notas else "$notas\n${convertida.notas}"
+                    }
+                    if (convertida.urls.isNotEmpty()) {
+                        listaEnlaces.addAll(convertida.urls.map { LanzadorEnlaces.desglosarParaEdicion(it) })
+                    }
+                },
                 adjuntos = adjuntos,
                 alCambiarAdjuntos = { adjuntos = it },
                 listaEnlaces = listaEnlaces,
@@ -240,7 +319,7 @@ fun PantallaEdicion(
                 alSeleccionarIdentidad = { iden ->
                     identidadId = iden?.id
                     if (iden != null && usuario.isBlank()) {
-                        usuario = iden.correoPrincipal
+                        usuario = iden.identificadorPreferido
                     }
                 },
                 etiquetas = etiquetas,
@@ -248,6 +327,8 @@ fun PantallaEdicion(
                 etiquetasSugeridas = etiquetasSugeridas,
                 favorito = favorito,
                 alAlternarFavorito = { favorito = it; haptica.tic() },
+                anclado = anclado,
+                alAlternarAnclado = { anclado = it; haptica.tic() },
                 ignoradaEnSalud = ignoradaEnSalud,
                 alAlternarIgnoradaEnSalud = { ignoradaEnSalud = it; haptica.tic() },
                 ajustes = ajustes,
@@ -310,5 +391,16 @@ fun PantallaEdicion(
                 alVolverManual = { mostrarComunesModal = false }
             )
         }
+    }
+
+    contactoParaPurga?.let { c ->
+        com.jlnavas3.bovedalocal.ui.pantallas.contactos.DialogoConfirmarPurgaAgenda(
+            abierto = true,
+            alCerrar = { contactoParaPurga = null },
+            nombreContacto = c.nombre,
+            alAbrirFichaSistema = {
+                com.jlnavas3.bovedalocal.util.comunicacion.LanzadorPurgaContactoAgenda.abrirFichaParaEliminar(contexto, c.id)
+            }
+        )
     }
 }

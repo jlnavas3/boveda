@@ -57,6 +57,7 @@ import com.jlnavas3.bovedalocal.util.GestorAppsInstaladas
 import com.jlnavas3.bovedalocal.util.LanzadorEnlaces
 import com.jlnavas3.bovedalocal.ui.componentes.seguridad.TextoSeguroVisual
 import com.jlnavas3.bovedalocal.ui.theme.EstiloBorde
+import com.jlnavas3.bovedalocal.ui.theme.EstiloIndicadores
 import com.jlnavas3.bovedalocal.ui.theme.GrosorBorde
 import com.jlnavas3.bovedalocal.ui.theme.TextoPrincipal
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
@@ -90,7 +91,10 @@ fun FilaEntrada(
     estiloOcultamiento: String = "desenfoque",
     identidadAsociada: com.jlnavas3.bovedalocal.data.Identidad? = null,
     ocultarEmailIdentidad: Boolean = false,
-    mostrarChipIdentidad: Boolean = true
+    mostrarChipIdentidad: Boolean = true,
+    seguridadVisualActiva: Boolean = false,
+    alCopiarDato: ((etiqueta: String, valor: String, sensible: Boolean) -> Unit)? = null,
+    alAvisar: ((String) -> Unit)? = null
 ) {
     val compacta = alturaFila.value <= 44f
     val forma = if (enGrupo) {
@@ -128,8 +132,6 @@ fun FilaEntrada(
             ColorAcento.copy(alpha = 0.22f)
         } else if (resaltado) {
             ColorAcento.copy(alpha = 0.16f)
-        } else if (enGrupo) {
-            Color.Transparent
         } else {
             ColorTarjetaAjustes
         }
@@ -149,10 +151,14 @@ fun FilaEntrada(
                     onLongClick = { if (!seleccionActiva) alPulsarLargo() }
                 )
         ) {
-            if (mostrarIndicadores) {
+            if (mostrarIndicadores && (EstiloIndicadores == "lineas" || EstiloIndicadores == "lateral")) {
+                val alineacionIndicador = when (EstiloIndicadores) {
+                    "lateral" -> Alignment.CenterStart
+                    else -> Alignment.TopCenter
+                }
                 IndicadorContenidoTarjeta(
                     entrada = entrada,
-                    modifier = Modifier.align(Alignment.TopCenter)
+                    modifier = Modifier.align(alineacionIndicador)
                 )
             }
 
@@ -162,30 +168,17 @@ fun FilaEntrada(
                     .padding(horizontal = 14.dp, vertical = 3.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                if (seleccionActiva) {
-                    Box(
-                        modifier = Modifier
-                            .size(24.dp)
-                            .clip(CircleShape)
-                            .background(if (seleccionado) ColorAcento else Borde),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        if (seleccionado) {
-                            Icon(Icons.Filled.Check, contentDescription = null, tint = ColorSobreAcento, modifier = Modifier.size(15.dp))
-                        }
-                    }
-                    Spacer(Modifier.width(10.dp))
-                }
-
-                // Avatar Squircle / Icono representativo a la izquierda
-                IconoTipoEntrada(
+                // Avatar interactivo con selección directa estilo Google (sin desplazar la fila)
+                AvatarSeleccionableEntrada(
                     entrada = entrada,
-                    tamanoIcono = tamanoIcono
+                    tamanoIcono = tamanoIcono,
+                    seleccionado = seleccionado,
+                    alAlternarSeleccion = alAlternarSeleccion
                 )
 
                 Spacer(Modifier.width(12.dp))
 
-                // Columna central: Título con TOTP y Subtítulo
+                // Columna central: Título con TOTP, estrella y Subtítulo
                 ColumnaDetallesFilaEntrada(
                     entrada = entrada,
                     tituloMostrar = tituloMostrar,
@@ -199,30 +192,15 @@ fun FilaEntrada(
                     ocultarUsuario = ocultarUsuario,
                     ocultarTotp = ocultarTotp,
                     estiloOcultamiento = estiloOcultamiento,
+                    seguridadVisualActiva = seguridadVisualActiva,
                     identidadAsociada = identidadAsociada,
                     ocultarEmailIdentidad = ocultarEmailIdentidad,
                     mostrarChipIdentidad = mostrarChipIdentidad,
+                    mostrarFavorito = !seleccionActiva && entrada.favorito,
+                    alFavorito = alFavorito,
+                    mostrarIndicadores = mostrarIndicadores,
                     modifier = Modifier.weight(1f)
                 )
-
-                // Bloque derecho: solo botón de favorito cuando la entrada es favorita (si no está en selección)
-                if (!seleccionActiva && entrada.favorito) {
-                    Spacer(Modifier.width(6.dp))
-                    Box(
-                        modifier = Modifier
-                            .size(28.dp)
-                            .clip(CircleShape)
-                            .clickable(onClick = alFavorito),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Icon(
-                            imageVector = Icons.Filled.Star,
-                            contentDescription = "Favorito",
-                            tint = ColorAcento,
-                            modifier = Modifier.size(18.dp)
-                        )
-                    }
-                }
             }
         }
     }
@@ -231,12 +209,14 @@ fun FilaEntrada(
         contenidoFila()
     } else {
         ContenedorDeslizamientoFila(
-            entradaId = entrada.id,
+            entrada = entrada,
             alturaFila = alturaFila,
             forma = forma,
             enGrupo = enGrupo,
             alCopiarUsuario = alCopiarUsuario,
             alCopiarContrasena = alCopiarContrasena,
+            alCopiarDato = alCopiarDato,
+            alAvisar = alAvisar,
             contenido = contenidoFila
         )
     }

@@ -53,7 +53,7 @@ fun PantallaCopiaAutomaticaLocal(
                 .background(ColorAjustesFondo)
         ) {
             BarraSuperiorPantalla(
-                titulo = "Copia automática local",
+                titulo = "Respaldo automático local",
                 idEtiqueta = "05-COP-AUT-FIL",
                 mostrarId = ajustes.mostrarIdsAjustes,
                 alVolver = { vm.volverAtras() },
@@ -62,15 +62,15 @@ fun PantallaCopiaAutomaticaLocal(
                 acciones = {
                     BotonMenuOpcionesPantalla(
                         grupos = listOf(
-                            AccionSaltoGrupo("05-COP-ATM-G01", "Copia automática local")
+                            AccionSaltoGrupo("05-COP-ATM-G01", "Respaldo automático local")
                         ),
                         alRestablecerPantalla = {
                             haptica.tic()
                             vm.ajustarBackupAutoFrecuenciaDias(0)
                             vm.ajustarBackupAutoMaxCopias(5)
                             vm.ajustarBackupAutoPasswordCifrado("")
-                            vm.ajustarBackupAutoPatronNombre("{99}-backup-{FECHA}")
-                            vm.avisar("Copia automática restablecida")
+                            vm.ajustarBackupAutoPatronNombre("{##}-backup-{FECHA}_{HORA}")
+                            vm.avisar("Respaldo automático restablecido")
                         }
                     )
                 }
@@ -108,7 +108,7 @@ private fun PantallaCopiaAutomaticaLocalPreview() {
                 .background(ColorAjustesFondo)
         ) {
             BarraSuperiorPantalla(
-                titulo = "Copia automática local",
+                titulo = "Respaldo automático local",
                 idEtiqueta = "05-COP-AUT-FIL",
                 mostrarId = true,
                 alVolver = {},

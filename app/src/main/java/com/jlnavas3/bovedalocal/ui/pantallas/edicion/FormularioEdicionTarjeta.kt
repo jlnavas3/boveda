@@ -24,37 +24,38 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.jlnavas3.bovedalocal.data.AjustesApp
-import com.jlnavas3.bovedalocal.data.CampoPersonalizado
-import com.jlnavas3.bovedalocal.data.TipoCampo
+import com.jlnavas3.bovedalocal.data.DatosTarjetaBancaria
 import com.jlnavas3.bovedalocal.ui.componentes.CampoBoveda
+import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
+import com.jlnavas3.bovedalocal.ui.theme.ColorDatos2FA
+import com.jlnavas3.bovedalocal.ui.theme.ColorDatosContrasena
+import com.jlnavas3.bovedalocal.ui.theme.ColorDatosUsuario
 import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
 import com.jlnavas3.bovedalocal.util.FormateadorCampos
 import java.util.Calendar
 import java.util.Locale
 
+/**
+ * Microcomponente desacoplado para edición directa y fuertemente tipada de tarjetas bancarias.
+ */
 @Composable
 fun FormularioEdicionTarjeta(
-    campos: List<CampoPersonalizado>,
-    alCambiarCampos: (List<CampoPersonalizado>) -> Unit,
+    datos: DatosTarjetaBancaria,
+    alCambiar: (DatosTarjetaBancaria) -> Unit,
     ajustes: AjustesApp = AjustesApp()
 ) {
     val contexto = LocalContext.current
-    var mostrarNumero by remember { mutableStateOf(false) }
-    var mostrarCvv by remember { mutableStateOf(false) }
-    var mostrarPin by remember { mutableStateOf(false) }
-
-    val titular = GestorCamposBase.valorDeCampo(campos, "Titular")
-    val numero = GestorCamposBase.valorDeCampo(campos, "Número de tarjeta")
-    val vencimiento = GestorCamposBase.valorDeCampo(campos, "Vencimiento")
-    val cvv = GestorCamposBase.valorDeCampo(campos, "CVV")
-    val pin = GestorCamposBase.valorDeCampo(campos, "PIN de tarjeta")
+    val ocultarPorDefecto = ajustes.seguridadVisualActiva && ajustes.ocultarContrasena
+    var mostrarNumero by remember(ajustes.seguridadVisualActiva, ajustes.ocultarContrasena) { mutableStateOf(!ocultarPorDefecto) }
+    var mostrarCvv by remember(ajustes.seguridadVisualActiva, ajustes.ocultarContrasena) { mutableStateOf(!ocultarPorDefecto) }
+    var mostrarPin by remember(ajustes.seguridadVisualActiva, ajustes.ocultarContrasena) { mutableStateOf(!ocultarPorDefecto) }
 
     fun abrirSelectorFechaExpiracion() {
         val cal = Calendar.getInstance()
         var yActual = cal.get(Calendar.YEAR)
         var mActual = cal.get(Calendar.MONTH)
-        if (vencimiento.contains("/")) {
-            val partes = vencimiento.split("/")
+        if (datos.vencimiento.contains("/")) {
+            val partes = datos.vencimiento.split("/")
             val mes = partes.getOrNull(0)?.toIntOrNull()
             if (mes != null && mes in 1..12) {
                 mActual = mes - 1
@@ -72,24 +73,26 @@ fun FormularioEdicionTarjeta(
                 String.format(Locale.ROOT, "%02d", anio % 100)
             }
             val nuevoVencimiento = "$mesStr/$anioStr"
-            alCambiarCampos(GestorCamposBase.actualizarValor(campos, "Vencimiento", nuevoVencimiento, TipoCampo.FECHA, formato = ajustes.formatoExpiracionTarjeta))
+            alCambiar(datos.copy(vencimiento = nuevoVencimiento))
         }, yActual, mActual, 1).show()
     }
 
     Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
         CampoBoveda(
-            valor = titular,
+            valor = datos.titular,
             etiqueta = "Titular (nombre como figura en el plástico)",
             alCambiar = {
-                alCambiarCampos(GestorCamposBase.actualizarValor(campos, "Titular", it, TipoCampo.TEXTO))
-            }
+                alCambiar(datos.copy(titular = it))
+            },
+            colorBordeIzquierdo = ColorDatosUsuario
         )
 
         CampoBoveda(
-            valor = numero,
+            valor = datos.numero,
             etiqueta = "Número de tarjeta",
             alCambiar = { raw ->
-                alCambiarCampos(GestorCamposBase.actualizarValor(campos, "Número de tarjeta", raw, TipoCampo.TEXTO, sensible = true, formato = "TARJETA_CREDITO"))
+                val filtrado = raw.filter { it.isDigit() }.take(19)
+                alCambiar(datos.copy(numero = filtrado))
             },
             formateadorMascara = { raw ->
                 FormateadorCampos.aplicarMascaraTarjeta(raw, ajustes.formatoTarjeta)
@@ -98,7 +101,8 @@ fun FormularioEdicionTarjeta(
             mostrarContrasena = mostrarNumero,
             alAlternarMostrarContrasena = { mostrarNumero = !mostrarNumero },
             monoespaciada = true,
-            tecladoNumerico = true
+            tecladoNumerico = true,
+            colorBordeIzquierdo = ColorAcento
         )
 
         Row(
@@ -106,10 +110,10 @@ fun FormularioEdicionTarjeta(
             horizontalArrangement = Arrangement.spacedBy(10.dp)
         ) {
             CampoBoveda(
-                valor = vencimiento,
+                valor = datos.vencimiento,
                 etiqueta = "Vencimiento (${ajustes.formatoExpiracionTarjeta})",
                 alCambiar = { raw ->
-                    alCambiarCampos(GestorCamposBase.actualizarValor(campos, "Vencimiento", raw, TipoCampo.FECHA, formato = ajustes.formatoExpiracionTarjeta))
+                    alCambiar(datos.copy(vencimiento = raw))
                 },
                 formateadorMascara = { raw ->
                     FormateadorCampos.aplicarMascaraExpiracion(raw, ajustes.formatoExpiracionTarjeta)
@@ -124,37 +128,40 @@ fun FormularioEdicionTarjeta(
                     }
                 },
                 modifier = Modifier.weight(1f),
-                tecladoNumerico = true
+                tecladoNumerico = true,
+                colorBordeIzquierdo = ColorDatos2FA
             )
 
             CampoBoveda(
-                valor = cvv,
+                valor = datos.cvv,
                 etiqueta = "CVV / CVC",
                 alCambiar = { raw ->
                     val sanitizado = raw.filter { it.isDigit() }.take(4)
-                    alCambiarCampos(GestorCamposBase.actualizarValor(campos, "CVV", sanitizado, TipoCampo.NUMERO, sensible = true))
+                    alCambiar(datos.copy(cvv = sanitizado))
                 },
                 esContrasena = true,
                 mostrarContrasena = mostrarCvv,
                 alAlternarMostrarContrasena = { mostrarCvv = !mostrarCvv },
                 monoespaciada = true,
                 tecladoNumerico = true,
-                modifier = Modifier.weight(1f)
+                modifier = Modifier.weight(1f),
+                colorBordeIzquierdo = ColorDatosContrasena
             )
         }
 
         CampoBoveda(
-            valor = pin,
+            valor = datos.pin,
             etiqueta = "PIN del cajero (opcional)",
             alCambiar = { raw ->
                 val sanitizado = raw.filter { it.isDigit() }.take(12)
-                alCambiarCampos(GestorCamposBase.actualizarValor(campos, "PIN de tarjeta", sanitizado, TipoCampo.PIN, sensible = true))
+                alCambiar(datos.copy(pin = sanitizado))
             },
             esContrasena = true,
             mostrarContrasena = mostrarPin,
             alAlternarMostrarContrasena = { mostrarPin = !mostrarPin },
             monoespaciada = true,
-            tecladoNumerico = true
+            tecladoNumerico = true,
+            colorBordeIzquierdo = ColorDatosContrasena
         )
     }
 }

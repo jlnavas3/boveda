@@ -85,7 +85,7 @@ object CxfExportador {
             }
         }
 
-        // 1. Llave de paso (Passkey / WebAuthn)
+        // 1. Llave de acceso (Passkey / WebAuthn)
         if (entrada.passkey != null) {
             val pk = entrada.passkey
             val usr = pk.usuario.ifBlank { entrada.usuario.ifBlank { tituloFinal } }

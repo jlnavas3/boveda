@@ -30,7 +30,8 @@ fun CampoBoveda(
     trailingIcon: (@Composable () -> Unit)? = null,
     alPulsar: (() -> Unit)? = null,
     formateadorMascara: ((String) -> String)? = null,
-    colorearContrasena: Boolean = false
+    colorearContrasena: Boolean = false,
+    colorBordeIzquierdo: androidx.compose.ui.graphics.Color? = null
 ) {
     val tipo = when {
         esContrasena -> TipoCampoTexto.CONTRASENA
@@ -55,7 +56,8 @@ fun CampoBoveda(
         trailingIcon = trailingIcon,
         alPulsar = alPulsar,
         formateadorMascara = formateadorMascara,
-        colorearContrasena = colorearContrasena
+        colorearContrasena = colorearContrasena,
+        colorBordeIzquierdo = colorBordeIzquierdo
     )
 }
 

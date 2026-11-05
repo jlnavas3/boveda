@@ -32,6 +32,9 @@ import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
 import com.jlnavas3.bovedalocal.util.Haptica
 import kotlin.math.roundToInt
 
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.width
+
 @Composable
 fun TarjetaResultadoGenerador(
     generada: String,
@@ -39,36 +42,35 @@ fun TarjetaResultadoGenerador(
     bits: Double,
     haptica: Haptica
 ) {
-    TarjetaBoveda {
+    TarjetaBoveda(
+        paddingInterno = PaddingValues(horizontal = 14.dp, vertical = 10.dp)
+    ) {
         EtiquetaSeccion("Resultado")
-        Spacer(Modifier.height(10.dp))
+        Spacer(Modifier.height(6.dp))
         ContrasenaSlotMachine(objetivo = generada, generacion = generacion, haptica = haptica)
-        Spacer(Modifier.height(12.dp))
+        Spacer(Modifier.height(8.dp))
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.Bottom
         ) {
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalAlignment = Alignment.CenterVertically
+            Text(
+                text = PasswordGenerator.tiempoDeCrackeo(bits),
+                color = TextoSecundario,
+                style = MaterialTheme.typography.bodyMedium,
+                modifier = Modifier.weight(1f, fill = false)
+            )
+            Spacer(Modifier.width(8.dp))
+            Box(
+                modifier = Modifier
+                    .clip(FormaPequena)
+                    .background(Menta.copy(alpha = 0.15f))
+                    .padding(horizontal = 8.dp, vertical = 4.dp)
             ) {
-                Box(
-                    modifier = Modifier
-                        .clip(FormaPequena)
-                        .background(Menta.copy(alpha = 0.15f))
-                        .padding(horizontal = 8.dp, vertical = 4.dp)
-                ) {
-                    Text(
-                        "${bits.roundToInt()} bits",
-                        color = Menta,
-                        style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold)
-                    )
-                }
                 Text(
-                    PasswordGenerator.tiempoDeCrackeo(bits),
-                    color = TextoSecundario,
-                    style = MaterialTheme.typography.bodyMedium
+                    "${bits.roundToInt()} bits",
+                    color = Menta,
+                    style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold)
                 )
             }
         }

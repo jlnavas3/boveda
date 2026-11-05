@@ -7,6 +7,7 @@
 package com.jlnavas3.bovedalocal.ui.pantallas.tema
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -29,10 +30,15 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjusteGris
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorTarjetaAjustes
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorTextoAjustes
+import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
 import com.jlnavas3.bovedalocal.ui.theme.CurvaturaEsquinas
+import com.jlnavas3.bovedalocal.ui.theme.EscalaTexto
+import com.jlnavas3.bovedalocal.ui.theme.EstiloBorde
+import com.jlnavas3.bovedalocal.ui.theme.GrosorBorde
 import com.jlnavas3.bovedalocal.ui.theme.colorContraste
 import com.jlnavas3.bovedalocal.util.Haptica
 
@@ -49,12 +55,20 @@ fun SelectorModoColorLab(
     haptica: Haptica,
     modifier: Modifier = Modifier
 ) {
+    val formaContenedor = if (CurvaturaEsquinas == 0.dp) RoundedCornerShape(0.dp) else RoundedCornerShape(CurvaturaEsquinas)
+    val formaPildora = if (CurvaturaEsquinas == 0.dp) RoundedCornerShape(0.dp) else RoundedCornerShape((CurvaturaEsquinas - 4.dp).coerceAtLeast(0.dp))
+
     Row(
         modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 4.dp)
-            .clip(RoundedCornerShape(CurvaturaEsquinas))
+            .clip(formaContenedor)
             .background(ColorTarjetaAjustes)
+            .then(
+                if (GrosorBorde > 0.dp && EstiloBorde != "ninguno") {
+                    Modifier.border(GrosorBorde, ColorBordeActual, formaContenedor)
+                } else Modifier
+            )
             .padding(4.dp),
         horizontalArrangement = Arrangement.spacedBy(6.dp)
     ) {
@@ -62,7 +76,7 @@ fun SelectorModoColorLab(
         Row(
             modifier = Modifier
                 .weight(1f)
-                .clip(RoundedCornerShape(CurvaturaEsquinas - 4.dp))
+                .clip(formaPildora)
                 .background(if (modoOscuro) colorAcentoActual else Color.Transparent)
                 .clickable {
                     haptica.tic()
@@ -82,6 +96,7 @@ fun SelectorModoColorLab(
             Text(
                 text = "Modo Oscuro" + if (modificadoOscuro) " (*)" else "",
                 style = MaterialTheme.typography.bodyMedium.copy(
+                    fontSize = (14 * EscalaTexto).sp,
                     fontWeight = if (modoOscuro) FontWeight.Bold else FontWeight.Normal,
                     color = if (modoOscuro) colorContraste(colorAcentoActual) else ColorTextoAjustes
                 )
@@ -92,7 +107,7 @@ fun SelectorModoColorLab(
         Row(
             modifier = Modifier
                 .weight(1f)
-                .clip(RoundedCornerShape(CurvaturaEsquinas - 4.dp))
+                .clip(formaPildora)
                 .background(if (!modoOscuro) colorAcentoActual else Color.Transparent)
                 .clickable {
                     haptica.tic()
@@ -112,6 +127,7 @@ fun SelectorModoColorLab(
             Text(
                 text = "Modo Claro" + if (modificadoClaro) " (*)" else "",
                 style = MaterialTheme.typography.bodyMedium.copy(
+                    fontSize = (14 * EscalaTexto).sp,
                     fontWeight = if (!modoOscuro) FontWeight.Bold else FontWeight.Normal,
                     color = if (!modoOscuro) colorContraste(colorAcentoActual) else ColorTextoAjustes
                 )

@@ -19,6 +19,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Close
+import com.jlnavas3.bovedalocal.ui.componentes.hud.accionConHud
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -37,15 +38,16 @@ import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorTarjetaAjustes
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
 import com.jlnavas3.bovedalocal.ui.theme.EstiloBorde
+import com.jlnavas3.bovedalocal.ui.theme.FormaChip
 import com.jlnavas3.bovedalocal.ui.theme.GrosorBorde
 import com.jlnavas3.bovedalocal.ui.theme.TextoPrincipal
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
 
 /**
- * Píldora de filtrado base con factor de forma ultra-compacto (~32 dp de altura).
+ * Píldora de filtrado base con factor de forma adaptativo según 'Formas y bordes'.
  *
- * Soporta icono primario, etiqueta truncada en una línea, y acción final diferenciada
- * (flecha desplegable cuando está inactiva o botón '✕' táctil para desfiltrar cuando está activa).
+ * Respeta la curvatura de esquinas configurada (FormaChip), el grosor de borde (GrosorBorde)
+ * y el estilo de borde de la aplicación (EstiloBorde).
  */
 @Composable
 fun PildoraFiltroBase(
@@ -54,29 +56,49 @@ fun PildoraFiltroBase(
     activo: Boolean,
     modifier: Modifier = Modifier,
     colorAcento: Color = ColorAcento,
+    descripcionHud: String? = null,
     alPulsar: () -> Unit,
     alLimpiar: (() -> Unit)? = null
 ) {
-    val formaPildora = RoundedCornerShape(50)
+    val formaChip = FormaChip
+    val tieneBordeConfigurado = GrosorBorde > 0.dp && EstiloBorde != "ninguno"
+
     val colorFondo = if (activo) colorAcento.copy(alpha = 0.16f) else ColorTarjetaAjustes
     val colorBorde = if (activo) {
         colorAcento.copy(alpha = 0.85f)
-    } else if (GrosorBorde > 0.dp && EstiloBorde != "ninguno") {
+    } else if (tieneBordeConfigurado) {
         ColorBordeActual
     } else {
-        ColorSeparadorAjustes.copy(alpha = 0.7f)
+        ColorSeparadorAjustes.copy(alpha = 0.5f)
     }
+
+    val grosorBordeEfectivo = if (activo) {
+        if (tieneBordeConfigurado) GrosorBorde.coerceAtLeast(1.dp) else 1.dp
+    } else {
+        if (tieneBordeConfigurado) GrosorBorde else if (EstiloBorde == "ninguno") 0.dp else 0.8.dp
+    }
+
+    val etiquetaEfectivaHud = descripcionHud ?: texto ?: ""
 
     Box(
         modifier = modifier
-            .clip(formaPildora)
+            .clip(formaChip)
             .background(colorFondo)
-            .border(
-                width = if (activo) 1.dp else if (GrosorBorde > 0.dp && EstiloBorde != "ninguno") GrosorBorde else 0.8.dp,
-                color = colorBorde,
-                shape = formaPildora
+            .then(
+                if (grosorBordeEfectivo > 0.dp) {
+                    Modifier.border(
+                        width = grosorBordeEfectivo,
+                        color = colorBorde,
+                        shape = formaChip
+                    )
+                } else Modifier
             )
-            .clickable { alPulsar() }
+            .accionConHud(
+                etiqueta = etiquetaEfectivaHud,
+                icono = icono,
+                radioRipple = 20.dp,
+                alPulsar = alPulsar
+            )
             .padding(start = 9.dp, end = 7.dp, top = 5.dp, bottom = 5.dp),
         contentAlignment = Alignment.Center
     ) {
@@ -110,7 +132,12 @@ fun PildoraFiltroBase(
                         .size(17.dp)
                         .clip(CircleShape)
                         .background(colorAcento.copy(alpha = 0.22f))
-                        .clickable { alLimpiar() },
+                        .accionConHud(
+                            etiqueta = "Quitar filtro",
+                            icono = Icons.Filled.Close,
+                            radioRipple = 10.dp,
+                            alPulsar = alLimpiar
+                        ),
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(

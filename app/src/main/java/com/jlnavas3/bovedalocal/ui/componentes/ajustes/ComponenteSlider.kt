@@ -146,22 +146,15 @@ fun ComponenteSlider(
 
             Spacer(Modifier.width(8.dp))
 
-            // Indicador en píldora del valor numérico
-            Box(
-                modifier = Modifier
-                    .clip(CircleShape)
-                    .background(colorAcento.copy(alpha = 0.16f))
-                    .padding(horizontal = 10.dp, vertical = 3.dp)
-            ) {
-                Text(
-                    text = valorTexto,
-                    color = colorAcento,
-                    style = EstiloMono.copy(
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.Bold
-                    )
+            // Indicador del valor numérico sobrio y limpio (sin cápsula de fondo)
+            Text(
+                text = valorTexto,
+                color = ColorAjusteGris,
+                style = EstiloMono.copy(
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.Medium
                 )
-            }
+            )
 
             if (alRestablecer != null) {
                 Spacer(Modifier.width(4.dp))

@@ -38,9 +38,9 @@ import com.jlnavas3.bovedalocal.ui.componentes.DescripcionPantalla
 import com.jlnavas3.bovedalocal.ui.componentes.cerrarTecladoAlTocarFuera
 import com.jlnavas3.bovedalocal.ui.componentes.seleccion.BarraSuperiorSeleccion
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjustesFondo
+import com.jlnavas3.bovedalocal.ui.pantallas.autenticador.BarraAccionesAutenticadorPrincipal
 import com.jlnavas3.bovedalocal.ui.pantallas.autenticador.BarraAccionesSeleccionAutenticador
 import com.jlnavas3.bovedalocal.ui.pantallas.autenticador.BarraSuperiorAutenticador
-import com.jlnavas3.bovedalocal.ui.pantallas.autenticador.ColumnaAccionesFlotantesAutenticador
 import com.jlnavas3.bovedalocal.ui.pantallas.autenticador.DialogosAutenticador
 import com.jlnavas3.bovedalocal.ui.pantallas.autenticador.ListaCuentasTotp
 import com.jlnavas3.bovedalocal.ui.pantallas.autenticador.SeccionBusquedaYFiltrosAutenticador
@@ -259,11 +259,16 @@ fun PantallaAutenticador(vm: VaultViewModel, estado: EstadoBoveda) {
                 modifier = Modifier.align(Alignment.BottomCenter)
             )
         } else {
-            ColumnaAccionesFlotantesAutenticador(
-                haptica = haptica,
-                alIngresarManual = { vm.ir(Pantalla.Escaner(soloManual = true)) },
-                alEscanearQr = { vm.ir(Pantalla.CamaraQr()) },
-                modifier = Modifier.align(Alignment.BottomEnd)
+            BarraAccionesAutenticadorPrincipal(
+                alEscanearQr = {
+                    haptica.toque()
+                    vm.ir(Pantalla.CamaraQr())
+                },
+                alIngresarManual = {
+                    haptica.toque()
+                    vm.ir(Pantalla.Escaner(soloManual = true))
+                },
+                modifier = Modifier.align(Alignment.BottomCenter)
             )
         }
     }

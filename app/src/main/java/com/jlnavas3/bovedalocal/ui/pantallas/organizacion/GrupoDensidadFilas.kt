@@ -15,7 +15,7 @@ import androidx.compose.ui.unit.dp
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteGrupo
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteRadio
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteSeparador
-import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
+import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
 
 @Composable
 fun GrupoDensidadFilas(
@@ -27,7 +27,7 @@ fun GrupoDensidadFilas(
     ComponenteGrupo(
         etiqueta = "Densidad de lista",
         icono = Icons.Filled.Tune,
-        colorIcono = ColorAcento,
+        colorIcono = ColorIconosInternos,
         idGrupo = "02-APA-DES-G02",
         mostrarId = mostrarId,
         modifier = modifier

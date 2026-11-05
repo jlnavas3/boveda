@@ -53,6 +53,13 @@ private fun deserializarPuertosServicios(raw: String): Map<String, String> = try
     AjustesDefaults.NormalizacionTitulos.PUERTOS_SERVICIOS_LOCALES
 }
 
+private fun deserializarRutasServicios(raw: String): Map<String, String> = try {
+    if (raw.isBlank()) AjustesDefaults.NormalizacionTitulos.RUTAS_SERVICIOS_LOCALES
+    else jsonAjustes.decodeFromString(raw)
+} catch (_: Exception) {
+    AjustesDefaults.NormalizacionTitulos.RUTAS_SERVICIOS_LOCALES
+}
+
 private fun deserializarOctetosRouter(raw: String): List<Int> = try {
     if (raw.isBlank()) AjustesDefaults.NormalizacionTitulos.OCTETOS_ROUTER
     else jsonAjustes.decodeFromString(raw)
@@ -81,6 +88,34 @@ private fun deserializarPistasOtp(raw: String): List<String> = try {
     AjustesDefaults.Autocompletado.PISTAS_OTP
 }
 
+private fun deserializarPistasDocumento(raw: String): List<String> = try {
+    if (raw.isBlank()) AjustesDefaults.Autocompletado.PISTAS_DOCUMENTO
+    else jsonAjustes.decodeFromString(raw)
+} catch (_: Exception) {
+    AjustesDefaults.Autocompletado.PISTAS_DOCUMENTO
+}
+
+private fun deserializarPaquetesComunicacion(raw: String): Set<String> = try {
+    if (raw.isBlank()) AjustesDefaults.Autocompletado.PAQUETES_COMUNICACION
+    else jsonAjustes.decodeFromString(raw)
+} catch (_: Exception) {
+    AjustesDefaults.Autocompletado.PAQUETES_COMUNICACION
+}
+
+private fun deserializarPistasContactoTelefono(raw: String): List<String> = try {
+    if (raw.isBlank()) AjustesDefaults.Autocompletado.PISTAS_CONTACTO_TELEFONO
+    else jsonAjustes.decodeFromString(raw)
+} catch (_: Exception) {
+    AjustesDefaults.Autocompletado.PISTAS_CONTACTO_TELEFONO
+}
+
+private fun deserializarPistasContactoNombre(raw: String): List<String> = try {
+    if (raw.isBlank()) AjustesDefaults.Autocompletado.PISTAS_CONTACTO_NOMBRE
+    else jsonAjustes.decodeFromString(raw)
+} catch (_: Exception) {
+    AjustesDefaults.Autocompletado.PISTAS_CONTACTO_NOMBRE
+}
+
 private fun deserializarMapeoPaquetes(raw: String): Map<String, String> = try {
     if (raw.isBlank()) AjustesDefaults.Autocompletado.MAPEO_PAQUETES_PERSONALIZADOS
     else jsonAjustes.decodeFromString(raw)
@@ -93,6 +128,76 @@ private fun deserializarNavegadoresPersonalizados(raw: String): List<String> = t
     else jsonAjustes.decodeFromString(raw)
 } catch (_: Exception) {
     AjustesDefaults.Autocompletado.NAVEGADORES_PERSONALIZADOS
+}
+
+private fun deserializarPistasTarjetaNumero(raw: String): List<String> = try {
+    if (raw.isBlank()) AjustesDefaults.Autocompletado.PISTAS_TARJETA_NUMERO
+    else jsonAjustes.decodeFromString(raw)
+} catch (_: Exception) {
+    AjustesDefaults.Autocompletado.PISTAS_TARJETA_NUMERO
+}
+
+private fun deserializarPistasTarjetaCvv(raw: String): List<String> = try {
+    if (raw.isBlank()) AjustesDefaults.Autocompletado.PISTAS_TARJETA_CVV
+    else jsonAjustes.decodeFromString(raw)
+} catch (_: Exception) {
+    AjustesDefaults.Autocompletado.PISTAS_TARJETA_CVV
+}
+
+private fun deserializarPistasTarjetaExpiracion(raw: String): List<String> = try {
+    if (raw.isBlank()) AjustesDefaults.Autocompletado.PISTAS_TARJETA_EXPIRACION
+    else jsonAjustes.decodeFromString(raw)
+} catch (_: Exception) {
+    AjustesDefaults.Autocompletado.PISTAS_TARJETA_EXPIRACION
+}
+
+private fun deserializarPistasTarjetaTitular(raw: String): List<String> = try {
+    if (raw.isBlank()) AjustesDefaults.Autocompletado.PISTAS_TARJETA_TITULAR
+    else jsonAjustes.decodeFromString(raw)
+} catch (_: Exception) {
+    AjustesDefaults.Autocompletado.PISTAS_TARJETA_TITULAR
+}
+
+private fun deserializarPistasDireccionCalle(raw: String): List<String> = try {
+    if (raw.isBlank()) AjustesDefaults.Autocompletado.PISTAS_DIRECCION_CALLE
+    else jsonAjustes.decodeFromString(raw)
+} catch (_: Exception) {
+    AjustesDefaults.Autocompletado.PISTAS_DIRECCION_CALLE
+}
+
+private fun deserializarPistasDireccionCp(raw: String): List<String> = try {
+    if (raw.isBlank()) AjustesDefaults.Autocompletado.PISTAS_DIRECCION_CP
+    else jsonAjustes.decodeFromString(raw)
+} catch (_: Exception) {
+    AjustesDefaults.Autocompletado.PISTAS_DIRECCION_CP
+}
+
+private fun deserializarPistasDireccionCiudad(raw: String): List<String> = try {
+    if (raw.isBlank()) AjustesDefaults.Autocompletado.PISTAS_DIRECCION_CIUDAD
+    else jsonAjustes.decodeFromString(raw)
+} catch (_: Exception) {
+    AjustesDefaults.Autocompletado.PISTAS_DIRECCION_CIUDAD
+}
+
+private fun deserializarPistasDireccionProvincia(raw: String): List<String> = try {
+    if (raw.isBlank()) AjustesDefaults.Autocompletado.PISTAS_DIRECCION_PROVINCIA
+    else jsonAjustes.decodeFromString(raw)
+} catch (_: Exception) {
+    AjustesDefaults.Autocompletado.PISTAS_DIRECCION_PROVINCIA
+}
+
+private fun deserializarPistasDireccionPais(raw: String): List<String> = try {
+    if (raw.isBlank()) AjustesDefaults.Autocompletado.PISTAS_DIRECCION_PAIS
+    else jsonAjustes.decodeFromString(raw)
+} catch (_: Exception) {
+    AjustesDefaults.Autocompletado.PISTAS_DIRECCION_PAIS
+}
+
+private fun deserializarTiposDocumentoPersonalizados(raw: String): List<String> = try {
+    if (raw.isBlank()) AjustesDefaults.Autocompletado.TIPOS_DOCUMENTO_PERSONALIZADOS
+    else jsonAjustes.decodeFromString(raw)
+} catch (_: Exception) {
+    AjustesDefaults.Autocompletado.TIPOS_DOCUMENTO_PERSONALIZADOS
 }
 
 private fun deserializarPlantillasCampos(raw: String): List<PlantillaCamposPersonalizada> = try {
@@ -155,6 +260,9 @@ private fun deserializarItemsMenuLateral(raw: String, migradoV2: Boolean): List<
 val AjustesApp.modoBiometriaActivo: BiometricKeyStore.Modo?
     get() = if (biometriaActiva) BiometricKeyStore.Modo.desde(biometriaModo) else null
 
+val AjustesApp.modoPerfiles: String
+    get() = modoIdentidades
+
 @Immutable
 data class AjustesApp(
     val autoBloqueoSegundos: Int = AjustesDefaults.Seguridad.AUTO_BLOQUEO_SEGUNDOS,
@@ -165,6 +273,9 @@ data class AjustesApp(
     val biometriaModo: String = AjustesDefaults.Seguridad.BIOMETRIA_MODO,
     /** "auto", "camerax" o "compatible": qué motor usa el escáner de QR. */
     val motorCamara: String = AjustesDefaults.Seguridad.MOTOR_CAMARA,
+    val escanerQrTamanoVentanaDp: Float = AjustesDefaults.CamaraQr.TAMANO_VENTANA_DP,
+    val escanerQrVibracion: Boolean = AjustesDefaults.CamaraQr.VIBRACION,
+    val escanerQrSonido: Boolean = AjustesDefaults.CamaraQr.SONIDO,
     /** Nombre que se ve dentro de la app (cabecera del menú). El launcher siempre muestra "Bóveda local": Android no permite un rótulo de icono libre en tiempo de ejecución. */
     val nombrePersonalizado: String = AjustesDefaults.Tema.NOMBRE_PERSONALIZADO,
     /** Clave de icono en el launcher (las 20 variantes de activity-alias). */
@@ -189,7 +300,9 @@ data class AjustesApp(
     val criterioOrdenacion: String = AjustesDefaults.ListaFormatos.CRITERIO_ORDENACION,
     /** Si es true, las entradas con el mismo dominio/sitio se agrupan en un acordeón desplegable. */
     val agruparPorSitio: Boolean = AjustesDefaults.ListaFormatos.AGRUPAR_POR_SITIO,
-    /** Modo de visualización de identidades: "chips", "secciones" o "desactivado". */
+    /** Si es true, las entradas ancladas (favoritas) se fijan arriba en un grupo dedicado "Anclados". */
+    val fijarAncladosArriba: Boolean = AjustesDefaults.ListaFormatos.FIJAR_ANCLADOS_ARRIBA,
+    /** Modo de visualización de identidades/perfiles: "chips", "secciones" o "desactivado". */
     val modoIdentidades: String = AjustesDefaults.ListaFormatos.MODO_IDENTIDADES,
     /** Relación jerárquica entre Identidades y Categorías: "identidad_sobre_categoria" o "categoria_sobre_identidad". */
     val jerarquiaOrganizacion: String = AjustesDefaults.ListaFormatos.JERARQUIA_ORGANIZACION,
@@ -203,6 +316,9 @@ data class AjustesApp(
     val generadorLongitudMax: Int = AjustesDefaults.Generador.LONGITUD_MAX,
     val generadorIdiomaFrases: String = AjustesDefaults.Generador.IDIOMA_FRASE,
     val generadorCapitalizarFrases: Boolean = AjustesDefaults.Generador.CAPITALIZAR_FRASE,
+    val aliasCorreoBasePredeterminado: String = AjustesDefaults.Generador.ALIAS_CORREO_BASE_PREDETERMINADO,
+    val aliasCorreoLongitudSufijo: Int = AjustesDefaults.Generador.ALIAS_CORREO_LONGITUD_SUFIJO,
+    val aliasCorreoDelimitador: String = AjustesDefaults.Generador.ALIAS_CORREO_DELIMITADOR,
     val diccionarioAnadidasEs: Set<String> = AjustesDefaults.Generador.DICCIONARIO_ANADIDAS_ES,
     val diccionarioExcluidasEs: Set<String> = AjustesDefaults.Generador.DICCIONARIO_EXCLUIDAS_ES,
     val diccionarioFavoritasEs: Set<String> = AjustesDefaults.Generador.DICCIONARIO_FAVORITAS_ES,
@@ -293,6 +409,7 @@ data class AjustesApp(
     val csvGoogleUri: String = AjustesDefaults.HistorialCopias.CSV_GOOGLE_URI,
     val csvGoogleCuentas: Int = AjustesDefaults.HistorialCopias.CSV_GOOGLE_CUENTAS,
     val csvGoogleEliminado: Boolean = AjustesDefaults.HistorialCopias.CSV_GOOGLE_ELIMINADO,
+    val csvDelimitadorPredeterminado: String = AjustesDefaults.Csv.DELIMITADOR_PREDETERMINADO_STR,
     // Índice Alfabético Lateral (Fast-scroller con ola estilo Niagara)
     val mostrarIndiceAlfabetico: Boolean = AjustesDefaults.Indice.MOSTRAR,
     val indiceEfectoOla: Boolean = AjustesDefaults.Indice.EFECTO_OLA,
@@ -316,6 +433,7 @@ data class AjustesApp(
     val formatoTarjeta: String = AjustesDefaults.ListaFormatos.FORMATO_TARJETA,
     val formatoExpiracionTarjeta: String = AjustesDefaults.ListaFormatos.FORMATO_EXPIRACION_TARJETA,
     val formatoIban: String = AjustesDefaults.ListaFormatos.FORMATO_IBAN,
+    val comunicaciones: AjustesComunicaciones = AjustesComunicaciones(),
     /** Perfil de derivación Argon2id: "estandar", "reforzado" o "ultraseguro". */
     val perfilArgon2: String = AjustesDefaults.Seguridad.PERFIL_ARGON2,
     /** FLAG_SECURE: protección anti-captura de pantalla y anti-recientes. Activa por defecto. */
@@ -328,6 +446,8 @@ data class AjustesApp(
     val contrasenasComunesExcluidas: Set<String> = AjustesDefaults.Seguridad.CONTRASENAS_COMUNES_EXCLUIDAS,
     /** Umbral en días para advertir sobre contraseñas antiguas en Salud (0 = desactivado). */
     val umbralAntiguedadDias: Int = AjustesDefaults.Seguridad.UMBRAL_ANTIGUEDAD_DIAS,
+    val saludUmbralPuntuacionDebil: Int = AjustesDefaults.SaludContrasenas.UMBRAL_PUNTUACION_DEBIL,
+    val saludLongitudMinimaRecomendada: Int = AjustesDefaults.SaludContrasenas.LONGITUD_MINIMA_RECOMENDADA,
     // Freno a fuerza bruta / Rate limiting
     val frenoIntentosGratis: Int = AjustesDefaults.Seguridad.FRENO_INTENTOS_GRATIS,
     val frenoSegundosBase: Long = AjustesDefaults.Seguridad.FRENO_SEGUNDOS_BASE,
@@ -359,27 +479,10 @@ data class AjustesApp(
     val mostrarIdsAjustes: Boolean = AjustesDefaults.Interaccion.MOSTRAR_IDS_AJUSTES,
     /** Animación de pantalla bloqueada: "engranajes" (mecanismo relojero) o "puerta" (anillos concéntricos). */
     val animacionDesbloqueo: String = AjustesDefaults.Animacion.TIPO_DESBLOQUEO,
+    /** Configuración de transiciones y animaciones entre pantallas. */
+    val transiciones: AjustesTransiciones = AjustesTransiciones(),
     // Configuración visual y física de los engranajes
-    val engranajesVelocidad: Float = AjustesDefaults.Animacion.Engranajes.VELOCIDAD,
-    val engranajesGrosorBorde: Float = AjustesDefaults.Animacion.Engranajes.GROSOR_BORDE,
-    val engranajesAlturaDientes: Float = AjustesDefaults.Animacion.Engranajes.ALTURA_DIENTES,
-    val engranajesAnchoDientes: Float = AjustesDefaults.Animacion.Engranajes.ANCHO_DIENTES,
-    val engranajesGrosorRadios: Float = AjustesDefaults.Animacion.Engranajes.GROSOR_RADIOS,
-    val engranajesCurvaturaRadios: Float = AjustesDefaults.Animacion.Engranajes.CURVATURA_RADIOS,
-    val engranajesCantidadRadios: Int = AjustesDefaults.Animacion.Engranajes.CANTIDAD_RADIOS,
-    val engranajesRadioInterior: Float = AjustesDefaults.Animacion.Engranajes.RADIO_INTERIOR,
-    val engranajesTamanoEje: Float = AjustesDefaults.Animacion.Engranajes.TAMANO_EJE,
-    val engranajesSombraIntensidad: Float = AjustesDefaults.Animacion.Engranajes.SOMBRA_INTENSIDAD,
-    val engranajesColorBrillo: String = AjustesDefaults.Animacion.Engranajes.COLOR_BRILLO,
-    val engranajesColorPrincipal: String = AjustesDefaults.Animacion.Engranajes.COLOR_PRINCIPAL,
-    val engranajesColorSombraMedio: String = AjustesDefaults.Animacion.Engranajes.COLOR_SOMBRA_MEDIO,
-    val engranajesColorSombraOscuro: String = AjustesDefaults.Animacion.Engranajes.COLOR_SOMBRA_OSCURO,
-    val engranajesColorBisel: String = AjustesDefaults.Animacion.Engranajes.COLOR_BISEL,
-    val engranajesColorInterior: String = AjustesDefaults.Animacion.Engranajes.COLOR_INTERIOR,
-    val engranajesColorCubo: String = AjustesDefaults.Animacion.Engranajes.COLOR_CUBO,
-    val engranajesColorEje: String = AjustesDefaults.Animacion.Engranajes.COLOR_EJE,
-    val engranajesColoresClaroJson: String = "",
-    val engranajesColoresOscuroJson: String = "",
+    val engranajes: AjustesAnimacionEngranajes = AjustesAnimacionEngranajes(),
     // Configuración visual y física de la puerta de bóveda
     val puertaVelocidad: Float = AjustesDefaults.Animacion.Puerta.VELOCIDAD,
     val puertaGrosorAnillos: Float = AjustesDefaults.Animacion.Puerta.GROSOR_ANILLOS,
@@ -395,10 +498,13 @@ data class AjustesApp(
     // Vibración háptica global de la app
     val hapticaApp: Boolean = AjustesDefaults.Interaccion.HAPTICA_APP,
     val hapticaAppIntensidad: Float = AjustesDefaults.Interaccion.HAPTICA_APP_INTENSIDAD,
-    // Estilo de avisos emergentes (Toast interno de la app)
+    // Estilo y posición de avisos emergentes (Toast interno de la app)
+    val avisosEmergentesHabilitados: Boolean = AjustesDefaults.Interaccion.AVISOS_EMERGENTES_HABILITADOS,
     val toastDescriptivo: Boolean = AjustesDefaults.Interaccion.TOAST_DESCRIPTIVO,
+    val posicionToast: PosicionToast = AjustesDefaults.Interaccion.POSICION_TOAST,
     // Indicadores superiores o de fondo en tarjetas de la lista
     val mostrarIndicadoresContenido: Boolean = AjustesDefaults.ColoresDatos.MOSTRAR_INDICADORES,
+    val estiloIndicadores: String = AjustesDefaults.ColoresDatos.ESTILO_INDICADORES,
     val alturaIndicadoresDp: Float = AjustesDefaults.ColoresDatos.ALTURA_INDICADORES_DP,
     val opacidadIndicadores: Float = AjustesDefaults.ColoresDatos.OPACIDAD_INDICADORES,
     // Colores aislados exclusivos para datos e indicadores de tarjetas
@@ -416,19 +522,13 @@ data class AjustesApp(
     val colorIdCopias: String = AjustesDefaults.ColoresIds.COPIAS,
     val colorIdSistema: String = AjustesDefaults.ColoresIds.SISTEMA,
     // Autocompletado de Android e Inline Suggestions
-    val autofillSugerenciasTeclado: Boolean = AjustesDefaults.Autocompletado.SUGERENCIAS_TECLADO,
-    val autofillCopiarTotpAutomatico: Boolean = AjustesDefaults.Autocompletado.COPIAR_TOTP_AUTOMATICO,
-    val autofillPistasUsuario: List<String> = AjustesDefaults.Autocompletado.PISTAS_USUARIO,
-    val autofillPistasContrasena: List<String> = AjustesDefaults.Autocompletado.PISTAS_CONTRASENA,
-    val autofillPistasOtp: List<String> = AjustesDefaults.Autocompletado.PISTAS_OTP,
-    val mapeoPaquetesPersonalizados: Map<String, String> = AjustesDefaults.Autocompletado.MAPEO_PAQUETES_PERSONALIZADOS,
-    val navegadoresPersonalizados: List<String> = AjustesDefaults.Autocompletado.NAVEGADORES_PERSONALIZADOS,
-    val maxSugerenciasAutofill: Int = AjustesDefaults.Autocompletado.MAX_SUGERENCIAS_AUTOFILL,
+    val autocompletado: AjustesAutocompletado = AjustesAutocompletado(),
     // Normalización de títulos y redes locales
     val prefijosSubdominios: List<String> = AjustesDefaults.NormalizacionTitulos.PREFIJOS_SUBDOMINIOS,
     val tldsDescartables: List<String> = AjustesDefaults.NormalizacionTitulos.TLDS_DESCARTABLES,
     val marcasPersonalizadas: Map<String, String> = AjustesDefaults.NormalizacionTitulos.MARCAS_PERSONALIZADAS,
     val puertosServiciosLocales: Map<String, String> = AjustesDefaults.NormalizacionTitulos.PUERTOS_SERVICIOS_LOCALES,
+    val rutasServiciosLocales: Map<String, String> = AjustesDefaults.NormalizacionTitulos.RUTAS_SERVICIOS_LOCALES,
     val octetosRouter: List<Int> = AjustesDefaults.NormalizacionTitulos.OCTETOS_ROUTER,
     val plantillaRouterIp: String = AjustesDefaults.NormalizacionTitulos.PLANTILLA_ROUTER_IP,
     val plantillaServidorIp: String = AjustesDefaults.NormalizacionTitulos.PLANTILLA_SERVIDOR_IP,
@@ -448,9 +548,15 @@ data class AjustesApp(
     val menuLateralAgruparItems: Boolean = AjustesDefaults.MenuLateral.AGRUPAR_ITEMS,
     val menuLateralSinBordes: Boolean = AjustesDefaults.MenuLateral.SIN_BORDES,
     val menuLateralItemsVisibles: List<String> = AjustesDefaults.MenuLateral.ITEMS_PREDETERMINADOS,
+    // Transferencia de credenciales (FIDO CXF)
+    val cxfModoTransferencia: String = AjustesDefaults.TransferenciaCxf.MODO,
+    val cxfTiempoVentanaManualSegundos: Int = AjustesDefaults.TransferenciaCxf.TIEMPO_VENTANA_MANUAL_SEGUNDOS,
     // Avisos y Asistencia interna (In-App)
     val avisos: AjustesAvisos = AjustesAvisos()
 ) {
+    val modoTransferenciaCxfEfectivo: ModoTransferenciaCxf
+        get() = ModoTransferenciaCxf.desde(cxfModoTransferencia)
+
     val modoVisualizacionIdentidades: ModoVisualizacionIdentidades
         get() = ModoVisualizacionIdentidades.desde(modoIdentidades)
 
@@ -470,6 +576,78 @@ data class AjustesApp(
 
     fun actualizarAvisos(modificar: (AjustesAvisos) -> AjustesAvisos): AjustesApp =
         copy(avisos = modificar(avisos))
+
+    val autofillSugerenciasTeclado: Boolean get() = autocompletado.sugerenciasTeclado
+    val autofillCopiarTotpAutomatico: Boolean get() = autocompletado.copiarTotpAutomatico
+    val autofillPistasUsuario: List<String> get() = autocompletado.pistasUsuario
+    val autofillPistasContrasena: List<String> get() = autocompletado.pistasContrasena
+    val autofillPistasOtp: List<String> get() = autocompletado.pistasOtp
+    val autofillPistasDocumento: List<String> get() = autocompletado.pistasDocumento
+    val autofillPaquetesComunicacion: Set<String> get() = autocompletado.paquetesComunicacion
+    val paquetesComunicacion: Set<String> get() = autocompletado.paquetesComunicacion
+    val autofillPistasContactoTelefono: List<String> get() = autocompletado.pistasContactoTelefono
+    val autofillPistasContactoNombre: List<String> get() = autocompletado.pistasContactoNombre
+    val mapeoPaquetesPersonalizados: Map<String, String> get() = autocompletado.mapeoPaquetesPersonalizados
+    val navegadoresPersonalizados: List<String> get() = autocompletado.navegadoresPersonalizados
+    val maxSugerenciasAutofill: Int get() = autocompletado.maxSugerenciasAutofill
+    val mostrarDatosTecnicosPasskey: Boolean get() = autocompletado.mostrarDatosTecnicosPasskey
+    val autofillPistasTarjetaNumero: List<String> get() = autocompletado.pistasTarjetaNumero
+    val autofillPistasTarjetaCvv: List<String> get() = autocompletado.pistasTarjetaCvv
+    val autofillPistasTarjetaExpiracion: List<String> get() = autocompletado.pistasTarjetaExpiracion
+    val autofillPistasTarjetaTitular: List<String> get() = autocompletado.pistasTarjetaTitular
+    val autofillPistasDireccionCalle: List<String> get() = autocompletado.pistasDireccionCalle
+    val autofillPistasDireccionCp: List<String> get() = autocompletado.pistasDireccionCp
+    val autofillPistasDireccionCiudad: List<String> get() = autocompletado.pistasDireccionCiudad
+    val autofillPistasDireccionProvincia: List<String> get() = autocompletado.pistasDireccionProvincia
+    val autofillPistasDireccionPais: List<String> get() = autocompletado.pistasDireccionPais
+    val tiposDocumentoPersonalizados: List<String> get() = autocompletado.tiposDocumentoPersonalizados
+
+    fun actualizarAutocompletado(modificar: (AjustesAutocompletado) -> AjustesAutocompletado): AjustesApp =
+        copy(autocompletado = modificar(autocompletado))
+
+    val estiloTransicionPantalla: String get() = transiciones.estilo
+    val duracionTransicionMs: Int get() = transiciones.duracionMs
+    val springTransicionHabilitado: Boolean get() = transiciones.springHabilitado
+    val springAmortiguacion: String get() = transiciones.springAmortiguacion
+    val desbloqueoFadeLimpio: Boolean get() = transiciones.desbloqueoFadeLimpio
+    val gestoPredictivoHabilitado: Boolean get() = transiciones.gestoPredictivoHabilitado
+
+    fun actualizarTransiciones(modificar: (AjustesTransiciones) -> AjustesTransiciones): AjustesApp =
+        copy(transiciones = modificar(transiciones))
+
+    val prefijoNumeroOculto: String get() = comunicaciones.prefijoNumeroOculto
+    val habilitarLlamadaOculta: Boolean get() = comunicaciones.habilitarLlamadaOculta
+    val habilitarWhatsappDirecto: Boolean get() = comunicaciones.habilitarWhatsappDirecto
+    val paisPredeterminadoTelefono: String get() = comunicaciones.paisPredeterminadoTelefono
+    val modoEnvioMensajeSeguro: String get() = comunicaciones.modoEnvioMensajeSeguro
+    val preguntarPurgaAgenda: Boolean get() = comunicaciones.preguntarPurgaAgenda
+
+    fun actualizarComunicaciones(modificar: (AjustesComunicaciones) -> AjustesComunicaciones): AjustesApp =
+        copy(comunicaciones = modificar(comunicaciones))
+
+    val engranajesVelocidad: Float get() = engranajes.velocidad
+    val engranajesGrosorBorde: Float get() = engranajes.grosorBorde
+    val engranajesAlturaDientes: Float get() = engranajes.alturaDientes
+    val engranajesAnchoDientes: Float get() = engranajes.anchoDientes
+    val engranajesGrosorRadios: Float get() = engranajes.grosorRadios
+    val engranajesCurvaturaRadios: Float get() = engranajes.curvaturaRadios
+    val engranajesCantidadRadios: Int get() = engranajes.cantidadRadios
+    val engranajesRadioInterior: Float get() = engranajes.radioInterior
+    val engranajesTamanoEje: Float get() = engranajes.tamanoEje
+    val engranajesSombraIntensidad: Float get() = engranajes.sombraIntensidad
+    val engranajesColorBrillo: String get() = engranajes.colorBrillo
+    val engranajesColorPrincipal: String get() = engranajes.colorPrincipal
+    val engranajesColorSombraMedio: String get() = engranajes.colorSombraMedio
+    val engranajesColorSombraOscuro: String get() = engranajes.colorSombraOscuro
+    val engranajesColorBisel: String get() = engranajes.colorBisel
+    val engranajesColorInterior: String get() = engranajes.colorInterior
+    val engranajesColorCubo: String get() = engranajes.colorCubo
+    val engranajesColorEje: String get() = engranajes.colorEje
+    val engranajesColoresClaroJson: String get() = engranajes.coloresClaroJson
+    val engranajesColoresOscuroJson: String get() = engranajes.coloresOscuroJson
+
+    fun actualizarEngranajes(modificar: (AjustesAnimacionEngranajes) -> AjustesAnimacionEngranajes): AjustesApp =
+        copy(engranajes = modificar(engranajes))
 }
 
 
@@ -532,6 +710,9 @@ class AlmacenAjustes(contexto: Context) {
             biometriaActiva = biometriaActiva,
             biometriaModo = modo,
             motorCamara = prefs.getString("motor_camara", AjustesDefaults.Seguridad.MOTOR_CAMARA) ?: AjustesDefaults.Seguridad.MOTOR_CAMARA,
+            escanerQrTamanoVentanaDp = prefs.getFloat("escaner_qr_tamano_dp", AjustesDefaults.CamaraQr.TAMANO_VENTANA_DP),
+            escanerQrVibracion = prefs.getBoolean("escaner_qr_vibracion", AjustesDefaults.CamaraQr.VIBRACION),
+            escanerQrSonido = prefs.getBoolean("escaner_qr_sonido", AjustesDefaults.CamaraQr.SONIDO),
             nombrePersonalizado = prefs.getString("nombre_personalizado", AjustesDefaults.Tema.NOMBRE_PERSONALIZADO) ?: AjustesDefaults.Tema.NOMBRE_PERSONALIZADO,
             iconoLauncher = run {
                 val prefIcono = prefs.getString("icono_launcher", null)
@@ -566,6 +747,7 @@ class AlmacenAjustes(contexto: Context) {
             } else {
                 prefs.getBoolean("agrupar_por_sitio", AjustesDefaults.ListaFormatos.AGRUPAR_POR_SITIO)
             },
+            fijarAncladosArriba = prefs.getBoolean("fijar_anclados_arriba", AjustesDefaults.ListaFormatos.FIJAR_ANCLADOS_ARRIBA),
             modoIdentidades = prefs.getString("modo_identidades", AjustesDefaults.ListaFormatos.MODO_IDENTIDADES) ?: AjustesDefaults.ListaFormatos.MODO_IDENTIDADES,
             jerarquiaOrganizacion = prefs.getString("jerarquia_organizacion", AjustesDefaults.ListaFormatos.JERARQUIA_ORGANIZACION) ?: AjustesDefaults.ListaFormatos.JERARQUIA_ORGANIZACION,
             totpManualDigitos = prefs.getInt("totp_manual_digitos", AjustesDefaults.TotpManual.DIGITOS),
@@ -576,6 +758,9 @@ class AlmacenAjustes(contexto: Context) {
             generadorLongitudMax = prefs.getInt("generador_longitud_max", AjustesDefaults.Generador.LONGITUD_MAX),
             generadorIdiomaFrases = prefs.getString("generador_idioma_frases", AjustesDefaults.Generador.IDIOMA_FRASE) ?: AjustesDefaults.Generador.IDIOMA_FRASE,
             generadorCapitalizarFrases = prefs.getBoolean("generador_capitalizar_frases", AjustesDefaults.Generador.CAPITALIZAR_FRASE),
+            aliasCorreoBasePredeterminado = prefs.getString("alias_correo_base_predeterminado", AjustesDefaults.Generador.ALIAS_CORREO_BASE_PREDETERMINADO) ?: AjustesDefaults.Generador.ALIAS_CORREO_BASE_PREDETERMINADO,
+            aliasCorreoLongitudSufijo = prefs.getInt("alias_correo_longitud_sufijo", AjustesDefaults.Generador.ALIAS_CORREO_LONGITUD_SUFIJO),
+            aliasCorreoDelimitador = prefs.getString("alias_correo_delimitador", AjustesDefaults.Generador.ALIAS_CORREO_DELIMITADOR) ?: AjustesDefaults.Generador.ALIAS_CORREO_DELIMITADOR,
             diccionarioAnadidasEs = prefs.getStringSet("diccionario_anadidas_es", AjustesDefaults.Generador.DICCIONARIO_ANADIDAS_ES) ?: emptySet(),
             diccionarioExcluidasEs = prefs.getStringSet("diccionario_excluidas_es", AjustesDefaults.Generador.DICCIONARIO_EXCLUIDAS_ES) ?: emptySet(),
             diccionarioFavoritasEs = prefs.getStringSet("diccionario_favoritas_es", AjustesDefaults.Generador.DICCIONARIO_FAVORITAS_ES) ?: emptySet(),
@@ -657,6 +842,7 @@ class AlmacenAjustes(contexto: Context) {
             csvGoogleUri = prefs.getString("csv_google_uri", AjustesDefaults.HistorialCopias.CSV_GOOGLE_URI) ?: AjustesDefaults.HistorialCopias.CSV_GOOGLE_URI,
             csvGoogleCuentas = prefs.getInt("csv_google_cuentas", AjustesDefaults.HistorialCopias.CSV_GOOGLE_CUENTAS),
             csvGoogleEliminado = prefs.getBoolean("csv_google_eliminado", AjustesDefaults.HistorialCopias.CSV_GOOGLE_ELIMINADO),
+            csvDelimitadorPredeterminado = prefs.getString("csv_delimitador_predeterminado", AjustesDefaults.Csv.DELIMITADOR_PREDETERMINADO_STR) ?: AjustesDefaults.Csv.DELIMITADOR_PREDETERMINADO_STR,
             mostrarIndiceAlfabetico = prefs.getBoolean("mostrar_indice_alfabetico", AjustesDefaults.Indice.MOSTRAR),
             indiceEfectoOla = prefs.getBoolean("indice_efecto_ola", AjustesDefaults.Indice.EFECTO_OLA),
             indiceAmplitudOlaDp = prefs.getFloat("indice_amplitud_ola_dp", AjustesDefaults.Indice.AMPLITUD_OLA_DP),
@@ -679,6 +865,14 @@ class AlmacenAjustes(contexto: Context) {
             formatoTarjeta = prefs.getString("formato_tarjeta", AjustesDefaults.ListaFormatos.FORMATO_TARJETA) ?: AjustesDefaults.ListaFormatos.FORMATO_TARJETA,
             formatoExpiracionTarjeta = prefs.getString("formato_expiracion_tarjeta", AjustesDefaults.ListaFormatos.FORMATO_EXPIRACION_TARJETA) ?: AjustesDefaults.ListaFormatos.FORMATO_EXPIRACION_TARJETA,
             formatoIban = prefs.getString("formato_iban", AjustesDefaults.ListaFormatos.FORMATO_IBAN) ?: AjustesDefaults.ListaFormatos.FORMATO_IBAN,
+            comunicaciones = AjustesComunicaciones(
+                prefijoNumeroOculto = prefs.getString("prefijo_numero_oculto", AjustesDefaults.Comunicaciones.PREFIJO_NUMERO_OCULTO) ?: AjustesDefaults.Comunicaciones.PREFIJO_NUMERO_OCULTO,
+                habilitarLlamadaOculta = prefs.getBoolean("habilitar_llamada_oculta", AjustesDefaults.Comunicaciones.HABILITAR_LLAMADA_OCULTA),
+                habilitarWhatsappDirecto = prefs.getBoolean("habilitar_whatsapp_directo", AjustesDefaults.Comunicaciones.HABILITAR_WHATSAPP_DIRECTO),
+                paisPredeterminadoTelefono = prefs.getString("pais_predeterminado_telefono", AjustesDefaults.Comunicaciones.PAIS_PREDETERMINADO_TELEFONO) ?: AjustesDefaults.Comunicaciones.PAIS_PREDETERMINADO_TELEFONO,
+                modoEnvioMensajeSeguro = prefs.getString("modo_envio_mensaje_seguro", AjustesDefaults.Comunicaciones.MODO_ENVIO_MENSAJE_SEGURO) ?: AjustesDefaults.Comunicaciones.MODO_ENVIO_MENSAJE_SEGURO,
+                preguntarPurgaAgenda = prefs.getBoolean("preguntar_purga_agenda", AjustesDefaults.Comunicaciones.PREGUNTAR_PURGA_AGENDA)
+            ),
             perfilArgon2 = prefs.getString("perfil_argon2", AjustesDefaults.Seguridad.PERFIL_ARGON2) ?: AjustesDefaults.Seguridad.PERFIL_ARGON2,
             proteccionPantalla = prefs.getBoolean("proteccion_pantalla", AjustesDefaults.Seguridad.PROTECCION_PANTALLA),
             proteccionTapjacking = prefs.getBoolean("proteccion_tapjacking", AjustesDefaults.Seguridad.PROTECCION_TAPJACKING),
@@ -686,6 +880,8 @@ class AlmacenAjustes(contexto: Context) {
             contrasenasComunesAnadidas = prefs.getStringSet("contrasenas_comunes_anadidas", AjustesDefaults.Seguridad.CONTRASENAS_COMUNES_ANADIDAS) ?: emptySet(),
             contrasenasComunesExcluidas = prefs.getStringSet("contrasenas_comunes_excluidas", AjustesDefaults.Seguridad.CONTRASENAS_COMUNES_EXCLUIDAS) ?: emptySet(),
             umbralAntiguedadDias = prefs.getInt("umbral_antiguedad_dias", AjustesDefaults.Seguridad.UMBRAL_ANTIGUEDAD_DIAS),
+            saludUmbralPuntuacionDebil = prefs.getInt("salud_umbral_puntuacion_debil", AjustesDefaults.SaludContrasenas.UMBRAL_PUNTUACION_DEBIL),
+            saludLongitudMinimaRecomendada = prefs.getInt("salud_longitud_minima_recomendada", AjustesDefaults.SaludContrasenas.LONGITUD_MINIMA_RECOMENDADA),
             frenoIntentosGratis = prefs.getInt("freno_intentos_gratis", AjustesDefaults.Seguridad.FRENO_INTENTOS_GRATIS),
             frenoSegundosBase = prefs.getLong("freno_segundos_base", AjustesDefaults.Seguridad.FRENO_SEGUNDOS_BASE),
             frenoSegundosMax = prefs.getLong("freno_segundos_max", AjustesDefaults.Seguridad.FRENO_SEGUNDOS_MAX),
@@ -709,35 +905,45 @@ class AlmacenAjustes(contexto: Context) {
             backupAutoMaxCopias = prefs.getInt("backup_auto_max_copias", AjustesDefaults.HistorialCopias.BACKUP_AUTO_MAX_COPIAS),
             backupAutoPatronNombre = run {
                 val guardado = prefs.getString("backup_auto_patron_nombre", null)
-                if (guardado == null || guardado == "boveda-auto-{FECHA}" || guardado == "{99}-boveda-auto-{FECHA}") {
+                if (guardado == null || guardado == "boveda-auto-{FECHA}" || guardado == "{99}-boveda-auto-{FECHA}" || guardado == "{99}-backup-{FECHA}") {
                     AjustesDefaults.HistorialCopias.BACKUP_AUTO_PATRON_NOMBRE
                 } else {
-                    guardado
+                    guardado.replace("{999}", "{###}").replace("{99}", "{##}").replace("{9}", "{#}")
                 }
             },
             backupAutoSecuencia = prefs.getInt("backup_auto_secuencia", AjustesDefaults.HistorialCopias.BACKUP_AUTO_SECUENCIA),
             mostrarIdsAjustes = prefs.getBoolean("mostrar_ids_ajustes", AjustesDefaults.Interaccion.MOSTRAR_IDS_AJUSTES),
             animacionDesbloqueo = prefs.getString("animacion_desbloqueo", AjustesDefaults.Animacion.TIPO_DESBLOQUEO) ?: AjustesDefaults.Animacion.TIPO_DESBLOQUEO,
-            engranajesVelocidad = prefs.getFloat("engranajes_velocidad", AjustesDefaults.Animacion.Engranajes.VELOCIDAD),
-            engranajesGrosorBorde = prefs.getFloat("engranajes_grosor_borde", AjustesDefaults.Animacion.Engranajes.GROSOR_BORDE),
-            engranajesAlturaDientes = prefs.getFloat("engranajes_altura_dientes", AjustesDefaults.Animacion.Engranajes.ALTURA_DIENTES),
-            engranajesAnchoDientes = prefs.getFloat("engranajes_ancho_dientes", AjustesDefaults.Animacion.Engranajes.ANCHO_DIENTES),
-            engranajesGrosorRadios = prefs.getFloat("engranajes_grosor_radios", AjustesDefaults.Animacion.Engranajes.GROSOR_RADIOS),
-            engranajesCurvaturaRadios = prefs.getFloat("engranajes_curvatura_radios", AjustesDefaults.Animacion.Engranajes.CURVATURA_RADIOS),
-            engranajesCantidadRadios = prefs.getInt("engranajes_cantidad_radios", AjustesDefaults.Animacion.Engranajes.CANTIDAD_RADIOS),
-            engranajesRadioInterior = prefs.getFloat("engranajes_radio_interior", AjustesDefaults.Animacion.Engranajes.RADIO_INTERIOR),
-            engranajesTamanoEje = prefs.getFloat("engranajes_tamano_eje", AjustesDefaults.Animacion.Engranajes.TAMANO_EJE),
-            engranajesSombraIntensidad = prefs.getFloat("engranajes_sombra_intensidad", AjustesDefaults.Animacion.Engranajes.SOMBRA_INTENSIDAD),
-            engranajesColorBrillo = prefs.getString("engranajes_color_brillo", AjustesDefaults.Animacion.Engranajes.COLOR_BRILLO) ?: AjustesDefaults.Animacion.Engranajes.COLOR_BRILLO,
-            engranajesColorPrincipal = prefs.getString("engranajes_color_principal", AjustesDefaults.Animacion.Engranajes.COLOR_PRINCIPAL) ?: AjustesDefaults.Animacion.Engranajes.COLOR_PRINCIPAL,
-            engranajesColorSombraMedio = prefs.getString("engranajes_color_sombra_medio", AjustesDefaults.Animacion.Engranajes.COLOR_SOMBRA_MEDIO) ?: AjustesDefaults.Animacion.Engranajes.COLOR_SOMBRA_MEDIO,
-            engranajesColorSombraOscuro = prefs.getString("engranajes_color_sombra_oscuro", AjustesDefaults.Animacion.Engranajes.COLOR_SOMBRA_OSCURO) ?: AjustesDefaults.Animacion.Engranajes.COLOR_SOMBRA_OSCURO,
-            engranajesColorBisel = prefs.getString("engranajes_color_bisel", AjustesDefaults.Animacion.Engranajes.COLOR_BISEL) ?: AjustesDefaults.Animacion.Engranajes.COLOR_BISEL,
-            engranajesColorInterior = prefs.getString("engranajes_color_interior", AjustesDefaults.Animacion.Engranajes.COLOR_INTERIOR) ?: AjustesDefaults.Animacion.Engranajes.COLOR_INTERIOR,
-            engranajesColorCubo = prefs.getString("engranajes_color_cubo", AjustesDefaults.Animacion.Engranajes.COLOR_CUBO) ?: AjustesDefaults.Animacion.Engranajes.COLOR_CUBO,
-            engranajesColorEje = prefs.getString("engranajes_color_eje", AjustesDefaults.Animacion.Engranajes.COLOR_EJE) ?: AjustesDefaults.Animacion.Engranajes.COLOR_EJE,
-            engranajesColoresClaroJson = prefs.getString("engranajes_colores_claro_json", "") ?: "",
-            engranajesColoresOscuroJson = prefs.getString("engranajes_colores_oscuro_json", "") ?: "",
+            transiciones = AjustesTransiciones(
+                estilo = prefs.getString("estilo_transicion_pantalla", AjustesDefaults.Animacion.ESTILO_TRANSICION) ?: AjustesDefaults.Animacion.ESTILO_TRANSICION,
+                duracionMs = prefs.getInt("duracion_transicion_ms", AjustesDefaults.Animacion.DURACION_TRANSICION_MS),
+                springHabilitado = prefs.getBoolean("spring_transicion_habilitado", AjustesDefaults.Animacion.SPRING_HABILITADO),
+                springAmortiguacion = prefs.getString("spring_amortiguacion", AjustesDefaults.Animacion.SPRING_AMORTIGUACION) ?: AjustesDefaults.Animacion.SPRING_AMORTIGUACION,
+                desbloqueoFadeLimpio = prefs.getBoolean("desbloqueo_fade_limpio", AjustesDefaults.Animacion.DESBLOQUEO_FADE_LIMPIO),
+                gestoPredictivoHabilitado = prefs.getBoolean("gesto_predictivo_habilitado", AjustesDefaults.Animacion.GESTO_PREDICTIVO_HABILITADO)
+            ),
+            engranajes = AjustesAnimacionEngranajes(
+                velocidad = prefs.getFloat("engranajes_velocidad", AjustesDefaults.Animacion.Engranajes.VELOCIDAD),
+                grosorBorde = prefs.getFloat("engranajes_grosor_borde", AjustesDefaults.Animacion.Engranajes.GROSOR_BORDE),
+                alturaDientes = prefs.getFloat("engranajes_altura_dientes", AjustesDefaults.Animacion.Engranajes.ALTURA_DIENTES),
+                anchoDientes = prefs.getFloat("engranajes_ancho_dientes", AjustesDefaults.Animacion.Engranajes.ANCHO_DIENTES),
+                grosorRadios = prefs.getFloat("engranajes_grosor_radios", AjustesDefaults.Animacion.Engranajes.GROSOR_RADIOS),
+                curvaturaRadios = prefs.getFloat("engranajes_curvatura_radios", AjustesDefaults.Animacion.Engranajes.CURVATURA_RADIOS),
+                cantidadRadios = prefs.getInt("engranajes_cantidad_radios", AjustesDefaults.Animacion.Engranajes.CANTIDAD_RADIOS),
+                radioInterior = prefs.getFloat("engranajes_radio_interior", AjustesDefaults.Animacion.Engranajes.RADIO_INTERIOR),
+                tamanoEje = prefs.getFloat("engranajes_tamano_eje", AjustesDefaults.Animacion.Engranajes.TAMANO_EJE),
+                sombraIntensidad = prefs.getFloat("engranajes_sombra_intensidad", AjustesDefaults.Animacion.Engranajes.SOMBRA_INTENSIDAD),
+                colorBrillo = prefs.getString("engranajes_color_brillo", AjustesDefaults.Animacion.Engranajes.COLOR_BRILLO) ?: AjustesDefaults.Animacion.Engranajes.COLOR_BRILLO,
+                colorPrincipal = prefs.getString("engranajes_color_principal", AjustesDefaults.Animacion.Engranajes.COLOR_PRINCIPAL) ?: AjustesDefaults.Animacion.Engranajes.COLOR_PRINCIPAL,
+                colorSombraMedio = prefs.getString("engranajes_color_sombra_medio", AjustesDefaults.Animacion.Engranajes.COLOR_SOMBRA_MEDIO) ?: AjustesDefaults.Animacion.Engranajes.COLOR_SOMBRA_MEDIO,
+                colorSombraOscuro = prefs.getString("engranajes_color_sombra_oscuro", AjustesDefaults.Animacion.Engranajes.COLOR_SOMBRA_OSCURO) ?: AjustesDefaults.Animacion.Engranajes.COLOR_SOMBRA_OSCURO,
+                colorBisel = prefs.getString("engranajes_color_bisel", AjustesDefaults.Animacion.Engranajes.COLOR_BISEL) ?: AjustesDefaults.Animacion.Engranajes.COLOR_BISEL,
+                colorInterior = prefs.getString("engranajes_color_interior", AjustesDefaults.Animacion.Engranajes.COLOR_INTERIOR) ?: AjustesDefaults.Animacion.Engranajes.COLOR_INTERIOR,
+                colorCubo = prefs.getString("engranajes_color_cubo", AjustesDefaults.Animacion.Engranajes.COLOR_CUBO) ?: AjustesDefaults.Animacion.Engranajes.COLOR_CUBO,
+                colorEje = prefs.getString("engranajes_color_eje", AjustesDefaults.Animacion.Engranajes.COLOR_EJE) ?: AjustesDefaults.Animacion.Engranajes.COLOR_EJE,
+                coloresClaroJson = prefs.getString("engranajes_colores_claro_json", "") ?: "",
+                coloresOscuroJson = prefs.getString("engranajes_colores_oscuro_json", "") ?: ""
+            ),
             puertaVelocidad = prefs.getFloat("puerta_velocidad", AjustesDefaults.Animacion.Puerta.VELOCIDAD),
             puertaGrosorAnillos = prefs.getFloat("puerta_grosor_anillos", AjustesDefaults.Animacion.Puerta.GROSOR_ANILLOS),
             puertaColor = prefs.getString("puerta_color", AjustesDefaults.Animacion.Puerta.COLOR) ?: AjustesDefaults.Animacion.Puerta.COLOR,
@@ -750,8 +956,11 @@ class AlmacenAjustes(contexto: Context) {
             alumbradoDuracionMs = prefs.getInt("alumbrado_duracion_ms", AjustesDefaults.Interaccion.ALUMBRADO_DURACION_MS),
             hapticaApp = prefs.getBoolean("haptica_app", AjustesDefaults.Interaccion.HAPTICA_APP),
             hapticaAppIntensidad = prefs.getFloat("haptica_app_intensidad", AjustesDefaults.Interaccion.HAPTICA_APP_INTENSIDAD),
+            avisosEmergentesHabilitados = prefs.getBoolean("avisos_emergentes_habilitados", AjustesDefaults.Interaccion.AVISOS_EMERGENTES_HABILITADOS),
             toastDescriptivo = prefs.getBoolean("toast_descriptivo", AjustesDefaults.Interaccion.TOAST_DESCRIPTIVO),
+            posicionToast = PosicionToast.desde(prefs.getString("posicion_toast", AjustesDefaults.Interaccion.POSICION_TOAST.clave)),
             mostrarIndicadoresContenido = prefs.getBoolean("mostrar_indicadores_contenido", AjustesDefaults.ColoresDatos.MOSTRAR_INDICADORES),
+            estiloIndicadores = prefs.getString("estilo_indicadores", AjustesDefaults.ColoresDatos.ESTILO_INDICADORES) ?: AjustesDefaults.ColoresDatos.ESTILO_INDICADORES,
             alturaIndicadoresDp = prefs.getFloat("altura_indicadores_dp", AjustesDefaults.ColoresDatos.ALTURA_INDICADORES_DP),
             opacidadIndicadores = prefs.getFloat("opacidad_indicadores", AjustesDefaults.ColoresDatos.OPACIDAD_INDICADORES),
             colorDatosUsuario = prefs.getString("color_datos_usuario", AjustesDefaults.ColoresDatos.USUARIO) ?: AjustesDefaults.ColoresDatos.USUARIO,
@@ -766,18 +975,36 @@ class AlmacenAjustes(contexto: Context) {
             colorIdHerramientas = prefs.getString("color_id_herramientas", AjustesDefaults.ColoresIds.HERRAMIENTAS) ?: AjustesDefaults.ColoresIds.HERRAMIENTAS,
             colorIdCopias = prefs.getString("color_id_copias", AjustesDefaults.ColoresIds.COPIAS) ?: AjustesDefaults.ColoresIds.COPIAS,
             colorIdSistema = prefs.getString("color_id_sistema", AjustesDefaults.ColoresIds.SISTEMA) ?: AjustesDefaults.ColoresIds.SISTEMA,
-            autofillSugerenciasTeclado = prefs.getBoolean("autofill_sugerencias_teclado", AjustesDefaults.Autocompletado.SUGERENCIAS_TECLADO),
-            autofillCopiarTotpAutomatico = prefs.getBoolean("autofill_copiar_totp_automatico", AjustesDefaults.Autocompletado.COPIAR_TOTP_AUTOMATICO),
-            autofillPistasUsuario = deserializarPistasUsuario(prefs.getString("autofill_pistas_usuario_json", "") ?: ""),
-            autofillPistasContrasena = deserializarPistasContrasena(prefs.getString("autofill_pistas_contrasena_json", "") ?: ""),
-            autofillPistasOtp = deserializarPistasOtp(prefs.getString("autofill_pistas_otp_json", "") ?: ""),
-            mapeoPaquetesPersonalizados = deserializarMapeoPaquetes(prefs.getString("mapeo_paquetes_personalizados_json", "") ?: ""),
-            navegadoresPersonalizados = deserializarNavegadoresPersonalizados(prefs.getString("navegadores_personalizados_json", "") ?: ""),
-            maxSugerenciasAutofill = prefs.getInt("max_sugerencias_autofill", AjustesDefaults.Autocompletado.MAX_SUGERENCIAS_AUTOFILL),
+            autocompletado = AjustesAutocompletado(
+                sugerenciasTeclado = prefs.getBoolean("autofill_sugerencias_teclado", AjustesDefaults.Autocompletado.SUGERENCIAS_TECLADO),
+                copiarTotpAutomatico = prefs.getBoolean("autofill_copiar_totp_automatico", AjustesDefaults.Autocompletado.COPIAR_TOTP_AUTOMATICO),
+                pistasUsuario = deserializarPistasUsuario(prefs.getString("autofill_pistas_usuario_json", "") ?: ""),
+                pistasContrasena = deserializarPistasContrasena(prefs.getString("autofill_pistas_contrasena_json", "") ?: ""),
+                pistasOtp = deserializarPistasOtp(prefs.getString("autofill_pistas_otp_json", "") ?: ""),
+                pistasDocumento = deserializarPistasDocumento(prefs.getString("autofill_pistas_documento_json", "") ?: ""),
+                paquetesComunicacion = deserializarPaquetesComunicacion(prefs.getString("autofill_paquetes_comunicacion_json", "") ?: ""),
+                pistasContactoTelefono = deserializarPistasContactoTelefono(prefs.getString("autofill_pistas_contacto_telefono_json", "") ?: ""),
+                pistasContactoNombre = deserializarPistasContactoNombre(prefs.getString("autofill_pistas_contacto_nombre_json", "") ?: ""),
+                mapeoPaquetesPersonalizados = deserializarMapeoPaquetes(prefs.getString("mapeo_paquetes_personalizados_json", "") ?: ""),
+                navegadoresPersonalizados = deserializarNavegadoresPersonalizados(prefs.getString("navegadores_personalizados_json", "") ?: ""),
+                maxSugerenciasAutofill = prefs.getInt("max_sugerencias_autofill", AjustesDefaults.Autocompletado.MAX_SUGERENCIAS_AUTOFILL),
+                mostrarDatosTecnicosPasskey = prefs.getBoolean("mostrar_datos_tecnicos_passkey", AjustesDefaults.Autocompletado.MOSTRAR_DATOS_TECNICOS_PASSKEY),
+                pistasTarjetaNumero = deserializarPistasTarjetaNumero(prefs.getString("autofill_pistas_tarjeta_numero_json", "") ?: ""),
+                pistasTarjetaCvv = deserializarPistasTarjetaCvv(prefs.getString("autofill_pistas_tarjeta_cvv_json", "") ?: ""),
+                pistasTarjetaExpiracion = deserializarPistasTarjetaExpiracion(prefs.getString("autofill_pistas_tarjeta_expiracion_json", "") ?: ""),
+                pistasTarjetaTitular = deserializarPistasTarjetaTitular(prefs.getString("autofill_pistas_tarjeta_titular_json", "") ?: ""),
+                pistasDireccionCalle = deserializarPistasDireccionCalle(prefs.getString("autofill_pistas_direccion_calle_json", "") ?: ""),
+                pistasDireccionCp = deserializarPistasDireccionCp(prefs.getString("autofill_pistas_direccion_cp_json", "") ?: ""),
+                pistasDireccionCiudad = deserializarPistasDireccionCiudad(prefs.getString("autofill_pistas_direccion_ciudad_json", "") ?: ""),
+                pistasDireccionProvincia = deserializarPistasDireccionProvincia(prefs.getString("autofill_pistas_direccion_provincia_json", "") ?: ""),
+                pistasDireccionPais = deserializarPistasDireccionPais(prefs.getString("autofill_pistas_direccion_pais_json", "") ?: ""),
+                tiposDocumentoPersonalizados = deserializarTiposDocumentoPersonalizados(prefs.getString("autofill_tipos_documento_personalizados_json", "") ?: "")
+            ),
             prefijosSubdominios = deserializarPrefijosSubdominios(prefs.getString("prefijos_subdominios_json", "") ?: ""),
             tldsDescartables = deserializarTldsDescartables(prefs.getString("tlds_descartables_json", "") ?: ""),
             marcasPersonalizadas = deserializarMarcasPersonalizadas(prefs.getString("marcas_personalizadas_json", "") ?: ""),
             puertosServiciosLocales = deserializarPuertosServicios(prefs.getString("puertos_servicios_locales_json", "") ?: ""),
+            rutasServiciosLocales = deserializarRutasServicios(prefs.getString("rutas_servicios_locales_json", "") ?: ""),
             octetosRouter = deserializarOctetosRouter(prefs.getString("octetos_router_json", "") ?: ""),
             plantillaRouterIp = prefs.getString("plantilla_router_ip", AjustesDefaults.NormalizacionTitulos.PLANTILLA_ROUTER_IP) ?: AjustesDefaults.NormalizacionTitulos.PLANTILLA_ROUTER_IP,
             plantillaServidorIp = prefs.getString("plantilla_servidor_ip", AjustesDefaults.NormalizacionTitulos.PLANTILLA_SERVIDOR_IP) ?: AjustesDefaults.NormalizacionTitulos.PLANTILLA_SERVIDOR_IP,
@@ -805,7 +1032,9 @@ class AlmacenAjustes(contexto: Context) {
                 fechaCreacionBovedaLocal = prefs.getLong("fecha_creacion_boveda_local", 0L),
                 avisosIgnorados = prefs.getStringSet("avisos_ignorados", emptySet()) ?: emptySet(),
                 conteoAvisosEnBloqueo = prefs.getInt("conteo_avisos_en_bloqueo", 0)
-            )
+            ),
+            cxfModoTransferencia = prefs.getString("cxf_modo_transferencia", AjustesDefaults.TransferenciaCxf.MODO) ?: AjustesDefaults.TransferenciaCxf.MODO,
+            cxfTiempoVentanaManualSegundos = prefs.getInt("cxf_tiempo_ventana_manual", AjustesDefaults.TransferenciaCxf.TIEMPO_VENTANA_MANUAL_SEGUNDOS)
         )
     }
 
@@ -818,6 +1047,9 @@ class AlmacenAjustes(contexto: Context) {
             .putBoolean("biometria", nuevo.biometriaActiva)
             .putString("biometria_modo", nuevo.biometriaModo)
             .putString("motor_camara", nuevo.motorCamara)
+            .putFloat("escaner_qr_tamano_dp", nuevo.escanerQrTamanoVentanaDp)
+            .putBoolean("escaner_qr_vibracion", nuevo.escanerQrVibracion)
+            .putBoolean("escaner_qr_sonido", nuevo.escanerQrSonido)
             .putString("nombre_personalizado", nuevo.nombrePersonalizado)
             .putString("icono_launcher", nuevo.iconoLauncher)
             .putString("color_acento", nuevo.colorAcento)
@@ -830,6 +1062,7 @@ class AlmacenAjustes(contexto: Context) {
             .putString("densidad_lista", nuevo.densidadLista)
             .putString("criterio_ordenacion", nuevo.criterioOrdenacion)
             .putBoolean("agrupar_por_sitio", nuevo.agruparPorSitio)
+            .putBoolean("fijar_anclados_arriba", nuevo.fijarAncladosArriba)
             .putString("modo_identidades", nuevo.modoIdentidades)
             .putString("jerarquia_organizacion", nuevo.jerarquiaOrganizacion)
             .putInt("totp_manual_digitos", nuevo.totpManualDigitos)
@@ -840,6 +1073,9 @@ class AlmacenAjustes(contexto: Context) {
             .putInt("generador_longitud_max", nuevo.generadorLongitudMax)
             .putString("generador_idioma_frases", nuevo.generadorIdiomaFrases)
             .putBoolean("generador_capitalizar_frases", nuevo.generadorCapitalizarFrases)
+            .putString("alias_correo_base_predeterminado", nuevo.aliasCorreoBasePredeterminado)
+            .putInt("alias_correo_longitud_sufijo", nuevo.aliasCorreoLongitudSufijo)
+            .putString("alias_correo_delimitador", nuevo.aliasCorreoDelimitador)
             .putStringSet("diccionario_anadidas_es", nuevo.diccionarioAnadidasEs)
             .putStringSet("diccionario_excluidas_es", nuevo.diccionarioExcluidasEs)
             .putStringSet("diccionario_favoritas_es", nuevo.diccionarioFavoritasEs)
@@ -921,6 +1157,7 @@ class AlmacenAjustes(contexto: Context) {
             .putString("csv_google_uri", nuevo.csvGoogleUri)
             .putInt("csv_google_cuentas", nuevo.csvGoogleCuentas)
             .putBoolean("csv_google_eliminado", nuevo.csvGoogleEliminado)
+            .putString("csv_delimitador_predeterminado", nuevo.csvDelimitadorPredeterminado)
             .putBoolean("mostrar_indice_alfabetico", nuevo.mostrarIndiceAlfabetico)
             .putBoolean("indice_efecto_ola", nuevo.indiceEfectoOla)
             .putFloat("indice_amplitud_ola_dp", nuevo.indiceAmplitudOlaDp)
@@ -943,6 +1180,12 @@ class AlmacenAjustes(contexto: Context) {
             .putString("formato_tarjeta", nuevo.formatoTarjeta)
             .putString("formato_expiracion_tarjeta", nuevo.formatoExpiracionTarjeta)
             .putString("formato_iban", nuevo.formatoIban)
+            .putString("prefijo_numero_oculto", nuevo.prefijoNumeroOculto)
+            .putBoolean("habilitar_llamada_oculta", nuevo.habilitarLlamadaOculta)
+            .putBoolean("habilitar_whatsapp_directo", nuevo.habilitarWhatsappDirecto)
+            .putString("pais_predeterminado_telefono", nuevo.paisPredeterminadoTelefono)
+            .putString("modo_envio_mensaje_seguro", nuevo.modoEnvioMensajeSeguro)
+            .putBoolean("preguntar_purga_agenda", nuevo.preguntarPurgaAgenda)
             .putString("perfil_argon2", nuevo.perfilArgon2)
             .putBoolean("proteccion_pantalla", nuevo.proteccionPantalla)
             .putBoolean("proteccion_tapjacking", nuevo.proteccionTapjacking)
@@ -950,6 +1193,8 @@ class AlmacenAjustes(contexto: Context) {
             .putStringSet("contrasenas_comunes_anadidas", nuevo.contrasenasComunesAnadidas)
             .putStringSet("contrasenas_comunes_excluidas", nuevo.contrasenasComunesExcluidas)
             .putInt("umbral_antiguedad_dias", nuevo.umbralAntiguedadDias)
+            .putInt("salud_umbral_puntuacion_debil", nuevo.saludUmbralPuntuacionDebil)
+            .putInt("salud_longitud_minima_recomendada", nuevo.saludLongitudMinimaRecomendada)
             .putInt("freno_intentos_gratis", nuevo.frenoIntentosGratis)
             .putLong("freno_segundos_base", nuevo.frenoSegundosBase)
             .putLong("freno_segundos_max", nuevo.frenoSegundosMax)
@@ -975,6 +1220,12 @@ class AlmacenAjustes(contexto: Context) {
             .putInt("backup_auto_secuencia", nuevo.backupAutoSecuencia)
             .putBoolean("mostrar_ids_ajustes", nuevo.mostrarIdsAjustes)
             .putString("animacion_desbloqueo", nuevo.animacionDesbloqueo)
+            .putString("estilo_transicion_pantalla", nuevo.estiloTransicionPantalla)
+            .putInt("duracion_transicion_ms", nuevo.duracionTransicionMs)
+            .putBoolean("spring_transicion_habilitado", nuevo.springTransicionHabilitado)
+            .putString("spring_amortiguacion", nuevo.springAmortiguacion)
+            .putBoolean("desbloqueo_fade_limpio", nuevo.desbloqueoFadeLimpio)
+            .putBoolean("gesto_predictivo_habilitado", nuevo.gestoPredictivoHabilitado)
             .putFloat("engranajes_velocidad", nuevo.engranajesVelocidad)
             .putFloat("engranajes_grosor_borde", nuevo.engranajesGrosorBorde)
             .putFloat("engranajes_altura_dientes", nuevo.engranajesAlturaDientes)
@@ -1007,8 +1258,11 @@ class AlmacenAjustes(contexto: Context) {
             .putInt("alumbrado_duracion_ms", nuevo.alumbradoDuracionMs)
             .putBoolean("haptica_app", nuevo.hapticaApp)
             .putFloat("haptica_app_intensidad", nuevo.hapticaAppIntensidad)
+            .putBoolean("avisos_emergentes_habilitados", nuevo.avisosEmergentesHabilitados)
             .putBoolean("toast_descriptivo", nuevo.toastDescriptivo)
+            .putString("posicion_toast", nuevo.posicionToast.clave)
             .putBoolean("mostrar_indicadores_contenido", nuevo.mostrarIndicadoresContenido)
+            .putString("estilo_indicadores", nuevo.estiloIndicadores)
             .putFloat("altura_indicadores_dp", nuevo.alturaIndicadoresDp)
             .putFloat("opacidad_indicadores", nuevo.opacidadIndicadores)
             .putString("color_datos_usuario", nuevo.colorDatosUsuario)
@@ -1028,13 +1282,29 @@ class AlmacenAjustes(contexto: Context) {
             .putString("autofill_pistas_usuario_json", jsonAjustes.encodeToString(nuevo.autofillPistasUsuario))
             .putString("autofill_pistas_contrasena_json", jsonAjustes.encodeToString(nuevo.autofillPistasContrasena))
             .putString("autofill_pistas_otp_json", jsonAjustes.encodeToString(nuevo.autofillPistasOtp))
+            .putString("autofill_pistas_documento_json", jsonAjustes.encodeToString(nuevo.autofillPistasDocumento))
+            .putString("autofill_paquetes_comunicacion_json", jsonAjustes.encodeToString(nuevo.autofillPaquetesComunicacion))
+            .putString("autofill_pistas_contacto_telefono_json", jsonAjustes.encodeToString(nuevo.autofillPistasContactoTelefono))
+            .putString("autofill_pistas_contacto_nombre_json", jsonAjustes.encodeToString(nuevo.autofillPistasContactoNombre))
             .putString("mapeo_paquetes_personalizados_json", jsonAjustes.encodeToString(nuevo.mapeoPaquetesPersonalizados))
             .putString("navegadores_personalizados_json", jsonAjustes.encodeToString(nuevo.navegadoresPersonalizados))
             .putInt("max_sugerencias_autofill", nuevo.maxSugerenciasAutofill)
+            .putBoolean("mostrar_datos_tecnicos_passkey", nuevo.mostrarDatosTecnicosPasskey)
+            .putString("autofill_pistas_tarjeta_numero_json", jsonAjustes.encodeToString(nuevo.autofillPistasTarjetaNumero))
+            .putString("autofill_pistas_tarjeta_cvv_json", jsonAjustes.encodeToString(nuevo.autofillPistasTarjetaCvv))
+            .putString("autofill_pistas_tarjeta_expiracion_json", jsonAjustes.encodeToString(nuevo.autofillPistasTarjetaExpiracion))
+            .putString("autofill_pistas_tarjeta_titular_json", jsonAjustes.encodeToString(nuevo.autofillPistasTarjetaTitular))
+            .putString("autofill_pistas_direccion_calle_json", jsonAjustes.encodeToString(nuevo.autofillPistasDireccionCalle))
+            .putString("autofill_pistas_direccion_cp_json", jsonAjustes.encodeToString(nuevo.autofillPistasDireccionCp))
+            .putString("autofill_pistas_direccion_ciudad_json", jsonAjustes.encodeToString(nuevo.autofillPistasDireccionCiudad))
+            .putString("autofill_pistas_direccion_provincia_json", jsonAjustes.encodeToString(nuevo.autofillPistasDireccionProvincia))
+            .putString("autofill_pistas_direccion_pais_json", jsonAjustes.encodeToString(nuevo.autofillPistasDireccionPais))
+            .putString("autofill_tipos_documento_personalizados_json", jsonAjustes.encodeToString(nuevo.tiposDocumentoPersonalizados))
             .putString("prefijos_subdominios_json", jsonAjustes.encodeToString(nuevo.prefijosSubdominios))
             .putString("tlds_descartables_json", jsonAjustes.encodeToString(nuevo.tldsDescartables))
             .putString("marcas_personalizadas_json", jsonAjustes.encodeToString(nuevo.marcasPersonalizadas))
             .putString("puertos_servicios_locales_json", jsonAjustes.encodeToString(nuevo.puertosServiciosLocales))
+            .putString("rutas_servicios_locales_json", jsonAjustes.encodeToString(nuevo.rutasServiciosLocales))
             .putString("octetos_router_json", jsonAjustes.encodeToString(nuevo.octetosRouter))
             .putString("plantilla_router_ip", nuevo.plantillaRouterIp)
             .putString("plantilla_servidor_ip", nuevo.plantillaServidorIp)
@@ -1062,6 +1332,8 @@ class AlmacenAjustes(contexto: Context) {
             .putLong("fecha_creacion_boveda_local", nuevo.avisos.fechaCreacionBovedaLocal)
             .putStringSet("avisos_ignorados", nuevo.avisos.avisosIgnorados)
             .putInt("conteo_avisos_en_bloqueo", nuevo.avisos.conteoAvisosEnBloqueo)
+            .putString("cxf_modo_transferencia", nuevo.cxfModoTransferencia)
+            .putInt("cxf_tiempo_ventana_manual", nuevo.cxfTiempoVentanaManualSegundos)
             .apply()
         _ajustes.value = nuevo
         com.jlnavas3.bovedalocal.util.Haptica.sincronizar(nuevo)
@@ -1070,6 +1342,14 @@ class AlmacenAjustes(contexto: Context) {
     }
 
     companion object {
+        val OPCIONES_VENTANA_TRANSFERENCIA = listOf(
+            60 to "1 minuto",
+            120 to "2 minutos",
+            300 to "5 minutos",
+            600 to "10 minutos",
+            1200 to "20 minutos",
+            -1 to "Hasta bloquear la bóveda"
+        )
         val OPCIONES_ANIMACION_DESBLOQUEO = listOf(
             "ninguna" to "Ninguna (Ahorro de energía)",
             "engranajes" to "Mecanismo de engranajes",
@@ -1228,9 +1508,9 @@ class AlmacenAjustes(contexto: Context) {
         )
         val OPCIONES_MAX_SUGERENCIAS_AUTOFILL = listOf(
             3 to "3 sugerencias",
-            5 to "5 sugerencias (predeterminado)",
+            5 to "5 sugerencias",
             10 to "10 sugerencias",
-            0 to "Todas las cuentas compatibles"
+            0 to "Todas las cuentas compatibles (predeterminado)"
         )
         val OPCIONES_AUTODESTRUCCION_INTENTOS = listOf(
             0 to "Desactivado",

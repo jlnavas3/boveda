@@ -62,6 +62,7 @@ import com.jlnavas3.bovedalocal.ui.theme.colorContraste
 fun TarjetaFlotantePreviaLaboratorio(
     colorFondo: Color,
     colorTarjeta: Color,
+    colorModal: Color,
     colorBorde: Color,
     colorCampo: Color,
     colorTextoPrincipal: Color,
@@ -71,7 +72,11 @@ fun TarjetaFlotantePreviaLaboratorio(
     onAlternarSwitch: (Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var colapsado by remember { mutableStateOf(false) }
+    var colapsado by remember { mutableStateOf(true) }
+    val formaTarjeta = if (CurvaturaEsquinas == 0.dp) RoundedCornerShape(0.dp) else RoundedCornerShape(CurvaturaEsquinas)
+    val formaPequena = if (CurvaturaEsquinas == 0.dp) RoundedCornerShape(0.dp) else RoundedCornerShape(8.dp)
+    val formaModal = if (CurvaturaEsquinas == 0.dp) RoundedCornerShape(0.dp) else RoundedCornerShape(topStart = 10.dp, topEnd = 10.dp, bottomStart = 6.dp, bottomEnd = 6.dp)
+    val formaChip = if (CurvaturaEsquinas == 0.dp) RoundedCornerShape(0.dp) else RoundedCornerShape(4.dp)
 
     Column(
         modifier = modifier
@@ -82,9 +87,9 @@ fun TarjetaFlotantePreviaLaboratorio(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .clip(RoundedCornerShape(CurvaturaEsquinas))
+                .clip(formaTarjeta)
                 .background(colorTarjeta)
-                .border(1.dp, colorBorde, RoundedCornerShape(CurvaturaEsquinas))
+                .border(1.dp, colorBorde, formaTarjeta)
                 .padding(horizontal = 14.dp, vertical = 8.dp)
         ) {
             // Cabecera compacta: Icono, Título y botón colapsar/expandir
@@ -94,8 +99,8 @@ fun TarjetaFlotantePreviaLaboratorio(
             ) {
                 Box(
                     modifier = Modifier
-                        .size(34.dp)
-                        .clip(RoundedCornerShape(9.dp))
+                        .size(32.dp)
+                        .clip(formaPequena)
                         .background(colorAcento),
                     contentAlignment = Alignment.Center
                 ) {
@@ -108,7 +113,7 @@ fun TarjetaFlotantePreviaLaboratorio(
                         imageVector = Icons.Filled.Lock,
                         contentDescription = null,
                         tint = colorContenidoAcento,
-                        modifier = Modifier.size(18.dp)
+                        modifier = Modifier.size(16.dp)
                     )
                 }
 
@@ -116,18 +121,18 @@ fun TarjetaFlotantePreviaLaboratorio(
 
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
-                        text = "Google Workspace",
+                        text = "Google",
                         style = MaterialTheme.typography.bodyLarge.copy(
                             fontWeight = FontWeight.SemiBold,
-                            fontSize = 14.5.sp,
+                            fontSize = 13.5.sp,
                             color = colorTextoPrincipal
                         ),
                         maxLines = 1
                     )
                     Text(
-                        text = if (colapsado) "Previa colapsada" else "usuario@empresa.com • TOTP activo",
+                        text = if (colapsado) "Previa colapsada" else "TOTP activo",
                         style = MaterialTheme.typography.bodySmall.copy(
-                            fontSize = 11.5.sp,
+                            fontSize = 11.sp,
                             color = colorTextoSecundario
                         ),
                         maxLines = 1
@@ -181,10 +186,10 @@ fun TarjetaFlotantePreviaLaboratorio(
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(34.dp)
-                            .clip(RoundedCornerShape(8.dp))
+                            .height(32.dp)
+                            .clip(formaPequena)
                             .background(colorCampo)
-                            .border(0.8.dp, colorBorde, RoundedCornerShape(8.dp))
+                            .border(0.8.dp, colorBorde, formaPequena)
                             .padding(horizontal = 10.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
@@ -192,13 +197,13 @@ fun TarjetaFlotantePreviaLaboratorio(
                             imageVector = Icons.Filled.Security,
                             contentDescription = null,
                             tint = colorTextoSecundario,
-                            modifier = Modifier.size(15.dp)
+                            modifier = Modifier.size(14.dp)
                         )
                         Spacer(Modifier.width(8.dp))
                         Text(
-                            text = "Contraseña segura de ejemplo...",
+                            text = "Contraseña segura...",
                             style = MaterialTheme.typography.bodySmall.copy(
-                                fontSize = 12.sp,
+                                fontSize = 11.5.sp,
                                 color = colorTextoSecundario
                             ),
                             maxLines = 1,
@@ -208,13 +213,61 @@ fun TarjetaFlotantePreviaLaboratorio(
                             imageVector = Icons.Filled.Visibility,
                             contentDescription = null,
                             tint = colorTextoSecundario,
-                            modifier = Modifier.size(15.dp)
+                            modifier = Modifier.size(14.dp)
                         )
                     }
 
                     Spacer(Modifier.height(8.dp))
 
-                    // Fila 3: Componentes de Botones Reales (BotonPrimario y BotonBorde)
+                    // Fila 3: Miniatura representativa de Capa 3: Modal / Sheet elevado
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clip(formaModal)
+                            .background(colorModal)
+                            .border(0.8.dp, colorBorde, formaModal)
+                            .padding(horizontal = 10.dp, vertical = 6.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        // Drag handle del sheet
+                        Box(
+                            modifier = Modifier
+                                .size(width = 24.dp, height = 3.dp)
+                                .clip(formaChip)
+                                .background(colorTextoSecundario.copy(alpha = 0.5f))
+                        )
+                        Spacer(Modifier.height(4.dp))
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = "Modal / Sheet (Capa 3)",
+                                style = MaterialTheme.typography.bodySmall.copy(
+                                    fontSize = 11.sp,
+                                    fontWeight = FontWeight.Medium,
+                                    color = colorTextoPrincipal
+                                )
+                            )
+                            Box(
+                                modifier = Modifier
+                                    .clip(formaChip)
+                                    .background(colorAcento.copy(alpha = 0.16f))
+                                    .padding(horizontal = 6.dp, vertical = 2.dp)
+                            ) {
+                                Text(
+                                    text = "Elevado",
+                                    style = MaterialTheme.typography.labelSmall.copy(fontSize = 9.sp),
+                                    color = colorAcento
+                                )
+                            }
+                        }
+                    }
+
+                    Spacer(Modifier.height(8.dp))
+
+                    // Fila 4: Componentes de Botones Reales (BotonPrimario y BotonBorde)
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.spacedBy(8.dp)

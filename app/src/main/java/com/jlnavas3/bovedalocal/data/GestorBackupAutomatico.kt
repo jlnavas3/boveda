@@ -165,29 +165,35 @@ object GestorBackupAutomatico {
         secuencia: Int = 1,
         fecha: Date = Date()
     ): String {
-        val formatoFecha = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault())
-        val marca = formatoFecha.format(fecha)
-        var limpio = patron.trim().ifBlank { "{99}-boveda-auto-{FECHA}" }
+        val formatoFecha = SimpleDateFormat("yyyyMMdd", Locale.US)
+        val formatoHora = SimpleDateFormat("HHmmss", Locale.US)
+        val fechaStr = formatoFecha.format(fecha)
+        val horaStr = formatoHora.format(fecha)
+
+        var limpio = patron.trim().ifBlank { "{##}-backup-{FECHA}_{HORA}" }
 
         limpio = when {
-            limpio.contains("{999}") -> limpio.replace("{999}", String.format(Locale.US, "%03d", secuencia))
-            limpio.contains("{001}") -> limpio.replace("{001}", String.format(Locale.US, "%03d", secuencia))
-            limpio.contains("{99}") -> limpio.replace("{99}", String.format(Locale.US, "%02d", secuencia))
-            limpio.contains("{01}") -> limpio.replace("{01}", String.format(Locale.US, "%02d", secuencia))
-            limpio.contains("{NUM}", ignoreCase = true) -> limpio.replace(Regex("(?i)\\{NUM\\}"), String.format(Locale.US, "%02d", secuencia))
-            limpio.contains("{9}") -> limpio.replace("{9}", secuencia.toString())
+            limpio.contains("{###}") -> limpio.replace("{###}", String.format(Locale.US, "%03d", secuencia))
+            limpio.contains("{##}") -> limpio.replace("{##}", String.format(Locale.US, "%02d", secuencia))
+            limpio.contains("{#}") -> limpio.replace("{#}", secuencia.toString())
             else -> limpio
         }
 
-        val res = if (limpio.contains("{FECHA}", ignoreCase = true)) {
-            limpio.replace(Regex("(?i)\\{FECHA\\}"), marca)
-        } else if (limpio.contains("{TIMESTAMP}", ignoreCase = true)) {
-            limpio.replace(Regex("(?i)\\{TIMESTAMP\\}"), marca)
-        } else if (limpio.contains("{DATE}", ignoreCase = true)) {
-            limpio.replace(Regex("(?i)\\{DATE\\}"), marca)
-        } else {
-            "${limpio}_$marca"
+        if (limpio.contains("{FECHA}", ignoreCase = true)) {
+            limpio = limpio.replace(Regex("(?i)\\{FECHA\\}"), fechaStr)
         }
+        if (limpio.contains("{HORA}", ignoreCase = true)) {
+            limpio = limpio.replace(Regex("(?i)\\{HORA\\}"), horaStr)
+        }
+
+        val res = if (!patron.contains("{FECHA}", ignoreCase = true) &&
+            !patron.contains("{HORA}", ignoreCase = true) &&
+            !patron.contains("{##}") && !patron.contains("{#}") && !patron.contains("{###}")) {
+            "${limpio}_$fechaStr"
+        } else {
+            limpio
+        }
+
         return if (res.endsWith(".bvda", ignoreCase = true)) res
                else if (res.endsWith(".boveda", ignoreCase = true)) res
                else "$res.bvda"

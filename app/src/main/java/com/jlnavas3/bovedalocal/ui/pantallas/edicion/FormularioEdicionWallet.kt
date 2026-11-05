@@ -14,65 +14,72 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.unit.dp
-import com.jlnavas3.bovedalocal.data.CampoPersonalizado
-import com.jlnavas3.bovedalocal.data.TipoCampo
+import com.jlnavas3.bovedalocal.data.AjustesApp
+import com.jlnavas3.bovedalocal.data.DatosCriptoWallet
 import com.jlnavas3.bovedalocal.ui.componentes.CampoBoveda
+import com.jlnavas3.bovedalocal.ui.theme.ColorDatosContrasena
+import com.jlnavas3.bovedalocal.ui.theme.ColorDatosPasskey
+import com.jlnavas3.bovedalocal.ui.theme.ColorDatosWeb
 
+/**
+ * Microcomponente desacoplado para edición directa y fuertemente tipada de billeteras criptográficas.
+ */
 @Composable
 fun FormularioEdicionWallet(
-    campos: List<CampoPersonalizado>,
-    alCambiarCampos: (List<CampoPersonalizado>) -> Unit
+    datos: DatosCriptoWallet,
+    alCambiar: (DatosCriptoWallet) -> Unit,
+    ajustes: AjustesApp = AjustesApp()
 ) {
-    var mostrarSemilla by remember { mutableStateOf(false) }
-    var mostrarClavePrivada by remember { mutableStateOf(false) }
-
-    val red = GestorCamposBase.valorDeCampo(campos, "Red / Blockchain")
-    val direccion = GestorCamposBase.valorDeCampo(campos, "Dirección pública")
-    val semilla = GestorCamposBase.valorDeCampo(campos, "Frase semilla (Seed phrase)")
-    val clavePrivada = GestorCamposBase.valorDeCampo(campos, "Clave privada")
+    val ocultarPorDefecto = ajustes.seguridadVisualActiva && ajustes.ocultarContrasena
+    var mostrarSemilla by remember(ajustes.seguridadVisualActiva, ajustes.ocultarContrasena) { mutableStateOf(!ocultarPorDefecto) }
+    var mostrarClavePrivada by remember(ajustes.seguridadVisualActiva, ajustes.ocultarContrasena) { mutableStateOf(!ocultarPorDefecto) }
 
     Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
         CampoBoveda(
-            valor = red,
+            valor = datos.red,
             etiqueta = "Red / Blockchain (ej. Ethereum, Bitcoin, Solana)",
             alCambiar = {
-                alCambiarCampos(GestorCamposBase.actualizarValor(campos, "Red / Blockchain", it, TipoCampo.TEXTO))
-            }
+                alCambiar(datos.copy(red = it))
+            },
+            colorBordeIzquierdo = ColorDatosWeb
         )
 
         CampoBoveda(
-            valor = direccion,
+            valor = datos.direccionPublica,
             etiqueta = "Dirección pública (clave pública)",
             alCambiar = {
-                alCambiarCampos(GestorCamposBase.actualizarValor(campos, "Dirección pública", it, TipoCampo.TEXTO))
+                alCambiar(datos.copy(direccionPublica = it))
             },
-            monoespaciada = true
+            monoespaciada = true,
+            colorBordeIzquierdo = ColorDatosWeb
         )
 
         CampoBoveda(
-            valor = semilla,
+            valor = datos.fraseSemilla,
             etiqueta = "Frase semilla (12 o 24 palabras mnemónicas)",
             alCambiar = {
-                alCambiarCampos(GestorCamposBase.actualizarValor(campos, "Frase semilla (Seed phrase)", it, TipoCampo.NOTAS, sensible = true))
+                alCambiar(datos.copy(fraseSemilla = it))
             },
             esContrasena = true,
             mostrarContrasena = mostrarSemilla,
             alAlternarMostrarContrasena = { mostrarSemilla = !mostrarSemilla },
             monoespaciada = true,
-            varias = true
+            varias = true,
+            colorBordeIzquierdo = ColorDatosPasskey
         )
 
         CampoBoveda(
-            valor = clavePrivada,
+            valor = datos.clavePrivada,
             etiqueta = "Clave privada (Private key)",
             alCambiar = {
-                alCambiarCampos(GestorCamposBase.actualizarValor(campos, "Clave privada", it, TipoCampo.NOTAS, sensible = true))
+                alCambiar(datos.copy(clavePrivada = it))
             },
             esContrasena = true,
             mostrarContrasena = mostrarClavePrivada,
             alAlternarMostrarContrasena = { mostrarClavePrivada = !mostrarClavePrivada },
             monoespaciada = true,
-            varias = true
+            varias = true,
+            colorBordeIzquierdo = ColorDatosContrasena
         )
     }
 }

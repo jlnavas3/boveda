@@ -32,18 +32,20 @@ fun GrupoSugerenciasTeclado(
     sugerenciasTeclado: Boolean,
     maxSugerencias: Int,
     copiarTotp: Boolean = true,
+    mostrarDatosTecnicosPasskey: Boolean = false,
     mostrarIdsAjustes: Boolean,
     alCambiarSugerenciasTeclado: (Boolean) -> Unit,
     alCambiarMaxSugerencias: (Int) -> Unit,
     alCambiarCopiarTotp: (Boolean) -> Unit = {},
+    alCambiarMostrarDatosTecnicosPasskey: (Boolean) -> Unit = {},
     alRestablecer: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val opcionesMax = AlmacenAjustes.OPCIONES_MAX_SUGERENCIAS_AUTOFILL.map { (valor, etiqueta) ->
         val desc = when (valor) {
-            0 -> "Muestra todas las cuentas que coincidan sin limitar la cantidad."
+            0 -> "Muestra todas las cuentas que coincidan sin limitar la cantidad (predeterminado)."
             3 -> "Muestra un máximo de 3 credenciales para mantener la barra compacta."
-            5 -> "Muestra hasta 5 credenciales (recomendado para la mayoría de pantallas)."
+            5 -> "Muestra hasta 5 credenciales (recomendado para teclados compactos)."
             10 -> "Muestra hasta 10 credenciales antes de requerir búsqueda manual."
             else -> "Muestra hasta $valor credenciales."
         }
@@ -95,6 +97,14 @@ fun GrupoSugerenciasTeclado(
             mostrarIdsAjustes = mostrarIdsAjustes,
             alCambiar = alCambiarCopiarTotp
         )
+
+        Spacer(modifier = Modifier.height(10.dp))
+
+        FilaAjusteMostrarDatosTecnicosPasskey(
+            activo = mostrarDatosTecnicosPasskey,
+            mostrarIdsAjustes = mostrarIdsAjustes,
+            alCambiar = alCambiarMostrarDatosTecnicosPasskey
+        )
     }
 }
 
@@ -104,7 +114,7 @@ private fun PreviaGrupoSugerenciasTeclado() {
     BovedaTheme {
         GrupoSugerenciasTeclado(
             sugerenciasTeclado = true,
-            maxSugerencias = 5,
+            maxSugerencias = 0,
             mostrarIdsAjustes = false,
             alCambiarSugerenciasTeclado = {},
             alCambiarMaxSugerencias = {},

@@ -63,16 +63,16 @@ fun EstadoVacioPasskeys(
         }
         Spacer(Modifier.height(12.dp))
         Text(
-            if (sinPasskeysEnTotal) "Todavía no hay llaves de paso" else "No se encontraron llaves de paso",
+            if (sinPasskeysEnTotal) "Todavía no hay llaves de acceso" else "No se encontraron llaves de acceso",
             color = ColorTitulos,
             style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
         )
         Spacer(Modifier.height(6.dp))
         Text(
             if (sinPasskeysEnTotal) {
-                "Cuando una web o app te pida crear una llave de paso y elijas Bóveda local, aparecerá guardada aquí. También puedes importarlas directamente desde otro gestor."
+                "Cuando una web o app te pida crear una llave de acceso y elijas Bóveda local, aparecerá guardada aquí. También puedes importarlas directamente desde otro gestor."
             } else {
-                "Ninguna llave de paso coincide con la búsqueda o filtro aplicado."
+                "Ninguna llave de acceso coincide con la búsqueda o filtro aplicado."
             },
             color = TextoSecundario,
             style = MaterialTheme.typography.bodySmall,

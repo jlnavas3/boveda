@@ -33,6 +33,7 @@ import com.jlnavas3.bovedalocal.ui.componentes.BotonColorido
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjusteGris
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorTextoAjustes
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.GrupoAjustes
+import com.jlnavas3.bovedalocal.ui.theme.FormaPequena
 import com.jlnavas3.bovedalocal.ui.theme.Menta
 import com.jlnavas3.bovedalocal.ui.theme.colorLegibleParaTema
 import com.jlnavas3.bovedalocal.ui.theme.fondoBadgeParaTema
@@ -52,7 +53,7 @@ fun BannerLimpiezaMasivaDuplicados(
                 Box(
                     modifier = Modifier
                         .size(42.dp)
-                        .clip(RoundedCornerShape(12.dp))
+                        .clip(FormaPequena)
                         .background(fondoBadgeParaTema(Menta)),
                     contentAlignment = Alignment.Center
                 ) {

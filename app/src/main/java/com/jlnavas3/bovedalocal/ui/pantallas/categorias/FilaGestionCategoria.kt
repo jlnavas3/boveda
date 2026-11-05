@@ -34,9 +34,10 @@ import com.jlnavas3.bovedalocal.ui.componentes.TamanoInsignia
 import com.jlnavas3.bovedalocal.ui.componentes.TextoCuerpo
 import com.jlnavas3.bovedalocal.ui.componentes.TextoSubtitulo
 import com.jlnavas3.bovedalocal.ui.componentes.TextoTitulo
+import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorCampoAjustes
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorTarjetaAjustes
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
-import com.jlnavas3.bovedalocal.ui.theme.Peligro
+import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
 import com.jlnavas3.bovedalocal.ui.theme.parsearColorO
 
@@ -117,13 +118,16 @@ fun FilaGestionCategoria(
                 BotonIconoSuperficie(
                     icono = Icons.Filled.Edit,
                     descripcion = "Editar categoría",
+                    colorIcono = ColorIconosInternos,
+                    colorFondo = ColorCampoAjustes,
                     alPulsar = alEditar
                 )
 
                 BotonIconoSuperficie(
                     icono = Icons.Filled.Delete,
                     descripcion = "Eliminar categoría",
-                    colorIcono = Peligro,
+                    colorIcono = ColorIconosInternos,
+                    colorFondo = ColorCampoAjustes,
                     alPulsar = alEliminar
                 )
             }

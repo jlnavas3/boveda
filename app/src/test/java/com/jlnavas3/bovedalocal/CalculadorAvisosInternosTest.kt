@@ -140,4 +140,38 @@ class CalculadorAvisosInternosTest {
         val avisoTitulos = avisos.find { it.tipo == TipoAvisoInterno.TITULOS_SIN_NORMALIZAR }
         assertEquals(null, avisoTitulos)
     }
+
+    @Test
+    fun calcularAvisos_modoPrueba30MinutosDisparaAviso() {
+        val ahora = 1_700_000_000_000L
+        val entradas = listOf(crearEntrada("1", "GitHub"))
+
+        // Caso 1: Pasaron 20 minutos desde la última copia (no debe disparar)
+        val ajustes20m = AjustesApp().copy(
+            recordatorioExportacionDias = -30,
+            ultimaExportacionEn = ahora - (20L * 60 * 1000)
+        )
+        val avisos20m = CalculadorAvisosInternos.calcular(
+            entradas = entradas,
+            ajustes = ajustes20m,
+            archivoBovedaModificado = ahora,
+            ahora = ahora
+        )
+        assertEquals(null, avisos20m.find { it.tipo == TipoAvisoInterno.RESPALDO_PENDIENTE })
+
+        // Caso 2: Pasaron 35 minutos desde la última copia (SÍ debe disparar)
+        val ajustes35m = AjustesApp().copy(
+            recordatorioExportacionDias = -30,
+            ultimaExportacionEn = ahora - (35L * 60 * 1000)
+        )
+        val avisos35m = CalculadorAvisosInternos.calcular(
+            entradas = entradas,
+            ajustes = ajustes35m,
+            archivoBovedaModificado = ahora,
+            ahora = ahora
+        )
+        val aviso = avisos35m.find { it.tipo == TipoAvisoInterno.RESPALDO_PENDIENTE }
+        assertTrue(aviso != null)
+        assertTrue(aviso!!.descripcion.contains("35 minutos"))
+    }
 }

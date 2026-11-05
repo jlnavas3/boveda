@@ -25,6 +25,7 @@ import com.jlnavas3.bovedalocal.ui.CriterioOrdenacion
 import com.jlnavas3.bovedalocal.ui.componentes.DialogoBoveda
 import com.jlnavas3.bovedalocal.ui.componentes.FilaOpcionModal
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
+import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
 
 @Composable
 fun DialogoOrdenacionLista(
@@ -37,7 +38,7 @@ fun DialogoOrdenacionLista(
         alCerrar = alCerrar,
         titulo = "Ordenar por",
         icono = Icons.AutoMirrored.Filled.Sort,
-        colorIcono = ColorAcento,
+        colorIcono = ColorIconosInternos,
         botonConfirmar = {
             TextButton(onClick = alCerrar) {
                 Text("Cerrar", color = ColorAcento)

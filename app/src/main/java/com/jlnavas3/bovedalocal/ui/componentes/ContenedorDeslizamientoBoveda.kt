@@ -140,9 +140,6 @@ fun ContenedorDeslizamientoBoveda(
             modifier = Modifier
                 .fillMaxWidth()
                 .offset { IntOffset(animOffset.value.roundToInt(), 0) }
-                .graphicsLayer {
-                    alpha = (1f - progreso).coerceIn(0f, 1f)
-                }
                 .pointerInput(idItem, accionIzquierda, accionDerecha) {
                     awaitEachGesture {
                         val down = awaitFirstDown(requireUnconsumed = false)

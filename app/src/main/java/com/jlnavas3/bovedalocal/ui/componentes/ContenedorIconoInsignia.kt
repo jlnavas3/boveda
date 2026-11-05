@@ -46,8 +46,8 @@ fun ContenedorIconoInsignia(
     val forma = when (tamano) {
         TamanoInsignia.PEQUENO -> FormaPequena
         TamanoInsignia.MEDIANO -> FormaPequena
-        TamanoInsignia.GRANDE -> RoundedCornerShape(CurvaturaEsquinas.coerceAtLeast(12.dp))
-        TamanoInsignia.HERO -> RoundedCornerShape(CurvaturaEsquinas.coerceAtLeast(20.dp))
+        TamanoInsignia.GRANDE -> if (CurvaturaEsquinas == 0.dp) RoundedCornerShape(0.dp) else RoundedCornerShape(CurvaturaEsquinas.coerceAtLeast(12.dp))
+        TamanoInsignia.HERO -> if (CurvaturaEsquinas == 0.dp) RoundedCornerShape(0.dp) else RoundedCornerShape(CurvaturaEsquinas.coerceAtLeast(20.dp))
     }
 
     Box(

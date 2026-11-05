@@ -46,6 +46,22 @@ object AjustesDefaults {
         const val OCULTAR_CAMPOS = true
     }
 
+    // 1c. Cámara y Escáner QR
+    object CamaraQr {
+        const val TAMANO_VENTANA_DP = 260f
+        const val TAMANO_VENTANA_MIN_DP = 160f
+        const val TAMANO_VENTANA_MAX_DP = 360f
+        const val VIBRACION = true
+        const val SONIDO = false
+    }
+
+    // 1d. Salud y Auditoría de Contraseñas
+    object SaludContrasenas {
+        const val UMBRAL_PUNTUACION_DEBIL = 1
+        const val LONGITUD_MINIMA_RECOMENDADA = 8
+        val OPCIONES_LONGITUD_MINIMA = listOf(6, 8, 10, 12, 14, 16)
+    }
+
     // 2. Apariencia y Tema General
     object Tema {
         const val NOMBRE_PERSONALIZADO = ""
@@ -74,13 +90,14 @@ object AjustesDefaults {
     // 4. Colores Datos e Indicadores de Tarjetas
     object ColoresDatos {
         const val MOSTRAR_INDICADORES = true
-        const val USUARIO = "#0284C7"
-        const val CONTRASENA = "#0D9488"
+        const val ESTILO_INDICADORES = "iconos" // "lineas", "puntos", "iconos", "lateral", "ninguno"
+        const val USUARIO = "#2563EB"
+        const val CONTRASENA = "#EAB308"
         const val DOS_FA = "#F97316"
         const val PASSKEY = "#8B5CF6"
         const val WEB = "#06B6D4"
-        const val APP = "#10B981"
-        const val ALTURA_INDICADORES_DP = 2.0f
+        const val APP = "#16A34A"
+        const val ALTURA_INDICADORES_DP = 12.5f
         const val OPACIDAD_INDICADORES = 0.70f
     }
 
@@ -96,10 +113,10 @@ object AjustesDefaults {
 
     // 6. Formas y Geometría
     object Formas {
-        const val CURVATURA_ESQUINAS_DP = 16f
-        const val GROSOR_BORDE_DP = 1.0f
-        const val ESTILO_BORDE = "ninguno"
-        const val ESPACIADO_COMPONENTES_DP = 14f
+        const val CURVATURA_ESQUINAS_DP = 6f
+        const val GROSOR_BORDE_DP = 0.8f
+        const val ESTILO_BORDE = "sutil"
+        const val ESPACIADO_COMPONENTES_DP = 6f
     }
 
     // 7. Tipografía y Textos
@@ -125,33 +142,96 @@ object AjustesDefaults {
         val PISTAS_OTP = listOf(
             "otp", "totp", "2fa", "mfa", "one-time-code", "verification", "verificacion", "verificación", "codigo", "código", "security_code", "auth_code", "token"
         )
+        val PISTAS_DOCUMENTO = listOf(
+            "cedula", "cédula", "dni", "ruc", "ssn", "curp", "pasaporte", "passport", "tax-id", "documento", "identificacion", "identificación"
+        )
+        val PAQUETES_COMUNICACION: Set<String> = setOf(
+            "com.whatsapp",
+            "com.whatsapp.w4b",
+            "org.telegram.messenger",
+            "org.telegram.messenger.web",
+            "org.telegram.plus",
+            "nekox.messenger",
+            "org.thoughtcrime.securesms",
+            "com.viber.voip",
+            "com.google.android.contacts",
+            "com.google.android.dialer",
+            "com.android.contacts",
+            "com.android.dialer",
+            "com.samsung.android.app.contacts",
+            "com.samsung.android.dialer",
+            "com.huawei.contacts",
+            "com.hihonor.contacts",
+            "com.oneplus.contacts"
+        )
+        val PISTAS_CONTACTO_TELEFONO = listOf(
+            "phone", "tel", "cel", "mobile"
+        )
+        val PISTAS_CONTACTO_NOMBRE = listOf(
+            "name", "nombre", "apellido"
+        )
+        val PISTAS_TARJETA_NUMERO = listOf(
+            "cardnumber", "card_number", "numero_tarjeta", "tarjeta", "creditcard", "pan", "num_tarjeta", "cc-number"
+        )
+        val PISTAS_TARJETA_CVV = listOf(
+            "cvv", "cvc", "security_code", "codigo_seguridad", "cvv2", "cid"
+        )
+        val PISTAS_TARJETA_EXPIRACION = listOf(
+            "exp", "expiration", "vencimiento", "fecha_vencimiento", "caducidad", "exp_date", "cc-exp"
+        )
+        val PISTAS_TARJETA_TITULAR = listOf(
+            "cardholder", "titular", "nombre_tarjeta", "card_name", "cc-name", "owner"
+        )
+        val PISTAS_DIRECCION_CALLE = listOf(
+            "address", "street", "calle", "direccion", "dirección", "domicilio", "address-line1"
+        )
+        val PISTAS_DIRECCION_CP = listOf(
+            "zip", "postal", "codigo_postal", "código_postal", "postcode", "postal_code"
+        )
+        val PISTAS_DIRECCION_CIUDAD = listOf(
+            "city", "ciudad", "localidad", "municipio", "poblacion", "población"
+        )
+        val PISTAS_DIRECCION_PROVINCIA = listOf(
+            "state", "province", "provincia", "departamento", "region", "región", "estado"
+        )
+        val PISTAS_DIRECCION_PAIS = listOf(
+            "country", "pais", "país", "nacion", "nación"
+        )
+        val TIPOS_DOCUMENTO_PERSONALIZADOS: List<String> = emptyList()
         val MAPEO_PAQUETES_PERSONALIZADOS: Map<String, String> = emptyMap()
         val NAVEGADORES_PERSONALIZADOS: List<String> = emptyList()
-        const val MAX_SUGERENCIAS_AUTOFILL: Int = 5
+        const val MAX_SUGERENCIAS_AUTOFILL: Int = 0
+        const val MOSTRAR_DATOS_TECNICOS_PASSKEY: Boolean = false
     }
 
     // 8. Índice Alfabético Lateral (Ola Niagara)
     object Indice {
         const val MOSTRAR = true
         const val EFECTO_OLA = true
-        const val AMPLITUD_OLA_DP = 109f
-        const val RADIO_OLA_DP = 169f
+        const val AMPLITUD_OLA_DP = 150f
+        const val RADIO_OLA_DP = 180f
         const val ESCALA_LETRAS = 1.5f
         const val MOSTRAR_CIRCULO = true
-        const val TAMANO_CIRCULO_DP = 50f
-        const val OFFSET_CIRCULO_DP = 136f
+        const val TAMANO_CIRCULO_DP = 46f
+        const val OFFSET_CIRCULO_DP = 127f
         const val HAPTICA = true
         const val ANCHO_TACTIL_DP = 45f
-        const val TONO_LETRAS = 80f
-        const val INCLUIR_ENIE = true
+        const val TONO_LETRAS = 45f
+        const val INCLUIR_ENIE = false
         const val RESALTAR_ENTRADAS = true
         const val RESALTAR_SOLO_PRIMERA = true
         const val ALINEAR_CON_CRESTA = true
     }
 
-    // 9. Animación Desbloqueo: Engranajes y Puerta
+    // 9. Animación y Transiciones
     object Animacion {
         const val TIPO_DESBLOQUEO = "ninguna"
+        const val ESTILO_TRANSICION = "INSTANTANEO"
+        const val DURACION_TRANSICION_MS = 220
+        const val SPRING_HABILITADO = false
+        const val SPRING_AMORTIGUACION = "SUTIL"
+        const val DESBLOQUEO_FADE_LIMPIO = true
+        const val GESTO_PREDICTIVO_HABILITADO = true
 
         object Engranajes {
             const val VELOCIDAD = 24f
@@ -273,7 +353,9 @@ object AjustesDefaults {
         const val DENSIDAD_LISTA = "predeterminada"
         const val CRITERIO_ORDENACION = "NOMBRE_AZ"
         const val AGRUPAR_POR_SITIO = true
+        const val FIJAR_ANCLADOS_ARRIBA = true
         const val MODO_IDENTIDADES = "chips"
+        const val MODO_PERFILES = MODO_IDENTIDADES
         const val JERARQUIA_ORGANIZACION = "identidad_sobre_categoria"
         const val FORMATO_FECHA = "DD/MM/AAAA"
         const val FORMATO_HORA = "24h"
@@ -282,6 +364,16 @@ object AjustesDefaults {
         const val FORMATO_TARJETA = "4x4"
         const val FORMATO_EXPIRACION_TARJETA = "MM/AA"
         const val FORMATO_IBAN = "bloques_4"
+    }
+
+    // 12b. Comunicaciones y Contactos
+    object Comunicaciones {
+        const val PREFIJO_NUMERO_OCULTO = "#31#"
+        const val HABILITAR_LLAMADA_OCULTA = true
+        const val HABILITAR_WHATSAPP_DIRECTO = true
+        const val PAIS_PREDETERMINADO_TELEFONO = ""
+        const val MODO_ENVIO_MENSAJE_SEGURO = "preguntar"
+        const val PREGUNTAR_PURGA_AGENDA = true
     }
 
     // 13. Generador Manual 2FA
@@ -303,7 +395,7 @@ object AjustesDefaults {
         const val BACKUP_AUTO_PASSWORD_CIFRADO = ""
         const val BACKUP_AUTO_ULTIMA_EJECUCION = 0L
         const val BACKUP_AUTO_MAX_COPIAS = 5
-        const val BACKUP_AUTO_PATRON_NOMBRE = "{99}-backup-{FECHA}"
+        const val BACKUP_AUTO_PATRON_NOMBRE = "{##}-backup-{FECHA}_{HORA}"
         const val BACKUP_AUTO_SECUENCIA = 0
         const val RECORDATORIO_EXPORTACION_DIAS = 30
         const val CSV_GOOGLE_RUTA = ""
@@ -321,7 +413,9 @@ object AjustesDefaults {
         const val HAPTICA_APP = true
         const val HAPTICA_APP_INTENSIDAD = 0.10f
         const val MOSTRAR_IDS_AJUSTES = false
+        const val AVISOS_EMERGENTES_HABILITADOS = true
         const val TOAST_DESCRIPTIVO = true
+        val POSICION_TOAST: PosicionToast = PosicionToast.INFERIOR
         val ORDEN_AJUSTES_PERSONALIZADO: List<String> = emptyList()
     }
 
@@ -352,6 +446,10 @@ object AjustesDefaults {
             "5001" to "Synology",
             "8080" to "Servidor Web"
         )
+        val RUTAS_SERVICIOS_LOCALES: Map<String, String> = mapOf(
+            "phpmyadmin" to "phpMyAdmin",
+            "portal" to "Portal Web"
+        )
         val OCTETOS_ROUTER: List<Int> = listOf(1, 254)
         const val PLANTILLA_ROUTER_IP = "Router ({ip})"
         const val PLANTILLA_SERVIDOR_IP = "Servidor ({ip})"
@@ -379,6 +477,11 @@ object AjustesDefaults {
         const val CAPITALIZAR_FRASE = false
         const val MODO_PATRON = false
         const val PATRON = "XXXXX-XXXXX-XXXXX-XXXXX-XXXXX"
+        const val ALIAS_CORREO_BASE_PREDETERMINADO = ""
+        const val ALIAS_CORREO_LONGITUD_SUFIJO = 6
+        const val ALIAS_CORREO_LONGITUD_MIN = 3
+        const val ALIAS_CORREO_LONGITUD_MAX = 20
+        const val ALIAS_CORREO_DELIMITADOR = "+"
         val DICCIONARIO_ANADIDAS_ES: Set<String> = emptySet()
         val DICCIONARIO_EXCLUIDAS_ES: Set<String> = emptySet()
         val DICCIONARIO_FAVORITAS_ES: Set<String> = emptySet()
@@ -391,6 +494,7 @@ object AjustesDefaults {
     object Csv {
         const val DELIMITADOR_AUTO = true
         const val DELIMITADOR_PREDETERMINADO = ','
+        const val DELIMITADOR_PREDETERMINADO_STR = ","
     }
 
     // 19. Diagnóstico y Registro de Eventos
@@ -434,6 +538,12 @@ object AjustesDefaults {
         const val AVISAR_TITULOS_SIN_NORMALIZAR = true
         const val AVISAR_SALUD_CONTRASENAS = true
         const val AVISAR_RESPALDO_PENDIENTE = true
+    }
+
+    // 23. Transferencia de Credenciales (FIDO CXF)
+    object TransferenciaCxf {
+        const val MODO = "manual"
+        const val TIEMPO_VENTANA_MANUAL_SEGUNDOS = 300
     }
 }
 

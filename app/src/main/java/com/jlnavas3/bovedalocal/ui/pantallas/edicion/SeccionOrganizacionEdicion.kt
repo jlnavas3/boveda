@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.PushPin
 import androidx.compose.material.icons.filled.Shield
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.runtime.Composable
@@ -20,10 +21,12 @@ import com.jlnavas3.bovedalocal.data.Categoria
 import com.jlnavas3.bovedalocal.data.Identidad
 import com.jlnavas3.bovedalocal.ui.pantallas.categorias.SeccionCategoriasEdicion
 import com.jlnavas3.bovedalocal.ui.pantallas.identidades.SeccionIdentidadEdicion
+import com.jlnavas3.bovedalocal.ui.theme.ColorAnclado
+import com.jlnavas3.bovedalocal.ui.theme.ColorFavorito
 
 /**
  * Sección de organización de la credencial, desglosada en filas homogéneas individuales
- * (Identidad, Categoría, Etiqueta, Favorito, Ignorar en auditoría) sin marcos envolventes dobles.
+ * (Identidad, Categoría, Etiqueta, Favorito, Anclado, Ignorar en auditoría) sin marcos envolventes dobles.
  */
 @Composable
 fun SeccionOrganizacionEdicion(
@@ -39,6 +42,8 @@ fun SeccionOrganizacionEdicion(
     etiquetasSugeridas: List<String>,
     favorito: Boolean,
     alAlternarFavorito: (Boolean) -> Unit,
+    anclado: Boolean = false,
+    alAlternarAnclado: (Boolean) -> Unit = {},
     ignoradaEnSalud: Boolean = false,
     alAlternarIgnoradaEnSalud: (Boolean) -> Unit = {},
     modifier: Modifier = Modifier
@@ -70,11 +75,20 @@ fun SeccionOrganizacionEdicion(
 
         FilaSeccionSwitchEdicion(
             icono = Icons.Filled.Star,
-            colorIcono = Color(0xFFFFB300),
-            titulo = "Favorito",
-            descripcion = "Fijar arriba en la lista principal",
+            colorIcono = ColorFavorito,
+            titulo = "Marcar como favorito",
+            descripcion = "Destacar con estrella en la lista",
             activado = favorito,
             alCambiar = alAlternarFavorito
+        )
+
+        FilaSeccionSwitchEdicion(
+            icono = Icons.Filled.PushPin,
+            colorIcono = ColorAnclado,
+            titulo = "Anclado",
+            descripcion = "Fijar en el grupo 'Anclados' arriba en la lista principal",
+            activado = anclado,
+            alCambiar = alAlternarAnclado
         )
 
         FilaSeccionSwitchEdicion(

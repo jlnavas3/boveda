@@ -62,7 +62,7 @@ fun FilaGrupoSitio(
 ) {
     val compacta = alturaFila.value <= 48f
     val forma = RoundedCornerShape(CurvaturaEsquinas)
-    val tamanoIcono = if (compacta) 32 else if (alturaFila.value <= 64f) 36 else 40
+    val tamanoIcono = if (compacta) 28 else if (alturaFila.value <= 64f) 34 else 38
     val infoMarca = remember(clave) {
         IconosMarcas.buscarInfo(clave, clave)
     }
@@ -78,7 +78,7 @@ fun FilaGrupoSitio(
                 else Modifier
             )
             .clickable { alAlternar() }
-            .padding(horizontal = 14.dp, vertical = 6.dp),
+            .padding(horizontal = 14.dp, vertical = if (compacta) 3.dp else 6.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Box(
@@ -92,36 +92,37 @@ fun FilaGrupoSitio(
                 Icon(
                     painter = painterResource(infoMarca.drawableRes),
                     contentDescription = clave,
-                    tint = if (infoMarca.esMulticolor) Color.Unspecified else (infoMarca.colorOficial ?: ColorAcento),
+                    tint = if (infoMarca.esMulticolor) Color.Unspecified else (infoMarca.colorOficial ?: ColorIconosInternos),
                     modifier = Modifier.size((tamanoIcono * 0.52f).dp)
                 )
             } else {
                 Icon(
                     imageVector = Icons.Filled.Dns,
                     contentDescription = null,
-                    tint = ColorAcento,
+                    tint = ColorIconosInternos,
                     modifier = Modifier.size((tamanoIcono * 0.52f).dp)
                 )
             }
         }
         Spacer(Modifier.width(12.dp))
-        Column(modifier = Modifier.weight(1f)) {
-            Text(
-                clave,
-                style = if (compacta) MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold) else MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold),
-                color = if (resaltado) ColorAcento else TextoPrincipal,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
-            Text(
-                "$cantidad ${if (cantidad == 1) "cuenta" else "cuentas"}",
-                style = if (compacta) MaterialTheme.typography.labelSmall else MaterialTheme.typography.bodySmall,
-                color = TextoSecundario,
-                maxLines = 1
-            )
-        }
+        Text(
+            text = clave,
+            style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold),
+            color = if (resaltado) ColorAcento else TextoPrincipal,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            modifier = Modifier.weight(1f)
+        )
+        Spacer(Modifier.width(10.dp))
+        Text(
+            text = "$cantidad ${if (cantidad == 1) "cuenta" else "cuentas"}",
+            style = MaterialTheme.typography.labelSmall,
+            color = TextoSecundario,
+            maxLines = 1
+        )
+        Spacer(Modifier.width(16.dp))
         Icon(
-            if (expandido) Icons.Filled.ExpandLess else Icons.Filled.ExpandMore,
+            imageVector = if (expandido) Icons.Filled.ExpandLess else Icons.Filled.ExpandMore,
             contentDescription = if (expandido) "Contraer" else "Expandir",
             tint = if (resaltado) ColorAcento else ColorIconosInternos
         )

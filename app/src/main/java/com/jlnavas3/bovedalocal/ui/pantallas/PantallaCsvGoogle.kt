@@ -6,8 +6,6 @@
 
 package com.jlnavas3.bovedalocal.ui.pantallas
 
-import android.Manifest
-import android.content.pm.PackageManager
 import android.provider.OpenableColumns
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -21,6 +19,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -28,9 +27,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.jlnavas3.bovedalocal.BovedaApp
+import com.jlnavas3.bovedalocal.data.contactos.ContactoDispositivo
+import com.jlnavas3.bovedalocal.data.contactos.LectorArchivoContactos
 import com.jlnavas3.bovedalocal.ui.Pantalla
 import com.jlnavas3.bovedalocal.ui.VaultViewModel
 import com.jlnavas3.bovedalocal.ui.componentes.BarraSuperiorPantalla
@@ -60,27 +60,61 @@ fun PantallaCsvGoogle(
     var dialogoImportarCsv by remember { mutableStateOf(false) }
     var mostrarDialogoBorradoManual by remember { mutableStateOf(false) }
     var mostrandoModalContactos by remember { mutableStateOf(false) }
+    var listaContactosImportados by remember { mutableStateOf<List<ContactoDispositivo>>(emptyList()) }
+    var accionAutomaticaEjecutada by remember { mutableStateOf(false) }
 
-    val lanzadorPermisoContactos = rememberLauncherForActivityResult(
-        ActivityResultContracts.RequestPermission()
-    ) { concedido ->
-        if (concedido) {
-            mostrandoModalContactos = true
-        } else {
-            vm.avisar("Se requiere permiso para leer los contactos del teléfono")
+    val lanzadorAbrirContactos = rememberLauncherForActivityResult(
+        ActivityResultContracts.OpenDocument()
+    ) { uri ->
+        BovedaApp.salidaTerminada(contexto)
+        if (uri != null) {
+            try {
+                val texto = contexto.contentResolver.openInputStream(uri)?.use {
+                    it.bufferedReader().readText()
+                } ?: throw java.lang.IllegalStateException("No se pudo leer el archivo")
+
+                val contactos = LectorArchivoContactos.parsear(texto)
+                if (contactos.isNotEmpty()) {
+                    listaContactosImportados = contactos
+                    mostrandoModalContactos = true
+                } else {
+                    vm.avisar("No se encontraron contactos en formato vCard (.vcf) o CSV en el archivo")
+                }
+            } catch (e: Exception) {
+                vm.avisar("Error al procesar archivo de contactos: ${e.message}")
+            }
         }
     }
 
     fun solicitarImportarContactos() {
-        val tienePermiso = ContextCompat.checkSelfPermission(
-            contexto,
-            Manifest.permission.READ_CONTACTS
-        ) == PackageManager.PERMISSION_GRANTED
+        BovedaApp.salidaPendiente(contexto)
+        try {
+            lanzadorAbrirContactos.launch(arrayOf(
+                "text/vcard",
+                "text/x-vcard",
+                "text/csv",
+                "text/comma-separated-values",
+                "text/plain",
+                "*/*"
+            ))
+        } catch (_: Exception) {
+            BovedaApp.salidaTerminada(contexto)
+            vm.avisar("No se encontró ningún selector de archivos disponible")
+        }
+    }
 
-        if (tienePermiso) {
-            mostrandoModalContactos = true
-        } else {
-            lanzadorPermisoContactos.launch(Manifest.permission.READ_CONTACTS)
+    LaunchedEffect(seccionDestino) {
+        if (!accionAutomaticaEjecutada) {
+            when (seccionDestino) {
+                "05-COP-CSV-IMP" -> {
+                    accionAutomaticaEjecutada = true
+                    dialogoImportarCsv = true
+                }
+                "05-COP-CNT-IMP" -> {
+                    accionAutomaticaEjecutada = true
+                    solicitarImportarContactos()
+                }
+            }
         }
     }
 
@@ -157,7 +191,9 @@ fun PantallaCsvGoogle(
                 GrupoImportacionCsvGoogle(
                     mostrarId = ajustes.mostrarIdsAjustes,
                     alIniciarImportacion = { dialogoImportarCsv = true },
-                    alAbrirNormalizador = { vm.ir(Pantalla.NormalizadorTitulos()) }
+                    alAbrirNormalizador = { vm.ir(Pantalla.NormalizadorTitulos()) },
+                    delimitadorPredeterminado = ajustes.csvDelimitadorPredeterminado,
+                    alCambiarDelimitador = { vm.ajustarCsvDelimitadorPredeterminado(it) }
                 )
 
                 Spacer(Modifier.height(14.dp))
@@ -188,9 +224,15 @@ fun PantallaCsvGoogle(
     if (mostrandoModalContactos) {
         ModalImportarContactos(
             abierto = true,
-            alCerrar = { mostrandoModalContactos = false },
+            contactos = listaContactosImportados,
+            alCerrar = {
+                mostrandoModalContactos = false
+                listaContactosImportados = emptyList()
+            },
             alImportar = { entradas ->
                 vm.importarEntradasContactos(entradas)
+                mostrandoModalContactos = false
+                listaContactosImportados = emptyList()
             }
         )
     }

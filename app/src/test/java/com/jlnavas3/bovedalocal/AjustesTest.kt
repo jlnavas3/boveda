@@ -37,10 +37,10 @@ class AjustesTest {
         assertEquals("XXXXX-XXXXX-XXXXX-XXXXX", ajustes.tilePatron)
 
         // Formas y geometría
-        assertEquals(16f, ajustes.curvaturaEsquinasDp, 0.01f)
-        assertEquals(1.0f, ajustes.grosorBordeDp, 0.01f)
-        assertEquals("ninguno", ajustes.estiloBorde)
-        assertEquals(14f, ajustes.espaciadoComponentesDp, 0.01f)
+        assertEquals(6f, ajustes.curvaturaEsquinasDp, 0.01f)
+        assertEquals(0.8f, ajustes.grosorBordeDp, 0.01f)
+        assertEquals("sutil", ajustes.estiloBorde)
+        assertEquals(6f, ajustes.espaciadoComponentesDp, 0.01f)
 
         // Widget 2FA
         assertEquals(0f, ajustes.widgetGrosorBordeDp, 0.01f)
@@ -60,7 +60,7 @@ class AjustesTest {
         // Backup automático local
         assertEquals(0, ajustes.backupAutoFrecuenciaDias)
         assertEquals(5, ajustes.backupAutoMaxCopias)
-        assertEquals("{99}-backup-{FECHA}", ajustes.backupAutoPatronNombre)
+        assertEquals("{##}-backup-{FECHA}_{HORA}", ajustes.backupAutoPatronNombre)
         assertEquals(0, ajustes.backupAutoSecuencia)
 
         // Tipografía
@@ -74,19 +74,27 @@ class AjustesTest {
         // Índice alfabético lateral
         assertTrue(ajustes.mostrarIndiceAlfabetico)
         assertTrue(ajustes.indiceEfectoOla)
-        assertEquals(109f, ajustes.indiceAmplitudOlaDp, 0.01f)
-        assertEquals(169f, ajustes.indiceRadioOlaDp, 0.01f)
+        assertEquals(150f, ajustes.indiceAmplitudOlaDp, 0.01f)
+        assertEquals(180f, ajustes.indiceRadioOlaDp, 0.01f)
         assertEquals(1.5f, ajustes.indiceEscalaLetras, 0.01f)
         assertTrue(ajustes.indiceMostrarCirculo)
-        assertEquals(50f, ajustes.indiceTamanoCirculoDp, 0.01f)
-        assertEquals(136f, ajustes.indiceOffsetCirculoDp, 0.01f)
+        assertEquals(46f, ajustes.indiceTamanoCirculoDp, 0.01f)
+        assertEquals(127f, ajustes.indiceOffsetCirculoDp, 0.01f)
         assertTrue(ajustes.indiceHaptica)
         assertEquals(45f, ajustes.indiceAnchoTactilDp, 0.01f)
-        assertEquals(80f, ajustes.indiceTonoLetras, 0.01f)
-        assertTrue(ajustes.indiceIncluirEnie)
+        assertEquals(45f, ajustes.indiceTonoLetras, 0.01f)
+        assertFalse(ajustes.indiceIncluirEnie)
         assertTrue(ajustes.indiceResaltarEntradas)
         assertTrue(ajustes.indiceResaltarSoloPrimera)
         assertTrue(ajustes.indiceAlinearConCresta)
+
+        // Passkeys / Llaves de acceso
+        assertFalse("mostrarDatosTecnicosPasskey debe estar desactivado por defecto", ajustes.mostrarDatosTecnicosPasskey)
+
+        // Avisos emergentes (Toast)
+        assertTrue("avisosEmergentesHabilitados debe estar activo por defecto", ajustes.avisosEmergentesHabilitados)
+        assertTrue("toastDescriptivo debe ser descriptivo por defecto", ajustes.toastDescriptivo)
+        assertEquals(com.jlnavas3.bovedalocal.data.PosicionToast.INFERIOR, ajustes.posicionToast)
     }
 
     @Test
@@ -133,7 +141,7 @@ class AjustesTest {
     @Test
     fun `recordatorio opciones y patron backup por defecto`() {
         val ajustes = AjustesApp()
-        assertEquals("{99}-backup-{FECHA}", ajustes.backupAutoPatronNombre)
+        assertEquals("{##}-backup-{FECHA}_{HORA}", ajustes.backupAutoPatronNombre)
         assertTrue(AlmacenAjustes.OPCIONES_RECORDATORIO_EXPORTACION.any { it.first == -30 })
     }
 
@@ -213,7 +221,8 @@ class AjustesTest {
             com.jlnavas3.bovedalocal.ui.Pantalla.SaludBoveda("03-LST-SLD") to "03-LST-SLD",
             com.jlnavas3.bovedalocal.ui.Pantalla.Duplicados("03-LST-DUP") to "03-LST-DUP",
             com.jlnavas3.bovedalocal.ui.Pantalla.Papelera("03-LST-PAP") to "03-LST-PAP",
-            com.jlnavas3.bovedalocal.ui.Pantalla.Categorias("03-LST-CAT") to "03-LST-CAT",
+            com.jlnavas3.bovedalocal.ui.Pantalla.AjustesTransiciones("02-APA-TRN") to "02-APA-TRN",
+            com.jlnavas3.bovedalocal.ui.Pantalla.AjustesTransiciones() to "02-APA-TRN",
             com.jlnavas3.bovedalocal.ui.Pantalla.Registro("06-SIS-LOG") to "06-SIS-LOG",
             com.jlnavas3.bovedalocal.ui.Pantalla.AcercaDe("06-SIS-DGN") to "06-SIS-DGN"
         )
@@ -223,5 +232,34 @@ class AjustesTest {
             assertTrue("Para $pantalla el padre debe ser Pantalla.Ajustes pero fue $padre", padre is com.jlnavas3.bovedalocal.ui.Pantalla.Ajustes)
             assertEquals("Para $pantalla el id esperado era $idEsperado", idEsperado, (padre as com.jlnavas3.bovedalocal.ui.Pantalla.Ajustes).seccionId)
         }
+    }
+
+    @Test
+    fun `valores por defecto y actualizacion de AjustesTransiciones funcionan correctamente`() {
+        val ajustes = AjustesApp()
+        assertEquals("INSTANTANEO", ajustes.estiloTransicionPantalla)
+        assertEquals(220, ajustes.duracionTransicionMs)
+        assertFalse(ajustes.springTransicionHabilitado)
+        assertEquals("SUTIL", ajustes.springAmortiguacion)
+        assertTrue(ajustes.desbloqueoFadeLimpio)
+        assertTrue(ajustes.gestoPredictivoHabilitado)
+
+        val modificado = ajustes.actualizarTransiciones {
+            it.copy(
+                estilo = "ZOOM",
+                duracionMs = 300,
+                springHabilitado = true,
+                springAmortiguacion = "DINAMICO",
+                desbloqueoFadeLimpio = false,
+                gestoPredictivoHabilitado = false
+            )
+        }
+
+        assertEquals("ZOOM", modificado.estiloTransicionPantalla)
+        assertEquals(300, modificado.duracionTransicionMs)
+        assertTrue(modificado.springTransicionHabilitado)
+        assertEquals("DINAMICO", modificado.springAmortiguacion)
+        assertFalse(modificado.desbloqueoFadeLimpio)
+        assertFalse(modificado.gestoPredictivoHabilitado)
     }
 }

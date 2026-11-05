@@ -28,6 +28,9 @@ fun construirPaletaDesdeEstado(
     val lumTP = if (esOscuro) estado.lumTextoPrincipalOscuro else estado.lumTextoPrincipalClaro
     val lumTS = if (esOscuro) estado.lumTextoSecundarioOscuro else estado.lumTextoSecundarioClaro
 
+    val lumM = if (esOscuro) estado.lumModalOscuro else estado.lumModalClaro
+    val effModal = if (estado.unificarTonos) tonoG else (if (esOscuro) estado.tonoModalOscuro else estado.tonoModalClaro)
+
     return PaletaSobria(
         esOscuro = esOscuro,
         fondo = calcularColorCapaLab(effFondo, lumF, sat, esOscuro, true),
@@ -36,6 +39,7 @@ fun construirPaletaDesdeEstado(
         borde = calcularColorCapaLab(effBorde, lumB, sat, esOscuro, true),
         textoPrincipal = calcularColorCapaLab(effTextoP, lumTP, sat, esOscuro, false),
         textoSecundario = calcularColorCapaLab(effTextoS, lumTS, sat, esOscuro, false),
-        acento = if (esOscuro) estado.colorAcentoOscuro else estado.colorAcentoClaro
+        acento = if (esOscuro) estado.colorAcentoOscuro else estado.colorAcentoClaro,
+        modal = calcularColorCapaLab(effModal, lumM, sat, esOscuro, true)
     )
 }

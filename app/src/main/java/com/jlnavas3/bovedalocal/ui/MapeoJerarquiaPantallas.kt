@@ -44,14 +44,14 @@ object MapeoJerarquiaPantallas {
         is Pantalla.LaboratorioTemas -> Pantalla.Tema("02-APA-THM-LAB")
         is Pantalla.PersonalizarMenuLateral -> Pantalla.Ajustes("02-APA-MNL")
         is Pantalla.AjustesAvisos -> Pantalla.Ajustes("02-APA-AVI")
+        is Pantalla.AjustesTransiciones -> Pantalla.Ajustes("02-APA-TRN")
 
         // Bloque 02: Apariencia
         is Pantalla.OrganizacionEstructura -> Pantalla.OrganizacionLista("02-APA-DES-EST")
         is Pantalla.OrganizacionJerarquia -> Pantalla.OrganizacionLista("02-APA-DES-JER")
-        is Pantalla.OrganizacionIndicadores -> Pantalla.OrganizacionLista("02-APA-DES-IND")
         is Pantalla.NormalizadorTitulos -> Pantalla.OrganizacionLista("02-APA-DES-TIT")
         is Pantalla.ColoresDatos -> when {
-            pantalla.seccionId == "02-APA-THM-G04" -> Pantalla.OrganizacionIndicadores("02-APA-THM-G04")
+            pantalla.seccionId?.startsWith("02-APA-DES") == true -> Pantalla.OrganizacionLista("02-APA-DES-IND")
             !pantalla.seccionId.isNullOrBlank() -> Pantalla.Ajustes(pantalla.seccionId)
             else -> Pantalla.Ajustes("02-APA-COL")
         }
@@ -89,13 +89,15 @@ object MapeoJerarquiaPantallas {
         is Pantalla.AvanzadaAlumbrado -> Pantalla.Avanzada("06-SIS-AVZ-LGT")
         is Pantalla.ReorganizarAjustes -> Pantalla.Avanzada("06-SIS-AVZ-ORG")
         is Pantalla.AvanzadaHaptica -> Pantalla.Avanzada("06-SIS-AVZ-HAP")
+        is Pantalla.AjustesAvisosEmergentes -> Pantalla.Avanzada("06-SIS-AVZ-TST")
         is Pantalla.AvanzadaZonaPeligro -> Pantalla.Avanzada("06-SIS-AVZ-PEL")
         is Pantalla.ColoresIdentificadores -> Pantalla.AvanzadaDesarrollo("06-SIS-AVZ-COL")
 
         is Pantalla.SaludBoveda -> if (!pantalla.seccionId.isNullOrBlank()) Pantalla.Ajustes(pantalla.seccionId) else Pantalla.Ajustes("03-LST-SLD")
         is Pantalla.Duplicados -> if (!pantalla.seccionId.isNullOrBlank()) Pantalla.Ajustes(pantalla.seccionId) else Pantalla.Ajustes("03-LST-DUP")
         is Pantalla.Papelera -> if (!pantalla.seccionId.isNullOrBlank()) Pantalla.Ajustes(pantalla.seccionId) else Pantalla.Ajustes("03-LST-PAP")
-        is Pantalla.Identidades -> if (!pantalla.seccionId.isNullOrBlank()) Pantalla.Ajustes(pantalla.seccionId) else Pantalla.Ajustes("03-LST-IDE")
+        is Pantalla.Perfiles -> if (!pantalla.seccionId.isNullOrBlank()) Pantalla.Ajustes(pantalla.seccionId) else Pantalla.Ajustes("03-LST-IDE")
+        is Pantalla.EditarPerfil -> Pantalla.Perfiles()
         is Pantalla.Categorias -> if (!pantalla.seccionId.isNullOrBlank()) Pantalla.Ajustes(pantalla.seccionId) else Pantalla.Ajustes("03-LST-CAT")
 
         // Nivel 3: Subpáginas de Formas -> Formas (Nivel 2)
@@ -147,6 +149,7 @@ object MapeoJerarquiaPantallas {
 
         // Nivel 2: Copias y datos -> Ajustes (Nivel 1)
         is Pantalla.CopiaSeguridad -> Pantalla.Ajustes("05-COP-MAN")
+        is Pantalla.AjustesTransferenciaCxf -> Pantalla.Ajustes("05-COP-CXF-AJU")
         is Pantalla.CsvGoogle -> Pantalla.Ajustes("05-COP-CSV")
         is Pantalla.KitEmergencia -> Pantalla.Ajustes("05-COP-KIT")
 

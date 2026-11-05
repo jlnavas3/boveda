@@ -25,6 +25,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -49,7 +50,7 @@ fun ChipPuertoServicio(
 ) {
     val forma = FormaChip
     val tieneBorde = GrosorBorde > 0.dp && EstiloBorde != "ninguno"
-    val colorBorde = if (tieneBorde) ColorBordeActual else ColorAcento.copy(alpha = 0.25f)
+    val colorBorde = if (tieneBorde) ColorBordeActual else ColorBordeActual.copy(alpha = 0.40f)
     val grosorEfectivo = if (tieneBorde) GrosorBorde else 1.dp
     val formaIcono = if (CurvaturaEsquinas == 0.dp) RoundedCornerShape(0.dp) else CircleShape
 
@@ -63,9 +64,10 @@ fun ChipPuertoServicio(
     ) {
         Text(
             text = ":$puerto",
-            color = ColorAcento,
+            color = TextoPrincipal,
+            fontFamily = FontFamily.Monospace,
             fontSize = 12.sp,
-            fontWeight = FontWeight.Bold
+            fontWeight = FontWeight.SemiBold
         )
         Text(
             text = " → ",

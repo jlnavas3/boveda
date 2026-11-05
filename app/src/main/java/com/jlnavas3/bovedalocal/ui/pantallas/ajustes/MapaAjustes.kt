@@ -44,6 +44,7 @@ import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.QrCodeScanner
 import androidx.compose.material.icons.filled.Security
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.SquareFoot
 import androidx.compose.material.icons.filled.TextFields
 import androidx.compose.material.icons.filled.Timer
@@ -244,16 +245,28 @@ object MapaAjustes {
             palabrasClave = listOf("formas", "bordes", "esquinas", "curvatura", "radio", "contorno")
         ),
         NodoAjuste(
+            id = "02-APA-TRN",
+            titulo = "Animaciones y transiciones",
+            subtitulo = "Estilo de cambio de pantalla, velocidad y físicas",
+            ruta = "Apariencia > Animaciones y transiciones",
+            grupo = "Apariencia",
+            pantallaDestino = Pantalla.AjustesTransiciones(),
+            padreId = "02-APA",
+            icono = Icons.Filled.AutoAwesome,
+            colorIcono = Color(0xFFE91E63),
+            palabrasClave = listOf("transiciones", "animaciones", "pantallas", "velocidad", "resorte", "spring", "duracion", "deslizamiento", "fade", "zoom", "sheet", "parallax", "movimiento")
+        ),
+        NodoAjuste(
             id = "02-APA-COL",
-            titulo = "Identificadores de campos",
-            subtitulo = "Pastillas de color por tipo de credencial",
-            ruta = "Apariencia > Identificadores de campos",
+            titulo = "Indicadores y colores de campos",
+            subtitulo = "Estilo de indicadores en tarjetas y colores por credencial",
+            ruta = "Apariencia > Indicadores y colores de campos",
             grupo = "Apariencia",
             pantallaDestino = Pantalla.ColoresDatos("02-APA-COL"),
             padreId = "02-APA",
             icono = Icons.Filled.Badge,
             colorIcono = Color(0xFF1E88E5),
-            palabrasClave = listOf("colores", "etiquetas", "tipos", "credenciales", "pastillas")
+            palabrasClave = listOf("indicadores", "colores", "estilo", "lineas", "puntos", "iconos", "lateral", "etiquetas", "tipos", "credenciales", "pastillas", "badges")
         ),
         NodoAjuste(
             id = "02-APA-LNC",
@@ -417,15 +430,15 @@ object MapaAjustes {
         ),
         NodoAjuste(
             id = "03-LST-IDE",
-            titulo = "Identidades",
+            titulo = "Perfiles",
             subtitulo = "Perfiles de correo y vinculación inteligente",
-            ruta = "Lista de cuentas > Identidades",
+            ruta = "Lista de cuentas > Perfiles",
             grupo = "Lista de cuentas",
-            pantallaDestino = Pantalla.Identidades("03-LST-IDE"),
+            pantallaDestino = Pantalla.Perfiles("03-LST-IDE"),
             padreId = "03-LST",
             icono = Icons.Filled.AccountCircle,
             colorIcono = Color(0xFF0284C7),
-            palabrasClave = listOf("identidades", "cuentas", "perfiles", "correo", "email", "alias")
+            palabrasClave = listOf("perfiles", "cuentas", "identidades", "correo", "email", "alias")
         ),
         NodoAjuste(
             id = "02-APA-AZX",
@@ -711,6 +724,18 @@ object MapaAjustes {
             colorIcono = Color(0xFFFFB300),
             palabrasClave = listOf("kit", "emergencia", "papel", "pdf", "imprimir")
         ),
+        NodoAjuste(
+            id = "05-COP-CXF-AJU",
+            titulo = "Transferencia de credenciales",
+            subtitulo = "Transferencia directa con Google y otros gestores",
+            ruta = "Copias y datos > Transferencia de credenciales",
+            grupo = "Copias y datos",
+            pantallaDestino = Pantalla.AjustesTransferenciaCxf("05-COP-CXF-AJU"),
+            padreId = "05-COP",
+            icono = Icons.Filled.Share,
+            colorIcono = Color(0xFF7E57C2),
+            palabrasClave = listOf("transferir", "transferencia", "cxf", "fido", "google", "gestor", "directa", "passkey", "exportar")
+        ),
 
         // ==========================================
         // NIVEL 2: Hijos de Sistema (06-SIS)
@@ -804,7 +829,7 @@ object MapaAjustes {
             subtitulo = "Autenticación biométrica con huella dactilar y modos fuerte o compatible",
             ruta = "Seguridad > Biometría y seguridad > Bloqueo y biometría",
             grupo = "Seguridad",
-            pantallaDestino = Pantalla.AjustesBiometria(),
+            pantallaDestino = Pantalla.BloqueoBiometria("01-SEG-BIO-G01"),
             padreId = "01-SEG-BIO-BLO",
             palabrasClave = listOf("huella", "biometria", "fingerprint", "sensor", "fuerte", "compatible")
         ),
@@ -814,7 +839,7 @@ object MapaAjustes {
             subtitulo = "Temporizadores de inactividad y protección de capturas de pantalla",
             ruta = "Seguridad > Biometría y seguridad > Bloqueo y biometría",
             grupo = "Seguridad",
-            pantallaDestino = Pantalla.BloqueoApp(),
+            pantallaDestino = Pantalla.BloqueoBiometria("01-SEG-BIO-G02"),
             padreId = "01-SEG-BIO-BLO",
             palabrasClave = listOf("bloqueo", "inactividad", "temporizador", "minutos", "flag secure", "pantalla", "tapjacking")
         ),
@@ -822,10 +847,10 @@ object MapaAjustes {
             id = "01-SEG-BIO-TAP",
             titulo = "Protección contra tapjacking",
             subtitulo = "Bloquea toques táctiles si otra aplicación o burbuja flota sobre la pantalla",
-            ruta = "Seguridad > Biometría y seguridad > Bloqueo de aplicación",
+            ruta = "Seguridad > Biometría y seguridad > Bloqueo y biometría",
             grupo = "Seguridad",
-            pantallaDestino = Pantalla.BloqueoApp("01-SEG-BIO-TAP"),
-            padreId = "01-SEG-BIO-APP",
+            pantallaDestino = Pantalla.BloqueoBiometria("01-SEG-BIO-TAP"),
+            padreId = "01-SEG-BIO-BLO",
             palabrasClave = listOf("tapjacking", "superposicion", "overlay", "flotante", "burbuja", "pantalla", "toques")
         ),
         NodoAjuste(
@@ -834,7 +859,7 @@ object MapaAjustes {
             subtitulo = "Defensa progresiva contra ataques de diccionario y limitación de reintentos",
             ruta = "Seguridad > Biometría y seguridad > Bloqueo y biometría",
             grupo = "Seguridad",
-            pantallaDestino = Pantalla.FuerzaBruta(),
+            pantallaDestino = Pantalla.BloqueoBiometria("01-SEG-BIO-G05"),
             padreId = "01-SEG-BIO-BLO",
             palabrasClave = listOf("fuerza", "bruta", "freno", "intentos", "espera", "ataques")
         ),
@@ -1086,13 +1111,13 @@ object MapaAjustes {
         ),
         NodoAjuste(
             id = "02-APA-DES-IND",
-            titulo = "Indicadores y badges",
-            subtitulo = "Pastillas de seguridad, TOTP y tipo de cuenta",
-            ruta = "Apariencia > Diseño de lista",
+            titulo = "Indicadores de tarjetas",
+            subtitulo = "Estilos visuales, dimensiones y colores de datos",
+            ruta = "Apariencia > Diseño de lista > Indicadores",
             grupo = "Apariencia",
-            pantallaDestino = Pantalla.OrganizacionIndicadores(),
+            pantallaDestino = Pantalla.ColoresDatos("02-APA-DES-IND"),
             padreId = "02-APA-DES",
-            palabrasClave = listOf("indicadores", "badges", "pastillas", "totp", "etiquetas", "iconos")
+            palabrasClave = listOf("indicadores", "badges", "pastillas", "totp", "etiquetas", "iconos", "lineas", "puntos", "lateral")
         ),
         NodoAjuste(
             id = "02-APA-DES-TIT",
@@ -1204,7 +1229,7 @@ object MapaAjustes {
             grupo = "Herramientas",
             pantallaDestino = Pantalla.ReglasAutocompletado,
             padreId = "04-HER-PSK",
-            palabrasClave = listOf("reglas", "autocompletado", "autofill", "dominios", "paquetes")
+            palabrasClave = listOf("reglas", "autocompletado", "autofill", "dominios", "paquetes", "documentos", "contactos", "dni", "mensajeria")
         ),
         NodoAjuste(
             id = "04-HER-PSK-PRV",
@@ -1344,13 +1369,13 @@ object MapaAjustes {
         ),
         NodoAjuste(
             id = "05-COP-AUT-FIL",
-            titulo = "Copia automática local",
+            titulo = "Respaldo automático local",
             subtitulo = "Respaldos periódicos automáticos en almacenamiento local",
             ruta = "Copias y datos > Copia de seguridad",
             grupo = "Copias y datos",
             pantallaDestino = Pantalla.CopiaAutomaticaLocalSub(),
             padreId = "05-COP-MAN",
-            palabrasClave = listOf("copia", "automatica", "local", "periodica", "diaria", "semanal")
+            palabrasClave = listOf("respaldo", "copia", "automatica", "local", "periodica", "diaria", "semanal")
         ),
         NodoAjuste(
             id = "05-COP-REC-FIL",
@@ -1364,7 +1389,7 @@ object MapaAjustes {
         ),
         NodoAjuste(
             id = "05-COP-EXP",
-            titulo = "Exportación selectiva",
+            titulo = "Exportación",
             subtitulo = "Elegir qué cuentas incluir en la copia exportada",
             ruta = "Copias y datos > Copia de seguridad > Copia manual",
             grupo = "Copias y datos",
@@ -1375,12 +1400,56 @@ object MapaAjustes {
         NodoAjuste(
             id = "05-COP-ATM-G01",
             titulo = "Frecuencia y retención automática",
-            subtitulo = "Configurar periodicidad y número máximo de copias",
-            ruta = "Copias y datos > Copia de seguridad > Copia automática",
+            subtitulo = "Configurar periodicidad y número máximo de respaldos",
+            ruta = "Copias y datos > Copia de seguridad > Respaldo automático",
             grupo = "Copias y datos",
             pantallaDestino = Pantalla.AjustesCopiaAutomatica(),
             padreId = "05-COP-AUT-FIL",
-            palabrasClave = listOf("frecuencia", "retencion", "rotacion", "limite", "copias")
+            palabrasClave = listOf("frecuencia", "retencion", "rotacion", "limite", "respaldos", "copias")
+        ),
+
+        // ==========================================
+        // Hijos de Transferencia de credenciales (05-COP-CXF-AJU)
+        // ==========================================
+        NodoAjuste(
+            id = "05-COP-CXF-MOD-AUT",
+            titulo = "Modo automático",
+            subtitulo = "Mantiene activa la transferencia mientras la bóveda esté desbloqueada",
+            ruta = "Copias y datos > Transferencia de credenciales > Automática",
+            grupo = "Copias y datos",
+            pantallaDestino = Pantalla.AjustesTransferenciaCxf("05-COP-CXF-MOD-AUT"),
+            padreId = "05-COP-CXF-AJU",
+            palabrasClave = listOf("automatica", "cxf", "transferencia", "desbloqueo")
+        ),
+        NodoAjuste(
+            id = "05-COP-CXF-MOD-MAN",
+            titulo = "Modo manual",
+            subtitulo = "Solo se activa al solicitarlo por un tiempo determinado",
+            ruta = "Copias y datos > Transferencia de credenciales > Manual",
+            grupo = "Copias y datos",
+            pantallaDestino = Pantalla.AjustesTransferenciaCxf("05-COP-CXF-MOD-MAN"),
+            padreId = "05-COP-CXF-AJU",
+            palabrasClave = listOf("manual", "cxf", "transferencia", "demanda")
+        ),
+        NodoAjuste(
+            id = "05-COP-CXF-TPO",
+            titulo = "Tiempo de disponibilidad",
+            subtitulo = "Duración de la ventana de transferencia manual",
+            ruta = "Copias y datos > Transferencia de credenciales > Tiempo de disponibilidad",
+            grupo = "Copias y datos",
+            pantallaDestino = Pantalla.AjustesTransferenciaCxf("05-COP-CXF-TPO"),
+            padreId = "05-COP-CXF-AJU",
+            palabrasClave = listOf("tiempo", "ventana", "duracion", "expiracion", "minutos")
+        ),
+        NodoAjuste(
+            id = "05-COP-CXF-SWT",
+            titulo = "Habilitar disponibilidad",
+            subtitulo = "Activa o desactiva la exportación bajo demanda",
+            ruta = "Copias y datos > Transferencia de credenciales > Habilitar disponibilidad",
+            grupo = "Copias y datos",
+            pantallaDestino = Pantalla.AjustesTransferenciaCxf("05-COP-CXF-SWT"),
+            padreId = "05-COP-CXF-AJU",
+            palabrasClave = listOf("habilitar", "activar", "desactivar", "disponibilidad")
         ),
 
         // ==========================================
@@ -1428,13 +1497,13 @@ object MapaAjustes {
         ),
         NodoAjuste(
             id = "06-SIS-AVZ-TST",
-            titulo = "Avisos emergentes descriptivos",
-            subtitulo = "Alternar entre formato descriptivo con cabecera y formato minimalista",
+            titulo = "Avisos emergentes",
+            subtitulo = "Estilo, formato y posición en pantalla",
             ruta = "Sistema > Opciones avanzadas",
             grupo = "Sistema",
-            pantallaDestino = Pantalla.Avanzada("06-SIS-AVZ-TST"),
+            pantallaDestino = Pantalla.AjustesAvisosEmergentes(),
             padreId = "06-SIS-AVZ",
-            palabrasClave = listOf("toast", "aviso", "notificacion", "emergente", "descriptivo", "minimalista")
+            palabrasClave = listOf("toast", "aviso", "notificacion", "emergente", "descriptivo", "minimalista", "posicion", "superior", "inferior", "botones")
         ),
         NodoAjuste(
             id = "06-SIS-AVZ-PEL",
@@ -1474,9 +1543,9 @@ object MapaAjustes {
 
     val NODO_PASSKEYS: NodoAjuste = NodoAjuste(
         id = "03-LST-PAS",
-        titulo = "Llaves de paso",
+        titulo = "Llaves de acceso",
         subtitulo = "Credenciales FIDO2 WebAuthn y passkeys locales",
-        ruta = "Lista de cuentas > Llaves de paso",
+        ruta = "Lista de cuentas > Llaves de acceso",
         grupo = "Lista de cuentas",
         esRaiz = false,
         icono = Icons.Filled.Fingerprint,
@@ -1573,6 +1642,7 @@ object MapaAjustes {
             "06-SIS-AVZ-LGT" -> Icons.Filled.AutoAwesome to Color(0xFFFFB300)
             "06-SIS-AVZ-ORG" -> Icons.AutoMirrored.Filled.Sort to Color(0xFF8B5CF6)
             "06-SIS-AVZ-HAP" -> Icons.Filled.Tune to Color(0xFF00897B)
+            "06-SIS-AVZ-TST" -> Icons.Filled.Notifications to Color(0xFFF59E0B)
             "06-SIS-AVZ-PEL" -> Icons.Filled.DeleteForever to Color(0xFFD32F2F)
             "01-SEG-ACC" -> Icons.Filled.Security to Color(0xFFE65100)
             else -> null

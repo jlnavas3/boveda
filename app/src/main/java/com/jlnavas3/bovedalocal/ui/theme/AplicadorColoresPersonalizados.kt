@@ -59,12 +59,13 @@ fun aplicarPersonalizacionColores(ajustes: AjustesApp) {
     ColorExportacion = parsearColorO(ajustes.colorExportacion, Color(0xFF6366F1))
 
     // Colores aislados exclusivos para datos e indicadores de tarjetas
-    ColorDatosUsuario = parsearColorO(ajustes.colorDatosUsuario, Color(0xFF0284C7))
-    ColorDatosContrasena = parsearColorO(ajustes.colorDatosContrasena, Color(0xFF0D9488))
+    ColorDatosUsuario = parsearColorO(ajustes.colorDatosUsuario, Color(0xFF2563EB))
+    ColorDatosContrasena = parsearColorO(ajustes.colorDatosContrasena, Color(0xFFEAB308))
     ColorDatos2FA = parsearColorO(ajustes.colorDatos2FA, Color(0xFFF97316))
     ColorDatosPasskey = parsearColorO(ajustes.colorDatosPasskey, Color(0xFF8B5CF6))
     ColorDatosWeb = parsearColorO(ajustes.colorDatosWeb, Color(0xFF06B6D4))
-    ColorDatosApp = parsearColorO(ajustes.colorDatosApp, Color(0xFF10B981))
+    ColorDatosApp = parsearColorO(ajustes.colorDatosApp, Color(0xFF16A34A))
+    EstiloIndicadores = ajustes.estiloIndicadores
     AlturaIndicadoresDp = ajustes.alturaIndicadoresDp
     OpacidadIndicadores = ajustes.opacidadIndicadores
 

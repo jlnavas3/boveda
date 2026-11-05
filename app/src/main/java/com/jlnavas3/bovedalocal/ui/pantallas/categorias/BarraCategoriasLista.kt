@@ -34,6 +34,7 @@ import com.jlnavas3.bovedalocal.ui.componentes.ElementoMenuCompacto
 import com.jlnavas3.bovedalocal.ui.componentes.MenuDesplegableBoveda
 import com.jlnavas3.bovedalocal.ui.componentes.SeparadorOpcionMenu
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
+import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
 import com.jlnavas3.bovedalocal.ui.theme.Peligro
 import com.jlnavas3.bovedalocal.ui.theme.TextoPrincipal
 import com.jlnavas3.bovedalocal.util.Haptica
@@ -109,7 +110,7 @@ fun BarraCategoriasLista(
                         texto = "Editar categoría",
                         icono = Icons.Filled.Edit,
                         colorTexto = TextoPrincipal,
-                        colorIcono = ColorAcento,
+                        colorIcono = ColorIconosInternos,
                         onClick = {
                             menuCategoriaAbierto = null
                             alEditarCategoria(cat)
@@ -119,8 +120,8 @@ fun BarraCategoriasLista(
                     ElementoMenuCompacto(
                         texto = "Eliminar",
                         icono = Icons.Filled.Delete,
-                        colorTexto = Peligro,
-                        colorIcono = Peligro,
+                        colorTexto = TextoPrincipal,
+                        colorIcono = ColorIconosInternos,
                         onClick = {
                             menuCategoriaAbierto = null
                             alEliminarCategoria(cat)

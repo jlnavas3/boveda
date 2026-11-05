@@ -32,7 +32,6 @@ import androidx.compose.ui.unit.dp
 import com.jlnavas3.bovedalocal.data.Entrada
 import com.jlnavas3.bovedalocal.data.contactos.ContactoDispositivo
 import com.jlnavas3.bovedalocal.data.contactos.ConversorContactoEntrada
-import com.jlnavas3.bovedalocal.data.contactos.LectorContactosAndroid
 import com.jlnavas3.bovedalocal.ui.componentes.ModalInferiorBoveda
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
@@ -44,22 +43,17 @@ import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
 @Composable
 fun ModalImportarContactos(
     abierto: Boolean,
+    contactos: List<ContactoDispositivo> = emptyList(),
     alCerrar: () -> Unit,
     alImportar: (List<Entrada>) -> Unit
 ) {
     if (!abierto) return
 
     val contexto = LocalContext.current
-    var cargando by remember { mutableStateOf(true) }
-    var todosLosContactos by remember { mutableStateOf<List<ContactoDispositivo>>(emptyList()) }
+    var cargando by remember { mutableStateOf(false) }
+    var todosLosContactos by remember(contactos) { mutableStateOf(contactos) }
     var consultaBusqueda by remember { mutableStateOf("") }
-    var seleccionadosIds by remember { mutableStateOf<Set<String>>(emptySet()) }
-
-    LaunchedEffect(Unit) {
-        cargando = true
-        todosLosContactos = LectorContactosAndroid.leerContactos(contexto)
-        cargando = false
-    }
+    var seleccionadosIds by remember(contactos) { mutableStateOf(contactos.map { it.id }.toSet()) }
 
     val contactosFiltrados = remember(todosLosContactos, consultaBusqueda) {
         if (consultaBusqueda.isBlank()) {

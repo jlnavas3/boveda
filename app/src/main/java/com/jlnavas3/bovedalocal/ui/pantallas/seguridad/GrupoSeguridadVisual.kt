@@ -114,7 +114,8 @@ fun GrupoSeguridadVisual(
             )
 
             ComponenteSwitch(
-                titulo = "Ocultar usuario o correo",
+                titulo = "Ocultar usuarios e identidades",
+                subtitulo = "Correos, usuarios SSH, titulares bancarios y documentos",
                 activo = ocultarUsuario,
                 alCambiar = alCambiarOcultarUsuario,
                 idFila = "01-SEG-VIS-USR",
@@ -122,7 +123,8 @@ fun GrupoSeguridadVisual(
             )
 
             ComponenteSwitch(
-                titulo = "Ocultar contraseñas",
+                titulo = "Ocultar contraseñas y secretos",
+                subtitulo = "Claves web, contraseñas Wi-Fi, CVV/PIN, claves SSH y wallets",
                 activo = ocultarContrasena,
                 alCambiar = alCambiarOcultarContrasena,
                 idFila = "01-SEG-VIS-PWD",
@@ -131,6 +133,7 @@ fun GrupoSeguridadVisual(
 
             ComponenteSwitch(
                 titulo = "Ocultar códigos 2FA (TOTP)",
+                subtitulo = "Códigos de verificación temporales",
                 activo = ocultarTotp,
                 alCambiar = alCambiarOcultarTotp,
                 idFila = "01-SEG-VIS-OTP",
@@ -139,6 +142,7 @@ fun GrupoSeguridadVisual(
 
             ComponenteSwitch(
                 titulo = "Ocultar notas seguras",
+                subtitulo = "Notas y observaciones en cualquier entrada",
                 activo = ocultarNotas,
                 alCambiar = alCambiarOcultarNotas,
                 idFila = "01-SEG-VIS-NOT",
@@ -146,7 +150,8 @@ fun GrupoSeguridadVisual(
             )
 
             ComponenteSwitch(
-                titulo = "Ocultar campos personalizados",
+                titulo = "Ocultar campos adicionales",
+                subtitulo = "Campos personalizados marcados como confidenciales",
                 activo = ocultarCampos,
                 alCambiar = alCambiarOcultarCampos,
                 idFila = "01-SEG-VIS-CMP",

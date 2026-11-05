@@ -54,10 +54,15 @@ import com.jlnavas3.bovedalocal.ui.componentes.seguridad.TemporizadorAutoOcultar
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorCampoAjustes
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorSeparadorAjustes
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorTarjetaAjustes
+import com.jlnavas3.bovedalocal.ui.pantallas.lista.AvatarSeleccionableEntrada
 import com.jlnavas3.bovedalocal.ui.pantallas.lista.IndicadorContenidoTarjeta
+import com.jlnavas3.bovedalocal.ui.theme.EstiloIndicadores
+import com.jlnavas3.bovedalocal.ui.theme.Advertencia
+import com.jlnavas3.bovedalocal.ui.theme.Azul
 import com.jlnavas3.bovedalocal.ui.theme.Borde
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
+import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
 import com.jlnavas3.bovedalocal.ui.theme.ColorSobreAcento
 import com.jlnavas3.bovedalocal.ui.theme.CurvaturaEsquinas
 import com.jlnavas3.bovedalocal.ui.theme.EstiloBorde
@@ -102,10 +107,10 @@ fun FilaProblemaAgil(
     }
 
     val forma = if (enGrupo) RectangleShape else RoundedCornerShape(CurvaturaEsquinas)
-    val fondo = if (seleccionado) ColorAcento.copy(alpha = 0.22f) else if (enGrupo) Color.Transparent else ColorTarjetaAjustes
+    val fondo = if (seleccionado) ColorAcento.copy(alpha = 0.22f) else ColorTarjetaAjustes
 
     val seguridadVisualActiva = ajustes?.seguridadVisualActiva == true
-    val ocultarUsuario = seguridadVisualActiva && (ajustes?.ocultarUsuario == true)
+    val ocultarUsuario = seguridadVisualActiva && ajustes.ocultarUsuario
     val estiloOcultamiento = ajustes?.estiloOcultamientoVisual ?: "desenfoque"
     val tiempoAutoOcultar = ajustes?.tiempoAutoOcultarSegundos ?: 10
 
@@ -134,13 +139,13 @@ fun FilaProblemaAgil(
         accionIzquierda = AccionDeslizamiento(
             texto = "Cambiar\nClave",
             icono = Icons.Filled.AutoFixHigh,
-            color = ColorAcento,
+            color = Azul,
             alEjecutar = alCambiarRapido
         ),
         accionDerecha = AccionDeslizamiento(
             texto = "Ignorar\nAlerta",
             icono = Icons.Filled.Check,
-            color = Borde,
+            color = Advertencia,
             alEjecutar = alIgnorar
         )
     ) {
@@ -156,10 +161,14 @@ fun FilaProblemaAgil(
                     } else Modifier
                 )
         ) {
-            if (mostrarIndicadores) {
+            if (mostrarIndicadores && (EstiloIndicadores == "lineas" || EstiloIndicadores == "lateral")) {
+                val alineacionIndicador = when (EstiloIndicadores) {
+                    "lateral" -> Alignment.CenterStart
+                    else -> Alignment.TopCenter
+                }
                 IndicadorContenidoTarjeta(
                     entrada = entrada,
-                    modifier = Modifier.align(Alignment.TopCenter)
+                    modifier = Modifier.align(alineacionIndicador)
                 )
             }
             Row(
@@ -182,50 +191,12 @@ fun FilaProblemaAgil(
                     .padding(horizontal = 14.dp, vertical = 11.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                if (seleccionActiva) {
-                    Box(
-                        modifier = Modifier
-                            .size(22.dp)
-                            .clip(CircleShape)
-                            .background(if (seleccionado) ColorAcento else Borde),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        if (seleccionado) {
-                            Icon(
-                                imageVector = Icons.Filled.Check,
-                                contentDescription = null,
-                                tint = ColorSobreAcento,
-                                modifier = Modifier.size(14.dp)
-                            )
-                        }
-                    }
-                    Spacer(Modifier.width(10.dp))
-                }
-
-                val iconoApp = rememberIconoAppInstalada(entrada)
-                if (iconoApp != null) {
-                    IconoAppCircular(
-                        bitmap = iconoApp,
-                        descripcion = entrada.titulo,
-                        tamanoDp = 36.dp
-                    )
-                } else {
-                    Box(
-                        modifier = Modifier
-                            .size(36.dp)
-                            .clip(FormaPequena)
-                            .background(ColorCampoAjustes)
-                            .border(0.8.dp, ColorSeparadorAjustes, FormaPequena),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Icon(
-                            imageVector = iconoTipo,
-                            contentDescription = null,
-                            tint = ColorAcento,
-                            modifier = Modifier.size(20.dp)
-                        )
-                    }
-                }
+                AvatarSeleccionableEntrada(
+                    entrada = entrada,
+                    tamanoIcono = 36,
+                    seleccionado = seleccionado,
+                    alAlternarSeleccion = { alAlternarSeleccion?.invoke() }
+                )
 
                 Spacer(Modifier.width(12.dp))
 
@@ -240,6 +211,8 @@ fun FilaProblemaAgil(
                         seguridadVisualActiva = seguridadVisualActiva,
                         mostrarUsuario = mostrarUsuario,
                         mostrarContrasena = mostrarContrasena,
+                        colorDetalle = colorDetalle,
+                        mostrarIndicadores = mostrarIndicadores,
                         alAlternarMostrarUsuario = { mostrarUsuario = !mostrarUsuario },
                         alAlternarMostrarContrasena = { mostrarContrasena = !mostrarContrasena }
                     )

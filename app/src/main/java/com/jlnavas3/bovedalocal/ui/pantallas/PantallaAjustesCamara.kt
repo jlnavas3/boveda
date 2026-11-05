@@ -17,6 +17,10 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CameraAlt
+import androidx.compose.material.icons.filled.CropFree
+import androidx.compose.material.icons.filled.QrCodeScanner
+import androidx.compose.material.icons.filled.Vibration
+import androidx.compose.material.icons.filled.VolumeUp
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -30,6 +34,7 @@ import com.jlnavas3.bovedalocal.ui.componentes.BarraSuperiorPantalla
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.AccionSaltoGrupo
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.BotonMenuOpcionesPantalla
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteGrupo
+import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteSwitch
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteSelectorModal
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.OpcionSelectorModal
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ProveedorResaltadoAjustes
@@ -63,12 +68,13 @@ fun PantallaAjustesCamara(
                 acciones = {
                     BotonMenuOpcionesPantalla(
                         grupos = listOf(
-                            AccionSaltoGrupo("04-HER-CAM-G01", "Motor de captura")
+                            AccionSaltoGrupo("04-HER-CAM-G01", "Motor de captura"),
+                            AccionSaltoGrupo("04-HER-CAM-G02", "Experiencia de escaneo")
                         ),
                         alRestablecerPantalla = {
                             vm.restablecerCamara()
                         },
-                        mensajeToastRestablecer = "Motor de cámara restablecido"
+                        mensajeToastRestablecer = "Ajustes de cámara y escáner restablecidos"
                     )
                 }
             )
@@ -110,6 +116,74 @@ fun PantallaAjustesCamara(
                         alSeleccionar = { valor ->
                             haptica.tic()
                             vm.ajustarMotorCamara(valor)
+                        }
+                    )
+                }
+
+                Spacer(Modifier.height(14.dp))
+
+                ComponenteGrupo(
+                    etiqueta = "Experiencia de escaneo",
+                    icono = Icons.Filled.QrCodeScanner,
+                    colorIcono = ColorCamara,
+                    alRestablecer = {
+                        vm.restablecerCamara()
+                    },
+                    mensajeToastRestablecer = "Ajustes de escaneo restablecidos",
+                    idGrupo = "04-HER-CAM-G02",
+                    mostrarId = ajustes.mostrarIdsAjustes,
+                    descripcion = "Respuesta sensorial y tamaño del visor al detectar códigos QR"
+                ) {
+                    ComponenteSwitch(
+                        titulo = "Vibración al detectar",
+                        subtitulo = "Confirmación háptica inmediata al reconocer un código QR",
+                        activo = ajustes.escanerQrVibracion,
+                        icono = Icons.Filled.Vibration,
+                        idFila = "04-HER-CAM-VIB",
+                        mostrarId = ajustes.mostrarIdsAjustes,
+                        alCambiar = { nuevo ->
+                            haptica.tic()
+                            vm.ajustarEscanerQrVibracion(nuevo)
+                        }
+                    )
+
+                    com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteSeparador()
+
+                    ComponenteSwitch(
+                        titulo = "Pitido sonoro de éxito",
+                        subtitulo = "Emite un tono breve al capturar satisfactoriamente un código",
+                        activo = ajustes.escanerQrSonido,
+                        icono = Icons.Filled.VolumeUp,
+                        idFila = "04-HER-CAM-SND",
+                        mostrarId = ajustes.mostrarIdsAjustes,
+                        alCambiar = { nuevo ->
+                            haptica.tic()
+                            vm.ajustarEscanerQrSonido(nuevo)
+                        }
+                    )
+
+                    com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteSeparador()
+
+                    val opcionesTamano = remember {
+                        listOf(
+                            OpcionSelectorModal("200.0", "Compacta (200 dp)", "200 dp", "Área pequeña para códigos densos o pantallas pequeñas", Icons.Filled.CropFree),
+                            OpcionSelectorModal("260.0", "Estándar (260 dp)", "260 dp", "Tamaño predeterminado equilibrado", Icons.Filled.CropFree),
+                            OpcionSelectorModal("300.0", "Amplia (300 dp)", "300 dp", "Área de enfoque amplia para lectura a mayor distancia", Icons.Filled.CropFree),
+                            OpcionSelectorModal("340.0", "Máxima (340 dp)", "340 dp", "Ocupa la mayor parte del visor", Icons.Filled.CropFree)
+                        )
+                    }
+
+                    ComponenteSelectorModal(
+                        titulo = "Tamaño inicial del visor",
+                        descripcionModal = "Elige la dimensión de la ventana de enfoque predeterminada (también puedes pellizcar para cambiarla en el visor)",
+                        icono = Icons.Filled.CropFree,
+                        idFila = "04-HER-CAM-TAM",
+                        mostrarId = ajustes.mostrarIdsAjustes,
+                        valorSeleccionado = ajustes.escanerQrTamanoVentanaDp.toString(),
+                        opciones = opcionesTamano,
+                        alSeleccionar = { valor ->
+                            haptica.tic()
+                            valor.toFloatOrNull()?.let { vm.ajustarEscanerQrTamanoVentanaDp(it) }
                         }
                     )
                 }

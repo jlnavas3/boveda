@@ -70,4 +70,20 @@ interface VaultAjustesCopiasDelegate {
             )
         }
     }
+
+    fun ajustarCsvDelimitadorPredeterminado(delimitador: String) {
+        val limpio = if (delimitador in listOf(",", ";", "\t", "|")) delimitador else AjustesDefaults.Csv.DELIMITADOR_PREDETERMINADO_STR
+        repositorio.ajustes.actualizar { it.copy(csvDelimitadorPredeterminado = limpio) }
+        val nombre = when (limpio) {
+            ";" -> "Punto y coma (;)"
+            "\t" -> "Tabulador (\\t)"
+            "|" -> "Pleca / Barra vertical (|)"
+            else -> "Coma (,)"
+        }
+        Diagnostico.apuntar("csv", "Delimitador predeterminado para importación/exportación CSV: $nombre")
+    }
+
+    fun restablecerCsvDelimitadorPredeterminado() {
+        repositorio.ajustes.actualizar { it.copy(csvDelimitadorPredeterminado = AjustesDefaults.Csv.DELIMITADOR_PREDETERMINADO_STR) }
+    }
 }

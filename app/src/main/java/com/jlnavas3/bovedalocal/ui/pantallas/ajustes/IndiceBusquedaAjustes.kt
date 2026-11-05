@@ -113,6 +113,16 @@ fun crearIndiceBusquedaAjustes(
 
     // Seguridad granular
     agregarGranular(
+        id = "01-SEG-BIO-SWT",
+        titulo = "Desbloqueo con huella",
+        subtitulo = "Activar o desactivar autenticación biométrica en el dispositivo",
+        ruta = "Seguridad > Biometría y seguridad > Bloqueo y biometría",
+        icono = Icons.Filled.Fingerprint,
+        colorIcono = Color(0xFF1E88E5),
+        palabrasClave = "desbloqueo huella dactilar biometria activar desactivar sensor",
+        alPulsar = { vm.ir(Pantalla.BloqueoBiometria("01-SEG-BIO-G01")) }
+    )
+    agregarGranular(
         id = "01-SEG-BIO-INA",
         titulo = "Bloqueo por inactividad",
         subtitulo = "Tiempo de espera antes de requerir clave (1m, 5m, 10m, 20m, 30m)",
@@ -120,7 +130,7 @@ fun crearIndiceBusquedaAjustes(
         icono = Icons.Filled.Timer,
         colorIcono = Color(0xFF1E88E5),
         palabrasClave = "inactividad bloqueo tiempo minutos espera automatico cerrar sesion temporizador",
-        alPulsar = { vm.ir(Pantalla.BloqueoBiometria("01-SEG-BIO-BLO")) }
+        alPulsar = { vm.ir(Pantalla.BloqueoBiometria("01-SEG-BIO-G02")) }
     )
     agregarGranular(
         id = "01-SEG-BIO-BRU",
@@ -130,7 +140,7 @@ fun crearIndiceBusquedaAjustes(
         icono = Icons.Filled.Security,
         colorIcono = Color(0xFFE53935),
         palabrasClave = "fuerza bruta intentos fallidos bloqueo penalizacion tiempo maximo espera reintentos",
-        alPulsar = { vm.ir(Pantalla.BloqueoBiometria("01-SEG-BIO-BLO")) }
+        alPulsar = { vm.ir(Pantalla.BloqueoBiometria("01-SEG-BIO-G05")) }
     )
     agregarGranular(
         id = "01-SEG-BIO-SEC",

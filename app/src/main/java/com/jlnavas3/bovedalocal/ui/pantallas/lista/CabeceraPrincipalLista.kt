@@ -11,6 +11,7 @@ import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -22,12 +23,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import com.jlnavas3.bovedalocal.data.Categoria
+import com.jlnavas3.bovedalocal.data.Entrada
 import com.jlnavas3.bovedalocal.data.Identidad
 import com.jlnavas3.bovedalocal.data.JerarquiaOrganizacion
 import com.jlnavas3.bovedalocal.data.ModoVisualizacionIdentidades
 import com.jlnavas3.bovedalocal.data.TipoEntrada
 import com.jlnavas3.bovedalocal.ui.CriterioOrdenacion
 import com.jlnavas3.bovedalocal.ui.componentes.seleccion.BarraSuperiorSeleccion
+import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjustesFondo
 import com.jlnavas3.bovedalocal.ui.pantallas.lista.pildoras.BarraPildorasFiltrosAnimada
 
 /**
@@ -48,7 +51,11 @@ fun CabeceraPrincipalLista(
     busquedaVisible: Boolean,
     busqueda: String,
     filtro: TipoEntrada?,
+    conteoPorTipo: Map<TipoEntrada, Int> = emptyMap(),
     soloFavoritos: Boolean,
+    solo2fa: Boolean = false,
+    conteo2fa: Int = 0,
+    alSeleccionar2fa: () -> Unit = {},
     filtroEtiqueta: String?,
     criterioOrdenacion: CriterioOrdenacion,
     agruparPorSitio: Boolean,
@@ -56,21 +63,39 @@ fun CabeceraPrincipalLista(
     categorias: List<Categoria>,
     categoriaSeleccionadaId: String?,
     conteoPorCategoria: Map<String, Int>,
+    alSeleccionarCriterioOrdenacion: (CriterioOrdenacion) -> Unit = {},
+    alSeleccionarFiltroTipo: (TipoEntrada?) -> Unit = {},
+    alCrearTipo: (TipoEntrada) -> Unit = {},
     alAbrirMenu: () -> Unit,
     alAlternarBusqueda: () -> Unit,
     alCambiarBusqueda: (String) -> Unit,
     alCerrarBusqueda: () -> Unit,
-    alMostrarOrdenacion: () -> Unit,
-    alMostrarFiltros: () -> Unit,
     alAlternarSoloFavoritos: () -> Unit,
+    alIrNormalizadorTitulos: () -> Unit = {},
+    alIrTema: () -> Unit = {},
+    alIrFormas: () -> Unit = {},
+    alIrTipografia: () -> Unit = {},
     alIrOrganizacionGrupo: () -> Unit,
     alIrOrganizacionIndicadores: () -> Unit,
+    alIrIndiceAz: () -> Unit = {},
+    alIrTransiciones: () -> Unit = {},
     alIrExportarSelectivo: () -> Unit,
     alIrCopiaSeguridadManual: () -> Unit,
     alIrCopiaSeguridad: () -> Unit,
     alIrCsvGoogle: () -> Unit,
+    alImportarGoogleAuthenticator: () -> Unit = {},
     alImportarDirectoCxf: () -> Unit,
+    alImportarContactos: () -> Unit = {},
     alExportarDirectoCxf: () -> Unit,
+    alIrCopiaRapida: () -> Unit = {},
+    alIrFormatosCampos: () -> Unit = {},
+    alIrSeguridadDatos: () -> Unit = {},
+    alIrColoresIds: () -> Unit = {},
+    alIrDatosTecnicosPasskey: () -> Unit = {},
+    alIrUmbralContrasenas: () -> Unit = {},
+    alIrContrasenasComunes: () -> Unit = {},
+    alIrPlantillasPersonalizadas: () -> Unit = {},
+    alIrAjustesGenerales: () -> Unit = {},
     alRestablecerFiltros: () -> Unit,
     alSeleccionarCategoria: (String?) -> Unit,
     alCrearCategoria: () -> Unit,
@@ -88,6 +113,9 @@ fun CabeceraPrincipalLista(
     alAbrirSelectorIdentidad: () -> Unit = {},
     alAbrirSelectorCategoria: () -> Unit = {},
     alAbrirSelectorEtiqueta: () -> Unit = {},
+    alGestionarIdentidades: () -> Unit = {},
+    alGestionarCategorias: () -> Unit = {},
+    conteoPorEtiqueta: Map<String, Int> = emptyMap(),
     alSeleccionarEtiqueta: (String?) -> Unit = {},
     alLimpiarTipo: () -> Unit = {},
     mostrarCampanaAvisos: Boolean = true,
@@ -96,9 +124,15 @@ fun CabeceraPrincipalLista(
     alAbrirSalud: () -> Unit = {},
     cantidadProblemasSalud: Int = 0,
     alAbrirAyuda: () -> Unit = {},
+    entradas: List<Entrada> = emptyList(),
     modifier: Modifier = Modifier
 ) {
-    Column(modifier = modifier.fillMaxWidth().zIndex(10f)) {
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .background(ColorAjustesFondo)
+            .zIndex(10f)
+    ) {
         if (modoSeleccion) {
             BarraSuperiorSeleccion(
                 cantidad = cantidadSeleccionados,
@@ -113,24 +147,45 @@ fun CabeceraPrincipalLista(
                 totalEntradas = totalEntradas,
                 busquedaVisible = busquedaVisible,
                 busquedaActiva = busqueda.isNotBlank(),
-                tieneFiltrosActivos = filtro != null || soloFavoritos || criterioOrdenacion != CriterioOrdenacion.NOMBRE_AZ,
+                tieneFiltrosActivos = filtro != null || solo2fa || soloFavoritos || criterioOrdenacion != CriterioOrdenacion.NOMBRE_AZ,
                 soloFavoritos = soloFavoritos,
                 agruparPorSitio = agruparPorSitio,
                 mostrarIndicadoresContenido = mostrarIndicadoresContenido,
-                hayFiltrosParaRestablecer = filtro != null || soloFavoritos || filtroEtiqueta != null,
+                hayFiltrosParaRestablecer = filtro != null || solo2fa || soloFavoritos || filtroEtiqueta != null,
+                criterioOrdenacionActual = criterioOrdenacion,
+                filtroTipoActual = filtro,
                 alAbrirMenu = alAbrirMenu,
                 alAlternarBusqueda = alAlternarBusqueda,
-                alMostrarOrdenacion = alMostrarOrdenacion,
-                alMostrarFiltros = alMostrarFiltros,
+                alSeleccionarCriterioOrdenacion = alSeleccionarCriterioOrdenacion,
+                alSeleccionarFiltroTipo = alSeleccionarFiltroTipo,
+                alCrearTipo = alCrearTipo,
                 alAlternarSoloFavoritos = alAlternarSoloFavoritos,
+                alIrNormalizadorTitulos = alIrNormalizadorTitulos,
+                alIrTema = alIrTema,
+                alIrFormas = alIrFormas,
+                alIrTipografia = alIrTipografia,
                 alIrOrganizacionGrupo = alIrOrganizacionGrupo,
                 alIrOrganizacionIndicadores = alIrOrganizacionIndicadores,
+                alIrIndiceAz = alIrIndiceAz,
+                alIrTransiciones = alIrTransiciones,
                 alIrExportarSelectivo = alIrExportarSelectivo,
                 alIrCopiaSeguridadManual = alIrCopiaSeguridadManual,
                 alIrCopiaSeguridad = alIrCopiaSeguridad,
                 alIrCsvGoogle = alIrCsvGoogle,
+                alImportarGoogleAuthenticator = alImportarGoogleAuthenticator,
                 alImportarDirectoCxf = alImportarDirectoCxf,
+                alImportarContactos = alImportarContactos,
                 alExportarDirectoCxf = alExportarDirectoCxf,
+                alIrCopiaRapida = alIrCopiaRapida,
+                alIrFormatosCampos = alIrFormatosCampos,
+                alIrSeguridadDatos = alIrSeguridadDatos,
+                alIrColoresIds = alIrColoresIds,
+                alIrDatosTecnicosPasskey = alIrDatosTecnicosPasskey,
+                alIrUmbralContrasenas = alIrUmbralContrasenas,
+                alIrContrasenasComunes = alIrContrasenasComunes,
+                alIrPlantillasPersonalizadas = alIrPlantillasPersonalizadas,
+                alIrAjustesGenerales = alIrAjustesGenerales,
+                alAbrirAyuda = alAbrirAyuda,
                 alRestablecerFiltros = alRestablecerFiltros,
                 mostrarCampanaAvisos = mostrarCampanaAvisos,
                 cantidadAvisos = cantidadAvisos,
@@ -147,19 +202,15 @@ fun CabeceraPrincipalLista(
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(start = 20.dp, end = 20.dp, top = 4.dp, bottom = 0.dp)
+                        .padding(start = 20.dp, end = 20.dp, top = 4.dp, bottom = 4.dp)
                 ) {
                     BarraBusquedaAnimada(
                         valor = busqueda,
                         alCambiar = alCambiarBusqueda,
-                        alCerrar = alCerrarBusqueda
-                    )
-
-                    Spacer(Modifier.height(3.dp))
-
-                    com.jlnavas3.bovedalocal.ui.pantallas.lista.busqueda.ContenedorSugerenciasBusqueda(
-                        textoBusqueda = busqueda,
-                        alCambiarTextoBusqueda = alCambiarBusqueda,
+                        alCerrar = alCerrarBusqueda,
+                        entradas = entradas,
+                        categorias = categorias,
+                        etiquetasDisponibles = etiquetasDisponibles,
                         alAbrirAyuda = alAbrirAyuda
                     )
                 }
@@ -173,8 +224,13 @@ fun CabeceraPrincipalLista(
                 visible = barraPildorasVisible,
                 soloFavoritos = soloFavoritos,
                 filtroTipo = filtro,
+                solo2fa = solo2fa,
                 alAlternarFavoritos = alAlternarSoloFavoritos,
                 alLimpiarTipo = alLimpiarTipo,
+                alSeleccionarTipo = alSeleccionarFiltroTipo,
+                alSeleccionar2fa = alSeleccionar2fa,
+                conteoPorTipo = conteoPorTipo,
+                conteo2fa = conteo2fa,
                 mostrarPildoraIdentidad = mostrarPildoraIdentidad,
                 identidades = identidades,
                 identidadSeleccionadaId = identidadSeleccionadaId,
@@ -182,14 +238,19 @@ fun CabeceraPrincipalLista(
                 conteoSinIdentidad = conteoSinIdentidad,
                 alAbrirSelectorIdentidad = alAbrirSelectorIdentidad,
                 alSeleccionarIdentidad = alSeleccionarIdentidad,
+                alGestionarIdentidades = alGestionarIdentidades,
                 mostrarPildoraCategoria = mostrarPildoraCategoria,
                 categorias = categorias,
                 categoriaSeleccionadaId = categoriaSeleccionadaId,
                 conteoPorCategoria = conteoPorCategoria,
                 alAbrirSelectorCategoria = alAbrirSelectorCategoria,
                 alSeleccionarCategoria = alSeleccionarCategoria,
+                alGestionarCategorias = alGestionarCategorias,
                 mostrarPildoraEtiqueta = mostrarPildoraEtiqueta,
                 filtroEtiqueta = filtroEtiqueta,
+                etiquetasDisponibles = etiquetasDisponibles,
+                conteoPorEtiqueta = conteoPorEtiqueta,
+                totalEntradas = totalEntradas,
                 alAbrirSelectorEtiqueta = alAbrirSelectorEtiqueta,
                 alSeleccionarEtiqueta = alSeleccionarEtiqueta
             )

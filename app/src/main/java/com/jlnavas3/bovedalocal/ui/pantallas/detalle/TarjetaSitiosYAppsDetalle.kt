@@ -39,7 +39,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorCampoAjustes
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorSeparadorAjustes
-import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.ColorDatosApp
 import com.jlnavas3.bovedalocal.ui.theme.ColorDatosWeb
 import com.jlnavas3.bovedalocal.ui.theme.FormaPequena
@@ -135,7 +134,7 @@ fun TarjetaSitiosYAppsDetalle(
                             Icon(
                                 imageVector = if (esApp) Icons.Filled.Android else Icons.Filled.Language,
                                 contentDescription = null,
-                                tint = ColorAcento,
+                                tint = colorDato,
                                 modifier = Modifier.size(20.dp)
                             )
                         }

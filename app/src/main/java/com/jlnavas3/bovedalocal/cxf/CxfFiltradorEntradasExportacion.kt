@@ -19,10 +19,12 @@ object CxfFiltradorEntradasExportacion {
         idsPreseleccionadas: Set<String>,
         esSeleccionPersonalizada: Boolean
     ): List<Entrada> {
-        if (!esSeleccionPersonalizada || idsPreseleccionadas.isEmpty()) {
+        if (!esSeleccionPersonalizada) {
             return entradasDisponibles
         }
-        val filtradas = entradasDisponibles.filter { idsPreseleccionadas.contains(it.id) }
-        return if (filtradas.isNotEmpty()) filtradas else entradasDisponibles
+        if (idsPreseleccionadas.isEmpty()) {
+            return emptyList()
+        }
+        return entradasDisponibles.filter { idsPreseleccionadas.contains(it.id) }
     }
 }

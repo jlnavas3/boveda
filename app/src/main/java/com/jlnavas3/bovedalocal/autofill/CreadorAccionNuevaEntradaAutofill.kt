@@ -27,13 +27,22 @@ object CreadorAccionNuevaEntradaAutofill {
         respuesta: FillResponse.Builder,
         ids: Array<AutofillId>,
         datosSugeridos: DatosSugeridosAutofill,
-        inlineSpec: InlinePresentationSpec?
+        inlineSpec: InlinePresentationSpec?,
+        esContacto: Boolean = false,
+        telefonoInicial: String? = null,
+        nombreInicial: String? = null
     ) {
         val intent = Intent(contexto, MainActivity::class.java).apply {
             action = Intent.ACTION_VIEW
-            putExtra("accion_shortcut", "nueva_entrada")
-            putExtra("titulo_inicial", datosSugeridos.titulo)
-            putExtra("url_inicial", datosSugeridos.url)
+            if (esContacto) {
+                putExtra("accion_shortcut", "nuevo_contacto")
+                putExtra("telefono_inicial", telefonoInicial ?: "")
+                putExtra("nombre_inicial", nombreInicial ?: "")
+            } else {
+                putExtra("accion_shortcut", "nueva_entrada")
+                putExtra("titulo_inicial", datosSugeridos.titulo)
+                putExtra("url_inicial", datosSugeridos.url)
+            }
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
         }
 
@@ -44,10 +53,11 @@ object CreadorAccionNuevaEntradaAutofill {
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
+        val etiquetaCorta = if (esContacto) "+ Contacto" else "+ Entrada"
         val presentacion = AutofillUtiles.presentacion(
             contexto = contexto,
-            titulo = "Agregar a Bóveda local",
-            subtitulo = "Crear entrada para ${datosSugeridos.titulo}",
+            titulo = if (esContacto) "Guardar contacto" else "Agregar a Bóveda local",
+            subtitulo = if (esContacto) "Nuevo contacto para ${datosSugeridos.titulo}" else "Crear entrada para ${datosSugeridos.titulo}",
             iconoBitmap = datosSugeridos.iconoBitmap
         )
 
@@ -55,8 +65,8 @@ object CreadorAccionNuevaEntradaAutofill {
             val inlineAccion = CreadorInlineSuggestion.crear(
                 contexto = contexto,
                 spec = inlineSpec,
-                titulo = "Agregar a Bóveda",
-                subtitulo = datosSugeridos.titulo,
+                titulo = etiquetaCorta,
+                subtitulo = null,
                 iconoBitmap = datosSugeridos.iconoBitmap
             )
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {

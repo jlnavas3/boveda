@@ -32,7 +32,9 @@ fun rememberDatosSaludBoveda(
     ahora: Long,
     contexto: Context,
     anadidasComunes: Set<String> = emptySet(),
-    excluidasComunes: Set<String> = emptySet()
+    excluidasComunes: Set<String> = emptySet(),
+    umbralPuntuacionDebil: Int = com.jlnavas3.bovedalocal.data.AjustesDefaults.SaludContrasenas.UMBRAL_PUNTUACION_DEBIL,
+    longitudMinima: Int = com.jlnavas3.bovedalocal.data.AjustesDefaults.SaludContrasenas.LONGITUD_MINIMA_RECOMENDADA
 ): DatosSaludBoveda {
     var resultado by remember {
         mutableStateOf(
@@ -40,7 +42,7 @@ fun rememberDatosSaludBoveda(
         )
     }
 
-    LaunchedEffect(entradas, umbralDias, ahora, anadidasComunes, excluidasComunes) {
+    LaunchedEffect(entradas, umbralDias, ahora, anadidasComunes, excluidasComunes, umbralPuntuacionDebil, longitudMinima) {
         val datos = withContext(Dispatchers.Default) {
             val claves = entradas.filter {
                 it.tipo == TipoEntrada.LOGIN && it.contrasena.isNotBlank() && !it.ignoradaEnSalud
@@ -54,7 +56,7 @@ fun rememberDatosSaludBoveda(
             fun puntuacionClave(pass: String): Int {
                 return cachePuntuacion.getOrPut(pass) {
                     when {
-                        pass.length < 6 -> 0
+                        pass.length < longitudMinima -> 0
                         pass.length >= 20 && pass.any { it.isUpperCase() } && pass.any { it.isDigit() } && pass.any { !it.isLetterOrDigit() } -> 4
                         else -> MedidorFuerza.medir(pass).puntuacion
                     }
@@ -62,7 +64,7 @@ fun rememberDatosSaludBoveda(
             }
 
             val debiles = claves
-                .filter { puntuacionClave(it.contrasena) <= 1 }
+                .filter { puntuacionClave(it.contrasena) <= umbralPuntuacionDebil || it.contrasena.length < longitudMinima }
                 .sortedBy { puntuacionClave(it.contrasena) }
 
             val muyComunes = claves.filter {
@@ -110,3 +112,28 @@ fun rememberDatosSaludBoveda(
 
     return resultado
 }
+
+/**
+ * Calcula de forma síncrona y consistente el número consolidado de cuentas con problemas
+ * de salud (repetidas, débiles y comunes) para contadores de Ajustes, Barra Lateral y Asistente.
+ */
+fun contarProblemasSaludBoveda(
+    entradas: List<Entrada>,
+    contexto: Context? = null,
+    anadidasComunes: Set<String> = emptySet(),
+    excluidasComunes: Set<String> = emptySet(),
+    umbralPuntuacionDebil: Int = com.jlnavas3.bovedalocal.data.AjustesDefaults.SaludContrasenas.UMBRAL_PUNTUACION_DEBIL,
+    longitudMinima: Int = com.jlnavas3.bovedalocal.data.AjustesDefaults.SaludContrasenas.LONGITUD_MINIMA_RECOMENDADA
+): Int {
+    val claves = entradas.filter {
+        it.tipo == TipoEntrada.LOGIN && it.contrasena.isNotBlank() && !it.ignoradaEnSalud
+    }
+    val repetidas = claves.groupBy { it.contrasena }.filter { it.value.size > 1 }.values.flatten().toSet()
+    val debiles = claves.filter {
+        MedidorFuerza.medir(it.contrasena).puntuacion <= umbralPuntuacionDebil ||
+            it.contrasena.length < longitudMinima ||
+            (contexto != null && ContrasenasComunes.esComun(contexto, it.contrasena, anadidasComunes, excluidasComunes))
+    }.toSet()
+    return (repetidas + debiles).size
+}
+

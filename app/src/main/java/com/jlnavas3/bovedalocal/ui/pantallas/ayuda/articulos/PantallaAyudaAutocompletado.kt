@@ -14,10 +14,14 @@ import androidx.compose.ui.unit.sp
 import com.jlnavas3.bovedalocal.ui.Pantalla
 import com.jlnavas3.bovedalocal.ui.VaultViewModel
 import com.jlnavas3.bovedalocal.ui.pantallas.ayuda.ContenedorArticuloDetalleAyuda
+import com.jlnavas3.bovedalocal.ui.pantallas.ayuda.TarjetaConsejoAyuda
 import com.jlnavas3.bovedalocal.ui.pantallas.ayuda.TarjetaInformativaAyuda
 import com.jlnavas3.bovedalocal.ui.theme.TextoPrincipal
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
 
+/**
+ * Artículo de ayuda exhaustivo sobre el servicio de autocompletado en Android, tarjetas, envíos y reglas heurísticas.
+ */
 @Composable
 fun PantallaAyudaAutocompletado(vm: VaultViewModel, alVolver: () -> Unit) {
     ContenedorArticuloDetalleAyuda(
@@ -27,31 +31,54 @@ fun PantallaAyudaAutocompletado(vm: VaultViewModel, alVolver: () -> Unit) {
         iconoAccion = Icons.Filled.AutoAwesome,
         alEjecutarAccion = { vm.ir(Pantalla.AjustesAutocompletado()) }
     ) {
-        TarjetaInformativaAyuda(titulo = "Relleno automático en navegadores y apps") {
+        TarjetaInformativaAyuda(titulo = "Relleno nativo sin fricción en todo el sistema") {
             Text(
-                text = "El servicio de autocompletado nativo de Android permite que, al tocar un campo de usuario o contraseña en Chrome, Firefox o cualquier aplicación bancaria, aparezca una sugerencia flotante de Bóveda Local para rellenarlo al instante.",
+                text = "El servicio de autocompletado de Bóveda Local se integra directamente con el Framework de Autocompletado nativo de Android (Android Autofill Framework / Credential Manager). Permite que tus credenciales, medios de pago, direcciones de paquetería y documentos oficiales se rellenen en navegadores y apps con un solo toque y autenticación biométrica.",
                 fontSize = 13.sp,
                 color = TextoSecundario,
-                lineHeight = 18.sp
+                lineHeight = 18.5.sp
             )
         }
 
-        TarjetaInformativaAyuda(titulo = "¿Cómo activarlo en tu dispositivo?") {
+        TarjetaInformativaAyuda(titulo = "1. Credenciales y sugerencias en teclado (IME)") {
             Text(
-                text = "1. Ve a Ajustes > Herramientas > Autocompletado dentro de Bóveda Local.\n\n2. Pulsa 'Activar en ajustes de Android' para ser redirigido a la sección de 'Servicio de Autocompletado' del sistema.\n\n3. Selecciona 'Bóveda Local' como tu proveedor predeterminado.\n\n4. A partir de ese momento, cada vez que inicies sesión en una app, se te pedirá autenticarte con tu huella y tus datos se completarán con total seguridad sin copiarlos manualmente.",
+                text = "• Detección automática: Al tocar un campo de usuario o contraseña en Chrome, Firefox o apps nativas, Bóveda Local identifica el dominio web o el nombre de paquete de la aplicación.\n\n• Sugerencias en teclado (Inline Suggestions): En Android 11 o superior, si utilizas teclados como Gboard o SwiftKey, las cuentas sugeridas aparecen directamente sobre la barra superior del teclado, ofreciendo un acceso ergonómico sin tapar la pantalla.\n\n• Búsqueda manual rápida: Si un formulario tiene un dominio atípico, la sugerencia incluye un botón para buscar en tu bóveda al instante y vincularlo.",
                 fontSize = 13.sp,
                 color = TextoPrincipal,
-                lineHeight = 18.sp
+                lineHeight = 18.5.sp
             )
         }
 
-        TarjetaInformativaAyuda(titulo = "Copia automática de TOTP (Segundo factor)") {
+        TarjetaInformativaAyuda(titulo = "2. Compras online y tarjetas bancarias") {
             Text(
-                text = "Al habilitar la opción 'Copiar TOTP automáticamente tras autocompletar' en Ajustes de Autocompletado, la bóveda colocará de inmediato en el portapapeles el código de 6 dígitos si la entrada tiene 2FA configurado. Así, cuando la web o app te pida el segundo factor en el siguiente paso, solo tendrás que pulsar 'Pegar' sin necesidad de volver a abrir la bóveda. El portapapeles se vacía solo automáticamente tras el tiempo configurado para máxima seguridad.",
+                text = "Al llegar al carrito de compra o pasarela de pago (checkout):\n\n• Número de tarjeta (PAN): Rellena los 16 dígitos formateados con validación Luhn.\n• Fecha de vencimiento: Completa mes y año en el formato que exija la web (MM/AA o MM/AAAA).\n• Código de seguridad: Inserta el CVV / CVC de 3 o 4 dígitos.\n• Titular de la tarjeta: Nombre y apellidos tal como figuran en el plástico de pago.",
                 fontSize = 13.sp,
-                color = TextoSecundario,
-                lineHeight = 18.sp
+                color = TextoPrincipal,
+                lineHeight = 18.5.sp
             )
         }
+
+        TarjetaInformativaAyuda(titulo = "3. Direcciones de paquetería y documentos de identidad") {
+            Text(
+                text = "• Formularios de envío: Rellena calle, número, piso/departamento, ciudad, código postal, provincia, país y teléfono según la ficha de tu perfil activo.\n\n• Documentos oficiales: Rellena números de DNI, Cédula, RUT o Pasaporte en aerolíneas, trámites notariales o gubernamentales.",
+                fontSize = 13.sp,
+                color = TextoPrincipal,
+                lineHeight = 18.5.sp
+            )
+        }
+
+        TarjetaInformativaAyuda(titulo = "Reglas heurísticas y chips configurables (04-HER-PSK-RGL)") {
+            Text(
+                text = "Existen tiendas y páginas web que utilizan identificadores inusuales en sus campos de formulario. En Ajustes > Herramientas > Autocompletado > Reglas de detección puedes afinar y añadir chips de palabras clave para que el motor reconozca campos específicos de tarjetas, direcciones o documentos de cualquier país.",
+                fontSize = 13.sp,
+                color = TextoSecundario,
+                lineHeight = 18.5.sp
+            )
+        }
+
+        TarjetaConsejoAyuda(
+            titulo = "Copia automática de TOTP tras autocompletar",
+            texto = "Si la cuenta autocompletada dispone de código 2FA, Bóveda Local copiará automáticamente el token de 6 dígitos en tu portapapeles. Al pulsar 'Siguiente' en el formulario web, solo tendrás que pulsar 'Pegar'."
+        )
     }
 }

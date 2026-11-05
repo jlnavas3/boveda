@@ -55,7 +55,7 @@ class CopiadorTotpAutofillTest {
 
     @Test
     fun `si el ajuste esta desactivado no debe procesarse copia de totp`() {
-        val ajustes = AjustesApp(autofillCopiarTotpAutomatico = false)
+        val ajustes = AjustesApp(autocompletado = com.jlnavas3.bovedalocal.data.AjustesAutocompletado(copiarTotpAutomatico = false))
         assertFalse(ajustes.autofillCopiarTotpAutomatico)
     }
 }

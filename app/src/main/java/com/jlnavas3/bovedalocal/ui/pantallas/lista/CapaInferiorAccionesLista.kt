@@ -30,13 +30,16 @@ fun BoxScope.CapaInferiorAccionesLista(
     haptica: Haptica,
     tieneAlertaAccesibilidad: Boolean = false,
     alAbrirAuditoriaAccesibilidad: (() -> Unit)? = null,
+    avisos: List<com.jlnavas3.bovedalocal.data.AvisoInterno> = emptyList(),
+    alNavegarAviso: ((Pantalla) -> Unit)? = null,
     alTransferirCxf: (List<Entrada>) -> Unit,
     alRenombrar: (String) -> Unit,
     alAsignarCategoria: () -> Unit,
+    alSolicitarUnificar: (List<Entrada>) -> Unit,
     alBorrar: () -> Unit
 ) {
     if (!estadoSeleccion.modoSeleccion) {
-        ColumnaAccionesFlotantesLista(
+        BarraAccionesListaPrincipal(
             alBloquear = {
                 haptica.toque()
                 vm.bloquear()
@@ -47,7 +50,9 @@ fun BoxScope.CapaInferiorAccionesLista(
             },
             tieneAlertaAccesibilidad = tieneAlertaAccesibilidad,
             alAbrirAuditoriaAccesibilidad = alAbrirAuditoriaAccesibilidad,
-            modifier = Modifier.align(Alignment.BottomEnd)
+            avisos = avisos,
+            alNavegarAviso = alNavegarAviso,
+            modifier = Modifier.align(Alignment.BottomCenter)
         )
     } else {
         val itemsSeleccionados = remember(entradas, estadoSeleccion.seleccionados) {
@@ -56,8 +61,30 @@ fun BoxScope.CapaInferiorAccionesLista(
         val todosSonFavoritos = remember(itemsSeleccionados) {
             itemsSeleccionados.isNotEmpty() && itemsSeleccionados.all { it.favorito }
         }
+        val todosSonAnclados = remember(itemsSeleccionados) {
+            itemsSeleccionados.isNotEmpty() && itemsSeleccionados.all { it.anclado }
+        }
         val todosIgnorados = remember(itemsSeleccionados) {
             itemsSeleccionados.isNotEmpty() && itemsSeleccionados.all { it.ignoradaEnSalud }
+        }
+        val tieneCredencialesCxf = remember(itemsSeleccionados) {
+            itemsSeleccionados.any {
+                it.tipo == com.jlnavas3.bovedalocal.data.TipoEntrada.LOGIN ||
+                it.tipo == com.jlnavas3.bovedalocal.data.TipoEntrada.PASSKEY ||
+                it.passkey != null ||
+                it.contrasena.isNotBlank() ||
+                !it.secretoTotp.isNullOrBlank()
+            }
+        }
+        val puedeUnificar = remember(itemsSeleccionados) {
+            itemsSeleccionados.size >= 2 && itemsSeleccionados.all {
+                it.tipo == com.jlnavas3.bovedalocal.data.TipoEntrada.LOGIN || it.tipo == com.jlnavas3.bovedalocal.data.TipoEntrada.PASSKEY
+            }
+        }
+        val tieneLoginAuditable = remember(itemsSeleccionados) {
+            itemsSeleccionados.any {
+                it.tipo == com.jlnavas3.bovedalocal.data.TipoEntrada.LOGIN && it.contrasena.isNotBlank()
+            }
         }
 
         BarraInferiorSeleccion(
@@ -68,11 +95,19 @@ fun BoxScope.CapaInferiorAccionesLista(
                 estadoSeleccion.salirDeSeleccion()
                 vm.alternarFavoritosVarias(ids)
             },
-            alAlternarIgnorarAuditoria = {
+            todosSonAnclados = todosSonAnclados,
+            alAlternarAnclados = {
                 val ids = estadoSeleccion.seleccionados.toSet()
                 estadoSeleccion.salirDeSeleccion()
-                vm.alternarIgnorarSaludVarias(ids)
+                vm.alternarAnclados(ids)
             },
+            alAlternarIgnorarAuditoria = if (tieneLoginAuditable) {
+                {
+                    val ids = estadoSeleccion.seleccionados.toSet()
+                    estadoSeleccion.salirDeSeleccion()
+                    vm.alternarIgnorarSaludVarias(ids)
+                }
+            } else null,
             todosIgnorados = todosIgnorados,
             alComparar = {
                 val listaComparar = estadoSeleccion.seleccionados.toList()
@@ -92,26 +127,27 @@ fun BoxScope.CapaInferiorAccionesLista(
                 estadoSeleccion.salirDeSeleccion()
                 vm.ir(Pantalla.ExportarSelectivo("ids:$ids"))
             },
-            alTransferirCxf = {
-                val copia = itemsSeleccionados.toList()
-                estadoSeleccion.salirDeSeleccion()
-                alTransferirCxf(copia)
-            },
+            alTransferirCxf = if (tieneCredencialesCxf) {
+                {
+                    val copia = itemsSeleccionados.toList()
+                    estadoSeleccion.salirDeSeleccion()
+                    alTransferirCxf(copia)
+                }
+            } else null,
             alRenombrar = {
                 val ids = estadoSeleccion.seleccionados.toList()
                 estadoSeleccion.salirDeSeleccion()
                 vm.ir(Pantalla.NormalizadorTitulos(idsEspecificos = ids))
             },
             alAsignarCategoria = alAsignarCategoria,
-            alUnificar = {
-                val copia = itemsSeleccionados.toList()
-                if (copia.size >= 2) {
-                    estadoSeleccion.salirDeSeleccion()
-                    val principal = com.jlnavas3.bovedalocal.data.AnalizadorDuplicados.seleccionarMejorEntrada(copia)
-                    val secundarias = copia.filterNot { it.id == principal.id }
-                    vm.unificarEntradas(principal = principal, secundarias = secundarias)
+            alUnificar = if (puedeUnificar) {
+                {
+                    val copia = itemsSeleccionados.toList()
+                    if (copia.size >= 2) {
+                        alSolicitarUnificar(copia)
+                    }
                 }
-            },
+            } else null,
             alBorrar = alBorrar,
             modifier = Modifier.align(Alignment.BottomCenter)
         )

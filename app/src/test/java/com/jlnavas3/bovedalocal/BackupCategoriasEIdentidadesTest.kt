@@ -72,7 +72,7 @@ class BackupCategoriasEIdentidadesTest {
             usuario = "juan@gmail.com",
             contrasena = "pass123",
             categorias = listOf("cat-personal"),
-            identidadId = "iden-1"
+            perfilId = "iden-1"
         )
         val entrada2 = Entrada(
             id = "e2",
@@ -80,14 +80,14 @@ class BackupCategoriasEIdentidadesTest {
             usuario = "juan@corporacion.com",
             contrasena = "corp456",
             categorias = listOf("cat-trabajo"),
-            identidadId = "iden-2"
+            perfilId = "iden-2"
         )
 
         val bovedaOriginal = ContenidoBoveda(
             version = 1,
             entradas = listOf(entrada1, entrada2),
             categorias = listOf(catPersonal, catTrabajo),
-            identidades = listOf(identidadPrincipal, identidadTrabajo)
+            perfiles = listOf(identidadPrincipal, identidadTrabajo)
         )
 
         // 1. Simular exportación: Cifrado con contraseña simulando un archivo .bvda

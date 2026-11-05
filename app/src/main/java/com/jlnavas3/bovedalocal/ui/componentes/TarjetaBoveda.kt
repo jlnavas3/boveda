@@ -12,6 +12,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
@@ -27,6 +28,7 @@ import com.jlnavas3.bovedalocal.ui.theme.GrosorBorde
 @Composable
 fun TarjetaBoveda(
     modifier: Modifier = Modifier,
+    paddingInterno: PaddingValues = PaddingValues(16.dp),
     alPulsar: (() -> Unit)? = null,
     contenido: @Composable ColumnScope.() -> Unit
 ) {
@@ -44,7 +46,7 @@ fun TarjetaBoveda(
                 }
             )
             .then(if (alPulsar != null) Modifier.clickable { alPulsar() } else Modifier)
-            .padding(16.dp)
+            .padding(paddingInterno)
     ) {
         Column(content = contenido)
     }

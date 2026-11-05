@@ -52,7 +52,8 @@ interface VaultTitulosDelegate {
                 tldsConfigurados = ajustes.tldsDescartables,
                 marcasPersonalizadas = ajustes.marcasPersonalizadas,
                 puertosConfigurados = ajustes.puertosServiciosLocales,
-                octetosRouter = ajustes.octetosRouter
+                octetosRouter = ajustes.octetosRouter,
+                rutasConfiguradas = ajustes.rutasServiciosLocales
             )
             val clave = nombreBase.lowercase()
             grupos.getOrPut(clave) { mutableListOf() }.add(e)
@@ -70,7 +71,8 @@ interface VaultTitulosDelegate {
                 tldsConfigurados = ajustes.tldsDescartables,
                 marcasPersonalizadas = ajustes.marcasPersonalizadas,
                 puertosConfigurados = ajustes.puertosServiciosLocales,
-                octetosRouter = ajustes.octetosRouter
+                octetosRouter = ajustes.octetosRouter,
+                rutasConfiguradas = ajustes.rutasServiciosLocales
             )
             val domMostrar = if (primeraUrl.isNotBlank()) {
                 val host = Dominios.host(primeraUrl)
@@ -133,11 +135,9 @@ interface VaultTitulosDelegate {
             for (grupo in grupos) {
                 for (entrada in grupo.entradas) {
                     val esCambioManualGrupo = grupo.nombrePersonalizado != grupo.nombreSugerido
-                    if (!esSeleccionManual && !esCambioManualGrupo && respetarManuales && !NormalizadorTitulosSitios.esTituloGeneradoOModificable(
-                            titulo = entrada.titulo,
+                    if (!esSeleccionManual && !esCambioManualGrupo && respetarManuales && NormalizadorTitulosSitios.esEntradaProtegidaManual(
+                            entrada = entrada,
                             nombreBase = grupo.nombreEfectivo,
-                            usuario = entrada.usuario,
-                            urls = entrada.urls,
                             tldsConfigurados = tldsActuales
                         )
                     ) {
@@ -195,7 +195,8 @@ interface VaultTitulosDelegate {
                     tldsConfigurados = tldsActuales,
                     marcasPersonalizadas = ajustes.marcasPersonalizadas,
                     puertosConfigurados = ajustes.puertosServiciosLocales,
-                    octetosRouter = ajustes.octetosRouter
+                    octetosRouter = ajustes.octetosRouter,
+                    rutasConfiguradas = ajustes.rutasServiciosLocales
                 ).lowercase()
             }
 
@@ -213,8 +214,12 @@ interface VaultTitulosDelegate {
                     tldsConfigurados = tldsActuales,
                     marcasPersonalizadas = ajustes.marcasPersonalizadas,
                     puertosConfigurados = ajustes.puertosServiciosLocales,
-                    octetosRouter = ajustes.octetosRouter
+                    octetosRouter = ajustes.octetosRouter,
+                    rutasConfiguradas = ajustes.rutasServiciosLocales
                 )
+                if (ajustes.respetarTitulosPersonalizados && NormalizadorTitulosSitios.esEntradaProtegidaManual(entrada, nombreBase, tldsActuales)) {
+                    return@filter false
+                }
                 val tieneColision = (gruposPorSitio[nombreBase.lowercase()]?.size ?: 1) > 1
                 val tituloFinal = NormalizadorTitulosSitios.generarTituloFinal(
                     nombreBase = nombreBase,
@@ -253,7 +258,8 @@ interface VaultTitulosDelegate {
                     tldsConfigurados = tldsActuales,
                     marcasPersonalizadas = ajustes.marcasPersonalizadas,
                     puertosConfigurados = ajustes.puertosServiciosLocales,
-                    octetosRouter = ajustes.octetosRouter
+                    octetosRouter = ajustes.octetosRouter,
+                    rutasConfiguradas = ajustes.rutasServiciosLocales
                 )
                 val tieneColision = (gruposPorSitio[nombreBase.lowercase()]?.size ?: 1) > 1
                 val tituloFinal = NormalizadorTitulosSitios.generarTituloFinal(
@@ -294,8 +300,8 @@ interface VaultTitulosDelegate {
             com.jlnavas3.bovedalocal.ui.progreso.GestorProgresoOperaciones.completar(
                 mensajeExito = "Se han estandarizado $modificadas títulos",
                 totalCuentas = modificadas,
-                textoAccionResultado = null,
-                textoAccionSecundaria = "Ver listado"
+                textoAccionResultado = "Ver listado",
+                textoAccionSecundaria = null
             )
 
             avisar("¡Listo! Se han estandarizado $modificadas títulos")
@@ -324,7 +330,8 @@ interface VaultTitulosDelegate {
                 tldsConfigurados = tldsActuales,
                 marcasPersonalizadas = ajustes.marcasPersonalizadas,
                 puertosConfigurados = ajustes.puertosServiciosLocales,
-                octetosRouter = ajustes.octetosRouter
+                octetosRouter = ajustes.octetosRouter,
+                rutasConfiguradas = ajustes.rutasServiciosLocales
             ).lowercase()
         }
 
@@ -341,7 +348,8 @@ interface VaultTitulosDelegate {
                 tldsConfigurados = tldsActuales,
                 marcasPersonalizadas = ajustes.marcasPersonalizadas,
                 puertosConfigurados = ajustes.puertosServiciosLocales,
-                octetosRouter = ajustes.octetosRouter
+                octetosRouter = ajustes.octetosRouter,
+                rutasConfiguradas = ajustes.rutasServiciosLocales
             )
             val tieneColision = (gruposPorSitio[nombreBase.lowercase()]?.size ?: 1) > 1
             val tituloFinal = NormalizadorTitulosSitios.generarTituloFinal(
@@ -475,6 +483,23 @@ interface VaultTitulosDelegate {
         }
     }
 
+    fun agregarRutaServicio(ruta: String, nombreServicio: String) {
+        val rutaLimpia = ruta.trim().removePrefix("/").removeSuffix("/")
+        val servicioLimpio = nombreServicio.trim()
+        if (rutaLimpia.isNotBlank() && servicioLimpio.isNotBlank()) {
+            repositorio.ajustes.actualizar {
+                it.copy(rutasServiciosLocales = it.rutasServiciosLocales + (rutaLimpia to servicioLimpio))
+            }
+        }
+    }
+
+    fun eliminarRutaServicio(ruta: String) {
+        val rutaLimpia = ruta.trim().removePrefix("/").removeSuffix("/")
+        repositorio.ajustes.actualizar {
+            it.copy(rutasServiciosLocales = it.rutasServiciosLocales.filterKeys { k -> !k.equals(rutaLimpia, ignoreCase = true) })
+        }
+    }
+
     fun restablecerReglasNormalizacion() {
         repositorio.ajustes.actualizar {
             it.copy(
@@ -482,6 +507,7 @@ interface VaultTitulosDelegate {
                 tldsDescartables = AjustesDefaults.NormalizacionTitulos.TLDS_DESCARTABLES,
                 marcasPersonalizadas = AjustesDefaults.NormalizacionTitulos.MARCAS_PERSONALIZADAS,
                 puertosServiciosLocales = AjustesDefaults.NormalizacionTitulos.PUERTOS_SERVICIOS_LOCALES,
+                rutasServiciosLocales = AjustesDefaults.NormalizacionTitulos.RUTAS_SERVICIOS_LOCALES,
                 octetosRouter = AjustesDefaults.NormalizacionTitulos.OCTETOS_ROUTER,
                 plantillaRouterIp = AjustesDefaults.NormalizacionTitulos.PLANTILLA_ROUTER_IP,
                 plantillaServidorIp = AjustesDefaults.NormalizacionTitulos.PLANTILLA_SERVIDOR_IP,

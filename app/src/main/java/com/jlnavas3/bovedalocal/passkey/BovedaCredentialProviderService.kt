@@ -201,6 +201,7 @@ class BovedaCredentialProviderService : CredentialProviderService() {
                 alguna = true
                 return@forEach
             }
+            com.jlnavas3.bovedalocal.BovedaApp.refrescarActividadSegundoPlano(this)
             val candidatas = repositorio.passkeysDe(peticion.rpId).filter { entrada ->
                 val datos = entrada.passkey ?: return@filter false
                 peticion.credencialesPermitidas.isEmpty() ||

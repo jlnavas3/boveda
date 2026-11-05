@@ -68,6 +68,17 @@ fun crearElementosAparienciaAjustes(
         alPulsar = { vm.ir(Pantalla.Formas()) }
     ),
     ElementoMenuAjustes(
+        titulo = "Animaciones y transiciones",
+        subtitulo = "Estilo de cambio de pantalla, velocidad y físicas",
+        icono = Icons.Filled.AutoAwesome,
+        colorIcono = Color(0xFFE91E63),
+        idEtiqueta = "02-APA-TRN",
+        grupo = "Apariencia",
+        palabrasClave = "transiciones animaciones pantallas velocidad resorte spring duracion deslizamiento fade zoom sheet parallax",
+        valorTexto = com.jlnavas3.bovedalocal.data.EstiloTransicionPantalla.desdeId(ajustes.estiloTransicionPantalla).titulo,
+        alPulsar = { vm.ir(Pantalla.AjustesTransiciones()) }
+    ),
+    ElementoMenuAjustes(
         titulo = "Diseño de lista",
         subtitulo = "Agrupamiento por sitio y densidad",
         icono = Icons.Filled.Layers,
@@ -111,13 +122,13 @@ fun crearElementosAparienciaAjustes(
         alPulsar = { vm.ir(Pantalla.PlantillasCampos()) }
     ),
     ElementoMenuAjustes(
-        titulo = "Identificadores de campos",
-        subtitulo = "Pastillas de color por tipo de credencial",
+        titulo = "Indicadores y colores de campos",
+        subtitulo = "Estilo de indicadores en tarjetas y colores por credencial",
         icono = Icons.Filled.Badge,
         colorIcono = Color(0xFF1E88E5),
         idEtiqueta = "02-APA-COL",
         grupo = "Apariencia",
-        palabrasClave = "colores etiquetas tipos credenciales pastillas insignias",
+        palabrasClave = "indicadores colores estilo lineas puntos iconos lateral etiquetas tipos credenciales pastillas insignias",
         alPulsar = { vm.ir(Pantalla.ColoresDatos("02-APA-COL")) }
     ),
     ElementoMenuAjustes(

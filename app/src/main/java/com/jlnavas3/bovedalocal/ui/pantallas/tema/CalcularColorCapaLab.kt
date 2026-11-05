@@ -18,6 +18,12 @@ fun calcularColorCapaLab(
     esSuperficie: Boolean
 ): Color {
     val lumRestringida = restringirLuminancia(lum, modoOscuro, esSuperficie)
+    if (modoOscuro && lumRestringida <= 0.001f) {
+        return Color(0xFF000000)
+    }
+    if (!modoOscuro && esSuperficie && lumRestringida >= 0.999f) {
+        return Color(0xFFFFFFFF)
+    }
     return if (saturacionTinte <= 0.001f) {
         crearGris(lumRestringida)
     } else {

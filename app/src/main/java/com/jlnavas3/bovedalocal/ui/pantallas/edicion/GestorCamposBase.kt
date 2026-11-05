@@ -19,7 +19,7 @@ object GestorCamposBase {
         TipoEntrada.TARJETA -> setOf("Titular", "Número de tarjeta", "Vencimiento", "CVV", "PIN de tarjeta")
         TipoEntrada.WIFI -> setOf("Nombre de red (SSID)", "Contraseña Wi-Fi", "Tipo de seguridad")
         TipoEntrada.CUENTA_BANCARIA -> setOf("Banco / Entidad", "Titular de la cuenta", "Número de cuenta / IBAN", "SWIFT / CBU / CLABE")
-        TipoEntrada.IDENTIDAD -> setOf("Tipo de documento", "Número de documento", "Nombre completo", "Expedición", "Caducidad", "País emisor")
+        TipoEntrada.IDENTIDAD -> setOf("Tipo de documento", "Número de documento", "Nombre completo", "Expedición", "Caducidad", "País emisor", "Fecha de expedición", "Fecha de caducidad")
         TipoEntrada.SERVIDOR -> setOf("Host o IP", "Puerto", "Usuario SSH", "Clave privada / Password")
         TipoEntrada.WALLET -> setOf("Red / Blockchain", "Dirección pública", "Frase semilla (Seed phrase)", "Clave privada")
         else -> emptySet()

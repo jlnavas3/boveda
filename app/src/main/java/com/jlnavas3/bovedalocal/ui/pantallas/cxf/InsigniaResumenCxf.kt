@@ -26,6 +26,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
 import com.jlnavas3.bovedalocal.ui.theme.EstiloBorde
+import com.jlnavas3.bovedalocal.ui.theme.FormaPequena
 import com.jlnavas3.bovedalocal.ui.theme.GrosorBorde
 import com.jlnavas3.bovedalocal.ui.theme.colorLegibleParaTema
 import com.jlnavas3.bovedalocal.ui.theme.fondoBadgeParaTema
@@ -40,11 +41,11 @@ fun InsigniaResumenCxf(
     val fondo = fondoBadgeParaTema(color)
     Row(
         modifier = Modifier
-            .clip(RoundedCornerShape(8.dp))
+            .clip(FormaPequena)
             .background(fondo)
             .then(
                 if (GrosorBorde > 0.dp && EstiloBorde != "ninguno" && ColorBordeActual != Color.Transparent) {
-                    Modifier.border(GrosorBorde, colorLegible.copy(alpha = 0.25f), RoundedCornerShape(8.dp))
+                    Modifier.border(GrosorBorde, colorLegible.copy(alpha = 0.25f), FormaPequena)
                 } else Modifier
             )
             .padding(horizontal = 8.dp, vertical = 4.dp),

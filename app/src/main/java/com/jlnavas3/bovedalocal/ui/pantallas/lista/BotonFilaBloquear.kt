@@ -33,20 +33,20 @@ import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorTarjetaAjustes
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorTextoAjustes
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
+import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
 import androidx.compose.foundation.layout.navigationBarsPadding
-import com.jlnavas3.bovedalocal.ui.theme.Peligro
 
 /**
  * Botón estilo barra inferior para bloquear la aplicación situado debajo del pie del menú lateral.
- * Se extiende de borde a borde absoluto (izquierdo, derecho e inferior) con fondo distintivo.
+ * Se extiende de borde a borde absoluto (izquierdo, derecho e inferior) con fondo limpio y diseño sobrio.
  */
 @Composable
 fun BotonFilaBloquear(
     alBloquear: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val colorFondoBloquear = Peligro.copy(alpha = 0.14f)
-    val colorContenido = Peligro
+    val colorFondoBloquear = ColorTarjetaAjustes
+    val colorContenido = ColorIconosInternos
 
     androidx.compose.foundation.layout.Box(
         modifier = modifier

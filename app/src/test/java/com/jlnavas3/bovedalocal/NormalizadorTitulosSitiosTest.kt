@@ -10,6 +10,7 @@ import com.jlnavas3.bovedalocal.data.AjustesDefaults
 import com.jlnavas3.bovedalocal.data.ModoFormatoTitulos
 import com.jlnavas3.bovedalocal.util.NormalizadorTitulosSitios
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
@@ -198,4 +199,61 @@ class NormalizadorTitulosSitiosTest {
         )
         org.junit.Assert.assertNotEquals(grupo1.id, grupo2.id)
     }
+
+    @Test
+    fun esEntradaProtegidaManual_detectaCorrectamenteEntradasManuales() {
+        // Caso 1: Marcada explícitamente como personalizada
+        val entradaExplicita = com.jlnavas3.bovedalocal.data.Entrada(
+            id = "1",
+            titulo = "Discord",
+            urls = listOf("https://discord.com"),
+            tituloPersonalizado = true
+        )
+        assertTrue(NormalizadorTitulosSitios.esEntradaProtegidaManual(entradaExplicita, "Discord"))
+
+        // Caso 2: Editada a mano en la app (modificadaEn > creadaEn) con título no técnico
+        val entradaEditada = com.jlnavas3.bovedalocal.data.Entrada(
+            id = "2",
+            titulo = "Discord",
+            urls = listOf("https://discord.com"),
+            creadaEn = 1000L,
+            modificadaEn = 2000L,
+            tituloPersonalizado = false
+        )
+        assertTrue(NormalizadorTitulosSitios.esEntradaProtegidaManual(entradaEditada, "Discord"))
+
+        // Caso 3: Editada a mano pero con título técnico puro (p.ej. url cruda) -> no protegida
+        val entradaTecnicaEditada = com.jlnavas3.bovedalocal.data.Entrada(
+            id = "3",
+            titulo = "discord.com",
+            urls = listOf("https://discord.com"),
+            creadaEn = 1000L,
+            modificadaEn = 2000L,
+            tituloPersonalizado = false
+        )
+        assertFalse(NormalizadorTitulosSitios.esEntradaProtegidaManual(entradaTecnicaEditada, "Discord"))
+
+        // Caso 4: Importada intacta (creadaEn == modificadaEn) con título técnico o autogenerado
+        val entradaImportada = com.jlnavas3.bovedalocal.data.Entrada(
+            id = "4",
+            titulo = "https://discord.com/login",
+            urls = listOf("https://discord.com"),
+            creadaEn = 1000L,
+            modificadaEn = 1000L,
+            tituloPersonalizado = false
+        )
+        assertFalse(NormalizadorTitulosSitios.esEntradaProtegidaManual(entradaImportada, "Discord"))
+
+        // Caso 5: Título arbitrario personalizado ("Mi Servidor Gamer") no coincidente con patrones técnicos
+        val entradaArbitraria = com.jlnavas3.bovedalocal.data.Entrada(
+            id = "5",
+            titulo = "Mi Servidor Gamer",
+            urls = listOf("https://discord.com"),
+            creadaEn = 1000L,
+            modificadaEn = 1000L,
+            tituloPersonalizado = false
+        )
+        assertTrue(NormalizadorTitulosSitios.esEntradaProtegidaManual(entradaArbitraria, "Discord"))
+    }
 }
+

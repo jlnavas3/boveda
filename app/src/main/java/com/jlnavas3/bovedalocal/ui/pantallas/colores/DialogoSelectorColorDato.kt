@@ -26,7 +26,7 @@ fun DialogoSelectorColorDato(
         "usuario" -> "Usuario / Correo"
         "contrasena" -> "Contraseña"
         "2fa" -> "Verificación en dos pasos"
-        "passkey" -> "Llave de paso"
+        "passkey" -> "Llave de acceso"
         "web" -> "Sitio Web (URL)"
         else -> "App Android vinculada"
     }

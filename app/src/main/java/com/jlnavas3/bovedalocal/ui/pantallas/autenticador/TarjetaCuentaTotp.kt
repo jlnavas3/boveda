@@ -37,6 +37,7 @@ import com.jlnavas3.bovedalocal.crypto.Base32
 import com.jlnavas3.bovedalocal.crypto.Totp
 import com.jlnavas3.bovedalocal.data.Entrada
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
+import com.jlnavas3.bovedalocal.ui.theme.ColorFavorito
 import com.jlnavas3.bovedalocal.ui.theme.ColorDatos2FA
 import com.jlnavas3.bovedalocal.ui.theme.ColorTitulos
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -44,6 +45,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.material.icons.filled.Check
 import com.jlnavas3.bovedalocal.ui.pantallas.lista.IndicadorContenidoTarjeta
+import com.jlnavas3.bovedalocal.ui.theme.EstiloIndicadores
 import com.jlnavas3.bovedalocal.ui.theme.Borde
 import com.jlnavas3.bovedalocal.ui.theme.ColorSobreAcento
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
@@ -102,8 +104,8 @@ fun TarjetaCuentaTotp(
     }
 
     val seguridadVisualActiva = ajustes?.seguridadVisualActiva == true
-    val ocultarUsuario = seguridadVisualActiva && (ajustes?.ocultarUsuario == true)
-    val ocultarTotp = seguridadVisualActiva && (ajustes?.ocultarTotp == true)
+    val ocultarUsuario = seguridadVisualActiva && ajustes.ocultarUsuario
+    val ocultarTotp = seguridadVisualActiva && ajustes.ocultarTotp
     val estiloOcultamiento = ajustes?.estiloOcultamientoVisual ?: "desenfoque"
     val tiempoAutoOcultar = ajustes?.tiempoAutoOcultarSegundos ?: 10
 
@@ -146,10 +148,14 @@ fun TarjetaCuentaTotp(
                 else Modifier
             )
     ) {
-        if (mostrarIndicadores) {
+        if (mostrarIndicadores && (EstiloIndicadores == "lineas" || EstiloIndicadores == "lateral")) {
+            val alineacionIndicador = when (EstiloIndicadores) {
+                "lateral" -> Alignment.CenterStart
+                else -> Alignment.TopCenter
+            }
             IndicadorContenidoTarjeta(
                 entrada = entrada,
-                modifier = Modifier.align(Alignment.TopCenter)
+                modifier = Modifier.align(alineacionIndicador)
             )
         }
         Box(
@@ -203,14 +209,40 @@ fun TarjetaCuentaTotp(
             }
 
             Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = entrada.totpEmisor.ifBlank { entrada.titulo },
-                    color = ColorTitulos,
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.SemiBold,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = entrada.totpEmisor.ifBlank { entrada.titulo },
+                        color = ColorTitulos,
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.SemiBold,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.weight(1f)
+                    )
+                    if (!seleccionActiva && entrada.favorito) {
+                        Spacer(Modifier.width(6.dp))
+                        Box(
+                            modifier = Modifier
+                                .size(24.dp)
+                                .clip(CircleShape)
+                                .clickable {
+                                    haptica.tic()
+                                    alAlternarFavorito()
+                                },
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                imageVector = Icons.Filled.Star,
+                                contentDescription = "Quitar de favoritos",
+                                tint = ColorFavorito,
+                                modifier = Modifier.size(17.dp)
+                            )
+                        }
+                    }
+                }
                 if (entrada.usuario.isNotBlank()) {
                     if (ocultarUsuario) {
                         com.jlnavas3.bovedalocal.ui.componentes.seguridad.DatoSensibleConRevelado(
@@ -222,7 +254,8 @@ fun TarjetaCuentaTotp(
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
                             alAlternarRevelado = { usuarioRevelado = !usuarioRevelado },
-                            descripcionAccesible = "usuario o correo de la cuenta 2FA"
+                            descripcionAccesible = "usuario o correo de la cuenta 2FA",
+                            modifier = Modifier.fillMaxWidth()
                         )
                     } else {
                         Text(
@@ -250,30 +283,25 @@ fun TarjetaCuentaTotp(
                     alAlternarRevelado = { codigoRevelado = !codigoRevelado }
                 )
                 Spacer(Modifier.height(3.dp))
-                Text(
-                    text = if (seleccionActiva) "$segundosRestantes s restantes" else "Toca el código para copiar · $segundosRestantes s",
-                    color = TextoSecundario,
-                    style = MaterialTheme.typography.bodySmall
-                )
-            }
-
-            if (!seleccionActiva && entrada.favorito) {
-                Box(
-                    modifier = Modifier
-                        .size(36.dp)
-                        .clip(CircleShape)
-                        .clickable {
-                            haptica.tic()
-                            alAlternarFavorito()
-                        },
-                    contentAlignment = Alignment.Center
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Icon(
-                        imageVector = Icons.Filled.Star,
-                        contentDescription = "Quitar de favoritos",
-                        tint = ColorAcento,
-                        modifier = Modifier.size(20.dp)
+                    Text(
+                        text = if (seleccionActiva) "$segundosRestantes s restantes" else "Toca el código para copiar · $segundosRestantes s",
+                        color = TextoSecundario,
+                        style = MaterialTheme.typography.bodySmall,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.weight(1f)
                     )
+                    if (mostrarIndicadores && (EstiloIndicadores == "puntos" || EstiloIndicadores == "iconos")) {
+                        Spacer(Modifier.width(8.dp))
+                        IndicadorContenidoTarjeta(
+                            entrada = entrada,
+                            estilo = EstiloIndicadores
+                        )
+                    }
                 }
             }
         }

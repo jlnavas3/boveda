@@ -7,51 +7,60 @@
 package com.jlnavas3.bovedalocal.ui.pantallas.ayuda.articulos
 
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Tune
+import androidx.compose.material.icons.filled.DynamicForm
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.unit.sp
 import com.jlnavas3.bovedalocal.ui.Pantalla
 import com.jlnavas3.bovedalocal.ui.VaultViewModel
 import com.jlnavas3.bovedalocal.ui.pantallas.ayuda.ContenedorArticuloDetalleAyuda
+import com.jlnavas3.bovedalocal.ui.pantallas.ayuda.TarjetaConsejoAyuda
 import com.jlnavas3.bovedalocal.ui.pantallas.ayuda.TarjetaInformativaAyuda
 import com.jlnavas3.bovedalocal.ui.theme.TextoPrincipal
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
 
+/**
+ * Artículo de ayuda exhaustivo sobre campos personalizados, tipos ricos y plantillas reutilizables.
+ */
 @Composable
 fun PantallaAyudaCamposPersonalizados(vm: VaultViewModel, alVolver: () -> Unit) {
     ContenedorArticuloDetalleAyuda(
-        titulo = "Campos personalizados",
+        titulo = "Campos personalizados y tipos ricos",
         alVolver = alVolver,
-        textoAccion = "Formatos de Campos",
-        iconoAccion = Icons.Filled.Tune,
-        alEjecutarAccion = { vm.ir(Pantalla.FormatosCampos("03-LST-CAM")) }
+        textoAccion = "Gestionar Plantillas",
+        iconoAccion = Icons.Filled.DynamicForm,
+        alEjecutarAccion = { vm.ir(Pantalla.PlantillasCampos()) }
     ) {
-        TarjetaInformativaAyuda(titulo = "Flexibilidad para cualquier tipo de registro") {
+        TarjetaInformativaAyuda(titulo = "Flexibilidad total para cualquier registro") {
             Text(
-                text = "Más allá del usuario y la contraseña estándar, cada entrada de la bóveda puede contener cualquier número de campos personalizados con etiquetas y tipos semánticos específicos adaptados a tus necesidades.",
+                text = "No todas las cuentas encajan en el esquema rígido de 'usuario y contraseña'. A menudo necesitas custodiar datos específicos como preguntas secretas de seguridad, códigos PUK de tu tarjeta SIM, tokens de API de desarrollo o fechas de renovación de contratos.\n\nEl sistema de campos personalizados de Bóveda Local te permite agregar cualquier número de propiedades a cualquier entrada con soporte para tipos de datos ricos.",
                 fontSize = 13.sp,
                 color = TextoSecundario,
-                lineHeight = 18.sp
+                lineHeight = 18.5.sp
             )
         }
 
-        TarjetaInformativaAyuda(titulo = "Tipos ricos disponibles") {
+        TarjetaInformativaAyuda(titulo = "Catálogo de tipos de campo disponibles") {
             Text(
-                text = "• Texto: Para datos visibles como identificadores de cliente, preguntas de seguridad o servidores.\n\n• Oculto / Contraseña: Para tokens de API, respuestas secretas o claves secundarias.\n\n• Booleano (Sí / No): Interruptor directo ideal para estados como '2FA Activado', 'Renovación automática' o 'Dispositivo de confianza'.\n\n• PIN numérico: Máscara específica para códigos numéricos de cajero, tarjetas SIM o cerraduras.\n\n• Fecha: Formato de calendario para vencimiento de licencias, renovaciones o contratos.",
+                text = "Al pulsar '+ Añadir campo personalizado' en el formulario de edición, puedes seleccionar:\n\n• Texto simple: Para respuestas de seguridad, nombres de servidor, números de cliente o notas breves.\n\n• Oculto / Contraseña: Campo enmascarado con puntos ('••••') y botón de visualización con ojo. Se beneficia de la limpieza automática de portapapeles.\n\n• Código PIN: Campo numérico especializado para PINs de tarjetas SIM, alarmas domésticas o códigos de desbloqueo.\n\n• Booleano (Interruptor Sí/No): Un conmutador interactivo visual para marcar estados binarios (ej: '¿Requiere VPN?', '¿Facturación anual activada?', '¿Cuenta verificada?').\n\n• Fecha: Selector de calendario nativo para registrar fechas de vencimiento de pólizas, garantías de compra o renovaciones de dominio.",
                 fontSize = 13.sp,
                 color = TextoPrincipal,
-                lineHeight = 18.sp
+                lineHeight = 18.5.sp
             )
         }
 
-        TarjetaInformativaAyuda(titulo = "Plantillas reutilizables") {
+        TarjetaInformativaAyuda(titulo = "Plantillas reutilizables del sistema y de usuario") {
             Text(
-                text = "Si sueles añadir la misma estructura de campos a varias entradas (por ejemplo, 'Pregunta 1', 'Pregunta 2', 'PIN'), puedes guardar un conjunto de campos como una Plantilla Reutilizable para insertarla con un solo toque en nuevas entradas.",
+                text = "En Ajustes > Apariencia > Plantillas de campos (02-APA-PLT) puedes diseñar plantillas preconcebidas:\n\n• Plantillas del sistema: Configuraciones listas para usar orientadas a servidores, banca o tarjetas prepago.\n\n• Plantillas personalizadas: Si gestionas muchos servidores o tiendas virtuales, crea una plantilla con los 4 o 5 campos que siempre necesitas (ej: 'IP', 'Puerto SSH', 'Usuario Root', 'Proveedor VPS'). Al crear una nueva cuenta, pulsa 'Aplicar plantilla' y todos los campos se insertarán automáticamente.",
                 fontSize = 13.sp,
-                color = TextoSecundario,
-                lineHeight = 18.sp
+                color = TextoPrincipal,
+                lineHeight = 18.5.sp
             )
         }
+
+        TarjetaConsejoAyuda(
+            titulo = "Reordenación táctil de campos",
+            texto = "En la ficha de edición puedes arrastrar los campos personalizados verticalmente para colocar la información más relevante en la parte superior."
+        )
     }
 }

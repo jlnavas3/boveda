@@ -37,6 +37,7 @@ import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteGrupo
 import com.jlnavas3.bovedalocal.ui.preview.BovedaPreview
 import com.jlnavas3.bovedalocal.ui.theme.BovedaTheme
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
+import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
 import com.jlnavas3.bovedalocal.ui.theme.FormaChip
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
 
@@ -52,8 +53,8 @@ fun SeccionNavegadoresPersonalizados(
     ComponenteGrupo(
         etiqueta = "Navegadores Web Personalizados",
         icono = Icons.Filled.Language,
-        colorIcono = ColorAcento,
-        idGrupo = "04-HER-PSK-RGL-G05",
+        colorIcono = ColorIconosInternos,
+        idGrupo = "04-HER-PSK-RGL-G07",
         mostrarId = mostrarId,
         modifier = modifier
     ) {

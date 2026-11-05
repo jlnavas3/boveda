@@ -67,7 +67,7 @@ fun FilaPreviaCuentaNormalizada(
             if (usuario.isNotBlank()) {
                 Text(
                     text = usuario,
-                    color = ColorAcento,
+                    color = TextoPrincipal,
                     fontSize = 12.sp,
                     fontWeight = FontWeight.SemiBold
                 )
@@ -88,7 +88,7 @@ fun FilaPreviaCuentaNormalizada(
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowForward,
                         contentDescription = "cambia a",
-                        tint = ColorAcento,
+                        tint = TextoSecundario,
                         modifier = Modifier.height(10.dp)
                     )
                     Spacer(modifier = Modifier.width(6.dp))

@@ -7,8 +7,11 @@
 package com.jlnavas3.bovedalocal.ui.componentes
 
 import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.interaction.InteractionSource
+import androidx.compose.foundation.interaction.collectIsDraggedAsState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.focus.FocusManager
@@ -47,6 +50,25 @@ fun CerrarTecladoAlHacerScroll(isScrollInProgress: Boolean) {
     val keyboardController = LocalSoftwareKeyboardController.current
     LaunchedEffect(isScrollInProgress) {
         if (isScrollInProgress) {
+            focusManager.clearFocus()
+            keyboardController?.hide()
+        }
+    }
+}
+
+/**
+ * Efecto reactivo que oculta el teclado y limpia el foco únicamente cuando
+ * el usuario interactúa manualmente arrastrando el contenedor desplazable.
+ * Evita cierres accidentales cuando el contenedor se desplaza programáticamente
+ * por la aparición del teclado virtual (BringIntoView / insets de IME).
+ */
+@Composable
+fun CerrarTecladoAlArrastrar(interactionSource: InteractionSource) {
+    val focusManager = LocalFocusManager.current
+    val keyboardController = LocalSoftwareKeyboardController.current
+    val estaArrastrando by interactionSource.collectIsDraggedAsState()
+    LaunchedEffect(estaArrastrando) {
+        if (estaArrastrando) {
             focusManager.clearFocus()
             keyboardController?.hide()
         }

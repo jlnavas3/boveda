@@ -71,6 +71,7 @@ fun TarjetaGrupoTitulos(
     alCambiarNombre: (String) -> Unit,
     modifier: Modifier = Modifier,
     esSeleccionEspecifica: Boolean = false,
+    respetarManuales: Boolean = true,
     prefijosSubdominios: List<String> = emptyList(),
     tldsConfigurados: List<String> = emptyList(),
     alSeleccionarSegmento: ((seleccionado: String, descartados: List<String>) -> Unit)? = null,
@@ -119,14 +120,14 @@ fun TarjetaGrupoTitulos(
                     Icon(
                         painter = painterResource(infoMarca.drawableRes),
                         contentDescription = grupo.nombreEfectivo,
-                        tint = if (infoMarca.esMulticolor) androidx.compose.ui.graphics.Color.Unspecified else (infoMarca.colorOficial ?: ColorAcento),
+                        tint = if (infoMarca.esMulticolor) androidx.compose.ui.graphics.Color.Unspecified else (infoMarca.colorOficial ?: TextoSecundario),
                         modifier = Modifier.size(20.dp)
                     )
                 } else {
                     Icon(
                         imageVector = Icons.Filled.Language,
                         contentDescription = "Sitio",
-                        tint = ColorAcento,
+                        tint = TextoSecundario,
                         modifier = Modifier.size(20.dp)
                     )
                 }
@@ -220,13 +221,22 @@ fun TarjetaGrupoTitulos(
                             .verticalScroll(rememberScrollState())
                     ) {
                         grupo.entradas.forEach { entrada ->
-                            val tituloNuevo = NormalizadorTitulosSitios.generarTituloFinal(
+                            val esProtegida = !esSeleccionEspecifica && respetarManuales && NormalizadorTitulosSitios.esEntradaProtegidaManual(
+                                entrada = entrada,
                                 nombreBase = grupo.nombreEfectivo,
-                                usuario = entrada.usuario,
-                                modo = modo,
-                                tieneColision = grupo.tieneColision,
-                                forzarFormato = esSeleccionEspecifica
+                                tldsConfigurados = tldsConfigurados
                             )
+                            val tituloNuevo = if (esProtegida) {
+                                entrada.titulo
+                            } else {
+                                NormalizadorTitulosSitios.generarTituloFinal(
+                                    nombreBase = grupo.nombreEfectivo,
+                                    usuario = entrada.usuario,
+                                    modo = modo,
+                                    tieneColision = grupo.tieneColision,
+                                    forzarFormato = esSeleccionEspecifica
+                                )
+                            }
                             FilaPreviaCuentaNormalizada(
                                 usuario = entrada.usuario,
                                 tituloActual = entrada.titulo,

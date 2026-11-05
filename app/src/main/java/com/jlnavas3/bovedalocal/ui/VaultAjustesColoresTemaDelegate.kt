@@ -193,6 +193,12 @@ interface VaultAjustesColoresTemaDelegate {
         aplicarPersonalizacionColores(repositorio.ajustes.actual)
     }
 
+    fun ajustarEstiloIndicadores(estilo: String) {
+        val mostrar = estilo != "ninguno"
+        repositorio.ajustes.actualizar { it.copy(estiloIndicadores = estilo, mostrarIndicadoresContenido = mostrar) }
+        aplicarPersonalizacionColores(repositorio.ajustes.actual)
+    }
+
     fun ajustarAlturaIndicadores(altura: Float) {
         repositorio.ajustes.actualizar { it.copy(alturaIndicadoresDp = altura) }
         aplicarPersonalizacionColores(repositorio.ajustes.actual)
@@ -207,6 +213,7 @@ interface VaultAjustesColoresTemaDelegate {
         repositorio.ajustes.actualizar {
             it.copy(
                 mostrarIndicadoresContenido = AjustesDefaults.ColoresDatos.MOSTRAR_INDICADORES,
+                estiloIndicadores = AjustesDefaults.ColoresDatos.ESTILO_INDICADORES,
                 alturaIndicadoresDp = AjustesDefaults.ColoresDatos.ALTURA_INDICADORES_DP,
                 opacidadIndicadores = AjustesDefaults.ColoresDatos.OPACIDAD_INDICADORES,
                 colorDatosUsuario = AjustesDefaults.ColoresDatos.USUARIO,

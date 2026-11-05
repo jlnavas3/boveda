@@ -176,7 +176,7 @@ fun BarraSuperiorRegistro(
                     SeparadorOpcionMenu()
                     DropdownMenuItem(
                         leadingIcon = {
-                            Icon(Icons.Filled.ContentCopy, contentDescription = null, tint = ColorSeguridad, modifier = Modifier.size(20.dp))
+                            Icon(Icons.Filled.ContentCopy, contentDescription = null, tint = ColorIconosInternos, modifier = Modifier.size(20.dp))
                         },
                         text = { Text("Copiar registro", color = TextoPrincipal) },
                         onClick = {
@@ -198,9 +198,9 @@ fun BarraSuperiorRegistro(
                     SeparadorOpcionMenu()
                     DropdownMenuItem(
                         leadingIcon = {
-                            Icon(Icons.Filled.Delete, contentDescription = null, tint = Peligro, modifier = Modifier.size(20.dp))
+                            Icon(Icons.Filled.Delete, contentDescription = null, tint = ColorIconosInternos, modifier = Modifier.size(20.dp))
                         },
-                        text = { Text("Borrar registro", color = Peligro) },
+                        text = { Text("Borrar registro", color = TextoPrincipal) },
                         onClick = {
                             menuOpcionesDesplegado = false
                             alBorrarRegistro()
@@ -210,9 +210,9 @@ fun BarraSuperiorRegistro(
                         SeparadorOpcionMenu()
                         DropdownMenuItem(
                             leadingIcon = {
-                                Icon(Icons.Filled.Close, contentDescription = null, tint = Peligro, modifier = Modifier.size(20.dp))
+                                Icon(Icons.Filled.Close, contentDescription = null, tint = ColorIconosInternos, modifier = Modifier.size(20.dp))
                             },
-                            text = { Text("Restablecer filtros", color = Peligro) },
+                            text = { Text("Restablecer filtros", color = TextoPrincipal) },
                             onClick = {
                                 menuOpcionesDesplegado = false
                                 alRestablecerFiltros()

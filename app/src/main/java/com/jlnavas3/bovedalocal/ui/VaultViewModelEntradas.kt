@@ -8,10 +8,12 @@ package com.jlnavas3.bovedalocal.ui
 
 import com.jlnavas3.bovedalocal.crypto.OtpAuth
 import com.jlnavas3.bovedalocal.data.AnalizadorDuplicados
+import com.jlnavas3.bovedalocal.data.DatosPasskey
 import com.jlnavas3.bovedalocal.data.Entrada
 import com.jlnavas3.bovedalocal.data.GrupoDuplicado
 import com.jlnavas3.bovedalocal.data.TipoDuplicado
 import com.jlnavas3.bovedalocal.data.TipoEntrada
+import com.jlnavas3.bovedalocal.data.TotpSecundario
 import com.jlnavas3.bovedalocal.data.VaultRepository
 import com.jlnavas3.bovedalocal.util.CuentaGoogleAuth
 import com.jlnavas3.bovedalocal.util.Diagnostico
@@ -20,12 +22,14 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.withContext
 
 interface VaultEntradasDelegate : VaultDuplicadosPapeleraDelegate {
+    fun obtenerApp(): android.app.Application
     override val repositorio: VaultRepository
     override val avisoInterno: MutableStateFlow<String?>
     val errorInterno: MutableStateFlow<String?>
     val busquedaInterna: MutableStateFlow<String>
     val filtroTipoInterno: MutableStateFlow<TipoEntrada?>
     val soloFavoritosInterno: MutableStateFlow<Boolean>
+    val solo2faInterno: MutableStateFlow<Boolean>
     val filtroEtiquetaInterno: MutableStateFlow<String?>
     val filtroCategoriaInterno: MutableStateFlow<String?>
     val filtroColeccionInterno: MutableStateFlow<String?> get() = filtroCategoriaInterno
@@ -50,6 +54,7 @@ interface VaultEntradasDelegate : VaultDuplicadosPapeleraDelegate {
             busqueda = busquedaInterna.value,
             filtroTipo = filtroTipoInterno.value,
             soloFavoritos = soloFavoritosInterno.value,
+            solo2fa = solo2faInterno.value,
             filtroEtiqueta = filtroEtiquetaInterno.value,
             filtroCategoria = filtroCategoriaInterno.value,
             criterioOrdenacion = criterioOrdenacionInterno.value,
@@ -68,6 +73,24 @@ interface VaultEntradasDelegate : VaultDuplicadosPapeleraDelegate {
 
     fun filtrarPorTipo(tipo: TipoEntrada?) {
         filtroTipoInterno.value = tipo
+        if (tipo != null) {
+            solo2faInterno.value = false
+        }
+    }
+
+    fun filtrarPor2fa(activo: Boolean) {
+        solo2faInterno.value = activo
+        if (activo) {
+            filtroTipoInterno.value = null
+        }
+    }
+
+    fun alternarSolo2fa() {
+        val nuevo = !solo2faInterno.value
+        solo2faInterno.value = nuevo
+        if (nuevo) {
+            filtroTipoInterno.value = null
+        }
     }
 
     fun alternarSoloFavoritos() {
@@ -107,45 +130,122 @@ interface VaultEntradasDelegate : VaultDuplicadosPapeleraDelegate {
                 }
             }
             avisoInterno.value = "Guardado en la bóveda"
+            refrescarTransferenciaCxfSiActiva()
+        }
+    }
+
+    fun intercambiarPasskeyPrincipal(entradaId: String, passkeySecundaria: DatosPasskey) {
+        ejecutar {
+            val actual = withContext(Dispatchers.IO) { repositorio.entrada(entradaId) } ?: return@ejecutar
+            val principalAnterior = actual.passkey?.let { p ->
+                if (p.creadaEn > 0L) p else p.copy(creadaEn = if (actual.creadaEn > 0L) actual.creadaEn else System.currentTimeMillis())
+            }
+            val nuevasSecundarias = actual.passkeysSecundarias.toMutableList()
+            nuevasSecundarias.removeAll { it.credId == passkeySecundaria.credId }
+            if (principalAnterior != null && principalAnterior.credId != passkeySecundaria.credId) {
+                nuevasSecundarias.add(0, principalAnterior)
+            }
+            val passkeyNuevaPrincipal = if (passkeySecundaria.creadaEn > 0L) {
+                passkeySecundaria
+            } else {
+                passkeySecundaria.copy(creadaEn = if (actual.creadaEn > 0L) actual.creadaEn else System.currentTimeMillis())
+            }
+            val actualizada = actual.copy(
+                passkey = passkeyNuevaPrincipal,
+                passkeysSecundarias = nuevasSecundarias
+            )
+            guardar(actualizada)
+            avisar("Llave de acceso principal actualizada")
+        }
+    }
+
+    fun eliminarPasskeySecundaria(entradaId: String, passkeyAEliminar: DatosPasskey) {
+        ejecutar {
+            val actual = withContext(Dispatchers.IO) { repositorio.entrada(entradaId) } ?: return@ejecutar
+            val nuevasSecundarias = actual.passkeysSecundarias.filterNot { it.credId == passkeyAEliminar.credId }
+            val actualizada = actual.copy(passkeysSecundarias = nuevasSecundarias)
+            guardar(actualizada)
+            avisar("Llave de acceso secundaria eliminada")
+        }
+    }
+
+    fun intercambiarTotpPrincipal(entradaId: String, totpSecundario: TotpSecundario) {
+        ejecutar {
+            val actual = withContext(Dispatchers.IO) { repositorio.entrada(entradaId) } ?: return@ejecutar
+            val nuevasSecundarias = actual.totpsSecundarios.toMutableList()
+            nuevasSecundarias.removeAll { it.id == totpSecundario.id }
+            if (actual.tieneTotp) {
+                nuevasSecundarias.add(
+                    0,
+                    TotpSecundario(
+                        id = java.util.UUID.randomUUID().toString(),
+                        secreto = actual.secretoTotp ?: "",
+                        emisor = actual.totpEmisor.ifBlank { actual.titulo },
+                        periodo = actual.totpPeriodo,
+                        digitos = actual.totpDigitos,
+                        algoritmo = actual.totpAlgoritmo
+                    )
+                )
+            }
+            val actualizada = actual.copy(
+                secretoTotp = totpSecundario.secreto,
+                totpEmisor = totpSecundario.emisor,
+                totpPeriodo = totpSecundario.periodo,
+                totpDigitos = totpSecundario.digitos,
+                totpAlgoritmo = totpSecundario.algoritmo,
+                totpsSecundarios = nuevasSecundarias
+            )
+            guardar(actualizada)
+            avisar("Código 2FA principal actualizado")
+        }
+    }
+
+    fun eliminarTotpSecundario(entradaId: String, idTotp: String) {
+        ejecutar {
+            val actual = withContext(Dispatchers.IO) { repositorio.entrada(entradaId) } ?: return@ejecutar
+            val nuevasSecundarias = actual.totpsSecundarios.filterNot { it.id == idTotp }
+            val actualizada = actual.copy(totpsSecundarios = nuevasSecundarias)
+            guardar(actualizada)
+            avisar("Código 2FA secundario eliminado")
         }
     }
 
     fun eliminar(id: String) {
+        val ent = repositorio.entradas().firstOrNull { it.id == id }
+        val tipoDesc = ent?.tipo?.etiqueta?.lowercase() ?: "entrada"
+        irRaiz(Pantalla.Lista)
+        avisoInterno.value = "Movida a la papelera"
+        avisar("Movida a la papelera")
         ejecutar {
-            val ent = withContext(Dispatchers.IO) { repositorio.entrada(id) }
-            val tipoDesc = ent?.tipo?.etiqueta?.lowercase() ?: "entrada"
             withContext(Dispatchers.IO) { repositorio.eliminarEntrada(id) }
             Diagnostico.apuntar("papelera", "Entrada ($tipoDesc) enviada a la papelera")
-            irRaiz(Pantalla.Lista)
-            avisoInterno.value = "Movida a la papelera"
+            refrescarTransferenciaCxfSiActiva()
         }
     }
 
     fun eliminarVarias(ids: Set<String>) {
         if (ids.isEmpty()) return
+        val entradasOriginales: List<Entrada> = repositorio.entradas().filter { it.id in ids }
+        val textoMsg = if (ids.size == 1) "Entrada movida a la papelera" else "${ids.size} entradas movidas a la papelera"
+        if (entradasOriginales.isNotEmpty()) {
+            avisarConDeshacer(
+                mensaje = textoMsg,
+                titulo = "Papelera",
+                alDeshacer = {
+                    ejecutar {
+                        withContext(Dispatchers.IO) {
+                            entradasOriginales.forEach { repositorio.guardarEntrada(it) }
+                        }
+                        avisoInterno.value = "Eliminación deshecha"
+                    }
+                }
+            )
+        } else {
+            avisoInterno.value = textoMsg
+        }
         ejecutar {
-            val entradasOriginales = withContext(Dispatchers.IO) {
-                ids.mapNotNull { repositorio.entrada(it) }
-            }
             withContext(Dispatchers.IO) { repositorio.eliminarEntradas(ids) }
             Diagnostico.apuntar("papelera", "${ids.size} entradas enviadas a la papelera")
-            val textoMsg = if (ids.size == 1) "Entrada movida a la papelera" else "${ids.size} entradas movidas a la papelera"
-            if (entradasOriginales.isNotEmpty()) {
-                avisarConDeshacer(
-                    mensaje = textoMsg,
-                    titulo = "Papelera",
-                    alDeshacer = {
-                        ejecutar {
-                            withContext(Dispatchers.IO) {
-                                entradasOriginales.forEach { repositorio.guardarEntrada(it) }
-                            }
-                            avisoInterno.value = "Eliminación deshecha"
-                        }
-                    }
-                )
-            } else {
-                avisoInterno.value = textoMsg
-            }
         }
     }
 
@@ -180,6 +280,26 @@ interface VaultEntradasDelegate : VaultDuplicadosPapeleraDelegate {
         }
     }
 
+    fun alternarAnclados(ids: Set<String>, forzarMarcar: Boolean? = null) {
+        if (ids.isEmpty()) return
+        ejecutar {
+            val entradasObjetivo = withContext(Dispatchers.IO) {
+                repositorio.entradas().filter { it.id in ids }
+            }
+            val marcar = forzarMarcar ?: entradasObjetivo.any { !it.anclado }
+            withContext(Dispatchers.IO) {
+                repositorio.alternarAnclados(ids, marcar)
+            }
+            val texto = if (marcar) {
+                if (ids.size == 1) "Entrada anclada" else "${ids.size} entradas ancladas"
+            } else {
+                if (ids.size == 1) "Entrada desanclada" else "${ids.size} entradas desancladas"
+            }
+            Diagnostico.apuntar("bóveda", "$texto (${ids.size} entradas)")
+            avisoInterno.value = texto
+        }
+    }
+
     // ------------------------------------------------------------- favoritos y acciones
 
     fun alternarFavorito(id: String) {
@@ -190,6 +310,17 @@ interface VaultEntradasDelegate : VaultDuplicadosPapeleraDelegate {
             }
             val estadoFav = if (ent?.favorito == true) "marcada como favorita" else "desmarcada de favoritos"
             Diagnostico.apuntar("bóveda", "Entrada $estadoFav")
+        }
+    }
+
+    fun alternarAnclado(id: String) {
+        ejecutar {
+            val ent = withContext(Dispatchers.IO) {
+                repositorio.alternarAnclado(id)
+                repositorio.entrada(id)
+            }
+            val estadoAnc = if (ent?.anclado == true) "anclada arriba" else "desanclada"
+            Diagnostico.apuntar("bóveda", "Entrada $estadoAnc")
         }
     }
 
@@ -375,5 +506,38 @@ interface VaultEntradasDelegate : VaultDuplicadosPapeleraDelegate {
             )
         }
         return entradas.size
+    }
+
+    fun refrescarTransferenciaCxfSiActiva() {
+        val ajustes = repositorio.ajustes.actual
+        if (com.jlnavas3.bovedalocal.cxf.CxfGestorTransferencia.estaTransferenciaActiva(ajustes)) {
+            ejecutar {
+                withContext(Dispatchers.IO) {
+                    try {
+                        val app = obtenerApp()
+                        if (com.jlnavas3.bovedalocal.cxf.CxfGestorTransferencia.esSeleccionPersonalizada(app)) {
+                            return@withContext
+                        }
+                        val entradas = repositorio.entradas().filter { it.eliminadaEn == 0L }
+                        if (entradas.isNotEmpty()) {
+                            if (ajustes.cxfModoTransferencia == "automatica") {
+                                com.jlnavas3.bovedalocal.cxf.CxfGestorTransferencia.sincronizarExportacionAutomatica(
+                                    context = obtenerApp(),
+                                    entradas = entradas,
+                                    ajustes = ajustes
+                                )
+                            } else {
+                                com.jlnavas3.bovedalocal.cxf.CxfGestorTransferencia.registrarExportacion(
+                                    context = obtenerApp(),
+                                    entradas = entradas,
+                                    esSeleccionPersonalizada = false
+                                )
+                            }
+                        }
+                    } catch (_: Exception) {
+                    }
+                }
+            }
+        }
     }
 }

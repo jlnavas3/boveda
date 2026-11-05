@@ -114,8 +114,6 @@ fun PantallaGestionIdentidades(
         }
     }
 
-    var mostrandoDialogoCrear by remember { mutableStateOf(false) }
-    var identidadAEditar by remember { mutableStateOf<Identidad?>(null) }
     var identidadAEliminar by remember { mutableStateOf<Identidad?>(null) }
 
     val listState = rememberLazyListStatePersistente("identidades", vm.gestorScroll)
@@ -126,7 +124,7 @@ fun PantallaGestionIdentidades(
         topBar = {
             Column {
                 BarraSuperiorPantalla(
-                    titulo = "Identidades",
+                    titulo = "Perfiles",
                     idEtiqueta = idDestinoInicial ?: "03-LST-IDE",
                     mostrarId = ajustes.mostrarIdsAjustes,
                     alVolver = { vm.volverAtras() },
@@ -146,7 +144,7 @@ fun PantallaGestionIdentidades(
                         ) {
                             Icon(
                                 imageVector = Icons.Filled.Search,
-                                contentDescription = "Buscar identidades",
+                                contentDescription = "Buscar perfiles",
                                 tint = if (busquedaVisible || textoBusqueda.isNotBlank()) ColorAcento else ColorIconosInternos,
                                 modifier = Modifier.size(20.dp)
                             )
@@ -178,7 +176,7 @@ fun PantallaGestionIdentidades(
                                 ElementoMenuCompacto(
                                     texto = if (ordenarPorCuentas) "Ordenar por nombre (A-Z)" else "Ordenar por cantidad",
                                     icono = if (ordenarPorCuentas) Icons.AutoMirrored.Filled.Sort else Icons.Filled.Numbers,
-                                    colorIcono = ColorAcento,
+                                    colorIcono = ColorIconosInternos,
                                     onClick = {
                                         menuOpcionesDesplegado = false
                                         haptica.tic()
@@ -212,20 +210,13 @@ fun PantallaGestionIdentidades(
                 }
             }
         },
-        floatingActionButton = {
-            FloatingActionButton(
-                onClick = {
+        bottomBar = {
+            BarraAccionesGestionIdentidades(
+                alCrearIdentidad = {
                     haptica.tic()
-                    mostrandoDialogoCrear = true
-                },
-                containerColor = ColorAcento,
-                contentColor = ColorSobreAcento
-            ) {
-                Icon(
-                    imageVector = Icons.Filled.Add,
-                    contentDescription = "Nueva identidad"
-                )
-            }
+                    vm.ir(com.jlnavas3.bovedalocal.ui.Pantalla.EditarPerfil(id = null))
+                }
+            )
         },
         containerColor = ColorAjustesFondo,
         modifier = Modifier.cerrarTecladoAlTocarFuera()
@@ -247,7 +238,7 @@ fun PantallaGestionIdentidades(
             ) {
                 item {
                     TextoCuerpo(
-                        texto = "Vinculación inteligente activa. Las cuentas que utilicen el correo principal o alias de cada identidad se agrupan automáticamente sin necesidad de editarlas a mano.",
+                        texto = "Vinculación inteligente activa. Las cuentas que utilicen el correo principal o alias de cada perfil se agrupan automáticamente sin necesidad de editarlas a mano.",
                         tamano = TamanoCuerpo.PEQUENO,
                         color = TextoSecundario,
                         modifier = Modifier.padding(horizontal = 4.dp, vertical = 6.dp)
@@ -260,7 +251,7 @@ fun PantallaGestionIdentidades(
                         conteoCuentas = conteosPorIdentidad[iden.id] ?: 0,
                         alEditar = {
                             haptica.tic()
-                            identidadAEditar = iden
+                            vm.ir(com.jlnavas3.bovedalocal.ui.Pantalla.EditarPerfil(id = iden.id))
                         },
                         alEliminar = {
                             haptica.tic()
@@ -272,40 +263,7 @@ fun PantallaGestionIdentidades(
         }
     }
 
-    if (mostrandoDialogoCrear) {
-        DialogoEditarIdentidad(
-            identidadAEditar = null,
-            alGuardar = { nombre, correoPrincipal, correosSecundarios, colorHex, icono ->
-                mostrandoDialogoCrear = false
-                vm.crearIdentidad(
-                    nombre = nombre,
-                    correoPrincipal = correoPrincipal,
-                    correosSecundarios = correosSecundarios,
-                    colorHex = colorHex,
-                    icono = icono
-                )
-            },
-            alDescartar = { mostrandoDialogoCrear = false }
-        )
-    }
 
-    identidadAEditar?.let { iden ->
-        DialogoEditarIdentidad(
-            identidadAEditar = iden,
-            alGuardar = { nombre, correoPrincipal, correosSecundarios, colorHex, icono ->
-                identidadAEditar = null
-                vm.actualizarIdentidad(
-                    id = iden.id,
-                    nombre = nombre,
-                    correoPrincipal = correoPrincipal,
-                    correosSecundarios = correosSecundarios,
-                    colorHex = colorHex,
-                    icono = icono
-                )
-            },
-            alDescartar = { identidadAEditar = null }
-        )
-    }
 
     identidadAEliminar?.let { iden ->
         val vinculadas = conteosPorIdentidad[iden.id] ?: 0

@@ -36,7 +36,6 @@ import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteBotonFila
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteGrupo
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjustesFondo
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
-import com.jlnavas3.bovedalocal.ui.theme.ColorSobreAcento
 import com.jlnavas3.bovedalocal.ui.theme.ColorTitulos
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
 
@@ -98,7 +97,7 @@ fun PasoBienvenida(
                     alPulsar = alIniciarCreacion,
                     icono = Icons.Filled.VpnKey,
                     colorIcono = ColorAcento,
-                    colorTinteIcono = ColorSobreAcento
+                    colorTinteIcono = ColorAcento
                 )
             }
 

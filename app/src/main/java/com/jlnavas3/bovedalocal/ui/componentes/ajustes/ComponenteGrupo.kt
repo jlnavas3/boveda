@@ -46,6 +46,7 @@ import androidx.compose.ui.unit.sp
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjusteGris
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorTarjetaAjustes
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
+import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
 import com.jlnavas3.bovedalocal.util.Haptica
 import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
 import com.jlnavas3.bovedalocal.ui.theme.CurvaturaEsquinas
@@ -120,7 +121,7 @@ fun ComponenteGrupo(
                             Icon(
                                 imageVector = icono,
                                 contentDescription = null,
-                                tint = colorIcono ?: ColorAjusteGris,
+                                tint = ColorIconosInternos,
                                 modifier = Modifier.size(15.dp)
                             )
                         }

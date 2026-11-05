@@ -178,36 +178,5 @@ object PasswordGenerator {
     private fun log2(x: Double): Double = ln(x) / ln(2.0)
 
     /** Estimación en lenguaje humano realista y profesional para resistencia ante ataques de fuerza bruta. */
-    fun tiempoDeCrackeo(bits: Double): String {
-        if (bits <= 0) return "Descifrable al instante"
-        val intentosPorSegundo = 1e11
-        val segundos = 2.0.pow(bits - 1) / intentosPorSegundo
-        val segundosL = segundos.toLong()
-        return when {
-            segundos < 1 -> "Descifrable al instante"
-            segundos < 60 -> if (segundosL == 1L) "Descifrable en 1 segundo" else "Descifrable en $segundosL segundos"
-            segundos < 3_600 -> {
-                val m = (segundos / 60).toLong()
-                if (m == 1L) "Descifrable en 1 minuto" else "Descifrable en $m minutos"
-            }
-            segundos < 86_400 -> {
-                val h = (segundos / 3_600).toLong()
-                if (h == 1L) "Descifrable en 1 hora" else "Descifrable en $h horas"
-            }
-            segundos < 2_592_000 -> {
-                val d = (segundos / 86_400).toLong()
-                if (d == 1L) "Resistente por 1 día" else "Resistente por $d días"
-            }
-            segundos < 31_536_000 -> {
-                val mes = (segundos / 2_592_000).toLong()
-                if (mes == 1L) "Resistente por 1 mes" else "Resistente por $mes meses"
-            }
-            segundos < 3.1536e9 -> {
-                val a = (segundos / 31_536_000).toLong()
-                if (a == 1L) "Resistente por 1 año" else "Resistente por $a años"
-            }
-            segundos < 3.1536e10 -> "Resistente por varios siglos"
-            else -> "Inquebrantable por fuerza bruta"
-        }
-    }
+    fun tiempoDeCrackeo(bits: Double): String = CalculadorTiempoResistencia.formatear(bits)
 }

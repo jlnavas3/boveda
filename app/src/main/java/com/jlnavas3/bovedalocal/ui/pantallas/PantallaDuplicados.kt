@@ -46,7 +46,7 @@ import com.jlnavas3.bovedalocal.ui.pantallas.duplicados.BarraChipsFiltroDuplicad
 import com.jlnavas3.bovedalocal.ui.scroll.rememberGruposExpandidosPersistentes
 import com.jlnavas3.bovedalocal.ui.scroll.rememberLazyListStatePersistente
 import com.jlnavas3.bovedalocal.ui.pantallas.duplicados.BarraSuperiorDuplicados
-import com.jlnavas3.bovedalocal.ui.pantallas.duplicados.BotonLimpiezaMasivaFab
+import com.jlnavas3.bovedalocal.ui.pantallas.duplicados.BarraAccionesDuplicadosPrincipal
 import com.jlnavas3.bovedalocal.ui.pantallas.duplicados.ContenidoListaDuplicados
 import com.jlnavas3.bovedalocal.ui.pantallas.duplicados.DialogoAdvertenciaUnificarUsuarios
 import com.jlnavas3.bovedalocal.ui.pantallas.duplicados.DialogosDuplicados
@@ -73,7 +73,9 @@ fun PantallaDuplicados(
 
     val cantAppsAndroid = remember(grupos) { grupos.count { it.esAppAndroid } }
     val cantWeb = remember(grupos) { grupos.count { !it.esAppAndroid } }
-    val cantMismaCuenta = remember(grupos) { grupos.count { it.tipo == TipoDuplicado.MISMA_CUENTA_DISTINTA_CLAVE } }
+    val cantMismaCuenta = remember(grupos) {
+        grupos.count { it.tipo == TipoDuplicado.MISMA_CUENTA_DISTINTA_CLAVE || it.tipo == TipoDuplicado.MISMO_IDENTIFICADOR_DISTINTA_CLAVE }
+    }
     val cantVariantes = remember(grupos) { grupos.count { it.tipo == TipoDuplicado.VARIANTE_USUARIO } }
     val cantPasskeys = remember(grupos) {
         grupos.count { grupo ->
@@ -172,7 +174,7 @@ fun PantallaDuplicados(
                 FiltroDuplicados.TOTP -> grupo.tipo == TipoDuplicado.TOTP || grupo.entradas.count { !it.secretoTotp.isNullOrBlank() } > 1
                 FiltroDuplicados.APPS_ANDROID -> grupo.esAppAndroid
                 FiltroDuplicados.SITIOS_WEB -> !grupo.esAppAndroid
-                FiltroDuplicados.MISMA_CUENTA -> grupo.tipo == TipoDuplicado.MISMA_CUENTA_DISTINTA_CLAVE
+                FiltroDuplicados.MISMA_CUENTA -> grupo.tipo == TipoDuplicado.MISMA_CUENTA_DISTINTA_CLAVE || grupo.tipo == TipoDuplicado.MISMO_IDENTIFICADOR_DISTINTA_CLAVE
                 FiltroDuplicados.VARIANTES -> grupo.tipo == TipoDuplicado.VARIANTE_USUARIO
             }
             coincideFiltro && (
@@ -197,14 +199,12 @@ fun PantallaDuplicados(
             mostrarId = ajustes.mostrarIdsAjustes,
             busquedaVisible = busquedaVisible,
             textoBusqueda = textoBusqueda,
-            totalSobrantesIdenticas = totalSobrantesIdenticas,
             haptica = haptica,
             alVolver = { vm.volverAtras() },
             alAlternarBusqueda = {
                 busquedaVisible = !busquedaVisible
                 if (!busquedaVisible) textoBusqueda = ""
             },
-            alPedirLimpiezaMasiva = { confirmarLimpiezaMasiva = true },
             alIrSalud = { vm.ir(Pantalla.SaludBoveda()) },
             alIrCopia = { vm.ir(Pantalla.CopiaSeguridad("05-COP-SEG")) }
         )
@@ -248,7 +248,7 @@ fun PantallaDuplicados(
                 BarraChipsFiltroDuplicados(
                     filtroActivo = filtroActivo,
                     totalGrupos = grupos.size,
-                    totalSobrantesIdenticas = totalSobrantesIdenticas,
+                    cantGruposIdenticos = gruposIdenticos.size,
                     cantPasskeys = cantPasskeys,
                     cantTotp = cantTotp,
                     cantAppsAndroid = cantAppsAndroid,
@@ -323,13 +323,14 @@ fun PantallaDuplicados(
                             alEliminar = { confirmarBorradoSeleccion = true },
                             modifier = Modifier.align(Alignment.BottomCenter)
                         )
-                    } else {
-                        BotonLimpiezaMasivaFab(
-                            visible = totalSobrantesIdenticas > 0,
+                    } else if (totalSobrantesIdenticas > 0) {
+                        BarraAccionesDuplicadosPrincipal(
                             totalSobrantesIdenticas = totalSobrantesIdenticas,
-                            haptica = haptica,
-                            alPulsar = { confirmarLimpiezaMasiva = true },
-                            modifier = Modifier.align(Alignment.BottomEnd)
+                            alPedirLimpiezaMasiva = {
+                                haptica.toque()
+                                confirmarLimpiezaMasiva = true
+                            },
+                            modifier = Modifier.align(Alignment.BottomCenter)
                         )
                     }
                 }
@@ -339,6 +340,7 @@ fun PantallaDuplicados(
 
     DialogosDuplicados(
         confirmarLimpiezaMasiva = confirmarLimpiezaMasiva,
+        totalGruposIdenticos = gruposIdenticos.size,
         totalSobrantesIdenticas = totalSobrantesIdenticas,
         alConfirmarLimpiezaMasiva = {
             confirmarLimpiezaMasiva = false

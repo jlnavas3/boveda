@@ -93,6 +93,19 @@ fun PantallaOrganizacionEstructura(
                     mostrarId = ajustes.mostrarIdsAjustes
                 ) {
                     ComponenteSwitch(
+                        titulo = "Fijar entradas ancladas arriba",
+                        subtitulo = "Muestra las entradas ancladas en un grupo superior en la lista principal",
+                        icono = null,
+                        activo = ajustes.fijarAncladosArriba,
+                        idFila = "02-APA-DES-ANC",
+                        mostrarId = ajustes.mostrarIdsAjustes,
+                        alCambiar = {
+                            haptica.tic()
+                            vm.ajustarFijarAncladosArriba(it)
+                        }
+                    )
+                    com.jlnavas3.bovedalocal.ui.pantallas.ajustes.SeparadorFilaSimple()
+                    ComponenteSwitch(
                         titulo = "Agrupar cuentas por servicio",
                         icono = null,
                         activo = ajustes.agruparPorSitio,

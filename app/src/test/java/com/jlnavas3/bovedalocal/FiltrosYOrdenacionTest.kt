@@ -9,6 +9,7 @@ package com.jlnavas3.bovedalocal
 import com.jlnavas3.bovedalocal.data.DatosPasskey
 import com.jlnavas3.bovedalocal.data.Entrada
 import com.jlnavas3.bovedalocal.data.TipoEntrada
+import com.jlnavas3.bovedalocal.data.TotpSecundario
 import com.jlnavas3.bovedalocal.ui.CriterioOrdenacion
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
@@ -21,31 +22,18 @@ class FiltrosYOrdenacionTest {
         busqueda: String = "",
         filtroTipo: TipoEntrada? = null,
         soloFavoritos: Boolean = false,
+        solo2fa: Boolean = false,
         filtroEtiqueta: String? = null,
         criterio: CriterioOrdenacion = CriterioOrdenacion.NOMBRE_AZ
-    ): List<Entrada> {
-        val texto = busqueda.trim().lowercase()
-        val filtradas = entradas.filter { entrada ->
-            (filtroTipo == null || entrada.tipo == filtroTipo) &&
-                (!soloFavoritos || entrada.favorito) &&
-                (filtroEtiqueta == null || entrada.etiquetas.contains(filtroEtiqueta)) &&
-                (texto.isEmpty() ||
-                    entrada.titulo.lowercase().contains(texto) ||
-                    entrada.usuario.lowercase().contains(texto) ||
-                    entrada.urls.any { it.lowercase().contains(texto) } ||
-                    entrada.etiquetas.any { it.lowercase().contains(texto) })
-        }
-        val comparador: Comparator<Entrada> = when (criterio) {
-            CriterioOrdenacion.NOMBRE_AZ -> compareByDescending<Entrada> { it.favorito }.thenBy { it.titulo.lowercase() }
-            CriterioOrdenacion.NOMBRE_ZA -> compareByDescending<Entrada> { it.titulo.lowercase() }.thenByDescending { it.favorito }
-            CriterioOrdenacion.MODIFICACION_RECIENTE -> compareByDescending<Entrada> { it.modificadaEn }.thenByDescending { it.favorito }
-            CriterioOrdenacion.CREACION_RECIENTE -> compareByDescending<Entrada> { it.creadaEn }.thenByDescending { it.favorito }
-            CriterioOrdenacion.ANTIGUEDAD -> compareBy<Entrada> { it.creadaEn }.thenByDescending { it.favorito }
-            CriterioOrdenacion.USO_RECIENTE -> compareByDescending<Entrada> { it.ultimoUsoEn }.thenByDescending { it.favorito }
-            CriterioOrdenacion.IGNORADAS -> compareByDescending<Entrada> { it.ignoradaEnSalud }
-        }
-        return filtradas.sortedWith(comparador)
-    }
+    ): List<Entrada> = com.jlnavas3.bovedalocal.ui.FiltradorEntradas.filtrarYOrdenar(
+        entradas = entradas,
+        busqueda = busqueda,
+        filtroTipo = filtroTipo,
+        soloFavoritos = soloFavoritos,
+        solo2fa = solo2fa,
+        filtroEtiqueta = filtroEtiqueta,
+        criterioOrdenacion = criterio
+    )
 
     @Test
     fun `filtra por texto en titulo usuario url o etiqueta de forma insensible a mayusculas`() {
@@ -97,14 +85,14 @@ class FiltrosYOrdenacionTest {
     }
 
     @Test
-    fun `los favoritos siempre van primero antes del orden secundario`() {
+    fun `los favoritos no se colocan arriba sino que respetan el orden alfabetico o de criterio`() {
         val e1 = Entrada("1", titulo = "Zeta", favorito = true)
         val e2 = Entrada("2", titulo = "Alfa", favorito = false)
         val e3 = Entrada("3", titulo = "Beta", favorito = false)
 
         val resultado = filtrarYOrdenar(listOf(e2, e1, e3), criterio = CriterioOrdenacion.NOMBRE_AZ)
-        // Zeta es favorito, así que va primero a pesar de que en orden alfabético Alfa iría antes
-        assertEquals(listOf(e1, e2, e3), resultado)
+        // Zeta es favorito, pero se mantiene en su orden natural alfabetico Alfa, Beta, Zeta
+        assertEquals(listOf(e2, e3, e1), resultado)
     }
 
     @Test
@@ -135,14 +123,14 @@ class FiltrosYOrdenacionTest {
     }
 
     @Test
-    fun `en criterios distintos de NOMBRE_AZ el criterio principal manda sobre favorito`() {
+    fun `en todos los criterios el criterio principal manda sin alterar por favorito`() {
         // Alfa es favorito antiguo, Zeta es no-favorito nuevo
         val eFav = Entrada("1", titulo = "Alfa", creadaEn = 1000L, modificadaEn = 1000L, ultimoUsoEn = 100L, favorito = true)
         val eNuevo = Entrada("2", titulo = "Zeta", creadaEn = 9000L, modificadaEn = 9000L, ultimoUsoEn = 900L, favorito = false)
 
         val lista = listOf(eFav, eNuevo)
 
-        // En NOMBRE_AZ, eFav va primero por ser favorito
+        // En NOMBRE_AZ, Alfa va primero alfabéticamente
         assertEquals(listOf(eFav, eNuevo), filtrarYOrdenar(lista, criterio = CriterioOrdenacion.NOMBRE_AZ))
 
         // En NOMBRE_ZA, Zeta va primero alfabéticamente
@@ -159,5 +147,18 @@ class FiltrosYOrdenacionTest {
 
         // En USO_RECIENTE, Zeta va primero por tener mayor ultimoUsoEn
         assertEquals(listOf(eNuevo, eFav), filtrarYOrdenar(lista, criterio = CriterioOrdenacion.USO_RECIENTE))
+    }
+
+    @Test
+    fun `filtra entradas con codigos 2FA primarios o secundarios`() {
+        val eTotpPrimario = Entrada("1", titulo = "GitHub", secretoTotp = "JBSWY3DPEHPK3PXP")
+        val eTotpSecundario = Entrada("2", titulo = "AWS", totpsSecundarios = listOf(TotpSecundario("Backup OTP", "HXDMVJECJJWSRB3HWIZR4IFUGFTMXBOZ")))
+        val eSinTotp = Entrada("3", titulo = "Banco", usuario = "user123")
+
+        val lista = listOf(eTotpPrimario, eTotpSecundario, eSinTotp)
+
+        val resultado = filtrarYOrdenar(lista, solo2fa = true)
+        // Debe incluir AWS y GitHub (en orden alfabetico A-Z) y excluir Banco
+        assertEquals(listOf(eTotpSecundario, eTotpPrimario), resultado)
     }
 }

@@ -20,11 +20,11 @@ fun EstadoVacioIdentidades(
     sinIdentidadesEnTotal: Boolean = true,
     modifier: Modifier = Modifier
 ) {
-    val titulo = if (sinIdentidadesEnTotal) "Sin identidades creadas" else "No se encontraron identidades"
+    val titulo = if (sinIdentidadesEnTotal) "Sin perfiles creados" else "No se encontraron perfiles"
     val subtitulo = if (sinIdentidadesEnTotal) {
-        "Crea identidades (ej. Personal, Trabajo, Compras) asociadas a tus correos. Las credenciales existentes se vincularán de forma automática e inteligente."
+        "Crea perfiles (ej. Personal, Trabajo, Finanzas) asociados a tus correos. Las credenciales existentes se vincularán de forma automática e inteligente."
     } else {
-        "Ninguna identidad coincide con la búsqueda aplicada."
+        "Ningún perfil coincide con la búsqueda aplicada."
     }
 
     EstadoVacioPantalla(

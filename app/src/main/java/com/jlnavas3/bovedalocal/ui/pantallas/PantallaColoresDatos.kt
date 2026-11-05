@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import com.jlnavas3.bovedalocal.ui.componentes.ajustes.BotonMenuOpcionesPantalla
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
@@ -30,27 +29,22 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.jlnavas3.bovedalocal.data.AjustesDefaults
 import com.jlnavas3.bovedalocal.data.DatosPasskey
 import com.jlnavas3.bovedalocal.data.Entrada
-import com.jlnavas3.bovedalocal.data.TipoEntrada
 import com.jlnavas3.bovedalocal.ui.VaultViewModel
 import com.jlnavas3.bovedalocal.ui.componentes.BarraSuperiorPantalla
-import com.jlnavas3.bovedalocal.ui.componentes.BotonBorde
-import com.jlnavas3.bovedalocal.ui.componentes.DescripcionPantalla
-import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteGrupo
-import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteSeparador
-import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteSlider
+import com.jlnavas3.bovedalocal.ui.componentes.ajustes.BotonMenuOpcionesPantalla
+import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ProveedorResaltadoAjustes
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjustesFondo
 import com.jlnavas3.bovedalocal.ui.pantallas.colores.DialogoSelectorColorDato
+import com.jlnavas3.bovedalocal.ui.pantallas.colores.GrupoDimensionesIndicadorDinamico
 import com.jlnavas3.bovedalocal.ui.pantallas.colores.GrupoSelectoresColoresDatos
+import com.jlnavas3.bovedalocal.ui.pantallas.colores.SelectorEstiloIndicador
 import com.jlnavas3.bovedalocal.ui.pantallas.colores.TarjetaStickyPreviaColores
-import com.jlnavas3.bovedalocal.ui.theme.EspaciadoComponentes
 import com.jlnavas3.bovedalocal.ui.theme.aHex
 import com.jlnavas3.bovedalocal.util.Haptica
-import java.util.Locale
-import kotlin.math.roundToInt
 
 /**
- * Pantalla dedicada a la personalización de los colores para los 6 tipos de datos
- * presentes en las entradas (Usuario, Contraseña, 2FA, Passkey, Web y Apps).
+ * Pantalla integral para configurar el estilo de los indicadores de tarjetas, sus dimensiones/apariencia
+ * y la paleta cromática de los 6 tipos de credenciales/datos.
  */
 @Composable
 fun PantallaColoresDatos(
@@ -62,11 +56,9 @@ fun PantallaColoresDatos(
     val ajustes by vm.ajustes.collectAsStateWithLifecycle()
     val scrollState = rememberScrollState()
 
-    // Entrada de prueba con todos los 6 campos activos para la vista previa
     val entradaPrueba = remember {
         Entrada(
             id = "preview_test",
-            tipo = TipoEntrada.LOGIN,
             titulo = "Cuenta de Prueba",
             usuario = "usuario@ejemplo.com",
             contrasena = "SuperClave123!",
@@ -76,127 +68,137 @@ fun PantallaColoresDatos(
         )
     }
 
+    var estiloTemporal by remember(ajustes.estiloIndicadores) { mutableStateOf(ajustes.estiloIndicadores) }
     var alturaTemporal by remember(ajustes.alturaIndicadoresDp) { mutableFloatStateOf(ajustes.alturaIndicadoresDp) }
     var opacidadTemporal by remember(ajustes.opacidadIndicadores) { mutableFloatStateOf(ajustes.opacidadIndicadores) }
 
     var colorSeleccionando by remember { mutableStateOf<String?>(null) }
     var colorInicialModal by remember { mutableStateOf(Color.White) }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(ColorAjustesFondo)
-    ) {
-        BarraSuperiorPantalla(
-            titulo = "Colores de campos y datos",
-            idEtiqueta = seccionDestino ?: "02-APA-COL",
-            mostrarId = ajustes.mostrarIdsAjustes,
-            alVolver = { vm.volverAtras() },
-            colorFondo = ColorAjustesFondo,
-            acciones = {
-                BotonMenuOpcionesPantalla(
-                    alRestablecerPantalla = {
-                        haptica.tic()
-                        alturaTemporal = AjustesDefaults.ColoresDatos.ALTURA_INDICADORES_DP
-                        opacidadTemporal = AjustesDefaults.ColoresDatos.OPACIDAD_INDICADORES
-                        vm.restablecerColoresDatos()
-                    },
-                    mensajeToastRestablecer = "Colores de datos restablecidos"
-                )
-            }
-        )
-
-        // Tarjeta de Vista Previa FLOTANTE SUPERIOR FIJA (Sticky Top con reactividad instantánea)
-        TarjetaStickyPreviaColores(
-            entradaPrueba = entradaPrueba,
-            alturaIndicadores = alturaTemporal.dp,
-            opacidadIndicadores = opacidadTemporal
-        )
-
-        // Scrollable Settings Column
+    ProveedorResaltadoAjustes(seccionDestino) {
         Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f)
-                .verticalScroll(scrollState)
-                .padding(horizontal = 16.dp, vertical = 8.dp)
+                .fillMaxSize()
+                .background(ColorAjustesFondo)
         ) {
-            GrupoSelectoresColoresDatos(
-                mostrarIdsAjustes = ajustes.mostrarIdsAjustes,
-                onSeleccionarColor = { clave, color ->
-                    haptica.tic()
-                    colorInicialModal = color
-                    colorSeleccionando = clave
-                },
-                alRestablecer = {
-                    haptica.tic()
-                    vm.restablecerColoresDatos()
-                    vm.avisar("Colores de datos restablecidos")
+            BarraSuperiorPantalla(
+                titulo = "Indicadores y colores de campos",
+                idEtiqueta = seccionDestino ?: "02-APA-COL",
+                mostrarId = ajustes.mostrarIdsAjustes,
+                alVolver = { vm.volverAtras() },
+                colorFondo = ColorAjustesFondo,
+                acciones = {
+                    BotonMenuOpcionesPantalla(
+                        alRestablecerPantalla = {
+                            haptica.tic()
+                            estiloTemporal = AjustesDefaults.ColoresDatos.ESTILO_INDICADORES
+                            alturaTemporal = AjustesDefaults.ColoresDatos.ALTURA_INDICADORES_DP
+                            opacidadTemporal = AjustesDefaults.ColoresDatos.OPACIDAD_INDICADORES
+                            vm.restablecerColoresDatos()
+                        },
+                        mensajeToastRestablecer = "Indicadores y colores restablecidos"
+                    )
                 }
             )
 
-            Spacer(Modifier.height(EspaciadoComponentes))
+            // Tarjeta de Vista Previa FLOTANTE SUPERIOR FIJA (Sticky Top con reactividad instantánea)
+            TarjetaStickyPreviaColores(
+                entradaPrueba = entradaPrueba,
+                estiloIndicadores = estiloTemporal,
+                alturaIndicadores = alturaTemporal.dp,
+                opacidadIndicadores = opacidadTemporal
+            )
 
-            // Grupo 2: Dimensiones y estilo de fondo / línea
-            ComponenteGrupo(
-                etiqueta = "Dimensiones y apariencia de indicadores",
-                idGrupo = "02-APA-THM-DAT-G02",
-                mostrarId = ajustes.mostrarIdsAjustes,
-                alRestablecer = {
-                    haptica.tic()
-                    alturaTemporal = AjustesDefaults.ColoresDatos.ALTURA_INDICADORES_DP
-                    opacidadTemporal = AjustesDefaults.ColoresDatos.OPACIDAD_INDICADORES
-                    vm.ajustarAlturaIndicadores(AjustesDefaults.ColoresDatos.ALTURA_INDICADORES_DP)
-                    vm.ajustarOpacidadIndicadores(AjustesDefaults.ColoresDatos.OPACIDAD_INDICADORES)
-                }
+            // Columna scrolleable de ajustes
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
+                    .verticalScroll(scrollState)
+                    .padding(horizontal = 16.dp, vertical = 8.dp)
             ) {
-                val textoAltura = "${String.format(Locale.US, "%.1f", alturaTemporal)} dp"
+                // Selector de Estilo de Indicadores
+                SelectorEstiloIndicador(
+                    estiloActual = estiloTemporal,
+                    mostrarIdsAjustes = ajustes.mostrarIdsAjustes,
+                    alSeleccionarEstilo = { nuevoEstilo ->
+                        haptica.tic()
+                        estiloTemporal = nuevoEstilo
+                        vm.ajustarEstiloIndicadores(nuevoEstilo)
+                    },
+                    alRestablecer = {
+                        haptica.tic()
+                        estiloTemporal = AjustesDefaults.ColoresDatos.ESTILO_INDICADORES
+                        vm.ajustarEstiloIndicadores(AjustesDefaults.ColoresDatos.ESTILO_INDICADORES)
+                    }
+                )
 
-                ComponenteSlider(
-                    titulo = "Altura de las líneas",
-                    valor = alturaTemporal.coerceIn(1f, 80f),
-                    valorTexto = textoAltura,
-                    rango = 1f..80f,
-                    etiquetaMin = "1 dp",
-                    etiquetaMax = "80 dp",
-                    idFila = "02-APA-THM-DAT-ALT",
-                    mostrarId = ajustes.mostrarIdsAjustes,
-                    alCambiar = {
+                Spacer(Modifier.height(14.dp))
+
+                // Controles Contextuales Dinámicos según el estilo seleccionado
+                GrupoDimensionesIndicadorDinamico(
+                    estilo = estiloTemporal,
+                    dimensionTemporal = alturaTemporal,
+                    opacidadTemporal = opacidadTemporal,
+                    mostrarIdsAjustes = ajustes.mostrarIdsAjustes,
+                    alCambiarDimension = {
                         alturaTemporal = it
                         vm.ajustarAlturaIndicadores(it)
                     },
-                    alRestablecer = {
+                    alRestablecerDimension = {
                         haptica.tic()
-                        alturaTemporal = AjustesDefaults.ColoresDatos.ALTURA_INDICADORES_DP
-                        vm.ajustarAlturaIndicadores(AjustesDefaults.ColoresDatos.ALTURA_INDICADORES_DP)
-                    }
-                )
-
-                ComponenteSeparador()
-
-                val porcentajeOpacidad = (opacidadTemporal * 100).roundToInt()
-                ComponenteSlider(
-                    titulo = "Opacidad de los colores",
-                    valor = opacidadTemporal.coerceIn(0.05f, 1.0f),
-                    valorTexto = "$porcentajeOpacidad%",
-                    rango = 0.05f..1.0f,
-                    etiquetaMin = "5%",
-                    etiquetaMax = "100%",
-                    idFila = "02-APA-THM-DAT-OPC",
-                    mostrarId = ajustes.mostrarIdsAjustes,
-                    alCambiar = {
+                        val def = when (estiloTemporal) {
+                            "iconos" -> 12.5f
+                            "puntos" -> 5f
+                            "lateral" -> 3.5f
+                            else -> 2f
+                        }
+                        alturaTemporal = def
+                        vm.ajustarAlturaIndicadores(def)
+                    },
+                    alCambiarOpacidad = {
                         opacidadTemporal = it
                         vm.ajustarOpacidadIndicadores(it)
                     },
-                    alRestablecer = {
+                    alRestablecerOpacidad = {
                         haptica.tic()
                         opacidadTemporal = AjustesDefaults.ColoresDatos.OPACIDAD_INDICADORES
                         vm.ajustarOpacidadIndicadores(AjustesDefaults.ColoresDatos.OPACIDAD_INDICADORES)
+                    },
+                    alRestablecerGrupo = {
+                        haptica.tic()
+                        val def = when (estiloTemporal) {
+                            "iconos" -> 12.5f
+                            "puntos" -> 5f
+                            "lateral" -> 3.5f
+                            else -> 2f
+                        }
+                        alturaTemporal = def
+                        opacidadTemporal = AjustesDefaults.ColoresDatos.OPACIDAD_INDICADORES
+                        vm.ajustarAlturaIndicadores(def)
+                        vm.ajustarOpacidadIndicadores(AjustesDefaults.ColoresDatos.OPACIDAD_INDICADORES)
                     }
                 )
-            }
 
-            Spacer(Modifier.height(32.dp))
+                Spacer(Modifier.height(14.dp))
+
+                // Paleta de Colores por Campo/Dato
+                GrupoSelectoresColoresDatos(
+                    mostrarIdsAjustes = ajustes.mostrarIdsAjustes,
+                    onSeleccionarColor = { clave, color ->
+                        haptica.tic()
+                        colorInicialModal = color
+                        colorSeleccionando = clave
+                    },
+                    alRestablecer = {
+                        haptica.tic()
+                        vm.restablecerColoresDatos()
+                        vm.avisar("Colores restablecidos")
+                    }
+                )
+
+                Spacer(Modifier.height(32.dp))
+            }
         }
     }
 

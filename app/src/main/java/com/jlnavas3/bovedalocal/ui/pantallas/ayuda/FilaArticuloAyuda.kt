@@ -23,6 +23,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -68,8 +69,9 @@ fun FilaArticuloAyuda(
             Text(
                 text = articulo.subtitulo,
                 style = MaterialTheme.typography.bodySmall.copy(
-                    fontSize = 12.sp,
-                    lineHeight = 16.sp
+                    fontSize = 11.5.sp,
+                    lineHeight = 15.sp,
+                    fontStyle = FontStyle.Italic
                 ),
                 color = TextoSecundario,
                 maxLines = 2,

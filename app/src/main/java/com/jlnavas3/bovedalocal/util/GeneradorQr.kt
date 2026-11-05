@@ -34,10 +34,15 @@ object GeneradorQr {
      * Genera una matriz booleana para representar el código QR.
      * Pura e independiente del framework de Android para poder probarse en la JVM.
      */
-    fun generarMatriz(texto: String, tamano: Int = 512): BitMatrix {
+    fun generarMatriz(texto: String, tamano: Int = 512, margen: Int = 1): BitMatrix {
         require(texto.isNotBlank()) { "El contenido del código QR no puede estar vacío" }
+        val hints = mapOf(
+            EncodeHintType.CHARACTER_SET to "UTF-8",
+            EncodeHintType.MARGIN to margen,
+            EncodeHintType.ERROR_CORRECTION to ErrorCorrectionLevel.M
+        )
         val writer = QRCodeWriter()
-        return writer.encode(texto, BarcodeFormat.QR_CODE, tamano, tamano, HINTS)
+        return writer.encode(texto, BarcodeFormat.QR_CODE, tamano, tamano, hints)
     }
 
     /**
@@ -46,10 +51,11 @@ object GeneradorQr {
     fun generarBitmap(
         texto: String,
         tamano: Int = 512,
+        margen: Int = 1,
         colorPunto: Int = 0xFF000000.toInt(),
         colorFondo: Int = 0xFFFFFFFF.toInt()
     ): Bitmap {
-        val matrix = generarMatriz(texto, tamano)
+        val matrix = generarMatriz(texto, tamano, margen)
         val ancho = matrix.width
         val alto = matrix.height
         val pixeles = IntArray(ancho * alto)
@@ -150,23 +156,11 @@ object GeneradorQr {
      * y genera el código QR estándar que los teléfonos reconocen de forma nativa para conectarse.
      */
     fun textoWifiDesdeEntrada(entrada: Entrada): String {
-        val ssid = GestorCamposBase.valorDeCampo(entrada.camposPersonalizados, "Nombre de red (SSID)")
-            .ifBlank { GestorCamposBase.valorDeCampo(entrada.camposPersonalizados, "SSID") }
-            .ifBlank { entrada.titulo }
-            .trim()
-
-        val clave = GestorCamposBase.valorDeCampo(entrada.camposPersonalizados, "Contraseña Wi-Fi")
-            .ifBlank { GestorCamposBase.valorDeCampo(entrada.camposPersonalizados, "Contraseña") }
-            .ifBlank { entrada.contrasena }
-
-        val seguridad = GestorCamposBase.valorDeCampo(entrada.camposPersonalizados, "Tipo de seguridad")
-            .ifBlank { GestorCamposBase.valorDeCampo(entrada.camposPersonalizados, "Seguridad") }
-            .ifBlank { "WPA" }
-
-        val esOculta = GestorCamposBase.valorDeCampo(entrada.camposPersonalizados, "Red oculta")
-            .equals("true", ignoreCase = true) ||
-            GestorCamposBase.valorDeCampo(entrada.camposPersonalizados, "Oculta")
-                .equals("true", ignoreCase = true)
+        val wifi = entrada.wifiEfectivo
+        val ssid = wifi?.ssid?.ifBlank { entrada.titulo }?.trim() ?: entrada.titulo.trim()
+        val clave = wifi?.contrasena?.ifBlank { entrada.contrasena } ?: entrada.contrasena
+        val seguridad = wifi?.tipoSeguridad?.ifBlank { "WPA" } ?: "WPA"
+        val esOculta = wifi?.oculta == true
 
         return textoConfiguracionWifi(ssid = ssid, clave = clave, tipoSeguridad = seguridad, oculta = esOculta)
     }

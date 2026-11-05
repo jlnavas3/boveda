@@ -32,6 +32,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -117,7 +118,9 @@ fun FilaAjusteMenu(
                     text = subtitulo,
                     color = ColorAjusteGris,
                     style = MaterialTheme.typography.bodySmall.copy(
-                        fontSize = 12.5.sp
+                        fontSize = 11.5.sp,
+                        lineHeight = 15.sp,
+                        fontStyle = FontStyle.Italic
                     ),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis

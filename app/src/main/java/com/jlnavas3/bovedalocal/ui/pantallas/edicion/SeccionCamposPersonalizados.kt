@@ -26,8 +26,7 @@ import androidx.compose.ui.unit.dp
 import com.jlnavas3.bovedalocal.data.AjustesApp
 import com.jlnavas3.bovedalocal.data.CampoPersonalizado
 import com.jlnavas3.bovedalocal.ui.componentes.BotonBorde
-import com.jlnavas3.bovedalocal.ui.componentes.BotonColorido
-import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
+import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
 import com.jlnavas3.bovedalocal.util.Haptica
 
 /**
@@ -38,6 +37,7 @@ import com.jlnavas3.bovedalocal.util.Haptica
 fun SeccionCamposPersonalizados(
     camposPersonalizados: List<CampoPersonalizado>,
     alCambiarCampos: (List<CampoPersonalizado>) -> Unit,
+    tipo: com.jlnavas3.bovedalocal.data.TipoEntrada? = null,
     etiquetasBase: Set<String> = emptySet(),
     ajustes: AjustesApp = AjustesApp(),
     haptica: Haptica,
@@ -49,21 +49,21 @@ fun SeccionCamposPersonalizados(
     var mostrandoDialogoPresets by remember { mutableStateOf(false) }
     var mostrandoDialogoGuardarPlantilla by remember { mutableStateOf(false) }
 
-    val camposVisibles = remember(camposPersonalizados, etiquetasBase) {
-        if (etiquetasBase.isEmpty()) camposPersonalizados
-        else camposPersonalizados.filterNot { campo ->
-            etiquetasBase.any { base -> base.equals(campo.etiqueta, ignoreCase = true) }
+    val camposVisibles = remember(camposPersonalizados, tipo, etiquetasBase) {
+        camposPersonalizados.filterNot { campo ->
+            (tipo != null && com.jlnavas3.bovedalocal.data.MigradorEntradasNativas.esCampoBaseNativo(tipo, campo.etiqueta)) ||
+            (etiquetasBase.isNotEmpty() && etiquetasBase.any { base -> base.equals(campo.etiqueta, ignoreCase = true) })
         }
     }
 
-    var expandido by remember { mutableStateOf(camposVisibles.isNotEmpty()) }
+    var expandido by remember { mutableStateOf(false) }
 
-    val tituloSeccion = if (etiquetasBase.isEmpty()) "Campos personalizados" else "Campos adicionales"
+    val tituloSeccion = if (etiquetasBase.isEmpty() && (tipo == null || tipo == com.jlnavas3.bovedalocal.data.TipoEntrada.LOGIN || tipo == com.jlnavas3.bovedalocal.data.TipoEntrada.NOTA)) "Campos personalizados" else "Campos adicionales"
     val resumenSeccion = if (camposVisibles.isEmpty()) "Sin campos adicionales" else "${camposVisibles.size} configurado(s)"
 
     FilaSeccionColapsableEdicion(
         icono = Icons.Filled.Extension,
-        colorIcono = ColorAcento,
+        colorIcono = TextoSecundario,
         titulo = tituloSeccion,
         resumen = resumenSeccion,
         insigniaTexto = if (camposVisibles.isNotEmpty()) "${camposVisibles.size}" else null,
@@ -107,10 +107,9 @@ fun SeccionCamposPersonalizados(
                 mostrandoDialogoNuevoCampo = true
             }
         )
-        BotonColorido(
+        BotonBorde(
             texto = "Presets",
             icono = Icons.Filled.DynamicForm,
-            color = ColorAcento,
             modifier = Modifier.weight(1f),
             alPulsar = {
                 haptica.tic()

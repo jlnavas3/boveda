@@ -67,7 +67,7 @@ object CxfGestorTransferencia {
                 Diagnostico.apuntar(
                     "cxf",
                     "Transferencia recibida: ${resultado.entradas.size} credenciales " +
-                        "(${resultado.totalPasskeys} llaves de paso, ${resultado.totalContrasenas} contraseñas, " +
+                        "(${resultado.totalPasskeys} llaves de acceso, ${resultado.totalContrasenas} contraseñas, " +
                         "${resultado.totalTotp} verificación en dos pasos) de ${resultado.exportador ?: "proveedor externo"}"
                 )
                 ResultadoImportacionCxf.Exito(jsonString, resultado)
@@ -118,14 +118,64 @@ object CxfGestorTransferencia {
         return idsSeleccionadasParaTransferir ?: CxfPersistenciaPayload.recuperarIdsSeleccionados(context)
     }
 
+    @Volatile
+    var finVentanaManualMillis: Long = 0L
+        private set
+
+    fun estaTransferenciaActiva(ajustes: com.jlnavas3.bovedalocal.data.AjustesApp): Boolean {
+        if (jsonExportacionActiva == null) return false
+        if (ajustes.cxfModoTransferencia == "automatica") return true
+        if (finVentanaManualMillis == -1L) return true
+        return System.currentTimeMillis() < finVentanaManualMillis
+    }
+
+    fun segundosRestantesVentana(): Int {
+        if (finVentanaManualMillis == -1L) return -1
+        val diff = (finVentanaManualMillis - System.currentTimeMillis()) / 1000L
+        return if (diff > 0) diff.toInt() else 0
+    }
+
     fun limpiarMemoriaExportacion(context: android.content.Context? = null) {
         jsonExportacionActiva = null
         idsSeleccionadasParaTransferir = null
         esSeleccionPersonalizadaActiva = false
+        finVentanaManualMillis = 0L
         totalEntradasActivas = 0
         numPasskeysActivas = 0
         numPasswordsActivas = 0
         context?.let { CxfPersistenciaPayload.limpiar(it) }
+    }
+
+    suspend fun habilitarTransferenciaManual(
+        context: android.content.Context,
+        entradas: List<com.jlnavas3.bovedalocal.data.Entrada>,
+        duracionSegundos: Int,
+        esSeleccionPersonalizada: Boolean = false
+    ): ResultadoRegistroExportacion {
+        val resultado = registrarExportacion(
+            context = context,
+            entradas = entradas,
+            esSeleccionPersonalizada = esSeleccionPersonalizada
+        )
+        if (resultado is ResultadoRegistroExportacion.Exito) {
+            finVentanaManualMillis = if (duracionSegundos == -1) {
+                -1L
+            } else {
+                System.currentTimeMillis() + duracionSegundos * 1000L
+            }
+        }
+        return resultado
+    }
+
+    suspend fun sincronizarExportacionAutomatica(
+        context: android.content.Context,
+        entradas: List<com.jlnavas3.bovedalocal.data.Entrada>,
+        ajustes: com.jlnavas3.bovedalocal.data.AjustesApp
+    ): ResultadoRegistroExportacion? {
+        if (ajustes.cxfModoTransferencia != "automatica") {
+            return null
+        }
+        return registrarExportacion(context, entradas, esSeleccionPersonalizada = false)
     }
 
     suspend fun registrarExportacion(

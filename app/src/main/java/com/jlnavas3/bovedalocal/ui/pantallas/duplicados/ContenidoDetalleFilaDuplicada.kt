@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
@@ -41,7 +42,9 @@ import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjusteGris
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorCampoAjustes
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorSeparadorAjustes
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorTextoAjustes
+import com.jlnavas3.bovedalocal.ui.pantallas.lista.IndicadorContenidoTarjeta
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
+import com.jlnavas3.bovedalocal.ui.theme.EstiloIndicadores
 import com.jlnavas3.bovedalocal.ui.theme.FormaPequena
 
 /**
@@ -57,6 +60,7 @@ fun ColumnScope.ContenidoDetalleFilaDuplicada(
     mostrarUsuario: Boolean = false,
     mostrarContrasena: Boolean,
     mostrarTotp: Boolean,
+    mostrarIndicadores: Boolean = false,
     alAlternarMostrarUsuario: () -> Unit = {},
     alAlternarMostrarContrasena: () -> Unit,
     alAlternarMostrarTotp: () -> Unit
@@ -74,86 +78,94 @@ fun ColumnScope.ContenidoDetalleFilaDuplicada(
         modifier = Modifier.fillMaxWidth()
     )
 
-    Spacer(Modifier.height(2.dp))
+    val esEspecializada = com.jlnavas3.bovedalocal.data.ExtractorClaveDuplicadoNativo.esTipoEspecializado(entrada.tipo)
 
-    // Usuario con soporte de revelado y ofuscación
-    val usuarioTexto = entrada.usuario.ifBlank { "Sin usuario" }
-    if (entrada.usuario.isNotBlank() && ocultarUsuario) {
-        com.jlnavas3.bovedalocal.ui.componentes.seguridad.DatoSensibleConRevelado(
-            texto = entrada.usuario,
-            oculto = !mostrarUsuario,
-            estilo = estiloOcultamiento,
-            modifier = Modifier.fillMaxWidth(),
-            estiloTexto = MaterialTheme.typography.bodySmall.copy(fontSize = 11.5.sp),
-            colorTexto = ColorTextoAjustes.copy(alpha = 0.85f),
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-            alAlternarRevelado = alAlternarMostrarUsuario,
-            descripcionAccesible = "usuario o correo"
-        )
-    } else {
-        Text(
-            text = usuarioTexto,
-            color = if (entrada.usuario.isNotBlank()) ColorTextoAjustes.copy(alpha = 0.85f) else ColorAjusteGris,
-            style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.5.sp),
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-            modifier = Modifier.fillMaxWidth()
-        )
+    if (esEspecializada) {
+        FilaDatoNativoDuplicado(entrada = entrada)
+        Spacer(Modifier.height(2.dp))
     }
 
-    Spacer(Modifier.height(2.dp))
-
-    // Contraseña
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween
-    ) {
-        if (entrada.contrasena.isBlank()) {
+    // Usuario con soporte de revelado y ofuscación (solo si no es especializada o tiene usuario específico)
+    if (!esEspecializada || entrada.usuario.isNotBlank()) {
+        val usuarioTexto = entrada.usuario.ifBlank { "Sin usuario" }
+        if (entrada.usuario.isNotBlank() && ocultarUsuario) {
+            com.jlnavas3.bovedalocal.ui.componentes.seguridad.DatoSensibleConRevelado(
+                texto = entrada.usuario,
+                oculto = !mostrarUsuario,
+                estilo = estiloOcultamiento,
+                modifier = Modifier.fillMaxWidth(),
+                estiloTexto = MaterialTheme.typography.bodySmall.copy(fontSize = 11.5.sp),
+                colorTexto = ColorTextoAjustes.copy(alpha = 0.85f),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                alAlternarRevelado = alAlternarMostrarUsuario,
+                descripcionAccesible = "usuario o correo"
+            )
+        } else {
             Text(
-                text = "Sin contraseña",
-                color = ColorAjusteGris,
+                text = usuarioTexto,
+                color = if (entrada.usuario.isNotBlank()) ColorTextoAjustes.copy(alpha = 0.85f) else ColorAjusteGris,
                 style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.5.sp),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
-                modifier = Modifier.weight(1f, fill = false)
-            )
-        } else {
-            TextoSeguroVisual(
-                texto = entrada.contrasena,
-                oculto = !mostrarContrasena,
-                estilo = if (seguridadVisualActiva) estiloOcultamiento else "puntos_reales",
-                estiloTexto = if (mostrarContrasena) {
-                    MaterialTheme.typography.bodySmall.copy(
-                        fontFamily = FontFamily.Monospace,
-                        fontSize = 11.sp
-                    )
-                } else {
-                    MaterialTheme.typography.bodySmall.copy(fontSize = 11.5.sp)
-                },
-                colorTexto = ColorTextoAjustes.copy(alpha = 0.9f),
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                modifier = Modifier.weight(1f)
+                modifier = Modifier.fillMaxWidth()
             )
         }
-        if (entrada.contrasena.isNotBlank()) {
-            val contexto = androidx.compose.ui.platform.LocalContext.current
-            val haptica = androidx.compose.runtime.remember { com.jlnavas3.bovedalocal.util.Haptica(contexto) }
-            IconButton(
-                onClick = {
-                    haptica.toque()
-                    alAlternarMostrarContrasena()
-                },
-                modifier = Modifier.size(22.dp)
-            ) {
-                Icon(
-                    imageVector = if (mostrarContrasena) Icons.Filled.VisibilityOff else Icons.Filled.Visibility,
-                    contentDescription = if (mostrarContrasena) "Ocultar contraseña" else "Mostrar contraseña",
-                    tint = ColorAjusteGris,
-                    modifier = Modifier.size(15.dp)
+        Spacer(Modifier.height(2.dp))
+    }
+
+    // Contraseña (solo si no es especializada o tiene contraseña)
+    if (!esEspecializada || entrada.contrasena.isNotBlank()) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            if (entrada.contrasena.isBlank()) {
+                Text(
+                    text = "Sin contraseña",
+                    color = ColorAjusteGris,
+                    style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.5.sp),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.weight(1f, fill = false)
                 )
+            } else {
+                TextoSeguroVisual(
+                    texto = entrada.contrasena,
+                    oculto = seguridadVisualActiva && !mostrarContrasena,
+                    estilo = estiloOcultamiento,
+                    estiloTexto = if (mostrarContrasena || !seguridadVisualActiva) {
+                        MaterialTheme.typography.bodySmall.copy(
+                            fontFamily = FontFamily.Monospace,
+                            fontSize = 11.sp
+                        )
+                    } else {
+                        MaterialTheme.typography.bodySmall.copy(fontSize = 11.5.sp)
+                    },
+                    colorTexto = ColorTextoAjustes.copy(alpha = 0.9f),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.weight(1f)
+                )
+            }
+            if (seguridadVisualActiva && entrada.contrasena.isNotBlank()) {
+                val contexto = androidx.compose.ui.platform.LocalContext.current
+                val haptica = androidx.compose.runtime.remember { com.jlnavas3.bovedalocal.util.Haptica(contexto) }
+                IconButton(
+                    onClick = {
+                        haptica.toque()
+                        alAlternarMostrarContrasena()
+                    },
+                    modifier = Modifier.size(22.dp)
+                ) {
+                    Icon(
+                        imageVector = if (mostrarContrasena) Icons.Filled.VisibilityOff else Icons.Filled.Visibility,
+                        contentDescription = if (mostrarContrasena) "Ocultar contraseña" else "Mostrar contraseña",
+                        tint = ColorAjusteGris,
+                        modifier = Modifier.size(15.dp)
+                    )
+                }
             }
         }
     }
@@ -174,13 +186,46 @@ fun ColumnScope.ContenidoDetalleFilaDuplicada(
     val urlsLimpias = remember(entrada.urls) { entrada.urls.filter { it.isNotBlank() } }
     if (urlsLimpias.isNotEmpty()) {
         Spacer(Modifier.height(2.dp))
-        urlsLimpias.forEach { url ->
-            Text(
-                text = url,
-                color = ColorAjusteGris,
-                style = MaterialTheme.typography.bodySmall.copy(fontSize = 10.5.sp),
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
+        urlsLimpias.forEachIndexed { index, url ->
+            if (index == urlsLimpias.lastIndex && mostrarIndicadores && (EstiloIndicadores == "puntos" || EstiloIndicadores == "iconos")) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = url,
+                        color = ColorAjusteGris,
+                        style = MaterialTheme.typography.bodySmall.copy(fontSize = 10.5.sp),
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.weight(1f)
+                    )
+                    Spacer(Modifier.width(8.dp))
+                    IndicadorContenidoTarjeta(
+                        entrada = entrada,
+                        estilo = EstiloIndicadores
+                    )
+                }
+            } else {
+                Text(
+                    text = url,
+                    color = ColorAjusteGris,
+                    style = MaterialTheme.typography.bodySmall.copy(fontSize = 10.5.sp),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
+        }
+    } else if (mostrarIndicadores && (EstiloIndicadores == "puntos" || EstiloIndicadores == "iconos")) {
+        Spacer(Modifier.height(3.dp))
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.End,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            IndicadorContenidoTarjeta(
+                entrada = entrada,
+                estilo = EstiloIndicadores
             )
         }
     }

@@ -6,50 +6,52 @@
 
 package com.jlnavas3.bovedalocal.ui.pantallas.lista
 
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Key
-import androidx.compose.material.icons.filled.Person
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.Dp
-import com.jlnavas3.bovedalocal.ui.componentes.AccionDeslizamiento
+import com.jlnavas3.bovedalocal.data.Entrada
 import com.jlnavas3.bovedalocal.ui.componentes.ContenedorDeslizamientoBoveda
-import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
-import com.jlnavas3.bovedalocal.ui.theme.Menta
 
 /**
  * Contenedor interactivo que gestiona el gesto de deslizamiento horizontal (swipe-to-action)
- * para copiar usuario o contraseña, con animaciones de resorte y retroalimentación háptica.
+ * contextualizado por [com.jlnavas3.bovedalocal.data.TipoEntrada].
  */
 @Composable
 fun ContenedorDeslizamientoFila(
-    entradaId: String,
+    entrada: Entrada,
     alturaFila: Dp,
     forma: Shape,
     alCopiarUsuario: () -> Unit,
     alCopiarContrasena: () -> Unit,
     modifier: Modifier = Modifier,
     enGrupo: Boolean = false,
+    alCopiarDato: ((etiqueta: String, valor: String, sensible: Boolean) -> Unit)? = null,
+    alAvisar: ((String) -> Unit)? = null,
     contenido: @Composable () -> Unit
 ) {
+    val (accionIzquierda, accionDerecha) = remember(entrada) {
+        ResolvedorAccionesDeslizamientoEntrada.resolver(
+            entrada = entrada,
+            alCopiar = { etiqueta, valor, sensible ->
+                if (alCopiarDato != null) {
+                    alCopiarDato(etiqueta, valor, sensible)
+                } else {
+                    if (sensible) alCopiarContrasena() else alCopiarUsuario()
+                }
+            },
+            alAvisar = { alAvisar?.invoke(it) }
+        )
+    }
+
     ContenedorDeslizamientoBoveda(
-        idItem = entradaId,
+        idItem = entrada.id,
         forma = forma,
         alturaFila = alturaFila,
         enGrupo = enGrupo,
-        accionIzquierda = AccionDeslizamiento(
-            texto = "Copiar\nUsuario",
-            icono = Icons.Filled.Person,
-            color = Menta,
-            alEjecutar = alCopiarUsuario
-        ),
-        accionDerecha = AccionDeslizamiento(
-            texto = "Copiar\nContraseña",
-            icono = Icons.Filled.Key,
-            color = ColorAcento,
-            alEjecutar = alCopiarContrasena
-        ),
+        accionIzquierda = accionIzquierda,
+        accionDerecha = accionDerecha,
         modifier = modifier,
         contenido = contenido
     )

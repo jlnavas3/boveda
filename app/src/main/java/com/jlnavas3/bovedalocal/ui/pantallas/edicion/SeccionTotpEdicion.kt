@@ -38,7 +38,7 @@ fun SeccionTotpEdicion(
     totpValido: Boolean,
     modifier: Modifier = Modifier
 ) {
-    var expandido by remember { mutableStateOf(totp.isNotBlank()) }
+    var expandido by remember { mutableStateOf(false) }
 
     FilaSeccionColapsableEdicion(
         icono = Icons.Filled.Timer,

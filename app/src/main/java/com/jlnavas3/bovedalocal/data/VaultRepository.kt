@@ -13,6 +13,7 @@ import com.jlnavas3.bovedalocal.crypto.KdfParams
 import com.jlnavas3.bovedalocal.crypto.PerfilArgon2
 import com.jlnavas3.bovedalocal.crypto.VaultCrypto
 import com.jlnavas3.bovedalocal.crypto.Zeroizar
+import com.jlnavas3.bovedalocal.sync.CalculadorHashEntrada
 import com.jlnavas3.bovedalocal.util.Diagnostico
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -117,7 +118,7 @@ class VaultRepository private constructor(contexto: Context) {
             params = kdfParams
             claveMaestra = clave
             contenido = ContenidoBoveda(
-                identidades = identidadesIniciales,
+                perfiles = identidadesIniciales,
                 configuracion = ajustes.actual.aConfiguracionExportable()
             )
             persistir()
@@ -262,9 +263,17 @@ class VaultRepository private constructor(contexto: Context) {
                         .filterNot { it.contrasena == entrada.contrasena }
                         .take(maxHistorial)
                 }
-                lista[existente] = entrada.copy(modificadaEn = ahora, creadaEn = previa.creadaEn, historialContrasenas = historial)
+                val cambioContenido = !CalculadorHashEntrada.calcularContentHash(entrada)
+                    .contentEquals(CalculadorHashEntrada.calcularContentHash(previa))
+                val nuevaRevision = if (cambioContenido) previa.revision + 1L else previa.revision
+                lista[existente] = entrada.copy(
+                    modificadaEn = ahora,
+                    creadaEn = previa.creadaEn,
+                    historialContrasenas = historial,
+                    revision = nuevaRevision
+                )
             } else {
-                lista.add(entrada.copy(creadaEn = ahora, modificadaEn = ahora))
+                lista.add(entrada.copy(creadaEn = ahora, modificadaEn = ahora, revision = 1L))
             }
             contenido = contenido.copy(entradas = lista)
             persistir()
@@ -307,9 +316,17 @@ class VaultRepository private constructor(contexto: Context) {
                             .filterNot { it.contrasena == entrada.contrasena }
                             .take(maxHistorial)
                     }
-                    lista[idx] = entrada.copy(modificadaEn = ahora, creadaEn = previa.creadaEn, historialContrasenas = historial)
+                    val cambioContenido = !CalculadorHashEntrada.calcularContentHash(entrada)
+                        .contentEquals(CalculadorHashEntrada.calcularContentHash(previa))
+                    val nuevaRevision = if (cambioContenido) previa.revision + 1L else previa.revision
+                    lista[idx] = entrada.copy(
+                        modificadaEn = ahora,
+                        creadaEn = previa.creadaEn,
+                        historialContrasenas = historial,
+                        revision = nuevaRevision
+                    )
                 } else {
-                    lista.add(entrada.copy(creadaEn = ahora, modificadaEn = ahora))
+                    lista.add(entrada.copy(creadaEn = ahora, modificadaEn = ahora, revision = 1L))
                 }
             }
 
@@ -319,7 +336,7 @@ class VaultRepository private constructor(contexto: Context) {
                 val (aBorrar, resto) = lista.partition { idsAEliminar.contains(it.id) }
                 lista = resto.toMutableList()
                 if (aBorrar.isNotEmpty()) {
-                    nuevaPapelera = nuevaPapelera + aBorrar.map { it.copy(eliminadaEn = ahora) }
+                    nuevaPapelera = nuevaPapelera + aBorrar.map { it.copy(eliminadaEn = ahora, revision = it.revision + 1L) }
                 }
             }
 
@@ -350,7 +367,7 @@ class VaultRepository private constructor(contexto: Context) {
             val entrada = contenido.entradas.firstOrNull { it.id == id } ?: return
             contenido = contenido.copy(
                 entradas = contenido.entradas.filterNot { it.id == id },
-                papelera = contenido.papelera + entrada.copy(eliminadaEn = System.currentTimeMillis())
+                papelera = contenido.papelera + entrada.copy(eliminadaEn = System.currentTimeMillis(), revision = entrada.revision + 1L)
             )
             persistir()
             publicar()
@@ -366,7 +383,7 @@ class VaultRepository private constructor(contexto: Context) {
             if (aBorrar.isEmpty()) return
             contenido = contenido.copy(
                 entradas = resto,
-                papelera = contenido.papelera + aBorrar.map { it.copy(eliminadaEn = ahora) }
+                papelera = contenido.papelera + aBorrar.map { it.copy(eliminadaEn = ahora, revision = it.revision + 1L) }
             )
             persistir()
             publicar()
@@ -428,6 +445,96 @@ class VaultRepository private constructor(contexto: Context) {
             contenido = contenido.copy(entradas = saneadas)
             persistir()
         }
+        sanearCategoriasEIdentidadesDuplicadas()
+    }
+
+    /**
+     * Detecta si existen categorías o identidades duplicadas (con el mismo nombre o correo),
+     * consolida sus datos en un único registro ganador y reasocia todas las entradas existentes.
+     */
+    fun sanearCategoriasEIdentidadesDuplicadas(): Boolean {
+        synchronized(candado) {
+            if (claveMaestra == null) return false
+            var huboCambios = false
+
+            // 1. Sanear Categorías duplicadas por nombre
+            val gruposCat = contenido.categorias.groupBy { it.nombre.trim().lowercase() }
+            val categoriasLimpias = mutableListOf<Categoria>()
+            val mapaReemplazoCat = mutableMapOf<String, String>() // idDuplicado -> idGanador
+
+            for ((_, lista) in gruposCat) {
+                if (lista.size > 1) {
+                    huboCambios = true
+                    val ganador = lista.minByOrNull { it.creadaEn } ?: lista.first()
+                    categoriasLimpias.add(ganador)
+                    for (dup in lista) {
+                        if (dup.id != ganador.id) {
+                            mapaReemplazoCat[dup.id] = ganador.id
+                        }
+                    }
+                } else {
+                    categoriasLimpias.addAll(lista)
+                }
+            }
+
+            // 2. Sanear Identidades duplicadas por correo, documento o nombre
+            val gruposIden = contenido.identidades.groupBy {
+                val correo = it.correoPrincipal.trim().lowercase()
+                val doc = it.numeroDocumento?.trim()?.lowercase().orEmpty()
+                when {
+                    correo.isNotBlank() -> "email:$correo"
+                    doc.isNotBlank() -> "doc:${it.tipoDocumento.orEmpty()}:$doc"
+                    else -> "nom:${it.nombre.trim().lowercase()}"
+                }
+            }
+            val identidadesLimpias = mutableListOf<Identidad>()
+            val mapaReemplazoIden = mutableMapOf<String, String>() // idDuplicado -> idGanador
+
+            for ((_, lista) in gruposIden) {
+                if (lista.size > 1) {
+                    huboCambios = true
+                    val ganador = lista.minByOrNull { it.creadaEn } ?: lista.first()
+                    val todosCorreos = (lista.map { it.correoPrincipal } + lista.flatMap { it.correosSecundarios })
+                        .filter { it.isNotBlank() && it != ganador.correoPrincipal }
+                        .distinct()
+                    val fusionada = ganador.copy(
+                        correosSecundarios = todosCorreos,
+                        tipoDocumento = ganador.tipoDocumento ?: lista.firstOrNull { !it.tipoDocumento.isNullOrBlank() }?.tipoDocumento,
+                        numeroDocumento = ganador.numeroDocumento ?: lista.firstOrNull { !it.numeroDocumento.isNullOrBlank() }?.numeroDocumento
+                    )
+                    identidadesLimpias.add(fusionada)
+                    for (dup in lista) {
+                        if (dup.id != ganador.id) {
+                            mapaReemplazoIden[dup.id] = ganador.id
+                        }
+                    }
+                } else {
+                    identidadesLimpias.addAll(lista)
+                }
+            }
+
+            // 3. Reasignar entradas si hubo reemplazos
+            val entradasActualizadas = if (mapaReemplazoCat.isNotEmpty() || mapaReemplazoIden.isNotEmpty()) {
+                contenido.entradas.map { ent ->
+                    val nuevasCats = ent.categorias.map { mapaReemplazoCat[it] ?: it }.distinct()
+                    val nuevoIdenId = mapaReemplazoIden[ent.identidadId] ?: ent.identidadId
+                    if (nuevasCats != ent.categorias || nuevoIdenId != ent.identidadId) {
+                        ent.copy(categorias = nuevasCats, perfilId = nuevoIdenId)
+                    } else ent
+                }
+            } else contenido.entradas
+
+            if (huboCambios) {
+                contenido = contenido.copy(
+                    categorias = categoriasLimpias,
+                    perfiles = identidadesLimpias,
+                    entradas = entradasActualizadas
+                )
+                persistir()
+                Diagnostico.apuntar("bóveda", "Categorías/identidades duplicadas consolidadas con éxito")
+            }
+            return huboCambios
+        }
     }
 
     /** Saca una entrada de la papelera y la devuelve a la lista activa con opción de sustituir o duplicar. */
@@ -442,7 +549,11 @@ class VaultRepository private constructor(contexto: Context) {
 
             val entradaParaActiva = if (existeMismoId || existeMismoTituloYUsuario) {
                 if (sustituir) {
-                    entrada.copy(eliminadaEn = 0L, modificadaEn = System.currentTimeMillis())
+                    entrada.copy(
+                        eliminadaEn = 0L,
+                        modificadaEn = System.currentTimeMillis(),
+                        revision = entrada.revision + 1L
+                    )
                 } else {
                     val nuevoTitulo = if (entrada.titulo.startsWith("Copia de ", ignoreCase = true)) {
                         entrada.titulo
@@ -453,11 +564,12 @@ class VaultRepository private constructor(contexto: Context) {
                         id = nuevoId(),
                         titulo = nuevoTitulo,
                         eliminadaEn = 0L,
-                        modificadaEn = System.currentTimeMillis()
+                        modificadaEn = System.currentTimeMillis(),
+                        revision = 1L
                     )
                 }
             } else {
-                entrada.copy(eliminadaEn = 0L)
+                entrada.copy(eliminadaEn = 0L, revision = entrada.revision + 1L)
             }
 
             val nuevasEntradas = if (sustituir && (existeMismoId || existeMismoTituloYUsuario)) {
@@ -503,6 +615,53 @@ class VaultRepository private constructor(contexto: Context) {
         }
     }
 
+    /** Borra de forma definitiva y atómica un conjunto de entradas de la papelera. */
+    fun borrarDefinitivamenteLote(ids: Set<String>) {
+        if (ids.isEmpty()) return
+        synchronized(candado) {
+            contenido = contenido.copy(papelera = contenido.papelera.filterNot { it.id in ids })
+            persistir()
+            publicar()
+        }
+    }
+
+    /** Restaura un conjunto de entradas de la papelera a la bóveda activa de forma atómica. */
+    fun restaurarLoteDeLaPapelera(ids: Set<String>): Int {
+        if (ids.isEmpty()) return 0
+        synchronized(candado) {
+            val aRestaurar = contenido.papelera.filter { it.id in ids }
+            if (aRestaurar.isEmpty()) return 0
+
+            val idsVistos = contenido.entradas.map { it.id }.toMutableSet()
+            val restauradas = mutableListOf<Entrada>()
+
+            for (ent in aRestaurar) {
+                val limpia = ent.copy(eliminadaEn = 0L, revision = ent.revision + 1L)
+                if (idsVistos.add(limpia.id)) {
+                    restauradas.add(limpia)
+                } else {
+                    val nueva = limpia.copy(id = nuevoId(), revision = 1L)
+                    idsVistos.add(nueva.id)
+                    restauradas.add(nueva)
+                }
+            }
+
+            contenido = contenido.copy(
+                entradas = contenido.entradas + restauradas,
+                papelera = contenido.papelera.filterNot { it.id in ids }
+            )
+            persistir()
+            publicar()
+            return restauradas.size
+        }
+    }
+
+    /** Restaura todas las entradas actualmente presentes en la papelera. */
+    fun restaurarTodasDeLaPapelera(): Int {
+        val todosIds = synchronized(candado) { contenido.papelera.map { it.id }.toSet() }
+        return restaurarLoteDeLaPapelera(todosIds)
+    }
+
     fun vaciarPapelera() {
         synchronized(candado) {
             if (contenido.papelera.isEmpty()) return
@@ -535,6 +694,36 @@ class VaultRepository private constructor(contexto: Context) {
                 modificadaEn = System.currentTimeMillis()
             )
             contenido = contenido.copy(entradas = lista)
+            persistir()
+            publicar()
+        }
+    }
+
+    fun alternarAnclado(id: String) {
+        synchronized(candado) {
+            val entrada = contenido.entradas.firstOrNull { it.id == id } ?: return
+            val lista = contenido.entradas.toMutableList()
+            val posicion = lista.indexOfFirst { it.id == id }
+            lista[posicion] = entrada.copy(
+                anclado = !entrada.anclado,
+                modificadaEn = System.currentTimeMillis()
+            )
+            contenido = contenido.copy(entradas = lista)
+            persistir()
+            publicar()
+        }
+    }
+
+    fun alternarAnclados(ids: Set<String>, forzarMarcar: Boolean? = null) {
+        if (ids.isEmpty()) return
+        synchronized(candado) {
+            val entradasObjetivo = contenido.entradas.filter { it.id in ids }
+            if (entradasObjetivo.isEmpty()) return
+            val marcar = forzarMarcar ?: entradasObjetivo.any { !it.anclado }
+            val ahora = System.currentTimeMillis()
+            val mapaModificadas = entradasObjetivo.associate { it.id to it.copy(anclado = marcar, modificadaEn = ahora) }
+            val nuevaLista = contenido.entradas.map { mapaModificadas[it.id] ?: it }
+            contenido = contenido.copy(entradas = nuevaLista)
             persistir()
             publicar()
         }
@@ -668,8 +857,11 @@ class VaultRepository private constructor(contexto: Context) {
 
     fun crearIdentidad(
         nombre: String,
-        correoPrincipal: String,
+        correoPrincipal: String = "",
         correosSecundarios: List<String> = emptyList(),
+        tipoDocumento: String? = null,
+        numeroDocumento: String? = null,
+        preferenciaIdentificador: String = PreferenciaIdentificadorIdentidad.CORREO,
         colorHex: String? = null,
         icono: String = "person"
     ): Identidad {
@@ -677,12 +869,15 @@ class VaultRepository private constructor(contexto: Context) {
             nombre = nombre.trim(),
             correoPrincipal = correoPrincipal.trim().lowercase(),
             correosSecundarios = correosSecundarios.map { it.trim().lowercase() }.filter { it.isNotBlank() },
+            tipoDocumento = tipoDocumento?.trim()?.ifBlank { null },
+            numeroDocumento = numeroDocumento?.trim()?.ifBlank { null },
+            preferenciaIdentificador = preferenciaIdentificador,
             colorHex = colorHex,
             icono = icono
         )
         synchronized(candado) {
             contenido = contenido.copy(
-                identidades = contenido.identidades + nueva
+                perfiles = contenido.identidades + nueva
             )
             persistir()
             publicar()
@@ -693,8 +888,11 @@ class VaultRepository private constructor(contexto: Context) {
     fun actualizarIdentidad(
         id: String,
         nombre: String,
-        correoPrincipal: String,
+        correoPrincipal: String = "",
         correosSecundarios: List<String> = emptyList(),
+        tipoDocumento: String? = null,
+        numeroDocumento: String? = null,
+        preferenciaIdentificador: String = PreferenciaIdentificadorIdentidad.CORREO,
         colorHex: String? = null,
         icono: String = "person"
     ) {
@@ -706,14 +904,46 @@ class VaultRepository private constructor(contexto: Context) {
                     nombre = nombre.trim(),
                     correoPrincipal = correoPrincipal.trim().lowercase(),
                     correosSecundarios = correosSecundarios.map { it.trim().lowercase() }.filter { it.isNotBlank() },
+                    tipoDocumento = tipoDocumento?.trim()?.ifBlank { null },
+                    numeroDocumento = numeroDocumento?.trim()?.ifBlank { null },
+                    preferenciaIdentificador = preferenciaIdentificador,
                     colorHex = colorHex,
                     icono = icono,
                     modificadaEn = System.currentTimeMillis()
                 )
-                contenido = contenido.copy(identidades = lista)
+                contenido = contenido.copy(perfiles = lista)
                 persistir()
                 publicar()
             }
+        }
+    }
+
+    fun guardarPerfil(perfil: Perfil): Perfil {
+        val limpio = perfil.copy(
+            nombre = perfil.nombre.trim(),
+            correoPrincipal = perfil.correoPrincipal.trim().lowercase(),
+            correosSecundarios = perfil.correosSecundarios.map { it.trim().lowercase() }.filter { it.isNotBlank() },
+            tipoDocumento = perfil.tipoDocumento?.trim()?.ifBlank { null },
+            numeroDocumento = perfil.numeroDocumento?.trim()?.ifBlank { null }
+        )
+        synchronized(candado) {
+            val lista = contenido.identidades.toMutableList()
+            val indice = lista.indexOfFirst { it.id == limpio.id }
+            val resultado = if (indice >= 0) {
+                limpio.copy(
+                    creadaEn = lista[indice].creadaEn,
+                    modificadaEn = System.currentTimeMillis()
+                ).also { lista[indice] = it }
+            } else {
+                limpio.copy(
+                    creadaEn = System.currentTimeMillis(),
+                    modificadaEn = System.currentTimeMillis()
+                ).also { lista.add(it) }
+            }
+            contenido = contenido.copy(perfiles = lista)
+            persistir()
+            publicar()
+            return resultado
         }
     }
 
@@ -723,19 +953,66 @@ class VaultRepository private constructor(contexto: Context) {
             val nuevasEntradas = contenido.entradas.map { entrada ->
                 if (entrada.identidadId == id) {
                     entrada.copy(
-                        identidadId = null,
+                        perfilId = null,
                         modificadaEn = System.currentTimeMillis()
                     )
                 } else entrada
             }
             contenido = contenido.copy(
-                identidades = nuevasIdentidades,
+                perfiles = nuevasIdentidades,
                 entradas = nuevasEntradas
             )
             persistir()
             publicar()
         }
     }
+
+    // ------------------------------------------------------------ perfiles
+    fun perfiles(): List<Perfil> = identidades()
+
+    fun crearPerfil(
+        nombre: String,
+        correoPrincipal: String = "",
+        correosSecundarios: List<String> = emptyList(),
+        tipoDocumento: String? = null,
+        numeroDocumento: String? = null,
+        preferenciaIdentificador: String = PreferenciaIdentificadorPerfil.CORREO,
+        colorHex: String? = null,
+        icono: String = "person"
+    ): Perfil = crearIdentidad(
+        nombre = nombre,
+        correoPrincipal = correoPrincipal,
+        correosSecundarios = correosSecundarios,
+        tipoDocumento = tipoDocumento,
+        numeroDocumento = numeroDocumento,
+        preferenciaIdentificador = preferenciaIdentificador,
+        colorHex = colorHex,
+        icono = icono
+    )
+
+    fun actualizarPerfil(
+        id: String,
+        nombre: String,
+        correoPrincipal: String = "",
+        correosSecundarios: List<String> = emptyList(),
+        tipoDocumento: String? = null,
+        numeroDocumento: String? = null,
+        preferenciaIdentificador: String = PreferenciaIdentificadorPerfil.CORREO,
+        colorHex: String? = null,
+        icono: String = "person"
+    ) = actualizarIdentidad(
+        id = id,
+        nombre = nombre,
+        correoPrincipal = correoPrincipal,
+        correosSecundarios = correosSecundarios,
+        tipoDocumento = tipoDocumento,
+        numeroDocumento = numeroDocumento,
+        preferenciaIdentificador = preferenciaIdentificador,
+        colorHex = colorHex,
+        icono = icono
+    )
+
+    fun eliminarPerfil(id: String) = eliminarIdentidad(id)
 
     fun asignarCategoriasAEntradas(
         idsEntradas: Set<String>,
@@ -843,7 +1120,7 @@ class VaultRepository private constructor(contexto: Context) {
                 version = contenido.version,
                 entradas = entradasFiltradas,
                 categorias = contenido.categorias,
-                identidades = contenido.identidades,
+                perfiles = contenido.identidades,
                 configuracion = ajustes.actual.aConfiguracionExportable()
             )
         }
@@ -878,10 +1155,8 @@ class VaultRepository private constructor(contexto: Context) {
         )
     }
 
-    /** Devuelve el número de entradas importadas (fusiona por id). */
-    fun importar(archivo: ByteArray, passwordExportacion: CharArray): Int {
-        if (claveMaestra == null) throw IllegalStateException("La bóveda está bloqueada")
-        // Descifrar el archivo que llega no toca el estado: fuera del candado.
+    /** Descifra y descomprime un archivo .bvda en memoria sin modificar la base de datos. */
+    fun descifrarContenidoBvda(archivo: ByteArray, passwordExportacion: CharArray): ContenidoBoveda {
         val cabecera = VaultCrypto.leerCabecera(archivo)
         val clave = VaultCrypto.derivarClave(passwordExportacion, cabecera.salt, cabecera.params)
         val plano = try {
@@ -893,59 +1168,164 @@ class VaultRepository private constructor(contexto: Context) {
         val importado = json.decodeFromString(ContenidoBoveda.serializer(), String(descomprimido, Charsets.UTF_8))
         Zeroizar.borrar(plano)
         if (descomprimido !== plano) Zeroizar.borrar(descomprimido)
-        var nuevas = 0
+        return importado
+    }
+
+    /** Importa un archivo de respaldo completo con todas las opciones activas. */
+    fun importar(archivo: ByteArray, passwordExportacion: CharArray): ResultadoImportacion {
+        if (claveMaestra == null) throw IllegalStateException("La bóveda está bloqueada")
+        val importado = descifrarContenidoBvda(archivo, passwordExportacion)
+        val todosLosTipos = importado.entradas.map { it.tipo }.toSet()
+        val opciones = OpcionesImportacionBvda(tiposEntradaSeleccionados = todosLosTipos)
+        return importarSelectivo(importado, opciones)
+    }
+
+    /**
+     * Importa selectivamente entradas y configuraciones desde un objeto [ContenidoBoveda],
+     * aplicando deduplicación estricta y remapeo de categorías e identidades.
+     */
+    fun importarSelectivo(importado: ContenidoBoveda, opciones: OpcionesImportacionBvda): ResultadoImportacion {
+        if (claveMaestra == null) throw IllegalStateException("La bóveda está bloqueada")
         synchronized(candado) {
             if (claveMaestra == null) throw IllegalStateException("La bóveda está bloqueada")
+
+            // 1. Deduplicar y remapear Categorías por nombre
+            val porIdCat = contenido.categorias.associateBy { it.id }.toMutableMap()
+            val porNombreCat = contenido.categorias.associateBy { it.nombre.trim().lowercase() }.toMutableMap()
+            val mapaIdsCat = mutableMapOf<String, String>()
+            var categoriasImportadas = 0
+
+            importado.categorias.forEach { cat ->
+                val existente = porIdCat[cat.id] ?: porNombreCat[cat.nombre.trim().lowercase()]
+                if (existente != null) {
+                    mapaIdsCat[cat.id] = existente.id
+                    if (opciones.importarCategorias && cat.modificadaEn > existente.modificadaEn) {
+                        val actualizada = cat.copy(id = existente.id)
+                        porIdCat[existente.id] = actualizada
+                        porNombreCat[actualizada.nombre.trim().lowercase()] = actualizada
+                    }
+                } else if (opciones.importarCategorias) {
+                    porIdCat[cat.id] = cat
+                    porNombreCat[cat.nombre.trim().lowercase()] = cat
+                    mapaIdsCat[cat.id] = cat.id
+                    categoriasImportadas++
+                }
+            }
+
+            // 2. Deduplicar y remapear Identidades por correo o nombre
+            val porIdIden = contenido.identidades.associateBy { it.id }.toMutableMap()
+            val mapaIdsIden = mutableMapOf<String, String>()
+            var identidadesImportadas = 0
+
+            importado.identidades.forEach { iden ->
+                val correoNormalizado = iden.correoPrincipal.trim().lowercase()
+                val docNormalizado = iden.numeroDocumento?.trim()?.lowercase().orEmpty()
+                val nombreNormalizado = iden.nombre.trim().lowercase()
+                val existente = porIdIden[iden.id] ?: contenido.identidades.firstOrNull {
+                    (correoNormalizado.isNotBlank() && it.correoPrincipal.trim().lowercase() == correoNormalizado) ||
+                    (docNormalizado.isNotBlank() && it.numeroDocumento?.trim()?.lowercase() == docNormalizado) ||
+                    (correoNormalizado.isBlank() && docNormalizado.isBlank() && it.nombre.trim().lowercase() == nombreNormalizado)
+                }
+
+                if (existente != null) {
+                    mapaIdsIden[iden.id] = existente.id
+                    if (opciones.importarIdentidades && iden.modificadaEn > existente.modificadaEn) {
+                        val todosCorreos = (existente.correosSecundarios + iden.correoPrincipal + iden.correosSecundarios)
+                            .filter { it.isNotBlank() && it != existente.correoPrincipal }
+                            .distinct()
+                        val fusionada = existente.copy(
+                            correosSecundarios = todosCorreos,
+                            tipoDocumento = existente.tipoDocumento ?: iden.tipoDocumento,
+                            numeroDocumento = existente.numeroDocumento ?: iden.numeroDocumento,
+                            preferenciaIdentificador = if (existente.preferenciaIdentificador.isBlank()) iden.preferenciaIdentificador else existente.preferenciaIdentificador
+                        )
+                        porIdIden[existente.id] = fusionada
+                    }
+                } else if (opciones.importarIdentidades) {
+                    porIdIden[iden.id] = iden
+                    mapaIdsIden[iden.id] = iden.id
+                    identidadesImportadas++
+                }
+            }
+
+            // 3. Filtrar y reasignar Entradas según los tipos seleccionados
+            val entradasSeleccionadas = importado.entradas.filter { opciones.tiposEntradaSeleccionados.contains(it.tipo) }
             val porId = contenido.entradas.associateBy { it.id }.toMutableMap()
-            importado.entradas.forEach { entrada ->
-                val previa = porId[entrada.id]
-                if (previa == null || entrada.modificadaEn > previa.modificadaEn) {
-                    porId[entrada.id] = entrada
+            var nuevas = 0
+
+            entradasSeleccionadas.forEach { entrada ->
+                val nuevasCats = entrada.categorias.map { catId ->
+                    mapaIdsCat[catId] ?: if (porIdCat.containsKey(catId)) catId else null
+                }.filterNotNull().distinct()
+
+                val nuevaIdenId = if (entrada.identidadId != null) {
+                    mapaIdsIden[entrada.identidadId] ?: if (porIdIden.containsKey(entrada.identidadId)) entrada.identidadId else null
+                } else null
+
+                val entradaAjustada = entrada.copy(categorias = nuevasCats, perfilId = nuevaIdenId)
+                val previa = porId[entradaAjustada.id]
+                if (previa == null || entradaAjustada.modificadaEn > previa.modificadaEn) {
+                    porId[entradaAjustada.id] = entradaAjustada
                     nuevas++
                 }
             }
-            val idsImportados = importado.entradas.map { it.id }.toSet()
-            val porIdCat = contenido.categorias.associateBy { it.id }.toMutableMap()
-            var categoriasImportadas = 0
-            importado.categorias.forEach { cat ->
-                val previa = porIdCat[cat.id]
-                if (previa == null || cat.modificadaEn >= previa.modificadaEn) {
-                    if (previa == null) categoriasImportadas++
-                    porIdCat[cat.id] = cat
-                }
-            }
-            val porIdIden = contenido.identidades.associateBy { it.id }.toMutableMap()
-            var identidadesImportadas = 0
-            importado.identidades.forEach { iden ->
-                val previa = porIdIden[iden.id]
-                if (previa == null || iden.modificadaEn >= previa.modificadaEn) {
-                    if (previa == null) identidadesImportadas++
-                    porIdIden[iden.id] = iden
-                }
-            }
+
+            val idsImportados = entradasSeleccionadas.map { it.id }.toSet()
+
+            var perfilArgon2Sugerido: PerfilArgon2? = null
+            // 4. Configuración exportable filtrada
             importado.configuracion?.let { config ->
+                if (opciones.importarSeguridadCripto && !config.perfilArgon2.isNullOrBlank()) {
+                    val perfilImportado = PerfilArgon2.desde(config.perfilArgon2)
+                    val perfilActual = perfilArgon2Actual()
+                    if (perfilImportado != perfilActual) {
+                        perfilArgon2Sugerido = perfilImportado
+                    }
+                }
                 sincronizandoDesdeBoveda = true
                 try {
-                    ajustes.actualizar { prev -> prev.aplicarConfiguracionExportable(config) }
+                    ajustes.actualizar { prev -> prev.aplicarConfiguracionFiltrada(config, opciones) }
                 } finally {
                     sincronizandoDesdeBoveda = false
                 }
             }
+
             contenido = contenido.copy(
                 entradas = porId.values.sortedBy { it.titulo.lowercase() },
                 papelera = contenido.papelera.filterNot { idsImportados.contains(it.id) },
                 categorias = porIdCat.values.toList(),
-                identidades = porIdIden.values.toList(),
+                perfiles = porIdIden.values.toList(),
                 configuracion = ajustes.actual.aConfiguracionExportable()
             )
             persistir()
             publicar()
+
+            val duplicados = AnalizadorDuplicados.analizar(contenido.entradas).size
+            if (opciones.importarCategorias) {
+                com.jlnavas3.bovedalocal.util.Diagnostico.apuntar(
+                    "bóveda",
+                    "Categorías importadas: $categoriasImportadas nuevas añadidas (${porIdCat.size} total tras deduplicar)"
+                )
+            }
+            if (opciones.importarIdentidades) {
+                com.jlnavas3.bovedalocal.util.Diagnostico.apuntar(
+                    "bóveda",
+                    "Identidades importadas: $identidadesImportadas nuevas añadidas (${porIdIden.size} total tras deduplicar)"
+                )
+            }
             com.jlnavas3.bovedalocal.util.Diagnostico.apuntar(
                 "bóveda",
-                "Importación completada: $nuevas entradas nuevas/actualizadas, $categoriasImportadas categorías, $identidadesImportadas identidades añadidas"
+                "Importación selectiva: $nuevas entradas, $categoriasImportadas categorías, $identidadesImportadas identidades añadidas"
+            )
+
+            return ResultadoImportacion(
+                entradasNuevas = nuevas,
+                duplicados = duplicados,
+                categoriasImportadas = categoriasImportadas,
+                identidadesImportadas = identidadesImportadas,
+                perfilArgon2Sugerido = perfilArgon2Sugerido
             )
         }
-        return nuevas
     }
 
     /** Importa un CSV plano (Google, Chrome, Bitwarden, LastPass...). Siempre añade entradas nuevas. */
@@ -980,6 +1360,29 @@ class VaultRepository private constructor(contexto: Context) {
             publicar()
         }
         return nuevasEntradas.size
+    }
+
+    /**
+     * Obtiene una copia snapshot del estado actual de la bóveda para sincronización P2P.
+     */
+    fun obtenerContenidoActual(): ContenidoBoveda {
+        synchronized(candado) {
+            return contenido.copy(entradas = contenido.entradas.toList())
+        }
+    }
+
+    /**
+     * Aplica atómicamente una bóveda fusionada completa resultante de la sincronización LAN P2P.
+     * Persiste en disco de forma transaccional mediante AES-GCM + fsync y notifica reactivamente a la UI.
+     */
+    fun aplicarBovedaFusionada(bovedaFusionada: ContenidoBoveda) {
+        if (claveMaestra == null) throw IllegalStateException("La bóveda está bloqueada")
+        synchronized(candado) {
+            if (claveMaestra == null) throw IllegalStateException("La bóveda está bloqueada")
+            contenido = bovedaFusionada
+            persistir()
+            publicar()
+        }
     }
 
     fun cambiarContrasenaMaestra(nueva: CharArray) {

@@ -31,7 +31,7 @@ enum class TipoEntrada {
             IDENTIDAD -> "Documento de identidad"
             SERVIDOR -> "Servidor / SSH"
             WALLET -> "Cripto Wallet"
-            PASSKEY -> "Llave de paso"
+            PASSKEY -> "Llave de acceso"
             CONTACTO -> "Contacto seguro"
         }
 }

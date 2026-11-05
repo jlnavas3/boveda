@@ -9,7 +9,6 @@ package com.jlnavas3.bovedalocal.ui.pantallas.duplicados
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AutoFixHigh
 import androidx.compose.material.icons.filled.Backup
 import androidx.compose.material.icons.filled.HealthAndSafety
 import androidx.compose.material.icons.filled.MoreVert
@@ -29,6 +28,7 @@ import com.jlnavas3.bovedalocal.ui.componentes.SeparadorOpcionMenu
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjustesFondo
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
+import com.jlnavas3.bovedalocal.ui.theme.ColorSalud
 import com.jlnavas3.bovedalocal.util.Haptica
 
 /**
@@ -39,11 +39,9 @@ fun BarraSuperiorDuplicados(
     mostrarId: Boolean,
     busquedaVisible: Boolean,
     textoBusqueda: String,
-    totalSobrantesIdenticas: Int,
     haptica: Haptica,
     alVolver: () -> Unit,
     alAlternarBusqueda: () -> Unit,
-    alPedirLimpiezaMasiva: () -> Unit,
     alIrSalud: () -> Unit,
     alIrCopia: () -> Unit
 ) {
@@ -63,17 +61,6 @@ fun BarraSuperiorDuplicados(
                 descripcion = "Buscar",
                 tint = if (busquedaVisible || textoBusqueda.isNotBlank()) ColorAcento else ColorIconosInternos
             )
-            if (totalSobrantesIdenticas > 0) {
-                BotonIconoCabecera(
-                    onClick = {
-                        haptica.toque()
-                        alPedirLimpiezaMasiva()
-                    },
-                    icono = Icons.Filled.AutoFixHigh,
-                    descripcion = "Limpieza rápida masiva",
-                    tint = ColorAcento
-                )
-            }
             var menuAbiertoDup by remember { mutableStateOf(false) }
             Box {
                 BotonIconoCabecera(
@@ -90,7 +77,7 @@ fun BarraSuperiorDuplicados(
                     ElementoMenuCompacto(
                         texto = "Salud...",
                         icono = Icons.Filled.HealthAndSafety,
-                        colorIcono = ColorAcento,
+                        colorIcono = ColorSalud,
                         onClick = {
                             menuAbiertoDup = false
                             alIrSalud()
@@ -100,7 +87,7 @@ fun BarraSuperiorDuplicados(
                     ElementoMenuCompacto(
                         texto = "Copia preventiva...",
                         icono = Icons.Filled.Backup,
-                        colorIcono = ColorAcento,
+                        colorIcono = ColorIconosInternos,
                         onClick = {
                             menuAbiertoDup = false
                             alIrCopia()

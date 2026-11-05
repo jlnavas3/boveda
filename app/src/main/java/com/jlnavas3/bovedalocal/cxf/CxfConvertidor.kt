@@ -93,6 +93,18 @@ object CxfConvertidor {
 
         val ahora = System.currentTimeMillis()
 
+        // Mapear colecciones asociadas a ítems si existen
+        val mapaItemAColecciones = mutableMapOf<String, MutableList<String>>()
+        doc.accounts?.forEach { cuenta ->
+            cuenta.collections?.forEach { col ->
+                col.items.forEach { itemId ->
+                    if (col.title.isNotBlank()) {
+                        mapaItemAColecciones.getOrPut(itemId) { mutableListOf() }.add(col.title.trim())
+                    }
+                }
+            }
+        }
+
         for (item in listaItems) {
             val credenciales = item.credentials ?: emptyList()
             if (credenciales.isEmpty()) continue
@@ -107,6 +119,10 @@ object CxfConvertidor {
             val tituloItem = (item.title ?: item.name ?: item.serviceName ?: item.scope?.urls?.firstOrNull() ?: item.scope?.androidApps?.firstOrNull()?.name ?: "").trim()
             val usuarioItem = (item.userName.extraerTexto() ?: item.username.extraerTexto() ?: "").trim()
             val notaItem = (item.notes.extraerTexto() ?: item.note.extraerTexto() ?: "").trim()
+
+            val etiquetasItem = item.tags?.map { it.trim() }?.filter { it.isNotBlank() } ?: emptyList()
+            val etiquetasColecciones = item.id?.let { mapaItemAColecciones[it] } ?: emptyList()
+            val etiquetasFinales = (etiquetasItem + etiquetasColecciones).distinct()
 
             val creada = item.creationAt?.let { if (it < 10_000_000_000L) it * 1000L else it } ?: ahora
             val modificada = item.modifiedAt?.let { if (it < 10_000_000_000L) it * 1000L else it } ?: creada
@@ -179,6 +195,7 @@ object CxfConvertidor {
                         totpPeriodo = totpCred?.period ?: 30,
                         totpAlgoritmo = normalizarAlgoritmoTotp(totpCred?.algorithm),
                         favorito = favorita,
+                        etiquetas = etiquetasFinales,
                         passkey = passkeyValida,
                         creadaEn = creada,
                         modificadaEn = modificada
@@ -202,6 +219,7 @@ object CxfConvertidor {
                                 urls = if (urlsItem.isNotEmpty()) urlsItem else listOf(passkey.rpId),
                                 notas = passCred.notes.extraerTexto() ?: notaItem,
                                 favorito = favorita,
+                                etiquetas = etiquetasFinales,
                                 passkey = passkey,
                                 creadaEn = creada,
                                 modificadaEn = modificada
@@ -225,6 +243,7 @@ object CxfConvertidor {
                             urls = urlsItem,
                             notas = passCred.notes.extraerTexto() ?: notaItem,
                             favorito = favorita,
+                            etiquetas = etiquetasFinales,
                             creadaEn = creada,
                             modificadaEn = modificada
                         )
@@ -252,6 +271,7 @@ object CxfConvertidor {
                                 totpPeriodo = totpCred.period ?: 30,
                                 totpAlgoritmo = normalizarAlgoritmoTotp(totpCred.algorithm),
                                 favorito = favorita,
+                                etiquetas = etiquetasFinales,
                                 creadaEn = creada,
                                 modificadaEn = modificada
                             )
@@ -272,6 +292,7 @@ object CxfConvertidor {
                         contrasena = "",
                         notas = texto,
                         favorito = favorita,
+                        etiquetas = etiquetasFinales,
                         creadaEn = creada,
                         modificadaEn = modificada
                     )

@@ -53,31 +53,31 @@ import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjusteGris
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorCampoAjustes
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorSeparadorAjustes
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorTextoAjustes
-import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
-import com.jlnavas3.bovedalocal.ui.theme.ColorExportacion
-import com.jlnavas3.bovedalocal.ui.theme.ColorGenerador
 import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
-import com.jlnavas3.bovedalocal.ui.theme.ColorPasskeys
-import com.jlnavas3.bovedalocal.ui.theme.ColorSalud
-import com.jlnavas3.bovedalocal.ui.theme.ColorSeguridad
 import com.jlnavas3.bovedalocal.ui.theme.Menta
 import com.jlnavas3.bovedalocal.ui.theme.Peligro
 import com.jlnavas3.bovedalocal.ui.componentes.AccionDeslizamiento
 import com.jlnavas3.bovedalocal.ui.componentes.ContenedorDeslizamientoBoveda
 import com.jlnavas3.bovedalocal.ui.pantallas.lista.IndicadorContenidoTarjeta
+import com.jlnavas3.bovedalocal.ui.theme.EstiloIndicadores
 import com.jlnavas3.bovedalocal.ui.theme.FormaPequena
 import com.jlnavas3.bovedalocal.ui.theme.colorLegibleParaTema
 import com.jlnavas3.bovedalocal.ui.theme.fondoBadgeParaTema
 import com.jlnavas3.bovedalocal.util.IconoAppCircular
 import com.jlnavas3.bovedalocal.util.rememberIconoAppInstalada
-import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.border
+import androidx.compose.ui.graphics.RectangleShape
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorTarjetaAjustes
+import com.jlnavas3.bovedalocal.ui.pantallas.lista.AvatarSeleccionableEntrada
+import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.CurvaturaEsquinas
 import com.jlnavas3.bovedalocal.ui.theme.GrosorBorde
 import com.jlnavas3.bovedalocal.ui.theme.EstiloBorde
 import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun FilaPapeleraNativa(
     entrada: Entrada,
@@ -87,7 +87,11 @@ fun FilaPapeleraNativa(
     modifier: Modifier = Modifier,
     ajustes: AjustesApp? = null,
     mostrarIndicadores: Boolean = false,
-    enGrupo: Boolean = true
+    enGrupo: Boolean = true,
+    seleccionado: Boolean = false,
+    seleccionActiva: Boolean = false,
+    alAlternarSeleccion: () -> Unit = {},
+    alPulsarLargo: () -> Unit = {}
 ) {
     val icono = when (entrada.tipo) {
         TipoEntrada.LOGIN -> Icons.Filled.Lock
@@ -102,25 +106,16 @@ fun FilaPapeleraNativa(
         TipoEntrada.CONTACTO -> Icons.Filled.Person
     }
 
-    val colorIcono = when (entrada.tipo) {
-        TipoEntrada.LOGIN -> ColorSeguridad
-        TipoEntrada.PASSKEY -> ColorPasskeys
-        TipoEntrada.NOTA -> ColorAcento
-        TipoEntrada.TARJETA -> ColorGenerador
-        TipoEntrada.WIFI -> ColorSalud
-        TipoEntrada.CUENTA_BANCARIA -> ColorSeguridad
-        TipoEntrada.IDENTIDAD -> ColorExportacion
-        TipoEntrada.SERVIDOR -> ColorIconosInternos
-        TipoEntrada.WALLET -> ColorAcento
-        TipoEntrada.CONTACTO -> ColorAcento
-    }
-
     val subtitulo = entrada.usuario.ifBlank {
         entrada.urls.firstOrNull() ?: entrada.tipo.etiqueta
     }
 
     val forma = if (enGrupo) RectangleShape else RoundedCornerShape(CurvaturaEsquinas)
-    val fondo = if (enGrupo) androidx.compose.ui.graphics.Color.Transparent else ColorTarjetaAjustes
+    val fondo = when {
+        seleccionado -> ColorAcento.copy(alpha = 0.12f)
+        enGrupo -> ColorTarjetaAjustes
+        else -> ColorTarjetaAjustes
+    }
 
     ContenedorDeslizamientoBoveda(
         idItem = entrada.id,
@@ -146,15 +141,33 @@ fun FilaPapeleraNativa(
                 .clip(forma)
                 .background(fondo)
                 .then(
-                    if (!enGrupo && GrosorBorde > 0.dp && EstiloBorde != "ninguno") {
+                    if (seleccionado) {
+                        Modifier.border(
+                            width = (GrosorBorde.takeIf { it > 0.dp } ?: 1.dp),
+                            color = ColorAcento,
+                            shape = forma
+                        )
+                    } else if (!enGrupo && GrosorBorde > 0.dp && EstiloBorde != "ninguno") {
                         Modifier.border(GrosorBorde, ColorBordeActual, forma)
                     } else Modifier
                 )
+                .combinedClickable(
+                    onClick = {
+                        if (seleccionActiva) alAlternarSeleccion()
+                    },
+                    onLongClick = {
+                        alPulsarLargo()
+                    }
+                )
         ) {
-            if (mostrarIndicadores) {
+            if (mostrarIndicadores && (EstiloIndicadores == "lineas" || EstiloIndicadores == "lateral")) {
+                val alineacionIndicador = when (EstiloIndicadores) {
+                    "lateral" -> Alignment.CenterStart
+                    else -> Alignment.TopCenter
+                }
                 IndicadorContenidoTarjeta(
                     entrada = entrada,
-                    modifier = Modifier.align(Alignment.TopCenter)
+                    modifier = Modifier.align(alineacionIndicador)
                 )
             }
             Row(
@@ -163,30 +176,12 @@ fun FilaPapeleraNativa(
                     .padding(horizontal = 16.dp, vertical = 12.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-            val iconoApp = rememberIconoAppInstalada(entrada)
-            if (iconoApp != null) {
-                IconoAppCircular(
-                    bitmap = iconoApp,
-                    descripcion = entrada.titulo,
-                    tamanoDp = 38.dp
+                AvatarSeleccionableEntrada(
+                    entrada = entrada,
+                    tamanoIcono = 38,
+                    seleccionado = seleccionado,
+                    alAlternarSeleccion = alAlternarSeleccion
                 )
-            } else {
-                Box(
-                    modifier = Modifier
-                        .size(38.dp)
-                        .clip(FormaPequena)
-                        .background(ColorCampoAjustes)
-                        .border(0.8.dp, ColorSeparadorAjustes, FormaPequena),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        imageVector = icono,
-                        contentDescription = null,
-                        tint = ColorAcento,
-                        modifier = Modifier.size(20.dp)
-                    )
-                }
-            }
 
             Spacer(Modifier.width(12.dp))
 
@@ -199,7 +194,7 @@ fun FilaPapeleraNativa(
                     overflow = TextOverflow.Ellipsis
                 )
                 val seguridadVisualActiva = ajustes?.seguridadVisualActiva == true
-                val ocultarUsuario = seguridadVisualActiva && (ajustes?.ocultarUsuario == true)
+                val ocultarUsuario = seguridadVisualActiva && (ajustes.ocultarUsuario)
                 val estiloOcultamiento = ajustes?.estiloOcultamientoVisual ?: "desenfoque"
 
                 if (entrada.usuario.isNotBlank() && ocultarUsuario) {
@@ -223,27 +218,43 @@ fun FilaPapeleraNativa(
                 }
                 Spacer(Modifier.height(2.dp))
                 Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    val esPeligro = diasRestantes in 0..3
-                    val colorTiempo = if (esPeligro) Peligro else ColorAjusteGris
-                    val textoExpiracion = when {
-                        diasRestantes < 0 -> "Conservada indefinidamente"
-                        diasRestantes > 0 -> "Expira en $diasRestantes días"
-                        else -> "Expira en cualquier momento"
+                    Row(
+                        modifier = Modifier.weight(1f),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
+                        val esPeligro = diasRestantes in 0..3
+                        val colorTiempo = if (esPeligro) Peligro else ColorAjusteGris
+                        val textoExpiracion = when {
+                            diasRestantes < 0 -> "Conservada indefinidamente"
+                            diasRestantes > 0 -> "Expira en $diasRestantes días"
+                            else -> "Expira en cualquier momento"
+                        }
+                        Icon(
+                            imageVector = Icons.Filled.Schedule,
+                            contentDescription = null,
+                            tint = colorTiempo,
+                            modifier = Modifier.size(12.dp)
+                        )
+                        Text(
+                            text = textoExpiracion,
+                            color = colorTiempo,
+                            style = MaterialTheme.typography.labelSmall.copy(fontSize = 11.sp),
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
                     }
-                    Icon(
-                        imageVector = Icons.Filled.Schedule,
-                        contentDescription = null,
-                        tint = colorTiempo,
-                        modifier = Modifier.size(12.dp)
-                    )
-                    Text(
-                        text = textoExpiracion,
-                        color = colorTiempo,
-                        style = MaterialTheme.typography.labelSmall.copy(fontSize = 11.sp)
-                    )
+
+                    if (mostrarIndicadores && (EstiloIndicadores == "puntos" || EstiloIndicadores == "iconos")) {
+                        Spacer(Modifier.width(8.dp))
+                        IndicadorContenidoTarjeta(
+                            entrada = entrada,
+                            estilo = EstiloIndicadores
+                        )
+                    }
                 }
             }
         }

@@ -19,21 +19,25 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Dns
-import com.jlnavas3.bovedalocal.data.CampoPersonalizado
-import com.jlnavas3.bovedalocal.data.TipoCampo
+import com.jlnavas3.bovedalocal.data.AjustesApp
+import com.jlnavas3.bovedalocal.data.DatosServidorSsh
 import com.jlnavas3.bovedalocal.ui.componentes.CampoBoveda
+import com.jlnavas3.bovedalocal.ui.theme.ColorDatosContrasena
+import com.jlnavas3.bovedalocal.ui.theme.ColorDatosPasskey
+import com.jlnavas3.bovedalocal.ui.theme.ColorDatosUsuario
+import com.jlnavas3.bovedalocal.ui.theme.ColorDatosWeb
 
+/**
+ * Microcomponente desacoplado para edición directa y fuertemente tipada de conexiones SSH y servidores.
+ */
 @Composable
 fun FormularioEdicionServidor(
-    campos: List<CampoPersonalizado>,
-    alCambiarCampos: (List<CampoPersonalizado>) -> Unit
+    datos: DatosServidorSsh,
+    alCambiar: (DatosServidorSsh) -> Unit,
+    ajustes: AjustesApp = AjustesApp()
 ) {
-    var mostrarClave by remember { mutableStateOf(false) }
-
-    val host = GestorCamposBase.valorDeCampo(campos, "Host o IP")
-    val puerto = GestorCamposBase.valorDeCampo(campos, "Puerto")
-    val usuario = GestorCamposBase.valorDeCampo(campos, "Usuario SSH")
-    val clave = GestorCamposBase.valorDeCampo(campos, "Clave privada / Password")
+    val ocultarPorDefecto = ajustes.seguridadVisualActiva && ajustes.ocultarContrasena
+    var mostrarClave by remember(ajustes.seguridadVisualActiva, ajustes.ocultarContrasena) { mutableStateOf(!ocultarPorDefecto) }
 
     Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
         Row(
@@ -41,45 +45,60 @@ fun FormularioEdicionServidor(
             horizontalArrangement = Arrangement.spacedBy(10.dp)
         ) {
             CampoBoveda(
-                valor = host,
+                valor = datos.host,
                 etiqueta = "Host o IP",
                 alCambiar = {
-                    alCambiarCampos(GestorCamposBase.actualizarValor(campos, "Host o IP", it, TipoCampo.TEXTO))
+                    alCambiar(datos.copy(host = it))
                 },
+                colorBordeIzquierdo = ColorDatosWeb,
                 modifier = Modifier.weight(2.2f)
             )
 
             CampoBoveda(
-                valor = puerto,
+                valor = datos.puerto,
                 etiqueta = "Puerto",
                 alCambiar = { raw ->
                     val sanitizado = raw.filter { it.isDigit() }.take(5)
-                    alCambiarCampos(GestorCamposBase.actualizarValor(campos, "Puerto", sanitizado, TipoCampo.NUMERO))
+                    alCambiar(datos.copy(puerto = sanitizado))
                 },
+                colorBordeIzquierdo = ColorDatosWeb,
                 tecladoNumerico = true,
                 modifier = Modifier.weight(1f)
             )
         }
 
         CampoBoveda(
-            valor = usuario,
+            valor = datos.usuario,
             etiqueta = "Usuario SSH (ej. root, ubuntu)",
             alCambiar = {
-                alCambiarCampos(GestorCamposBase.actualizarValor(campos, "Usuario SSH", it, TipoCampo.TEXTO))
-            }
+                alCambiar(datos.copy(usuario = it))
+            },
+            colorBordeIzquierdo = ColorDatosUsuario
         )
 
         CampoBoveda(
-            valor = clave,
+            valor = datos.clavePrivada,
             etiqueta = "Clave privada SSH o Contraseña",
             alCambiar = {
-                alCambiarCampos(GestorCamposBase.actualizarValor(campos, "Clave privada / Password", it, TipoCampo.NOTAS, sensible = true))
+                alCambiar(datos.copy(clavePrivada = it))
             },
             esContrasena = true,
             mostrarContrasena = mostrarClave,
             alAlternarMostrarContrasena = { mostrarClave = !mostrarClave },
             monoespaciada = true,
-            varias = true
+            varias = true,
+            colorBordeIzquierdo = ColorDatosContrasena
+        )
+
+        CampoBoveda(
+            valor = datos.clavePublica,
+            etiqueta = "Clave pública SSH (opcional)",
+            alCambiar = {
+                alCambiar(datos.copy(clavePublica = it))
+            },
+            monoespaciada = true,
+            varias = true,
+            colorBordeIzquierdo = ColorDatosPasskey
         )
 
         var mostrarDialogoSsh by remember { mutableStateOf(false) }
@@ -95,9 +114,7 @@ fun FormularioEdicionServidor(
             DialogoGeneradorClavesSsh(
                 alCerrar = { mostrarDialogoSsh = false },
                 alAplicar = { privadaPem, publicaSsh ->
-                    var actualizados = GestorCamposBase.actualizarValor(campos, "Clave privada / Password", privadaPem, TipoCampo.NOTAS, sensible = true)
-                    actualizados = GestorCamposBase.actualizarValor(actualizados, "Clave pública SSH", publicaSsh, TipoCampo.TEXTO, sensible = false)
-                    alCambiarCampos(actualizados)
+                    alCambiar(datos.copy(clavePrivada = privadaPem, clavePublica = publicaSsh))
                     mostrarClave = true
                     mostrarDialogoSsh = false
                 }

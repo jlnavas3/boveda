@@ -211,10 +211,21 @@ fun ContenidoGruposSeguridad(
                 haptica.tic()
                 vm.ajustarUmbralAntiguedad(valor)
             },
+            saludUmbralPuntuacionDebil = ajustes.saludUmbralPuntuacionDebil,
+            saludLongitudMinimaRecomendada = ajustes.saludLongitudMinimaRecomendada,
+            alAjustarSaludUmbralPuntuacionDebil = { valor ->
+                haptica.tic()
+                vm.ajustarSaludUmbralPuntuacionDebil(valor)
+            },
+            alAjustarSaludLongitudMinimaRecomendada = { valor ->
+                haptica.tic()
+                vm.ajustarSaludLongitudMinimaRecomendada(valor)
+            },
             alRestablecer = {
                 haptica.tic()
                 vm.restablecerUmbralAntiguedad()
-                vm.avisar("Umbral de antigüedad restablecido")
+                vm.restablecerSaludContrasenas()
+                vm.avisar("Ajustes de auditoría restablecidos")
             }
         )
 

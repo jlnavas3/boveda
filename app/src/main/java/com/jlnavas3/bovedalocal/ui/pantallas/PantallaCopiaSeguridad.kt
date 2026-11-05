@@ -93,7 +93,7 @@ fun PantallaCopiaSeguridad(
                     mostrarId = ajustes.mostrarIdsAjustes
                 ) {
                     ComponenteNavegacion(
-                        titulo = "Copia automática local",
+                        titulo = "Respaldo automático local",
                         icono = null,
                         idFila = "05-COP-AUT-FIL",
                         mostrarId = ajustes.mostrarIdsAjustes,

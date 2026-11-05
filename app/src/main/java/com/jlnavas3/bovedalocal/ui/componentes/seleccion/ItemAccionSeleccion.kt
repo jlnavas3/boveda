@@ -26,7 +26,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
+import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
 import com.jlnavas3.bovedalocal.ui.theme.TextoPrincipal
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
 
@@ -40,7 +40,7 @@ fun ItemAccionSeleccion(
     habilitado: Boolean,
     alPulsar: () -> Unit,
     modifier: Modifier = Modifier,
-    colorIcono: Color = ColorAcento,
+    colorIcono: Color = ColorIconosInternos,
     colorTexto: Color = TextoPrincipal,
     descripcion: String? = null
 ) {

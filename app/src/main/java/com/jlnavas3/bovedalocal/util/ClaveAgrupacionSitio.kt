@@ -21,7 +21,8 @@ fun claveAgrupacionSitio(
     tldsConfigurados: List<String> = emptyList(),
     marcasPersonalizadas: Map<String, String> = emptyMap(),
     puertosConfigurados: Map<String, String> = emptyMap(),
-    octetosRouter: List<Int> = listOf(1, 254)
+    octetosRouter: List<Int> = listOf(1, 254),
+    rutasConfiguradas: Map<String, String> = emptyMap()
 ): String? = when (entrada.tipo) {
     TipoEntrada.LOGIN -> {
         val web = entrada.urls.asSequence()
@@ -38,7 +39,8 @@ fun claveAgrupacionSitio(
                 tldsConfigurados = tldsConfigurados,
                 marcasPersonalizadas = marcasPersonalizadas,
                 puertosConfigurados = puertosConfigurados,
-                octetosRouter = octetosRouter
+                octetosRouter = octetosRouter,
+                rutasConfiguradas = rutasConfiguradas
             )
         } else null
     }
@@ -54,7 +56,8 @@ fun claveAgrupacionSitio(
                 tldsConfigurados = tldsConfigurados,
                 marcasPersonalizadas = marcasPersonalizadas,
                 puertosConfigurados = puertosConfigurados,
-                octetosRouter = octetosRouter
+                octetosRouter = octetosRouter,
+                rutasConfiguradas = rutasConfiguradas
             )
         }
     else -> null

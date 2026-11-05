@@ -41,8 +41,10 @@ class EstadoSeleccionLista(
     }
 
     fun alternarSeleccion(id: String) {
-        seleccionados = if (seleccionados.contains(id)) seleccionados - id else seleccionados + id
-        if (seleccionados.isEmpty()) modoSeleccion = false
+        haptica.tic()
+        val nuevoSet = if (seleccionados.contains(id)) seleccionados - id else seleccionados + id
+        seleccionados = nuevoSet
+        modoSeleccion = nuevoSet.isNotEmpty()
     }
 
     fun entrarEnSeleccionLote(ids: Set<String>) {

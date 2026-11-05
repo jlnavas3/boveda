@@ -6,34 +6,60 @@
 
 package com.jlnavas3.bovedalocal.ui.pantallas.lista.pildoras
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Label
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import com.jlnavas3.bovedalocal.data.normalizarEtiqueta
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 
 /**
- * Píldora compacta para el filtro de Etiquetas.
+ * Píldora compacta para el filtro de Etiquetas con menú desplegable contextual.
  * Muestra el icono [ 🏷️ Todas ▾ ] o [ 🏷️ <etiqueta> ✕ ] cuando está activa.
  */
 @Composable
 fun PildoraEtiqueta(
+    etiquetas: List<String> = emptyList(),
     filtroEtiqueta: String?,
-    alAbrirSelector: () -> Unit,
+    conteoPorEtiqueta: Map<String, Int> = emptyMap(),
+    totalEntradas: Int = 0,
+    alAbrirSelector: () -> Unit = {},
     alSeleccionarEtiqueta: (String?) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val activo = !filtroEtiqueta.isNullOrBlank()
-    val texto = if (activo) normalizarEtiqueta(filtroEtiqueta) else "Todas"
+    var menuAbierto by remember { mutableStateOf(false) }
 
-    PildoraFiltroBase(
-        icono = Icons.AutoMirrored.Filled.Label,
-        texto = texto,
-        activo = activo,
-        colorAcento = ColorAcento,
-        alPulsar = alAbrirSelector,
-        alLimpiar = if (activo) { { alSeleccionarEtiqueta(null) } } else null,
-        modifier = modifier
-    )
+    val activo = !filtroEtiqueta.isNullOrBlank()
+    val texto = if (activo) normalizarEtiqueta(filtroEtiqueta) else null
+    val descripcionHud = if (activo) "Etiqueta: #$filtroEtiqueta" else "Filtrar por etiqueta"
+
+    Box(modifier = modifier) {
+        PildoraFiltroBase(
+            icono = Icons.AutoMirrored.Filled.Label,
+            texto = texto,
+            activo = activo,
+            colorAcento = ColorAcento,
+            descripcionHud = descripcionHud,
+            alPulsar = {
+                alAbrirSelector()
+                menuAbierto = true
+            },
+            alLimpiar = if (activo) { { alSeleccionarEtiqueta(null) } } else null
+        )
+
+        DropdownFiltroEtiquetas(
+            expanded = menuAbierto,
+            onDismissRequest = { menuAbierto = false },
+            etiquetas = etiquetas,
+            filtroEtiqueta = filtroEtiqueta,
+            conteoPorEtiqueta = conteoPorEtiqueta,
+            totalEntradas = totalEntradas,
+            alSeleccionarEtiqueta = alSeleccionarEtiqueta
+        )
+    }
 }

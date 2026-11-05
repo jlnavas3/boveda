@@ -38,6 +38,7 @@ import com.jlnavas3.bovedalocal.ui.pantallas.lista.IndicadorContenidoTarjeta
 import com.jlnavas3.bovedalocal.ui.theme.AlturaIndicadores
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
+import com.jlnavas3.bovedalocal.ui.theme.EstiloIndicadores
 import com.jlnavas3.bovedalocal.ui.theme.FormaCampo
 import com.jlnavas3.bovedalocal.ui.theme.FormaTarjeta
 import com.jlnavas3.bovedalocal.ui.theme.GrosorBorde
@@ -51,6 +52,7 @@ import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
 fun TarjetaStickyPreviaColores(
     entradaPrueba: Entrada,
     modifier: Modifier = Modifier,
+    estiloIndicadores: String = EstiloIndicadores,
     alturaIndicadores: Dp = AlturaIndicadores,
     opacidadIndicadores: Float = OpacidadIndicadores
 ) {
@@ -74,19 +76,27 @@ fun TarjetaStickyPreviaColores(
                 .background(Superficie)
                 .then(modifierBordeTarjeta)
         ) {
-            // Capa de fondo: Línea o fondo segmentado de indicadores (Z-order detrás)
-            IndicadorContenidoTarjeta(
-                entrada = entradaPrueba,
-                altura = alturaIndicadores,
-                opacidad = opacidadIndicadores,
-                modifier = Modifier.align(Alignment.TopCenter)
-            )
+            // Indicador de contenido según el estilo (líneas o lateral en bordes)
+            if (estiloIndicadores == "lineas" || estiloIndicadores == "lateral") {
+                val alineacionIndicador = when (estiloIndicadores) {
+                    "lateral" -> Alignment.CenterStart
+                    else -> Alignment.TopCenter
+                }
+                IndicadorContenidoTarjeta(
+                    entrada = entradaPrueba,
+                    estilo = estiloIndicadores,
+                    altura = alturaIndicadores,
+                    opacidad = opacidadIndicadores,
+                    modifier = Modifier.align(alineacionIndicador)
+                )
+            }
 
             // Contenido simulado en primer plano para validar legibilidad y contraste
+            val paddingInicio = if (estiloIndicadores == "lateral") (14.dp + alturaIndicadores.coerceAtLeast(3.dp)) else 14.dp
             Row(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(horizontal = 14.dp),
+                    .padding(start = paddingInicio, end = 14.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Box(
@@ -116,14 +126,30 @@ fun TarjetaStickyPreviaColores(
                         color = TextoPrincipal,
                         maxLines = 1
                     )
-                    Text(
-                        text = entradaPrueba.usuario,
-                        style = MaterialTheme.typography.bodySmall.copy(
-                            fontSize = 11.sp
-                        ),
-                        color = TextoSecundario,
-                        maxLines = 1
-                    )
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = entradaPrueba.usuario,
+                            style = MaterialTheme.typography.bodySmall.copy(
+                                fontSize = 11.sp
+                            ),
+                            color = TextoSecundario,
+                            maxLines = 1,
+                            overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
+                            modifier = Modifier.weight(1f)
+                        )
+                        if (estiloIndicadores == "puntos" || estiloIndicadores == "iconos") {
+                            Spacer(Modifier.width(8.dp))
+                            IndicadorContenidoTarjeta(
+                                entrada = entradaPrueba,
+                                estilo = estiloIndicadores,
+                                altura = alturaIndicadores,
+                                opacidad = opacidadIndicadores
+                            )
+                        }
+                    }
                 }
             }
         }

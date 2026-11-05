@@ -10,19 +10,31 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -33,9 +45,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.jlnavas3.bovedalocal.data.Entrada
 import com.jlnavas3.bovedalocal.ui.componentes.AccionDeslizamiento
-import com.jlnavas3.bovedalocal.ui.componentes.CheckboxBoveda
 import com.jlnavas3.bovedalocal.ui.componentes.ContenedorDeslizamientoBoveda
-import com.jlnavas3.bovedalocal.ui.pantallas.lista.IconoTipoEntrada
+import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjustesFondo
+import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorSeparadorAjustes
+import com.jlnavas3.bovedalocal.ui.pantallas.lista.AvatarSeleccionableEntrada
 import com.jlnavas3.bovedalocal.ui.pantallas.lista.IndicadorContenidoTarjeta
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
@@ -43,6 +56,7 @@ import com.jlnavas3.bovedalocal.ui.theme.ColorTarjetas
 import com.jlnavas3.bovedalocal.ui.theme.ColorTitulos
 import com.jlnavas3.bovedalocal.ui.theme.EscalaTexto
 import com.jlnavas3.bovedalocal.ui.theme.EstiloBorde
+import com.jlnavas3.bovedalocal.ui.theme.EstiloIndicadores
 import com.jlnavas3.bovedalocal.ui.theme.FormaTarjeta
 import com.jlnavas3.bovedalocal.ui.theme.GrosorBorde
 import com.jlnavas3.bovedalocal.ui.theme.Peligro
@@ -51,8 +65,8 @@ import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
 /**
  * Fila individual para la selección de una credencial en el diálogo interactivo de exportación CXF.
  * Soporta deslizamiento horizontal (swipe) para alternar selección/deselección con retroalimentación háptica.
- * Muestra indicador de contenido en tarjetas, icono de app asociada (o tipo), clave oculta con puntos,
- * URLs, y tipografía compacta gobernada por 02-APA-TYP y 02-APA-GEO.
+ * Incluye check circular neutro a la izquierda, icono de app/tipo, revelado de clave con icono de ojo alineado
+ * a la derecha, micro-indicadores anclados a la derecha y tipografía compacta gobernada por 02-APA-TYP y 02-APA-GEO.
  */
 @Composable
 fun FilaSeleccionCredencialCxf(
@@ -64,6 +78,7 @@ fun FilaSeleccionCredencialCxf(
     val forma = FormaTarjeta
     val tieneContrasena = entrada.contrasena.isNotBlank()
     val urlsLimpias = remember(entrada.urls) { entrada.urls.filter { it.isNotBlank() } }
+    var contrasenaVisible by rememberSaveable { mutableStateOf(false) }
 
     val accionDeslizamiento = remember(seleccionada) {
         AccionDeslizamiento(
@@ -81,7 +96,7 @@ fun FilaSeleccionCredencialCxf(
         accionIzquierda = accionDeslizamiento,
         accionDerecha = accionDeslizamiento
     ) {
-        Column(
+        Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(forma)
@@ -93,23 +108,32 @@ fun FilaSeleccionCredencialCxf(
                 )
                 .clickable { alAlternar(!seleccionada) }
         ) {
-            // Línea de indicadores de contenido en tarjetas
-            IndicadorContenidoTarjeta(entrada = entrada)
+            if (EstiloIndicadores == "lineas" || EstiloIndicadores == "lateral") {
+                val alineacionIndicador = when (EstiloIndicadores) {
+                    "lateral" -> Alignment.CenterStart
+                    else -> Alignment.TopCenter
+                }
+                IndicadorContenidoTarjeta(
+                    entrada = entrada,
+                    modifier = Modifier.align(alineacionIndicador)
+                )
+            }
 
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 12.dp, vertical = 10.dp),
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(10.dp)
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                // Icono de la app asociada o tipo de credencial
-                IconoTipoEntrada(
+                AvatarSeleccionableEntrada(
                     entrada = entrada,
-                    tamanoIcono = 34
+                    tamanoIcono = 38,
+                    seleccionado = seleccionada,
+                    alAlternarSeleccion = { alAlternar(!seleccionada) }
                 )
 
-                // Información central: Título, Usuario, Contraseña (puntos), Enlaces
+                // Información central: Título, Usuario, Contraseña (con ojo), Enlaces y micro-indicadores
                 Column(modifier = Modifier.weight(1f)) {
                     com.jlnavas3.bovedalocal.ui.componentes.TextoTitulo(
                         texto = entrada.titulo.ifBlank { "Sin título" },
@@ -127,31 +151,77 @@ fun FilaSeleccionCredencialCxf(
 
                     if (tieneContrasena) {
                         Spacer(Modifier.height(1.5.dp))
-                        val textoClave = "•".repeat(entrada.contrasena.length.coerceIn(8, 16))
-                        com.jlnavas3.bovedalocal.ui.componentes.TextoCuerpo(
-                            texto = textoClave,
-                            tamano = com.jlnavas3.bovedalocal.ui.componentes.TamanoCuerpo.PEQUENO,
-                            color = TextoSecundario.copy(alpha = 0.85f),
-                            maxLineas = 1
-                        )
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            val textoClave = if (contrasenaVisible) entrada.contrasena else "•".repeat(entrada.contrasena.length.coerceIn(8, 16))
+                            com.jlnavas3.bovedalocal.ui.componentes.TextoCuerpo(
+                                texto = textoClave,
+                                tamano = com.jlnavas3.bovedalocal.ui.componentes.TamanoCuerpo.PEQUENO,
+                                color = TextoSecundario.copy(alpha = 0.85f),
+                                maxLineas = 1,
+                                modifier = Modifier.weight(1f)
+                            )
+                            IconButton(
+                                onClick = { contrasenaVisible = !contrasenaVisible },
+                                modifier = Modifier.size(24.dp)
+                            ) {
+                                Icon(
+                                    imageVector = if (contrasenaVisible) Icons.Filled.VisibilityOff else Icons.Filled.Visibility,
+                                    contentDescription = if (contrasenaVisible) "Ocultar contraseña" else "Mostrar contraseña",
+                                    tint = TextoSecundario.copy(alpha = 0.7f),
+                                    modifier = Modifier.size(16.dp)
+                                )
+                            }
+                        }
                     }
 
                     if (urlsLimpias.isNotEmpty()) {
                         Spacer(Modifier.height(1.5.dp))
-                        urlsLimpias.forEach { url ->
-                            com.jlnavas3.bovedalocal.ui.componentes.TextoPiePagina(
-                                texto = url,
-                                maxLineas = 1
+                        urlsLimpias.forEachIndexed { index, url ->
+                            if (index == urlsLimpias.lastIndex && (EstiloIndicadores == "puntos" || EstiloIndicadores == "iconos")) {
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Row(
+                                        modifier = Modifier.weight(1f),
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        com.jlnavas3.bovedalocal.ui.componentes.TextoPiePagina(
+                                            texto = url,
+                                            maxLineas = 1,
+                                            modifier = Modifier.weight(1f, fill = false)
+                                        )
+                                    }
+                                    Spacer(Modifier.width(8.dp))
+                                    IndicadorContenidoTarjeta(
+                                        entrada = entrada,
+                                        estilo = EstiloIndicadores
+                                    )
+                                }
+                            } else {
+                                com.jlnavas3.bovedalocal.ui.componentes.TextoPiePagina(
+                                    texto = url,
+                                    maxLineas = 1
+                                )
+                            }
+                        }
+                    } else if (EstiloIndicadores == "puntos" || EstiloIndicadores == "iconos") {
+                        Spacer(Modifier.height(1.5.dp))
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.End,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            IndicadorContenidoTarjeta(
+                                entrada = entrada,
+                                estilo = EstiloIndicadores
                             )
                         }
                     }
                 }
-
-                // Checkbox unificado
-                CheckboxBoveda(
-                    checked = seleccionada,
-                    onCheckedChange = alAlternar
-                )
             }
         }
     }

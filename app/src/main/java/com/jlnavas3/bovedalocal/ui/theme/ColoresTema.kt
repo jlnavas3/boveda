@@ -30,6 +30,7 @@ internal class PaletaBase(
     val textoPrincipal: Color,
     val textoSecundario: Color,
     val menta: Color,
+    val azul: Color,
     val peligro: Color
 )
 
@@ -41,6 +42,7 @@ internal val paletaOscura = PaletaBase(
     textoPrincipal = PaletaSobriaDefaults.OSCURA.textoPrincipal,
     textoSecundario = PaletaSobriaDefaults.OSCURA.textoSecundario,
     menta = Color(0xFF57E6B4),
+    azul = Color(0xFF6FA8FF),
     peligro = Color(0xFFFF5D5D)
 )
 
@@ -52,6 +54,7 @@ internal val paletaClara = PaletaBase(
     textoPrincipal = PaletaSobriaDefaults.CLARA.textoPrincipal,
     textoSecundario = PaletaSobriaDefaults.CLARA.textoSecundario,
     menta = Color(0xFF1F9C74),
+    azul = Color(0xFF2563EB),
     peligro = Color(0xFFD23F3F)
 )
 
@@ -66,8 +69,11 @@ val Superficie: Color get() = paletaSobriaEfectiva.tarjeta
 val SuperficieAlta: Color get() = paletaSobriaEfectiva.campo
 val Borde: Color get() = paletaSobriaEfectiva.borde
 val Menta: Color get() = paletaActiva.menta
+val Azul: Color get() = paletaActiva.azul
 val Peligro: Color get() = paletaActiva.peligro
 val Advertencia: Color get() = if (esOscuroActivo) Color(0xFFFBBF24) else Color(0xFFD97706)
+val ColorAnclado: Color = Color(0xFF1E88E5)
+val ColorFavorito: Color = Color(0xFFFFB300)
 val TextoPrincipal: Color get() = paletaSobriaEfectiva.textoPrincipal
 val TextoSecundario: Color get() = paletaSobriaEfectiva.textoSecundario
 
@@ -162,12 +168,12 @@ private var colorPapeleraBase by mutableStateOf(Color(0xFFEF4444))
 private var colorExportacionBase by mutableStateOf(Color(0xFF6366F1))
 
 // Colores Aislados Exclusivos para Datos e Indicadores de Tarjetas
-private var colorDatosUsuarioBase by mutableStateOf(Color(0xFF0284C7))
-private var colorDatosContrasenaBase by mutableStateOf(Color(0xFF0D9488))
+private var colorDatosUsuarioBase by mutableStateOf(Color(0xFF2563EB))
+private var colorDatosContrasenaBase by mutableStateOf(Color(0xFFEAB308))
 private var colorDatos2FABase by mutableStateOf(Color(0xFFF97316))
 private var colorDatosPasskeyBase by mutableStateOf(Color(0xFF8B5CF6))
 private var colorDatosWebBase by mutableStateOf(Color(0xFF06B6D4))
-private var colorDatosAppBase by mutableStateOf(Color(0xFF10B981))
+private var colorDatosAppBase by mutableStateOf(Color(0xFF16A34A))
 
 var ColorDatosUsuario: Color
     get() = colorDatosUsuarioBase
@@ -194,8 +200,13 @@ var ColorDatosApp: Color
     set(valor) { colorDatosAppBase = valor }
 
 // Dimensiones y Apariencia de Indicadores de Datos en Tarjetas
+private var estiloIndicadoresBase by mutableStateOf(AjustesDefaults.ColoresDatos.ESTILO_INDICADORES)
 private var alturaIndicadoresDpBase by mutableStateOf(AjustesDefaults.ColoresDatos.ALTURA_INDICADORES_DP)
 private var opacidadIndicadoresBase by mutableStateOf(AjustesDefaults.ColoresDatos.OPACIDAD_INDICADORES)
+
+var EstiloIndicadores: String
+    get() = estiloIndicadoresBase
+    set(valor) { estiloIndicadoresBase = valor }
 
 var AlturaIndicadoresDp: Float
     get() = alturaIndicadoresDpBase

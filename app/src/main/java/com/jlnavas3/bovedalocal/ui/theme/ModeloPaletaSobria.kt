@@ -28,7 +28,8 @@ data class PaletaSobria(
     val borde: Color,
     val textoPrincipal: Color,
     val textoSecundario: Color,
-    val acento: Color
+    val acento: Color,
+    val modal: Color = if (esOscuro) Color(0xFF23252A) else Color(0xFFD6E2F0)
 ) {
     /**
      * Exporta la paleta en formato JSON para que el usuario pueda copiarla fácilmente
@@ -41,6 +42,7 @@ data class PaletaSobria(
           "fondo": "${fondo.aHexConAlfa()}",
           "tarjeta": "${tarjeta.aHexConAlfa()}",
           "campo": "${campo.aHexConAlfa()}",
+          "modal": "${modal.aHexConAlfa()}",
           "borde": "${borde.aHexConAlfa()}",
           "textoPrincipal": "${textoPrincipal.aHexConAlfa()}",
           "textoSecundario": "${textoSecundario.aHexConAlfa()}",
@@ -60,6 +62,7 @@ data class PaletaSobria(
             fondo = Color(0x${fondo.aHexConAlfa().removePrefix("#")}),
             tarjeta = Color(0x${tarjeta.aHexConAlfa().removePrefix("#")}),
             campo = Color(0x${campo.aHexConAlfa().removePrefix("#")}),
+            modal = Color(0x${modal.aHexConAlfa().removePrefix("#")}),
             borde = Color(0x${borde.aHexConAlfa().removePrefix("#")}),
             textoPrincipal = Color(0x${textoPrincipal.aHexConAlfa().removePrefix("#")}),
             textoSecundario = Color(0x${textoSecundario.aHexConAlfa().removePrefix("#")}),
@@ -78,7 +81,8 @@ object PaletaSobriaDefaults {
         borde = Color(0xFF242629),
         textoPrincipal = Color(0xFF8A929E),
         textoSecundario = Color(0xFF7A828C),
-        acento = Color(0xFF959AA7)
+        acento = Color(0xFF959AA7),
+        modal = Color(0xFF23252A)
     )
 
     val CLARA = PaletaSobria(
@@ -89,7 +93,8 @@ object PaletaSobriaDefaults {
         borde = Color(0xFFB2BDCC),
         textoPrincipal = Color(0xFF43484D),
         textoSecundario = Color(0xFF646A73),
-        acento = Color(0xFF323842)
+        acento = Color(0xFF323842),
+        modal = Color(0xFFD6E2F0)
     )
 }
 
@@ -105,38 +110,41 @@ data class ParametrosLaboratorioPreset(
     val acentoHue: Float,
     val acentoSat: Float,
     val acentoVal: Float,
-    val acentoAlfa: Float
+    val acentoAlfa: Float,
+    val lumModal: Float = 0.22f
 )
 
 object PaletaSobriaParametrosDefaults {
     val OSCURO = ParametrosLaboratorioPreset(
         tonoGlobal = 215f,
         saturacionTinte = 0.12f,
-        lumFondo = 0.00f,
-        lumTarjeta = 0.11f,
+        lumFondo = 0.09f,
+        lumTarjeta = 0.16f,
         lumCampo = 0.21f,
         lumBorde = 0.16f,
-        lumTextoPrincipal = 0.62f,
-        lumTextoSecundario = 0.53f,
+        lumTextoPrincipal = 0.85f,
+        lumTextoSecundario = 0.65f,
         acentoHue = 223f,
         acentoSat = 0.10f,
         acentoVal = 0.65f,
-        acentoAlfa = 1.0f
+        acentoAlfa = 1.0f,
+        lumModal = 0.22f
     )
 
     val CLARO = ParametrosLaboratorioPreset(
         tonoGlobal = 215f,
         saturacionTinte = 0.12f,
-        lumFondo = 0.80f,
-        lumTarjeta = 0.90f,
-        lumCampo = 1.00f,
-        lumBorde = 0.80f,
-        lumTextoPrincipal = 0.30f,
-        lumTextoSecundario = 0.45f,
+        lumFondo = 0.95f,
+        lumTarjeta = 0.89f,
+        lumCampo = 0.83f,
+        lumBorde = 0.78f,
+        lumTextoPrincipal = 0.14f,
+        lumTextoSecundario = 0.38f,
         acentoHue = 217f,
         acentoSat = 0.24f,
         acentoVal = 0.25f,
-        acentoAlfa = 1.0f
+        acentoAlfa = 1.0f,
+        lumModal = 0.93f
     )
 }
 
@@ -159,7 +167,9 @@ data class ParametrosLaboratorio(
     val acentoSat: Float,
     val acentoVal: Float,
     val acentoAlfa: Float,
-    val esPersonalizado: Boolean = false
+    val esPersonalizado: Boolean = false,
+    val lumModal: Float = 0.22f,
+    val tonoModal: Float = tonoGlobal
 )
 
 data class EstadoLaboratorioGuardado(
@@ -193,6 +203,7 @@ object GestorPaletaSobria {
             ed.putString("oscuro_fondo", paletaOscura.fondo.aHexConAlfa())
             ed.putString("oscuro_tarjeta", paletaOscura.tarjeta.aHexConAlfa())
             ed.putString("oscuro_campo", paletaOscura.campo.aHexConAlfa())
+            ed.putString("oscuro_modal", paletaOscura.modal.aHexConAlfa())
             ed.putString("oscuro_borde", paletaOscura.borde.aHexConAlfa())
             ed.putString("oscuro_texto_principal", paletaOscura.textoPrincipal.aHexConAlfa())
             ed.putString("oscuro_texto_secundario", paletaOscura.textoSecundario.aHexConAlfa())
@@ -203,6 +214,7 @@ object GestorPaletaSobria {
             ed.putFloat("param_osc_lum_fondo", paramsOscuro.lumFondo)
             ed.putFloat("param_osc_lum_tarjeta", paramsOscuro.lumTarjeta)
             ed.putFloat("param_osc_lum_campo", paramsOscuro.lumCampo)
+            ed.putFloat("param_osc_lum_modal", paramsOscuro.lumModal)
             ed.putFloat("param_osc_lum_borde", paramsOscuro.lumBorde)
             ed.putFloat("param_osc_lum_texto_p", paramsOscuro.lumTextoPrincipal)
             ed.putFloat("param_osc_lum_texto_s", paramsOscuro.lumTextoSecundario)
@@ -211,6 +223,7 @@ object GestorPaletaSobria {
             ed.putFloat("param_osc_tono_fondo", paramsOscuro.tonoFondo)
             ed.putFloat("param_osc_tono_tarjeta", paramsOscuro.tonoTarjeta)
             ed.putFloat("param_osc_tono_campo", paramsOscuro.tonoCampo)
+            ed.putFloat("param_osc_tono_modal", paramsOscuro.tonoModal)
             ed.putFloat("param_osc_tono_borde", paramsOscuro.tonoBorde)
             ed.putFloat("param_osc_tono_texto_p", paramsOscuro.tonoTextoPrincipal)
             ed.putFloat("param_osc_tono_texto_s", paramsOscuro.tonoTextoSecundario)
@@ -226,6 +239,7 @@ object GestorPaletaSobria {
             ed.putString("claro_fondo", paletaClara.fondo.aHexConAlfa())
             ed.putString("claro_tarjeta", paletaClara.tarjeta.aHexConAlfa())
             ed.putString("claro_campo", paletaClara.campo.aHexConAlfa())
+            ed.putString("claro_modal", paletaClara.modal.aHexConAlfa())
             ed.putString("claro_borde", paletaClara.borde.aHexConAlfa())
             ed.putString("claro_texto_principal", paletaClara.textoPrincipal.aHexConAlfa())
             ed.putString("claro_texto_secundario", paletaClara.textoSecundario.aHexConAlfa())
@@ -236,6 +250,7 @@ object GestorPaletaSobria {
             ed.putFloat("param_cla_lum_fondo", paramsClaro.lumFondo)
             ed.putFloat("param_cla_lum_tarjeta", paramsClaro.lumTarjeta)
             ed.putFloat("param_cla_lum_campo", paramsClaro.lumCampo)
+            ed.putFloat("param_cla_lum_modal", paramsClaro.lumModal)
             ed.putFloat("param_cla_lum_borde", paramsClaro.lumBorde)
             ed.putFloat("param_cla_lum_texto_p", paramsClaro.lumTextoPrincipal)
             ed.putFloat("param_cla_lum_texto_s", paramsClaro.lumTextoSecundario)
@@ -244,6 +259,7 @@ object GestorPaletaSobria {
             ed.putFloat("param_cla_tono_fondo", paramsClaro.tonoFondo)
             ed.putFloat("param_cla_tono_tarjeta", paramsClaro.tonoTarjeta)
             ed.putFloat("param_cla_tono_campo", paramsClaro.tonoCampo)
+            ed.putFloat("param_cla_tono_modal", paramsClaro.tonoModal)
             ed.putFloat("param_cla_tono_borde", paramsClaro.tonoBorde)
             ed.putFloat("param_cla_tono_texto_p", paramsClaro.tonoTextoPrincipal)
             ed.putFloat("param_cla_tono_texto_s", paramsClaro.tonoTextoSecundario)
@@ -268,6 +284,7 @@ object GestorPaletaSobria {
                 lumFondo = prefs.getFloat("param_osc_lum_fondo", PaletaSobriaParametrosDefaults.OSCURO.lumFondo),
                 lumTarjeta = prefs.getFloat("param_osc_lum_tarjeta", PaletaSobriaParametrosDefaults.OSCURO.lumTarjeta),
                 lumCampo = prefs.getFloat("param_osc_lum_campo", PaletaSobriaParametrosDefaults.OSCURO.lumCampo),
+                lumModal = prefs.getFloat("param_osc_lum_modal", PaletaSobriaParametrosDefaults.OSCURO.lumModal),
                 lumBorde = prefs.getFloat("param_osc_lum_borde", PaletaSobriaParametrosDefaults.OSCURO.lumBorde),
                 lumTextoPrincipal = prefs.getFloat("param_osc_lum_texto_p", PaletaSobriaParametrosDefaults.OSCURO.lumTextoPrincipal),
                 lumTextoSecundario = prefs.getFloat("param_osc_lum_texto_s", PaletaSobriaParametrosDefaults.OSCURO.lumTextoSecundario),
@@ -276,6 +293,7 @@ object GestorPaletaSobria {
                 tonoFondo = prefs.getFloat("param_osc_tono_fondo", PaletaSobriaParametrosDefaults.OSCURO.tonoGlobal),
                 tonoTarjeta = prefs.getFloat("param_osc_tono_tarjeta", PaletaSobriaParametrosDefaults.OSCURO.tonoGlobal),
                 tonoCampo = prefs.getFloat("param_osc_tono_campo", PaletaSobriaParametrosDefaults.OSCURO.tonoGlobal),
+                tonoModal = prefs.getFloat("param_osc_tono_modal", PaletaSobriaParametrosDefaults.OSCURO.tonoGlobal),
                 tonoBorde = prefs.getFloat("param_osc_tono_borde", PaletaSobriaParametrosDefaults.OSCURO.tonoGlobal),
                 tonoTextoPrincipal = prefs.getFloat("param_osc_tono_texto_p", PaletaSobriaParametrosDefaults.OSCURO.tonoGlobal),
                 tonoTextoSecundario = prefs.getFloat("param_osc_tono_texto_s", PaletaSobriaParametrosDefaults.OSCURO.tonoGlobal),
@@ -292,6 +310,7 @@ object GestorPaletaSobria {
                 lumFondo = prefs.getFloat("param_cla_lum_fondo", PaletaSobriaParametrosDefaults.CLARO.lumFondo),
                 lumTarjeta = prefs.getFloat("param_cla_lum_tarjeta", PaletaSobriaParametrosDefaults.CLARO.lumTarjeta),
                 lumCampo = prefs.getFloat("param_cla_lum_campo", PaletaSobriaParametrosDefaults.CLARO.lumCampo),
+                lumModal = prefs.getFloat("param_cla_lum_modal", PaletaSobriaParametrosDefaults.CLARO.lumModal),
                 lumBorde = prefs.getFloat("param_cla_lum_borde", PaletaSobriaParametrosDefaults.CLARO.lumBorde),
                 lumTextoPrincipal = prefs.getFloat("param_cla_lum_texto_p", PaletaSobriaParametrosDefaults.CLARO.lumTextoPrincipal),
                 lumTextoSecundario = prefs.getFloat("param_cla_lum_texto_s", PaletaSobriaParametrosDefaults.CLARO.lumTextoSecundario),
@@ -300,6 +319,7 @@ object GestorPaletaSobria {
                 tonoFondo = prefs.getFloat("param_cla_tono_fondo", PaletaSobriaParametrosDefaults.CLARO.tonoGlobal),
                 tonoTarjeta = prefs.getFloat("param_cla_tono_tarjeta", PaletaSobriaParametrosDefaults.CLARO.tonoGlobal),
                 tonoCampo = prefs.getFloat("param_cla_tono_campo", PaletaSobriaParametrosDefaults.CLARO.tonoGlobal),
+                tonoModal = prefs.getFloat("param_cla_tono_modal", PaletaSobriaParametrosDefaults.CLARO.tonoGlobal),
                 tonoBorde = prefs.getFloat("param_cla_tono_borde", PaletaSobriaParametrosDefaults.CLARO.tonoGlobal),
                 tonoTextoPrincipal = prefs.getFloat("param_cla_tono_texto_p", PaletaSobriaParametrosDefaults.CLARO.tonoGlobal),
                 tonoTextoSecundario = prefs.getFloat("param_cla_tono_texto_s", PaletaSobriaParametrosDefaults.CLARO.tonoGlobal),
@@ -322,6 +342,7 @@ object GestorPaletaSobria {
                 fondo = parsearColorHex(prefs.getString("oscuro_fondo", null), PaletaSobriaDefaults.OSCURA.fondo),
                 tarjeta = parsearColorHex(prefs.getString("oscuro_tarjeta", null), PaletaSobriaDefaults.OSCURA.tarjeta),
                 campo = parsearColorHex(prefs.getString("oscuro_campo", null), PaletaSobriaDefaults.OSCURA.campo),
+                modal = parsearColorHex(prefs.getString("oscuro_modal", null), PaletaSobriaDefaults.OSCURA.modal),
                 borde = parsearColorHex(prefs.getString("oscuro_borde", null), PaletaSobriaDefaults.OSCURA.borde),
                 textoPrincipal = parsearColorHex(prefs.getString("oscuro_texto_principal", null), PaletaSobriaDefaults.OSCURA.textoPrincipal),
                 textoSecundario = parsearColorHex(prefs.getString("oscuro_texto_secundario", null), PaletaSobriaDefaults.OSCURA.textoSecundario),
@@ -335,6 +356,7 @@ object GestorPaletaSobria {
                 fondo = parsearColorHex(prefs.getString("claro_fondo", null), PaletaSobriaDefaults.CLARA.fondo),
                 tarjeta = parsearColorHex(prefs.getString("claro_tarjeta", null), PaletaSobriaDefaults.CLARA.tarjeta),
                 campo = parsearColorHex(prefs.getString("claro_campo", null), PaletaSobriaDefaults.CLARA.campo),
+                modal = parsearColorHex(prefs.getString("claro_modal", null), PaletaSobriaDefaults.CLARA.modal),
                 borde = parsearColorHex(prefs.getString("claro_borde", null), PaletaSobriaDefaults.CLARA.borde),
                 textoPrincipal = parsearColorHex(prefs.getString("claro_texto_principal", null), PaletaSobriaDefaults.CLARA.textoPrincipal),
                 textoSecundario = parsearColorHex(prefs.getString("claro_texto_secundario", null), PaletaSobriaDefaults.CLARA.textoSecundario),

@@ -41,7 +41,7 @@ fun ElementoMenuCompacto(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     icono: ImageVector? = null,
-    colorIcono: Color = ColorAcento,
+    colorIcono: Color = ColorIconosInternos,
     colorTexto: Color = TextoPrincipal,
     iconoFinal: ImageVector? = null,
     colorIconoFinal: Color = ColorIconosInternos.copy(alpha = 0.6f),

@@ -48,8 +48,8 @@ fun ChipSegmentoUrl(
     modifier: Modifier = Modifier
 ) {
     val forma = FormaChip
-    val colorBorde = if (seleccionado) ColorAcento else if (GrosorBorde > 0.dp && EstiloBorde != "ninguno") ColorBordeActual else ColorAcento.copy(alpha = 0.25f)
-    val grosorEfectivo = if (seleccionado) 1.5.dp else if (GrosorBorde > 0.dp && EstiloBorde != "ninguno") GrosorBorde else 1.dp
+    val colorBorde = if (seleccionado) ColorAcento.copy(alpha = 0.6f) else if (GrosorBorde > 0.dp && EstiloBorde != "ninguno") ColorBordeActual else ColorBordeActual.copy(alpha = 0.35f)
+    val grosorEfectivo = 1.dp
     val formaIconoRegla = if (CurvaturaEsquinas == 0.dp) RoundedCornerShape(0.dp) else CircleShape
 
     Row(
@@ -57,7 +57,7 @@ fun ChipSegmentoUrl(
         modifier = modifier
             .clip(forma)
             .background(
-                if (seleccionado) ColorAcento.copy(alpha = 0.22f) else SuperficieAlta
+                if (seleccionado) ColorAcento.copy(alpha = 0.15f) else SuperficieAlta
             )
             .border(
                 width = grosorEfectivo,

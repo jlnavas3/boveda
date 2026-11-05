@@ -37,11 +37,13 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjusteGris
+import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorCampoAjustes
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorTarjetaAjustes
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorTextoAjustes
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.MapaAjustes
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.NodoAjuste
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
+import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
 import com.jlnavas3.bovedalocal.ui.theme.EstiloMono
 
 /**
@@ -103,13 +105,13 @@ fun FilaItemMenuLateralPersonalizable(
                 modifier = Modifier
                     .size(32.dp)
                     .clip(RoundedCornerShape(8.dp))
-                    .background(color),
+                    .background(ColorCampoAjustes),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
                     imageVector = icono,
                     contentDescription = null,
-                    tint = Color.White,
+                    tint = ColorIconosInternos,
                     modifier = Modifier.size(18.dp)
                 )
             }

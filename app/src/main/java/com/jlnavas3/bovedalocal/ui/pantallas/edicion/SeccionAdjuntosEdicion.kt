@@ -11,28 +11,28 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AttachFile
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.jlnavas3.bovedalocal.BovedaApp
 import com.jlnavas3.bovedalocal.data.AdjuntoBoveda
 import com.jlnavas3.bovedalocal.ui.componentes.BotonBorde
-import com.jlnavas3.bovedalocal.ui.componentes.ContenedorTarjeta
-import com.jlnavas3.bovedalocal.ui.componentes.EtiquetaSeccion
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
 import com.jlnavas3.bovedalocal.util.LectorAdjuntosSaf
 
 /**
- * Sección desacoplada del formulario de edición para gestionar archivos adjuntos cifrados.
+ * Sección desacoplada del formulario de edición para gestionar archivos adjuntos cifrados,
+ * presentada como fila colapsable homogénea.
  */
 @Composable
 fun SeccionAdjuntosEdicion(
@@ -41,6 +41,7 @@ fun SeccionAdjuntosEdicion(
     modifier: Modifier = Modifier
 ) {
     val contexto = LocalContext.current
+    var expandido by remember { mutableStateOf(false) }
 
     val selectorArchivo = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.OpenDocument()
@@ -57,49 +58,53 @@ fun SeccionAdjuntosEdicion(
         }
     }
 
-    Column(modifier = modifier.fillMaxWidth()) {
-        EtiquetaSeccion(texto = "Archivos adjuntos cifrados", icono = Icons.Filled.AttachFile)
-        Spacer(Modifier.height(4.dp))
+    val resumen = if (adjuntos.isEmpty()) "Sin archivos adjuntos" else "${adjuntos.size} archivo(s) cifrado(s)"
 
-        ContenedorTarjeta {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(12.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                if (adjuntos.isNotEmpty()) {
-                    adjuntos.forEach { adjunto ->
-                        FilaAdjuntoEdicion(
-                            adjunto = adjunto,
-                            alEliminar = {
-                                alCambiarAdjuntos(adjuntos.filterNot { it.id == adjunto.id })
-                            }
-                        )
-                    }
-                }
-
-                BotonBorde(
-                    texto = "Adjuntar archivo seguro",
-                    icono = Icons.Filled.AttachFile,
-                    alPulsar = {
-                        BovedaApp.salidaPendiente(contexto)
-                        try {
-                            selectorArchivo.launch(arrayOf("*/*"))
-                        } catch (e: Exception) {
-                            BovedaApp.salidaTerminada(contexto)
-                            Toast.makeText(contexto, "No se pudo abrir el selector de archivos", Toast.LENGTH_SHORT).show()
+    FilaSeccionColapsableEdicion(
+        icono = Icons.Filled.AttachFile,
+        colorIcono = TextoSecundario,
+        titulo = "Archivos adjuntos cifrados",
+        resumen = resumen,
+        insigniaTexto = if (adjuntos.isNotEmpty()) "${adjuntos.size}" else null,
+        expandido = expandido,
+        alAlternarExpandido = { expandido = !expandido },
+        modifier = modifier
+    ) {
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            if (adjuntos.isNotEmpty()) {
+                adjuntos.forEach { adjunto ->
+                    FilaAdjuntoEdicion(
+                        adjunto = adjunto,
+                        alEliminar = {
+                            alCambiarAdjuntos(adjuntos.filterNot { it.id == adjunto.id })
                         }
-                    },
-                    modifier = Modifier.fillMaxWidth()
-                )
-
-                Text(
-                    text = "Los adjuntos se cifran localmente dentro del archivo de la bóveda (.bvda). Tamaño máximo de 2 MB por archivo.",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = TextoSecundario
-                )
+                    )
+                }
             }
+
+            BotonBorde(
+                texto = "Adjuntar archivo seguro",
+                icono = Icons.Filled.AttachFile,
+                alPulsar = {
+                    BovedaApp.salidaPendiente(contexto)
+                    try {
+                        selectorArchivo.launch(arrayOf("*/*"))
+                    } catch (e: Exception) {
+                        BovedaApp.salidaTerminada(contexto)
+                        Toast.makeText(contexto, "No se pudo abrir el selector de archivos", Toast.LENGTH_SHORT).show()
+                    }
+                },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Text(
+                text = "Los adjuntos se cifran localmente dentro del archivo de la bóveda (.bvda). Tamaño máximo de 2 MB por archivo.",
+                style = MaterialTheme.typography.bodySmall,
+                color = TextoSecundario
+            )
         }
     }
 }

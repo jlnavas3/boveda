@@ -54,7 +54,7 @@ class CxfFiltradorEntradasExportacionTest {
     }
 
     @Test
-    fun filtrar_conIdsVacias_devuelveTodas() {
+    fun filtrar_conIdsVacias_devuelveVacio() {
         val e1 = crearEntrada("id-1", "Google")
         val todas = listOf(e1)
 
@@ -64,6 +64,6 @@ class CxfFiltradorEntradasExportacionTest {
             esSeleccionPersonalizada = true
         )
 
-        assertEquals(1, resultado.size)
+        assertEquals(0, resultado.size)
     }
 }

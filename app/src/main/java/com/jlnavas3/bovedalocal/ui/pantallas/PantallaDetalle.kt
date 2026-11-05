@@ -47,6 +47,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.jlnavas3.bovedalocal.data.AjustesApp
 import com.jlnavas3.bovedalocal.data.Entrada
+import com.jlnavas3.bovedalocal.data.TipoEntrada
 import com.jlnavas3.bovedalocal.ui.pantallas.detalle.BarraAccionesDockedDetalle
 import com.jlnavas3.bovedalocal.ui.pantallas.detalle.ContenidoEntradaDetalle
 import com.jlnavas3.bovedalocal.ui.pantallas.detalle.DialogosDetalle
@@ -74,7 +75,7 @@ import com.jlnavas3.bovedalocal.ui.pantallas.detalle.PieMetadatosDetalle
 import com.jlnavas3.bovedalocal.ui.pantallas.detalle.TarjetaCamposDetalle
 import com.jlnavas3.bovedalocal.ui.pantallas.detalle.TarjetaCredencialesDetalle
 import com.jlnavas3.bovedalocal.ui.pantallas.detalle.TarjetaEtiquetasDetalle
-import com.jlnavas3.bovedalocal.ui.pantallas.detalle.TarjetaHistorialDetalle
+import com.jlnavas3.bovedalocal.ui.pantallas.detalle.TarjetaCredencialesSecundariasDetalle
 import com.jlnavas3.bovedalocal.ui.pantallas.detalle.TarjetaNotasDetalle
 import com.jlnavas3.bovedalocal.ui.pantallas.detalle.TarjetaPasskeyDetalle
 import com.jlnavas3.bovedalocal.ui.pantallas.detalle.TarjetaSitiosYAppsDetalle
@@ -147,13 +148,27 @@ fun PantallaDetalle(
             .fillMaxSize()
             .background(ColorAjustesFondo)
     ) {
+        val tienePasskeyActual = entradaActual?.tipo == TipoEntrada.PASSKEY || entradaActual?.passkey != null
+        val esLoginActual = entradaActual?.tipo == TipoEntrada.LOGIN
+
         BarraSuperiorDetalle(
             conSeparador = true,
             alVolver = { vm.volverAtras() },
             alIrCopiaRapida = { vm.ir(Pantalla.AjustesCopiaAutomatica("03.2.1")) },
             alIrFormatosCampos = { vm.ir(Pantalla.FormatosCampos("03-LST-CAM")) },
-            alIrSeguridadDatos = { vm.ir(Pantalla.Seguridad("01-SEG-DAT")) },
-            alIrColoresIds = { vm.ir(Pantalla.ColoresIdentificadores("06-AVN-IDS")) }
+            alIrSeguridadDatos = { vm.ir(Pantalla.SeguridadVisual("01-SEG-BIO-VIS")) },
+            alIrColoresIds = { vm.ir(Pantalla.ColoresDatos("02-APA-DES-IND")) },
+            alIrDatosTecnicosPasskey = if (tienePasskeyActual) {
+                { vm.ir(Pantalla.AjustesAutocompletado("04-HER-PSK-TEC")) }
+            } else null,
+            alIrUmbralContrasenas = if (esLoginActual) {
+                { vm.ir(Pantalla.AuditoriaSeguridad("01-SEG-BIO-ANT")) }
+            } else null,
+            alIrContrasenasComunes = if (esLoginActual) {
+                { vm.ir(Pantalla.ContrasenasComunes("01-SEG-COM")) }
+            } else null,
+            alIrPlantillasPersonalizadas = { vm.ir(Pantalla.PlantillasCampos("02-APA-PLT")) },
+            alIrAyuda = { vm.ir(Pantalla.Ayuda("06-SIS-AYU")) }
         )
 
         // Indicador de modo comparación
@@ -218,6 +233,7 @@ fun PantallaDetalle(
 
         BarraAccionesDockedDetalle(
             esFavorito = entradaActual?.favorito == true,
+            esAnclado = entradaActual?.anclado == true,
             alEliminar = {
                 haptica.tic()
                 confirmarBorrado = true
@@ -225,6 +241,10 @@ fun PantallaDetalle(
             alCompartirQr = {
                 haptica.tic()
                 mostrarDialogoQr = true
+            },
+            alAlternarAnclado = {
+                haptica.tic()
+                entradaActual?.let { vm.alternarAnclado(it.id) }
             },
             alAlternarFavorito = {
                 haptica.tic()

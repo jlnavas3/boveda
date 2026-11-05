@@ -20,13 +20,14 @@ import androidx.compose.runtime.remember
 @Composable
 fun rememberGruposExpandidosPersistentes(
     clave: String,
-    gestor: GestorGruposExpandidos?
+    gestor: GestorGruposExpandidos?,
+    valoresPorDefecto: Set<String> = emptySet()
 ): MutableState<Set<String>> {
     if (gestor == null) {
-        return remember { mutableStateOf(emptySet()) }
+        return remember { mutableStateOf(valoresPorDefecto) }
     }
     val estadoGrupos = remember(clave) {
-        mutableStateOf(gestor.obtenerGrupos(clave))
+        mutableStateOf(gestor.obtenerGrupos(clave, valoresPorDefecto))
     }
 
     DisposableEffect(clave, estadoGrupos.value) {

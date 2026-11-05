@@ -205,6 +205,9 @@ fun ComponenteCampoTexto(
     }
     val composablePlaceholder: (@Composable () -> Unit)? = placeholder?.let { { Text(it) } }
 
+    val oculta = esContrasena && !esVisible
+    val variasEfectivo = if (oculta) false else varias
+
     Column(modifier = modifier.fillMaxWidth()) {
         Box(
             modifier = Modifier
@@ -217,13 +220,6 @@ fun ComponenteCampoTexto(
                             .then(borderModifier)
                     } else Modifier
                 )
-                .then(
-                    if (alPulsar != null && habilitado) {
-                        Modifier.clickable { alPulsar() }
-                    } else {
-                        Modifier
-                    }
-                )
         ) {
             CuerpoEntradaTextoBoveda(
                 valor = valor,
@@ -234,7 +230,7 @@ fun ComponenteCampoTexto(
                 readOnly = readOnly,
                 habilitado = habilitado,
                 esError = esError,
-                varias = varias,
+                varias = variasEfectivo,
                 estiloTexto = estiloTexto,
                 transformacionVisual = transformacionVisual,
                 leadingIcon = leadingIconComposable,
@@ -258,6 +254,14 @@ fun ComponenteCampoTexto(
                             .background(colorBordeIzquierdo)
                     )
                 }
+            }
+            if (alPulsar != null && habilitado) {
+                Box(
+                    modifier = Modifier
+                        .matchParentSize()
+                        .clip(forma)
+                        .clickable { alPulsar() }
+                )
             }
         }
 

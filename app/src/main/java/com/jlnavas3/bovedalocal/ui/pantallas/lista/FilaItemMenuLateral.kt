@@ -16,6 +16,7 @@ import androidx.compose.material.icons.filled.Fingerprint
 import androidx.compose.material.icons.filled.Folder
 import androidx.compose.material.icons.filled.HealthAndSafety
 import androidx.compose.material.icons.filled.History
+import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.QrCodeScanner
 import androidx.compose.material.icons.filled.Security
 import androidx.compose.material.icons.filled.Settings
@@ -25,13 +26,8 @@ import androidx.compose.ui.graphics.Color
 import com.jlnavas3.bovedalocal.data.AjustesApp
 import com.jlnavas3.bovedalocal.ui.Pantalla
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.MapaAjustes
-import com.jlnavas3.bovedalocal.ui.theme.Color2FA
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
-import com.jlnavas3.bovedalocal.ui.theme.ColorGenerador
 import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
-import com.jlnavas3.bovedalocal.ui.theme.ColorPapelera
-import com.jlnavas3.bovedalocal.ui.theme.ColorPasskeys
-import com.jlnavas3.bovedalocal.ui.theme.ColorSalud
 import com.jlnavas3.bovedalocal.ui.theme.Peligro
 
 /**
@@ -42,6 +38,7 @@ fun FilaItemMenuLateral(
     id: String,
     totalDuplicadas: Int = 0,
     totalPapelera: Int = 0,
+    conteosListaCuentas: Map<String, Int> = emptyMap(),
     mostrarIds: Boolean = false,
     ajustes: AjustesApp? = null,
     alIr: (Pantalla) -> Unit
@@ -54,7 +51,7 @@ fun FilaItemMenuLateral(
         "04-HER-GEN" -> ItemMenu(
             texto = "Generar contraseñas",
             icono = Icons.Filled.AutoAwesome,
-            colorIcono = ColorGenerador,
+            colorIcono = ColorIconosInternos,
             idEtiqueta = id,
             mostrarId = mostrarIds,
             ajustes = ajustes
@@ -63,92 +60,117 @@ fun FilaItemMenuLateral(
         "04-HER-HST" -> ItemMenu(
             texto = "Historial de contraseñas",
             icono = Icons.Filled.History,
-            colorIcono = ColorGenerador,
+            colorIcono = ColorIconosInternos,
             idEtiqueta = id,
             mostrarId = mostrarIds,
             ajustes = ajustes
         ) { alIr(Pantalla.HistorialClaves) }
 
-        "03-LST-PAS", "04-HER-PAS", "04-HER-PSK" -> ItemMenu(
-            texto = "Llaves de paso",
-            icono = Icons.Filled.Fingerprint,
-            colorIcono = ColorPasskeys,
-            idEtiqueta = id,
-            mostrarId = mostrarIds,
-            ajustes = ajustes
-        ) { alIr(Pantalla.Passkeys("03-LST-PAS")) }
+        "03-LST-PAS", "04-HER-PAS", "04-HER-PSK" -> {
+            val passkeysCount = conteosListaCuentas["03-LST-PAS"] ?: conteosListaCuentas["04-HER-PAS"] ?: 0
+            ItemMenu(
+                texto = "Llaves de acceso",
+                icono = Icons.Filled.Fingerprint,
+                colorIcono = ColorIconosInternos,
+                badge = if (passkeysCount > 0) passkeysCount.toString() else null,
+                idEtiqueta = id,
+                mostrarId = mostrarIds,
+                ajustes = ajustes
+            ) { alIr(Pantalla.Passkeys("03-LST-PAS")) }
+        }
 
-        "03-LST-2FA", "04-HER-2FA" -> ItemMenu(
-            texto = "Verificación en dos pasos",
-            icono = Icons.Filled.Timer,
-            colorIcono = Color2FA,
-            idEtiqueta = id,
-            mostrarId = mostrarIds,
-            ajustes = ajustes
-        ) { alIr(Pantalla.Autenticador) }
+        "03-LST-2FA", "04-HER-2FA" -> {
+            val totpCount = conteosListaCuentas["03-LST-2FA"] ?: conteosListaCuentas["04-HER-2FA"] ?: 0
+            ItemMenu(
+                texto = "Verificación en dos pasos",
+                icono = Icons.Filled.Timer,
+                colorIcono = ColorIconosInternos,
+                badge = if (totpCount > 0) totpCount.toString() else null,
+                idEtiqueta = id,
+                mostrarId = mostrarIds,
+                ajustes = ajustes
+            ) { alIr(Pantalla.Autenticador) }
+        }
 
         "04-HER-QRS" -> ItemMenu(
             texto = "Escáner QR",
             icono = Icons.Filled.QrCodeScanner,
-            colorIcono = ColorAcento,
+            colorIcono = ColorIconosInternos,
             idEtiqueta = id,
             mostrarId = mostrarIds,
             ajustes = ajustes
         ) { alIr(Pantalla.CamaraQr(null)) }
 
-        "03-LST-SLD" -> ItemMenu(
-            texto = "Salud",
-            icono = Icons.Filled.HealthAndSafety,
-            colorIcono = ColorSalud,
-            idEtiqueta = id,
-            mostrarId = mostrarIds,
-            ajustes = ajustes
-        ) { alIr(Pantalla.SaludBoveda) }
+        "03-LST-SLD" -> {
+            val problemasSalud = conteosListaCuentas["03-LST-SLD"] ?: 0
+            ItemMenu(
+                texto = "Salud",
+                icono = Icons.Filled.HealthAndSafety,
+                colorIcono = ColorIconosInternos,
+                badge = if (problemasSalud > 0) problemasSalud.toString() else null,
+                colorBadge = Peligro,
+                idEtiqueta = id,
+                mostrarId = mostrarIds,
+                ajustes = ajustes
+            ) { alIr(Pantalla.SaludBoveda) }
+        }
 
-        "03-LST-DUP" -> ItemMenu(
-            texto = "Duplicados",
-            icono = Icons.Filled.ContentCopy,
-            colorIcono = if (totalDuplicadas > 0) Peligro else ColorIconosInternos,
-            badge = if (totalDuplicadas > 0) totalDuplicadas.toString() else null,
-            colorBadge = if (totalDuplicadas > 0) Peligro else ColorIconosInternos,
-            idEtiqueta = id,
-            mostrarId = mostrarIds,
-            ajustes = ajustes
-        ) { alIr(Pantalla.Duplicados) }
+        "03-LST-DUP" -> {
+            val duplicadas = conteosListaCuentas["03-LST-DUP"] ?: totalDuplicadas
+            ItemMenu(
+                texto = "Duplicados",
+                icono = Icons.Filled.ContentCopy,
+                colorIcono = ColorIconosInternos,
+                badge = if (duplicadas > 0) duplicadas.toString() else null,
+                idEtiqueta = id,
+                mostrarId = mostrarIds,
+                ajustes = ajustes
+            ) { alIr(Pantalla.Duplicados) }
+        }
 
-        "03-LST-PAP" -> ItemMenu(
-            texto = "Papelera",
-            icono = Icons.Filled.Delete,
-            colorIcono = if (totalPapelera > 0) ColorPapelera else ColorIconosInternos,
-            badge = if (totalPapelera > 0) totalPapelera.toString() else null,
-            colorBadge = ColorAcento,
-            idEtiqueta = id,
-            mostrarId = mostrarIds,
-            ajustes = ajustes
-        ) { alIr(Pantalla.Papelera) }
+        "03-LST-PAP" -> {
+            val papelera = conteosListaCuentas["03-LST-PAP"] ?: totalPapelera
+            ItemMenu(
+                texto = "Papelera",
+                icono = Icons.Filled.Delete,
+                colorIcono = ColorIconosInternos,
+                badge = if (papelera > 0) papelera.toString() else null,
+                idEtiqueta = id,
+                mostrarId = mostrarIds,
+                ajustes = ajustes
+            ) { alIr(Pantalla.Papelera) }
+        }
 
-        "03-LST-IDE" -> ItemMenu(
-            texto = "Identidades",
-            icono = Icons.Filled.AccountCircle,
-            colorIcono = Color(0xFF0284C7),
-            idEtiqueta = id,
-            mostrarId = mostrarIds,
-            ajustes = ajustes
-        ) { alIr(Pantalla.Identidades()) }
+        "03-LST-IDE" -> {
+            val identidadesCount = conteosListaCuentas["03-LST-IDE"] ?: 0
+            ItemMenu(
+                texto = "Perfiles",
+                icono = Icons.Filled.AccountCircle,
+                colorIcono = ColorIconosInternos,
+                badge = if (identidadesCount > 0) identidadesCount.toString() else null,
+                idEtiqueta = id,
+                mostrarId = mostrarIds,
+                ajustes = ajustes
+            ) { alIr(Pantalla.Perfiles()) }
+        }
 
-        "03-LST-CAT" -> ItemMenu(
-            texto = "Categorías",
-            icono = Icons.Filled.Folder,
-            colorIcono = Color(0xFF10B981),
-            idEtiqueta = id,
-            mostrarId = mostrarIds,
-            ajustes = ajustes
-        ) { alIr(Pantalla.Categorias()) }
+        "03-LST-CAT" -> {
+            val categoriasCount = conteosListaCuentas["03-LST-CAT"] ?: 0
+            ItemMenu(
+                texto = "Categorías",
+                icono = Icons.Filled.Folder,
+                colorIcono = ColorIconosInternos,
+                badge = if (categoriasCount > 0) categoriasCount.toString() else null,
+                idEtiqueta = id,
+                mostrarId = mostrarIds,
+                ajustes = ajustes
+            ) { alIr(Pantalla.Categorias()) }
+        }
 
         "00-AJU" -> ItemMenu(
             texto = "Ajustes",
             icono = Icons.Filled.Settings,
-            colorIcono = Color(0xFF546E7A),
+            colorIcono = ColorIconosInternos,
             idEtiqueta = id,
             mostrarId = mostrarIds,
             ajustes = ajustes
@@ -157,20 +179,31 @@ fun FilaItemMenuLateral(
         "01-SEG-ACC" -> ItemMenu(
             texto = "Auditoría de accesibilidad",
             icono = Icons.Filled.Security,
-            colorIcono = Color(0xFFE65100),
+            colorIcono = ColorIconosInternos,
             idEtiqueta = id,
             mostrarId = mostrarIds,
             ajustes = ajustes
         ) { alIr(Pantalla.AuditoriaAccesibilidad()) }
 
+        "06-SIS-AVZ-TST" -> ItemMenu(
+            texto = "Avisos emergentes",
+            icono = Icons.Filled.Notifications,
+            colorIcono = ColorIconosInternos,
+            idEtiqueta = id,
+            mostrarId = mostrarIds,
+            ajustes = ajustes
+        ) { alIr(Pantalla.AjustesAvisosEmergentes()) }
+
         else -> {
             val nodo = MapaAjustes.buscarPorId(id)
             if (nodo != null) {
-                val (icono, color) = MapaAjustes.resolverIconoYColor(nodo)
+                val (icono, _) = MapaAjustes.resolverIconoYColor(nodo)
+                val conteo = conteosListaCuentas[id]
                 ItemMenu(
                     texto = nodo.titulo,
                     icono = icono,
-                    colorIcono = color,
+                    colorIcono = ColorIconosInternos,
+                    badge = if (conteo != null && conteo > 0) conteo.toString() else null,
                     idEtiqueta = id,
                     mostrarId = mostrarIds,
                     ajustes = ajustes

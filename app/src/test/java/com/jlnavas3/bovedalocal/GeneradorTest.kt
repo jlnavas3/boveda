@@ -85,7 +85,7 @@ class GeneradorTest {
     @Test
     fun `el tiempo de crackeo se explica en castellano`() {
         assertEquals("Descifrable al instante", PasswordGenerator.tiempoDeCrackeo(20.0))
-        assertEquals("Inquebrantable por fuerza bruta", PasswordGenerator.tiempoDeCrackeo(128.0))
+        assertTrue(PasswordGenerator.tiempoDeCrackeo(128.0).startsWith("Resiste"))
         assertEquals("Descifrable al instante", PasswordGenerator.tiempoDeCrackeo(0.0))
     }
 

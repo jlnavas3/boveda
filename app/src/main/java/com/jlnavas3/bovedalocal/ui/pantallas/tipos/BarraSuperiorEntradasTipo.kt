@@ -36,7 +36,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import com.jlnavas3.bovedalocal.ui.CriterioOrdenacion
+import com.jlnavas3.bovedalocal.ui.componentes.hud.accionConHud
 import com.jlnavas3.bovedalocal.ui.componentes.BarraSuperiorPantalla
 import com.jlnavas3.bovedalocal.ui.componentes.ElementoMenuCompacto
 import com.jlnavas3.bovedalocal.ui.componentes.MenuDesplegableBoveda
@@ -46,6 +48,7 @@ import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorTarjetaAjustes
 import com.jlnavas3.bovedalocal.ui.pantallas.lista.BarraBusquedaAnimada
 import com.jlnavas3.bovedalocal.ui.pantallas.lista.ChipFiltroActivo
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
+import com.jlnavas3.bovedalocal.ui.theme.ColorFavorito
 import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
 import com.jlnavas3.bovedalocal.ui.theme.Peligro
 import com.jlnavas3.bovedalocal.ui.theme.TextoPrincipal
@@ -78,7 +81,12 @@ fun BarraSuperiorEntradasTipo(
     alAbrirAyuda: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
-    Column(modifier = modifier) {
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .background(ColorAjustesFondo)
+            .zIndex(10f)
+    ) {
         BarraSuperiorPantalla(
             titulo = infoTipo.tituloPlural,
             idEtiqueta = infoTipo.idEtiqueta,
@@ -88,11 +96,7 @@ fun BarraSuperiorEntradasTipo(
             colorFondo = ColorAjustesFondo,
             acciones = {
                 // Botón Búsqueda (Lupa)
-                IconButton(
-                    onClick = {
-                        haptica.tic()
-                        alAlternarBusqueda()
-                    },
+                Box(
                     modifier = Modifier
                         .size(40.dp)
                         .clip(CircleShape)
@@ -101,6 +105,16 @@ fun BarraSuperiorEntradasTipo(
                                 Modifier.background(infoTipo.color.copy(alpha = 0.16f))
                             } else Modifier
                         )
+                        .accionConHud(
+                            etiqueta = "Buscar ${infoTipo.tituloPlural.lowercase()}",
+                            icono = Icons.Filled.Search,
+                            radioRipple = 20.dp,
+                            alPulsar = {
+                                haptica.tic()
+                                alAlternarBusqueda()
+                            }
+                        ),
+                    contentAlignment = Alignment.Center
                 ) {
                     Icon(
                         imageVector = Icons.Filled.Search,
@@ -115,11 +129,7 @@ fun BarraSuperiorEntradasTipo(
                 // Botón Tres Puntos (Filtros y ordenación)
                 Box {
                     val tieneFiltrosActivos = soloFavoritos || criterioOrdenacion != CriterioOrdenacion.NOMBRE_AZ
-                    IconButton(
-                        onClick = {
-                            haptica.tic()
-                            alAbrirMenu()
-                        },
+                    Box(
                         modifier = Modifier
                             .size(40.dp)
                             .clip(CircleShape)
@@ -128,6 +138,16 @@ fun BarraSuperiorEntradasTipo(
                                     Modifier.background(infoTipo.color.copy(alpha = 0.16f))
                                 } else Modifier
                             )
+                            .accionConHud(
+                                etiqueta = "Más opciones",
+                                icono = Icons.Filled.MoreVert,
+                                radioRipple = 20.dp,
+                                alPulsar = {
+                                    haptica.tic()
+                                    alAbrirMenu()
+                                }
+                            ),
+                        contentAlignment = Alignment.Center
                     ) {
                         Icon(
                             imageVector = Icons.Filled.MoreVert,
@@ -145,15 +165,15 @@ fun BarraSuperiorEntradasTipo(
                         ElementoMenuCompacto(
                             texto = "Ordenar por...",
                             icono = Icons.AutoMirrored.Filled.Sort,
-                            colorIcono = infoTipo.color,
+                            colorIcono = ColorIconosInternos,
                             onClick = alAbrirOrdenacion
                         )
                         SeparadorOpcionMenu()
                         ElementoMenuCompacto(
                             texto = if (soloFavoritos) "Ver todas" else "Solo favoritos",
                             icono = Icons.Filled.Star,
-                            colorIcono = if (soloFavoritos) ColorAcento else ColorIconosInternos,
-                            colorTexto = if (soloFavoritos) ColorAcento else TextoPrincipal,
+                            colorIcono = ColorIconosInternos,
+                            colorTexto = TextoPrincipal,
                             onClick = alAlternarFavoritos
                         )
                         if (soloFavoritos || criterioOrdenacion != CriterioOrdenacion.NOMBRE_AZ || textoBusqueda.isNotBlank()) {
@@ -161,8 +181,8 @@ fun BarraSuperiorEntradasTipo(
                             ElementoMenuCompacto(
                                 texto = "Restablecer filtros",
                                 icono = Icons.Filled.Close,
-                                colorIcono = Peligro,
-                                colorTexto = Peligro,
+                                colorIcono = ColorIconosInternos,
+                                colorTexto = TextoPrincipal,
                                 onClick = alRestablecerFiltros
                             )
                         }
@@ -180,19 +200,12 @@ fun BarraSuperiorEntradasTipo(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 3.dp)
+                    .padding(horizontal = 16.dp, vertical = 4.dp)
             ) {
                 BarraBusquedaAnimada(
                     valor = textoBusqueda,
                     alCambiar = alCambiarTextoBusqueda,
-                    alCerrar = alCerrarBusqueda
-                )
-
-                Spacer(Modifier.height(3.dp))
-
-                com.jlnavas3.bovedalocal.ui.pantallas.lista.busqueda.ContenedorSugerenciasBusqueda(
-                    textoBusqueda = textoBusqueda,
-                    alCambiarTextoBusqueda = alCambiarTextoBusqueda,
+                    alCerrar = alCerrarBusqueda,
                     alAbrirAyuda = alAbrirAyuda
                 )
             }

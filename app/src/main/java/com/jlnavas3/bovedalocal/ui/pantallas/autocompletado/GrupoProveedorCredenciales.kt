@@ -43,7 +43,7 @@ fun GrupoProveedorCredenciales(
             alPulsar = alConfigurarProveedor
         )
         Text(
-            text = "Android requiere registrar a Bóveda local en \"Contraseñas y cuentas\" para permitir el autocompletado y llaves de paso en otras aplicaciones.",
+            text = "Android requiere registrar a Bóveda local en \"Contraseñas y cuentas\" para permitir el autocompletado y llaves de acceso en otras aplicaciones.",
             style = MaterialTheme.typography.bodySmall,
             color = TextoSecundario,
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)

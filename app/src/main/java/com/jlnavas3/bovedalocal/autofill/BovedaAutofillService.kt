@@ -85,7 +85,19 @@ class BovedaAutofillService : AutofillService() {
             estructura = estructura,
             pistasUsuario = ajustes.autofillPistasUsuario,
             pistasContrasena = ajustes.autofillPistasContrasena,
-            pistasOtp = ajustes.autofillPistasOtp
+            pistasOtp = ajustes.autofillPistasOtp,
+            pistasDocumento = ajustes.autofillPistasDocumento,
+            pistasTarjetaNumero = ajustes.autofillPistasTarjetaNumero,
+            pistasTarjetaCvv = ajustes.autofillPistasTarjetaCvv,
+            pistasTarjetaExpiracion = ajustes.autofillPistasTarjetaExpiracion,
+            pistasTarjetaTitular = ajustes.autofillPistasTarjetaTitular,
+            pistasDireccionCalle = ajustes.autofillPistasDireccionCalle,
+            pistasDireccionCp = ajustes.autofillPistasDireccionCp,
+            pistasDireccionCiudad = ajustes.autofillPistasDireccionCiudad,
+            pistasDireccionProvincia = ajustes.autofillPistasDireccionProvincia,
+            pistasDireccionPais = ajustes.autofillPistasDireccionPais,
+            pistasContactoTelefono = ajustes.autofillPistasContactoTelefono,
+            pistasContactoNombre = ajustes.autofillPistasContactoNombre
         )
         if (!campos.hayAlgo) {
             callback.onSuccess(null)
@@ -95,12 +107,38 @@ class BovedaAutofillService : AutofillService() {
             if (campos.usuario != null) add("usuario")
             if (campos.contrasena != null) add("contraseña")
             if (campos.otp != null) add("código de verificación")
+            if (campos.tarjeta.hayAlgo) add("tarjeta bancaria")
+            if (campos.direccion.hayAlgo) add("dirección postal")
+            if (campos.documento.hayAlgo) add("documento de identidad")
         }.joinToString(" y ")
         Diagnostico.apuntar("autofill", "Formulario reconocido: $descCampos")
         val paquete = estructura.activityComponent?.packageName ?: ""
         val repositorio = VaultRepository.obtener(this)
         val respuesta = FillResponse.Builder()
-        val ids: Array<AutofillId> = listOfNotNull(campos.usuario, campos.contrasena, campos.otp).toTypedArray()
+        val ids: Array<AutofillId> = buildList {
+            if (campos.usuario != null) add(campos.usuario)
+            if (campos.contrasena != null) add(campos.contrasena)
+            if (campos.otp != null) add(campos.otp)
+            // Tarjeta
+            if (campos.tarjeta.numeroTarjeta != null) add(campos.tarjeta.numeroTarjeta)
+            if (campos.tarjeta.cvv != null) add(campos.tarjeta.cvv)
+            if (campos.tarjeta.titular != null) add(campos.tarjeta.titular)
+            if (campos.tarjeta.vencimiento != null) add(campos.tarjeta.vencimiento)
+            if (campos.tarjeta.vencimientoMes != null) add(campos.tarjeta.vencimientoMes)
+            if (campos.tarjeta.vencimientoAno != null) add(campos.tarjeta.vencimientoAno)
+            // Dirección
+            if (campos.direccion.calle != null) add(campos.direccion.calle)
+            if (campos.direccion.ciudad != null) add(campos.direccion.ciudad)
+            if (campos.direccion.provincia != null) add(campos.direccion.provincia)
+            if (campos.direccion.codigoPostal != null) add(campos.direccion.codigoPostal)
+            if (campos.direccion.pais != null) add(campos.direccion.pais)
+            if (campos.direccion.nombreCompleto != null) add(campos.direccion.nombreCompleto)
+            if (campos.direccion.telefono != null) add(campos.direccion.telefono)
+            if (campos.direccion.correo != null) add(campos.direccion.correo)
+            // Documento
+            if (campos.documento.numero != null) add(campos.documento.numero)
+            if (campos.documento.nombreCompleto != null) add(campos.documento.nombreCompleto)
+        }.distinct().toTypedArray()
 
         val inlineReq = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) request.inlineSuggestionsRequest else null
         android.util.Log.i("BovedaAutofill", "onFillRequest: paquete=$paquete, inlineReq=$inlineReq, specsCount=${inlineReq?.inlinePresentationSpecs?.size}, switchActivo=${ajustes.autofillSugerenciasTeclado}")
@@ -152,6 +190,51 @@ class BovedaAutofillService : AutofillService() {
                 respuesta.setAuthentication(ids, pendiente.intentSender, presentacion)
             }
         } else {
+            com.jlnavas3.bovedalocal.BovedaApp.refrescarActividadSegundoPlano(this)
+            val elementosPerfil = ResolvedorElementosPerfilAutofill.resolver(
+                entradas = repositorio.entradas(),
+                perfiles = repositorio.perfiles(),
+                paquete = paquete,
+                dominioWeb = campos.dominioWeb,
+                mapeoPersonalizado = ajustes.mapeoPaquetesPersonalizados
+            )
+
+            // Autocompletado de Tarjetas de Crédito / Pago
+            if (campos.tarjeta.hayAlgo && elementosPerfil.tarjetas.isNotEmpty()) {
+                elementosPerfil.tarjetas.forEachIndexed { indice, tarjetaEntrada ->
+                    val spec = specs.getOrElse(indice) { specs.lastOrNull() }
+                    CreadorDatasetTarjetaAutofill.crear(this, tarjetaEntrada, campos.tarjeta, spec)?.let {
+                        respuesta.addDataset(it)
+                    }
+                }
+            }
+
+            // Autocompletado de Direcciones / Contactos
+            if (campos.direccion.hayAlgo && elementosPerfil.contactos.isNotEmpty()) {
+                elementosPerfil.contactos.forEachIndexed { indice, contactoEntrada ->
+                    val spec = specs.getOrElse(indice) { specs.lastOrNull() }
+                    CreadorDatasetDireccionAutofill.crear(this, contactoEntrada, campos.direccion, spec)?.let {
+                        respuesta.addDataset(it)
+                    }
+                }
+            }
+
+            // Autocompletado de Documentos de Identidad (Cédula / DNI)
+            if (campos.documento.hayAlgo) {
+                val spec = specs.firstOrNull()
+                val docPredet = elementosPerfil.documentos.firstOrNull()
+                if (docPredet != null) {
+                    CreadorDatasetDocumentoAutofill.crear(this, docPredet, campos.documento, spec)?.let {
+                        respuesta.addDataset(it)
+                    }
+                } else if (elementosPerfil.perfil != null && !elementosPerfil.perfil.numeroDocumento.isNullOrBlank()) {
+                    CreadorDatasetDocumentoAutofill.crearDesdePerfil(this, elementosPerfil.perfil, campos.documento, spec)?.let {
+                        respuesta.addDataset(it)
+                    }
+                }
+            }
+
+            // Autocompletado de Credenciales de Inicio de Sesión
             val compatibles = AutofillUtiles.entradasCompatibles(
                 repositorio.entradas(),
                 paquete,
@@ -164,21 +247,34 @@ class BovedaAutofillService : AutofillService() {
                 compatibles
             }
             if (compatibles.isEmpty()) {
-                val datosSugeridos = DetectorDatosSugeridosAutofill.detectar(
-                    this,
-                    paquete,
-                    campos.dominioWeb,
-                    ajustes.navegadoresPersonalizados,
-                    ajustes.mapeoPaquetesPersonalizados
+                val contextoContacto = DetectorContextoContactoAutofill.detectar(
+                    paquete = paquete,
+                    campos = campos,
+                    estructura = estructura,
+                    paquetesComunicacion = ajustes.autofillPaquetesComunicacion,
+                    pistasTelefono = ajustes.autofillPistasContactoTelefono,
+                    pistasNombre = ajustes.autofillPistasContactoNombre
                 )
-                val inlineSpec = specs.firstOrNull()
-                CreadorAccionNuevaEntradaAutofill.aplicar(
-                    contexto = this,
-                    respuesta = respuesta,
-                    ids = ids,
-                    datosSugeridos = datosSugeridos,
-                    inlineSpec = inlineSpec
-                )
+                if (campos.usuario != null || campos.contrasena != null || contextoContacto.esContacto) {
+                    val datosSugeridos = DetectorDatosSugeridosAutofill.detectar(
+                        this,
+                        paquete,
+                        campos.dominioWeb,
+                        ajustes.navegadoresPersonalizados,
+                        ajustes.mapeoPaquetesPersonalizados
+                    )
+                    val inlineSpec = specs.firstOrNull()
+                    CreadorAccionNuevaEntradaAutofill.aplicar(
+                        contexto = this,
+                        respuesta = respuesta,
+                        ids = ids,
+                        datosSugeridos = datosSugeridos,
+                        inlineSpec = inlineSpec,
+                        esContacto = contextoContacto.esContacto,
+                        telefonoInicial = contextoContacto.telefonoInicial,
+                        nombreInicial = contextoContacto.nombreInicial
+                    )
+                }
             } else {
                 sugerencias.forEachIndexed { indice, entrada ->
                     val spec = specs.getOrElse(indice) { specs.lastOrNull() }
@@ -194,6 +290,8 @@ class BovedaAutofillService : AutofillService() {
             var tipos = 0
             if (campos.usuario != null) tipos = tipos or SaveInfo.SAVE_DATA_TYPE_USERNAME
             if (campos.contrasena != null) tipos = tipos or SaveInfo.SAVE_DATA_TYPE_PASSWORD
+            if (campos.tarjeta.hayAlgo) tipos = tipos or SaveInfo.SAVE_DATA_TYPE_CREDIT_CARD
+            if (campos.direccion.hayAlgo) tipos = tipos or SaveInfo.SAVE_DATA_TYPE_ADDRESS
             if (tipos != 0) {
                 Diagnostico.apuntar("autofill", "Android recibió la opción de guardar")
                 respuesta.setSaveInfo(
@@ -226,7 +324,8 @@ class BovedaAutofillService : AutofillService() {
             estructura = estructura,
             pistasUsuario = ajustes.autofillPistasUsuario,
             pistasContrasena = ajustes.autofillPistasContrasena,
-            pistasOtp = ajustes.autofillPistasOtp
+            pistasOtp = ajustes.autofillPistasOtp,
+            pistasDocumento = ajustes.autofillPistasDocumento
         )
         val (usuario, contrasena) = AutofillUtiles.leerValores(
             estructura = estructura,
@@ -247,7 +346,7 @@ class BovedaAutofillService : AutofillService() {
         val titulo = if (campos.dominioWeb.isNullOrBlank()) {
             nombreApp?.ifBlank { null } ?: if (paquete.isNotBlank()) Dominios.dominioDePaquete(paquete) else "Nueva entrada"
         } else {
-            Dominios.raiz(campos.dominioWeb!!)
+            Dominios.raiz(campos.dominioWeb)
         }
 
         val urlGuardada = if (campos.dominioWeb.isNullOrBlank() && paquete.isNotBlank()) {

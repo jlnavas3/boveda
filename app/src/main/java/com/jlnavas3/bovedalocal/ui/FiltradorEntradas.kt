@@ -19,6 +19,7 @@ object FiltradorEntradas {
         busqueda: String = "",
         filtroTipo: TipoEntrada? = null,
         soloFavoritos: Boolean = false,
+        solo2fa: Boolean = false,
         filtroEtiqueta: String? = null,
         filtroCategoria: String? = null,
         filtroColeccion: String? = null,
@@ -37,6 +38,7 @@ object FiltradorEntradas {
             coincideIdentidad &&
                 (filtroTipo == null || entrada.tipo == filtroTipo) &&
                 (!soloFavoritos || entrada.favorito) &&
+                (!solo2fa || entrada.tieneTotp) &&
                 (filtroEtiqueta == null || entrada.etiquetas.contains(filtroEtiqueta)) &&
                 (catEfectiva == null || entrada.categorias.contains(catEfectiva))
         }
@@ -48,16 +50,14 @@ object FiltradorEntradas {
         }
 
         val comparador: Comparator<Entrada> = when (criterioOrdenacion) {
-            CriterioOrdenacion.NOMBRE_AZ -> compareByDescending<Entrada> { it.favorito }.thenBy { it.titulo.lowercase() }
-            CriterioOrdenacion.NOMBRE_ZA -> compareByDescending<Entrada> { it.titulo.lowercase() }.thenByDescending { it.favorito }
-            CriterioOrdenacion.MODIFICACION_RECIENTE -> compareByDescending<Entrada> { it.modificadaEn }.thenByDescending { it.favorito }
-            CriterioOrdenacion.CREACION_RECIENTE -> compareByDescending<Entrada> { it.creadaEn }.thenByDescending { it.favorito }
-            CriterioOrdenacion.ANTIGUEDAD -> compareBy<Entrada> { it.creadaEn }.thenByDescending { it.favorito }
+            CriterioOrdenacion.NOMBRE_AZ -> compareBy<Entrada> { it.titulo.lowercase() }
+            CriterioOrdenacion.NOMBRE_ZA -> compareByDescending<Entrada> { it.titulo.lowercase() }
+            CriterioOrdenacion.MODIFICACION_RECIENTE -> compareByDescending<Entrada> { it.modificadaEn }
+            CriterioOrdenacion.CREACION_RECIENTE -> compareByDescending<Entrada> { it.creadaEn }
+            CriterioOrdenacion.ANTIGUEDAD -> compareBy<Entrada> { it.creadaEn }
             CriterioOrdenacion.USO_RECIENTE -> compareByDescending<Entrada> { it.ultimoUsoEn }
-                .thenByDescending { it.favorito }
                 .thenBy { it.titulo.lowercase() }
             CriterioOrdenacion.IGNORADAS -> compareByDescending<Entrada> { it.ignoradaEnSalud }
-                .thenByDescending { it.favorito }
                 .thenBy { it.titulo.lowercase() }
         }
         return filtradas.sortedWith(comparador)

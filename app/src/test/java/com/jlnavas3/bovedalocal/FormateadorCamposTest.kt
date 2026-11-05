@@ -216,4 +216,12 @@ class FormateadorCamposTest {
         assertEquals("12/2", res.text)
         assertEquals(4, res.selection.end)
     }
+
+    @Test
+    fun `normalizarYFormatearFecha convierte fechas entre diferentes formatos configurados`() {
+        assertEquals("2025-01-30", FormateadorCampos.normalizarYFormatearFecha("30/01/2025", FormateadorCampos.FECHA_AAAA_MM_DD))
+        assertEquals("30/01/2025", FormateadorCampos.normalizarYFormatearFecha("2025-01-30", FormateadorCampos.FECHA_DD_MM_AAAA))
+        assertEquals("30-01-2025", FormateadorCampos.normalizarYFormatearFecha("30/01/2025", FormateadorCampos.FECHA_DD_GUION_MM_AAAA))
+        assertEquals("01/30/2025", FormateadorCampos.normalizarYFormatearFecha("30/01/2025", FormateadorCampos.FECHA_MM_DD_AAAA))
+    }
 }

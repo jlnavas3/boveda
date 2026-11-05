@@ -16,14 +16,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Tune
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -41,14 +40,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjusteGris
-import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorTarjetaAjustes
-import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorTextoAjustes
-import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
+import com.jlnavas3.bovedalocal.ui.componentes.ElementoMenuCompacto
+import com.jlnavas3.bovedalocal.ui.componentes.MenuDesplegableBoveda
+import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorCampoAjustes
 import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
 import com.jlnavas3.bovedalocal.ui.theme.ColorTitulos
-import com.jlnavas3.bovedalocal.ui.theme.colorLegibleParaTema
-import com.jlnavas3.bovedalocal.ui.theme.fondoBadgeParaTema
+import com.jlnavas3.bovedalocal.ui.theme.Menta
+import com.jlnavas3.bovedalocal.ui.theme.TextoPrincipal
+import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
 
 /**
  * Cabecera destacada estilo MagicOS / One UI para el menú lateral con opciones rápidas.
@@ -103,14 +102,14 @@ fun CabeceraMenuLateral(
                     horizontalArrangement = Arrangement.spacedBy(6.dp),
                     modifier = Modifier
                         .clip(RoundedCornerShape(8.dp))
-                        .background(fondoBadgeParaTema(ColorAcento))
+                        .background(ColorCampoAjustes)
                         .padding(horizontal = 7.dp, vertical = 2.dp)
                 ) {
                     Box(
                         modifier = Modifier
                             .size(6.dp)
                             .clip(CircleShape)
-                            .background(ColorAcento)
+                            .background(Menta)
                     )
                     Text(
                         text = "Bóveda cifrada",
@@ -118,7 +117,7 @@ fun CabeceraMenuLateral(
                             fontWeight = FontWeight.Medium,
                             fontSize = 11.sp
                         ),
-                        color = colorLegibleParaTema(ColorAcento),
+                        color = TextoSecundario,
                         maxLines = 1
                     )
                 }
@@ -135,32 +134,20 @@ fun CabeceraMenuLateral(
                 Icon(
                     imageVector = Icons.Default.MoreVert,
                     contentDescription = "Opciones del menú lateral",
-                    tint = ColorAjusteGris,
+                    tint = TextoPrincipal,
                     modifier = Modifier.size(22.dp)
                 )
             }
 
-            DropdownMenu(
+            MenuDesplegableBoveda(
                 expanded = menuAbierto,
                 onDismissRequest = { menuAbierto = false },
-                modifier = Modifier.background(ColorTarjetaAjustes)
+                modifier = Modifier.widthIn(min = 220.dp, max = 280.dp)
             ) {
-                DropdownMenuItem(
-                    text = {
-                        Text(
-                            text = "Personalizar barra lateral",
-                            color = ColorTextoAjustes,
-                            fontSize = 14.sp
-                        )
-                    },
-                    leadingIcon = {
-                        Icon(
-                            imageVector = Icons.Default.Tune,
-                            contentDescription = null,
-                            tint = ColorAcento,
-                            modifier = Modifier.size(20.dp)
-                        )
-                    },
+                ElementoMenuCompacto(
+                    texto = "Personalizar barra lateral",
+                    icono = Icons.Default.Tune,
+                    colorIcono = ColorIconosInternos,
                     onClick = {
                         menuAbierto = false
                         alPersonalizar()

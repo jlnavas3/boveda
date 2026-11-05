@@ -23,6 +23,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.jlnavas3.bovedalocal.data.AjustesApp
 import com.jlnavas3.bovedalocal.data.Entrada
+import com.jlnavas3.bovedalocal.data.MigradorEntradasNativas
+import com.jlnavas3.bovedalocal.data.TipoEntrada
 import com.jlnavas3.bovedalocal.ui.VaultViewModel
 import com.jlnavas3.bovedalocal.ui.componentes.reboteElastico
 import com.jlnavas3.bovedalocal.util.Diagnostico
@@ -73,37 +75,134 @@ fun ContenidoEntradaDetalle(
             alMostrarQr = alMostrarQr,
             alActualizarTitulo = { nuevoTitulo ->
                 haptica.exito()
-                vm.guardar(entrada.copy(titulo = nuevoTitulo, modificadaEn = System.currentTimeMillis()))
+                vm.guardar(entrada.copy(titulo = nuevoTitulo, tituloPersonalizado = true, modificadaEn = System.currentTimeMillis()))
+            },
+            seguridadVisualActiva = ajustes.seguridadVisualActiva
+        )
+
+        Spacer(Modifier.height(8.dp))
+
+        // Grupo 1: Datos principales según TipoEntrada
+        when (entrada.tipo) {
+            TipoEntrada.TARJETA -> {
+                entrada.tarjetaEfectiva?.let { tarjeta ->
+                    TarjetaDetalleTarjetaBancaria(
+                        tarjeta = tarjeta,
+                        vm = vm,
+                        ajustes = ajustes,
+                        haptica = haptica,
+                        ultimaCopia = ultimaCopia,
+                        alCopiarCampo = { ultimaCopia = it }
+                    )
+                    Spacer(Modifier.height(16.dp))
+                }
             }
-        )
-
-        Spacer(Modifier.height(14.dp))
-
-        // Grupo 1: Credenciales principales
-        TarjetaCredencialesDetalle(
-            entrada = entrada,
-            revelada = revelada,
-            ultimaCopia = ultimaCopia,
-            alAlternarRevelada = {
-                haptica.toque()
-                revelada = !revelada
-            },
-            alCopiarUsuario = {
-                haptica.toque()
-                vm.copiar("Usuario", entrada.usuario, sensible = false)
-                vm.registrarUsoEntrada(entrada.id)
-                ultimaCopia = "usuario"
-            },
-            alCopiarContrasena = {
-                haptica.exito()
-                vm.copiar("Contraseña", entrada.contrasena, sensible = true)
-                vm.registrarUsoEntrada(entrada.id)
-                ultimaCopia = "contrasena"
-            },
-            ajustes = ajustes
-        )
-        if (entrada.usuario.isNotBlank() || entrada.contrasena.isNotBlank()) {
-            Spacer(Modifier.height(16.dp))
+            TipoEntrada.WIFI -> {
+                entrada.wifiEfectivo?.let { wifi ->
+                    TarjetaDetalleWifi(
+                        wifi = wifi,
+                        vm = vm,
+                        ajustes = ajustes,
+                        haptica = haptica,
+                        ultimaCopia = ultimaCopia,
+                        alCopiarCampo = { ultimaCopia = it },
+                        alMostrarQr = alMostrarQr
+                    )
+                    Spacer(Modifier.height(16.dp))
+                }
+            }
+            TipoEntrada.CUENTA_BANCARIA -> {
+                entrada.cuentaBancariaEfectiva?.let { cuenta ->
+                    TarjetaDetalleCuentaBancaria(
+                        cuenta = cuenta,
+                        vm = vm,
+                        ajustes = ajustes,
+                        haptica = haptica,
+                        ultimaCopia = ultimaCopia,
+                        alCopiarCampo = { ultimaCopia = it }
+                    )
+                    Spacer(Modifier.height(16.dp))
+                }
+            }
+            TipoEntrada.IDENTIDAD -> {
+                entrada.identidadEfectiva?.let { iden ->
+                    TarjetaDetalleIdentidad(
+                        identidad = iden,
+                        vm = vm,
+                        ajustes = ajustes,
+                        haptica = haptica,
+                        ultimaCopia = ultimaCopia,
+                        alCopiarCampo = { ultimaCopia = it }
+                    )
+                    Spacer(Modifier.height(16.dp))
+                }
+            }
+            TipoEntrada.SERVIDOR -> {
+                entrada.servidorEfectivo?.let { serv ->
+                    TarjetaDetalleServidor(
+                        servidor = serv,
+                        vm = vm,
+                        ajustes = ajustes,
+                        haptica = haptica,
+                        ultimaCopia = ultimaCopia,
+                        alCopiarCampo = { ultimaCopia = it }
+                    )
+                    Spacer(Modifier.height(16.dp))
+                }
+            }
+            TipoEntrada.WALLET -> {
+                entrada.walletEfectiva?.let { wallet ->
+                    TarjetaDetalleWallet(
+                        wallet = wallet,
+                        vm = vm,
+                        ajustes = ajustes,
+                        haptica = haptica,
+                        ultimaCopia = ultimaCopia,
+                        alCopiarCampo = { ultimaCopia = it },
+                        alMostrarQr = alMostrarQr
+                    )
+                    Spacer(Modifier.height(16.dp))
+                }
+            }
+            TipoEntrada.CONTACTO -> {
+                TarjetaDetalleContacto(
+                    telefonoPrincipal = entrada.usuario,
+                    contacto = entrada.contactoEfectivo ?: com.jlnavas3.bovedalocal.data.DatosContacto(),
+                    vm = vm,
+                    ajustes = ajustes,
+                    haptica = haptica,
+                    ultimaCopia = ultimaCopia,
+                    alCopiarCampo = { ultimaCopia = it }
+                )
+                Spacer(Modifier.height(16.dp))
+            }
+            else -> {
+                TarjetaCredencialesDetalle(
+                    entrada = entrada,
+                    revelada = revelada,
+                    ultimaCopia = ultimaCopia,
+                    alAlternarRevelada = {
+                        haptica.toque()
+                        revelada = !revelada
+                    },
+                    alCopiarUsuario = {
+                        haptica.toque()
+                        vm.copiar("Usuario", entrada.usuario, sensible = false)
+                        vm.registrarUsoEntrada(entrada.id)
+                        ultimaCopia = "usuario"
+                    },
+                    alCopiarContrasena = {
+                        haptica.exito()
+                        vm.copiar("Contraseña", entrada.contrasena, sensible = true)
+                        vm.registrarUsoEntrada(entrada.id)
+                        ultimaCopia = "contrasena"
+                    },
+                    ajustes = ajustes
+                )
+                if (entrada.usuario.isNotBlank() || entrada.contrasena.isNotBlank()) {
+                    Spacer(Modifier.height(16.dp))
+                }
+            }
         }
 
         // Grupo 2: 2FA / TOTP modular
@@ -162,11 +261,12 @@ fun ContenidoEntradaDetalle(
             Spacer(Modifier.height(16.dp))
         }
 
-        // Grupo 4: Campos personalizados (excluyendo TOTP alternativo que ya se muestra arriba)
-        val camposVisibles = remember(entrada.camposPersonalizados) {
-            entrada.camposPersonalizados.filterNot {
+        // Grupo 4: Campos personalizados (excluyendo TOTP alternativo y campos base nativos)
+        val camposVisibles = remember(entrada.camposPersonalizados, entrada.tipo) {
+            val sinTotp = entrada.camposPersonalizados.filterNot {
                 it.etiqueta.contains("TOTP", ignoreCase = true) && it.valor.isNotBlank()
             }
+            MigradorEntradasNativas.depurarCamposPersonalizados(entrada.tipo, sinTotp)
         }
         TarjetaCamposDetalle(
             campos = camposVisibles,
@@ -183,6 +283,7 @@ fun ContenidoEntradaDetalle(
         // Grupo 5: Notas
         TarjetaNotasDetalle(
             notas = entrada.notas,
+            titulo = if (entrada.tipo == TipoEntrada.NOTA) "Nota" else "Notas",
             ultimaCopia = ultimaCopia,
             alCopiarNotas = {
                 haptica.toque()
@@ -217,28 +318,43 @@ fun ContenidoEntradaDetalle(
 
         // Grupo 7: Passkey
         entrada.passkey?.let { passkey ->
-            TarjetaPasskeyDetalle(passkey = passkey, usuarioEntrada = entrada.usuario)
+            TarjetaPasskeyDetalle(
+                passkey = passkey,
+                usuarioEntrada = entrada.usuario,
+                fechaRegistro = if (passkey.creadaEn > 0L) passkey.creadaEn else entrada.creadaEn,
+                mostrarDatosTecnicos = ajustes.mostrarDatosTecnicosPasskey,
+                vm = vm,
+                haptica = haptica
+            )
             Spacer(Modifier.height(16.dp))
         }
 
-        // Grupo 8: Historial de contraseñas anteriores
-        TarjetaHistorialDetalle(
+        // Grupo 8: Credenciales alternativas (contraseñas anteriores, passkeys y 2FA secundarios)
+        TarjetaCredencialesSecundariasDetalle(
             entrada = entrada,
             vm = vm,
-            haptica = haptica
+            haptica = haptica,
+            ajustes = ajustes
         )
-        if (entrada.historialContrasenas.isNotEmpty()) {
+        val tieneAlternativas = entrada.historialContrasenas.isNotEmpty() ||
+                entrada.passkeysSecundarias.isNotEmpty() ||
+                entrada.totpsSecundarios.isNotEmpty()
+        if (tieneAlternativas) {
             Spacer(Modifier.height(16.dp))
         }
 
-        // Metadatos: Fechas de creación, edición y último uso
-        PieMetadatosDetalle(
-            creadaEn = entrada.creadaEn,
-            modificadaEn = entrada.modificadaEn,
-            ultimoUsoEn = entrada.ultimoUsoEn
-        )
-        if (entrada.creadaEn > 0L || entrada.modificadaEn > 0L || entrada.ultimoUsoEn > 0L) {
-            Spacer(Modifier.height(16.dp))
+        // Metadatos: Fechas de edición y último uso
+        val tieneFechasPie = (entrada.modificadaEn > 0L && entrada.modificadaEn != entrada.creadaEn) ||
+                (entrada.ultimoUsoEn > 0L && entrada.tipo != com.jlnavas3.bovedalocal.data.TipoEntrada.NOTA)
+        if (tieneFechasPie) {
+            Spacer(Modifier.height(4.dp))
+            PieMetadatosDetalle(
+                creadaEn = entrada.creadaEn,
+                modificadaEn = entrada.modificadaEn,
+                ultimoUsoEn = entrada.ultimoUsoEn,
+                tipo = entrada.tipo
+            )
+            Spacer(Modifier.height(12.dp))
         }
 
         Spacer(Modifier.height(130.dp))

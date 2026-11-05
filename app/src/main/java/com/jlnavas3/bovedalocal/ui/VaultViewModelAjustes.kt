@@ -33,7 +33,8 @@ interface VaultAjustesDelegate :
     VaultAjustesTileTotpManualDelegate,
     VaultAjustesWidgetTotpDelegate,
     VaultAjustesWidget1x1Delegate,
-    VaultAjustesDiccionariosDelegate {
+    VaultAjustesDiccionariosDelegate,
+    VaultAjustesTransicionesDelegate {
 
     override val repositorio: VaultRepository
     override fun obtenerApp(): Application

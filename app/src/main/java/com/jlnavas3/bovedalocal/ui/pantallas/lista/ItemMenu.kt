@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material3.Icon
@@ -39,9 +40,12 @@ import androidx.compose.ui.unit.sp
 import com.jlnavas3.bovedalocal.data.AjustesApp
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.InsigniaIdAjuste
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjusteGris
+import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorCampoAjustes
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorTextoAjustes
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
+import com.jlnavas3.bovedalocal.ui.theme.Peligro
+import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
 import com.jlnavas3.bovedalocal.util.Haptica
 
 /**
@@ -54,7 +58,7 @@ fun ItemMenu(
     colorIcono: Color = ColorIconosInternos,
     colorTexto: Color = ColorTextoAjustes,
     badge: String? = null,
-    colorBadge: Color = ColorAcento,
+    colorBadge: Color = TextoSecundario,
     idEtiqueta: String? = null,
     mostrarId: Boolean = false,
     mostrarChevron: Boolean = true,
@@ -75,14 +79,17 @@ fun ItemMenu(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Box(
-            modifier = Modifier.size(32.dp),
+            modifier = Modifier
+                .size(32.dp)
+                .clip(RoundedCornerShape(8.dp))
+                .background(ColorCampoAjustes),
             contentAlignment = Alignment.Center
         ) {
             Icon(
                 imageVector = icono,
                 contentDescription = null,
-                tint = colorIcono,
-                modifier = Modifier.size(22.dp)
+                tint = ColorIconosInternos,
+                modifier = Modifier.size(18.dp)
             )
         }
 
@@ -110,19 +117,23 @@ fun ItemMenu(
         }
 
         if (badge != null) {
+            val esAlerta = colorBadge == Peligro
+            val fondoBadge = if (esAlerta) Peligro.copy(alpha = 0.16f) else ColorCampoAjustes
+            val textoBadge = if (esAlerta) Peligro else TextoSecundario
+
             Box(
                 modifier = Modifier
                     .clip(CircleShape)
-                    .background(colorBadge)
-                    .padding(horizontal = 8.dp, vertical = 2.dp)
+                    .background(fondoBadge)
+                    .padding(horizontal = 8.dp, vertical = 2.5.dp)
             ) {
                 Text(
                     text = badge,
                     style = MaterialTheme.typography.labelSmall.copy(
-                        fontWeight = FontWeight.Bold,
+                        fontWeight = FontWeight.SemiBold,
                         fontSize = 10.5.sp
                     ),
-                    color = Color.White
+                    color = textoBadge
                 )
             }
             Spacer(Modifier.width(4.dp))

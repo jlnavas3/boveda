@@ -65,7 +65,7 @@ fun PantallaAjustes(
     var dialogoProveedorPasskeys by remember { mutableStateOf(false) }
     var dialogoCambioMaestra by remember { mutableStateOf(false) }
 
-    val todosLosElementos = remember(ajustes, estado) {
+    val todosLosElementos = remember(ajustes) {
         crearCatalogoAjustesHub(
             ajustes = ajustes,
             vm = vm,
@@ -75,14 +75,19 @@ fun PantallaAjustes(
         )
     }
 
-    val indiceBusqueda = remember(ajustes) {
-        crearIndiceBusquedaAjustes(
-            ajustes = ajustes,
-            vm = vm,
-            alAbrirNombreBoveda = { dialogoNombreBoveda = true },
-            alAbrirProveedorPasskeys = { dialogoProveedorPasskeys = true },
-            alAbrirCambioMaestra = { dialogoCambioMaestra = true }
-        )
+    val busquedaActiva = textoBusqueda.isNotBlank()
+    val indiceBusqueda = remember(busquedaActiva, ajustes) {
+        if (!busquedaActiva) {
+            emptyList()
+        } else {
+            crearIndiceBusquedaAjustes(
+                ajustes = ajustes,
+                vm = vm,
+                alAbrirNombreBoveda = { dialogoNombreBoveda = true },
+                alAbrirProveedorPasskeys = { dialogoProveedorPasskeys = true },
+                alAbrirCambioMaestra = { dialogoCambioMaestra = true }
+            )
+        }
     }
 
     val elementosFiltrados = remember(textoBusqueda, indiceBusqueda) {
@@ -158,6 +163,7 @@ fun PantallaAjustes(
                         todosLosElementos = todosLosElementos,
                         ajustes = ajustes,
                         vm = vm,
+                        seccionDestino = seccionDestino,
                         alAbrirNombreBoveda = { dialogoNombreBoveda = true },
                         alAbrirProveedorPasskeys = { dialogoProveedorPasskeys = true },
                         alAbrirCambioMaestra = { dialogoCambioMaestra = true }

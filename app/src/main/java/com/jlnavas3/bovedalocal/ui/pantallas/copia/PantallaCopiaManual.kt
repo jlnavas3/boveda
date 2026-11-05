@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -56,6 +57,7 @@ fun PantallaCopiaManual(
     var dialogoExportar by remember { mutableStateOf(false) }
     var dialogoImportar by remember { mutableStateOf(false) }
     var uriPendiente by remember { mutableStateOf<Uri?>(null) }
+    var accionAutomaticaEjecutada by remember { mutableStateOf(false) }
 
     val lanzadorCrear = rememberLauncherForActivityResult(
         ActivityResultContracts.CreateDocument("application/octet-stream")
@@ -77,6 +79,26 @@ fun PantallaCopiaManual(
         if (uri != null) {
             uriPendiente = uri
             dialogoImportar = true
+        }
+    }
+
+    LaunchedEffect(seccionDestino) {
+        if (!accionAutomaticaEjecutada && seccionDestino != null) {
+            accionAutomaticaEjecutada = true
+            when (seccionDestino) {
+                "05-COP-MAN-IMP" -> {
+                    BovedaApp.salidaPendiente(contexto)
+                    try {
+                        lanzadorAbrir.launch(arrayOf("*/*"))
+                    } catch (e: Exception) {
+                        BovedaApp.salidaTerminada(contexto)
+                        vm.avisar("No se encontró ningún selector de archivos disponible")
+                    }
+                }
+                "05-COP-MAN-EXP" -> {
+                    dialogoExportar = true
+                }
+            }
         }
     }
 
@@ -157,7 +179,7 @@ fun PantallaCopiaManual(
                 dialogoImportar = false
                 uriPendiente = null
                 if (uri != null) {
-                    vm.importar(clave) {
+                    vm.prepararImportacionBvda(clave) {
                         contexto.contentResolver.openInputStream(uri)?.use { it.readBytes() }
                             ?: throw IllegalStateException("No se pudo leer el archivo")
                     }

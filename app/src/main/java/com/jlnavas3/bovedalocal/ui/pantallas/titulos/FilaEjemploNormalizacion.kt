@@ -95,7 +95,7 @@ fun FilaEjemploNormalizacion(
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.ArrowForward,
                 contentDescription = null,
-                tint = ColorAcento.copy(alpha = 0.85f),
+                tint = TextoSecundario.copy(alpha = 0.85f),
                 modifier = Modifier.size(16.dp)
             )
 

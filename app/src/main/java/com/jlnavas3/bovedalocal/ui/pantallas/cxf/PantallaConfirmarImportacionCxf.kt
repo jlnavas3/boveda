@@ -6,6 +6,7 @@
 
 package com.jlnavas3.bovedalocal.ui.pantallas.cxf
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -52,6 +53,7 @@ import kotlinx.coroutines.withContext
  * Pantalla que permite al usuario revisar y seleccionar qué credenciales transferidas
  * vía CXF desea incorporar a su bóveda local.
  */
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun PantallaConfirmarImportacionCxf(
     vm: VaultViewModel,
@@ -144,67 +146,73 @@ fun PantallaConfirmarImportacionCxf(
                 val resultadoActual = resultadoCxf ?: return@Column
                 val exportadorNombre = resultadoActual.exportador?.ifBlank { "Proveedor del sistema" } ?: "Proveedor del sistema"
 
-                Column(
+                LazyColumn(
                     modifier = Modifier
                         .fillMaxWidth()
                         .weight(1f)
-                        .padding(horizontal = 16.dp, vertical = 8.dp)
+                        .padding(horizontal = 16.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    contentPadding = PaddingValues(top = 8.dp, bottom = 96.dp)
                 ) {
-                    TarjetaResumenTransferenciaCxf(
-                        exportadorNombre = exportadorNombre,
-                        totalItems = items.size,
-                        resultadoCxf = resultadoActual,
-                        soloNuevasSeleccionadas = soloNuevasSeleccionadas,
-                        todasSeleccionadas = todasSeleccionadas,
-                        ningunaSeleccionada = ningunaSeleccionada,
-                        alSeleccionarSoloNuevas = {
-                            haptica.tic()
-                            for (i in items.indices) {
-                                items[i] = items[i].copy(seleccionada = !items[i].yaExisteEnBoveda)
-                            }
-                        },
-                        alSeleccionarTodas = {
-                            haptica.tic()
-                            for (i in items.indices) {
-                                items[i] = items[i].copy(seleccionada = true)
-                            }
-                        },
-                        alSeleccionarNinguna = {
-                            haptica.tic()
-                            for (i in items.indices) {
-                                items[i] = items[i].copy(seleccionada = false)
-                            }
-                        }
-                    )
+                    // Cabecera grande informativa que se desplaza naturalmente con el scroll
+                    item(key = "cabecera_resumen") {
+                        TarjetaResumenTransferenciaCxf(
+                            exportadorNombre = exportadorNombre,
+                            totalItems = items.size,
+                            resultadoCxf = resultadoActual,
+                            modifier = Modifier.padding(bottom = 4.dp)
+                        )
+                    }
 
-                    Spacer(Modifier.height(10.dp))
-
-                    LazyColumn(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .weight(1f),
-                        verticalArrangement = Arrangement.spacedBy(8.dp),
-                        contentPadding = PaddingValues(bottom = 88.dp)
-                    ) {
-                        itemsIndexed(items, key = { _, item -> item.entrada.id }) { index, item ->
-                            FilaConfirmacionCxf(
-                                item = item,
-                                alAlternar = {
-                                    haptica.tic()
-                                    items[index] = item.copy(seleccionada = !item.seleccionada)
-                                },
-                                onCheckedChange = { checked ->
-                                    items[index] = item.copy(seleccionada = checked)
+                    // Botones rápidos de selección anclados como stickyHeader compacto
+                    stickyHeader(key = "sticky_selectores_rapidos") {
+                        SelectorRapidoImportacionCxf(
+                            totalItems = items.size,
+                            soloNuevasSeleccionadas = soloNuevasSeleccionadas,
+                            todasSeleccionadas = todasSeleccionadas,
+                            ningunaSeleccionada = ningunaSeleccionada,
+                            alSeleccionarSoloNuevas = {
+                                haptica.tic()
+                                for (i in items.indices) {
+                                    items[i] = items[i].copy(seleccionada = !items[i].yaExisteEnBoveda)
                                 }
-                            )
-                        }
+                            },
+                            alSeleccionarTodas = {
+                                haptica.tic()
+                                for (i in items.indices) {
+                                    items[i] = items[i].copy(seleccionada = true)
+                                }
+                            },
+                            alSeleccionarNinguna = {
+                                haptica.tic()
+                                for (i in items.indices) {
+                                    items[i] = items[i].copy(seleccionada = false)
+                                }
+                            }
+                        )
+                    }
+
+                    // Filas de credenciales
+                    itemsIndexed(items, key = { _, item -> item.entrada.id }) { index, item ->
+                        FilaConfirmacionCxf(
+                            item = item,
+                            alAlternar = {
+                                haptica.tic()
+                                items[index] = item.copy(seleccionada = !item.seleccionada)
+                            },
+                            seguridadVisualActiva = ajustes.seguridadVisualActiva,
+                            ocultarContrasena = ajustes.ocultarContrasena,
+                            estiloOcultamiento = ajustes.estiloOcultamientoVisual,
+                            tiempoAutoOcultarSegundos = ajustes.tiempoAutoOcultarSegundos
+                        )
                     }
                 }
             }
         }
 
+        // Panel inferior fijo desacoplado con BarraAccionesInferiorBoveda
         if (!cargando && resultadoCxf != null && items.isNotEmpty()) {
-            BotonImportarFabCxf(
+            BarraAccionesConfirmarImportacionCxf(
                 cuantasSeleccionadas = cuantasSeleccionadas,
                 alImportar = {
                     val seleccionadas = items.filter { it.seleccionada }.map { it.entrada }
@@ -221,7 +229,11 @@ fun PantallaConfirmarImportacionCxf(
                         vm.mostrarAviso("Selecciona al menos una credencial para importar")
                     }
                 },
-                modifier = Modifier.align(Alignment.BottomEnd)
+                alCancelar = {
+                    haptica.tic()
+                    vm.volverAtras()
+                },
+                modifier = Modifier.align(Alignment.BottomCenter)
             )
         }
     }

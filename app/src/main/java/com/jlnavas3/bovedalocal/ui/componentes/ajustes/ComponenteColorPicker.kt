@@ -30,6 +30,7 @@ fun ComponenteColorPicker(
     colorActual: Color,
     alPulsar: () -> Unit,
     modifier: Modifier = Modifier,
+    subtitulo: String? = null,
     icono: ImageVector? = null,
     colorIcono: Color? = null,
     colorTinteIcono: Color = Color.White,
@@ -40,6 +41,7 @@ fun ComponenteColorPicker(
 ) {
     ComponenteFila(
         titulo = titulo,
+        subtitulo = subtitulo,
         modifier = modifier,
         icono = icono,
         colorIcono = colorIcono,

@@ -174,7 +174,8 @@ object NormalizadorTitulosSitios {
         tldsConfigurados: List<String> = emptyList(),
         marcasPersonalizadas: Map<String, String> = emptyMap(),
         puertosConfigurados: Map<String, String> = emptyMap(),
-        octetosRouter: List<Int> = listOf(1, 254)
+        octetosRouter: List<Int> = listOf(1, 254),
+        rutasConfiguradas: Map<String, String> = emptyMap()
     ): String {
         val tituloLimpio = rawTitulo.substringBefore('(').substringBefore('·').substringBefore('[').trim()
         val esHostSso = urlODominio.isNotBlank() && esProveedorSso(urlODominio)
@@ -192,7 +193,8 @@ object NormalizadorTitulosSitios {
         val infoRed = ClasificadorRedLocal.analizar(
             urlORaw = entradaAnalisis,
             puertosConfigurados = puertosConfigurados,
-            octetosRouter = octetosRouter
+            octetosRouter = octetosRouter,
+            rutasConfiguradas = rutasConfiguradas
         )
         if (infoRed != null) {
             return ClasificadorRedLocal.formatearNombre(infoRed, plantillaRouter, plantillaServidor)
@@ -302,6 +304,35 @@ object NormalizadorTitulosSitios {
             if (t.equals("$base · $usuario", ignoreCase = true)) return true
         }
         return false
+    }
+
+    /**
+     * Determina si una entrada fue personalizada a mano por el usuario o si su título
+     * debe respetarse sin ser sobrescrito por procesos de estandarización masiva.
+     */
+    fun esEntradaProtegidaManual(
+        entrada: com.jlnavas3.bovedalocal.data.Entrada,
+        nombreBase: String,
+        tldsConfigurados: List<String> = emptyList()
+    ): Boolean {
+        // 1. Marca explícita de título personalizado editado a mano
+        if (entrada.tituloPersonalizado) return true
+
+        // 2. Compatibilidad retroactiva: si fue modificada en la app y su título no es técnico/comprometido
+        if (entrada.modificadaEn > 0L && entrada.modificadaEn > entrada.creadaEn &&
+            !esTituloTecnico(entrada.titulo, entrada.urls, tldsConfigurados)
+        ) {
+            return true
+        }
+
+        // 3. Si el título actual difiere de los patrones autogenerados o técnicos
+        return !esTituloGeneradoOModificable(
+            titulo = entrada.titulo,
+            nombreBase = nombreBase,
+            usuario = entrada.usuario,
+            urls = entrada.urls,
+            tldsConfigurados = tldsConfigurados
+        )
     }
 
     fun generarTituloFinal(

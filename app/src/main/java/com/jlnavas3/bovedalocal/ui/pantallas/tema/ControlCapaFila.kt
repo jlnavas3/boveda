@@ -31,7 +31,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.SliderBoveda
+import com.jlnavas3.bovedalocal.ui.theme.EscalaTexto
 import com.jlnavas3.bovedalocal.ui.theme.EstiloMono
+import com.jlnavas3.bovedalocal.ui.theme.FormaPequena
 import com.jlnavas3.bovedalocal.ui.theme.aHexConAlfa
 
 /**
@@ -62,14 +64,14 @@ fun ControlCapaFila(
             Box(
                 modifier = Modifier
                     .size(24.dp)
-                    .clip(RoundedCornerShape(6.dp))
+                    .clip(FormaPequena)
                     .background(colorActual)
-                    .border(1.dp, Color.Gray.copy(alpha = 0.4f), RoundedCornerShape(6.dp))
+                    .border(1.dp, Color.Gray.copy(alpha = 0.4f), FormaPequena)
             )
             Spacer(Modifier.width(10.dp))
             Text(
                 text = etiqueta,
-                style = MaterialTheme.typography.bodyMedium.copy(fontSize = 14.sp),
+                style = MaterialTheme.typography.bodyMedium.copy(fontSize = (14 * EscalaTexto).sp),
                 modifier = Modifier.weight(1f)
             )
             Text(

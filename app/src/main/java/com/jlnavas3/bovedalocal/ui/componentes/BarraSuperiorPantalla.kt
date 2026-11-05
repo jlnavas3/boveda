@@ -32,6 +32,7 @@ import com.jlnavas3.bovedalocal.ui.componentes.ajustes.InsigniaIdAjuste
 import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
 import com.jlnavas3.bovedalocal.ui.theme.ColorTitulos
 import com.jlnavas3.bovedalocal.ui.theme.Obsidiana
+import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
 
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.zIndex
@@ -45,10 +46,12 @@ fun BarraSuperiorPantalla(
     titulo: String,
     alVolver: () -> Unit,
     modifier: Modifier = Modifier,
+    subtitulo: String? = null,
     idEtiqueta: String? = null,
     mostrarId: Boolean = false,
     conSeparador: Boolean = false,
     colorFondo: Color = Color.Unspecified,
+    estiloTitulo: androidx.compose.ui.text.TextStyle? = null,
     acciones: (@Composable RowScope.() -> Unit)? = null
 ) {
     val fondoBarra = if (colorFondo != Color.Unspecified) colorFondo else Obsidiana
@@ -77,10 +80,20 @@ fun BarraSuperiorPantalla(
                 Text(
                     text = titulo,
                     color = ColorTitulos,
-                    style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
+                    style = estiloTitulo ?: MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
+                if (!subtitulo.isNullOrBlank()) {
+                    Spacer(Modifier.height(1.dp))
+                    Text(
+                        text = subtitulo,
+                        color = TextoSecundario,
+                        style = MaterialTheme.typography.bodySmall,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
                 if (mostrarId && !idEtiqueta.isNullOrBlank()) {
                     Spacer(Modifier.height(2.dp))
                     InsigniaIdAjuste(id = idEtiqueta)

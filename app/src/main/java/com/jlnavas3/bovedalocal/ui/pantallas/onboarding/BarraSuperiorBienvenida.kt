@@ -92,8 +92,8 @@ fun BarraSuperiorBienvenida(
                 ElementoMenuCompacto(
                     texto = "Salir",
                     icono = Icons.AutoMirrored.Filled.ExitToApp,
-                    colorIcono = Peligro,
-                    colorTexto = Peligro,
+                    colorIcono = ColorIconosInternos,
+                    colorTexto = TextoPrincipal,
                     onClick = {
                         menuAbierto = false
                         alSalir()

@@ -59,10 +59,11 @@ fun AnimacionBienvenidaBoveda(
             }
         }
         else -> {
+            val formaCandado = if (CurvaturaEsquinas == 0.dp) RoundedCornerShape(0.dp) else RoundedCornerShape(CurvaturaEsquinas.coerceAtLeast(18.dp))
             Box(
                 modifier = modifier
                     .size(96.dp)
-                    .clip(RoundedCornerShape(CurvaturaEsquinas.coerceAtLeast(18.dp)))
+                    .clip(formaCandado)
                     .background(ColorTarjetaAjustes),
                 contentAlignment = Alignment.Center
             ) {

@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.CallMerge
+import androidx.compose.material.icons.automirrored.filled.CompareArrows
 import androidx.compose.material.icons.filled.Backup
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.MoreVert
@@ -26,7 +27,7 @@ import androidx.compose.ui.unit.dp
 import com.jlnavas3.bovedalocal.ui.componentes.ElementoMenuCompacto
 import com.jlnavas3.bovedalocal.ui.componentes.MenuDesplegableBoveda
 import com.jlnavas3.bovedalocal.ui.componentes.SeparadorOpcionMenu
-import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
+import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
 import com.jlnavas3.bovedalocal.ui.theme.ColorPasskeys
 import com.jlnavas3.bovedalocal.ui.theme.Peligro
 import com.jlnavas3.bovedalocal.ui.theme.TextoPrincipal
@@ -34,28 +35,30 @@ import com.jlnavas3.bovedalocal.util.Haptica
 
 /**
  * Microcomponente que maneja el botón y menú desplegable de más opciones (3 puntos)
- * en la barra inferior de selección múltiple (Respaldar, Transferir CXF, Eliminar, Ignorar en auditoría).
+ * en la barra inferior de selección múltiple (Comparar seleccionados, Respaldar, Transferir CXF, Eliminar, Ignorar en auditoría).
  */
 @Composable
 fun MenuOverflowSeleccion(
     habilitado: Boolean,
+    alComparar: (() -> Unit)? = null,
+    puedeComparar: Boolean = false,
     alRespaldar: (() -> Unit)?,
     alTransferirCxf: (() -> Unit)?,
     alUnificar: (() -> Unit)? = null,
     alAlternarIgnorarAuditoria: (() -> Unit)? = null,
     todosIgnorados: Boolean = false,
-    alBorrar: (() -> Unit)?,
+    alBorrar: (() -> Unit)? = null,
     haptica: Haptica,
     modifier: Modifier = Modifier
 ) {
     var menuMasAbierto by remember { mutableStateOf(false) }
 
     Box(modifier = modifier) {
-        ItemAccionSeleccion(
+        BotonAccionSeleccionIcono(
             icono = Icons.Filled.MoreVert,
-            texto = "Más",
+            descripcion = "Más opciones",
             habilitado = habilitado,
-            colorIcono = TextoPrincipal,
+            colorIcono = ColorIconosInternos,
             alPulsar = {
                 haptica.toque()
                 menuMasAbierto = true
@@ -67,11 +70,24 @@ fun MenuOverflowSeleccion(
             onDismissRequest = { menuMasAbierto = false },
             modifier = Modifier.widthIn(min = 200.dp, max = 260.dp)
         ) {
-            if (alUnificar != null) {
+            if (alComparar != null && puedeComparar) {
                 ElementoMenuCompacto(
-                    texto = "Unificar",
+                    texto = "Comparar seleccionados",
+                    icono = Icons.AutoMirrored.Filled.CompareArrows,
+                    colorIcono = ColorIconosInternos,
+                    onClick = {
+                        menuMasAbierto = false
+                        haptica.toque()
+                        alComparar()
+                    }
+                )
+            }
+            if (alUnificar != null) {
+                if (alComparar != null && puedeComparar) SeparadorOpcionMenu()
+                ElementoMenuCompacto(
+                    texto = "Unificar seleccionados",
                     icono = Icons.AutoMirrored.Filled.CallMerge,
-                    colorIcono = ColorAcento,
+                    colorIcono = ColorIconosInternos,
                     onClick = {
                         menuMasAbierto = false
                         haptica.toque()
@@ -80,11 +96,11 @@ fun MenuOverflowSeleccion(
                 )
             }
             if (alRespaldar != null) {
-                if (alUnificar != null) SeparadorOpcionMenu()
+                if ((alComparar != null && puedeComparar) || alUnificar != null) SeparadorOpcionMenu()
                 ElementoMenuCompacto(
-                    texto = "Respaldar",
+                    texto = "Respaldar seleccionados",
                     icono = Icons.Filled.Backup,
-                    colorIcono = ColorAcento,
+                    colorIcono = ColorIconosInternos,
                     onClick = {
                         menuMasAbierto = false
                         haptica.tic()
@@ -94,11 +110,11 @@ fun MenuOverflowSeleccion(
             }
 
             if (alTransferirCxf != null) {
-                if (alRespaldar != null) SeparadorOpcionMenu()
+                if ((alComparar != null && puedeComparar) || alUnificar != null || alRespaldar != null) SeparadorOpcionMenu()
                 ElementoMenuCompacto(
-                    texto = "Transferir",
+                    texto = "Transferir credenciales",
                     icono = Icons.Filled.VpnKey,
-                    colorIcono = ColorPasskeys,
+                    colorIcono = ColorIconosInternos,
                     onClick = {
                         menuMasAbierto = false
                         haptica.toque()
@@ -108,11 +124,11 @@ fun MenuOverflowSeleccion(
             }
 
             if (alAlternarIgnorarAuditoria != null) {
-                if (alUnificar != null || alRespaldar != null || alTransferirCxf != null) SeparadorOpcionMenu()
+                if ((alComparar != null && puedeComparar) || alUnificar != null || alRespaldar != null || alTransferirCxf != null) SeparadorOpcionMenu()
                 ElementoMenuCompacto(
                     texto = if (todosIgnorados) "Incluir en auditoría" else "Ignorar en auditoría",
                     icono = Icons.Filled.Shield,
-                    colorIcono = Color(0xFFE57373),
+                    colorIcono = ColorIconosInternos,
                     onClick = {
                         menuMasAbierto = false
                         haptica.tic()
@@ -122,12 +138,12 @@ fun MenuOverflowSeleccion(
             }
 
             if (alBorrar != null) {
-                if (alUnificar != null || alRespaldar != null || alTransferirCxf != null || alAlternarIgnorarAuditoria != null) SeparadorOpcionMenu()
+                if ((alComparar != null && puedeComparar) || alUnificar != null || alRespaldar != null || alTransferirCxf != null || alAlternarIgnorarAuditoria != null) SeparadorOpcionMenu()
                 ElementoMenuCompacto(
                     texto = "Eliminar",
                     icono = Icons.Filled.Delete,
-                    colorIcono = Peligro,
-                    colorTexto = Peligro,
+                    colorIcono = ColorIconosInternos,
+                    colorTexto = TextoPrincipal,
                     onClick = {
                         menuMasAbierto = false
                         haptica.error()

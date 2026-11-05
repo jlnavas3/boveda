@@ -95,7 +95,7 @@ fun HojaPasskey(
         error = null
         flujo.desbloquear(
             titulo = "Bóveda local",
-            subtitulo = "Desbloquea para usar tu llave de paso",
+            subtitulo = "Desbloquea para usar tu llave de acceso",
             alClave = { clave ->
                 try {
                     repositorio.desbloquearConClaveMaestra(clave)
@@ -177,7 +177,7 @@ fun HojaPasskey(
                         .clip(CircleShape)
                 )
             } else {
-                Monograma(titulo = sitio.ifBlank { "Llave de paso" }, semilla = sitio, tamano = 52)
+                Monograma(titulo = sitio.ifBlank { "Llave de acceso" }, semilla = sitio, tamano = 52)
             }
             Spacer(Modifier.height(14.dp))
             Text(titulo, style = MaterialTheme.typography.titleLarge, color = ColorAcento)

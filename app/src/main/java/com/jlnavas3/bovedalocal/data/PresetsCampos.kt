@@ -22,11 +22,12 @@ object PresetsCampos {
         etiqueta: String,
         tipo: TipoCampo,
         sensible: Boolean = false,
-        formato: String? = null
+        formato: String? = null,
+        valorInicial: String = ""
     ) = CampoPersonalizado(
         id = UUID.randomUUID().toString(),
         etiqueta = etiqueta,
-        valor = "",
+        valor = valorInicial,
         tipo = tipo,
         esSensible = sensible,
         formato = formato
@@ -55,7 +56,7 @@ object PresetsCampos {
     )
 
     fun identidad(): List<CampoPersonalizado> = listOf(
-        campo("Tipo de documento (DNI/Pasaporte)", TipoCampo.TEXTO),
+        campo("Tipo de documento", TipoCampo.TEXTO, valorInicial = "CI"),
         campo("Número de documento", TipoCampo.TEXTO, sensible = true, formato = "DOCUMENTO"),
         campo("Fecha de expedición", TipoCampo.FECHA),
         campo("Fecha de caducidad", TipoCampo.FECHA),
@@ -76,15 +77,23 @@ object PresetsCampos {
         campo("Clave privada", TipoCampo.NOTAS, sensible = true, formato = "CLAVE_PRIVADA")
     )
 
-    fun paraTipoEntrada(tipo: TipoEntrada): List<CampoPersonalizado> = when (tipo) {
-        TipoEntrada.TARJETA -> tarjeta()
-        TipoEntrada.WIFI -> wifi()
-        TipoEntrada.CUENTA_BANCARIA -> cuentaBancaria()
-        TipoEntrada.IDENTIDAD -> identidad()
-        TipoEntrada.SERVIDOR -> servidorSsh()
-        TipoEntrada.WALLET -> criptoWallet()
-        else -> emptyList()
-    }
+    fun contacto(): List<CampoPersonalizado> = listOf(
+        campo("Teléfono secundario", TipoCampo.TELEFONO, formato = "TELEFONO"),
+        campo("Correo electrónico", TipoCampo.EMAIL, formato = "EMAIL"),
+        campo("Dirección postal", TipoCampo.TEXTO),
+        campo("Código postal", TipoCampo.TEXTO),
+        campo("Ciudad", TipoCampo.TEXTO),
+        campo("Provincia / Estado", TipoCampo.TEXTO),
+        campo("País", TipoCampo.TEXTO)
+    )
+
+    /**
+     * Retorna los campos personalizados por defecto para un nuevo tipo de entrada.
+     * Como las entradas TARJETA, WIFI, CUENTA_BANCARIA, IDENTIDAD, SERVIDOR, WALLET y CONTACTO
+     * ya son ciudadanos nativos estructurados de primer nivel con submodelos dedicados,
+     * no deben iniciar con campos personalizados por defecto. Inician vacíos.
+     */
+    fun paraTipoEntrada(tipo: TipoEntrada): List<CampoPersonalizado> = emptyList()
 
     val todos: List<PresetRapido> = listOf(
         PresetRapido(
@@ -114,6 +123,13 @@ object PresetsCampos {
             descripcion = "Tipo, número oficial, emisión y caducidad",
             tipoEntradaSugerido = TipoEntrada.IDENTIDAD,
             generarCampos = ::identidad
+        ),
+        PresetRapido(
+            id = "contacto",
+            titulo = "Contacto / Dirección de envío",
+            descripcion = "Teléfono, correo, dirección postal y código postal",
+            tipoEntradaSugerido = TipoEntrada.CONTACTO,
+            generarCampos = ::contacto
         ),
         PresetRapido(
             id = "servidor",

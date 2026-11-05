@@ -26,7 +26,7 @@ class PresetsCamposTest {
     @Test
     fun `presets estaticos estan correctamente definidos con identificadores unicos`() {
         val presets = PresetsCampos.todos
-        assertEquals(6, presets.size)
+        assertEquals(7, presets.size)
 
         val ids = presets.map { it.id }
         assertEquals(ids.distinct().size, ids.size)
@@ -129,7 +129,7 @@ class PresetsCamposTest {
         assertEquals("Documento de identidad", TipoEntrada.IDENTIDAD.etiqueta)
         assertEquals("Servidor / SSH", TipoEntrada.SERVIDOR.etiqueta)
         assertEquals("Cripto Wallet", TipoEntrada.WALLET.etiqueta)
-        assertEquals("Llave de paso", TipoEntrada.PASSKEY.etiqueta)
+        assertEquals("Llave de acceso", TipoEntrada.PASSKEY.etiqueta)
     }
 
     @Test
@@ -175,7 +175,7 @@ class PresetsCamposTest {
 
     @Test
     fun `obtenerTodos combina presets del sistema y plantillas personalizadas generando nuevos UUIDs`() {
-        assertEquals(6, PresetsCampos.obtenerTodos(emptyList()).size)
+        assertEquals(7, PresetsCampos.obtenerTodos(emptyList()).size)
 
         val personalizadas = listOf(
             com.jlnavas3.bovedalocal.data.PlantillaCamposPersonalizada(
@@ -189,7 +189,7 @@ class PresetsCamposTest {
         )
 
         val combinados = PresetsCampos.obtenerTodos(personalizadas)
-        assertEquals(7, combinados.size)
+        assertEquals(8, combinados.size)
 
         val presetCustom = combinados.firstOrNull { it.id == "custom-db" }
         assertNotNull(presetCustom)

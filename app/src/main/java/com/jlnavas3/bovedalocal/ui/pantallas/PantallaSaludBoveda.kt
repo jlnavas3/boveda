@@ -79,7 +79,9 @@ fun PantallaSaludBoveda(
         ahora = ahora,
         contexto = contexto,
         anadidasComunes = ajustes.contrasenasComunesAnadidas,
-        excluidasComunes = ajustes.contrasenasComunesExcluidas
+        excluidasComunes = ajustes.contrasenasComunesExcluidas,
+        umbralPuntuacionDebil = ajustes.saludUmbralPuntuacionDebil,
+        longitudMinima = ajustes.saludLongitudMinimaRecomendada
     )
     val diagnosticoAccesibilidad = remember(contexto, ajustes.listaBlancaAccesibilidad) {
         com.jlnavas3.bovedalocal.util.DetectorServiciosAccesibilidad.evaluar(contexto, ajustes.listaBlancaAccesibilidad)

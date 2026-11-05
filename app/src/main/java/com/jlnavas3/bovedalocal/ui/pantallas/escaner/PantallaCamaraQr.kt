@@ -74,12 +74,22 @@ fun PantallaCamaraQr(
     var motorCameraX by remember { mutableStateOf<MotorCameraX?>(null) }
     var flashEncendido by remember { mutableStateOf(false) }
     var zoomRatio by remember { mutableFloatStateOf(0f) }
+    var tamanoVentanaDp by remember(ajustes.escanerQrTamanoVentanaDp) { mutableStateOf(ajustes.escanerQrTamanoVentanaDp.dp) }
 
     var codigoDetectado by remember { mutableStateOf(false) }
     var mensajeEstado by remember { mutableStateOf<String?>(null) }
     var esErrorMensaje by remember { mutableStateOf(false) }
     var procesandoLectura by remember { mutableStateOf(false) }
     var entradaConfirmar by remember { mutableStateOf<com.jlnavas3.bovedalocal.data.Entrada?>(null) }
+    var payloadP2pConfirmar by remember { mutableStateOf<com.jlnavas3.bovedalocal.sync.SyncQrPayload?>(null) }
+    var sincronizandoP2p by remember { mutableStateOf(false) }
+    var errorSincronizacionP2p by remember { mutableStateOf<String?>(null) }
+    var informeP2pMostrar by remember { mutableStateOf<com.jlnavas3.bovedalocal.sync.InformeSincronizacion?>(null) }
+
+    val ensambladorOptico = remember { com.jlnavas3.bovedalocal.sync.EnsambladorRafagaOptica() }
+    var mostrarDialogoPinOptico by remember { mutableStateOf(false) }
+    var errorPinOptico by remember { mutableStateOf<String?>(null) }
+    var mostrandoModalAnfitrion by remember { mutableStateOf(false) }
 
     val yaLeido = remember { AtomicBoolean(false) }
     val principal = remember { Handler(Looper.getMainLooper()) }
@@ -123,13 +133,51 @@ fun PantallaCamaraQr(
                 principal.post {
                     procesandoLectura = true
                     codigoDetectado = true
-                    if (ajustes.hapticaApp) haptica.exito()
+                    if (ajustes.escanerQrVibracion && ajustes.hapticaApp) haptica.exito()
+                    if (ajustes.escanerQrSonido) {
+                        try {
+                            val tg = android.media.ToneGenerator(android.media.AudioManager.STREAM_NOTIFICATION, 100)
+                            tg.startTone(android.media.ToneGenerator.TONE_PROP_BEEP)
+                            principal.postDelayed({ tg.release() }, 200)
+                        } catch (_: Exception) {}
+                    }
 
                     principal.postDelayed({
                         val res = procesarLecturaQr(texto, "la cámara", entradaDestino, vm)
                         when (res) {
                             is ResultadoProcesoQr.EntradaDetectada -> {
                                 entradaConfirmar = vm.resolverTituloDuplicado(res.entrada)
+                            }
+                            is ResultadoProcesoQr.P2pSyncDetectado -> {
+                                if (com.jlnavas3.bovedalocal.BuildConfig.PERMITE_RED_LAN) {
+                                    payloadP2pConfirmar = res.payload
+                                } else {
+                                    if (ajustes.hapticaApp) haptica.error()
+                                    mensajeEstado = "Esta variante es 100% Air-Gapped (aislada sin permisos de red). La sincronización Wi-Fi requiere la variante LanSync."
+                                    esErrorMensaje = true
+                                    principal.postDelayed({
+                                        codigoDetectado = false
+                                        procesandoLectura = false
+                                        yaLeido.set(false)
+                                        mensajeEstado = null
+                                    }, 4_000)
+                                }
+                            }
+                            is ResultadoProcesoQr.TramaOpticaDetectada -> {
+                                val esNueva = ensambladorOptico.registrarTrama(res.trama)
+                                if (esNueva && ajustes.hapticaApp) haptica.tic()
+
+                                if (ensambladorOptico.estaCompleto) {
+                                    if (ajustes.hapticaApp) haptica.exito()
+                                    errorPinOptico = null
+                                    mostrarDialogoPinOptico = true
+                                } else {
+                                    mensajeEstado = "Ráfaga óptica: ${ensambladorOptico.progreso} / ${ensambladorOptico.total} fragmentos"
+                                    esErrorMensaje = false
+                                    codigoDetectado = false
+                                    procesandoLectura = false
+                                    yaLeido.set(false)
+                                }
                             }
                             is ResultadoProcesoQr.Error -> {
                                 if (ajustes.hapticaApp) haptica.error()
@@ -171,6 +219,26 @@ fun PantallaCamaraQr(
                         is ResultadoProcesoQr.EntradaDetectada -> {
                             entradaConfirmar = vm.resolverTituloDuplicado(res.entrada)
                         }
+                        is ResultadoProcesoQr.P2pSyncDetectado -> {
+                            if (com.jlnavas3.bovedalocal.BuildConfig.PERMITE_RED_LAN) {
+                                payloadP2pConfirmar = res.payload
+                            } else {
+                                if (ajustes.hapticaApp) haptica.error()
+                                mensajeEstado = "Esta variante es 100% Air-Gapped (aislada sin permisos de red). La sincronización Wi-Fi requiere la variante LanSync."
+                                esErrorMensaje = true
+                            }
+                        }
+                        is ResultadoProcesoQr.TramaOpticaDetectada -> {
+                            ensambladorOptico.registrarTrama(res.trama)
+                            if (ensambladorOptico.estaCompleto) {
+                                if (ajustes.hapticaApp) haptica.exito()
+                                errorPinOptico = null
+                                mostrarDialogoPinOptico = true
+                            } else {
+                                mensajeEstado = "Fragmento óptico ${ensambladorOptico.progreso} / ${ensambladorOptico.total} registrado."
+                                esErrorMensaje = false
+                            }
+                        }
                         is ResultadoProcesoQr.Exito -> {
                             if (ajustes.hapticaApp) haptica.exito()
                         }
@@ -202,6 +270,16 @@ fun PantallaCamaraQr(
                     esErrorMensaje = true
                 },
                 alMotorListo = { motorCameraX = it },
+                tamanoVentanaDp = tamanoVentanaDp,
+                alCambiarTamano = {
+                    tamanoVentanaDp = it
+                    vm.ajustarEscanerQrTamanoVentanaDp(it.value)
+                },
+                alRestablecerTamano = {
+                    tamanoVentanaDp = com.jlnavas3.bovedalocal.data.AjustesDefaults.CamaraQr.TAMANO_VENTANA_DP.dp
+                    vm.ajustarEscanerQrTamanoVentanaDp(com.jlnavas3.bovedalocal.data.AjustesDefaults.CamaraQr.TAMANO_VENTANA_DP)
+                    if (ajustes.hapticaApp) haptica.tic()
+                },
                 modifier = Modifier.fillMaxSize()
             )
         } else {
@@ -241,6 +319,11 @@ fun PantallaCamaraQr(
             alEntradaManual = {
                 motorCameraX?.alternarFlash(false)
                 vm.ir(Pantalla.Escaner(entradaDestino, soloManual = true))
+            },
+            alMostrarAnfitrion = {
+                motorCameraX?.alternarFlash(false)
+                flashEncendido = false
+                mostrandoModalAnfitrion = true
             },
             alAbrirAjustes = {
                 motorCameraX?.alternarFlash(false)
@@ -296,6 +379,146 @@ fun PantallaCamaraQr(
                 procesandoLectura = false
                 yaLeido.set(false)
                 mensajeEstado = null
+            }
+        )
+    }
+
+    if (payloadP2pConfirmar != null) {
+        DialogoConfirmarSincronizacionP2P(
+            payload = payloadP2pConfirmar!!,
+            sincronizando = sincronizandoP2p,
+            errorMensaje = errorSincronizacionP2p,
+            alConfirmar = {
+                val payload = payloadP2pConfirmar ?: return@DialogoConfirmarSincronizacionP2P
+                sincronizandoP2p = true
+                errorSincronizacionP2p = null
+                ambito.launch {
+                    try {
+                        val previa = vm.obtenerContenidoActual()
+                        val fusionada = withContext(Dispatchers.IO) {
+                            com.jlnavas3.bovedalocal.sync.ClienteSyncP2P.sincronizarConServidor(
+                                payloadQr = payload,
+                                bovedaLocal = previa
+                            )
+                        }
+                        val dispositivoRemoto = fusionada.aliasDispositivo
+                        val informe = com.jlnavas3.bovedalocal.sync.CalculadorMascaraDiff.generarInforme(
+                            bovedaPrevia = previa,
+                            bovedaFusionada = fusionada,
+                            dispositivoRemoto = dispositivoRemoto
+                        )
+                        vm.aplicarBovedaFusionada(fusionada.copy(aliasDispositivo = null))
+                        Diagnostico.apuntar("sync", "Sincronización P2P exitosa: ${informe.textoResumen()}")
+                        if (ajustes.hapticaApp) haptica.exito()
+                        val mensajeAviso = if (informe.hayCambios) {
+                            "¡Sincronización exitosa! (${informe.totalModificadas} cambios aplicados)"
+                        } else {
+                            "¡Bóvedas al día! Sin cambios pendientes"
+                        }
+                        vm.avisar(mensajeAviso)
+                        payloadP2pConfirmar = null
+                        sincronizandoP2p = false
+                        informeP2pMostrar = informe
+                    } catch (e: Exception) {
+                        Diagnostico.apuntar("sync", "Error en sincronización P2P con Desktop: ${e.message}", e)
+                        if (ajustes.hapticaApp) haptica.error()
+                        errorSincronizacionP2p = e.message ?: "Error desconocido al conectar con Desktop"
+                        sincronizandoP2p = false
+                    }
+                }
+            },
+            alDescartar = {
+                payloadP2pConfirmar = null
+                sincronizandoP2p = false
+                errorSincronizacionP2p = null
+                codigoDetectado = false
+                procesandoLectura = false
+                yaLeido.set(false)
+                mensajeEstado = null
+            }
+        )
+    }
+
+    if (mostrarDialogoPinOptico) {
+        DialogoPinOptico(
+            totalTramas = ensambladorOptico.total,
+            errorMensaje = errorPinOptico,
+            aliasEmisor = ensambladorOptico.aliasEmisor,
+            alConfirmarPin = { pin ->
+                ambito.launch {
+                    try {
+                        val previa = vm.obtenerContenidoActual()
+                        val bovedaRemota = withContext(Dispatchers.Default) {
+                            ensambladorOptico.descifrarBoveda(pin)
+                        }
+                        val fusionadaConInforme = withContext(Dispatchers.Default) {
+                            com.jlnavas3.bovedalocal.sync.FusionadorBovedas.fusionarBovedasConInforme(
+                                bovedaLocal = previa,
+                                bovedaRemota = bovedaRemota
+                            )
+                        }
+                        val fusionada = fusionadaConInforme.boveda
+                        val informe = fusionadaConInforme.informe
+                        vm.aplicarBovedaFusionada(fusionada)
+                        Diagnostico.apuntar("sync", "Sincronización Óptica QR exitosa: ${informe.textoResumen()}")
+                        if (ajustes.hapticaApp) haptica.exito()
+                        val mensajeAviso = if (informe.hayCambios) {
+                            "¡Sincronización óptica exitosa! (${informe.totalModificadas} cambios aplicados)"
+                        } else {
+                            "¡Bóvedas al día! Sin cambios pendientes"
+                        }
+                        vm.avisar(mensajeAviso)
+                        mostrarDialogoPinOptico = false
+                        ensambladorOptico.reiniciar()
+                        informeP2pMostrar = informe
+                    } catch (e: Exception) {
+                        Diagnostico.apuntar("sync", "Error al descifrar ráfaga óptica: ${e.message}", e)
+                        if (ajustes.hapticaApp) haptica.error()
+                        errorPinOptico = e.message ?: "PIN incorrecto o datos corruptos"
+                    }
+                }
+            },
+            alDescartar = {
+                mostrarDialogoPinOptico = false
+                errorPinOptico = null
+                ensambladorOptico.reiniciar()
+                codigoDetectado = false
+                procesandoLectura = false
+                yaLeido.set(false)
+                mensajeEstado = null
+            }
+        )
+    }
+
+    if (mostrandoModalAnfitrion) {
+        ModalAnfitrionSyncP2P(
+            bovedaActual = vm.obtenerContenidoActual(),
+            alGuardarBovedaFusionada = { bovedaFusionada ->
+                vm.aplicarBovedaFusionada(bovedaFusionada)
+            },
+            alFinalizarConInforme = { informe ->
+                Diagnostico.apuntar("sync", "Sincronización P2P como anfitrión exitosa: ${informe.textoResumen()}")
+                val mensajeAviso = if (informe.hayCambios) {
+                    "¡Sincronización exitosa! (${informe.totalModificadas} cambios aplicados)"
+                } else {
+                    "¡Bóvedas al día! Sin cambios pendientes"
+                }
+                vm.avisar(mensajeAviso)
+                mostrandoModalAnfitrion = false
+                informeP2pMostrar = informe
+            },
+            alCerrar = {
+                mostrandoModalAnfitrion = false
+            }
+        )
+    }
+
+    if (informeP2pMostrar != null) {
+        DialogoInformeSincronizacion(
+            informe = informeP2pMostrar!!,
+            alCerrar = {
+                informeP2pMostrar = null
+                vm.volverAtras()
             }
         )
     }

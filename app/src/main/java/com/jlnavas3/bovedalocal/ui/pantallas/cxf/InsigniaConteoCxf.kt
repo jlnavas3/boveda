@@ -28,6 +28,7 @@ import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorSeparadorAjustes
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.FormaPequena
 import com.jlnavas3.bovedalocal.ui.theme.TextoPrincipal
+import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
 
 /**
  * Insignia visual modular para representar el conteo y tipo de credencial
@@ -37,7 +38,7 @@ import com.jlnavas3.bovedalocal.ui.theme.TextoPrincipal
 fun InsigniaConteoCxf(
     icono: ImageVector,
     texto: String,
-    color: Color = ColorAcento,
+    color: Color = TextoSecundario,
     modifier: Modifier = Modifier
 ) {
     Surface(
@@ -54,7 +55,7 @@ fun InsigniaConteoCxf(
             Icon(
                 imageVector = icono,
                 contentDescription = null,
-                tint = ColorAcento,
+                tint = color,
                 modifier = Modifier.size(14.dp)
             )
             com.jlnavas3.bovedalocal.ui.componentes.TextoPiePagina(

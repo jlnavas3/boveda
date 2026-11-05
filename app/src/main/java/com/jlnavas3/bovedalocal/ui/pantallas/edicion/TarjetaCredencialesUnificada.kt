@@ -104,6 +104,9 @@ fun TarjetaCredencialesUnificada(
     haptica: Haptica,
     alAbrirDiccionario: (() -> Unit)? = null,
     alAbrirContrasenasComunes: (() -> Unit)? = null,
+    correoBasePredeterminado: String = "",
+    delimitadorAlias: String = "+",
+    longitudSufijoAlias: Int = 6,
     modifier: Modifier = Modifier
 ) {
     val contexto = LocalContext.current
@@ -129,13 +132,13 @@ fun TarjetaCredencialesUnificada(
                 ) {
                     Icon(
                         imageVector = Icons.Filled.Fingerprint,
-                        contentDescription = "Llave de paso activa",
+                        contentDescription = "Llave de acceso activa",
                         tint = colorLegibleParaTema(ColorDatosPasskey),
                         modifier = Modifier.size(20.dp)
                     )
                     Column(modifier = Modifier.weight(1f)) {
                         Text(
-                            text = "Llave de paso registrada",
+                            text = "Llave de acceso registrada",
                             style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
                             color = colorLegibleParaTema(ColorDatosPasskey)
                         )
@@ -182,7 +185,7 @@ fun TarjetaCredencialesUnificada(
                 sinFondo = true,
                 mostrarIcono = true,
                 icono = Icons.Filled.Title,
-                colorIcono = ColorAcento,
+                colorIcono = TextoSecundario,
                 botonLimpiar = true,
                 imeAction = ImeAction.Next,
                 keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Down) })
@@ -208,15 +211,18 @@ fun TarjetaCredencialesUnificada(
                 colorIcono = ColorDatosUsuario,
                 trailingIcon = {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        if (usuario.isNotEmpty()) {
-                            com.jlnavas3.bovedalocal.ui.componentes.ajustes.BotonLimpiarTexto(onLimpiar = { alCambiarUsuario("") })
-                        }
                         BotonAliasCorreo(
                             usuarioActual = usuario,
                             tituloEntrada = titulo,
                             alSeleccionarAlias = alCambiarUsuario,
-                            haptica = haptica
+                            haptica = haptica,
+                            correoBasePredeterminado = correoBasePredeterminado,
+                            delimitador = delimitadorAlias,
+                            longitudSufijo = longitudSufijoAlias
                         )
+                        if (usuario.isNotEmpty()) {
+                            com.jlnavas3.bovedalocal.ui.componentes.ajustes.BotonLimpiarTexto(onLimpiar = { alCambiarUsuario("") })
+                        }
                     }
                 },
                 imeAction = ImeAction.Next,
@@ -268,7 +274,7 @@ fun TarjetaCredencialesUnificada(
                             Icon(
                                 imageVector = Icons.Filled.AutoAwesome,
                                 contentDescription = "Generar contraseña rápidamente",
-                                tint = ColorAcento,
+                                tint = TextoSecundario,
                                 modifier = Modifier.size(19.dp)
                             )
                         }

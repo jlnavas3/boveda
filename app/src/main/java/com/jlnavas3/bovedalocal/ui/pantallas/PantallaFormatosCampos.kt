@@ -69,12 +69,15 @@ fun PantallaFormatosCampos(
                         grupos = listOf(
                             AccionSaltoGrupo("02-APA-FMT-G01", "Vista previa"),
                             AccionSaltoGrupo("02-APA-FMT-G02", "Configuración de formatos"),
-                            AccionSaltoGrupo("02-APA-FMT-G03", "Formatos financieros")
+                            AccionSaltoGrupo("02-APA-FMT-G03", "Formatos financieros"),
+                            AccionSaltoGrupo("02-APA-FMT-G04", "Comunicaciones seguras")
                         ),
                         alRestablecerPantalla = {
                             haptica.tic()
                             vm.restablecerFormatos()
-                            vm.avisar("Formatos restablecidos")
+                            vm.restablecerFormatosFinancieros()
+                            vm.restablecerComunicaciones()
+                            vm.avisar("Formatos y comunicaciones restablecidos")
                         }
                     )
                 }
@@ -155,6 +158,43 @@ fun PantallaFormatosCampos(
                         haptica.tic()
                         vm.restablecerFormatosFinancieros()
                         vm.avisar("Formatos financieros restablecidos")
+                    }
+                )
+
+                Spacer(Modifier.height(14.dp))
+
+                // Grupo 4: Comunicaciones seguras y privacidad
+                com.jlnavas3.bovedalocal.ui.pantallas.formatos.GrupoConfiguracionComunicaciones(
+                    mostrarIdsAjustes = ajustes.mostrarIdsAjustes,
+                    prefijoNumeroOculto = ajustes.prefijoNumeroOculto,
+                    habilitarLlamadaOculta = ajustes.habilitarLlamadaOculta,
+                    habilitarWhatsappDirecto = ajustes.habilitarWhatsappDirecto,
+                    modoEnvioMensajeSeguro = ajustes.modoEnvioMensajeSeguro,
+                    preguntarPurgaAgenda = ajustes.preguntarPurgaAgenda,
+                    alCambiarPrefijoNumeroOculto = {
+                        haptica.tic()
+                        vm.ajustarPrefijoNumeroOculto(it)
+                    },
+                    alCambiarHabilitarLlamadaOculta = {
+                        haptica.tic()
+                        vm.ajustarHabilitarLlamadaOculta(it)
+                    },
+                    alCambiarHabilitarWhatsappDirecto = {
+                        haptica.tic()
+                        vm.ajustarHabilitarWhatsappDirecto(it)
+                    },
+                    alCambiarModoEnvioMensajeSeguro = {
+                        haptica.tic()
+                        vm.ajustarModoEnvioMensajeSeguro(it)
+                    },
+                    alCambiarPreguntarPurgaAgenda = {
+                        haptica.tic()
+                        vm.ajustarPreguntarPurgaAgenda(it)
+                    },
+                    alRestablecerGrupo = {
+                        haptica.tic()
+                        vm.restablecerComunicaciones()
+                        vm.avisar("Comunicaciones restablecidas")
                     }
                 )
 

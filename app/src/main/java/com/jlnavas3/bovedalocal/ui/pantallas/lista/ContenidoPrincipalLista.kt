@@ -50,6 +50,7 @@ fun ColumnScope.ContenidoPrincipalLista(
     vm: VaultViewModel,
     haptica: Haptica,
     alImportarDirectoCxf: () -> Unit,
+    alImportarContactos: () -> Unit = {},
     alEntrarEnSeleccion: (String) -> Unit,
     alAlternarSeleccion: (String) -> Unit,
     alEntrarEnSeleccionLote: (Set<String>) -> Unit,
@@ -66,7 +67,7 @@ fun ColumnScope.ContenidoPrincipalLista(
             alAbrirAyuda = { vm.ir(Pantalla.Ayuda()) },
             alImportarCopia = {
                 haptica.tic()
-                vm.ir(Pantalla.CopiaSeguridad("05-COP-MAN-IMP"))
+                vm.ir(Pantalla.CopiaManual("05-COP-MAN-IMP"))
             },
             alImportarCsvGoogle = {
                 haptica.tic()
@@ -76,7 +77,8 @@ fun ColumnScope.ContenidoPrincipalLista(
                 haptica.tic()
                 vm.ir(Pantalla.Escaner())
             },
-            alImportarDirectoCxf = alImportarDirectoCxf
+            alImportarDirectoCxf = alImportarDirectoCxf,
+            alImportarContactos = alImportarContactos
         )
     } else {
         CuerpoListaEntradas(
@@ -120,7 +122,13 @@ fun ColumnScope.ContenidoPrincipalLista(
             alEntrarEnSeleccionLote = alEntrarEnSeleccionLote,
             alAlternarSeleccionLote = alAlternarSeleccionLote,
             alAlternarGrupo = alAlternarGrupo,
-            gestorScroll = vm.gestorScroll
+            gestorScroll = vm.gestorScroll,
+            alCopiarDato = { id, etiqueta, valor, sensible ->
+                if (sensible) haptica.exito() else haptica.toque()
+                vm.copiar(etiqueta, valor, sensible)
+                vm.registrarUsoEntrada(id)
+            },
+            alAvisar = { vm.avisar(it) }
         )
     }
 }

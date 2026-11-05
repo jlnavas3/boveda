@@ -37,6 +37,10 @@ class BovedaApp : Application(), Application.ActivityLifecycleCallbacks {
         fun salidaTerminada(contexto: Context) {
             (contexto.applicationContext as? BovedaApp)?.salidaTerminada()
         }
+
+        fun refrescarActividadSegundoPlano(contexto: Context) {
+            (contexto.applicationContext as? BovedaApp)?.refrescarActividadSegundoPlano()
+        }
     }
 
     private var actividadesVisibles = 0
@@ -70,6 +74,20 @@ class BovedaApp : Application(), Application.ActivityLifecycleCallbacks {
         }
     }
 
+    fun refrescarActividadSegundoPlano() {
+        if (momentoAlFondo > 0L) {
+            momentoAlFondo = System.currentTimeMillis()
+        }
+    }
+
+    fun deberiaBloquearsePorInactividad(): Boolean {
+        if (momentoAlFondo <= 0L || salidaPermitida || !repositorio.estaDesbloqueada) return false
+        val ajustes = repositorio.ajustes.actual
+        val transcurrido = System.currentTimeMillis() - momentoAlFondo
+        val limite = (if (ajustes.autoBloqueoSegundos < 5) 30 else ajustes.autoBloqueoSegundos) * 1000L
+        return transcurrido >= limite
+    }
+
     private val salidaPermitida: Boolean
         get() {
             if (salidasPendientes.get() <= 0) return false
@@ -82,13 +100,12 @@ class BovedaApp : Application(), Application.ActivityLifecycleCallbacks {
 
     override fun onActivityStarted(activity: Activity) {
         if (actividadesVisibles == 0 && momentoAlFondo > 0L) {
-            val ajustes = repositorio.ajustes.actual
-            val transcurrido = System.currentTimeMillis() - momentoAlFondo
-            val limite = (if (ajustes.autoBloqueoSegundos < 5) 30 else ajustes.autoBloqueoSegundos) * 1000L
-            if (transcurrido >= limite && !salidaPermitida && repositorio.estaDesbloqueada) {
+            if (deberiaBloquearsePorInactividad()) {
+                val transcurrido = System.currentTimeMillis() - momentoAlFondo
                 repositorio.bloquear()
                 Diagnostico.apuntar("bóveda", "Bloqueada por inactividad tras ${transcurrido / 1000}s en segundo plano")
             }
+            momentoAlFondo = 0L
         }
         actividadesVisibles++
     }

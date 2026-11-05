@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.material.icons.filled.QrCode
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -22,9 +23,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.width
@@ -42,18 +45,24 @@ import com.jlnavas3.bovedalocal.ui.componentes.BotonColorido
 import com.jlnavas3.bovedalocal.ui.componentes.Monograma
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.ColorTitulos
+import com.jlnavas3.bovedalocal.ui.theme.EscalaTexto
 import com.jlnavas3.bovedalocal.ui.theme.FormaPequena
+import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
 import com.jlnavas3.bovedalocal.util.Dominios
 import com.jlnavas3.bovedalocal.util.GestorAppsInstaladas
 import com.jlnavas3.bovedalocal.util.IconoAppCircular
 import com.jlnavas3.bovedalocal.util.LanzadorEnlaces
 import com.jlnavas3.bovedalocal.util.rememberIconoAppInstalada
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 @Composable
 fun CabeceraHeroDetalle(
     entrada: Entrada,
     alMostrarQr: () -> Unit,
-    alActualizarTitulo: ((String) -> Unit)? = null
+    alActualizarTitulo: ((String) -> Unit)? = null,
+    seguridadVisualActiva: Boolean = true
 ) {
     val contexto = LocalContext.current
     val iconoApp = rememberIconoAppInstalada(entrada)
@@ -83,88 +92,136 @@ fun CabeceraHeroDetalle(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 8.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+            .padding(vertical = 4.dp)
     ) {
-        if (iconoApp != null) {
-            IconoAppCircular(
-                bitmap = iconoApp,
-                descripcion = entrada.titulo,
-                tamanoDp = 60.dp
-            )
-        } else {
-            Monograma(
-                titulo = entrada.titulo.ifBlank { "?" },
-                semilla = entrada.urls.firstOrNull() ?: entrada.passkey?.rpId ?: entrada.titulo,
-                tamano = 60
-            )
-        }
-        Spacer(Modifier.height(10.dp))
-        Text(
-            text = entrada.titulo.ifBlank { "Sin título" },
-            style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
-            color = ColorTitulos,
-            maxLines = 2,
-            overflow = TextOverflow.Ellipsis
-        )
-        Spacer(Modifier.height(4.dp))
         Row(
-            horizontalArrangement = Arrangement.spacedBy(6.dp),
-            verticalAlignment = Alignment.CenterVertically
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            Box(
-                modifier = Modifier
-                    .clip(FormaPequena)
-                    .background(ColorAcento.copy(alpha = 0.12f))
-                    .padding(horizontal = 10.dp, vertical = 3.dp)
-            ) {
-                Text(
-                    text = entrada.tipo.etiqueta,
-                    style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Medium),
-                    color = ColorAcento
+            // Icono o Monograma compacto
+            if (iconoApp != null) {
+                IconoAppCircular(
+                    bitmap = iconoApp,
+                    descripcion = entrada.titulo,
+                    tamanoDp = 44.dp
+                )
+            } else {
+                Monograma(
+                    titulo = entrada.titulo.ifBlank { "?" },
+                    semilla = entrada.urls.firstOrNull() ?: entrada.passkey?.rpId ?: entrada.titulo,
+                    tamano = 44
                 )
             }
-            if (entrada.ignoradaEnSalud) {
-                Box(
-                    modifier = Modifier
-                        .clip(FormaPequena)
-                        .background(Peligro.copy(alpha = 0.12f))
-                        .padding(horizontal = 8.dp, vertical = 3.dp)
+
+            // Título y Chip de Tipo en columna vertical compacta
+            Column(
+                modifier = Modifier.weight(1f),
+                verticalArrangement = Arrangement.spacedBy(2.dp)
+            ) {
+                Text(
+                    text = entrada.titulo.ifBlank { "Sin título" },
+                    style = MaterialTheme.typography.titleLarge.copy(
+                        fontWeight = FontWeight.Bold,
+                        fontSize = (18 * EscalaTexto).sp
+                    ),
+                    color = ColorTitulos,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(6.dp),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(4.dp)
+                    Box(
+                        modifier = Modifier
+                            .clip(FormaPequena)
+                            .background(ColorAcento.copy(alpha = 0.12f))
+                            .padding(horizontal = 8.dp, vertical = 2.dp)
                     ) {
-                        Icon(
-                            imageVector = Icons.Filled.VisibilityOff,
-                            contentDescription = null,
-                            tint = Peligro,
-                            modifier = Modifier.size(12.dp)
-                        )
                         Text(
-                            text = "Ignorada",
-                            style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Medium),
-                            color = Peligro
+                            text = entrada.tipo.etiqueta,
+                            style = MaterialTheme.typography.labelSmall.copy(
+                                fontWeight = FontWeight.Medium,
+                                fontSize = (10 * EscalaTexto).sp
+                            ),
+                            color = ColorAcento
                         )
+                    }
+                    if (seguridadVisualActiva && entrada.ignoradaEnSalud) {
+                        Box(
+                            modifier = Modifier
+                                .clip(FormaPequena)
+                                .background(Peligro.copy(alpha = 0.12f))
+                                .padding(horizontal = 6.dp, vertical = 2.dp)
+                        ) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(3.dp)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Filled.VisibilityOff,
+                                    contentDescription = null,
+                                    tint = Peligro,
+                                    modifier = Modifier.size(11.dp)
+                                )
+                                Text(
+                                    text = "Ignorada",
+                                    style = MaterialTheme.typography.labelSmall.copy(
+                                        fontWeight = FontWeight.Medium,
+                                        fontSize = (10 * EscalaTexto).sp
+                                    ),
+                                    color = Peligro
+                                )
+                            }
+                        }
+                    }
+
+                    if (entrada.creadaEn > 0L) {
+                        val formatoFecha = remember {
+                            SimpleDateFormat("dd/MM/yy", Locale.forLanguageTag("es-ES"))
+                        }
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(3.dp),
+                            modifier = Modifier.padding(start = 2.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Filled.CalendarToday,
+                                contentDescription = null,
+                                tint = TextoSecundario,
+                                modifier = Modifier.size(11.dp)
+                            )
+                            Text(
+                                text = formatoFecha.format(Date(entrada.creadaEn)),
+                                style = MaterialTheme.typography.labelSmall.copy(
+                                    fontStyle = FontStyle.Italic,
+                                    fontSize = (11 * EscalaTexto).sp
+                                ),
+                                color = TextoSecundario
+                            )
+                        }
                     }
                 }
             }
         }
+
         if (esTituloTecnico && nombreApp != null && alActualizarTitulo != null) {
-            Spacer(Modifier.height(8.dp))
+            Spacer(Modifier.height(6.dp))
             Row(
                 modifier = Modifier
                     .clip(RoundedCornerShape(12.dp))
                     .background(ColorAcento.copy(alpha = 0.15f))
                     .clickable { alActualizarTitulo(nombreApp) }
-                    .padding(horizontal = 12.dp, vertical = 6.dp),
+                    .padding(horizontal = 12.dp, vertical = 5.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Icon(
                     imageVector = Icons.Filled.AutoFixHigh,
                     contentDescription = null,
                     tint = ColorAcento,
-                    modifier = Modifier.size(16.dp)
+                    modifier = Modifier.size(15.dp)
                 )
                 Spacer(Modifier.width(6.dp))
                 Text(
@@ -176,16 +233,5 @@ fun CabeceraHeroDetalle(
                 )
             }
         }
-    }
-
-    if (entrada.tipo == TipoEntrada.WIFI) {
-        Spacer(Modifier.height(8.dp))
-        BotonColorido(
-            texto = "Compartir Wi-Fi por código QR",
-            color = ColorAcento,
-            icono = Icons.Filled.QrCode,
-            modifier = Modifier.fillMaxWidth(),
-            alPulsar = alMostrarQr
-        )
     }
 }

@@ -15,9 +15,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.relocation.BringIntoViewRequester
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -27,12 +29,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.jlnavas3.bovedalocal.data.AjustesApp
 import com.jlnavas3.bovedalocal.ui.VaultViewModel
 import com.jlnavas3.bovedalocal.ui.componentes.BarraSuperiorPantalla
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjustesFondo
 import com.jlnavas3.bovedalocal.ui.preview.BovedaPantallaPreview
 import com.jlnavas3.bovedalocal.ui.preview.PreviewTemaBoveda
 import com.jlnavas3.bovedalocal.ui.theme.GestorPaletaSobria
+import androidx.compose.foundation.ExperimentalFoundationApi
 import com.jlnavas3.bovedalocal.ui.theme.ParametrosLaboratorio
 import com.jlnavas3.bovedalocal.util.Haptica
 
@@ -41,6 +46,7 @@ import com.jlnavas3.bovedalocal.util.Haptica
  * Herramienta visual interactiva para ajustar la escala neutra de grises y el acento esencial,
  * aplicando la filosofía 90% neutro + 10% acento con restricción inteligente de luminancia.
  */
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun PantallaLaboratorioTemas(
     vm: VaultViewModel? = null,
@@ -52,6 +58,14 @@ fun PantallaLaboratorioTemas(
     val portapapeles = LocalClipboardManager.current
     val avisador = LocalAvisador.current
     val scrollState = rememberScrollState()
+    val ajustes = vm?.ajustes?.collectAsStateWithLifecycle()?.value ?: remember { AjustesApp() }
+    val reqDinamico = remember { BringIntoViewRequester() }
+
+    LaunchedEffect(seccionDestino) {
+        if (seccionDestino != null && (seccionDestino == "02-APA-THM-DYN" || seccionDestino == "09.2.2")) {
+            reqDinamico.bringIntoView()
+        }
+    }
 
     val estadoLab = remember { EstadoLaboratorioTemas(contexto) }
     var mostrarModalConfirmacionGuardado by remember { mutableStateOf(false) }
@@ -60,6 +74,7 @@ fun PantallaLaboratorioTemas(
         val tonoEfectivoFondo = if (unificarTonos) tonoGlobal else tonoFondo
         val tonoEfectivoTarjeta = if (unificarTonos) tonoGlobal else tonoTarjeta
         val tonoEfectivoCampo = if (unificarTonos) tonoGlobal else tonoCampo
+        val tonoEfectivoModal = if (unificarTonos) tonoGlobal else tonoModal
         val tonoEfectivoBorde = if (unificarTonos) tonoGlobal else tonoBorde
         val tonoEfectivoTextoPrincipal = if (unificarTonos) tonoGlobal else tonoTextoPrincipal
         val tonoEfectivoTextoSecundario = if (unificarTonos) tonoGlobal else tonoTextoSecundario
@@ -72,6 +87,9 @@ fun PantallaLaboratorioTemas(
         }
         val colorCampo = remember(lumCampo, tonoEfectivoCampo, saturacionTinte, modoOscuro) {
             calcularColorCapaLab(tonoEfectivoCampo, lumCampo, saturacionTinte, modoOscuro, esSuperficie = true)
+        }
+        val colorModal = remember(lumModal, tonoEfectivoModal, saturacionTinte, modoOscuro) {
+            calcularColorCapaLab(tonoEfectivoModal, lumModal, saturacionTinte, modoOscuro, esSuperficie = true)
         }
         val colorBorde = remember(lumBorde, tonoEfectivoBorde, saturacionTinte, modoOscuro) {
             calcularColorCapaLab(tonoEfectivoBorde, lumBorde, saturacionTinte, modoOscuro, esSuperficie = true)
@@ -86,8 +104,8 @@ fun PantallaLaboratorioTemas(
         val acentosPredefinidos = remember { ACENTOS_PREDEFINIDOS_LAB }
         val acentosGrisesNeutros = remember(modoOscuro) { obtenerAcentosGrisesNeutros(modoOscuro) }
 
-        fun marcarModificado() {
-            if (modoOscuro) modificadoOscuro = true else modificadoClaro = true
+        fun marcarModificado(esPreset: Boolean = false) {
+            estadoLab.marcarModificado(esPreset)
         }
 
         fun ejecutarGuardado() {
@@ -113,7 +131,9 @@ fun PantallaLaboratorioTemas(
                 acentoSat = satPersonalizadoOscuro,
                 acentoVal = valPersonalizadoOscuro,
                 acentoAlfa = alfaPersonalizadoOscuro,
-                esPersonalizado = esPersonalizadoActivoOscuro
+                esPersonalizado = esPersonalizadoActivoOscuro,
+                lumModal = lumModalOscuro,
+                tonoModal = tonoModalOscuro
             )
 
             val paramsCla = ParametrosLaboratorio(
@@ -135,7 +155,9 @@ fun PantallaLaboratorioTemas(
                 acentoSat = satPersonalizadoClaro,
                 acentoVal = valPersonalizadoClaro,
                 acentoAlfa = alfaPersonalizadoClaro,
-                esPersonalizado = esPersonalizadoActivoClaro
+                esPersonalizado = esPersonalizadoActivoClaro,
+                lumModal = lumModalClaro,
+                tonoModal = tonoModalClaro
             )
 
             GestorPaletaSobria.guardar(
@@ -172,6 +194,7 @@ fun PantallaLaboratorioTemas(
                 colorFondo = colorFondo,
                 colorTarjeta = colorTarjeta,
                 colorCampo = colorCampo,
+                colorModal = colorModal,
                 colorBorde = colorBorde,
                 colorTextoPrincipal = colorTextoPrincipal,
                 colorTextoSecundario = colorTextoSecundario,
@@ -185,6 +208,8 @@ fun PantallaLaboratorioTemas(
                 tonoEfectivoTarjeta = tonoEfectivoTarjeta,
                 lumCampo = lumCampo,
                 tonoEfectivoCampo = tonoEfectivoCampo,
+                lumModal = lumModal,
+                tonoEfectivoModal = tonoEfectivoModal,
                 lumBorde = lumBorde,
                 tonoEfectivoBorde = tonoEfectivoBorde,
                 lumTextoPrincipal = lumTextoPrincipal,
@@ -219,6 +244,7 @@ fun PantallaLaboratorioTemas(
             TarjetaFlotantePreviaLaboratorio(
                 colorFondo = colorFondo,
                 colorTarjeta = colorTarjeta,
+                colorModal = colorModal,
                 colorBorde = colorBorde,
                 colorCampo = colorCampo,
                 colorTextoPrincipal = colorTextoPrincipal,
@@ -240,36 +266,48 @@ fun PantallaLaboratorioTemas(
             ) {
                 FilaPresetsRapidosLab(
                     modoOscuro = modoOscuro,
+                    presetActivoId = estadoLab.presetActivoId,
                     alSeleccionarPreset = { preset ->
                         lumFondo = preset.lumFondo
                         lumTarjeta = preset.lumTarjeta
                         lumCampo = preset.lumCampo
+                        lumModal = preset.lumModal
                         lumBorde = preset.lumBorde
                         lumTextoPrincipal = preset.lumTextoPrincipal
                         lumTextoSecundario = preset.lumTextoSecundario
                         tonoGlobal = preset.tonoGlobal
                         saturacionTinte = preset.saturacionTinte
-                        marcarModificado()
+                        estadoLab.presetActivoId = preset.id
+                        marcarModificado(esPreset = true)
                     },
                     haptica = haptica
                 )
 
-                Spacer(Modifier.height(10.dp))
+                // Color dinámico del sistema (Material You - Android 12+)
+                SeccionColorDinamicoYSistema(
+                    ajustes = ajustes,
+                    haptica = haptica,
+                    reqDinamico = reqDinamico,
+                    alAlternarColorDinamico = { vm?.alternarColorDinamicoSistema(it) }
+                )
+
+                Spacer(Modifier.height(14.dp))
 
                 SeccionEscalaCapasLab(
                     estadoLab = estadoLab,
                     colorFondo = colorFondo,
                     colorTarjeta = colorTarjeta,
                     colorCampo = colorCampo,
+                    colorModal = colorModal,
                     colorBorde = colorBorde,
                     colorTextoPrincipal = colorTextoPrincipal,
                     colorTextoSecundario = colorTextoSecundario,
                     colorAcentoActual = colorAcentoActual,
                     haptica = haptica,
-                    marcarModificado = ::marcarModificado
+                    marcarModificado = { marcarModificado(false) }
                 )
 
-                Spacer(Modifier.height(18.dp))
+                Spacer(Modifier.height(14.dp))
 
                 SeccionAcentoEsencialLab(
                     estadoLab = estadoLab,
@@ -280,7 +318,7 @@ fun PantallaLaboratorioTemas(
                     acentosPredefinidos = acentosPredefinidos,
                     acentosGrisesNeutros = acentosGrisesNeutros,
                     haptica = haptica,
-                    marcarModificado = ::marcarModificado
+                    marcarModificado = { marcarModificado(false) }
                 )
 
                 Spacer(Modifier.height(24.dp))

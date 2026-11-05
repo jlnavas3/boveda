@@ -93,21 +93,51 @@ class FusionadorEntradasTest {
     }
 
     @Test
-    fun fusionar_distintosTotp_preservaSegundoComoTotpAlternativo() {
+    fun fusionar_distintosTotp_preservaSegundoComoTotpSecundarioEstructurado() {
         val principal = crearEntrada("1", "X (Twitter)", "usuario_demo", "Clave123").copy(
-            secretoTotp = "JBSWY3DPEHPK3PXP"
+            secretoTotp = "JBSWY3DPEHPK3PXP",
+            totpEmisor = "Twitter"
         )
         val secundaria = crearEntrada("2", "X (Twitter)", "usuario_demo", "Clave123").copy(
-            secretoTotp = "KRSXG5CTMVRXEZLU"
+            secretoTotp = "KRSXG5CTMVRXEZLU",
+            totpEmisor = "X"
         )
 
         val fusionada = FusionadorEntradas.fusionar(principal, listOf(secundaria))
 
         assertEquals("JBSWY3DPEHPK3PXP", fusionada.secretoTotp)
-        val campoAlt = fusionada.camposPersonalizados.firstOrNull { it.etiqueta.contains("TOTP", ignoreCase = true) }
-        org.junit.Assert.assertNotNull("Debe existir el campo personalizado TOTP alternativo", campoAlt)
-        assertEquals("KRSXG5CTMVRXEZLU", campoAlt?.valor)
-        assertTrue("Debe existir nota de respaldo de TOTP alternativo", fusionada.notas.contains("TOTP alternativo"))
+        assertEquals(1, fusionada.totpsSecundarios.size)
+        assertEquals("KRSXG5CTMVRXEZLU", fusionada.totpsSecundarios.first().secreto)
+        assertEquals("X", fusionada.totpsSecundarios.first().emisor)
+        assertTrue("No debe degradarse a notas si se preserva como objeto estructurado", !fusionada.notas.contains("TOTP alternativo"))
+    }
+
+    @Test
+    fun fusionar_distintasPasskeys_preservaSegundaComoPasskeySecundaria() {
+        val p1 = com.jlnavas3.bovedalocal.data.DatosPasskey(
+            rpId = "google.com",
+            rpName = "Google",
+            userHandle = "h1",
+            credId = "cred-1",
+            clavePrivada = "priv1",
+            usuario = "user1@gmail.com"
+        )
+        val p2 = com.jlnavas3.bovedalocal.data.DatosPasskey(
+            rpId = "google.com",
+            rpName = "Google",
+            userHandle = "h2",
+            credId = "cred-2",
+            clavePrivada = "priv2",
+            usuario = "user2@gmail.com"
+        )
+        val principal = crearEntrada("1", "Google").copy(passkey = p1)
+        val secundaria = crearEntrada("2", "Google").copy(passkey = p2)
+
+        val fusionada = FusionadorEntradas.fusionar(principal, listOf(secundaria))
+
+        assertEquals("cred-1", fusionada.passkey?.credId)
+        assertEquals(1, fusionada.passkeysSecundarias.size)
+        assertEquals("cred-2", fusionada.passkeysSecundarias.first().credId)
     }
 
     @Test
@@ -140,5 +170,96 @@ class FusionadorEntradasTest {
         assertEquals("https://starplus.disney.com", fusionada.urls[2])
         assertEquals("com.disney.starplus", fusionada.urls[3])
         assertEquals("https://www.disneyplus.com/", fusionada.urls[4])
+    }
+
+    @Test
+    fun fusionar_entradaContrasenaConEntradaPasskey_conservaAmbasComoPrincipalSinNotas() {
+        val entradaPassword = crearEntrada("1", "eBay", "jolunavi@gmail.com", "qt(_M2w5SvQK78N")
+        val entradaPasskey = crearEntrada("2", "eBay", "jolunavi@gmail.com", "").copy(
+            passkey = com.jlnavas3.bovedalocal.data.DatosPasskey(
+                rpId = "ebay.com",
+                rpName = "eBay",
+                userHandle = "uh123",
+                credId = "cred-ebay-1",
+                clavePrivada = "priv-key",
+                usuario = "jolunavi@gmail.com"
+            )
+        )
+
+        val fusionada = FusionadorEntradas.fusionar(entradaPassword, listOf(entradaPasskey))
+
+        assertEquals("qt(_M2w5SvQK78N", fusionada.contrasena)
+        org.junit.Assert.assertNotNull(fusionada.passkey)
+        assertEquals("cred-ebay-1", fusionada.passkey?.credId)
+        assertTrue("No debe haber texto autogenerado en notas", fusionada.notas.isBlank())
+    }
+
+    @Test
+    fun fusionar_conNotasResidualesAntiguas_limpiaNotasAutogeneradas() {
+        val principal = crearEntrada("1", "eBay", "user@test.com", "Clave123").copy(
+            notas = "[Passkey secundario respaldado de 'eBay': Usuario=user@test.com, CredId=abc123xyz]\n\n---\nNota legítima del usuario"
+        )
+        val secundaria = crearEntrada("2", "eBay", "user@test.com", "Clave123").copy(
+            notas = "Otra nota legítima"
+        )
+
+        val fusionada = FusionadorEntradas.fusionar(principal, listOf(secundaria))
+
+        assertTrue("La nota de passkey residual debe ser eliminada", !fusionada.notas.contains("Passkey secundario respaldado"))
+        assertTrue("La nota legítima debe conservarse", fusionada.notas.contains("Nota legítima del usuario"))
+        assertTrue("La nota de la secundaria debe conservarse", fusionada.notas.contains("Otra nota legítima"))
+    }
+
+    @Test
+    fun fusionar_mismasPasskeys_descartaDuplicadoYConsolidaDatosEnPrincipal() {
+        val p1 = com.jlnavas3.bovedalocal.data.DatosPasskey(
+            rpId = "whatsapp.com",
+            rpName = "whatsapp.com",
+            userHandle = "h1",
+            credId = "cred-wa-123",
+            clavePrivada = "priv-wa",
+            usuario = "",
+            creadaEn = 1724247720000L
+        )
+        val p2 = com.jlnavas3.bovedalocal.data.DatosPasskey(
+            rpId = "whatsapp.com",
+            rpName = "WhatsApp",
+            userHandle = "h1",
+            credId = "cred-wa-123",
+            clavePrivada = "priv-wa",
+            usuario = "********9258",
+            creadaEn = 1724247720000L
+        )
+        val principal = crearEntrada("1", "WhatsApp").copy(passkey = p1)
+        val secundaria = crearEntrada("2", "WhatsApp").copy(passkey = p2)
+
+        val fusionada = FusionadorEntradas.fusionar(principal, listOf(secundaria))
+
+        // La principal debe conservar la credencial única
+        org.junit.Assert.assertNotNull(fusionada.passkey)
+        assertEquals("cred-wa-123", fusionada.passkey?.credId)
+        // Debe consolidar el nombre de usuario y nombre amigable que venían en la secundaria
+        assertEquals("********9258", fusionada.passkey?.usuario)
+        assertEquals("WhatsApp", fusionada.passkey?.rpName)
+        // La passkey secundaria duplicada DEBE ser descartada
+        assertTrue("No debe haber passkeys secundarias si ambas entradas tenían la misma passkey", fusionada.passkeysSecundarias.isEmpty())
+    }
+
+    @Test
+    fun fusionar_mismoTotp_descartaDuplicadoYConsolidaEmisor() {
+        val principal = crearEntrada("1", "Amazon").copy(
+            secretoTotp = "JBSWY3DPEHPK3PXP",
+            totpEmisor = ""
+        )
+        val secundaria = crearEntrada("2", "Amazon").copy(
+            secretoTotp = "JBSWY3DPEHPK3PXP",
+            totpEmisor = "Amazon Prime"
+        )
+
+        val fusionada = FusionadorEntradas.fusionar(principal, listOf(secundaria))
+
+        assertEquals("JBSWY3DPEHPK3PXP", fusionada.secretoTotp)
+        assertEquals("Amazon Prime", fusionada.totpEmisor)
+        assertTrue("No debe haber TOTP secundario si el secreto es el mismo", fusionada.totpsSecundarios.isEmpty())
     }
 }

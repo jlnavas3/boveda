@@ -13,7 +13,7 @@ import kotlinx.serialization.json.JsonElement
 /**
  * Modelos de datos para el formato FIDO CXF (Credential Exchange Format).
  *
- * La especificación permite transportar credenciales (llaves de paso, contraseñas,
+ * La especificación permite transportar credenciales (llaves de acceso, contraseñas,
  * códigos de verificación en dos pasos y notas) de manera estructurada e interoperable.
  * Los modelos son lenientes para admitir tanto variantes jerárquicas
  * (`accounts` -> `items` -> `credentials`) como estructuras planas (`items`, `entries` o `credentials`).
@@ -108,7 +108,7 @@ data class CredencialCxf(
     val notes: JsonElement? = null,
     val content: JsonElement? = null,
 
-    // Llave de paso (Passkey / WebAuthn)
+    // Llave de acceso (Passkey / WebAuthn)
     val rpId: String? = null,
     val rpName: String? = null,
     val userHandle: String? = null,

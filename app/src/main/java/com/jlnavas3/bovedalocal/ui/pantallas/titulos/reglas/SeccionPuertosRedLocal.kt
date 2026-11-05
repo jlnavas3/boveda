@@ -77,30 +77,10 @@ fun SeccionPuertosRedLocal(
                     )
                 }
 
-                Box(
-                    contentAlignment = Alignment.Center,
-                    modifier = Modifier
-                        .clip(com.jlnavas3.bovedalocal.ui.theme.FormaChip)
-                        .background(ColorAcento.copy(alpha = 0.15f))
-                        .clickable { alAgregarClick() }
-                        .padding(horizontal = 12.dp, vertical = 6.dp)
-                ) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(
-                            imageVector = Icons.Filled.Add,
-                            contentDescription = "Agregar puerto de servicio",
-                            tint = ColorAcento,
-                            modifier = Modifier.size(16.dp)
-                        )
-                        Spacer(modifier = Modifier.width(4.dp))
-                        Text(
-                            text = "Agregar",
-                            color = ColorAcento,
-                            fontSize = 13.sp,
-                            fontWeight = FontWeight.Bold
-                        )
-                    }
-                }
+                BotonAgregarChipRegla(
+                    descripcion = "Agregar puerto de servicio",
+                    alPulsar = alAgregarClick
+                )
             }
         }
     }

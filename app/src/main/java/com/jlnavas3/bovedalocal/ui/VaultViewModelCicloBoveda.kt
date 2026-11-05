@@ -14,6 +14,7 @@ import com.jlnavas3.bovedalocal.data.FrenoIntentos
 import com.jlnavas3.bovedalocal.data.GestorBackupAutomatico
 import com.jlnavas3.bovedalocal.data.Identidad
 import com.jlnavas3.bovedalocal.data.PinAutodestruccion
+import com.jlnavas3.bovedalocal.data.TipoEntrada
 import com.jlnavas3.bovedalocal.data.VaultRepository
 import com.jlnavas3.bovedalocal.util.Diagnostico
 import kotlinx.coroutines.Dispatchers
@@ -114,8 +115,8 @@ interface VaultCicloBovedaDelegate {
                 com.jlnavas3.bovedalocal.ui.progreso.GestorProgresoOperaciones.completar(
                     mensajeExito = "Perfil ${nuevoPerfil.titulo} aplicado con éxito",
                     totalCuentas = 1,
-                    textoAccionResultado = null,
-                    textoAccionSecundaria = "Aceptar"
+                    textoAccionResultado = "Aceptar",
+                    textoAccionSecundaria = null
                 )
                 alTerminar(true)
             } catch (e: Exception) {
@@ -155,7 +156,8 @@ interface VaultCicloBovedaDelegate {
                 Diagnostico.apuntar("bóveda", "Desbloqueada con contraseña maestra")
                 registrarInteraccion()
                 alTerminar(true)
-                delay(520)
+                val esperaAnim = if (repositorio.ajustes.actual.animacionDesbloqueo == "ninguna") 0L else 320L
+                if (esperaAnim > 0L) delay(esperaAnim)
                 irRaiz(Pantalla.Lista)
             }
             return
@@ -168,11 +170,13 @@ interface VaultCicloBovedaDelegate {
                 Diagnostico.apuntar("bóveda", "Desbloqueada con contraseña maestra")
                 registrarInteraccion()
                 alTerminar(true)
-                delay(520)
+                val esperaAnim = if (repositorio.ajustes.actual.animacionDesbloqueo == "ninguna") 0L else 320L
+                if (esperaAnim > 0L) delay(esperaAnim)
                 irRaiz(Pantalla.Lista)
                 procesarShortcutPendiente()
                 procesarImportacionQrPendiente()
                 verificarBackupAutomatico()
+                sincronizarTransferenciaCxfAlDesbloquear()
             } catch (e: Exception) {
                 val fallos = apuntarFallo()
                 Diagnostico.apuntar("bóveda", "Desbloqueo con contraseña rechazado (intento $fallos)")
@@ -203,11 +207,13 @@ interface VaultCicloBovedaDelegate {
                 Diagnostico.apuntar("bóveda", "Desbloqueada con huella")
                 registrarInteraccion()
                 alTerminar(true)
-                delay(520)
+                val esperaAnim = if (repositorio.ajustes.actual.animacionDesbloqueo == "ninguna") 0L else 320L
+                if (esperaAnim > 0L) delay(esperaAnim)
                 irRaiz(Pantalla.Lista)
                 procesarShortcutPendiente()
                 procesarImportacionQrPendiente()
                 verificarBackupAutomatico()
+                sincronizarTransferenciaCxfAlDesbloquear()
             } catch (e: Exception) {
                 Diagnostico.apuntar("huella", "La clave desenvuelta no abrió la bóveda: ${e.javaClass.simpleName}")
                 errorInterno.value = "No se pudo abrir la bóveda con la huella"
@@ -218,23 +224,57 @@ interface VaultCicloBovedaDelegate {
         }
     }
 
-    fun solicitarAccionShortcut(accion: String, tituloInicial: String = "", urlInicial: String = "") {
+    fun solicitarAccionShortcut(
+        accion: String,
+        tituloInicial: String = "",
+        urlInicial: String = "",
+        tipoInicial: TipoEntrada? = null,
+        telefonoInicial: String = ""
+    ) {
         if (repositorio.estaDesbloqueada) {
-            ejecutarAccionShortcut(accion, tituloInicial, urlInicial)
+            ejecutarAccionShortcut(accion, tituloInicial, urlInicial, tipoInicial, telefonoInicial)
         } else {
-            accionShortcutPendiente = AccionShortcutPendiente(accion, tituloInicial, urlInicial)
+            accionShortcutPendiente = AccionShortcutPendiente(accion, tituloInicial, urlInicial, tipoInicial, telefonoInicial)
         }
     }
 
     fun procesarShortcutPendiente() {
         val pendiente = accionShortcutPendiente ?: return
         accionShortcutPendiente = null
-        ejecutarAccionShortcut(pendiente.accion, pendiente.tituloInicial, pendiente.urlInicial)
+        ejecutarAccionShortcut(
+            pendiente.accion,
+            pendiente.tituloInicial,
+            pendiente.urlInicial,
+            pendiente.tipoInicial,
+            pendiente.telefonoInicial
+        )
     }
 
-    fun ejecutarAccionShortcut(accion: String, tituloInicial: String = "", urlInicial: String = "") {
+    fun ejecutarAccionShortcut(
+        accion: String,
+        tituloInicial: String = "",
+        urlInicial: String = "",
+        tipoInicial: TipoEntrada? = null,
+        telefonoInicial: String = ""
+    ) {
         when (accion) {
-            "nueva_entrada" -> ir(Pantalla.Editar(id = null, tituloInicial = tituloInicial, urlInicial = urlInicial))
+            "nuevo_contacto" -> ir(
+                Pantalla.Editar(
+                    id = null,
+                    tituloInicial = tituloInicial,
+                    tipoInicial = TipoEntrada.CONTACTO,
+                    telefonoInicial = telefonoInicial
+                )
+            )
+            "nueva_entrada" -> ir(
+                Pantalla.Editar(
+                    id = null,
+                    tituloInicial = tituloInicial,
+                    urlInicial = urlInicial,
+                    tipoInicial = tipoInicial,
+                    telefonoInicial = telefonoInicial
+                )
+            )
             "buscar" -> irRaiz(Pantalla.Lista)
             "escanear_qr" -> ir(Pantalla.CamaraQr(null))
         }
@@ -264,6 +304,14 @@ interface VaultCicloBovedaDelegate {
         limpiarMemoriaScroll()
         com.jlnavas3.bovedalocal.util.GestorAppsInstaladas.limpiarCachesSensibles()
         com.jlnavas3.bovedalocal.util.ResolverIconoAppDominio.limpiarCaches()
+        com.jlnavas3.bovedalocal.cxf.CxfGestorTransferencia.limpiarMemoriaExportacion(contextoApp)
+        com.jlnavas3.bovedalocal.util.comunicacion.PurgadorArchivosEfimeros.purgar(contextoApp)
+        ejecutar {
+            withContext(Dispatchers.IO) {
+                com.jlnavas3.bovedalocal.cxf.CxfGestorTransferencia.limpiarExportacion(contextoApp)
+                com.jlnavas3.bovedalocal.util.comunicacion.PurgadorArchivosEfimeros.purgar(contextoApp)
+            }
+        }
         if (estabaDesbloqueada) {
             val limite = repositorio.ajustes.actual.autoBloqueoSegundos
             val mensaje = if (porInactividad) "Bloqueada por caducidad de tiempo (${limite}s de inactividad)" else "Bloqueada manualmente"
@@ -271,6 +319,17 @@ interface VaultCicloBovedaDelegate {
         }
         registrarInteraccion()
         irRaiz(if (repositorio.existeBoveda) Pantalla.Desbloqueo else Pantalla.Onboarding)
+    }
+
+    /**
+     * Verifica de forma síncrona si la aplicación estuvo en segundo plano más tiempo del límite
+     * configurado por el usuario. Si caducó, bloquea la bóveda y navega de inmediato a Pantalla.Desbloqueo.
+     */
+    fun verificarBloqueoSegundoPlano() {
+        val app = contextoApp as? com.jlnavas3.bovedalocal.BovedaApp ?: return
+        if (app.deberiaBloquearsePorInactividad()) {
+            bloquear(porInactividad = true)
+        }
     }
 
     /** Información del recordatorio de copia; null si no corresponde mostrarlo. */
@@ -335,5 +394,41 @@ interface VaultCicloBovedaDelegate {
         if (config == -30) return 0L
         val ultimaCopia = maxOf(repositorio.ajustes.actual.ultimaExportacionEn, repositorio.ajustes.actual.backupAutoUltimaEjecucion)
         return if (ultimaCopia > 0L) (System.currentTimeMillis() - ultimaCopia) / (24L * 60 * 60 * 1000) else config.toLong()
+    }
+
+    fun sincronizarTransferenciaCxfAlDesbloquear() {
+        val ajustes = repositorio.ajustes.actual
+        if (ajustes.cxfModoTransferencia == "automatica") {
+            ejecutar {
+                withContext(Dispatchers.IO) {
+                    try {
+                        val entradas = repositorio.entradas().filter { it.eliminadaEn == 0L }
+                        if (entradas.isNotEmpty()) {
+                            com.jlnavas3.bovedalocal.cxf.CxfGestorTransferencia.sincronizarExportacionAutomatica(
+                                context = contextoApp,
+                                entradas = entradas,
+                                ajustes = ajustes
+                            )
+                        }
+                    } catch (e: Exception) {
+                        Diagnostico.apuntar("cxf", "Fallo al sincronizar exportación automática CXF: ${e.message}", e)
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Obtiene una instantánea del estado actual de la bóveda para sincronización P2P.
+     */
+    fun obtenerContenidoActual(): com.jlnavas3.bovedalocal.data.ContenidoBoveda {
+        return repositorio.obtenerContenidoActual()
+    }
+
+    /**
+     * Aplica la bóveda fusionada resultante de la sincronización P2P en el repositorio local.
+     */
+    fun aplicarBovedaFusionada(bovedaFusionada: com.jlnavas3.bovedalocal.data.ContenidoBoveda) {
+        repositorio.aplicarBovedaFusionada(bovedaFusionada)
     }
 }

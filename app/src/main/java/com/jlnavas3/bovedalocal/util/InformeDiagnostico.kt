@@ -202,7 +202,7 @@ object InformeDiagnostico {
             appendLine("Tamaño en disco: ${datos.tamanoBovedaBytes} bytes")
             appendLine()
             appendLine("=== SEGURIDAD Y PRIVACIDAD ===")
-            appendLine("Permiso INTERNET: ${if (datos.tienePermisoInternet) "PRESENTE (ALERTA)" else "NO DECLARADO (100% OFFLINE)"}")
+            appendLine("Permiso INTERNET: ${if (datos.tienePermisoInternet) "ACTIVO (SINCRONIZACIÓN LOCAL P2P)" else "NO DECLARADO (100% OFFLINE)"}")
             appendLine("FLAG_SECURE: ACTIVO (bloqueo capturas y grabación)")
             appendLine("Permisos declarados: ${datos.permisosDeclarados.joinToString(", ")}")
             appendLine()

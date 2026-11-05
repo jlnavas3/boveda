@@ -6,16 +6,21 @@
 
 package com.jlnavas3.bovedalocal.ui.pantallas.lista.pildoras
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import com.jlnavas3.bovedalocal.data.Identidad
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.parsearColorO
 
 /**
- * Píldora compacta para el filtro de Identidades.
+ * Píldora compacta para el filtro de Identidades con menú desplegable contextual.
  * Muestra el icono [ 👤 Todas ▾ ] o [ 👤 <nombre> (N) ✕ ] cuando está activa.
  */
 @Composable
@@ -24,10 +29,14 @@ fun PildoraIdentidad(
     identidadSeleccionadaId: String?,
     conteoPorIdentidad: Map<String, Int>,
     conteoSinIdentidad: Int,
-    alAbrirSelector: () -> Unit,
+    alAbrirSelector: () -> Unit = {},
     alSeleccionarIdentidad: (String?) -> Unit,
+    alGestionarIdentidades: () -> Unit = {},
+    totalEntradas: Int = 0,
     modifier: Modifier = Modifier
 ) {
+    var menuAbierto by remember { mutableStateOf(false) }
+
     val identidadActiva = identidades.firstOrNull { it.id == identidadSeleccionadaId }
     val esSinIdentidad = identidadSeleccionadaId == "__SIN_IDENTIDAD__"
     val activo = identidadActiva != null || esSinIdentidad
@@ -46,16 +55,39 @@ fun PildoraIdentidad(
         esSinIdentidad -> {
             if (conteoSinIdentidad > 0) "Sin asignar ($conteoSinIdentidad)" else "Sin asignar"
         }
-        else -> "Todas"
+        else -> null
     }
 
-    PildoraFiltroBase(
-        icono = Icons.Filled.Person,
-        texto = texto,
-        activo = activo,
-        colorAcento = colorBase,
-        alPulsar = alAbrirSelector,
-        alLimpiar = if (activo) { { alSeleccionarIdentidad(null) } } else null,
-        modifier = modifier
-    )
+    val descripcionHud = when {
+        identidadActiva != null -> "Perfil: ${identidadActiva.nombre}"
+        esSinIdentidad -> "Sin perfil asignado"
+        else -> "Filtrar por perfiles"
+    }
+
+    Box(modifier = modifier) {
+        PildoraFiltroBase(
+            icono = Icons.Filled.Person,
+            texto = texto,
+            activo = activo,
+            colorAcento = colorBase,
+            descripcionHud = descripcionHud,
+            alPulsar = {
+                alAbrirSelector()
+                menuAbierto = true
+            },
+            alLimpiar = if (activo) { { alSeleccionarIdentidad(null) } } else null
+        )
+
+        DropdownFiltroIdentidades(
+            expanded = menuAbierto,
+            onDismissRequest = { menuAbierto = false },
+            identidades = identidades,
+            identidadSeleccionadaId = identidadSeleccionadaId,
+            conteoPorIdentidad = conteoPorIdentidad,
+            conteoSinIdentidad = conteoSinIdentidad,
+            totalEntradas = totalEntradas,
+            alSeleccionarIdentidad = alSeleccionarIdentidad,
+            alGestionarIdentidades = alGestionarIdentidades
+        )
+    }
 }

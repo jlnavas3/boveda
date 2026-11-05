@@ -53,10 +53,13 @@ import com.jlnavas3.bovedalocal.ui.componentes.seguridad.TemporizadorAutoOcultar
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorCampoAjustes
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorSeparadorAjustes
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorTarjetaAjustes
+import com.jlnavas3.bovedalocal.ui.pantallas.lista.AvatarSeleccionableEntrada
 import com.jlnavas3.bovedalocal.ui.pantallas.lista.IndicadorContenidoTarjeta
+import com.jlnavas3.bovedalocal.ui.theme.EstiloIndicadores
 import com.jlnavas3.bovedalocal.ui.theme.Borde
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
+import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
 import com.jlnavas3.bovedalocal.ui.theme.ColorSobreAcento
 import com.jlnavas3.bovedalocal.ui.theme.CurvaturaEsquinas
 import com.jlnavas3.bovedalocal.ui.theme.EstiloBorde
@@ -143,10 +146,14 @@ fun FilaEntradaDuplicada(
                 } else Modifier
             )
     ) {
-            if (mostrarIndicadores) {
+            if (mostrarIndicadores && (EstiloIndicadores == "lineas" || EstiloIndicadores == "lateral")) {
+                val alineacionIndicador = when (EstiloIndicadores) {
+                    "lateral" -> Alignment.CenterStart
+                    else -> Alignment.TopCenter
+                }
                 IndicadorContenidoTarjeta(
                     entrada = entrada,
-                    modifier = Modifier.align(Alignment.TopCenter)
+                    modifier = Modifier.align(alineacionIndicador)
                 )
             }
             Row(
@@ -169,50 +176,12 @@ fun FilaEntradaDuplicada(
                     .padding(horizontal = 14.dp, vertical = 10.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                if (seleccionActiva) {
-                    Box(
-                        modifier = Modifier
-                            .size(22.dp)
-                            .clip(CircleShape)
-                            .background(if (seleccionado) ColorAcento else Borde),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        if (seleccionado) {
-                            Icon(
-                                imageVector = Icons.Filled.Check,
-                                contentDescription = null,
-                                tint = ColorSobreAcento,
-                                modifier = Modifier.size(14.dp)
-                            )
-                        }
-                    }
-                    Spacer(Modifier.width(10.dp))
-                }
-
-                val iconoApp = rememberIconoAppInstalada(entrada)
-                if (iconoApp != null) {
-                    IconoAppCircular(
-                        bitmap = iconoApp,
-                        descripcion = entrada.titulo,
-                        tamanoDp = 34.dp
-                    )
-                } else {
-                    Box(
-                        modifier = Modifier
-                            .size(34.dp)
-                            .clip(FormaPequena)
-                            .background(ColorCampoAjustes)
-                            .border(0.8.dp, ColorSeparadorAjustes, FormaPequena),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Icon(
-                            imageVector = iconoTipo,
-                            contentDescription = null,
-                            tint = ColorAcento,
-                            modifier = Modifier.size(18.dp)
-                        )
-                    }
-                }
+                AvatarSeleccionableEntrada(
+                    entrada = entrada,
+                    tamanoIcono = 34,
+                    seleccionado = seleccionado,
+                    alAlternarSeleccion = { alAlternarSeleccion?.invoke() }
+                )
 
                 Spacer(Modifier.width(10.dp))
 
@@ -228,6 +197,7 @@ fun FilaEntradaDuplicada(
                         mostrarUsuario = mostrarUsuario,
                         mostrarContrasena = mostrarContrasena,
                         mostrarTotp = mostrarTotp,
+                        mostrarIndicadores = mostrarIndicadores,
                         alAlternarMostrarUsuario = { mostrarUsuario = !mostrarUsuario },
                         alAlternarMostrarContrasena = { mostrarContrasena = !mostrarContrasena },
                         alAlternarMostrarTotp = { mostrarTotp = !mostrarTotp }

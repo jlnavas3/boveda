@@ -124,14 +124,14 @@ fun obtenerInfoTipoEntrada(tipo: TipoEntrada): InfoTipoEntrada = when (tipo) {
         palabrasClave = listOf("cripto", "wallets", "billeteras", "seed phrase", "semilla", "bitcoin", "ethereum")
     )
     TipoEntrada.PASSKEY -> InfoTipoEntrada(
-        tituloPlural = "Llaves de paso",
-        tituloSingular = "Llave de paso",
+        tituloPlural = "Llaves de acceso",
+        tituloSingular = "Llave de acceso",
         subtitulo = "Credenciales FIDO2 WebAuthn y passkeys locales",
         icono = Icons.Filled.Fingerprint,
         color = Color(0xFF10B981),
         idEtiqueta = "03-LST-PAS",
-        descripcionCrear = "Nueva llave de paso",
-        textoVacioTotal = "Todavía no tienes llaves de paso guardadas.",
+        descripcionCrear = "Nueva llave de acceso",
+        textoVacioTotal = "Todavía no tienes llaves de acceso guardadas.",
         palabrasClave = listOf("passkeys", "llaves", "fido2", "webauthn", "biometria", "sin contrasena")
     )
 }

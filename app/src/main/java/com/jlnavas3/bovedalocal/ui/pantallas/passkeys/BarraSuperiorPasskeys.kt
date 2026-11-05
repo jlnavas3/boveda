@@ -41,7 +41,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import com.jlnavas3.bovedalocal.ui.CriterioOrdenacion
+import com.jlnavas3.bovedalocal.ui.componentes.hud.accionConHud
 import com.jlnavas3.bovedalocal.ui.componentes.BarraSuperiorPantalla
 import com.jlnavas3.bovedalocal.ui.componentes.MenuDesplegableBoveda
 import com.jlnavas3.bovedalocal.ui.componentes.SeparadorOpcionMenu
@@ -52,6 +54,7 @@ import com.jlnavas3.bovedalocal.ui.pantallas.lista.ChipFiltroActivo
 import com.jlnavas3.bovedalocal.ui.preview.BovedaPreview
 import com.jlnavas3.bovedalocal.ui.preview.PreviewTemaBoveda
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
+import com.jlnavas3.bovedalocal.ui.theme.ColorFavorito
 import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
 import com.jlnavas3.bovedalocal.ui.theme.ColorPasskeys
 import com.jlnavas3.bovedalocal.ui.theme.Peligro
@@ -85,9 +88,14 @@ fun BarraSuperiorPasskeys(
     idEtiqueta: String = "03-LST-PAS",
     mostrarId: Boolean = false
 ) {
-    Column(modifier = modifier) {
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .background(ColorAjustesFondo)
+            .zIndex(10f)
+    ) {
         BarraSuperiorPantalla(
-            titulo = "Llaves de paso",
+            titulo = "Llaves de acceso",
             idEtiqueta = idEtiqueta,
             mostrarId = mostrarId,
             alVolver = alVolver,
@@ -95,11 +103,7 @@ fun BarraSuperiorPasskeys(
             colorFondo = ColorAjustesFondo,
             acciones = {
                 // Botón Búsqueda (Lupa)
-                IconButton(
-                    onClick = {
-                        haptica.tic()
-                        alAlternarBusqueda()
-                    },
+                Box(
                     modifier = Modifier
                         .size(40.dp)
                         .clip(CircleShape)
@@ -108,10 +112,20 @@ fun BarraSuperiorPasskeys(
                                 Modifier.background(ColorPasskeys.copy(alpha = 0.16f))
                             } else Modifier
                         )
+                        .accionConHud(
+                            etiqueta = "Buscar llaves de acceso",
+                            icono = Icons.Filled.Search,
+                            radioRipple = 20.dp,
+                            alPulsar = {
+                                haptica.tic()
+                                alAlternarBusqueda()
+                            }
+                        ),
+                    contentAlignment = Alignment.Center
                 ) {
                     Icon(
                         imageVector = Icons.Filled.Search,
-                        contentDescription = "Buscar llaves de paso",
+                        contentDescription = "Buscar llaves de acceso",
                         tint = if (busquedaVisible || textoBusqueda.isNotBlank()) ColorPasskeys else ColorIconosInternos,
                         modifier = Modifier.size(20.dp)
                     )
@@ -122,11 +136,7 @@ fun BarraSuperiorPasskeys(
                 // Botón Tres Puntos (Filtros y ordenación)
                 Box {
                     val tieneFiltrosActivos = soloFavoritos || criterioOrdenacion != CriterioOrdenacion.NOMBRE_AZ
-                    IconButton(
-                        onClick = {
-                            haptica.tic()
-                            alAbrirMenu()
-                        },
+                    Box(
                         modifier = Modifier
                             .size(40.dp)
                             .clip(CircleShape)
@@ -135,6 +145,16 @@ fun BarraSuperiorPasskeys(
                                     Modifier.background(ColorPasskeys.copy(alpha = 0.16f))
                                 } else Modifier
                             )
+                            .accionConHud(
+                                etiqueta = "Más opciones",
+                                icono = Icons.Filled.MoreVert,
+                                radioRipple = 20.dp,
+                                alPulsar = {
+                                    haptica.tic()
+                                    alAbrirMenu()
+                                }
+                            ),
+                        contentAlignment = Alignment.Center
                     ) {
                         Icon(
                             imageVector = Icons.Filled.MoreVert,
@@ -152,29 +172,29 @@ fun BarraSuperiorPasskeys(
                         com.jlnavas3.bovedalocal.ui.componentes.ElementoMenuCompacto(
                             texto = "Ordenar por...",
                             icono = Icons.AutoMirrored.Filled.Sort,
-                            colorIcono = ColorPasskeys,
+                            colorIcono = ColorIconosInternos,
                             onClick = alAbrirOrdenacion
                         )
                         SeparadorOpcionMenu()
                         com.jlnavas3.bovedalocal.ui.componentes.ElementoMenuCompacto(
                             texto = if (soloFavoritos) "Ver todas las llaves" else "Solo favoritos",
                             icono = Icons.Filled.Star,
-                            colorIcono = if (soloFavoritos) ColorAcento else ColorIconosInternos,
-                            colorTexto = if (soloFavoritos) ColorAcento else TextoPrincipal,
+                            colorIcono = if (soloFavoritos) ColorFavorito else ColorIconosInternos,
+                            colorTexto = TextoPrincipal,
                             onClick = alAlternarFavoritos
                         )
                         SeparadorOpcionMenu()
                         com.jlnavas3.bovedalocal.ui.componentes.ElementoMenuCompacto(
                             texto = "Exportación selectiva",
                             icono = Icons.Filled.FileUpload,
-                            colorIcono = ColorPasskeys,
+                            colorIcono = ColorIconosInternos,
                             onClick = alIrExportacionSelectiva
                         )
                         SeparadorOpcionMenu()
                         com.jlnavas3.bovedalocal.ui.componentes.ElementoMenuCompacto(
                             texto = "Seguridad biométrica...",
                             icono = androidx.compose.material.icons.Icons.Filled.Fingerprint,
-                            colorIcono = ColorPasskeys,
+                            colorIcono = ColorIconosInternos,
                             onClick = {
                                 alCerrarMenu()
                                 alIrSeguridadBiometria()
@@ -184,7 +204,7 @@ fun BarraSuperiorPasskeys(
                         com.jlnavas3.bovedalocal.ui.componentes.ElementoMenuCompacto(
                             texto = "Copia de seguridad...",
                             icono = androidx.compose.material.icons.Icons.Filled.Backup,
-                            colorIcono = ColorPasskeys,
+                            colorIcono = ColorIconosInternos,
                             onClick = {
                                 alCerrarMenu()
                                 alIrCopiaSeguridad()
@@ -192,9 +212,9 @@ fun BarraSuperiorPasskeys(
                         )
                         SeparadorOpcionMenu()
                         com.jlnavas3.bovedalocal.ui.componentes.ElementoMenuCompacto(
-                            texto = "Importar llaves de paso...",
+                            texto = "Importar llaves de acceso...",
                             icono = androidx.compose.material.icons.Icons.Filled.VpnKey,
-                            colorIcono = ColorPasskeys,
+                            colorIcono = ColorIconosInternos,
                             onClick = {
                                 alCerrarMenu()
                                 alImportarPasskeys()
@@ -202,9 +222,9 @@ fun BarraSuperiorPasskeys(
                         )
                         SeparadorOpcionMenu()
                         com.jlnavas3.bovedalocal.ui.componentes.ElementoMenuCompacto(
-                            texto = "Exportación directa de llaves de paso...",
+                            texto = "Exportación directa de llaves de acceso...",
                             icono = androidx.compose.material.icons.Icons.Filled.VpnKey,
-                            colorIcono = ColorPasskeys,
+                            colorIcono = ColorIconosInternos,
                             onClick = {
                                 alCerrarMenu()
                                 alExportarDirectoCxf()
@@ -215,8 +235,8 @@ fun BarraSuperiorPasskeys(
                             com.jlnavas3.bovedalocal.ui.componentes.ElementoMenuCompacto(
                                 texto = "Restablecer filtros",
                                 icono = Icons.Filled.Close,
-                                colorIcono = Peligro,
-                                colorTexto = Peligro,
+                                colorIcono = ColorIconosInternos,
+                                colorTexto = TextoPrincipal,
                                 onClick = alRestablecerFiltros
                             )
                         }

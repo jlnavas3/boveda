@@ -143,7 +143,7 @@ fun PantallaHistorialClaves(
                                 com.jlnavas3.bovedalocal.ui.componentes.ElementoMenuCompacto(
                                     texto = "Ajustes del historial...",
                                     icono = Icons.Filled.Tune,
-                                    colorIcono = ColorAcento,
+                                    colorIcono = ColorIconosInternos,
                                     onClick = {
                                         menuAbiertoHist = false
                                         vm.ir(Pantalla.AjustesHistorial("04-HER-HST-CFG"))
@@ -153,7 +153,7 @@ fun PantallaHistorialClaves(
                                 com.jlnavas3.bovedalocal.ui.componentes.ElementoMenuCompacto(
                                     texto = "Ajustes de portapapeles...",
                                     icono = androidx.compose.material.icons.Icons.Filled.Timer,
-                                    colorIcono = ColorAcento,
+                                    colorIcono = ColorIconosInternos,
                                     onClick = {
                                         menuAbiertoHist = false
                                         vm.ir(Pantalla.AjustesCopiaAutomatica("03.2.1"))

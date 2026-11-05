@@ -35,6 +35,7 @@ import com.jlnavas3.bovedalocal.data.TipoEntrada
 import com.jlnavas3.bovedalocal.ui.componentes.DialogoBoveda
 import com.jlnavas3.bovedalocal.ui.componentes.FilaOpcionModal
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
+import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
 
 @Composable
 fun DialogoFiltrosLista(
@@ -45,7 +46,7 @@ fun DialogoFiltrosLista(
     val tipos = listOf(
         null to ("Todo" to Icons.Filled.SelectAll),
         TipoEntrada.LOGIN to ("Claves / Logins" to Icons.Filled.Lock),
-        TipoEntrada.PASSKEY to ("Llaves de paso" to Icons.Filled.Fingerprint),
+        TipoEntrada.PASSKEY to ("Llaves de acceso" to Icons.Filled.Fingerprint),
         TipoEntrada.NOTA to ("Notas seguras" to Icons.Filled.Description),
         TipoEntrada.TARJETA to ("Tarjetas bancarias" to Icons.Filled.CreditCard),
         TipoEntrada.CONTACTO to ("Contactos" to Icons.Filled.Person),
@@ -61,7 +62,7 @@ fun DialogoFiltrosLista(
         alCerrar = alCerrar,
         titulo = "Filtrar por tipo",
         icono = Icons.Filled.SelectAll,
-        colorIcono = ColorAcento,
+        colorIcono = ColorIconosInternos,
         botonConfirmar = {
             TextButton(onClick = alCerrar) {
                 Text("Cerrar", color = ColorAcento)

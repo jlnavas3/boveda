@@ -34,12 +34,21 @@ import androidx.compose.ui.unit.dp
 import com.jlnavas3.bovedalocal.crypto.OpcionesGenerador
 import com.jlnavas3.bovedalocal.data.AjustesApp
 import com.jlnavas3.bovedalocal.data.CampoPersonalizado
+import com.jlnavas3.bovedalocal.data.DatosCuentaBancaria
+import com.jlnavas3.bovedalocal.data.DatosCriptoWallet
+import com.jlnavas3.bovedalocal.data.DatosDocumentoIdentidad
+import com.jlnavas3.bovedalocal.data.DatosRedWifi
+import com.jlnavas3.bovedalocal.data.DatosServidorSsh
+import com.jlnavas3.bovedalocal.data.DatosTarjetaBancaria
 import com.jlnavas3.bovedalocal.data.Entrada
 import com.jlnavas3.bovedalocal.data.TipoEntrada
+import com.jlnavas3.bovedalocal.ui.componentes.CampoBoveda
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteCampoTexto
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.GrupoAjustes
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
+import com.jlnavas3.bovedalocal.ui.theme.ColorDatosUsuario
 import com.jlnavas3.bovedalocal.util.EnlaceEditable
+import com.jlnavas3.bovedalocal.util.FormateadorCampos
 import com.jlnavas3.bovedalocal.util.GestorAppsInstaladas
 import com.jlnavas3.bovedalocal.util.Haptica
 import com.jlnavas3.bovedalocal.util.LanzadorEnlaces
@@ -60,11 +69,26 @@ fun SeccionDatosPrincipalesEdicion(
     alCambiarOpcionesGenerador: (OpcionesGenerador) -> Unit,
     camposPersonalizados: List<CampoPersonalizado>,
     alCambiarCamposPersonalizados: (List<CampoPersonalizado>) -> Unit,
+    datosTarjeta: DatosTarjetaBancaria = DatosTarjetaBancaria(),
+    alCambiarDatosTarjeta: (DatosTarjetaBancaria) -> Unit = {},
+    datosWifi: DatosRedWifi = DatosRedWifi(),
+    alCambiarDatosWifi: (DatosRedWifi) -> Unit = {},
+    datosCuentaBancaria: DatosCuentaBancaria = DatosCuentaBancaria(),
+    alCambiarDatosCuentaBancaria: (DatosCuentaBancaria) -> Unit = {},
+    datosIdentidad: DatosDocumentoIdentidad = DatosDocumentoIdentidad(),
+    alCambiarDatosIdentidad: (DatosDocumentoIdentidad) -> Unit = {},
+    datosServidor: DatosServidorSsh = DatosServidorSsh(),
+    alCambiarDatosServidor: (DatosServidorSsh) -> Unit = {},
+    datosWallet: DatosCriptoWallet = DatosCriptoWallet(),
+    alCambiarDatosWallet: (DatosCriptoWallet) -> Unit = {},
+    datosContacto: com.jlnavas3.bovedalocal.data.DatosContacto = com.jlnavas3.bovedalocal.data.DatosContacto(),
+    alCambiarDatosContacto: (com.jlnavas3.bovedalocal.data.DatosContacto) -> Unit = {},
     listaEnlaces: List<EnlaceEditable>,
     ajustes: AjustesApp,
     haptica: Haptica,
     alAbrirDiccionario: (() -> Unit)? = null,
     alAbrirContrasenasComunes: (() -> Unit)? = null,
+    alImportarContacto: ((com.jlnavas3.bovedalocal.data.contactos.ContactoDispositivo) -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
     val contexto = LocalContext.current
@@ -141,7 +165,10 @@ fun SeccionDatosPrincipalesEdicion(
                         passkey = original?.passkey,
                         haptica = haptica,
                         alAbrirDiccionario = alAbrirDiccionario,
-                        alAbrirContrasenasComunes = alAbrirContrasenasComunes
+                        alAbrirContrasenasComunes = alAbrirContrasenasComunes,
+                        correoBasePredeterminado = ajustes.aliasCorreoBasePredeterminado,
+                        delimitadorAlias = ajustes.aliasCorreoDelimitador,
+                        longitudSufijoAlias = ajustes.aliasCorreoLongitudSufijo
                     )
                 }
                 TipoEntrada.CONTACTO -> {
@@ -153,11 +180,15 @@ fun SeccionDatosPrincipalesEdicion(
                         botonLimpiar = true
                     )
                     Spacer(Modifier.height(8.dp))
-                    ComponenteCampoTexto(
+                    CampoBoveda(
                         valor = usuario,
                         etiqueta = "Teléfono principal",
                         alCambiar = alCambiarUsuario,
-                        botonLimpiar = true
+                        formateadorMascara = { raw ->
+                            FormateadorCampos.aplicarMascaraTelefono(raw, ajustes.formatoTelefono)
+                        },
+                        keyboardType = androidx.compose.ui.text.input.KeyboardType.Phone,
+                        colorBordeIzquierdo = ColorDatosUsuario
                     )
                 }
                 else -> {
@@ -178,50 +209,62 @@ fun SeccionDatosPrincipalesEdicion(
                 TipoEntrada.TARJETA -> {
                     Spacer(Modifier.height(12.dp))
                     FormularioEdicionTarjeta(
-                        campos = camposPersonalizados,
-                        alCambiarCampos = alCambiarCamposPersonalizados,
+                        datos = datosTarjeta,
+                        alCambiar = alCambiarDatosTarjeta,
                         ajustes = ajustes
                     )
                 }
                 TipoEntrada.WIFI -> {
                     Spacer(Modifier.height(12.dp))
                     FormularioEdicionWifi(
-                        campos = camposPersonalizados,
-                        alCambiarCampos = alCambiarCamposPersonalizados
+                        datos = datosWifi,
+                        alCambiar = alCambiarDatosWifi,
+                        ajustes = ajustes
                     )
                 }
                 TipoEntrada.CUENTA_BANCARIA -> {
                     Spacer(Modifier.height(12.dp))
                     FormularioEdicionCuentaBancaria(
-                        campos = camposPersonalizados,
-                        alCambiarCampos = alCambiarCamposPersonalizados,
+                        datos = datosCuentaBancaria,
+                        alCambiar = alCambiarDatosCuentaBancaria,
                         ajustes = ajustes
                     )
                 }
                 TipoEntrada.IDENTIDAD -> {
                     Spacer(Modifier.height(12.dp))
                     FormularioEdicionIdentidad(
-                        campos = camposPersonalizados,
-                        alCambiarCampos = alCambiarCamposPersonalizados,
+                        datos = datosIdentidad,
+                        alCambiar = alCambiarDatosIdentidad,
                         ajustes = ajustes
                     )
                 }
                 TipoEntrada.SERVIDOR -> {
                     Spacer(Modifier.height(12.dp))
                     FormularioEdicionServidor(
-                        campos = camposPersonalizados,
-                        alCambiarCampos = alCambiarCamposPersonalizados
+                        datos = datosServidor,
+                        alCambiar = alCambiarDatosServidor,
+                        ajustes = ajustes
                     )
                 }
                 TipoEntrada.WALLET -> {
                     Spacer(Modifier.height(12.dp))
                     FormularioEdicionWallet(
-                        campos = camposPersonalizados,
-                        alCambiarCampos = alCambiarCamposPersonalizados
+                        datos = datosWallet,
+                        alCambiar = alCambiarDatosWallet,
+                        ajustes = ajustes
                     )
                 }
-                TipoEntrada.NOTA, TipoEntrada.CONTACTO -> {
-                    // Para nota y contacto, gestionado en sus campos correspondientes
+                TipoEntrada.CONTACTO -> {
+                    Spacer(Modifier.height(12.dp))
+                    FormularioEdicionContacto(
+                        datos = datosContacto,
+                        alCambiar = alCambiarDatosContacto,
+                        ajustes = ajustes,
+                        alImportarContacto = alImportarContacto
+                    )
+                }
+                TipoEntrada.NOTA -> {
+                    // Para nota, gestionado en sus campos correspondientes
                 }
             }
         }

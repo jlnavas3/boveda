@@ -19,8 +19,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteAlerta
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.TipoAlerta
-import com.jlnavas3.bovedalocal.ui.theme.Peligro
 import com.jlnavas3.bovedalocal.ui.theme.TextoPrincipal
+import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
 
 @Composable
 fun AlertaCriticaAutodestruccion(
@@ -35,14 +35,20 @@ fun AlertaCriticaAutodestruccion(
             Text(
                 text = "Si introduces este PIN en la pantalla de desbloqueo, la bóveda local, todas sus contraseñas, notas, passkeys y registros criptográficos serán destruidos de forma instantánea y permanente en este dispositivo.",
                 style = MaterialTheme.typography.bodySmall,
-                color = TextoPrincipal,
+                color = TextoSecundario,
                 lineHeight = 17.sp
             )
             Spacer(Modifier.height(8.dp))
             Text(
-                text = "⚠️ ES IMPRESCINDIBLE TENER UN RESPALDO EXTERNO:\nAsegúrate de contar con una Copia de Seguridad Cifrada (.boveda) o un Kit de Emergencia resguardado en otro lugar antes de habilitar esta opción.",
-                style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.SemiBold),
-                color = Peligro,
+                text = "⚠️ ES IMPRESCINDIBLE TENER UN RESPALDO EXTERNO:",
+                style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
+                color = TextoPrincipal,
+                lineHeight = 16.sp
+            )
+            Text(
+                text = "Asegúrate de contar con una Copia de Seguridad Cifrada (.boveda) o un Kit de Emergencia resguardado en otro lugar antes de habilitar esta opción.",
+                style = MaterialTheme.typography.bodySmall,
+                color = TextoSecundario,
                 lineHeight = 16.sp
             )
         }

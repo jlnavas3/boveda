@@ -20,6 +20,7 @@ import androidx.fragment.app.FragmentActivity
 import com.jlnavas3.bovedalocal.ui.VaultViewModel
 import com.jlnavas3.bovedalocal.ui.componentes.DialogoBoveda
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
+import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
 import com.jlnavas3.bovedalocal.ui.theme.TextoPrincipal
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
 import com.jlnavas3.bovedalocal.util.AjustesSistema
@@ -35,8 +36,8 @@ fun DialogoProveedorPasskeys(
         alCerrar = alCerrar,
         titulo = "Proveedor de credenciales",
         icono = Icons.Filled.Key,
-        colorIcono = ColorAcento,
-        fondoIcono = ColorAcento.copy(alpha = 0.15f),
+        colorIcono = ColorIconosInternos,
+        fondoIcono = ColorIconosInternos.copy(alpha = 0.15f),
         botonConfirmar = {
             TextButton(onClick = {
                 alCerrar()
@@ -60,7 +61,7 @@ fun DialogoProveedorPasskeys(
                 style = MaterialTheme.typography.bodyMedium
             )
             Text(
-                "En \"Contraseñas y llaves de acceso\" activa Bóveda local para permitir el inicio de sesión automático con llaves de paso.",
+                "En \"Contraseñas y llaves de acceso\" activa Bóveda local para permitir el inicio de sesión automático con llaves de acceso.",
                 color = TextoSecundario,
                 style = MaterialTheme.typography.bodyMedium
             )

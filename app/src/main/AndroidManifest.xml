@@ -4,10 +4,8 @@
 
     <uses-permission android:name="android.permission.USE_BIOMETRIC" />
     <uses-permission android:name="android.permission.VIBRATE" />
-    <!-- Solo para leer el QR de un 2FA. Se pide al pulsar "Escanear", nunca al abrir la app. -->
+    <!-- Solo para leer el QR de un 2FA o de sincronización P2P. Se pide al pulsar "Escanear", nunca al abrir la app. -->
     <uses-permission android:name="android.permission.CAMERA" />
-    <!-- Solo para importar contactos seleccionados del dispositivo hacia la bóveda de forma offline. -->
-    <uses-permission android:name="android.permission.READ_CONTACTS" />
     <uses-feature android:name="android.hardware.camera" android:required="false" />
     <uses-feature android:name="android.hardware.camera.any" android:required="false" />
     <!-- El permiso CAMERA da por exigido el autoenfoque si no se dice lo contrario. -->
@@ -40,6 +38,8 @@
             <action android:name="android.intent.action.MAIN" />
             <category android:name="android.intent.category.LAUNCHER" />
         </intent>
+        <package android:name="com.whatsapp" />
+        <package android:name="com.whatsapp.w4b" />
     </queries>
 
     <application
@@ -53,8 +53,19 @@
         android:roundIcon="@mipmap/ic_launcher"
         android:supportsRtl="false"
         android:theme="@style/Theme.BovedaLocal"
+        android:enableOnBackInvokedCallback="true"
         tools:targetApi="34"
         tools:ignore="CredentialDependency">
+
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/rutas_archivos" />
+        </provider>
 
         <activity
             android:name=".ui.MainActivity"

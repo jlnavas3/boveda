@@ -17,7 +17,7 @@ import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteGrupo
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteRadio
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteSeparador
 
-import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
+import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
 
 @Composable
 fun GrupoOrdenacionPredeterminada(
@@ -30,7 +30,7 @@ fun GrupoOrdenacionPredeterminada(
     ComponenteGrupo(
         etiqueta = "Orden predeterminado",
         icono = Icons.AutoMirrored.Filled.Sort,
-        colorIcono = ColorAcento,
+        colorIcono = ColorIconosInternos,
         alRestablecer = alRestablecerGrupo,
         idGrupo = "02-APA-DES-G03",
         mostrarId = mostrarId,

@@ -15,6 +15,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
@@ -26,13 +27,19 @@ import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
  * Opción individual dentro del menú de filtrado.
  */
 @Composable
-fun OpcionFiltro(texto: String, icono: ImageVector, activo: Boolean, alPulsar: () -> Unit) {
+fun OpcionFiltro(
+    texto: String,
+    icono: ImageVector,
+    activo: Boolean,
+    colorIconoActivo: Color = ColorAcento,
+    alPulsar: () -> Unit
+) {
     DropdownMenuItem(
         leadingIcon = {
             Icon(
                 icono,
                 contentDescription = null,
-                tint = if (activo) ColorAcento else TextoSecundario,
+                tint = if (activo) colorIconoActivo else TextoSecundario,
                 modifier = Modifier.size(20.dp)
             )
         },

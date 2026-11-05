@@ -10,10 +10,13 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Surface
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.CallMerge
@@ -22,6 +25,7 @@ import androidx.compose.material.icons.filled.Backup
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Folder
+import androidx.compose.material.icons.filled.PushPin
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.VpnKey
 import androidx.compose.runtime.Composable
@@ -32,8 +36,12 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorTarjetaAjustes
+import com.jlnavas3.bovedalocal.ui.theme.Advertencia
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
+import com.jlnavas3.bovedalocal.ui.theme.ColorAnclado
 import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
+import com.jlnavas3.bovedalocal.ui.theme.ColorFavorito
+import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
 import com.jlnavas3.bovedalocal.ui.theme.ColorPasskeys
 import com.jlnavas3.bovedalocal.ui.theme.CurvaturaEsquinas
 import com.jlnavas3.bovedalocal.ui.theme.EstiloBorde
@@ -45,7 +53,7 @@ import com.jlnavas3.bovedalocal.util.Haptica
 /**
  * Barra inferior de acciones contextuales para selección múltiple (estilo Solid Explorer / Bottom Action Bar).
  * Presenta iconos ergonómicos con texto centrado debajo:
- * - Listado principal: 'Favorito', 'Compara', 'Renombra', 'Colección' y menú 'Más' (3 puntos) con Respaldar, Transferir y Eliminar.
+ * - Listado principal: 'Favorito', 'Anclar', 'Renombra', 'Categoría' y menú 'Más' (3 puntos) con Comparar, Respaldar, Transferir y Eliminar.
  * - Pantallas como Salud y Duplicados: 'Favorito', 'Compara' y 'Eliminar' directamente con su texto debajo.
  */
 @Composable
@@ -53,6 +61,8 @@ fun BarraInferiorSeleccion(
     cantidad: Int,
     todosSonFavoritos: Boolean = false,
     alAlternarFavoritos: (() -> Unit)? = null,
+    todosSonAnclados: Boolean = false,
+    alAlternarAnclados: (() -> Unit)? = null,
     alComparar: (() -> Unit)? = null,
     alRespaldar: (() -> Unit)? = null,
     alTransferirCxf: (() -> Unit)? = null,
@@ -73,34 +83,39 @@ fun BarraInferiorSeleccion(
     // Si existen acciones avanzadas de respaldo/transferencia junto con borrado, agrupamos en menú "Más"
     val hayMenuOverflow = (alRespaldar != null || alTransferirCxf != null) && (alRenombrar != null || accionCategoria != null)
 
-    Box(
+    Surface(
+        color = com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjustesFondo,
         modifier = modifier
             .fillMaxWidth()
-            .navigationBarsPadding()
-            .padding(horizontal = 14.dp, vertical = 6.dp)
-            .shadow(16.dp, RoundedCornerShape(CurvaturaEsquinas))
-            .clip(RoundedCornerShape(CurvaturaEsquinas))
-            .background(ColorTarjetaAjustes)
             .then(
                 if (GrosorBorde > 0.dp && EstiloBorde != "ninguno") {
-                    Modifier.border(GrosorBorde, ColorBordeActual, RoundedCornerShape(CurvaturaEsquinas))
+                    Modifier.border(
+                        width = GrosorBorde,
+                        color = ColorBordeActual.copy(alpha = 0.5f)
+                    )
                 } else Modifier
             )
-            .padding(horizontal = 8.dp, vertical = 5.dp),
-        contentAlignment = Alignment.Center
     ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceEvenly,
-            verticalAlignment = Alignment.CenterVertically
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .navigationBarsPadding()
         ) {
-            // 1. Favorito (Alternar favorito a toda la selección)
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(48.dp)
+                    .padding(horizontal = 8.dp),
+                horizontalArrangement = Arrangement.SpaceEvenly,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+            // 1. Favorito (Alternar favorito a toda la selección con estrella amarilla)
             if (alAlternarFavoritos != null) {
-                ItemAccionSeleccion(
+                BotonAccionSeleccionIcono(
                     icono = Icons.Filled.Star,
-                    texto = if (todosSonFavoritos) "Quitar fav" else "Favorito",
+                    descripcion = if (todosSonFavoritos) "Quitar fav" else "Favorito",
                     habilitado = habilitado,
-                    colorIcono = if (todosSonFavoritos) TextoPrincipal else ColorAcento,
+                    colorIcono = if (todosSonFavoritos) ColorFavorito else ColorIconosInternos,
                     alPulsar = {
                         haptica.tic()
                         alAlternarFavoritos()
@@ -108,14 +123,25 @@ fun BarraInferiorSeleccion(
                 )
             }
 
-            // 2. Comparar (habilitado cuando 2 o más están seleccionados)
-            if (alComparar != null) {
+            // 2. Anclar (o Comparar en pantallas secundarias sin anclado)
+            if (alAlternarAnclados != null) {
+                BotonAccionSeleccionIcono(
+                    icono = Icons.Filled.PushPin,
+                    descripcion = if (todosSonAnclados) "Desanclar" else "Anclar",
+                    habilitado = habilitado,
+                    colorIcono = if (todosSonAnclados) ColorAnclado else ColorIconosInternos,
+                    alPulsar = {
+                        haptica.tic()
+                        alAlternarAnclados()
+                    }
+                )
+            } else if (alComparar != null && !hayMenuOverflow) {
                 val puedeComparar = cantidad >= 2
-                ItemAccionSeleccion(
+                BotonAccionSeleccionIcono(
                     icono = Icons.AutoMirrored.Filled.CompareArrows,
-                    texto = "Comparar",
+                    descripcion = "Comparar",
                     habilitado = puedeComparar,
-                    colorIcono = ColorAcento,
+                    colorIcono = ColorIconosInternos,
                     alPulsar = {
                         haptica.toque()
                         alComparar()
@@ -125,11 +151,11 @@ fun BarraInferiorSeleccion(
 
             // 3. Renombrar
             if (alRenombrar != null) {
-                ItemAccionSeleccion(
+                BotonAccionSeleccionIcono(
                     icono = Icons.Filled.Edit,
-                    texto = "Renombra",
+                    descripcion = "Renombrar",
                     habilitado = habilitado,
-                    colorIcono = ColorAcento,
+                    colorIcono = ColorIconosInternos,
                     alPulsar = {
                         haptica.tic()
                         alRenombrar()
@@ -139,11 +165,11 @@ fun BarraInferiorSeleccion(
 
             // 4. Categoría
             if (accionCategoria != null) {
-                ItemAccionSeleccion(
+                BotonAccionSeleccionIcono(
                     icono = Icons.Filled.Folder,
-                    texto = "Categoría",
+                    descripcion = "Categoría",
                     habilitado = habilitado,
-                    colorIcono = ColorAcento,
+                    colorIcono = ColorIconosInternos,
                     alPulsar = {
                         haptica.tic()
                         accionCategoria()
@@ -151,27 +177,43 @@ fun BarraInferiorSeleccion(
                 )
             }
 
-            // 5. Menú "Más" de 3 puntos (si aplica overflow) o acciones directas
+            // 5. Eliminar (afuera directamente en la barra con color neutro)
+            if (alBorrar != null) {
+                BotonAccionSeleccionIcono(
+                    icono = Icons.Filled.Delete,
+                    descripcion = "Eliminar",
+                    habilitado = habilitado,
+                    colorIcono = ColorIconosInternos,
+                    alPulsar = {
+                        haptica.error()
+                        alBorrar()
+                    }
+                )
+            }
+
+            // 6. Menú "Más" de 3 puntos (si aplica overflow) o acciones directas
             if (hayMenuOverflow) {
                 MenuOverflowSeleccion(
                     habilitado = habilitado,
+                    alComparar = alComparar,
+                    puedeComparar = cantidad >= 2,
                     alRespaldar = alRespaldar,
                     alTransferirCxf = alTransferirCxf,
                     alUnificar = alUnificar,
                     alAlternarIgnorarAuditoria = alAlternarIgnorarAuditoria,
                     todosIgnorados = todosIgnorados,
-                    alBorrar = alBorrar,
+                    alBorrar = null,
                     haptica = haptica
                 )
             } else {
                 // Modo sin overflow (p. ej. en Salud y Duplicados)
                 if (alUnificar != null) {
                     val puedeUnificar = cantidad >= 2
-                    ItemAccionSeleccion(
+                    BotonAccionSeleccionIcono(
                         icono = Icons.AutoMirrored.Filled.CallMerge,
-                        texto = "Unificar",
+                        descripcion = "Unificar seleccionados",
                         habilitado = puedeUnificar,
-                        colorIcono = ColorAcento,
+                        colorIcono = ColorIconosInternos,
                         alPulsar = {
                             haptica.toque()
                             alUnificar()
@@ -179,11 +221,11 @@ fun BarraInferiorSeleccion(
                     )
                 }
                 if (alRespaldar != null) {
-                    ItemAccionSeleccion(
+                    BotonAccionSeleccionIcono(
                         icono = Icons.Filled.Backup,
-                        texto = "Respaldar",
+                        descripcion = "Respaldar seleccionados",
                         habilitado = habilitado,
-                        colorIcono = ColorAcento,
+                        colorIcono = ColorIconosInternos,
                         alPulsar = {
                             haptica.tic()
                             alRespaldar()
@@ -192,28 +234,14 @@ fun BarraInferiorSeleccion(
                 }
 
                 if (alTransferirCxf != null) {
-                    ItemAccionSeleccion(
+                    BotonAccionSeleccionIcono(
                         icono = Icons.Filled.VpnKey,
-                        texto = "Transferir",
+                        descripcion = "Transferir credenciales",
                         habilitado = habilitado,
-                        colorIcono = ColorPasskeys,
+                        colorIcono = ColorIconosInternos,
                         alPulsar = {
                             haptica.toque()
                             alTransferirCxf()
-                        }
-                    )
-                }
-
-                if (alBorrar != null) {
-                    ItemAccionSeleccion(
-                        icono = Icons.Filled.Delete,
-                        texto = "Eliminar",
-                        habilitado = habilitado,
-                        colorIcono = Peligro,
-                        colorTexto = Peligro,
-                        alPulsar = {
-                            haptica.error()
-                            alBorrar()
                         }
                     )
                 }
@@ -221,3 +249,5 @@ fun BarraInferiorSeleccion(
         }
     }
 }
+}
+

@@ -19,7 +19,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowForwardIos
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -40,6 +39,7 @@ import com.jlnavas3.bovedalocal.data.Entrada
 import com.jlnavas3.bovedalocal.ui.componentes.Monograma
 import com.jlnavas3.bovedalocal.ui.componentes.seguridad.TextoSeguroVisual
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
+import com.jlnavas3.bovedalocal.ui.theme.ColorFavorito
 import com.jlnavas3.bovedalocal.util.IconoAppCircular
 import com.jlnavas3.bovedalocal.util.rememberIconoAppInstalada
 import com.jlnavas3.bovedalocal.ui.theme.ColorDatosPasskey
@@ -56,6 +56,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.material.icons.filled.Check
 import com.jlnavas3.bovedalocal.ui.pantallas.lista.IndicadorContenidoTarjeta
+import com.jlnavas3.bovedalocal.ui.theme.EstiloIndicadores
 import com.jlnavas3.bovedalocal.ui.theme.Borde
 import com.jlnavas3.bovedalocal.ui.theme.ColorSobreAcento
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -101,10 +102,14 @@ fun FilaPasskey(
                 else Modifier
             )
     ) {
-        if (mostrarIndicadores) {
+        if (mostrarIndicadores && (EstiloIndicadores == "lineas" || EstiloIndicadores == "lateral")) {
+            val alineacionIndicador = when (EstiloIndicadores) {
+                "lateral" -> Alignment.CenterStart
+                else -> Alignment.TopCenter
+            }
             IndicadorContenidoTarjeta(
                 entrada = entrada,
-                modifier = Modifier.align(Alignment.TopCenter)
+                modifier = Modifier.align(alineacionIndicador)
             )
         }
         Box(
@@ -173,17 +178,43 @@ fun FilaPasskey(
             }
             Spacer(Modifier.width(14.dp))
             Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    datos.rpName.ifBlank { datos.rpId },
-                    color = ColorTitulos,
-                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold),
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = datos.rpName.ifBlank { datos.rpId },
+                        color = ColorTitulos,
+                        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold),
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.weight(1f)
+                    )
+                    if (!seleccionActiva && entrada.favorito) {
+                        Spacer(Modifier.width(6.dp))
+                        Box(
+                            modifier = Modifier
+                                .size(24.dp)
+                                .clip(CircleShape)
+                                .clickable {
+                                    haptica.tic()
+                                    alAlternarFavorito()
+                                },
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                imageVector = Icons.Filled.Star,
+                                contentDescription = "Quitar de favoritos",
+                                tint = ColorFavorito,
+                                modifier = Modifier.size(17.dp)
+                            )
+                        }
+                    }
+                }
                 val textoUsuario = datos.usuario.ifBlank { entrada.usuario.ifBlank { datos.rpId } }
                 val tieneUsuarioReal = datos.usuario.isNotBlank() || entrada.usuario.isNotBlank()
                 val seguridadVisualActiva = ajustes?.seguridadVisualActiva == true
-                val ocultarUsuario = seguridadVisualActiva && (ajustes?.ocultarUsuario == true)
+                val ocultarUsuario = seguridadVisualActiva && ajustes.ocultarUsuario
                 val estiloOcultamiento = ajustes?.estiloOcultamientoVisual ?: "desenfoque"
                 val tiempoAutoOcultar = ajustes?.tiempoAutoOcultarSegundos ?: 10
 
@@ -219,44 +250,26 @@ fun FilaPasskey(
                         overflow = TextOverflow.Ellipsis
                     )
                 }
-                Text(
-                    "Creada el ${formato.format(Date(entrada.creadaEn))}",
-                    color = Menta,
-                    style = MaterialTheme.typography.bodySmall,
-                    maxLines = 1
-                )
-            }
-
-            if (!seleccionActiva) {
-                if (entrada.favorito) {
-                    // Botón de favorito con ripple circular
-                    Box(
-                        modifier = Modifier
-                            .size(32.dp)
-                            .clip(CircleShape)
-                            .clickable {
-                                haptica.tic()
-                                alAlternarFavorito()
-                            },
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Icon(
-                            imageVector = Icons.Filled.Star,
-                            contentDescription = "Quitar de favoritos",
-                            tint = ColorAcento,
-                            modifier = Modifier.size(18.dp)
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "Creada el ${formato.format(Date(entrada.creadaEn))}",
+                        color = Menta,
+                        style = MaterialTheme.typography.bodySmall,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.weight(1f)
+                    )
+                    if (mostrarIndicadores && (EstiloIndicadores == "puntos" || EstiloIndicadores == "iconos")) {
+                        Spacer(Modifier.width(8.dp))
+                        IndicadorContenidoTarjeta(
+                            entrada = entrada,
+                            estilo = EstiloIndicadores
                         )
                     }
-
-                    Spacer(Modifier.width(4.dp))
                 }
-
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.ArrowForwardIos,
-                    contentDescription = null,
-                    tint = TextoSecundario.copy(alpha = 0.4f),
-                    modifier = Modifier.size(14.dp)
-                )
             }
         }
     }

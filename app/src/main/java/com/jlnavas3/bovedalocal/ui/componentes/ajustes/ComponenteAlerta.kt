@@ -38,14 +38,17 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorTarjetaAjustes
 import com.jlnavas3.bovedalocal.ui.theme.Advertencia
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
+import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
 import com.jlnavas3.bovedalocal.ui.theme.ColorSeguridad
 import com.jlnavas3.bovedalocal.ui.theme.FormaTarjeta
 import com.jlnavas3.bovedalocal.ui.theme.GrosorBorde
 import com.jlnavas3.bovedalocal.ui.theme.Menta
 import com.jlnavas3.bovedalocal.ui.theme.Peligro
 import com.jlnavas3.bovedalocal.ui.theme.TextoPrincipal
+import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
 import com.jlnavas3.bovedalocal.ui.theme.colorLegibleParaTema
 import com.jlnavas3.bovedalocal.ui.theme.esOscuroActivo
 
@@ -105,8 +108,8 @@ fun ComponenteAlerta(
     }
 
     val colorLegible = colorLegibleParaTema(colorBase, esOscuro)
-    val colorFondo = colorBase.copy(alpha = if (esOscuro) 0.12f else 0.08f)
-    val colorBorde = colorBase.copy(alpha = if (esOscuro) 0.28f else 0.22f)
+    val colorFondo = ColorTarjetaAjustes
+    val colorBorde = ColorBordeActual
     val formaAlerta = FormaTarjeta
 
     Surface(
@@ -139,7 +142,7 @@ fun ComponenteAlerta(
                             modifier = Modifier
                                 .size(32.dp)
                                 .clip(RoundedCornerShape(8.dp))
-                                .background(colorBase.copy(alpha = if (esOscuro) 0.18f else 0.14f)),
+                                .background(colorBase.copy(alpha = if (esOscuro) 0.16f else 0.12f)),
                             contentAlignment = Alignment.Center
                         ) {
                             Icon(
@@ -156,7 +159,7 @@ fun ComponenteAlerta(
                         if (!titulo.isNullOrBlank()) {
                             Text(
                                 text = titulo,
-                                color = colorLegible,
+                                color = TextoPrincipal,
                                 style = MaterialTheme.typography.titleSmall.copy(
                                     fontWeight = FontWeight.Bold,
                                     fontSize = 14.5.sp
@@ -167,7 +170,7 @@ fun ComponenteAlerta(
                         if (!mensaje.isNullOrBlank() && titulo.isNullOrBlank()) {
                             Text(
                                 text = mensaje,
-                                color = TextoPrincipal,
+                                color = TextoSecundario,
                                 style = MaterialTheme.typography.bodySmall.copy(
                                     lineHeight = 18.sp,
                                     fontSize = 13.5.sp
@@ -181,7 +184,7 @@ fun ComponenteAlerta(
                     Spacer(Modifier.height(8.dp))
                     Text(
                         text = mensaje,
-                        color = TextoPrincipal,
+                        color = TextoSecundario,
                         style = MaterialTheme.typography.bodySmall.copy(
                             lineHeight = 18.sp,
                             fontSize = 13.5.sp
@@ -202,7 +205,7 @@ fun ComponenteAlerta(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(0.5.dp)
-                        .background(colorBorde)
+                        .background(ColorBordeActual.copy(alpha = 0.5f))
                 )
                 accion()
             }

@@ -96,6 +96,10 @@ object FiltroSintaxisBusqueda {
                     entrada.usuario.contains(palabra, ignoreCase = true) ||
                     entrada.notas.contains(palabra, ignoreCase = true) ||
                     entrada.urls.any { it.contains(palabra, ignoreCase = true) } ||
+                    entrada.etiquetas.any {
+                        it.contains(palabra, ignoreCase = true) ||
+                            it.contains(palabra.removePrefix("#"), ignoreCase = true)
+                    } ||
                     entrada.camposPersonalizados.any {
                         it.etiqueta.contains(palabra, ignoreCase = true) || it.valor.contains(palabra, ignoreCase = true)
                     }

@@ -31,7 +31,9 @@ import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Dns
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
+import androidx.compose.material.icons.filled.PushPin
 import androidx.compose.material.icons.filled.Remove
+import com.jlnavas3.bovedalocal.util.CLAVE_GRUPO_ANCLADOS
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -49,12 +51,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.jlnavas3.bovedalocal.data.Entrada
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorCampoAjustes
+import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorSeparadorAjustes
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorTarjetaAjustes
 import com.jlnavas3.bovedalocal.ui.theme.Borde
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.preview.BovedaPreview
 import com.jlnavas3.bovedalocal.ui.preview.PreviewMocks
 import com.jlnavas3.bovedalocal.ui.preview.PreviewTemaBoveda
+import com.jlnavas3.bovedalocal.ui.theme.ColorAnclado
 import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
 import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
 import com.jlnavas3.bovedalocal.ui.theme.ColorSobreAcento
@@ -87,12 +91,13 @@ fun ComponenteGrupoLista(
     parcialmenteSeleccionado: Boolean = false,
     alPulsarLargo: (() -> Unit)? = null,
     alAlternarExpansion: (() -> Unit)? = null,
+    alAlternarSeleccionGrupo: (() -> Unit)? = null,
     contenidoEntrada: @Composable (entrada: Entrada, indice: Int, total: Int) -> Unit
 ) {
     val compacta = alturaFila.value <= 48f
     val formaGrupo = RoundedCornerShape(CurvaturaEsquinas)
-    val tamanoIcono = if (compacta) 32 else if (alturaFila.value <= 64f) 36 else 40
-    val sangriaSeparador = (14 + (if (seleccionActiva) 34 else 0) + tamanoIcono + 12).dp
+    val tamanoIcono = if (compacta) 28 else if (alturaFila.value <= 64f) 34 else 38
+    val sangriaSeparador = (14 + tamanoIcono + 12).dp
 
     Box(
         modifier = modifier
@@ -114,85 +119,61 @@ fun ComponenteGrupoLista(
                         onClick = alAlternar,
                         onLongClick = alPulsarLargo
                     )
-                    .padding(horizontal = 14.dp, vertical = 6.dp),
+                    .padding(horizontal = 14.dp, vertical = if (compacta) 3.dp else 6.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                if (seleccionActiva) {
-                    Box(
-                        modifier = Modifier
-                            .size(24.dp)
-                            .clip(CircleShape)
-                            .background(if (seleccionado || parcialmenteSeleccionado) ColorAcento else Borde),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        if (seleccionado) {
-                            Icon(
-                                imageVector = Icons.Filled.Check,
-                                contentDescription = null,
-                                tint = ColorSobreAcento,
-                                modifier = Modifier.size(15.dp)
-                            )
-                        } else if (parcialmenteSeleccionado) {
-                            Icon(
-                                imageVector = Icons.Filled.Remove,
-                                contentDescription = null,
-                                tint = ColorSobreAcento,
-                                modifier = Modifier.size(15.dp)
-                            )
-                        }
-                    }
-                    Spacer(Modifier.width(10.dp))
+                val esAnclados = clave == CLAVE_GRUPO_ANCLADOS
+                val tituloVisual = if (esAnclados) "Anclados" else clave
+                val vectorIcono = if (esAnclados) Icons.Filled.PushPin else Icons.Filled.Dns
+                val colorIcono = if (esAnclados) ColorAnclado else ColorIconosInternos
+                val textoConteo = if (esAnclados) {
+                    "${entradas.size} ${if (entradas.size == 1) "anclada" else "ancladas"}"
+                } else {
+                    "${entradas.size} ${if (entradas.size == 1) "cuenta" else "cuentas"}"
                 }
 
-                Box(
-                    modifier = Modifier
-                        .size(tamanoIcono.dp)
-                        .clip(CircleShape)
-                        .background(ColorCampoAjustes),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        imageVector = Icons.Filled.Dns,
-                        contentDescription = null,
-                        tint = ColorAcento,
-                        modifier = Modifier.size((tamanoIcono * 0.52f).dp)
-                    )
-                }
+                AvatarSeleccionableGrupo(
+                    vectorIcono = vectorIcono,
+                    colorIcono = colorIcono,
+                    tamanoIcono = tamanoIcono,
+                    seleccionado = seleccionado,
+                    parcialmenteSeleccionado = parcialmenteSeleccionado,
+                    alAlternarSeleccion = {
+                        if (alAlternarSeleccionGrupo != null) {
+                            alAlternarSeleccionGrupo()
+                        } else {
+                            alAlternar()
+                        }
+                    }
+                )
 
                 Spacer(Modifier.width(12.dp))
 
-                Column(
-                    modifier = Modifier.weight(1f),
-                    verticalArrangement = Arrangement.Center
-                ) {
-                    Text(
-                        text = clave,
-                        style = if (compacta) {
-                            MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold)
-                        } else {
-                            MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold, fontSize = 15.sp)
-                        },
-                        color = if (resaltado) ColorAcento else TextoPrincipal,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
-                    Spacer(Modifier.height(2.dp))
-                    Text(
-                        text = "${entradas.size} ${if (entradas.size == 1) "cuenta" else "cuentas"}",
-                        style = if (compacta) {
-                            MaterialTheme.typography.labelSmall
-                        } else {
-                            MaterialTheme.typography.bodySmall.copy(fontSize = 12.5.sp)
-                        },
-                        color = TextoSecundario,
-                        maxLines = 1
-                    )
-                }
+                Text(
+                    text = tituloVisual,
+                    style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold),
+                    color = if (resaltado) ColorAcento else TextoPrincipal,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.weight(1f)
+                )
+
+                Spacer(Modifier.width(10.dp))
+
+                Text(
+                    text = textoConteo,
+                    style = MaterialTheme.typography.labelSmall,
+                    color = TextoSecundario,
+                    maxLines = 1
+                )
+
+                Spacer(Modifier.width(16.dp))
 
                 IconButton(
                     onClick = {
                         if (alAlternarExpansion != null) alAlternarExpansion() else alAlternar()
-                    }
+                    },
+                    modifier = Modifier.size(if (compacta) 28.dp else 32.dp)
                 ) {
                     Icon(
                         imageVector = if (expandido) Icons.Filled.ExpandLess else Icons.Filled.ExpandMore,
@@ -211,9 +192,12 @@ fun ComponenteGrupoLista(
                 Column(modifier = Modifier.fillMaxWidth()) {
                     entradas.forEachIndexed { indice, entrada ->
                         HorizontalDivider(
-                            color = ColorBordeActual.copy(alpha = 0.20f),
-                            thickness = 0.6.dp,
-                            modifier = Modifier.padding(start = sangriaSeparador, end = 14.dp)
+                            color = ColorSeparadorAjustes.copy(alpha = 0.65f),
+                            thickness = 0.8.dp,
+                            modifier = Modifier.padding(
+                                start = if (indice == 0) 14.dp else sangriaSeparador,
+                                end = 14.dp
+                            )
                         )
                         contenidoEntrada(entrada, indice, entradas.size)
                     }

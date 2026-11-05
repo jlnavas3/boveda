@@ -16,6 +16,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.jlnavas3.bovedalocal.ui.componentes.TextoPiePagina
+import com.jlnavas3.bovedalocal.ui.theme.FormaPequena
 import com.jlnavas3.bovedalocal.ui.theme.colorLegibleParaTema
 import com.jlnavas3.bovedalocal.ui.theme.fondoBadgeParaTema
 
@@ -25,7 +26,7 @@ fun MiniChipCxf(texto: String, color: Color) {
     val fondo = fondoBadgeParaTema(color)
     Box(
         modifier = Modifier
-            .clip(RoundedCornerShape(4.dp))
+            .clip(FormaPequena)
             .background(fondo)
             .padding(horizontal = 5.dp, vertical = 2.dp)
     ) {

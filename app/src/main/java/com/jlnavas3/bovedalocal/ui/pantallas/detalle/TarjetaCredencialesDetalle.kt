@@ -6,13 +6,17 @@
 
 package com.jlnavas3.bovedalocal.ui.pantallas.detalle
 
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
@@ -26,6 +30,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.jlnavas3.bovedalocal.data.AjustesApp
@@ -54,10 +59,10 @@ fun TarjetaCredencialesDetalle(
 
     val seguridadVisualActiva = ajustes?.seguridadVisualActiva == true
     val estiloOcultamiento = ajustes?.estiloOcultamientoVisual ?: "desenfoque"
-    val tiempoAutoOcultar = if (seguridadVisualActiva) (ajustes?.tiempoAutoOcultarSegundos ?: 10) else 0
+    val tiempoAutoOcultar = if (seguridadVisualActiva) ajustes.tiempoAutoOcultarSegundos else 0
 
     // Estado y temporizador para usuario
-    val protegerUsuario = seguridadVisualActiva && (ajustes?.ocultarUsuario == true)
+    val protegerUsuario = seguridadVisualActiva && ajustes.ocultarUsuario
     var usuarioRevelado by remember(entrada.id, protegerUsuario) { mutableStateOf(!protegerUsuario) }
 
     TemporizadorAutoOcultar(
@@ -73,8 +78,18 @@ fun TarjetaCredencialesDetalle(
         alAutoOcultar = { if (revelada) alAlternarRevelada() }
     )
 
+    val esContacto = entrada.tipo == com.jlnavas3.bovedalocal.data.TipoEntrada.CONTACTO
+    val etiquetaUsuario = if (esContacto) "Teléfono principal" else "Usuario o correo"
+    val usuarioMostrado = remember(entrada.usuario, esContacto, ajustes?.formatoTelefono) {
+        if (esContacto && ajustes != null) {
+            com.jlnavas3.bovedalocal.util.FormateadorCampos.aplicarMascaraTelefono(entrada.usuario, ajustes.formatoTelefono)
+        } else {
+            entrada.usuario
+        }
+    }
+
     Column(modifier = Modifier.fillMaxWidth()) {
-        EtiquetaSeccionDetalle(texto = "Credenciales")
+        EtiquetaSeccionDetalle(texto = if (esContacto) "Contacto" else "Credenciales")
 
         if (entrada.usuario.isNotBlank()) {
             TarjetaDatoDetalle(
@@ -89,23 +104,33 @@ fun TarjetaCredencialesDetalle(
                 ) {
                     Column(modifier = Modifier.weight(1f)) {
                         Text(
-                            text = "Usuario o correo",
+                            text = etiquetaUsuario,
                             style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.SemiBold),
                             color = TextoSecundario
                         )
                         Spacer(Modifier.height(4.dp))
-                        TextoSeguroVisual(
-                            texto = entrada.usuario,
-                            oculto = protegerUsuario && !usuarioRevelado,
-                            estilo = estiloOcultamiento,
-                            estiloTexto = if (protegerUsuario && !usuarioRevelado) {
-                                EstiloMono.copy(letterSpacing = 2.sp)
-                            } else {
-                                MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Medium)
-                            },
-                            colorTexto = TextoPrincipal
-                        )
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .horizontalScroll(rememberScrollState())
+                        ) {
+                            TextoSeguroVisual(
+                                texto = usuarioMostrado,
+                                oculto = protegerUsuario && !usuarioRevelado,
+                                estilo = estiloOcultamiento,
+                                estiloTexto = if (protegerUsuario && !usuarioRevelado) {
+                                    EstiloMono.copy(letterSpacing = 2.sp)
+                                } else {
+                                    MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Medium)
+                                },
+                                colorTexto = TextoPrincipal,
+                                maxLines = 1,
+                                overflow = TextOverflow.Clip,
+                                softWrap = false
+                            )
+                        }
                     }
+                    Spacer(Modifier.width(8.dp))
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         if (protegerUsuario) {
                             val contexto = androidx.compose.ui.platform.LocalContext.current
@@ -147,28 +172,42 @@ fun TarjetaCredencialesDetalle(
                             color = TextoSecundario
                         )
                         Spacer(Modifier.height(4.dp))
-                        if (revelada) {
-                            Text(
-                                text = contrasenaColoreada(entrada.contrasena),
-                                style = EstiloMono,
-                                modifier = Modifier.fillMaxWidth()
-                            )
-                        } else {
-                            TextoSeguroVisual(
-                                texto = entrada.contrasena,
-                                oculto = true,
-                                estilo = estiloOcultamiento,
-                                estiloTexto = EstiloMono.copy(letterSpacing = 2.sp),
-                                colorTexto = TextoPrincipal
-                            )
+                        val mostrarPlano = !seguridadVisualActiva || revelada
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .horizontalScroll(rememberScrollState())
+                        ) {
+                            if (mostrarPlano) {
+                                Text(
+                                    text = contrasenaColoreada(entrada.contrasena),
+                                    style = EstiloMono,
+                                    maxLines = 1,
+                                    softWrap = false
+                                )
+                            } else {
+                                TextoSeguroVisual(
+                                    texto = entrada.contrasena,
+                                    oculto = true,
+                                    estilo = estiloOcultamiento,
+                                    estiloTexto = EstiloMono.copy(letterSpacing = 2.sp),
+                                    colorTexto = TextoPrincipal,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Clip,
+                                    softWrap = false
+                                )
+                            }
                         }
                     }
+                    Spacer(Modifier.width(8.dp))
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        BotonIconoDetalle(
-                            icono = if (revelada) Icons.Filled.VisibilityOff else Icons.Filled.Visibility,
-                            descripcion = if (revelada) "Ocultar contraseña" else "Mostrar contraseña",
-                            alPulsar = alAlternarRevelada
-                        )
+                        if (seguridadVisualActiva) {
+                            BotonIconoDetalle(
+                                icono = if (revelada) Icons.Filled.VisibilityOff else Icons.Filled.Visibility,
+                                descripcion = if (revelada) "Ocultar contraseña" else "Mostrar contraseña",
+                                alPulsar = alAlternarRevelada
+                            )
+                        }
                         BotonCopiarDetalle(copiado = ultimaCopia == "contrasena", alPulsar = alCopiarContrasena)
                     }
                 }

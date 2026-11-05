@@ -7,11 +7,8 @@
 package com.jlnavas3.bovedalocal.ui.componentes
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -49,8 +46,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.jlnavas3.bovedalocal.ui.DatosAviso
@@ -87,9 +87,12 @@ fun AvisoFlotanteBoveda(
     aviso: DatosAviso?,
     toastDescriptivo: Boolean,
     alCerrar: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    posicionToast: com.jlnavas3.bovedalocal.data.PosicionToast = com.jlnavas3.bovedalocal.data.PosicionToast.INFERIOR,
+    alMedirAltura: ((Dp) -> Unit)? = null
 ) {
     val contexto = LocalContext.current
+    val densidad = LocalDensity.current
     val haptica = remember { Haptica(contexto) }
 
     // Temporizador de auto-cierre tras 3.2 segundos (o 5 segundos si tiene opción deshacer)
@@ -98,19 +101,17 @@ fun AvisoFlotanteBoveda(
             val tiempoEspera = if (aviso.alDeshacer != null) 5000L else 3200L
             delay(tiempoEspera)
             alCerrar()
+        } else {
+            alMedirAltura?.invoke(0.dp)
         }
     }
 
+    val esSuperior = posicionToast == com.jlnavas3.bovedalocal.data.PosicionToast.SUPERIOR
+
     AnimatedVisibility(
         visible = aviso != null,
-        enter = slideInVertically(
-            initialOffsetY = { it },
-            animationSpec = tween(durationMillis = 220)
-        ) + fadeIn(animationSpec = tween(200)),
-        exit = slideOutVertically(
-            targetOffsetY = { it },
-            animationSpec = tween(durationMillis = 180)
-        ) + fadeOut(animationSpec = tween(150)),
+        enter = EnterTransition.None,
+        exit = ExitTransition.None,
         modifier = modifier
     ) {
         if (aviso != null) {
@@ -125,13 +126,19 @@ fun AvisoFlotanteBoveda(
             val colorIcono = ColorAcento
             val colorCerrar = ColorAjusteGris
             val fondoCabecera = if (esOscuro) Color.Black.copy(alpha = 0.32f) else Color.Black.copy(alpha = 0.07f)
-            val formaDescriptivo = RoundedCornerShape(CurvaturaEsquinas.coerceIn(12.dp, 18.dp))
-            val formaMinimalista = RoundedCornerShape(CurvaturaEsquinas.coerceIn(10.dp, 14.dp))
+            val formaDescriptivo = if (CurvaturaEsquinas == 0.dp) RoundedCornerShape(0.dp) else RoundedCornerShape(CurvaturaEsquinas.coerceIn(12.dp, 18.dp))
+            val formaMinimalista = if (CurvaturaEsquinas == 0.dp) RoundedCornerShape(0.dp) else RoundedCornerShape(CurvaturaEsquinas.coerceIn(10.dp, 14.dp))
 
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .widthIn(max = 420.dp),
+                    .widthIn(max = 420.dp)
+                    .onSizeChanged { intSize ->
+                        if (intSize.height > 0 && alMedirAltura != null) {
+                            val alturaDp = with(densidad) { intSize.height.toDp() }
+                            alMedirAltura(alturaDp)
+                        }
+                    },
                 contentAlignment = Alignment.Center
             ) {
                 if (toastDescriptivo) {

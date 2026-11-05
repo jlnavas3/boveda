@@ -16,5 +16,8 @@ data class ContactoDispositivo(
     val correos: List<String> = emptyList(),
     val organizacion: String? = null,
     val cargo: String? = null,
-    val notas: String? = null
+    val notas: String? = null,
+    val direcciones: List<DireccionPostalDispositivo> = emptyList(),
+    val sitiosWeb: List<String> = emptyList(),
+    val camposExtra: Map<String, String> = emptyMap()
 )

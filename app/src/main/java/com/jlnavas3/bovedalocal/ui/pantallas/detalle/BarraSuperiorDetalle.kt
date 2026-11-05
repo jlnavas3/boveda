@@ -9,8 +9,13 @@ package com.jlnavas3.bovedalocal.ui.pantallas.detalle
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.HelpOutline
+import androidx.compose.material.icons.filled.DynamicForm
+import androidx.compose.material.icons.filled.Fingerprint
+import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Palette
+import androidx.compose.material.icons.filled.Password
 import androidx.compose.material.icons.filled.Security
 import androidx.compose.material.icons.filled.Timer
 import androidx.compose.material.icons.filled.Tune
@@ -35,7 +40,12 @@ fun BarraSuperiorDetalle(
     alIrCopiaRapida: () -> Unit,
     alIrFormatosCampos: () -> Unit,
     alIrSeguridadDatos: () -> Unit,
-    alIrColoresIds: () -> Unit
+    alIrColoresIds: () -> Unit,
+    alIrDatosTecnicosPasskey: (() -> Unit)? = null,
+    alIrUmbralContrasenas: (() -> Unit)? = null,
+    alIrContrasenasComunes: (() -> Unit)? = null,
+    alIrPlantillasPersonalizadas: () -> Unit,
+    alIrAyuda: () -> Unit
 ) {
     var menuAbierto by remember { mutableStateOf(false) }
 
@@ -55,7 +65,7 @@ fun BarraSuperiorDetalle(
                 MenuDesplegableBoveda(
                     expanded = menuAbierto,
                     onDismissRequest = { menuAbierto = false },
-                    modifier = Modifier.widthIn(min = 220.dp, max = 280.dp)
+                    modifier = Modifier.widthIn(min = 220.dp, max = 290.dp)
                 ) {
                     ElementoMenuCompacto(
                         texto = "Ajustes de copia rápida...",
@@ -76,7 +86,7 @@ fun BarraSuperiorDetalle(
                     )
                     SeparadorOpcionMenu()
                     ElementoMenuCompacto(
-                        texto = "Seguridad de pantalla...",
+                        texto = "Seguridad visual...",
                         icono = Icons.Filled.Security,
                         onClick = {
                             menuAbierto = false
@@ -90,6 +100,57 @@ fun BarraSuperiorDetalle(
                         onClick = {
                             menuAbierto = false
                             alIrColoresIds()
+                        }
+                    )
+                    if (alIrDatosTecnicosPasskey != null) {
+                        SeparadorOpcionMenu()
+                        ElementoMenuCompacto(
+                            texto = "Datos técnicos en passkeys...",
+                            icono = Icons.Filled.Fingerprint,
+                            onClick = {
+                                menuAbierto = false
+                                alIrDatosTecnicosPasskey()
+                            }
+                        )
+                    }
+                    if (alIrUmbralContrasenas != null) {
+                        SeparadorOpcionMenu()
+                        ElementoMenuCompacto(
+                            texto = "Umbral de contraseñas...",
+                            icono = Icons.Filled.History,
+                            onClick = {
+                                menuAbierto = false
+                                alIrUmbralContrasenas()
+                            }
+                        )
+                    }
+                    if (alIrContrasenasComunes != null) {
+                        SeparadorOpcionMenu()
+                        ElementoMenuCompacto(
+                            texto = "Contraseñas comunes...",
+                            icono = Icons.Filled.Password,
+                            onClick = {
+                                menuAbierto = false
+                                alIrContrasenasComunes()
+                            }
+                        )
+                    }
+                    SeparadorOpcionMenu()
+                    ElementoMenuCompacto(
+                        texto = "Plantillas personalizadas...",
+                        icono = Icons.Filled.DynamicForm,
+                        onClick = {
+                            menuAbierto = false
+                            alIrPlantillasPersonalizadas()
+                        }
+                    )
+                    SeparadorOpcionMenu()
+                    ElementoMenuCompacto(
+                        texto = "Ayuda...",
+                        icono = Icons.AutoMirrored.Filled.HelpOutline,
+                        onClick = {
+                            menuAbierto = false
+                            alIrAyuda()
                         }
                     )
                 }

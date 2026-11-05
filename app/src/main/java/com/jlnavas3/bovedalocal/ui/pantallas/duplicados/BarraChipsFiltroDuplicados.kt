@@ -18,7 +18,7 @@ import com.jlnavas3.bovedalocal.ui.componentes.ChipBoveda
 fun BarraChipsFiltroDuplicados(
     filtroActivo: FiltroDuplicados,
     totalGrupos: Int,
-    totalSobrantesIdenticas: Int,
+    cantGruposIdenticos: Int,
     cantPasskeys: Int,
     cantTotp: Int,
     cantAppsAndroid: Int,
@@ -33,17 +33,17 @@ fun BarraChipsFiltroDuplicados(
     ) {
         item {
             ChipBoveda(
-                texto = "Todos",
+                texto = "Grupos",
                 conteo = totalGrupos,
                 seleccionado = filtroActivo == FiltroDuplicados.TODOS,
                 alPulsar = { alSeleccionarFiltro(FiltroDuplicados.TODOS) }
             )
         }
-        if (totalSobrantesIdenticas > 0) {
+        if (cantGruposIdenticos > 0) {
             item {
                 ChipBoveda(
                     texto = "Idénticos",
-                    conteo = totalSobrantesIdenticas,
+                    conteo = cantGruposIdenticos,
                     seleccionado = filtroActivo == FiltroDuplicados.IDENTICOS,
                     alPulsar = { alSeleccionarFiltro(FiltroDuplicados.IDENTICOS) }
                 )

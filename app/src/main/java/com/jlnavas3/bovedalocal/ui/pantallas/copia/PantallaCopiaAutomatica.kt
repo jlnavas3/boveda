@@ -80,7 +80,7 @@ fun PantallaCopiaAutomatica(
                 .background(ColorAjustesFondo)
         ) {
             BarraSuperiorPantalla(
-                titulo = "Copia automática",
+                titulo = "Respaldo automático",
                 idEtiqueta = "05-COP-ATM",
                 mostrarId = ajustes.mostrarIdsAjustes,
                 alVolver = { vm.volverAtras() },
@@ -98,8 +98,8 @@ fun PantallaCopiaAutomatica(
                             vm.ajustarBackupAutoFrecuenciaDias(0)
                             vm.ajustarBackupAutoMaxCopias(5)
                             vm.ajustarBackupAutoPasswordCifrado("")
-                            vm.ajustarBackupAutoPatronNombre("{99}-backup-{FECHA}")
-                            vm.avisar("Copia automática restablecida")
+                            vm.ajustarBackupAutoPatronNombre("{##}-backup-{FECHA}_{HORA}")
+                            vm.avisar("Respaldo automático restablecido")
                         }
                     )
                 }
@@ -167,7 +167,7 @@ fun PantallaCopiaAutomatica(
                     mostrarId = ajustes.mostrarIdsAjustes
                 ) {
                     ComponenteSelectorModal(
-                        titulo = "Frecuencia de copia",
+                        titulo = "Frecuencia de respaldo",
                         descripcionModal = "Periodicidad con la que se genera un respaldo cifrado en Descargas",
                         icono = null,
                         idFila = "05-COP-ATM-FRQ",
@@ -184,8 +184,8 @@ fun PantallaCopiaAutomatica(
                         ComponenteSeparador(sangriaInicio = 16.dp)
 
                         ComponenteSelectorModal(
-                            titulo = "Copias a conservar",
-                            descripcionModal = "Número de copias automáticas que se conservan antes de rotar y borrar las más antiguas",
+                            titulo = "Respaldos a conservar",
+                            descripcionModal = "Número de respaldos automáticos que se conservan antes de rotar y borrar los más antiguos",
                             icono = null,
                             idFila = "05-COP-ATM-ROT",
                             mostrarId = ajustes.mostrarIdsAjustes,
@@ -209,7 +209,7 @@ fun PantallaCopiaAutomatica(
                     alRestablecer = {
                         haptica.tic()
                         vm.ajustarBackupAutoPasswordCifrado("")
-                        vm.ajustarBackupAutoPatronNombre("{99}-backup-{FECHA}")
+                        vm.ajustarBackupAutoPatronNombre("{##}-backup-{FECHA}_{HORA}")
                         vm.avisar("Seguridad y formato restablecidos")
                     },
                     idGrupo = "05-COP-ATM-G02",
@@ -218,7 +218,7 @@ fun PantallaCopiaAutomatica(
                     Column(modifier = Modifier.padding(16.dp)) {
                         ComponenteCampoTexto(
                             valor = ajustes.backupAutoPasswordCifrado,
-                            etiqueta = "Contraseña para la copia automática",
+                            etiqueta = "Contraseña para el respaldo automático",
                             alCambiar = { vm.ajustarBackupAutoPasswordCifrado(it) },
                             tipo = TipoCampoTexto.CONTRASENA,
                             mostrarContrasena = mostrarPassBackupAuto,
@@ -237,21 +237,21 @@ fun PantallaCopiaAutomatica(
                         Spacer(Modifier.height(6.dp))
 
                         com.jlnavas3.bovedalocal.ui.componentes.TextoSubtitulo(
-                            texto = "Usa {99} para número secuencial y {FECHA} para fecha/hora. Se guarda como .bvda en Descargas/BovedaLocal/Backups/"
+                            texto = "Usa {##} para número secuencial, {FECHA} para fecha y {HORA} para hora. Se guarda como .bvda en Descargas/BovedaLocal/Backups/"
                         )
 
                         Spacer(Modifier.height(12.dp))
 
                         val textoUltima = if (ajustes.backupAutoUltimaEjecucion > 0L) {
                             val sdf = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
-                            "Última copia: ${sdf.format(Date(ajustes.backupAutoUltimaEjecucion))}"
+                            "Último respaldo: ${sdf.format(Date(ajustes.backupAutoUltimaEjecucion))}"
                         } else {
-                            "Última copia: Aún no realizada"
+                            "Último respaldo: Aún no realizado"
                         }
                         val textoRotacion = if (ajustes.backupAutoMaxCopias <= 0) {
                             "Rotación: Infinitas"
                         } else {
-                            "Rotación máxima: ${ajustes.backupAutoMaxCopias} copias"
+                            "Rotación máxima: ${ajustes.backupAutoMaxCopias} respaldos"
                         }
                         com.jlnavas3.bovedalocal.ui.componentes.TextoPiePagina(
                             texto = "$textoUltima ($textoRotacion)"

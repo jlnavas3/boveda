@@ -27,9 +27,15 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
 import com.jlnavas3.bovedalocal.data.AvisoInterno
+import androidx.compose.foundation.border
+import androidx.compose.foundation.lazy.rememberLazyListState
 import com.jlnavas3.bovedalocal.data.TipoAvisoInterno
-import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjustesFondo
+import com.jlnavas3.bovedalocal.ui.componentes.barraDesplazamientoVertical
+import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorModalAjustes
+import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
 import com.jlnavas3.bovedalocal.ui.theme.CurvaturaEsquinas
+import com.jlnavas3.bovedalocal.ui.theme.EstiloBorde
+import com.jlnavas3.bovedalocal.ui.theme.GrosorBorde
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -40,14 +46,16 @@ fun ModalAvisosInternos(
     alIgnorarAviso: (TipoAvisoInterno) -> Unit
 ) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    val lazyListState = rememberLazyListState()
     val configuracion = LocalConfiguration.current
     val alturaMaxima = (configuracion.screenHeightDp * 0.60f).dp
+    val formaSheet = RoundedCornerShape(topStart = CurvaturaEsquinas, topEnd = CurvaturaEsquinas)
 
     ModalBottomSheet(
         onDismissRequest = alCerrar,
         sheetState = sheetState,
-        shape = RoundedCornerShape(topStart = CurvaturaEsquinas, topEnd = CurvaturaEsquinas),
-        containerColor = ColorAjustesFondo,
+        shape = formaSheet,
+        containerColor = ColorModalAjustes,
         scrimColor = Color.Black.copy(alpha = 0.55f)
     ) {
         Column(
@@ -62,9 +70,15 @@ fun ModalAvisosInternos(
             )
 
             LazyColumn(
+                state = lazyListState,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .weight(1f, fill = false),
+                    .weight(1f, fill = false)
+                    .barraDesplazamientoVertical(
+                        state = lazyListState,
+                        ancho = 3.dp,
+                        margenFin = 4.dp
+                    ),
                 contentPadding = PaddingValues(start = 20.dp, end = 20.dp, top = 4.dp, bottom = 24.dp),
                 verticalArrangement = Arrangement.spacedBy(10.dp)
             ) {

@@ -15,7 +15,6 @@ import androidx.compose.ui.Modifier
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteAlerta
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteBotonFila
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.TipoAlerta
-import com.jlnavas3.bovedalocal.ui.theme.Peligro
 
 @Composable
 fun AlertaBiometriaSenuelo(
@@ -34,7 +33,6 @@ fun AlertaBiometriaSenuelo(
                 ComponenteBotonFila(
                     titulo = "Desactivar acceso por huella dactilar",
                     icono = Icons.Filled.Fingerprint,
-                    colorIcono = Peligro,
                     alPulsar = alDesactivarBiometria
                 )
             }

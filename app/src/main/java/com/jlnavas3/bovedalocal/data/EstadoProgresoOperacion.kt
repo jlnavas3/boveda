@@ -23,5 +23,6 @@ data class EstadoProgresoOperacion(
     val textoAccionResultado: String? = null,
     val textoAccionSecundaria: String? = null,
     val accionResultado: (() -> Unit)? = null,
+    val accionSecundaria: (() -> Unit)? = null,
     val alCerrar: (() -> Unit)? = null
 )

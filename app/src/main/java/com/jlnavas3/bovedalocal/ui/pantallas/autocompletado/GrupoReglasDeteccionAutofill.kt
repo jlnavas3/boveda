@@ -18,7 +18,7 @@ import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteGrupo
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteNavegacion
 import com.jlnavas3.bovedalocal.ui.preview.BovedaPreview
 import com.jlnavas3.bovedalocal.ui.theme.BovedaTheme
-import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
+import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
 
 @Composable
@@ -30,7 +30,7 @@ fun GrupoReglasDeteccionAutofill(
     ComponenteGrupo(
         etiqueta = "Reglas y Detección de Campos",
         icono = Icons.Filled.Tune,
-        colorIcono = ColorAcento,
+        colorIcono = ColorIconosInternos,
         idGrupo = "04-HER-PSK-G03",
         mostrarId = mostrarIdsAjustes,
         modifier = modifier
@@ -39,7 +39,7 @@ fun GrupoReglasDeteccionAutofill(
             titulo = "Palabras clave de formularios",
             subtitulo = "Personalizar términos de usuario, contraseña y 2FA/OTP",
             icono = Icons.Filled.Tune,
-            colorIcono = ColorAcento,
+            colorIcono = ColorIconosInternos,
             idFila = "04-HER-PSK-RGL",
             mostrarId = mostrarIdsAjustes,
             alPulsar = alAbrirReglas

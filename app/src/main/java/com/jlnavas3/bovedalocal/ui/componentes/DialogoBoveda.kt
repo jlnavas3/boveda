@@ -55,7 +55,8 @@ fun DialogoBoveda(
     text: @Composable (() -> Unit)? = null,
     shape: Shape = RoundedCornerShape(CurvaturaEsquinas),
     containerColor: Color = ColorTarjetaAjustes,
-    tonalElevation: Dp = 0.dp
+    tonalElevation: Dp = 0.dp,
+    properties: androidx.compose.ui.window.DialogProperties = androidx.compose.ui.window.DialogProperties()
 ) {
     val formaDialogo = shape as? RoundedCornerShape ?: RoundedCornerShape(CurvaturaEsquinas)
     val modificadorBorde = if (GrosorBorde > 0.dp && EstiloBorde != "ninguno") {
@@ -72,7 +73,8 @@ fun DialogoBoveda(
         text = text,
         shape = formaDialogo,
         containerColor = containerColor,
-        tonalElevation = tonalElevation
+        tonalElevation = tonalElevation,
+        properties = properties
     )
 }
 
@@ -93,6 +95,7 @@ fun DialogoBoveda(
     shape: Shape = RoundedCornerShape(CurvaturaEsquinas),
     containerColor: Color = ColorTarjetaAjustes,
     tonalElevation: Dp = 0.dp,
+    properties: androidx.compose.ui.window.DialogProperties = androidx.compose.ui.window.DialogProperties(),
     contenido: @Composable ColumnScope.() -> Unit
 ) {
     if (!abierto) return
@@ -102,6 +105,7 @@ fun DialogoBoveda(
         confirmButton = { botonConfirmar?.invoke() },
         modifier = modifier,
         dismissButton = botonDescartar,
+        properties = properties,
         icon = icono?.let {
             {
                 if (fondoIcono != null) {

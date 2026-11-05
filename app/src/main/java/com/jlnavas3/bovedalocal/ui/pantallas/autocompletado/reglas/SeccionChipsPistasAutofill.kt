@@ -38,6 +38,7 @@ import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteGrupo
 import com.jlnavas3.bovedalocal.ui.preview.BovedaPreview
 import com.jlnavas3.bovedalocal.ui.theme.BovedaTheme
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
+import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
 import com.jlnavas3.bovedalocal.ui.theme.FormaChip
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
 
@@ -57,7 +58,7 @@ fun SeccionChipsPistasAutofill(
     ComponenteGrupo(
         etiqueta = titulo,
         icono = icono,
-        colorIcono = ColorAcento,
+        colorIcono = ColorIconosInternos,
         idGrupo = idGrupo,
         mostrarId = mostrarId,
         modifier = modifier

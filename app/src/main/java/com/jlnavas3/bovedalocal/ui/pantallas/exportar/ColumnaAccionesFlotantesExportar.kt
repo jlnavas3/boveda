@@ -29,6 +29,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.jlnavas3.bovedalocal.ui.componentes.desplazarPorAvisoEmergente
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorTarjetaAjustes
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
@@ -58,9 +59,11 @@ fun ColumnaAccionesFlotantesExportar(
     val formaFab = RoundedCornerShape(CurvaturaEsquinas)
 
     Column(
-        modifier = modifier.padding(20.dp),
+        modifier = modifier
+            .desplazarPorAvisoEmergente()
+            .padding(20.dp),
         horizontalAlignment = Alignment.End,
-        verticalArrangement = Arrangement.spacedBy(12.dp)
+        verticalArrangement = Arrangement.spacedBy(10.dp)
     ) {
         // 1. Deseleccionar todo (arriba)
         BotonFlotanteSecundario(

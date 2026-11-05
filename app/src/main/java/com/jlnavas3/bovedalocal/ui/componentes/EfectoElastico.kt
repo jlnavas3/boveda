@@ -13,6 +13,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
+import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
@@ -106,6 +107,7 @@ fun Modifier.reboteElastico(
     }
 
     this
+        .clipToBounds()
         .nestedScroll(conexion)
         .graphicsLayer {
             translationY = animableOffset.value

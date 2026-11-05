@@ -182,4 +182,54 @@ class RestaurarPapeleraTest {
         val vigentesIndefinido = if (diasRetencionIndefinido <= 0) papelera else emptyList()
         assertEquals(2, vigentesIndefinido.size)
     }
+
+    @Test
+    fun borrarLotePapelera_eliminaSoloLosIdsEspecificados() {
+        val ent1 = Entrada(id = "e1", titulo = "Uno", eliminadaEn = 1000L)
+        val ent2 = Entrada(id = "e2", titulo = "Dos", eliminadaEn = 1000L)
+        val ent3 = Entrada(id = "e3", titulo = "Tres", eliminadaEn = 1000L)
+        val papelera = listOf(ent1, ent2, ent3)
+
+        val aBorrar = setOf("e1", "e3")
+        val resultado = papelera.filterNot { it.id in aBorrar }
+
+        assertEquals(1, resultado.size)
+        assertEquals("e2", resultado.first().id)
+    }
+
+    @Test
+    fun restaurarLotePapelera_restauraSeleccionadasYSaneaIdsDuplicados() {
+        val activas = listOf(Entrada(id = "id-duplicado", titulo = "Existente"))
+        val p1 = Entrada(id = "id-duplicado", titulo = "En Papelera 1", eliminadaEn = 2000L)
+        val p2 = Entrada(id = "id-unico", titulo = "En Papelera 2", eliminadaEn = 2000L)
+        val p3 = Entrada(id = "id-no-seleccionado", titulo = "En Papelera 3", eliminadaEn = 2000L)
+        val papelera = listOf(p1, p2, p3)
+
+        val idsARestaurar = setOf("id-duplicado", "id-unico")
+        val aRestaurar = papelera.filter { it.id in idsARestaurar }
+
+        val idsVistos = activas.map { it.id }.toMutableSet()
+        val restauradas = mutableListOf<Entrada>()
+
+        for (ent in aRestaurar) {
+            val limpia = ent.copy(eliminadaEn = 0L)
+            if (idsVistos.add(limpia.id)) {
+                restauradas.add(limpia)
+            } else {
+                val nueva = limpia.copy(id = UUID.randomUUID().toString())
+                idsVistos.add(nueva.id)
+                restauradas.add(nueva)
+            }
+        }
+
+        val nuevasActivas = activas + restauradas
+        val nuevaPapelera = papelera.filterNot { it.id in idsARestaurar }
+
+        assertEquals(3, nuevasActivas.size)
+        assertEquals(3, nuevasActivas.map { it.id }.toSet().size)
+        assertEquals(1, nuevaPapelera.size)
+        assertEquals("id-no-seleccionado", nuevaPapelera.first().id)
+        assertTrue(nuevasActivas.any { it.titulo == "En Papelera 2" && it.id == "id-unico" })
+        assertTrue(nuevasActivas.any { it.titulo == "En Papelera 1" && it.id != "id-duplicado" })
+    }
 }

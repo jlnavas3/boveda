@@ -46,7 +46,7 @@ fun PantallaAuditoriaSeguridad(
     val ajustes by vm.ajustes.collectAsStateWithLifecycle()
     val scrollState = rememberScrollState()
 
-    ProveedorResaltadoAjustes(seccionDestino) {
+    ProveedorResaltadoAjustes(seccionDestino, scrollState = scrollState) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -67,7 +67,8 @@ fun PantallaAuditoriaSeguridad(
                         alRestablecerPantalla = {
                             haptica.tic()
                             vm.restablecerUmbralAntiguedad()
-                            vm.avisar("Umbral de antigüedad restablecido")
+                            vm.restablecerSaludContrasenas()
+                            vm.avisar("Ajustes de auditoría restablecidos")
                         }
                     )
                 }
@@ -79,7 +80,7 @@ fun PantallaAuditoriaSeguridad(
                     .verticalScroll(scrollState)
                     .padding(horizontal = 16.dp, vertical = 12.dp)
             ) {
-                DescripcionPantalla(subtitulo = "Umbrales temporales para evaluar la antigüedad y necesidad de renovación de claves")
+                DescripcionPantalla(subtitulo = "Umbrales y niveles de exigencia para evaluar la fortaleza y renovación de claves")
                 Spacer(Modifier.height(10.dp))
 
                 GrupoAntiguedadSalud(
@@ -89,10 +90,21 @@ fun PantallaAuditoriaSeguridad(
                         haptica.tic()
                         vm.ajustarUmbralAntiguedad(valor)
                     },
+                    saludUmbralPuntuacionDebil = ajustes.saludUmbralPuntuacionDebil,
+                    saludLongitudMinimaRecomendada = ajustes.saludLongitudMinimaRecomendada,
+                    alAjustarSaludUmbralPuntuacionDebil = { valor ->
+                        haptica.tic()
+                        vm.ajustarSaludUmbralPuntuacionDebil(valor)
+                    },
+                    alAjustarSaludLongitudMinimaRecomendada = { valor ->
+                        haptica.tic()
+                        vm.ajustarSaludLongitudMinimaRecomendada(valor)
+                    },
                     alRestablecer = {
                         haptica.tic()
                         vm.restablecerUmbralAntiguedad()
-                        vm.avisar("Umbral de antigüedad restablecido")
+                        vm.restablecerSaludContrasenas()
+                        vm.avisar("Ajustes de auditoría restablecidos")
                     }
                 )
 

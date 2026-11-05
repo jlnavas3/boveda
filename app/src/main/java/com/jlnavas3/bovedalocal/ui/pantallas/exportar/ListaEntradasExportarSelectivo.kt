@@ -36,9 +36,10 @@ fun ListaEntradasExportarSelectivo(
     espaciadoFilas: Dp = 8.dp,
     densidadAltura: Dp = 74.dp,
     densidadMonograma: Int = 46,
+    cabecera: (@Composable () -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
-    if (entradas.isEmpty()) {
+    if (entradas.isEmpty() && cabecera == null) {
         Box(
             modifier = modifier
                 .fillMaxWidth()
@@ -57,17 +58,38 @@ fun ListaEntradasExportarSelectivo(
             contentPadding = PaddingValues(start = 20.dp, end = 20.dp, bottom = 130.dp),
             verticalArrangement = Arrangement.spacedBy(espaciadoFilas)
         ) {
-            items(entradas, key = { it.id }) { entrada ->
-                val marcada = idsSeleccionados.contains(entrada.id)
-                FilaEntradaExportarSelectivo(
-                    entrada = entrada,
-                    marcada = marcada,
-                    alAlternarMarcado = { checked ->
-                        alAlternarSeleccion(entrada.id, checked)
-                    },
-                    alturaFila = densidadAltura,
-                    tamanoMonograma = densidadMonograma
-                )
+            if (cabecera != null) {
+                item(key = "cabecera_exportacion") {
+                    cabecera()
+                }
+            }
+            if (entradas.isEmpty()) {
+                item(key = "estado_vacio") {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(180.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        com.jlnavas3.bovedalocal.ui.componentes.TextoSubtitulo(
+                            texto = "No hay entradas registradas en esta categoría.",
+                            alineacion = androidx.compose.ui.text.style.TextAlign.Center
+                        )
+                    }
+                }
+            } else {
+                items(entradas, key = { it.id }) { entrada ->
+                    val marcada = idsSeleccionados.contains(entrada.id)
+                    FilaEntradaExportarSelectivo(
+                        entrada = entrada,
+                        marcada = marcada,
+                        alAlternarMarcado = { checked ->
+                            alAlternarSeleccion(entrada.id, checked)
+                        },
+                        alturaFila = densidadAltura,
+                        tamanoMonograma = densidadMonograma
+                    )
+                }
             }
         }
     }

@@ -12,6 +12,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -22,13 +23,10 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import com.jlnavas3.bovedalocal.ui.componentes.CerrarTecladoAlHacerScroll
-import com.jlnavas3.bovedalocal.ui.componentes.cerrarTecladoAlTocarFuera
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Layers
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.PersonOff
@@ -42,10 +40,6 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -53,11 +47,21 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.ui.platform.LocalConfiguration
 import com.jlnavas3.bovedalocal.data.Identidad
-import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjustesFondo
+import com.jlnavas3.bovedalocal.ui.componentes.barraDesplazamientoVertical
+import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorCampoAjustes
+import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorModalAjustes
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorSeparadorAjustes
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorTarjetaAjustes
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
+import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
+import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
+import com.jlnavas3.bovedalocal.ui.theme.CurvaturaEsquinas
+import com.jlnavas3.bovedalocal.ui.theme.EstiloBorde
+import com.jlnavas3.bovedalocal.ui.theme.GrosorBorde
 import com.jlnavas3.bovedalocal.ui.theme.TextoPrincipal
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
 import com.jlnavas3.bovedalocal.ui.theme.parsearColorO
@@ -80,31 +84,24 @@ fun BottomSheetFiltroIdentidades(
 ) {
     if (!visible) return
 
-    var busqueda by remember { mutableStateOf("") }
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-
-    val identidadesFiltradas = remember(identidades, busqueda) {
-        if (busqueda.isBlank()) identidades
-        else identidades.filter {
-            it.nombre.contains(busqueda, ignoreCase = true) ||
-            it.correoPrincipal.contains(busqueda, ignoreCase = true) ||
-            it.correosSecundarios.any { c -> c.contains(busqueda, ignoreCase = true) }
-        }
-    }
+    val configuracion = LocalConfiguration.current
+    val alturaMaxima = (configuracion.screenHeightDp * 0.60f).dp
+    val formaSheet = RoundedCornerShape(topStart = CurvaturaEsquinas, topEnd = CurvaturaEsquinas)
 
     val lazyListState = rememberLazyListState()
-    CerrarTecladoAlHacerScroll(lazyListState.isScrollInProgress)
 
     ModalBottomSheet(
         onDismissRequest = alCerrar,
         sheetState = sheetState,
-        containerColor = ColorAjustesFondo,
+        shape = formaSheet,
+        containerColor = ColorModalAjustes,
         dragHandle = { BottomSheetDefaults.DragHandle() }
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .cerrarTecladoAlTocarFuera()
+                .heightIn(max = alturaMaxima)
                 .padding(horizontal = 20.dp)
                 .padding(bottom = 24.dp)
         ) {
@@ -112,50 +109,34 @@ fun BottomSheetFiltroIdentidades(
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Filled.Person,
-                        contentDescription = null,
-                        tint = ColorAcento,
-                        modifier = Modifier.size(20.dp)
-                    )
-                    Text(
-                        text = "Filtrar por Identidad",
-                        color = TextoPrincipal,
-                        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
-                    )
-                }
-                IconButton(onClick = alCerrar, modifier = Modifier.size(32.dp)) {
-                    Icon(
-                        imageVector = Icons.Filled.Close,
-                        contentDescription = "Cerrar",
-                        tint = TextoSecundario,
-                        modifier = Modifier.size(18.dp)
-                    )
-                }
+                Icon(
+                    imageVector = Icons.Filled.Person,
+                    contentDescription = null,
+                    tint = ColorAcento,
+                    modifier = Modifier.size(20.dp)
+                )
+                Text(
+                    text = "Filtrar por Identidad",
+                    color = TextoPrincipal,
+                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
+                )
             }
 
-            Spacer(Modifier.height(10.dp))
-
-            // Buscador
-            CampoBusquedaBottomSheet(
-                valor = busqueda,
-                alCambiar = { busqueda = it },
-                pista = "Buscar entre ${identidades.size} identidades..."
-            )
-
-            Spacer(Modifier.height(12.dp))
+            Spacer(Modifier.height(14.dp))
 
             LazyColumn(
                 state = lazyListState,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .weight(1f, fill = false),
+                    .weight(1f, fill = false)
+                    .barraDesplazamientoVertical(
+                        state = lazyListState,
+                        ancho = 3.dp,
+                        margenFin = 1.dp
+                    ),
+                contentPadding = PaddingValues(end = 8.dp),
                 verticalArrangement = Arrangement.spacedBy(6.dp)
             ) {
                 // Opción 1: Todas las identidades
@@ -165,7 +146,7 @@ fun BottomSheetFiltroIdentidades(
                         titulo = "Todas las identidades",
                         subtitulo = "$totalEntradas entradas en total",
                         icono = Icons.Filled.Layers,
-                        colorIcono = ColorAcento,
+                        colorIcono = ColorIconosInternos,
                         seleccionado = seleccionado,
                         alPulsar = {
                             alSeleccionarIdentidad(null)
@@ -175,7 +156,7 @@ fun BottomSheetFiltroIdentidades(
                 }
 
                 // Opción 2: Sin identidad asignada (si aplica)
-                if (conteoSinIdentidad > 0 && (busqueda.isBlank() || "sin identidad".contains(busqueda, ignoreCase = true))) {
+                if (conteoSinIdentidad > 0) {
                     item {
                         val seleccionado = identidadSeleccionadaId == "__SIN_IDENTIDAD__"
                         FilaOpcionIdentidad(
@@ -193,7 +174,7 @@ fun BottomSheetFiltroIdentidades(
                 }
 
                 // Lista de identidades configuradas
-                items(identidadesFiltradas, key = { it.id }) { iden ->
+                items(identidades, key = { it.id }) { iden ->
                     val colorBase = parsearColorO(iden.colorHex ?: "", ColorAcento)
                     val conteo = conteoPorIdentidad[iden.id] ?: 0
                     val seleccionado = identidadSeleccionadaId == iden.id
@@ -255,16 +236,21 @@ private fun FilaOpcionIdentidad(
     conteo: Int? = null,
     alPulsar: () -> Unit
 ) {
-    val forma = RoundedCornerShape(12.dp)
+    val forma = RoundedCornerShape(CurvaturaEsquinas)
+    val tieneBorde = GrosorBorde > 0.dp && EstiloBorde != "ninguno"
+    val anchoBorde = if (seleccionado) GrosorBorde.coerceAtLeast(1.5.dp) else (if (tieneBorde) GrosorBorde else 0.dp)
+    val colorBorde = if (seleccionado) colorIcono else ColorBordeActual
+    val fondo = if (seleccionado) colorIcono.copy(alpha = 0.16f) else ColorTarjetaAjustes
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .clip(forma)
-            .background(if (seleccionado) colorIcono.copy(alpha = 0.14f) else ColorTarjetaAjustes)
-            .border(
-                width = if (seleccionado) 1.dp else 0.5.dp,
-                color = if (seleccionado) colorIcono.copy(alpha = 0.8f) else ColorSeparadorAjustes.copy(alpha = 0.4f),
-                shape = forma
+            .background(fondo)
+            .then(
+                if (anchoBorde > 0.dp) {
+                    Modifier.border(anchoBorde, colorBorde, forma)
+                } else Modifier
             )
             .clickable { alPulsar() }
             .padding(horizontal = 12.dp, vertical = 10.dp),

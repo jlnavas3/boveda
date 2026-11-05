@@ -24,30 +24,33 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.jlnavas3.bovedalocal.data.AjustesApp
-import com.jlnavas3.bovedalocal.data.CampoPersonalizado
-import com.jlnavas3.bovedalocal.data.TipoCampo
+import com.jlnavas3.bovedalocal.data.DatosDocumentoIdentidad
+import com.jlnavas3.bovedalocal.data.TipoDocumentoIdentidad
 import com.jlnavas3.bovedalocal.ui.componentes.CampoBoveda
+import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
+import com.jlnavas3.bovedalocal.ui.theme.ColorDatos2FA
+import com.jlnavas3.bovedalocal.ui.theme.ColorDatosUsuario
+import com.jlnavas3.bovedalocal.ui.theme.ColorDatosWeb
 import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
 import com.jlnavas3.bovedalocal.util.FormateadorCampos
 import java.util.Calendar
 
+/**
+ * Microcomponente desacoplado para edición directa y fuertemente tipada de documentos de identidad.
+ */
 @Composable
 fun FormularioEdicionIdentidad(
-    campos: List<CampoPersonalizado>,
-    alCambiarCampos: (List<CampoPersonalizado>) -> Unit,
+    datos: DatosDocumentoIdentidad,
+    alCambiar: (DatosDocumentoIdentidad) -> Unit,
     ajustes: AjustesApp = AjustesApp()
 ) {
     val contexto = LocalContext.current
-    var mostrarDoc by remember { mutableStateOf(false) }
+    val ocultarPorDefecto = ajustes.seguridadVisualActiva && ajustes.ocultarUsuario
+    var mostrarDoc by remember(ajustes.seguridadVisualActiva, ajustes.ocultarUsuario) { mutableStateOf(!ocultarPorDefecto) }
 
-    val tipoDoc = GestorCamposBase.valorDeCampo(campos, "Tipo de documento")
-    val numero = GestorCamposBase.valorDeCampo(campos, "Número de documento")
-    val nombre = GestorCamposBase.valorDeCampo(campos, "Nombre completo")
-    val expedicion = GestorCamposBase.valorDeCampo(campos, "Expedición")
-    val caducidad = GestorCamposBase.valorDeCampo(campos, "Caducidad")
-    val pais = GestorCamposBase.valorDeCampo(campos, "País emisor")
+    val tipoDoc = datos.tipoDocumento.ifBlank { "CI" }
 
-    fun abrirSelectorFecha(clave: String, valorActual: String) {
+    fun abrirSelectorFecha(esExpedicion: Boolean, valorActual: String) {
         val parseado = FormateadorCampos.parsearFecha(valorActual, ajustes.formatoFecha)
         val cal = Calendar.getInstance()
         val y = parseado?.first ?: cal.get(Calendar.YEAR)
@@ -56,37 +59,59 @@ fun FormularioEdicionIdentidad(
 
         DatePickerDialog(contexto, { _, anio, mes, dia ->
             val fechaFormateada = FormateadorCampos.formatearFecha(anio, mes, dia, ajustes.formatoFecha)
-            alCambiarCampos(GestorCamposBase.actualizarValor(campos, clave, fechaFormateada, TipoCampo.FECHA))
+            if (esExpedicion) {
+                alCambiar(datos.copy(expedicion = fechaFormateada))
+            } else {
+                alCambiar(datos.copy(caducidad = fechaFormateada))
+            }
         }, y, m, d).show()
     }
 
+    val docEnum = TipoDocumentoIdentidad.desdeSigla(tipoDoc)
+    val esSiglaEstandar = docEnum != TipoDocumentoIdentidad.OTRO
+    val esPersonalizado = ajustes.tiposDocumentoPersonalizados.any { it.equals(tipoDoc.trim(), ignoreCase = true) }
+    val esOtro = !esSiglaEstandar && !esPersonalizado
+
     Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-        CampoBoveda(
-            valor = tipoDoc,
-            etiqueta = "Tipo (DNI, Pasaporte, Licencia...)",
-            alCambiar = {
-                alCambiarCampos(GestorCamposBase.actualizarValor(campos, "Tipo de documento", it, TipoCampo.TEXTO))
-            }
+        SelectorTipoDocumentoDesplegable(
+            tipoSeleccionado = tipoDoc,
+            alSeleccionarTipo = { nuevoTipo ->
+                alCambiar(datos.copy(tipoDocumento = nuevoTipo))
+            },
+            tiposPersonalizados = ajustes.tiposDocumentoPersonalizados
         )
 
+        if (esOtro) {
+            CampoBoveda(
+                valor = if (tipoDoc.equals("Otro", ignoreCase = true)) "" else tipoDoc,
+                etiqueta = "Especificar tipo de documento (ej. Licencia de conducir)",
+                alCambiar = { nuevoValor ->
+                    alCambiar(datos.copy(tipoDocumento = nuevoValor.ifBlank { "Otro" }))
+                },
+                colorBordeIzquierdo = ColorDatosWeb
+            )
+        }
+
         CampoBoveda(
-            valor = numero,
+            valor = datos.numero,
             etiqueta = "Número de documento",
             alCambiar = {
-                alCambiarCampos(GestorCamposBase.actualizarValor(campos, "Número de documento", it, TipoCampo.TEXTO, sensible = true))
+                alCambiar(datos.copy(numero = it))
             },
             esContrasena = true,
             mostrarContrasena = mostrarDoc,
             alAlternarMostrarContrasena = { mostrarDoc = !mostrarDoc },
-            monoespaciada = true
+            monoespaciada = true,
+            colorBordeIzquierdo = ColorAcento
         )
 
         CampoBoveda(
-            valor = nombre,
+            valor = datos.nombreCompleto,
             etiqueta = "Nombre completo del titular",
             alCambiar = {
-                alCambiarCampos(GestorCamposBase.actualizarValor(campos, "Nombre completo", it, TipoCampo.TEXTO))
-            }
+                alCambiar(datos.copy(nombreCompleto = it))
+            },
+            colorBordeIzquierdo = ColorDatosUsuario
         )
 
         Row(
@@ -94,12 +119,12 @@ fun FormularioEdicionIdentidad(
             horizontalArrangement = Arrangement.spacedBy(10.dp)
         ) {
             CampoBoveda(
-                valor = expedicion,
+                valor = datos.expedicion,
                 etiqueta = "Expedición (${ajustes.formatoFecha})",
                 alCambiar = {},
                 readOnly = true,
                 trailingIcon = {
-                    IconButton(onClick = { abrirSelectorFecha("Expedición", expedicion) }) {
+                    IconButton(onClick = { abrirSelectorFecha(esExpedicion = true, valorActual = datos.expedicion) }) {
                         Icon(
                             imageVector = Icons.Filled.CalendarToday,
                             contentDescription = "Elegir fecha",
@@ -107,17 +132,18 @@ fun FormularioEdicionIdentidad(
                         )
                     }
                 },
-                alPulsar = { abrirSelectorFecha("Expedición", expedicion) },
-                modifier = Modifier.weight(1f)
+                alPulsar = { abrirSelectorFecha(esExpedicion = true, valorActual = datos.expedicion) },
+                modifier = Modifier.weight(1f),
+                colorBordeIzquierdo = ColorDatos2FA
             )
 
             CampoBoveda(
-                valor = caducidad,
+                valor = datos.caducidad,
                 etiqueta = "Caducidad (${ajustes.formatoFecha})",
                 alCambiar = {},
                 readOnly = true,
                 trailingIcon = {
-                    IconButton(onClick = { abrirSelectorFecha("Caducidad", caducidad) }) {
+                    IconButton(onClick = { abrirSelectorFecha(esExpedicion = false, valorActual = datos.caducidad) }) {
                         Icon(
                             imageVector = Icons.Filled.CalendarToday,
                             contentDescription = "Elegir fecha",
@@ -125,17 +151,19 @@ fun FormularioEdicionIdentidad(
                         )
                     }
                 },
-                alPulsar = { abrirSelectorFecha("Caducidad", caducidad) },
-                modifier = Modifier.weight(1f)
+                alPulsar = { abrirSelectorFecha(esExpedicion = false, valorActual = datos.caducidad) },
+                modifier = Modifier.weight(1f),
+                colorBordeIzquierdo = ColorDatos2FA
             )
         }
 
         CampoBoveda(
-            valor = pais,
+            valor = datos.paisEmisor,
             etiqueta = "País emisor",
             alCambiar = {
-                alCambiarCampos(GestorCamposBase.actualizarValor(campos, "País emisor", it, TipoCampo.TEXTO))
-            }
+                alCambiar(datos.copy(paisEmisor = it))
+            },
+            colorBordeIzquierdo = ColorDatosWeb
         )
     }
 }

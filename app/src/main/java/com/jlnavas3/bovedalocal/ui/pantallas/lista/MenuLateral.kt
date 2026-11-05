@@ -55,6 +55,7 @@ fun MenuLateral(
     totalEntradas: Int,
     totalPapelera: Int,
     totalDuplicadas: Int = 0,
+    conteosListaCuentas: Map<String, Int> = emptyMap(),
     perfilArgon2: PerfilArgon2 = PerfilArgon2.ESTANDAR,
     mostrarIds: Boolean = false,
     ajustes: AjustesApp? = null,
@@ -137,6 +138,7 @@ fun MenuLateral(
                                     id = id,
                                     totalDuplicadas = totalDuplicadas,
                                     totalPapelera = totalPapelera,
+                                    conteosListaCuentas = conteosListaCuentas,
                                     mostrarIds = mostrarIds,
                                     ajustes = ajustes,
                                     alIr = alIr
@@ -170,6 +172,7 @@ fun MenuLateral(
                                 id = id,
                                 totalDuplicadas = totalDuplicadas,
                                 totalPapelera = totalPapelera,
+                                conteosListaCuentas = conteosListaCuentas,
                                 mostrarIds = mostrarIds,
                                 ajustes = ajustes,
                                 alIr = alIr

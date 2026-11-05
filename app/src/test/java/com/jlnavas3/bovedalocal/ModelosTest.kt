@@ -71,36 +71,36 @@ class ModelosTest {
 
         val lista = listOf(e1, e2, e3)
 
-        // NOMBRE_AZ con favoritos arriba
+        // NOMBRE_AZ sin elevar favoritos
         val ordenAZ = lista.sortedWith(
-            compareByDescending<Entrada> { it.favorito }.thenBy { it.titulo.lowercase() }
+            compareBy<Entrada> { it.titulo.lowercase() }
         )
-        assertEquals("Gamma", ordenAZ[0].titulo) // favorito
-        assertEquals("Alpha", ordenAZ[1].titulo)
-        assertEquals("Beta", ordenAZ[2].titulo)
+        assertEquals("Alpha", ordenAZ[0].titulo)
+        assertEquals("Beta", ordenAZ[1].titulo)
+        assertEquals("Gamma", ordenAZ[2].titulo)
 
-        // NOMBRE_ZA con favoritos arriba
+        // NOMBRE_ZA sin elevar favoritos
         val ordenZA = lista.sortedWith(
-            compareByDescending<Entrada> { it.favorito }.thenByDescending { it.titulo.lowercase() }
+            compareByDescending<Entrada> { it.titulo.lowercase() }
         )
-        assertEquals("Gamma", ordenZA[0].titulo) // favorito
+        assertEquals("Gamma", ordenZA[0].titulo)
         assertEquals("Beta", ordenZA[1].titulo)
         assertEquals("Alpha", ordenZA[2].titulo)
 
         // MODIFICACION_RECIENTE
         val ordenMod = lista.sortedWith(
-            compareByDescending<Entrada> { it.favorito }.thenByDescending { it.modificadaEn }
+            compareByDescending<Entrada> { it.modificadaEn }
         )
-        assertEquals("Gamma", ordenMod[0].titulo)
+        assertEquals("Gamma", ordenMod[0].titulo) // 1000L
         assertEquals("Beta", ordenMod[1].titulo) // 500L
         assertEquals("Alpha", ordenMod[2].titulo) // 300L
 
         // CREACION_RECIENTE
         val ordenCrea = lista.sortedWith(
-            compareByDescending<Entrada> { it.favorito }.thenByDescending { it.creadaEn }
+            compareByDescending<Entrada> { it.creadaEn }
         )
-        assertEquals("Gamma", ordenCrea[0].titulo)
-        assertEquals("Alpha", ordenCrea[1].titulo) // 200L
-        assertEquals("Beta", ordenCrea[2].titulo) // 100L
+        assertEquals("Alpha", ordenCrea[0].titulo) // 200L
+        assertEquals("Beta", ordenCrea[1].titulo) // 100L
+        assertEquals("Gamma", ordenCrea[2].titulo) // 50L
     }
 }

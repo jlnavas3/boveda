@@ -31,22 +31,22 @@ fun GrupoImportacionContactos(
     modifier: Modifier = Modifier
 ) {
     ComponenteGrupo(
-        etiqueta = "Contactos del teléfono",
+        etiqueta = "Contactos (vCard / CSV)",
         icono = Icons.Filled.Person,
         colorIcono = ColorAcento,
         idGrupo = "05-COP-CNT-G01",
         mostrarId = mostrarId,
-        descripcion = "Importación segura y offline de contactos desde la agenda de Android",
+        descripcion = "Importación segura con cero permisos mediante selector de archivos (.vcf / .csv)",
         modifier = modifier
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             TextoSubtitulo(
-                texto = "Permite seleccionar e importar contactos de tu agenda telefónica a la bóveda. Cada contacto se guardará cifrado con su nombre, teléfonos, correos y notas."
+                texto = "Permite seleccionar un archivo vCard (.vcf) o CSV exportado de tu agenda. Cada contacto se previsualiza para que elijas cuáles cifrar en la bóveda, sin otorgar permisos de acceso a tu agenda."
             )
         }
         SeparadorFilaSimple()
         ComponenteBotonFila(
-            titulo = "Importar contactos a la bóveda",
+            titulo = "Seleccionar archivo de contactos (.vcf / .csv)",
             icono = null,
             idFila = "05-COP-CNT-IMP",
             mostrarId = mostrarId,

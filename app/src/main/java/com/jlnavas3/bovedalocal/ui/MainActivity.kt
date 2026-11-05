@@ -19,11 +19,13 @@ import androidx.core.content.pm.ShortcutInfoCompat
 import androidx.core.content.pm.ShortcutManagerCompat
 import androidx.core.graphics.drawable.IconCompat
 import androidx.fragment.app.FragmentActivity
+import androidx.compose.ui.graphics.toArgb
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.jlnavas3.bovedalocal.R
 import com.jlnavas3.bovedalocal.quicksettings.GeneradorRapidoHelper
 import com.jlnavas3.bovedalocal.ui.theme.BovedaTheme
 import com.jlnavas3.bovedalocal.ui.theme.GestorPaletaSobria
+import com.jlnavas3.bovedalocal.ui.theme.Obsidiana
 import com.jlnavas3.bovedalocal.ui.theme.aplicarPersonalizacionTemaCompleto
 import com.jlnavas3.bovedalocal.ui.theme.paletaSobriaGuardadaClara
 import com.jlnavas3.bovedalocal.ui.theme.paletaSobriaGuardadaOscura
@@ -42,6 +44,8 @@ class MainActivity : FragmentActivity() {
 
     override fun onStart() {
         super.onStart()
+        vm.verificarBloqueoSegundoPlano()
+        vm.recalcularAvisosInternos()
         if (Build.VERSION.SDK_INT >= 34 && capturaCallback != null) {
             try {
                 @Suppress("NewApi")
@@ -66,8 +70,10 @@ class MainActivity : FragmentActivity() {
 
     override fun onResume() {
         super.onResume()
+        vm.verificarBloqueoSegundoPlano()
         vm.recargarAjustes()
         vm.registrarInteraccion()
+        com.jlnavas3.bovedalocal.util.comunicacion.PurgadorArchivosEfimeros.purgar(this)
     }
 
     override fun onUserInteraction() {
@@ -158,13 +164,42 @@ class MainActivity : FragmentActivity() {
         val accion = intent?.getStringExtra("accion_shortcut") ?: return
         val tituloInicial = intent.getStringExtra("titulo_inicial") ?: ""
         val urlInicial = intent.getStringExtra("url_inicial") ?: ""
+        val nombreInicial = intent.getStringExtra("nombre_inicial") ?: ""
+        var telefonoInicial = intent.getStringExtra("telefono_inicial") ?: ""
+
         intent.removeExtra("accion_shortcut")
         intent.removeExtra("titulo_inicial")
         intent.removeExtra("url_inicial")
+        intent.removeExtra("nombre_inicial")
+        intent.removeExtra("telefono_inicial")
+
         if (accion == "generador_rapido") {
             GeneradorRapidoHelper.generar(this, "App Shortcut")
         } else {
-            vm.solicitarAccionShortcut(accion, tituloInicial, urlInicial)
+            val tituloFinal = if (tituloInicial.isNotBlank()) tituloInicial else nombreInicial
+            if (accion == "nuevo_contacto") {
+                if (telefonoInicial.isBlank()) {
+                    try {
+                        val clipboard = getSystemService(android.content.ClipboardManager::class.java)
+                        val clip = clipboard?.primaryClip
+                        if (clip != null && clip.itemCount > 0) {
+                            val textoClip = clip.getItemAt(0)?.coerceToText(this)?.toString()?.trim() ?: ""
+                            if (com.jlnavas3.bovedalocal.data.contactos.FormateadorTelefonoInternacional.esNumeroTelefonicoValido(textoClip)) {
+                                telefonoInicial = textoClip
+                            }
+                        }
+                    } catch (_: Exception) {}
+                }
+                vm.solicitarAccionShortcut(
+                    accion = accion,
+                    tituloInicial = tituloFinal,
+                    urlInicial = "",
+                    tipoInicial = com.jlnavas3.bovedalocal.data.TipoEntrada.CONTACTO,
+                    telefonoInicial = telefonoInicial
+                )
+            } else {
+                vm.solicitarAccionShortcut(accion, tituloInicial, urlInicial)
+            }
         }
     }
 
@@ -192,11 +227,11 @@ class MainActivity : FragmentActivity() {
         if (guardadaOsc != null) paletaSobriaGuardadaOscura = guardadaOsc
         if (guardadaCla != null) paletaSobriaGuardadaClara = guardadaCla
         aplicarPersonalizacionTemaCompleto(vm.repositorio.ajustes.actual)
+        window.decorView.setBackgroundColor(Obsidiana.toArgb())
         setContent {
             val ajustes by vm.ajustes.collectAsStateWithLifecycle()
-            LaunchedEffect(ajustes) {
-                aplicarPersonalizacionTemaCompleto(ajustes)
-            }
+            // Sincronización inmediata de tema antes del primer renderizado de cada fotograma
+            aplicarPersonalizacionTemaCompleto(ajustes)
             // FLAG_SECURE dinámico: respeta la preferencia del usuario en tiempo real
             LaunchedEffect(ajustes.proteccionPantalla) {
                 if (ajustes.proteccionPantalla) {

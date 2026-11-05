@@ -7,22 +7,24 @@
 package com.jlnavas3.bovedalocal.ui.componentes
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
-import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorTarjetaAjustes
+import com.jlnavas3.bovedalocal.ui.componentes.hud.accionConHud
 import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
 
 /**
  * Botón de icono estandarizado para las cabeceras de pantalla (40.dp, recorte circular, icono de 20.dp).
- * En reposo es limpio y transparente; al hacer tap muestra sutilmente el efecto ripple circular nativo.
+ * En reposo es limpio y transparente; al hacer tap muestra sutilmente el efecto ripple circular nativo,
+ * y al mantener pulsado despliega el HUD flotante inferior de acción.
  */
 @Composable
 fun BotonIconoCabecera(
@@ -34,9 +36,7 @@ fun BotonIconoCabecera(
     colorFondo: Color = Color.Transparent,
     habilitado: Boolean = true
 ) {
-    IconButton(
-        onClick = onClick,
-        enabled = habilitado,
+    Box(
         modifier = modifier
             .size(40.dp)
             .clip(CircleShape)
@@ -45,6 +45,14 @@ fun BotonIconoCabecera(
                     Modifier.background(if (habilitado) colorFondo else colorFondo.copy(alpha = 0.5f))
                 } else Modifier
             )
+            .accionConHud(
+                etiqueta = descripcion,
+                icono = icono,
+                habilitado = habilitado,
+                radioRipple = 20.dp,
+                alPulsar = onClick
+            ),
+        contentAlignment = Alignment.Center
     ) {
         Icon(
             imageVector = icono,

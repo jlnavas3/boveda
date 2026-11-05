@@ -95,4 +95,29 @@ interface VaultAjustesTileTotpManualDelegate {
             )
         }
     }
+
+    fun ajustarAliasCorreoBasePredeterminado(correo: String) {
+        val limpio = correo.trim().lowercase()
+        repositorio.ajustes.actualizar { it.copy(aliasCorreoBasePredeterminado = limpio) }
+    }
+
+    fun ajustarAliasCorreoLongitudSufijo(longitud: Int) {
+        val valor = longitud.coerceIn(AjustesDefaults.Generador.ALIAS_CORREO_LONGITUD_MIN, AjustesDefaults.Generador.ALIAS_CORREO_LONGITUD_MAX)
+        repositorio.ajustes.actualizar { it.copy(aliasCorreoLongitudSufijo = valor) }
+    }
+
+    fun ajustarAliasCorreoDelimitador(delimitador: String) {
+        val limpio = if (delimitador in listOf("+", "-", ".")) delimitador else AjustesDefaults.Generador.ALIAS_CORREO_DELIMITADOR
+        repositorio.ajustes.actualizar { it.copy(aliasCorreoDelimitador = limpio) }
+    }
+
+    fun restablecerAliasCorreo() {
+        repositorio.ajustes.actualizar {
+            it.copy(
+                aliasCorreoBasePredeterminado = AjustesDefaults.Generador.ALIAS_CORREO_BASE_PREDETERMINADO,
+                aliasCorreoLongitudSufijo = AjustesDefaults.Generador.ALIAS_CORREO_LONGITUD_SUFIJO,
+                aliasCorreoDelimitador = AjustesDefaults.Generador.ALIAS_CORREO_DELIMITADOR
+            )
+        }
+    }
 }

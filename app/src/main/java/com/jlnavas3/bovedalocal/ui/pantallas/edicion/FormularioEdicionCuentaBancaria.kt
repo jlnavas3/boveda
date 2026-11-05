@@ -15,46 +15,49 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.unit.dp
 import com.jlnavas3.bovedalocal.data.AjustesApp
-import com.jlnavas3.bovedalocal.data.CampoPersonalizado
-import com.jlnavas3.bovedalocal.data.TipoCampo
+import com.jlnavas3.bovedalocal.data.DatosCuentaBancaria
 import com.jlnavas3.bovedalocal.ui.componentes.CampoBoveda
+import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
+import com.jlnavas3.bovedalocal.ui.theme.ColorDatosUsuario
+import com.jlnavas3.bovedalocal.ui.theme.ColorDatosWeb
 import com.jlnavas3.bovedalocal.util.FormateadorCampos
 
+/**
+ * Microcomponente desacoplado para edición directa y fuertemente tipada de cuentas bancarias.
+ */
 @Composable
 fun FormularioEdicionCuentaBancaria(
-    campos: List<CampoPersonalizado>,
-    alCambiarCampos: (List<CampoPersonalizado>) -> Unit,
+    datos: DatosCuentaBancaria,
+    alCambiar: (DatosCuentaBancaria) -> Unit,
     ajustes: AjustesApp = AjustesApp()
 ) {
     var mostrarIban by remember { mutableStateOf(false) }
 
-    val banco = GestorCamposBase.valorDeCampo(campos, "Banco / Entidad")
-    val titular = GestorCamposBase.valorDeCampo(campos, "Titular de la cuenta")
-    val iban = GestorCamposBase.valorDeCampo(campos, "Número de cuenta / IBAN")
-    val swift = GestorCamposBase.valorDeCampo(campos, "SWIFT / CBU / CLABE")
-
     Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
         CampoBoveda(
-            valor = banco,
+            valor = datos.banco,
             etiqueta = "Banco / Entidad financiera",
             alCambiar = {
-                alCambiarCampos(GestorCamposBase.actualizarValor(campos, "Banco / Entidad", it, TipoCampo.TEXTO))
-            }
+                alCambiar(datos.copy(banco = it))
+            },
+            colorBordeIzquierdo = ColorDatosWeb
         )
 
         CampoBoveda(
-            valor = titular,
+            valor = datos.titular,
             etiqueta = "Titular de la cuenta",
             alCambiar = {
-                alCambiarCampos(GestorCamposBase.actualizarValor(campos, "Titular de la cuenta", it, TipoCampo.TEXTO))
-            }
+                alCambiar(datos.copy(titular = it))
+            },
+            colorBordeIzquierdo = ColorDatosUsuario
         )
 
         CampoBoveda(
-            valor = iban,
+            valor = datos.numeroCuenta,
             etiqueta = "Número de cuenta / IBAN",
             alCambiar = { raw ->
-                alCambiarCampos(GestorCamposBase.actualizarValor(campos, "Número de cuenta / IBAN", raw, TipoCampo.TEXTO, sensible = true, formato = "IBAN"))
+                val alfanumerico = raw.filter { it.isLetterOrDigit() }.uppercase()
+                alCambiar(datos.copy(numeroCuenta = alfanumerico))
             },
             formateadorMascara = { raw ->
                 FormateadorCampos.aplicarMascaraIban(raw, ajustes.formatoIban)
@@ -62,16 +65,18 @@ fun FormularioEdicionCuentaBancaria(
             esContrasena = true,
             mostrarContrasena = mostrarIban,
             alAlternarMostrarContrasena = { mostrarIban = !mostrarIban },
-            monoespaciada = true
+            monoespaciada = true,
+            colorBordeIzquierdo = ColorAcento
         )
 
         CampoBoveda(
-            valor = swift,
+            valor = datos.swiftBic,
             etiqueta = "SWIFT / BIC / CLABE / CBU",
             alCambiar = { raw ->
-                alCambiarCampos(GestorCamposBase.actualizarValor(campos, "SWIFT / CBU / CLABE", FormateadorCampos.sanitizarMayusculas(raw), TipoCampo.TEXTO, formato = "SWIFT_BIC"))
+                alCambiar(datos.copy(swiftBic = FormateadorCampos.sanitizarMayusculas(raw)))
             },
-            monoespaciada = true
+            monoespaciada = true,
+            colorBordeIzquierdo = ColorDatosWeb
         )
     }
 }

@@ -30,30 +30,40 @@ import com.jlnavas3.bovedalocal.data.TipoEntrada
 fun FilaPildorasFiltros(
     soloFavoritos: Boolean,
     filtroTipo: TipoEntrada?,
+    solo2fa: Boolean = false,
     alAlternarFavoritos: () -> Unit,
     alLimpiarTipo: () -> Unit,
+    alSeleccionarTipo: (TipoEntrada?) -> Unit = { alLimpiarTipo() },
+    alSeleccionar2fa: () -> Unit = {},
+    conteoPorTipo: Map<TipoEntrada, Int> = emptyMap(),
+    conteo2fa: Int = 0,
     mostrarPildoraIdentidad: Boolean,
     identidades: List<Identidad>,
     identidadSeleccionadaId: String?,
     conteoPorIdentidad: Map<String, Int>,
     conteoSinIdentidad: Int,
-    alAbrirSelectorIdentidad: () -> Unit,
+    alAbrirSelectorIdentidad: () -> Unit = {},
     alSeleccionarIdentidad: (String?) -> Unit,
+    alGestionarIdentidades: () -> Unit = {},
     mostrarPildoraCategoria: Boolean,
     categorias: List<Categoria>,
     categoriaSeleccionadaId: String?,
     conteoPorCategoria: Map<String, Int>,
-    alAbrirSelectorCategoria: () -> Unit,
+    alAbrirSelectorCategoria: () -> Unit = {},
     alSeleccionarCategoria: (String?) -> Unit,
+    alGestionarCategorias: () -> Unit = {},
     mostrarPildoraEtiqueta: Boolean,
     filtroEtiqueta: String?,
-    alAbrirSelectorEtiqueta: () -> Unit,
+    etiquetasDisponibles: List<String> = emptyList(),
+    conteoPorEtiqueta: Map<String, Int> = emptyMap(),
+    totalEntradas: Int = 0,
+    alAbrirSelectorEtiqueta: () -> Unit = {},
     alSeleccionarEtiqueta: (String?) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val tieneIdentidades = mostrarPildoraIdentidad && identidades.isNotEmpty()
     val tieneCategorias = mostrarPildoraCategoria && categorias.isNotEmpty()
-    val hayElementos = soloFavoritos || filtroTipo != null || tieneIdentidades || tieneCategorias || mostrarPildoraEtiqueta
+    val hayElementos = totalEntradas > 0 || soloFavoritos || solo2fa || filtroTipo != null || tieneIdentidades || tieneCategorias || mostrarPildoraEtiqueta
 
     if (!hayElementos) return
 
@@ -71,10 +81,16 @@ fun FilaPildorasFiltros(
             alAlternarFavoritos = alAlternarFavoritos
         )
 
-        // 2. Píldora Tipo de Entrada (solo cuando está activo)
+        // 2. Píldora Tipo de Entrada (permanente)
         PildoraTipoEntrada(
             tipo = filtroTipo,
-            alLimpiarTipo = alLimpiarTipo
+            solo2fa = solo2fa,
+            conteoPorTipo = conteoPorTipo,
+            conteo2fa = conteo2fa,
+            totalEntradas = totalEntradas,
+            alSeleccionarTipo = alSeleccionarTipo,
+            alSeleccionar2fa = alSeleccionar2fa,
+            alLimpiar = alLimpiarTipo
         )
 
         // 3. Píldora Identidades
@@ -85,7 +101,9 @@ fun FilaPildorasFiltros(
                 conteoPorIdentidad = conteoPorIdentidad,
                 conteoSinIdentidad = conteoSinIdentidad,
                 alAbrirSelector = alAbrirSelectorIdentidad,
-                alSeleccionarIdentidad = alSeleccionarIdentidad
+                alSeleccionarIdentidad = alSeleccionarIdentidad,
+                alGestionarIdentidades = alGestionarIdentidades,
+                totalEntradas = totalEntradas
             )
         }
 
@@ -96,14 +114,19 @@ fun FilaPildorasFiltros(
                 categoriaSeleccionadaId = categoriaSeleccionadaId,
                 conteoPorCategoria = conteoPorCategoria,
                 alAbrirSelector = alAbrirSelectorCategoria,
-                alSeleccionarCategoria = alSeleccionarCategoria
+                alSeleccionarCategoria = alSeleccionarCategoria,
+                alGestionarCategorias = alGestionarCategorias,
+                totalEntradas = totalEntradas
             )
         }
 
         // 5. Píldora Etiquetas
         if (mostrarPildoraEtiqueta) {
             PildoraEtiqueta(
+                etiquetas = etiquetasDisponibles,
                 filtroEtiqueta = filtroEtiqueta,
+                conteoPorEtiqueta = conteoPorEtiqueta,
+                totalEntradas = totalEntradas,
                 alAbrirSelector = alAbrirSelectorEtiqueta,
                 alSeleccionarEtiqueta = alSeleccionarEtiqueta
             )

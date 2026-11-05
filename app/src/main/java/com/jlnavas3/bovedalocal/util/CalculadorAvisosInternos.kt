@@ -104,15 +104,12 @@ object CalculadorAvisosInternos {
 
         // 3. Salud de contraseñas
         if (ajustes.avisarSaludContrasenas && TipoAvisoInterno.CONTRASENAS_VULNERABLES.name !in ignorados) {
-            val entradasConClave = entradas.filter { it.contrasena.isNotEmpty() && it.tipo == TipoEntrada.LOGIN }
-            val muyComunes = if (contexto != null) {
-                entradasConClave.count { ContrasenasComunes.esComun(contexto, it.contrasena) }
-            } else {
-                entradasConClave.count { MedidorFuerza.medir(it.contrasena).puntuacion <= 1 }
-            }
-            val agrupadas = entradasConClave.groupBy { it.contrasena }.filter { it.value.size > 1 }
-            val repetidas = agrupadas.values.sumOf { it.size }
-            val totalVulnerables = muyComunes + repetidas
+            val totalVulnerables = com.jlnavas3.bovedalocal.ui.pantallas.salud.contarProblemasSaludBoveda(
+                entradas = entradas,
+                contexto = contexto,
+                anadidasComunes = ajustes.contrasenasComunesAnadidas,
+                excluidasComunes = ajustes.contrasenasComunesExcluidas
+            )
             if (totalVulnerables > 0) {
                 resultado.add(
                     AvisoInterno(
@@ -140,13 +137,24 @@ object CalculadorAvisosInternos {
             if (ultimaCopia > 0L) {
                 val transcurrido = ahora - ultimaCopia
                 if (transcurrido >= umbralMs) {
-                    val dias = (transcurrido / (24L * 60 * 60 * 1000)).coerceAtLeast(1)
+                    val desc = if (config == -30) {
+                        val minutos = (transcurrido / (60 * 1000)).coerceAtLeast(30)
+                        if (minutos < 60) {
+                            "Han pasado $minutos minutos desde tu última copia de seguridad (Modo de prueba)."
+                        } else {
+                            val horas = minutos / 60
+                            "Han pasado $horas ${if (horas == 1L) "hora" else "horas"} desde tu última copia de seguridad."
+                        }
+                    } else {
+                        val dias = (transcurrido / (24L * 60 * 60 * 1000)).coerceAtLeast(1)
+                        "Han pasado $dias ${if (dias == 1L) "día" else "días"} desde tu última copia de seguridad."
+                    }
                     resultado.add(
                         AvisoInterno(
                             tipo = TipoAvisoInterno.RESPALDO_PENDIENTE,
                             categoria = CategoriaAvisoInterno.MANTENIMIENTO,
                             titulo = "Copia de seguridad pendiente",
-                            descripcion = "Han pasado $dias ${if (dias == 1L) "día" else "días"} desde tu última copia de seguridad.",
+                            descripcion = desc,
                             accionTexto = "Hacer copia",
                             pantallaDestino = Pantalla.CopiaSeguridad("05-COP-MAN"),
                             cantidadAfectados = 1

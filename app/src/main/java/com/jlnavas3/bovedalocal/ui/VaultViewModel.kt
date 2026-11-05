@@ -18,6 +18,8 @@ import com.jlnavas3.bovedalocal.data.GrupoTitulosSitio
 import com.jlnavas3.bovedalocal.data.ModoFormatoTitulos
 import com.jlnavas3.bovedalocal.data.TipoEntrada
 import com.jlnavas3.bovedalocal.data.VaultRepository
+import com.jlnavas3.bovedalocal.data.AnalizadorDuplicados
+import com.jlnavas3.bovedalocal.ui.pantallas.salud.contarProblemasSaludBoveda
 import com.jlnavas3.bovedalocal.util.Diagnostico
 import com.jlnavas3.bovedalocal.util.GestorAppsInstaladas
 import com.jlnavas3.bovedalocal.util.Portapapeles
@@ -106,6 +108,10 @@ class VaultViewModel(app: Application) : AndroidViewModel(app),
     val soloFavoritos: StateFlow<Boolean> = _soloFavoritos
     override val soloFavoritosInterno: MutableStateFlow<Boolean> get() = _soloFavoritos
 
+    private val _solo2fa = MutableStateFlow(false)
+    val solo2fa: StateFlow<Boolean> = _solo2fa
+    override val solo2faInterno: MutableStateFlow<Boolean> get() = _solo2fa
+
     private val _filtroEtiqueta = MutableStateFlow<String?>(null)
     val filtroEtiqueta: StateFlow<String?> = _filtroEtiqueta
     override val filtroEtiquetaInterno: MutableStateFlow<String?> get() = _filtroEtiqueta
@@ -144,6 +150,12 @@ class VaultViewModel(app: Application) : AndroidViewModel(app),
     override val esSeleccionEspecificaTitulosInterno: MutableStateFlow<Boolean> get() = _esSeleccionEspecificaTitulos
 
     private var trabajoPortapapeles: Job? = null
+
+    private val _numDuplicadas = MutableStateFlow(0)
+    val numDuplicadas: StateFlow<Int> = _numDuplicadas
+
+    private val _numProblemasSalud = MutableStateFlow(0)
+    val numProblemasSalud: StateFlow<Int> = _numProblemasSalud
 
     // ------------------------------------------------------------- navegación (VaultNavegacionDelegate)
 
@@ -212,6 +224,7 @@ class VaultViewModel(app: Application) : AndroidViewModel(app),
     }
 
     fun avisar(mensaje: String, titulo: String? = null) {
+        if (!repositorio.ajustes.actual.avisosEmergentesHabilitados) return
         _aviso.value = DatosAviso(mensaje = mensaje, titulo = titulo)
     }
 
@@ -221,6 +234,7 @@ class VaultViewModel(app: Application) : AndroidViewModel(app),
         accionTexto: String,
         alDeshacer: () -> Unit
     ) {
+        if (!repositorio.ajustes.actual.avisosEmergentesHabilitados) return
         _aviso.value = DatosAviso(
             mensaje = mensaje,
             titulo = titulo,
@@ -308,9 +322,19 @@ class VaultViewModel(app: Application) : AndroidViewModel(app),
                 }
             }
         }
-        viewModelScope.launch {
-            repositorio.estado.collect {
+        viewModelScope.launch(Dispatchers.Default) {
+            repositorio.estado.collect { estado ->
                 recalcularAvisosInternos()
+                if (estado is EstadoBoveda.Desbloqueada) {
+                    val entradas = estado.entradas
+                    val dup = AnalizadorDuplicados.analizar(entradas).sumOf { it.entradasSecundarias.size }
+                    val salud = contarProblemasSaludBoveda(entradas)
+                    _numDuplicadas.value = dup
+                    _numProblemasSalud.value = salud
+                } else {
+                    _numDuplicadas.value = 0
+                    _numProblemasSalud.value = 0
+                }
             }
         }
         viewModelScope.launch {
@@ -321,7 +345,8 @@ class VaultViewModel(app: Application) : AndroidViewModel(app),
                         it.avisos.avisarRespaldoPendiente,
                         it.avisos.avisarSaludContrasenas,
                         it.avisos.avisarDuplicados,
-                        it.avisos.avisosIgnorados
+                        it.avisos.avisosIgnorados,
+                        it.recordatorioExportacionDias
                     )
                 }
                 .distinctUntilChanged()

@@ -36,6 +36,10 @@ import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorTarjetaAjustes
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
 import com.jlnavas3.bovedalocal.ui.theme.CurvaturaEsquinas
+import com.jlnavas3.bovedalocal.ui.theme.EstiloBorde
+import com.jlnavas3.bovedalocal.ui.theme.FormaChip
+import com.jlnavas3.bovedalocal.ui.theme.FormaTarjeta
+import com.jlnavas3.bovedalocal.ui.theme.GrosorBorde
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
 
 /**
@@ -49,14 +53,20 @@ fun PanelSugerenciasExpandido(
     alAbrirAyuda: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val forma = RoundedCornerShape(CurvaturaEsquinas)
+    val forma = FormaTarjeta
+    val tieneBordeConfigurado = GrosorBorde > 0.dp && EstiloBorde != "ninguno"
+    val grosorBorde = if (tieneBordeConfigurado) GrosorBorde else if (EstiloBorde == "ninguno") 0.dp else 1.dp
 
     Column(
         modifier = modifier
             .fillMaxWidth()
             .clip(forma)
             .background(ColorTarjetaAjustes.copy(alpha = 0.85f))
-            .border(1.dp, ColorBordeActual.copy(alpha = 0.4f), forma)
+            .then(
+                if (grosorBorde > 0.dp) {
+                    Modifier.border(grosorBorde, ColorBordeActual.copy(alpha = 0.4f), forma)
+                } else Modifier
+            )
             .padding(8.dp)
     ) {
         ProveedorSugerenciasBusqueda.todasPorCategoria.forEach { (categoria, items) ->
@@ -91,7 +101,7 @@ fun PanelSugerenciasExpandido(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .clip(RoundedCornerShape(6.dp))
+                .clip(FormaChip)
                 .clickable(onClick = alAbrirAyuda)
                 .padding(vertical = 6.dp, horizontal = 4.dp),
             verticalAlignment = Alignment.CenterVertically,

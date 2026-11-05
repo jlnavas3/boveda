@@ -30,9 +30,14 @@ data class CamposDetectados(
     val usuario: AutofillId? = null,
     val contrasena: AutofillId? = null,
     val dominioWeb: String? = null,
-    val otp: AutofillId? = null
+    val otp: AutofillId? = null,
+    val tarjeta: CamposDetectadosTarjeta = CamposDetectadosTarjeta(),
+    val direccion: CamposDetectadosDireccion = CamposDetectadosDireccion(),
+    val documento: CamposDetectadosDocumento = CamposDetectadosDocumento()
 ) {
-    val hayAlgo: Boolean get() = usuario != null || contrasena != null || otp != null
+    val hayAlgo: Boolean
+        get() = usuario != null || contrasena != null || otp != null ||
+            tarjeta.hayAlgo || direccion.hayAlgo || documento.hayAlgo
 }
 
 object AutofillUtiles {
@@ -44,14 +49,30 @@ object AutofillUtiles {
         estructura: AssistStructure,
         pistasUsuario: List<String> = emptyList(),
         pistasContrasena: List<String> = emptyList(),
-        pistasOtp: List<String> = emptyList()
+        pistasOtp: List<String> = emptyList(),
+        pistasDocumento: List<String> = emptyList(),
+        pistasTarjetaNumero: List<String> = emptyList(),
+        pistasTarjetaCvv: List<String> = emptyList(),
+        pistasTarjetaExpiracion: List<String> = emptyList(),
+        pistasTarjetaTitular: List<String> = emptyList(),
+        pistasDireccionCalle: List<String> = emptyList(),
+        pistasDireccionCp: List<String> = emptyList(),
+        pistasDireccionCiudad: List<String> = emptyList(),
+        pistasDireccionProvincia: List<String> = emptyList(),
+        pistasDireccionPais: List<String> = emptyList(),
+        pistasContactoTelefono: List<String> = emptyList(),
+        pistasContactoNombre: List<String> = emptyList()
     ): CamposDetectados {
         val listaUsuario = pistasUsuario.ifEmpty { com.jlnavas3.bovedalocal.data.AjustesDefaults.Autocompletado.PISTAS_USUARIO }
         val listaContrasena = pistasContrasena.ifEmpty { com.jlnavas3.bovedalocal.data.AjustesDefaults.Autocompletado.PISTAS_CONTRASENA }
+        val listaDocumento = pistasDocumento.ifEmpty { com.jlnavas3.bovedalocal.data.AjustesDefaults.Autocompletado.PISTAS_DOCUMENTO }
         var usuario: AutofillId? = null
         var contrasena: AutofillId? = null
         var otp: AutofillId? = null
         var dominio: String? = null
+        val acumTarjeta = AcumuladorCamposTarjeta()
+        val acumDireccion = AcumuladorCamposDireccion()
+        val acumDocumento = AcumuladorCamposDocumento()
 
         fun recorrer(nodo: AssistStructure.ViewNode) {
             nodo.webDomain?.takeIf { it.isNotBlank() }?.let { if (dominio == null) dominio = it }
@@ -97,6 +118,33 @@ object AutofillUtiles {
                 } else if (esUsuario && usuario == null) {
                     usuario = id
                 }
+
+                DetectorCamposTarjetaAutofill.inspeccionarNodo(
+                    nodo = nodo,
+                    pistasSistema = pistasSistema,
+                    textoPistas = textoPistas,
+                    htmlAutocomplete = htmlAutocomplete,
+                    acumulador = acumTarjeta,
+                    pistasNumero = pistasTarjetaNumero,
+                    pistasCvv = pistasTarjetaCvv,
+                    pistasExpiracion = pistasTarjetaExpiracion,
+                    pistasTitular = pistasTarjetaTitular
+                )
+                DetectorCamposDireccionAutofill.inspeccionarNodo(
+                    nodo = nodo,
+                    pistasSistema = pistasSistema,
+                    textoPistas = textoPistas,
+                    htmlAutocomplete = htmlAutocomplete,
+                    acumulador = acumDireccion,
+                    pistasCalle = pistasDireccionCalle,
+                    pistasCp = pistasDireccionCp,
+                    pistasCiudad = pistasDireccionCiudad,
+                    pistasProvincia = pistasDireccionProvincia,
+                    pistasPais = pistasDireccionPais,
+                    pistasTelefono = pistasContactoTelefono,
+                    pistasNombre = pistasContactoNombre
+                )
+                DetectorCamposDocumentoAutofill.inspeccionarNodo(nodo, textoPistas, htmlAutocomplete, acumDocumento, listaDocumento)
             }
             for (i in 0 until nodo.childCount) recorrer(nodo.getChildAt(i))
         }
@@ -104,7 +152,15 @@ object AutofillUtiles {
         for (i in 0 until estructura.windowNodeCount) {
             recorrer(estructura.getWindowNodeAt(i).rootViewNode)
         }
-        return CamposDetectados(usuario = usuario, contrasena = contrasena, dominioWeb = dominio, otp = otp)
+        return CamposDetectados(
+            usuario = usuario,
+            contrasena = contrasena,
+            dominioWeb = dominio,
+            otp = otp,
+            tarjeta = acumTarjeta.aCamposDetectados(),
+            direccion = acumDireccion.aCamposDetectados(),
+            documento = acumDocumento.aCamposDetectados()
+        )
     }
 
     /** Devuelve el par (usuario, contraseña) escrito por la persona, para el flujo de guardado. */
@@ -121,7 +177,7 @@ object AutofillUtiles {
         fun texto(nodo: AssistStructure.ViewNode): String? {
             val valor = nodo.autofillValue
             return when {
-                valor != null && valor.isText -> valor.textValue?.toString()
+                valor != null && valor.isText -> valor.textValue.toString()
                 else -> nodo.text?.toString()
             }?.takeIf { it.isNotBlank() }
         }

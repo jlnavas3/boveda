@@ -11,11 +11,13 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Backup
+import androidx.compose.material.icons.filled.ContactPhone
 import androidx.compose.material.icons.filled.FileDownload
 import androidx.compose.material.icons.filled.QrCodeScanner
 import androidx.compose.material.icons.filled.VpnKey
@@ -27,6 +29,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.jlnavas3.bovedalocal.ui.componentes.IlustracionVacio
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteGrupo
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteNavegacion
@@ -44,7 +47,8 @@ fun EstadoVacioLista(
     alImportarCopia: () -> Unit,
     alImportarCsvGoogle: () -> Unit,
     alImportarGoogleAuthenticator: () -> Unit,
-    alImportarDirectoCxf: () -> Unit = {}
+    alImportarDirectoCxf: () -> Unit = {},
+    alImportarContactos: () -> Unit = {}
 ) {
     if (entradasVacias) {
         Column(
@@ -65,35 +69,52 @@ fun EstadoVacioLista(
                 colorIcono = ColorExportacion
             ) {
                 ComponenteNavegacion(
-                    titulo = "Copia de seguridad",
+                    titulo = "Respaldo (.bvda)",
                     icono = Icons.Filled.Backup,
                     colorIcono = Color(0xFF26A69A),
+                    tamanoFuenteTitulo = 13.5.sp,
+                    paddingVertical = 8.dp,
                     alPulsar = alImportarCopia
                 )
                 ComponenteSeparador(sangriaInicio = 68.dp)
                 ComponenteNavegacion(
-                    titulo = "Contraseñas de Google",
-                    icono = Icons.Filled.VpnKey,
+                    titulo = "Google Passwords (.csv)",
+                    icono = Icons.Filled.FileDownload,
                     colorIcono = Color(0xFF4285F4),
+                    tamanoFuenteTitulo = 13.5.sp,
+                    paddingVertical = 8.dp,
                     alPulsar = alImportarCsvGoogle
                 )
                 ComponenteSeparador(sangriaInicio = 68.dp)
                 ComponenteNavegacion(
-                    titulo = "Verificación en dos pasos de Google",
+                    titulo = "Google Authenticator (QR)",
                     icono = Icons.Filled.QrCodeScanner,
                     colorIcono = Color(0xFFEA4335),
+                    tamanoFuenteTitulo = 13.5.sp,
+                    paddingVertical = 8.dp,
                     alPulsar = alImportarGoogleAuthenticator
                 )
                 ComponenteSeparador(sangriaInicio = 68.dp)
                 ComponenteNavegacion(
-                    titulo = "Importación directa de llaves de paso y contraseñas",
-                    icono = androidx.compose.material.icons.Icons.Filled.VpnKey,
+                    titulo = "Llaves y contraseñas (CXF)",
+                    icono = Icons.Filled.VpnKey,
                     colorIcono = ColorAcento,
+                    tamanoFuenteTitulo = 13.5.sp,
+                    paddingVertical = 8.dp,
                     alPulsar = alImportarDirectoCxf
+                )
+                ComponenteSeparador(sangriaInicio = 68.dp)
+                ComponenteNavegacion(
+                    titulo = "Contactos del teléfono",
+                    icono = Icons.Filled.ContactPhone,
+                    colorIcono = Color(0xFF4CAF50),
+                    tamanoFuenteTitulo = 13.5.sp,
+                    paddingVertical = 8.dp,
+                    alPulsar = alImportarContactos
                 )
             }
 
-            Spacer(Modifier.height(88.dp))
+            Spacer(Modifier.navigationBarsPadding().height(88.dp))
         }
     } else {
         com.jlnavas3.bovedalocal.ui.componentes.busqueda.EstadoVacioBusquedaSugerencias(

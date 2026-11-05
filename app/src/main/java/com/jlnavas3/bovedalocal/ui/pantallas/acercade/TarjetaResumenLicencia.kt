@@ -43,12 +43,13 @@ import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
 fun TarjetaResumenLicencia(
     modifier: Modifier = Modifier
 ) {
+    val forma = if (CurvaturaEsquinas == 0.dp) RoundedCornerShape(0.dp) else RoundedCornerShape(CurvaturaEsquinas.coerceAtLeast(16.dp))
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(CurvaturaEsquinas.coerceAtLeast(16.dp)))
+            .clip(forma)
             .background(ColorTarjetaAjustes)
-            .border(1.dp, ColorBordeActual.copy(alpha = 0.5f), RoundedCornerShape(CurvaturaEsquinas.coerceAtLeast(16.dp)))
+            .border(1.dp, ColorBordeActual.copy(alpha = 0.5f), forma)
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {

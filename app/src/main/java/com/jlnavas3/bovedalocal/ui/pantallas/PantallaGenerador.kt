@@ -11,21 +11,19 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.Refresh
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.Icon
-import com.jlnavas3.bovedalocal.ui.componentes.BotonFlotanteSecundario
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -43,12 +41,14 @@ import com.jlnavas3.bovedalocal.crypto.PasswordGenerator
 import com.jlnavas3.bovedalocal.quicksettings.GeneradorRapidoHelper
 import com.jlnavas3.bovedalocal.ui.Pantalla
 import com.jlnavas3.bovedalocal.ui.VaultViewModel
+import com.jlnavas3.bovedalocal.ui.componentes.BotonBorde
+import com.jlnavas3.bovedalocal.ui.componentes.BotonPrimario
 import com.jlnavas3.bovedalocal.ui.componentes.DescripcionPantalla
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteGrupo
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteSeparador
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjustesFondo
-import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorTarjetaAjustes
 import com.jlnavas3.bovedalocal.ui.pantallas.generador.BarraSuperiorGenerador
+import com.jlnavas3.bovedalocal.ui.pantallas.generador.GrupoAjustesAliasCorreo
 import com.jlnavas3.bovedalocal.ui.pantallas.generador.PanelModoDiceware
 import com.jlnavas3.bovedalocal.ui.pantallas.generador.SeccionConfiguracionAleatoria
 import com.jlnavas3.bovedalocal.ui.pantallas.generador.SeccionConfiguracionPatron
@@ -56,8 +56,6 @@ import com.jlnavas3.bovedalocal.ui.pantallas.generador.SelectorModoEstrategia
 import com.jlnavas3.bovedalocal.ui.pantallas.generador.TarjetaResultadoGenerador
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
-import com.jlnavas3.bovedalocal.ui.theme.ColorSobreAcento
-import com.jlnavas3.bovedalocal.ui.theme.CurvaturaEsquinas
 import com.jlnavas3.bovedalocal.ui.theme.EstiloBorde
 import com.jlnavas3.bovedalocal.ui.theme.GrosorBorde
 import com.jlnavas3.bovedalocal.util.Haptica
@@ -88,128 +86,136 @@ fun PantallaGenerador(vm: VaultViewModel) {
     LaunchedEffect(opciones) { regenerar() }
     val bits = PasswordGenerator.entropiaBits(opciones)
     val scrollState = rememberScrollState()
-    val formaFab = RoundedCornerShape(CurvaturaEsquinas)
 
-    Box(
+    Column(
         modifier = Modifier
             .fillMaxSize()
             .background(ColorAjustesFondo)
     ) {
+        BarraSuperiorGenerador(
+            alVolver = { vm.volverAtras() },
+            conSeparador = scrollState.value > 0,
+            alIrHistorial = { vm.ir(Pantalla.HistorialClaves("04-HER-HIS")) },
+            alIrAjustesPortapapeles = { vm.ir(Pantalla.AjustesCopiaAutomatica("03.2.1")) },
+            idEtiqueta = "04-HER-GEN",
+            mostrarId = ajustes.mostrarIdsAjustes
+        )
+
         Column(
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f)
+                .verticalScroll(scrollState)
+                .padding(horizontal = 16.dp, vertical = 12.dp)
         ) {
-            BarraSuperiorGenerador(
-                alVolver = { vm.volverAtras() },
-                conSeparador = scrollState.value > 0,
-                alIrHistorial = { vm.ir(Pantalla.HistorialClaves("04-HER-HIS")) },
-                alIrAjustesPortapapeles = { vm.ir(Pantalla.AjustesCopiaAutomatica("03.2.1")) },
-                idEtiqueta = "04-HER-GEN",
-                mostrarId = ajustes.mostrarIdsAjustes
+            DescripcionPantalla(subtitulo = "Genera contraseñas fuertes o frases Diceware en local")
+            Spacer(Modifier.height(10.dp))
+
+            // 1. Tarjeta: Resultado y Entropía en tiempo real
+            TarjetaResultadoGenerador(
+                generada = generada,
+                generacion = generacion,
+                bits = bits,
+                haptica = haptica
             )
 
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f)
-                    .verticalScroll(scrollState)
-                    .padding(horizontal = 16.dp, vertical = 12.dp)
-            ) {
-                DescripcionPantalla(subtitulo = "Genera contraseñas fuertes o frases Diceware en local")
-                Spacer(Modifier.height(10.dp))
+            Spacer(Modifier.height(18.dp))
 
-                // 1. Tarjeta: Resultado y Entropía en tiempo real
-                TarjetaResultadoGenerador(
-                    generada = generada,
-                    generacion = generacion,
-                    bits = bits,
+            // 2. Tarjeta agrupada: Configuración de Parámetros con Selectores Modales
+            ComponenteGrupo(etiqueta = "Configuración del generador") {
+                SelectorModoEstrategia(
+                    opciones = opciones,
+                    alCambiarOpciones = { opciones = it },
                     haptica = haptica
                 )
 
-                Spacer(Modifier.height(18.dp))
+                ComponenteSeparador()
 
-                // 2. Tarjeta agrupada: Configuración de Parámetros con Selectores Modales
-                ComponenteGrupo(etiqueta = "Configuración del generador") {
-                    SelectorModoEstrategia(
-                        opciones = opciones,
-                        alCambiarOpciones = { opciones = it },
-                        haptica = haptica
-                    )
-
-                    ComponenteSeparador()
-
-                    when {
-                        opciones.modoFrase -> {
-                            Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 14.dp)) {
-                                PanelModoDiceware(
-                                    opciones = opciones,
-                                    alCambiarOpciones = { opciones = it },
-                                    haptica = haptica,
-                                    alAbrirDiccionario = { vm.ir(Pantalla.DiccionarioPalabras(opciones.idiomaFrase)) }
-                                )
-                            }
-                        }
-                        opciones.modoPatron -> {
-                            SeccionConfiguracionPatron(
+                when {
+                    opciones.modoFrase -> {
+                        Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 14.dp)) {
+                            PanelModoDiceware(
                                 opciones = opciones,
                                 alCambiarOpciones = { opciones = it },
-                                haptica = haptica
-                            )
-                        }
-                        else -> {
-                            SeccionConfiguracionAleatoria(
-                                opciones = opciones,
-                                alCambiarOpciones = { opciones = it },
-                                haptica = haptica
+                                haptica = haptica,
+                                alAbrirDiccionario = { vm.ir(Pantalla.DiccionarioPalabras(opciones.idiomaFrase)) }
                             )
                         }
                     }
+                    opciones.modoPatron -> {
+                        SeccionConfiguracionPatron(
+                            opciones = opciones,
+                            alCambiarOpciones = { opciones = it },
+                            haptica = haptica
+                        )
+                    }
+                    else -> {
+                        SeccionConfiguracionAleatoria(
+                            opciones = opciones,
+                            alCambiarOpciones = { opciones = it },
+                            haptica = haptica
+                        )
+                    }
                 }
-
-                Spacer(Modifier.height(110.dp))
             }
-        }
 
-        // Botones de acción flotantes (FABs) en la esquina inferior derecha
-        Column(
-            modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .padding(20.dp),
-            horizontalAlignment = Alignment.End,
-            verticalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            // FAB superior: Copiar contraseña
-            BotonFlotanteSecundario(
-                onClick = {
-                    haptica.exito()
-                    GeneradorRapidoHelper.registrarEnHistorial(contexto, generada, "Generador")
-                    vm.copiar("Contraseña", generada, sensible = true)
-                },
-                icono = Icons.Filled.ContentCopy,
-                descripcion = "Copiar contraseña",
-                containerColor = ColorTarjetaAjustes,
-                contentColor = ColorAcento,
-                colorBorde = ColorBordeActual
+            Spacer(Modifier.height(14.dp))
+
+            GrupoAjustesAliasCorreo(
+                ajustes = ajustes,
+                alCambiarCorreoBase = { vm.ajustarAliasCorreoBasePredeterminado(it) },
+                alCambiarLongitudSufijo = { vm.ajustarAliasCorreoLongitudSufijo(it) },
+                alCambiarDelimitador = { vm.ajustarAliasCorreoDelimitador(it) },
+                alRestablecer = { vm.restablecerAliasCorreo() },
+                haptica = haptica,
+                modifier = Modifier.fillMaxWidth()
             )
 
-            // FAB inferior: Regenerar contraseña (Principal)
-            FloatingActionButton(
-                onClick = {
-                    haptica.toque()
-                    regenerar()
-                },
-                containerColor = ColorAcento,
-                contentColor = ColorSobreAcento,
-                shape = formaFab,
-                modifier = Modifier.then(
+            Spacer(Modifier.height(16.dp))
+        }
+
+        // Barra fija inferior de acciones (Copiar y Generar)
+        Surface(
+            color = ColorAjustesFondo,
+            modifier = Modifier
+                .fillMaxWidth()
+                .then(
                     if (GrosorBorde > 0.dp && EstiloBorde != "ninguno") {
-                        Modifier.border(GrosorBorde, ColorBordeActual, formaFab)
+                        Modifier.border(
+                            width = GrosorBorde,
+                            color = ColorBordeActual.copy(alpha = 0.5f)
+                        )
                     } else Modifier
                 )
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .navigationBarsPadding()
+                    .padding(horizontal = 16.dp, vertical = 10.dp),
+                horizontalArrangement = Arrangement.spacedBy(10.dp),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Icon(
-                    imageVector = Icons.Filled.Refresh,
-                    contentDescription = "Regenerar contraseña",
-                    modifier = Modifier.size(24.dp)
+                BotonBorde(
+                    texto = "Copiar",
+                    icono = Icons.Filled.ContentCopy,
+                    modifier = Modifier.weight(1f),
+                    color = ColorAcento,
+                    alPulsar = {
+                        haptica.exito()
+                        GeneradorRapidoHelper.registrarEnHistorial(contexto, generada, "Generador")
+                        vm.copiar("Contraseña", generada, sensible = true)
+                    }
+                )
+
+                BotonPrimario(
+                    texto = "Generar",
+                    icono = Icons.Filled.Refresh,
+                    modifier = Modifier.weight(1f),
+                    alPulsar = {
+                        haptica.toque()
+                        regenerar()
+                    }
                 )
             }
         }

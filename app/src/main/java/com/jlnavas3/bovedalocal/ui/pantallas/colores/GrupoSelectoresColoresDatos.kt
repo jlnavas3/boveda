@@ -41,7 +41,8 @@ fun GrupoSelectoresColoresDatos(
         modifier = modifier
     ) {
         ComponenteColorPicker(
-            titulo = "Usuario / Correo",
+            titulo = "Identidades y Titulares",
+            subtitulo = "Usuarios, correos, titulares bancarios, SSH y documentos",
             colorActual = ColorDatosUsuario,
             icono = Icons.Filled.Person,
             colorIcono = ColorDatosUsuario,
@@ -51,7 +52,8 @@ fun GrupoSelectoresColoresDatos(
         ComponenteSeparador()
 
         ComponenteColorPicker(
-            titulo = "Contraseña",
+            titulo = "Contraseñas y Secretos",
+            subtitulo = "Claves web, contraseñas Wi-Fi, CVV, PIN y claves privadas",
             colorActual = ColorDatosContrasena,
             icono = Icons.Filled.Key,
             colorIcono = ColorDatosContrasena,
@@ -61,7 +63,8 @@ fun GrupoSelectoresColoresDatos(
         ComponenteSeparador()
 
         ComponenteColorPicker(
-            titulo = "Verificación en dos pasos",
+            titulo = "Códigos y Vigencia (2FA)",
+            subtitulo = "Tokens TOTP, seguridad Wi-Fi y fechas de vencimiento",
             colorActual = ColorDatos2FA,
             icono = Icons.Filled.Timer,
             colorIcono = ColorDatos2FA,
@@ -71,7 +74,8 @@ fun GrupoSelectoresColoresDatos(
         ComponenteSeparador()
 
         ComponenteColorPicker(
-            titulo = "Llave de paso",
+            titulo = "Criptografía y Llaves avanzadas",
+            subtitulo = "Passkeys FIDO2, frases semilla y claves públicas",
             colorActual = ColorDatosPasskey,
             icono = Icons.Filled.Fingerprint,
             colorIcono = ColorDatosPasskey,
@@ -81,7 +85,8 @@ fun GrupoSelectoresColoresDatos(
         ComponenteSeparador()
 
         ComponenteColorPicker(
-            titulo = "Sitio Web (URL)",
+            titulo = "Redes, Servidores y Web",
+            subtitulo = "Sitios web, hosts de servidores, SSID Wi-Fi y bancos",
             colorActual = ColorDatosWeb,
             icono = Icons.Filled.Language,
             colorIcono = ColorDatosWeb,
@@ -91,7 +96,8 @@ fun GrupoSelectoresColoresDatos(
         ComponenteSeparador()
 
         ComponenteColorPicker(
-            titulo = "App Android vinculada",
+            titulo = "Aplicaciones vinculadas",
+            subtitulo = "Paquetes y aplicaciones Android asociadas",
             colorActual = ColorDatosApp,
             icono = Icons.Filled.Android,
             colorIcono = ColorDatosApp,

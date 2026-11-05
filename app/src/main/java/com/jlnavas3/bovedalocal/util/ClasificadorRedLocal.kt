@@ -13,7 +13,8 @@ object ClasificadorRedLocal {
     fun analizar(
         urlORaw: String,
         puertosConfigurados: Map<String, String> = emptyMap(),
-        octetosRouter: List<Int> = listOf(1, 254)
+        octetosRouter: List<Int> = listOf(1, 254),
+        rutasConfiguradas: Map<String, String> = emptyMap()
     ): InfoRedLocal? {
         val limpio = urlORaw.trim().lowercase()
         if (limpio.isBlank()) return null
@@ -34,7 +35,9 @@ object ClasificadorRedLocal {
         }
         val ruta = uri?.path?.lowercase() ?: limpio.substringAfter(host).substringBefore('?')
 
-        val servicioRuta = when {
+        val servicioRuta = rutasConfiguradas.entries.firstOrNull { (pista, _) ->
+            pista.isNotBlank() && ruta.contains(pista.lowercase())
+        }?.value ?: when {
             ruta.contains("phpmyadmin") -> "phpMyAdmin"
             ruta.contains("web/guest") || ruta.contains("portal") -> "Portal Web"
             else -> null

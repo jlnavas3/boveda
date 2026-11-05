@@ -39,6 +39,9 @@ import com.jlnavas3.bovedalocal.ui.theme.CurvaturaEsquinas
 import com.jlnavas3.bovedalocal.ui.theme.TextoPrincipal
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
 
+/**
+ * Artículo de ayuda sobre la búsqueda avanzada por sintaxis, píldoras y sugerencias inteligentes.
+ */
 @Composable
 fun PantallaAyudaBusqueda(vm: VaultViewModel, alVolver: () -> Unit) {
     ContenedorArticuloDetalleAyuda(
@@ -57,17 +60,36 @@ fun PantallaAyudaBusqueda(vm: VaultViewModel, alVolver: () -> Unit) {
             )
         }
 
+        TarjetaInformativaAyuda(titulo = "Píldoras interactivas de filtro rápido") {
+            Text(
+                text = "Encima del listado principal dispones de una fila de píldoras táctiles que te permiten filtrar sin escribir sintaxis manual:\n\n• Píldora de Tipos: Filtra por cualquier tipo o activa el filtro rápido de códigos 2FA [ ⏱️ 2FA (X) ✕ ] para ver solo las entradas que generan tokens.\n• Píldora de Perfiles [ 👤 ]: Alterna entre entornos (Personal, Trabajo, etc.).\n• Píldora de Categorías [ 📁 ]: Filtra por categorías personalizadas.\n• Píldora de Etiquetas [ 🏷️ ]: Filtra por etiquetas transversales.",
+                fontSize = 13.sp,
+                color = TextoPrincipal,
+                lineHeight = 18.sp
+            )
+        }
+
+        TarjetaInformativaAyuda(titulo = "Menú de sugerencias inteligentes") {
+            Text(
+                text = "Al escribir en la caja de búsqueda o tocar el asistente, se desplegará un menú inteligente contextual que te sugiere comandos rápidos (ej. t:tarjeta, has:totp, cat:finanzas) y términos frecuentes para autocompletar la consulta con un solo toque.",
+                fontSize = 13.sp,
+                color = TextoSecundario,
+                lineHeight = 18.sp
+            )
+        }
+
         TarjetaInformativaAyuda(titulo = "Comandos por tipo de entrada") {
             val tipos = listOf(
                 "t:login" to "Contraseñas y cuentas de usuario",
                 "t:tarjeta" to "Tarjetas bancarias de débito y crédito",
-                "t:wifi" to "Redes Wi-Fi y claves de acceso",
+                "t:identidad" to "Documentos oficiales (DNI, Cédula, Pasaporte)",
                 "t:banco" to "Cuentas bancarias (IBAN / BIC)",
+                "t:wifi" to "Redes Wi-Fi y claves de acceso",
                 "t:servidor" to "Servidores, IPs y claves SSH",
                 "t:wallet" to "Billeteras criptográficas y semillas",
-                "t:passkey" to "Llaves de paso FIDO2 / WebAuthn",
-                "t:nota" to "Notas seguras cifradas",
-                "t:contacto" to "Contactos de emergencia"
+                "t:passkey" to "Llaves de acceso FIDO2 / WebAuthn",
+                "t:nota" to "Notas seguras cifradas con Markdown",
+                "t:contacto" to "Contactos y direcciones de envío"
             )
             Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
                 tipos.forEach { (cmd, desc) ->
@@ -80,6 +102,7 @@ fun PantallaAyudaBusqueda(vm: VaultViewModel, alVolver: () -> Unit) {
             val props = listOf(
                 "has:totp" to "Entradas con autenticador 2FA activo",
                 "has:passkey" to "Entradas con llave Passkey vinculada",
+                "has:adjuntos" to "Entradas con archivos adjuntos cifrados (.bvda)",
                 "has:nota" to "Entradas que contienen notas adicionales",
                 "is:fav" to "Entradas marcadas como favorito",
                 "is:ignorado" to "Entradas excluidas de la auditoría de salud"
@@ -147,7 +170,7 @@ private fun FilaComando(comando: String, descripcion: String) {
 
 @Composable
 private fun BloqueEjemplo(comando: String, explicacion: String) {
-    val forma = RoundedCornerShape(CurvaturaEsquinas / 2)
+    val forma = if (CurvaturaEsquinas == 0.dp) RoundedCornerShape(0.dp) else RoundedCornerShape(CurvaturaEsquinas / 2)
     Column(
         modifier = Modifier
             .fillMaxWidth()

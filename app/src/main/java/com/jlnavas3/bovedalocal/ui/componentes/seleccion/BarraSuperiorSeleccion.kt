@@ -6,15 +6,24 @@
 
 package com.jlnavas3.bovedalocal.ui.componentes.seleccion
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import com.jlnavas3.bovedalocal.ui.componentes.hud.accionConHud
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Deselect
@@ -41,9 +50,9 @@ import com.jlnavas3.bovedalocal.ui.theme.TextoPrincipal
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
 
 /**
- * Cabecera minimalista para el modo de selección múltiple (estilo Solid Explorer).
- * Contiene únicamente el botón cerrar, el contador de elementos y dos botones a la derecha:
- * Seleccionar todo y Deseleccionar todo.
+ * Cabecera minimalista para el modo de selección múltiple (estilo Solid Explorer / Google).
+ * Contiene el botón cerrar, el contador de elementos seleccionados y un único botón interactivo
+ * toggle a la derecha que alterna entre "Seleccionar todo" y "Deseleccionar todo".
  */
 @Composable
 fun BarraSuperiorSeleccion(
@@ -71,7 +80,18 @@ fun BarraSuperiorSeleccion(
             .padding(horizontal = 8.dp, vertical = 4.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        IconButton(onClick = alCancelar, modifier = Modifier.size(38.dp)) {
+        Box(
+            modifier = Modifier
+                .size(38.dp)
+                .clip(CircleShape)
+                .accionConHud(
+                    etiqueta = "Cancelar selección",
+                    icono = Icons.Filled.Close,
+                    radioRipple = 19.dp,
+                    alPulsar = alCancelar
+                ),
+            contentAlignment = Alignment.Center
+        ) {
             Icon(
                 imageVector = Icons.Filled.Close,
                 contentDescription = "Cancelar selección",
@@ -105,28 +125,48 @@ fun BarraSuperiorSeleccion(
             }
         }
 
-        // 1. Seleccionar Todo
-        IconButton(onClick = alSeleccionarTodo, modifier = Modifier.size(38.dp)) {
-            Icon(
-                imageVector = Icons.Filled.SelectAll,
-                contentDescription = "Seleccionar todo",
-                tint = if (todoSeleccionado) ColorAcento else TextoPrincipal,
-                modifier = Modifier.size(20.dp)
-            )
-        }
-
-        // 2. Deseleccionar Todo
-        IconButton(
-            onClick = alDeseleccionarTodo,
-            enabled = cantidad > 0,
-            modifier = Modifier.size(38.dp)
+        // Botón interactivo toggle único: Seleccionar Todo <-> Deseleccionar Todo
+        Box(
+            modifier = Modifier
+                .size(38.dp)
+                .clip(CircleShape)
+                .accionConHud(
+                    etiqueta = if (todoSeleccionado) "Deseleccionar todo" else "Seleccionar todo",
+                    icono = if (todoSeleccionado) Icons.Filled.Deselect else Icons.Filled.SelectAll,
+                    radioRipple = 19.dp,
+                    alPulsar = {
+                        if (todoSeleccionado) {
+                            alDeseleccionarTodo()
+                        } else {
+                            alSeleccionarTodo()
+                        }
+                    }
+                ),
+            contentAlignment = Alignment.Center
         ) {
-            Icon(
-                imageVector = Icons.Filled.Deselect,
-                contentDescription = "Deseleccionar todo",
-                tint = if (cantidad > 0) TextoPrincipal else TextoSecundario.copy(alpha = 0.35f),
-                modifier = Modifier.size(20.dp)
-            )
+            AnimatedContent(
+                targetState = todoSeleccionado,
+                transitionSpec = {
+                    (scaleIn(initialScale = 0.8f) + fadeIn()) togetherWith (scaleOut(targetScale = 0.8f) + fadeOut())
+                },
+                label = "ToggleSeleccionarTodoAnim"
+            ) { estaTodoSeleccionado ->
+                if (estaTodoSeleccionado) {
+                    Icon(
+                        imageVector = Icons.Filled.Deselect,
+                        contentDescription = "Deseleccionar todo",
+                        tint = ColorAcento,
+                        modifier = Modifier.size(20.dp)
+                    )
+                } else {
+                    Icon(
+                        imageVector = Icons.Filled.SelectAll,
+                        contentDescription = "Seleccionar todo",
+                        tint = TextoPrincipal,
+                        modifier = Modifier.size(20.dp)
+                    )
+                }
+            }
         }
     }
 }

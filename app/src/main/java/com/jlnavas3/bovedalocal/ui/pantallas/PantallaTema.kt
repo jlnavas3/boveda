@@ -78,7 +78,7 @@ fun PantallaTema(
                     mostrarId = ajustes.mostrarIdsAjustes
                 ) {
                     ComponenteNavegacion(
-                        titulo = "Tema y colores",
+                        titulo = "Modos de tema",
                         icono = null,
                         idFila = "02-APA-THM-PAL",
                         mostrarId = ajustes.mostrarIdsAjustes,

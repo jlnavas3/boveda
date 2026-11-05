@@ -81,8 +81,9 @@ object GestorProgresoOperaciones {
         mensajeExito: String,
         totalCuentas: Int,
         textoAccionResultado: String? = null,
-        textoAccionSecundaria: String? = "Ver en la lista",
-        accionResultado: (() -> Unit)? = null
+        textoAccionSecundaria: String? = null,
+        accionResultado: (() -> Unit)? = null,
+        accionSecundaria: (() -> Unit)? = null
     ) {
         val actual = _estado.value ?: return
         val itemsFinalizados = actual.itemsActivos.map {
@@ -98,7 +99,8 @@ object GestorProgresoOperaciones {
             completado = true,
             textoAccionResultado = textoAccionResultado,
             textoAccionSecundaria = textoAccionSecundaria,
-            accionResultado = accionResultado
+            accionResultado = accionResultado,
+            accionSecundaria = accionSecundaria
         )
         // Si estaba minimizado, restaurar para que el usuario vea el resultado
         _minimizado.value = false

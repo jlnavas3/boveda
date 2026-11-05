@@ -25,101 +25,84 @@ interface VaultAjustesAnimacionEngranajesDelegate {
 
     // --- Personalización de Engranajes ---
     fun ajustarEngranajesVelocidad(valor: Float) {
-        repositorio.ajustes.actualizar { it.copy(engranajesVelocidad = valor) }
+        repositorio.ajustes.actualizar { it.actualizarEngranajes { e -> e.copy(velocidad = valor) } }
     }
     fun ajustarEngranajesGrosorBorde(valor: Float) {
-        repositorio.ajustes.actualizar { it.copy(engranajesGrosorBorde = valor) }
+        repositorio.ajustes.actualizar { it.actualizarEngranajes { e -> e.copy(grosorBorde = valor) } }
     }
     fun ajustarEngranajesAlturaDientes(valor: Float) {
-        repositorio.ajustes.actualizar { it.copy(engranajesAlturaDientes = valor) }
+        repositorio.ajustes.actualizar { it.actualizarEngranajes { e -> e.copy(alturaDientes = valor) } }
     }
     fun ajustarEngranajesAnchoDientes(valor: Float) {
-        repositorio.ajustes.actualizar { it.copy(engranajesAnchoDientes = valor) }
+        repositorio.ajustes.actualizar { it.actualizarEngranajes { e -> e.copy(anchoDientes = valor) } }
     }
     fun ajustarEngranajesGrosorRadios(valor: Float) {
-        repositorio.ajustes.actualizar { it.copy(engranajesGrosorRadios = valor) }
+        repositorio.ajustes.actualizar { it.actualizarEngranajes { e -> e.copy(grosorRadios = valor) } }
     }
     fun ajustarEngranajesCurvaturaRadios(valor: Float) {
-        repositorio.ajustes.actualizar { it.copy(engranajesCurvaturaRadios = valor) }
+        repositorio.ajustes.actualizar { it.actualizarEngranajes { e -> e.copy(curvaturaRadios = valor) } }
     }
     fun ajustarEngranajesCantidadRadios(valor: Int) {
-        repositorio.ajustes.actualizar { it.copy(engranajesCantidadRadios = valor) }
+        repositorio.ajustes.actualizar { it.actualizarEngranajes { e -> e.copy(cantidadRadios = valor) } }
     }
     fun ajustarEngranajesRadioInterior(valor: Float) {
-        repositorio.ajustes.actualizar { it.copy(engranajesRadioInterior = valor) }
+        repositorio.ajustes.actualizar { it.actualizarEngranajes { e -> e.copy(radioInterior = valor) } }
     }
     fun ajustarEngranajesTamanoEje(valor: Float) {
-        repositorio.ajustes.actualizar { it.copy(engranajesTamanoEje = valor) }
+        repositorio.ajustes.actualizar { it.actualizarEngranajes { e -> e.copy(tamanoEje = valor) } }
     }
     fun ajustarEngranajesSombraIntensidad(valor: Float) {
-        repositorio.ajustes.actualizar { it.copy(engranajesSombraIntensidad = valor) }
+        repositorio.ajustes.actualizar { it.actualizarEngranajes { e -> e.copy(sombraIntensidad = valor) } }
     }
     fun ajustarEngranajesColor(campo: String, hex: String, esOscuro: Boolean = true) {
-        repositorio.ajustes.actualizar {
-            if (esOscuro) {
-                val nuevoJson = com.jlnavas3.bovedalocal.data.actualizarColorEnJson(it.engranajesColoresOscuroJson, campo, hex)
-                when (campo) {
-                    "brillo" -> it.copy(engranajesColoresOscuroJson = nuevoJson, engranajesColorBrillo = hex)
-                    "principal" -> it.copy(engranajesColoresOscuroJson = nuevoJson, engranajesColorPrincipal = hex)
-                    "sombra_medio" -> it.copy(engranajesColoresOscuroJson = nuevoJson, engranajesColorSombraMedio = hex)
-                    "sombra_oscuro" -> it.copy(engranajesColoresOscuroJson = nuevoJson, engranajesColorSombraOscuro = hex)
-                    "bisel" -> it.copy(engranajesColoresOscuroJson = nuevoJson, engranajesColorBisel = hex)
-                    "interior" -> it.copy(engranajesColoresOscuroJson = nuevoJson, engranajesColorInterior = hex)
-                    "cubo" -> it.copy(engranajesColoresOscuroJson = nuevoJson, engranajesColorCubo = hex)
-                    "eje" -> it.copy(engranajesColoresOscuroJson = nuevoJson, engranajesColorEje = hex)
-                    else -> it.copy(engranajesColoresOscuroJson = nuevoJson)
+        repositorio.ajustes.actualizar { actual ->
+            actual.actualizarEngranajes { e ->
+                if (esOscuro) {
+                    val nuevoJson = com.jlnavas3.bovedalocal.data.actualizarColorEnJson(e.coloresOscuroJson, campo, hex)
+                    when (campo) {
+                        "brillo" -> e.copy(coloresOscuroJson = nuevoJson, colorBrillo = hex)
+                        "principal" -> e.copy(coloresOscuroJson = nuevoJson, colorPrincipal = hex)
+                        "sombra_medio" -> e.copy(coloresOscuroJson = nuevoJson, colorSombraMedio = hex)
+                        "sombra_oscuro" -> e.copy(coloresOscuroJson = nuevoJson, colorSombraOscuro = hex)
+                        "bisel" -> e.copy(coloresOscuroJson = nuevoJson, colorBisel = hex)
+                        "interior" -> e.copy(coloresOscuroJson = nuevoJson, colorInterior = hex)
+                        "cubo" -> e.copy(coloresOscuroJson = nuevoJson, colorCubo = hex)
+                        "eje" -> e.copy(coloresOscuroJson = nuevoJson, colorEje = hex)
+                        else -> e.copy(coloresOscuroJson = nuevoJson)
+                    }
+                } else {
+                    val nuevoJson = com.jlnavas3.bovedalocal.data.actualizarColorEnJson(e.coloresClaroJson, campo, hex)
+                    e.copy(coloresClaroJson = nuevoJson)
                 }
-            } else {
-                val nuevoJson = com.jlnavas3.bovedalocal.data.actualizarColorEnJson(it.engranajesColoresClaroJson, campo, hex)
-                it.copy(engranajesColoresClaroJson = nuevoJson)
             }
         }
     }
 
     fun restablecerColoresEngranajes(esOscuro: Boolean = true) {
-        repositorio.ajustes.actualizar {
-            if (esOscuro) {
-                it.copy(
-                    engranajesColoresOscuroJson = "",
-                    engranajesColorBrillo = AjustesDefaults.Animacion.Engranajes.COLOR_BRILLO,
-                    engranajesColorPrincipal = AjustesDefaults.Animacion.Engranajes.COLOR_PRINCIPAL,
-                    engranajesColorSombraMedio = AjustesDefaults.Animacion.Engranajes.COLOR_SOMBRA_MEDIO,
-                    engranajesColorSombraOscuro = AjustesDefaults.Animacion.Engranajes.COLOR_SOMBRA_OSCURO,
-                    engranajesColorBisel = AjustesDefaults.Animacion.Engranajes.COLOR_BISEL,
-                    engranajesColorInterior = AjustesDefaults.Animacion.Engranajes.COLOR_INTERIOR,
-                    engranajesColorCubo = AjustesDefaults.Animacion.Engranajes.COLOR_CUBO,
-                    engranajesColorEje = AjustesDefaults.Animacion.Engranajes.COLOR_EJE
-                )
-            } else {
-                it.copy(engranajesColoresClaroJson = "")
+        repositorio.ajustes.actualizar { actual ->
+            actual.actualizarEngranajes { e ->
+                if (esOscuro) {
+                    e.copy(
+                        coloresOscuroJson = "",
+                        colorBrillo = AjustesDefaults.Animacion.Engranajes.COLOR_BRILLO,
+                        colorPrincipal = AjustesDefaults.Animacion.Engranajes.COLOR_PRINCIPAL,
+                        colorSombraMedio = AjustesDefaults.Animacion.Engranajes.COLOR_SOMBRA_MEDIO,
+                        colorSombraOscuro = AjustesDefaults.Animacion.Engranajes.COLOR_SOMBRA_OSCURO,
+                        colorBisel = AjustesDefaults.Animacion.Engranajes.COLOR_BISEL,
+                        colorInterior = AjustesDefaults.Animacion.Engranajes.COLOR_INTERIOR,
+                        colorCubo = AjustesDefaults.Animacion.Engranajes.COLOR_CUBO,
+                        colorEje = AjustesDefaults.Animacion.Engranajes.COLOR_EJE
+                    )
+                } else {
+                    e.copy(coloresClaroJson = "")
+                }
             }
         }
     }
 
     fun restablecerAjustesEngranajes() {
         repositorio.ajustes.actualizar {
-            it.copy(
-                engranajesVelocidad = AjustesDefaults.Animacion.Engranajes.VELOCIDAD,
-                engranajesGrosorBorde = AjustesDefaults.Animacion.Engranajes.GROSOR_BORDE,
-                engranajesAlturaDientes = AjustesDefaults.Animacion.Engranajes.ALTURA_DIENTES,
-                engranajesAnchoDientes = AjustesDefaults.Animacion.Engranajes.ANCHO_DIENTES,
-                engranajesGrosorRadios = AjustesDefaults.Animacion.Engranajes.GROSOR_RADIOS,
-                engranajesCurvaturaRadios = AjustesDefaults.Animacion.Engranajes.CURVATURA_RADIOS,
-                engranajesCantidadRadios = AjustesDefaults.Animacion.Engranajes.CANTIDAD_RADIOS,
-                engranajesRadioInterior = AjustesDefaults.Animacion.Engranajes.RADIO_INTERIOR,
-                engranajesTamanoEje = AjustesDefaults.Animacion.Engranajes.TAMANO_EJE,
-                engranajesSombraIntensidad = AjustesDefaults.Animacion.Engranajes.SOMBRA_INTENSIDAD,
-                engranajesColorBrillo = AjustesDefaults.Animacion.Engranajes.COLOR_BRILLO,
-                engranajesColorPrincipal = AjustesDefaults.Animacion.Engranajes.COLOR_PRINCIPAL,
-                engranajesColorSombraMedio = AjustesDefaults.Animacion.Engranajes.COLOR_SOMBRA_MEDIO,
-                engranajesColorSombraOscuro = AjustesDefaults.Animacion.Engranajes.COLOR_SOMBRA_OSCURO,
-                engranajesColorBisel = AjustesDefaults.Animacion.Engranajes.COLOR_BISEL,
-                engranajesColorInterior = AjustesDefaults.Animacion.Engranajes.COLOR_INTERIOR,
-                engranajesColorCubo = AjustesDefaults.Animacion.Engranajes.COLOR_CUBO,
-                engranajesColorEje = AjustesDefaults.Animacion.Engranajes.COLOR_EJE,
-                engranajesColoresClaroJson = "",
-                engranajesColoresOscuroJson = ""
-            )
+            it.copy(engranajes = com.jlnavas3.bovedalocal.data.AjustesAnimacionEngranajes())
         }
     }
 

@@ -14,35 +14,59 @@ import androidx.compose.ui.unit.sp
 import com.jlnavas3.bovedalocal.ui.Pantalla
 import com.jlnavas3.bovedalocal.ui.VaultViewModel
 import com.jlnavas3.bovedalocal.ui.pantallas.ayuda.ContenedorArticuloDetalleAyuda
+import com.jlnavas3.bovedalocal.ui.pantallas.ayuda.TarjetaAdvertenciaAyuda
+import com.jlnavas3.bovedalocal.ui.pantallas.ayuda.TarjetaConsejoAyuda
 import com.jlnavas3.bovedalocal.ui.pantallas.ayuda.TarjetaInformativaAyuda
 import com.jlnavas3.bovedalocal.ui.theme.TextoPrincipal
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
 
+/**
+ * Artículo de ayuda exhaustivo sobre la papelera de reciclaje, borrado suave y restauración sin conflictos.
+ */
 @Composable
 fun PantallaAyudaPapelera(vm: VaultViewModel, alVolver: () -> Unit) {
     ContenedorArticuloDetalleAyuda(
-        titulo = "Papelera de reciclaje",
+        titulo = "Papelera de reciclaje y retención",
         alVolver = alVolver,
         textoAccion = "Abrir Papelera",
         iconoAccion = Icons.Filled.Delete,
-        alEjecutarAccion = { vm.ir(Pantalla.Papelera()) }
+        alEjecutarAccion = { vm.ir(Pantalla.Papelera) }
     ) {
-        TarjetaInformativaAyuda(titulo = "Protección contra borrados accidentales") {
+        TarjetaInformativaAyuda(titulo = "Borrado protegido contra accidentes") {
             Text(
-                text = "Cuando eliminas una entrada, no se borra de inmediato de tu disco: se traslada a la Papelera de reciclaje con cifrado intacto para que puedas recuperarla si te equivocaste.",
+                text = "Borrar una contraseña por error puede ser catastrófico si no tienes un respaldo a mano. Bóveda Local implementa una política de 'borrado suave' (Soft-Delete): cuando eliminas una credencial, tarjeta o nota, se mueve a la Papelera de Reciclaje manteniendo intacta su información, historial y adjuntos.",
                 fontSize = 13.sp,
                 color = TextoSecundario,
-                lineHeight = 18.sp
+                lineHeight = 18.5.sp
             )
         }
 
-        TarjetaInformativaAyuda(titulo = "Restauración y purga automática") {
+        TarjetaInformativaAyuda(titulo = "Opciones y gestión en la papelera") {
             Text(
-                text = "• Restauración: Puedes entrar a la Papelera y devolver cualquier credencial a tu listado principal con su historial y claves intactas.\n\n• Vaciado definitivo: Puedes vaciar la papelera manualmente en cualquier momento.\n\n• Política de retención: En Ajustes puedes configurar la auto-purga a 30, 60 o 90 días para mantener limpia la bóveda sin preocuparte.",
+                text = "Desde el menú lateral > Papelera puedes:\n\n• Restaurar cuentas: Recupera cualquier entrada devuelta a su estado activo original con un solo toque.\n\n• Resolución de conflictos al restaurar: Si creaste una nueva cuenta con idéntico nombre mientras la anterior estaba en la papelera, el diálogo de restauración te alertará para que elijas si deseas renombrarla, conservarla como copia o sobrescribirla.\n\n• Borrado definitivo individual: Elimina quirúrgicamente un registro sensible que no desees conservar en la papelera.\n\n• Vaciar papelera completa: Purga definitiva de todos los elementos archivados en un solo paso con confirmación de seguridad.",
                 fontSize = 13.sp,
                 color = TextoPrincipal,
-                lineHeight = 18.sp
+                lineHeight = 18.5.sp
             )
         }
+
+        TarjetaInformativaAyuda(titulo = "Cifrado permanente en la papelera") {
+            Text(
+                text = "Los elementos en la papelera no quedan en texto plano ni se almacenan en carpetas temporales desprotegidas: continúan cifrados con AES-256 dentro de la base de datos SQLCipher. Nadie puede acceder a tus claves borradas sin tu contraseña maestra.",
+                fontSize = 13.sp,
+                color = TextoSecundario,
+                lineHeight = 18.5.sp
+            )
+        }
+
+        TarjetaAdvertenciaAyuda(
+            titulo = "El vaciado de papelera es irreversible",
+            texto = "Al pulsar 'Vaciar papelera', los bloques de datos se truncan y borran físicamente de la base de datos. Solo un respaldo externo .bvda previo podrá recuperar las cuentas eliminadas tras vaciar la papelera."
+        )
+
+        TarjetaConsejoAyuda(
+            titulo = "Revisa la papelera antes de vaciar",
+            texto = "Echa un vistazo rápido a los nombres antes de pulsar 'Vaciar'. A veces un borrado rápido semanas atrás contenía apuntes o notas de recuperación que no recordabas."
+        )
     }
 }

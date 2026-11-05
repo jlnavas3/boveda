@@ -14,6 +14,7 @@ import androidx.compose.material.icons.filled.FileDownload
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Security
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.Tune
 import androidx.compose.ui.graphics.Color
 import com.jlnavas3.bovedalocal.ui.Pantalla
@@ -35,6 +36,16 @@ fun crearElementosCopiasYSistemaAjustes(
             grupo = "Copias y datos",
             palabrasClave = "copia seguridad backup exportar importar restaurar auto automatica",
             alPulsar = { vm.ir(Pantalla.CopiaSeguridad()) }
+        ),
+        ElementoMenuAjustes(
+            titulo = "Transferencia de credenciales",
+            subtitulo = "Transferencia directa con Google y otros gestores",
+            icono = Icons.Filled.Share,
+            colorIcono = Color(0xFF7E57C2),
+            idEtiqueta = "05-COP-CXF-AJU",
+            grupo = "Copias y datos",
+            palabrasClave = "transferir transferencia cxf fido google gestor directa passkey exportar",
+            alPulsar = { vm.ir(Pantalla.AjustesTransferenciaCxf("05-COP-CXF-AJU")) }
         ),
         ElementoMenuAjustes(
             titulo = "Importar de Google",

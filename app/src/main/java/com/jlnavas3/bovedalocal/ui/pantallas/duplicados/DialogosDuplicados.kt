@@ -20,6 +20,7 @@ import com.jlnavas3.bovedalocal.ui.componentes.TipoBotonTexto
 @Composable
 fun DialogosDuplicados(
     confirmarLimpiezaMasiva: Boolean,
+    totalGruposIdenticos: Int = 0,
     totalSobrantesIdenticas: Int,
     alConfirmarLimpiezaMasiva: () -> Unit,
     alDescartarLimpiezaMasiva: () -> Unit,
@@ -29,10 +30,25 @@ fun DialogosDuplicados(
     alDescartarBorradoSeleccion: () -> Unit
 ) {
     if (confirmarLimpiezaMasiva) {
+        val tituloDialogo = if (totalGruposIdenticos > 0) {
+            "Unificar $totalGruposIdenticos grupos idénticos"
+        } else {
+            "Unificar $totalSobrantesIdenticas copias idénticas"
+        }
+        val mensajeDialogo = if (totalGruposIdenticos > 0) {
+            "Se conservará 1 cuenta principal por grupo y se eliminarán $totalSobrantesIdenticas copias redundantes sin perder datos."
+        } else {
+            "Se consolidarán en una sola entrada sin perder datos."
+        }
+        val textoBoton = if (totalSobrantesIdenticas > 0) {
+            "Unificar ($totalSobrantesIdenticas copias)"
+        } else {
+            "Unificar todo"
+        }
         DialogoConfirmacionBoveda(
-            titulo = "Unificar $totalSobrantesIdenticas copias idénticas",
-            mensaje = "Se consolidarán en una sola entrada sin perder datos.",
-            textoConfirmar = "Unificar todo",
+            titulo = tituloDialogo,
+            mensaje = mensajeDialogo,
+            textoConfirmar = textoBoton,
             tipoConfirmacion = TipoBotonTexto.PRIMARIO,
             iconoHeader = Icons.Filled.AutoFixHigh,
             alConfirmar = alConfirmarLimpiezaMasiva,

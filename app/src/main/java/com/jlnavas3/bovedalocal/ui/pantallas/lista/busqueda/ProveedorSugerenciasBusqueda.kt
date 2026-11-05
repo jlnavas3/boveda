@@ -48,7 +48,7 @@ object ProveedorSugerenciasBusqueda {
             ItemSugerenciaBusqueda("t:banco", "Cuenta bancaria", Icons.Filled.AccountBalance, "Tipos de entrada"),
             ItemSugerenciaBusqueda("t:servidor", "Servidor / SSH", Icons.Filled.Dns, "Tipos de entrada"),
             ItemSugerenciaBusqueda("t:wallet", "Cripto Wallet", Icons.Filled.Security, "Tipos de entrada"),
-            ItemSugerenciaBusqueda("t:passkey", "Llave de paso", Icons.Filled.Fingerprint, "Tipos de entrada"),
+            ItemSugerenciaBusqueda("t:passkey", "Llave de acceso", Icons.Filled.Fingerprint, "Tipos de entrada"),
             ItemSugerenciaBusqueda("t:nota", "Nota segura", Icons.Filled.Description, "Tipos de entrada"),
             ItemSugerenciaBusqueda("t:contacto", "Contacto", Icons.Filled.Person, "Tipos de entrada")
         ),

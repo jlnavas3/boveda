@@ -32,7 +32,7 @@ import com.jlnavas3.bovedalocal.ui.componentes.ContenedorTarjeta
 import com.jlnavas3.bovedalocal.ui.componentes.EstiloTitulo
 import com.jlnavas3.bovedalocal.ui.componentes.TextoSubtitulo
 import com.jlnavas3.bovedalocal.ui.componentes.TextoTitulo
-import com.jlnavas3.bovedalocal.ui.pantallas.lista.IconoTipoEntrada
+import com.jlnavas3.bovedalocal.ui.pantallas.lista.AvatarSeleccionableEntrada
 import com.jlnavas3.bovedalocal.ui.theme.Borde
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.ColorSobreAcento
@@ -65,30 +65,12 @@ fun FilaEntradaExportarSelectivo(
                 .padding(horizontal = 14.dp, vertical = 6.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Indicador circular de selección estilo PantallaLista
-            Box(
-                modifier = Modifier
-                    .size(24.dp)
-                    .clip(CircleShape)
-                    .background(if (marcada) ColorAcento else Borde),
-                contentAlignment = Alignment.Center
-            ) {
-                if (marcada) {
-                    Icon(
-                        imageVector = Icons.Filled.Check,
-                        contentDescription = null,
-                        tint = ColorSobreAcento,
-                        modifier = Modifier.size(15.dp)
-                    )
-                }
-            }
-
-            Spacer(Modifier.width(10.dp))
-
-            // Icono representativo / Avatar
-            IconoTipoEntrada(
+            // Avatar con selección interactiva estilo Google
+            AvatarSeleccionableEntrada(
                 entrada = entrada,
-                tamanoIcono = tamanoIcono
+                tamanoIcono = tamanoIcono,
+                seleccionado = marcada,
+                alAlternarSeleccion = { alAlternarMarcado(!marcada) }
             )
 
             Spacer(Modifier.width(12.dp))

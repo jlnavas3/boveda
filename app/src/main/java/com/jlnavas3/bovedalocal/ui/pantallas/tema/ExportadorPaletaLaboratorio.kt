@@ -29,6 +29,7 @@ object ExportadorPaletaLaboratorio {
         colorFondo: Color,
         colorTarjeta: Color,
         colorCampo: Color,
+        colorModal: Color,
         colorBorde: Color,
         colorTextoPrincipal: Color,
         colorTextoSecundario: Color,
@@ -42,6 +43,8 @@ object ExportadorPaletaLaboratorio {
         tonoEfectivoTarjeta: Float,
         lumCampo: Float,
         tonoEfectivoCampo: Float,
+        lumModal: Float,
+        tonoEfectivoModal: Float,
         lumBorde: Float,
         tonoEfectivoBorde: Float,
         lumTextoPrincipal: Float,
@@ -58,6 +61,7 @@ object ExportadorPaletaLaboratorio {
           "fondo": "${colorFondo.aHexConAlfa()}",
           "tarjeta": "${colorTarjeta.aHexConAlfa()}",
           "campo": "${colorCampo.aHexConAlfa()}",
+          "modal": "${colorModal.aHexConAlfa()}",
           "borde": "${colorBorde.aHexConAlfa()}",
           "textoPrincipal": "${colorTextoPrincipal.aHexConAlfa()}",
           "textoSecundario": "${colorTextoSecundario.aHexConAlfa()}",
@@ -81,6 +85,11 @@ object ExportadorPaletaLaboratorio {
                 "hex": "${colorCampo.aHexConAlfa()}",
                 "luminancia": "${(lumCampo * 100).toInt()}%",
                 "tono": "${tonoEfectivoCampo.toInt()}°"
+              },
+              "modal": {
+                "hex": "${colorModal.aHexConAlfa()}",
+                "luminancia": "${(lumModal * 100).toInt()}%",
+                "tono": "${tonoEfectivoModal.toInt()}°"
               },
               "borde": {
                 "hex": "${colorBorde.aHexConAlfa()}",

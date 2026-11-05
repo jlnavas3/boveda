@@ -6,10 +6,18 @@
 
 package com.jlnavas3.bovedalocal.ui.pantallas.lista
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.ime
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -28,6 +36,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -39,6 +48,7 @@ import com.jlnavas3.bovedalocal.ui.componentes.IndiceAlfabetico
 import com.jlnavas3.bovedalocal.ui.componentes.reboteElastico
 import com.jlnavas3.bovedalocal.ui.componentes.encontrarIndiceParaLetra
 import com.jlnavas3.bovedalocal.ui.componentes.letraInicialIndice
+import com.jlnavas3.bovedalocal.util.CLAVE_GRUPO_ANCLADOS
 import com.jlnavas3.bovedalocal.util.ItemAgrupado
 import com.jlnavas3.bovedalocal.util.construirItemsAgrupadosPorSitio
 import kotlinx.coroutines.delay
@@ -68,7 +78,9 @@ fun CuerpoListaEntradas(
     alAlternarSeleccionLote: ((Set<String>) -> Unit)? = null,
     identidades: List<com.jlnavas3.bovedalocal.data.Identidad> = emptyList(),
     categorias: List<com.jlnavas3.bovedalocal.data.Categoria> = emptyList(),
-    gestorScroll: com.jlnavas3.bovedalocal.ui.scroll.GestorPosicionScroll? = null
+    gestorScroll: com.jlnavas3.bovedalocal.ui.scroll.GestorPosicionScroll? = null,
+    alCopiarDato: ((id: String, etiqueta: String, valor: String, sensible: Boolean) -> Unit)? = null,
+    alAvisar: ((String) -> Unit)? = null
 ) {
     val ambitoCorutina = rememberCoroutineScope()
     val densidad = LocalDensity.current
@@ -112,7 +124,8 @@ fun CuerpoListaEntradas(
         ajustes.tldsDescartables,
         ajustes.marcasPersonalizadas,
         ajustes.puertosServiciosLocales,
-        ajustes.octetosRouter
+        ajustes.octetosRouter,
+        ajustes.fijarAncladosArriba
     ) {
         construirItemsAgrupadosPorSitio(
             entradas = visibles,
@@ -125,15 +138,22 @@ fun CuerpoListaEntradas(
             marcasPersonalizadas = ajustes.marcasPersonalizadas,
             puertosConfigurados = ajustes.puertosServiciosLocales,
             octetosRouter = ajustes.octetosRouter,
+            fijarAncladosArriba = ajustes.fijarAncladosArriba,
             expandido = { false }
         )
     }
 
     val estadoLista = rememberLazyListStatePersistente("lista_principal", gestorScroll)
     CerrarTecladoAlHacerScroll(estadoLista.isScrollInProgress)
+
+    val insetsIme = WindowInsets.ime
+    val tecladoVisible = insetsIme.getBottom(densidad) > 0
+    val rellenoInferiorDinamico = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
+
     val mostrarIndice = ajustes.mostrarIndiceAlfabetico &&
         itemsAMostrar.size >= 5 &&
-        criterioOrdenacion == CriterioOrdenacion.NOMBRE_AZ
+        criterioOrdenacion == CriterioOrdenacion.NOMBRE_AZ &&
+        !tecladoVisible
 
     var letraArrastrada by remember { mutableStateOf<Char?>(null) }
 
@@ -141,7 +161,7 @@ fun CuerpoListaEntradas(
         if (letra == null) return false
         val titulo = when (item) {
             is ItemAgrupado.Suelto -> item.entrada.titulo
-            is ItemAgrupado.Grupo -> item.clave.removePrefix("www.")
+            is ItemAgrupado.Grupo -> if (item.clave == CLAVE_GRUPO_ANCLADOS) "Anclados" else item.clave.removePrefix("www.")
             is ItemAgrupado.Hijo -> item.entrada.titulo
         }
         return letraInicialIndice(titulo, incluirEnie) == letra
@@ -176,7 +196,7 @@ fun CuerpoListaEntradas(
             }
         }
 
-        Box(modifier = Modifier.fillMaxSize()) {
+        Box(modifier = Modifier.fillMaxSize().clipToBounds()) {
             LazyColumn(
                 state = estadoLista,
                 modifier = Modifier
@@ -185,7 +205,7 @@ fun CuerpoListaEntradas(
                 contentPadding = PaddingValues(
                     start = 20.dp,
                     end = 20.dp,
-                    bottom = 110.dp
+                    bottom = 80.dp + rellenoInferiorDinamico
                 ),
                 verticalArrangement = Arrangement.spacedBy(espaciadoFilas)
             ) {
@@ -321,7 +341,12 @@ fun CuerpoListaEntradas(
                                     estiloOcultamiento = ajustes.estiloOcultamientoVisual,
                                     identidadAsociada = iden,
                                     ocultarEmailIdentidad = true,
-                                    mostrarChipIdentidad = false
+                                    mostrarChipIdentidad = false,
+                                    seguridadVisualActiva = ajustes.seguridadVisualActiva,
+                                    alCopiarDato = if (alCopiarDato != null) { etiqueta, valor, sensible ->
+                                        alCopiarDato(item.entrada.id, etiqueta, valor, sensible)
+                                    } else null,
+                                    alAvisar = alAvisar
                                 )
                             }
                         }
@@ -332,7 +357,7 @@ fun CuerpoListaEntradas(
         return
     }
 
-    Box(modifier = Modifier.fillMaxSize()) {
+    Box(modifier = Modifier.fillMaxSize().clipToBounds()) {
         LazyColumn(
             state = estadoLista,
             modifier = Modifier
@@ -341,7 +366,7 @@ fun CuerpoListaEntradas(
             contentPadding = PaddingValues(
                 start = 20.dp,
                 end = if (mostrarIndice) 36.dp else 20.dp,
-                bottom = 110.dp
+                bottom = 110.dp + rellenoInferiorDinamico
             ),
             verticalArrangement = Arrangement.spacedBy(espaciadoFilas)
         ) {
@@ -423,6 +448,25 @@ fun CuerpoListaEntradas(
                             alAlternarExpansion = {
                                 alAlternarGrupo(item.clave)
                             },
+                            alAlternarSeleccionGrupo = {
+                                if (modoSeleccion) {
+                                    if (alAlternarSeleccionLote != null) {
+                                        alAlternarSeleccionLote(idsHijos)
+                                    } else {
+                                        if (todosHijosSeleccionados) {
+                                            item.entradas.forEach { if (seleccionados.contains(it.id)) alAlternarSeleccion(it.id) }
+                                        } else {
+                                            item.entradas.forEach { if (!seleccionados.contains(it.id)) alAlternarSeleccion(it.id) }
+                                        }
+                                    }
+                                } else {
+                                    if (alEntrarEnSeleccionLote != null) {
+                                        alEntrarEnSeleccionLote(idsHijos)
+                                    } else {
+                                        item.entradas.forEach { alAlternarSeleccion(it.id) }
+                                    }
+                                }
+                            },
                             contenidoEntrada = { entradaHija, indiceHijo, totalHijos ->
                             val coincideLetraHijo = if (!ajustes.indiceResaltarEntradas || letraArrastrada == null) {
                                 false
@@ -450,7 +494,12 @@ fun CuerpoListaEntradas(
                                 ocultarUsuario = ajustes.seguridadVisualActiva && ajustes.ocultarUsuario,
                                 ocultarTotp = ajustes.seguridadVisualActiva && ajustes.ocultarTotp,
                                 estiloOcultamiento = ajustes.estiloOcultamientoVisual,
-                                identidadAsociada = com.jlnavas3.bovedalocal.util.resolverIdentidadParaEntrada(entradaHija, identidades)
+                                identidadAsociada = com.jlnavas3.bovedalocal.util.resolverIdentidadParaEntrada(entradaHija, identidades),
+                                seguridadVisualActiva = ajustes.seguridadVisualActiva,
+                                alCopiarDato = if (alCopiarDato != null) { etiqueta, valor, sensible ->
+                                    alCopiarDato(entradaHija.id, etiqueta, valor, sensible)
+                                } else null,
+                                alAvisar = alAvisar
                             )
                         }
                     )
@@ -475,14 +524,24 @@ fun CuerpoListaEntradas(
                         ocultarUsuario = ajustes.seguridadVisualActiva && ajustes.ocultarUsuario,
                         ocultarTotp = ajustes.seguridadVisualActiva && ajustes.ocultarTotp,
                         estiloOcultamiento = ajustes.estiloOcultamientoVisual,
-                        identidadAsociada = com.jlnavas3.bovedalocal.util.resolverIdentidadParaEntrada(item.entrada, identidades)
+                        identidadAsociada = com.jlnavas3.bovedalocal.util.resolverIdentidadParaEntrada(item.entrada, identidades),
+                        seguridadVisualActiva = ajustes.seguridadVisualActiva,
+                        alCopiarDato = if (alCopiarDato != null) { etiqueta, valor, sensible ->
+                            alCopiarDato(item.entrada.id, etiqueta, valor, sensible)
+                        } else null,
+                        alAvisar = alAvisar
                     )
                     is ItemAgrupado.Hijo -> Unit
                 }
             }
         }
 
-        if (mostrarIndice) {
+        AnimatedVisibility(
+            visible = mostrarIndice,
+            enter = fadeIn(animationSpec = tween(150)),
+            exit = fadeOut(animationSpec = tween(150)),
+            modifier = Modifier.align(Alignment.CenterEnd)
+        ) {
             IndiceAlfabeticoLista(
                 ajustes = ajustes,
                 itemsAMostrar = itemsAMostrar,
@@ -490,9 +549,7 @@ fun CuerpoListaEntradas(
                 espaciadoFilas = espaciadoFilas,
                 estadoLista = estadoLista,
                 alCambiarLetraActiva = { letraArrastrada = it },
-                modifier = Modifier
-                    .align(Alignment.CenterEnd)
-                    .padding(top = 4.dp, bottom = 100.dp)
+                modifier = Modifier.padding(top = 4.dp, bottom = 64.dp)
             )
         }
     }

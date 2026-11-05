@@ -151,4 +151,65 @@ class AgrupadorSitiosTest {
         assertEquals(2, items.size)
         assertTrue(items.all { it is ItemAgrupado.Suelto })
     }
+
+    @Test
+    fun `fijarAncladosArriba coloca entradas ancladas en grupo superior y las excluye del resto`() {
+        val e1 = Entrada("1", titulo = "GitHub", anclado = true, urls = listOf("https://github.com"))
+        val e2 = Entrada("2", titulo = "Amazon", anclado = false, favorito = true, urls = listOf("https://amazon.com"))
+        val e3 = Entrada("3", titulo = "GitLab", anclado = true, urls = listOf("https://gitlab.com"))
+
+        val items = construirItemsAgrupadosPorSitio(
+            entradas = listOf(e1, e2, e3),
+            criterio = CriterioOrdenacion.NOMBRE_AZ,
+            agrupar = true,
+            fijarAncladosArriba = true
+        ) { false }
+
+        // Debe haber: 1 grupo Anclados (con GitHub y GitLab) y 1 suelto Amazon (que es favorito pero no anclado)
+        assertEquals(2, items.size)
+        val grupoAnclados = items[0] as ItemAgrupado.Grupo
+        assertEquals(com.jlnavas3.bovedalocal.util.CLAVE_GRUPO_ANCLADOS, grupoAnclados.clave)
+        assertEquals(2, grupoAnclados.entradas.size)
+        assertEquals("GitHub", grupoAnclados.entradas[0].titulo)
+        assertEquals("GitLab", grupoAnclados.entradas[1].titulo)
+
+        val suelto = items[1] as ItemAgrupado.Suelto
+        assertEquals("Amazon", suelto.entrada.titulo)
+        assertEquals(true, suelto.entrada.favorito)
+    }
+
+    @Test
+    fun `fijarAncladosArriba con agrupar false mantiene grupo superior y resto sueltas`() {
+        val e1 = Entrada("1", titulo = "Banco", anclado = true)
+        val e2 = Entrada("2", titulo = "Personal", anclado = false)
+
+        val items = construirItemsAgrupadosPorSitio(
+            entradas = listOf(e1, e2),
+            criterio = CriterioOrdenacion.NOMBRE_AZ,
+            agrupar = false,
+            fijarAncladosArriba = true
+        ) { false }
+
+        assertEquals(2, items.size)
+        assertTrue(items[0] is ItemAgrupado.Grupo)
+        assertEquals(com.jlnavas3.bovedalocal.util.CLAVE_GRUPO_ANCLADOS, (items[0] as ItemAgrupado.Grupo).clave)
+        assertTrue(items[1] is ItemAgrupado.Suelto)
+        assertEquals("Personal", (items[1] as ItemAgrupado.Suelto).entrada.titulo)
+    }
+
+    @Test
+    fun `fijarAncladosArriba sin anclados no crea grupo Anclados aunque haya favoritos`() {
+        val e1 = Entrada("1", titulo = "Alpha", favorito = true, anclado = false)
+        val e2 = Entrada("2", titulo = "Beta", favorito = false, anclado = false)
+
+        val items = construirItemsAgrupadosPorSitio(
+            entradas = listOf(e1, e2),
+            criterio = CriterioOrdenacion.NOMBRE_AZ,
+            agrupar = true,
+            fijarAncladosArriba = true
+        ) { false }
+
+        assertEquals(2, items.size)
+        assertTrue(items.none { it is ItemAgrupado.Grupo && it.clave == com.jlnavas3.bovedalocal.util.CLAVE_GRUPO_ANCLADOS })
+    }
 }

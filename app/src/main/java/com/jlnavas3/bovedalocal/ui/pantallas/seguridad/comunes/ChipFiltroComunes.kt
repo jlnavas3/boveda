@@ -24,7 +24,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorTarjetaAjustes
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
-import com.jlnavas3.bovedalocal.ui.theme.ColorSobreAcento
 import com.jlnavas3.bovedalocal.ui.theme.CurvaturaEsquinas
 import com.jlnavas3.bovedalocal.ui.theme.TextoPrincipal
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
@@ -39,9 +38,9 @@ fun ChipFiltroComunes(
     modifier: Modifier = Modifier
 ) {
     val forma = RoundedCornerShape(CurvaturaEsquinas)
-    val fondo = if (seleccionado) ColorAcento else ColorTarjetaAjustes
-    val colorEtiqueta = if (seleccionado) ColorSobreAcento else TextoSecundario
-    val colorCantidad = if (seleccionado) ColorSobreAcento else TextoPrincipal
+    val fondo = if (seleccionado) ColorAcento.copy(alpha = 0.15f) else ColorTarjetaAjustes
+    val colorEtiqueta = if (seleccionado) ColorAcento else TextoSecundario
+    val colorCantidad = if (seleccionado) ColorAcento else TextoPrincipal
 
     Column(
         modifier = modifier

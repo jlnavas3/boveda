@@ -84,11 +84,12 @@ interface VaultDuplicadosPapeleraDelegate {
             Diagnostico.apuntar("duplicados", "Unificación inteligente masiva: ${unificadas.size} grupos consolidados (${idsABorrar.size} duplicados unificados)")
 
             com.jlnavas3.bovedalocal.ui.progreso.GestorProgresoOperaciones.completar(
-                mensajeExito = "${unificadas.size} grupos unificados (${idsABorrar.size} duplicados)",
+                mensajeExito = "${unificadas.size} grupos consolidados (${idsABorrar.size} copias eliminadas)",
                 totalCuentas = totalGrupos,
-                textoAccionResultado = "Deshacer",
-                textoAccionSecundaria = "Aceptar",
-                accionResultado = {
+                textoAccionResultado = "Aceptar",
+                textoAccionSecundaria = "Deshacer",
+                accionResultado = null,
+                accionSecundaria = {
                     ejecutar {
                         withContext(Dispatchers.IO) {
                             repositorio.sincronizarLote(
@@ -101,8 +102,8 @@ interface VaultDuplicadosPapeleraDelegate {
             )
 
             avisarConDeshacer(
-                mensaje = "${unificadas.size} grupo${if (unificadas.size > 1) "s" else ""} unificado${if (unificadas.size > 1) "s" else ""}",
-                titulo = "Unificación masiva",
+                mensaje = "${unificadas.size} grupos consolidados (${idsABorrar.size} copias eliminadas)",
+                titulo = "Unificación completada",
                 alDeshacer = {
                     ejecutar {
                         withContext(Dispatchers.IO) {
@@ -210,9 +211,10 @@ interface VaultDuplicadosPapeleraDelegate {
             com.jlnavas3.bovedalocal.ui.progreso.GestorProgresoOperaciones.completar(
                 mensajeExito = "$cantGrupos grupos consolidados (${idsABorrar.size} duplicados)",
                 totalCuentas = cantGrupos,
-                textoAccionResultado = "Deshacer",
-                textoAccionSecundaria = "Aceptar",
-                accionResultado = {
+                textoAccionResultado = "Aceptar",
+                textoAccionSecundaria = "Deshacer",
+                accionResultado = null,
+                accionSecundaria = {
                     ejecutar {
                         withContext(Dispatchers.IO) {
                             repositorio.sincronizarLote(
@@ -275,6 +277,33 @@ interface VaultDuplicadosPapeleraDelegate {
             withContext(Dispatchers.IO) { repositorio.borrarDefinitivamente(id) }
             Diagnostico.apuntar("papelera", "Entrada ($tipoDesc) eliminada definitivamente de la papelera")
             avisoInterno.value = "Borrada para siempre"
+        }
+    }
+
+    fun borrarDefinitivamenteLote(ids: Set<String>) {
+        if (ids.isEmpty()) return
+        ejecutar {
+            val cant = ids.size
+            withContext(Dispatchers.IO) { repositorio.borrarDefinitivamenteLote(ids) }
+            Diagnostico.apuntar("papelera", "$cant entradas eliminadas definitivamente de la papelera")
+            avisoInterno.value = "$cant entrada${if (cant > 1) "s" else ""} eliminada${if (cant > 1) "s" else ""} definitivamente"
+        }
+    }
+
+    fun restaurarLoteDeLaPapelera(ids: Set<String>) {
+        if (ids.isEmpty()) return
+        ejecutar {
+            val cant = withContext(Dispatchers.IO) { repositorio.restaurarLoteDeLaPapelera(ids) }
+            Diagnostico.apuntar("papelera", "$cant entradas restauradas desde la papelera")
+            avisoInterno.value = "$cant entrada${if (cant > 1) "s" else ""} restaurada${if (cant > 1) "s" else ""}"
+        }
+    }
+
+    fun restaurarTodasDeLaPapelera() {
+        ejecutar {
+            val cant = withContext(Dispatchers.IO) { repositorio.restaurarTodasDeLaPapelera() }
+            Diagnostico.apuntar("papelera", "Todas las entradas ($cant) restauradas desde la papelera")
+            avisoInterno.value = "Papelera restaurada ($cant entradas)"
         }
     }
 

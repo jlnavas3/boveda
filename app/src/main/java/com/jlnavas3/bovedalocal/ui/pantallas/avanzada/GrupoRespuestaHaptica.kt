@@ -18,7 +18,7 @@ import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteNavegacion
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteSeparador
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteSlider
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteSwitch
-import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
+import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
 import com.jlnavas3.bovedalocal.util.Haptica
 import kotlin.math.roundToInt
 
@@ -35,7 +35,7 @@ fun GrupoRespuestaHaptica(
     ComponenteGrupo(
         etiqueta = "Respuesta táctil y vibración",
         icono = Icons.Filled.Vibration,
-        colorIcono = ColorAcento,
+        colorIcono = ColorIconosInternos,
         alRestablecer = {
             haptica.tic()
             alCambiarHapticaApp(AjustesDefaults.Interaccion.HAPTICA_APP)
@@ -73,7 +73,6 @@ fun GrupoRespuestaHaptica(
                 idFila = "06-SIS-AVZ-HIN",
                 mostrarId = mostrarIdsAjustes,
                 icono = null,
-                colorAcento = ColorAcento,
                 alCambiar = {
                     alCambiarIntensidad(it)
                     haptica.probar(it)

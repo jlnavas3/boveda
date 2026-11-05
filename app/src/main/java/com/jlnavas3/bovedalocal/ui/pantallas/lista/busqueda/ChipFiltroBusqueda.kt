@@ -31,12 +31,16 @@ import androidx.compose.ui.unit.sp
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorTarjetaAjustes
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
-import com.jlnavas3.bovedalocal.ui.theme.CurvaturaEsquinas
+import com.jlnavas3.bovedalocal.ui.theme.EstiloBorde
+import com.jlnavas3.bovedalocal.ui.theme.FormaChip
+import com.jlnavas3.bovedalocal.ui.theme.GrosorBorde
 import com.jlnavas3.bovedalocal.ui.theme.TextoPrincipal
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
 
 /**
  * Chip visual individual para un modificador de búsqueda rápida.
+ * Diseñado con menor altura que las píldoras de filtros principales
+ * y adaptado estrictamente a la configuración de 'Formas y bordes'.
  */
 @Composable
 fun ChipFiltroBusqueda(
@@ -62,29 +66,41 @@ fun ChipFiltroBusqueda(
         label = "textoChip"
     )
 
-    val forma = RoundedCornerShape(CurvaturaEsquinas / 2)
+    val forma = FormaChip
+    val tieneBordeConfigurado = GrosorBorde > 0.dp && EstiloBorde != "ninguno"
+    val grosorBordeEfectivo = if (estaActivo) {
+        if (tieneBordeConfigurado) GrosorBorde.coerceAtLeast(1.dp) else 1.dp
+    } else {
+        if (tieneBordeConfigurado) GrosorBorde else if (EstiloBorde == "ninguno") 0.dp else 0.75.dp
+    }
 
     Row(
         modifier = modifier
+            .height(23.dp)
             .clip(forma)
             .background(fondoColor)
-            .border(0.75.dp, bordeColor, forma)
+            .then(
+                if (grosorBordeEfectivo > 0.dp) {
+                    Modifier.border(grosorBordeEfectivo, bordeColor, forma)
+                } else Modifier
+            )
             .clickable(onClick = alPulsar)
-            .padding(horizontal = 6.dp, vertical = 2.5.dp),
+            .padding(horizontal = 6.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Icon(
             imageVector = item.icono,
             contentDescription = null,
             tint = iconoColor,
-            modifier = Modifier.size(11.dp)
+            modifier = Modifier.size(10.5.dp)
         )
-        Spacer(Modifier.width(4.dp))
+        Spacer(Modifier.width(3.5.dp))
         Text(
             text = item.etiqueta,
             color = textoColor,
-            fontSize = 10.5.sp,
-            fontWeight = if (estaActivo) FontWeight.SemiBold else FontWeight.Normal
+            fontSize = 10.sp,
+            fontWeight = if (estaActivo) FontWeight.SemiBold else FontWeight.Normal,
+            maxLines = 1
         )
     }
 }

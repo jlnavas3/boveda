@@ -125,6 +125,21 @@ class CxfExportActivity : ComponentActivity() {
             esSeleccionPersonalizada = esPersonalizada
         )
 
+        if (entradasAMostrar.isEmpty()) {
+            val msgVacio = "No hay credenciales activas disponibles para transferir"
+            CxfRegistroDiagnostico.log(this, msgVacio)
+            mostrarToast("Bóveda Local: $msgVacio")
+
+            val resultIntent = Intent()
+            IntentHandler.setImportCredentialsException(
+                resultIntent,
+                ImportCredentialsSystemErrorException(msgVacio)
+            )
+            setResult(Activity.RESULT_CANCELED, resultIntent)
+            finish()
+            return
+        }
+
         setContent {
             val ajustesState by repo.ajustes.ajustes.collectAsStateWithLifecycle()
             androidx.compose.runtime.LaunchedEffect(ajustesState) {
@@ -136,6 +151,7 @@ class CxfExportActivity : ComponentActivity() {
                     entradasDisponibles = entradasAMostrar,
                     idsIniciales = idsPreseleccionadas,
                     mostrarIdAjustes = ajustesState.mostrarIdsAjustes,
+                    ajustes = ajustesState,
                     alConfirmar = { seleccionadas ->
                         completarTransferencia(destinationUri, seleccionadas, gestorReceptor)
                     },

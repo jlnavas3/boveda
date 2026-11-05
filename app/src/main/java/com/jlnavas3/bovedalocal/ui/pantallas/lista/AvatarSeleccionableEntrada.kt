@@ -1,0 +1,91 @@
+/*
+ * Copyright (C) 2026 Jose Luis Navas
+ * Licensed under the GNU General Public License v3.0 (GPLv3).
+ * See LICENSE file in the project root for full license information.
+ */
+
+package com.jlnavas3.bovedalocal.ui.pantallas.lista
+
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
+import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material3.Icon
+import androidx.compose.material3.ripple
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.unit.dp
+import com.jlnavas3.bovedalocal.data.Entrada
+import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
+import com.jlnavas3.bovedalocal.ui.theme.ColorSobreAcento
+
+/**
+ * Microcomponente que desacopla el avatar interactivo de la entrada.
+ * Permite selección directa estilo Google con un tap sobre el logo/avatar,
+ * transformándose con una animación fluida hacia el checkmark circular sin desplazar la fila.
+ */
+@Composable
+fun AvatarSeleccionableEntrada(
+    entrada: Entrada,
+    tamanoIcono: Int,
+    seleccionado: Boolean,
+    alAlternarSeleccion: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Box(
+        modifier = modifier
+            .size(tamanoIcono.dp)
+            .clip(CircleShape)
+            .clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = ripple(bounded = true, radius = (tamanoIcono / 2).dp),
+                onClick = alAlternarSeleccion
+            ),
+        contentAlignment = Alignment.Center
+    ) {
+        AnimatedContent(
+            targetState = seleccionado,
+            transitionSpec = {
+                (scaleIn(initialScale = 0.8f) + fadeIn()) togetherWith (scaleOut(targetScale = 0.8f) + fadeOut())
+            },
+            label = "AvatarSeleccionAnim"
+        ) { estaSeleccionado ->
+            if (estaSeleccionado) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .clip(CircleShape)
+                        .background(ColorAcento),
+                    contentAlignment = Alignment.Center
+                ) {
+                    val tamanoCheck = (tamanoIcono * 0.52f).coerceAtLeast(14f)
+                    Icon(
+                        imageVector = Icons.Filled.Check,
+                        contentDescription = "Seleccionado",
+                        tint = ColorSobreAcento,
+                        modifier = Modifier.size(tamanoCheck.dp)
+                    )
+                }
+            } else {
+                IconoTipoEntrada(
+                    entrada = entrada,
+                    tamanoIcono = tamanoIcono
+                )
+            }
+        }
+    }
+}

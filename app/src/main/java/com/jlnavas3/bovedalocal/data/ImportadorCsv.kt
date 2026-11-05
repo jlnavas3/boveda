@@ -23,20 +23,21 @@ object ImportadorCsv {
     private val ALIAS_CONTRASENA = listOf("password", "login_password", "contraseña", "contrasena", "clave")
     private val ALIAS_NOTAS = listOf("notes", "note", "extra", "notas", "comentario", "comentarios")
 
-    val DELIMITADORES_SOPORTADOS = listOf(',', ';', '\t')
+    val DELIMITADORES_SOPORTADOS = listOf(',', ';', '\t', '|')
 
     /**
-     * Detecta automáticamente si el archivo usa comas (,), punto y coma (;) o tabuladores (\t).
-     * Analiza los separadores fuera de comillas en la cabecera.
+     * Detecta automáticamente si el archivo usa comas (,), punto y coma (;), tabuladores (\t) o plecas (|).
+     * Analiza los separadores fuera de comillas en la cabecera. Si es ambiguo, usa delimitadorFallback.
      */
-    fun detectarDelimitador(texto: String): Char {
+    fun detectarDelimitador(texto: String, delimitadorFallback: Char = ','): Char {
         val primeraLinea = texto.lineSequence()
-            .firstOrNull { it.isNotBlank() } ?: return ','
+            .firstOrNull { it.isNotBlank() } ?: return delimitadorFallback
 
         var enComillas = false
         var comas = 0
         var puntosYComas = 0
         var tabuladores = 0
+        var plecas = 0
 
         for (c in primeraLinea) {
             if (c == '"') {
@@ -46,24 +47,31 @@ object ImportadorCsv {
                     ',' -> comas++
                     ';' -> puntosYComas++
                     '\t' -> tabuladores++
+                    '|' -> plecas++
                 }
             }
         }
 
+        val max = maxOf(comas, puntosYComas, tabuladores, plecas)
+        if (max == 0) return delimitadorFallback
+
         return when {
-            tabuladores > comas && tabuladores > puntosYComas -> '\t'
-            puntosYComas > comas -> ';'
-            else -> ','
+            plecas == max -> '|'
+            tabuladores == max -> '\t'
+            puntosYComas == max -> ';'
+            comas == max -> ','
+            else -> delimitadorFallback
         }
     }
 
     fun parsear(
         datos: ByteArray,
         delimitadorManual: Char? = null,
+        delimitadorFallback: Char = ',',
         onProgreso: ((procesadas: Int, total: Int, entradaActual: Entrada) -> Unit)? = null
     ): List<Entrada> {
         val texto = String(datos, Charsets.UTF_8).removePrefix("\uFEFF")
-        val delimitador = delimitadorManual ?: detectarDelimitador(texto)
+        val delimitador = delimitadorManual ?: detectarDelimitador(texto, delimitadorFallback)
         val filas = tokenizar(texto, delimitador)
         if (filas.size < 2) throw IllegalArgumentException("El CSV no tiene filas de datos")
 

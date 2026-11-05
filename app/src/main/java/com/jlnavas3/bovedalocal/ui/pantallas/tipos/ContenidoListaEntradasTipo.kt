@@ -99,7 +99,14 @@ fun ContenidoListaEntradasTipo(
                     alCopiarCodigo = { vm.copiar("Código 2FA", it, sensible = true) },
                     alPulsarLargo = { alPulsarLargo(entrada.id) },
                     alAlternarSeleccion = { alAlternarSeleccion(entrada.id) },
-                    mostrarIndicadores = ajustes.mostrarIndicadoresContenido
+                    mostrarIndicadores = ajustes.mostrarIndicadoresContenido,
+                    seguridadVisualActiva = ajustes.seguridadVisualActiva,
+                    alCopiarDato = { etiqueta, valor, sensible ->
+                        if (sensible) haptica.exito() else haptica.toque()
+                        vm.copiar(etiqueta, valor, sensible)
+                        vm.registrarUsoEntrada(entrada.id)
+                    },
+                    alAvisar = { vm.avisar(it) }
                 )
             }
         }

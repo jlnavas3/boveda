@@ -40,15 +40,15 @@ import com.jlnavas3.bovedalocal.data.CampoPersonalizado
 import com.jlnavas3.bovedalocal.data.PlantillaCamposPersonalizada
 import com.jlnavas3.bovedalocal.data.TipoCampo
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorCampoAjustes
+import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorTarjetaAjustes
 import com.jlnavas3.bovedalocal.ui.preview.BovedaPreview
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
-import com.jlnavas3.bovedalocal.ui.theme.ColorSobreAcento
+import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
 import com.jlnavas3.bovedalocal.ui.theme.EstiloBorde
 import com.jlnavas3.bovedalocal.ui.theme.FormaCampo
 import com.jlnavas3.bovedalocal.ui.theme.FormaPequena
 import com.jlnavas3.bovedalocal.ui.theme.GrosorBorde
-import com.jlnavas3.bovedalocal.ui.theme.Peligro
 import com.jlnavas3.bovedalocal.ui.theme.SuperficieAlta
 import com.jlnavas3.bovedalocal.ui.theme.TextoPrincipal
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
@@ -83,13 +83,13 @@ fun TarjetaPlantillaPersonalizada(
                 modifier = Modifier
                     .size(38.dp)
                     .clip(FormaPequena)
-                    .background(ColorAcento),
+                    .background(ColorTarjetaAjustes),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
                     imageVector = Icons.Filled.FolderSpecial,
                     contentDescription = null,
-                    tint = ColorSobreAcento,
+                    tint = ColorIconosInternos,
                     modifier = Modifier.size(20.dp)
                 )
             }
@@ -121,7 +121,7 @@ fun TarjetaPlantillaPersonalizada(
                 Icon(
                     imageVector = Icons.Filled.Edit,
                     contentDescription = "Editar plantilla",
-                    tint = ColorAcento,
+                    tint = ColorIconosInternos,
                     modifier = Modifier.size(19.dp)
                 )
             }
@@ -133,7 +133,7 @@ fun TarjetaPlantillaPersonalizada(
                 Icon(
                     imageVector = Icons.Filled.DeleteOutline,
                     contentDescription = "Eliminar plantilla",
-                    tint = Peligro,
+                    tint = ColorIconosInternos,
                     modifier = Modifier.size(19.dp)
                 )
             }

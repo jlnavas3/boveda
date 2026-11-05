@@ -95,7 +95,7 @@ fun PantallaOrganizacionJerarquia(
                     },
                     alGestionarIdentidades = {
                         haptica.tic()
-                        vm.ir(Pantalla.Identidades("02-APA-DES-GID"))
+                        vm.ir(Pantalla.Perfiles("02-APA-DES-GID"))
                     }
                 )
 

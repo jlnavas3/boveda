@@ -27,7 +27,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
+import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
 import com.jlnavas3.bovedalocal.ui.theme.TextoPrincipal
 import com.jlnavas3.bovedalocal.util.Haptica
 
@@ -57,7 +57,7 @@ fun ElementoRetornoSubmenu(
         Icon(
             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
             contentDescription = "Volver",
-            tint = ColorAcento,
+            tint = ColorIconosInternos,
             modifier = Modifier.size(18.dp)
         )
         Spacer(Modifier.width(8.dp))

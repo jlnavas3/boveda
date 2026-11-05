@@ -7,18 +7,13 @@
 package com.jlnavas3.bovedalocal.ui.progreso
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.animation.shrinkVertically
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.Orientation
-import androidx.compose.foundation.gestures.draggable
-import androidx.compose.foundation.gestures.rememberDraggableState
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -31,16 +26,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
 import com.jlnavas3.bovedalocal.ui.theme.CurvaturaEsquinas
 import com.jlnavas3.bovedalocal.ui.theme.GrosorBorde
@@ -48,7 +40,8 @@ import com.jlnavas3.bovedalocal.ui.theme.SuperficieAlta
 
 /**
  * Contenedor visual desacoplado que renderiza el panel flotante inferior de operaciones
- * o la píldora minimizada según el estado de `GestorProgresoOperaciones`.
+ * con una sola barra de progreso global limpia o la píldora minimizada según el estado
+ * de `GestorProgresoOperaciones`.
  */
 @Composable
 fun HojaProgresoOperaciones(
@@ -56,7 +49,6 @@ fun HojaProgresoOperaciones(
 ) {
     val estado by GestorProgresoOperaciones.estado.collectAsStateWithLifecycle()
     val minimizado by GestorProgresoOperaciones.minimizado.collectAsStateWithLifecycle()
-    var detallesExpandidos by remember { mutableStateOf(false) }
 
     val operacion = estado ?: return
 
@@ -91,7 +83,7 @@ fun HojaProgresoOperaciones(
             alCerrar = { GestorProgresoOperaciones.descartar() }
         )
 
-        // 2. Panel desplegado completo
+        // 2. Panel desplegado completo (tarjeta flotante limpia con barra de progreso global)
         AnimatedVisibility(
             visible = !minimizado,
             enter = slideInVertically(initialOffsetY = { it }) + fadeIn(),
@@ -114,59 +106,14 @@ fun HojaProgresoOperaciones(
                         indication = null,
                         onClick = { /* Consume clicks inside sheet so it doesn't minimize */ }
                     )
-                    .draggable(
-                        orientation = Orientation.Vertical,
-                        state = rememberDraggableState { delta ->
-                            when {
-                                delta < -15 && operacion.itemsActivos.isNotEmpty() -> {
-                                    // Arrastre hacia arriba: desplegar lista de entradas
-                                    detallesExpandidos = true
-                                }
-                                delta > 20 -> {
-                                    // Arrastre hacia abajo: si hay detalles expandidos se repliegan, si no se minimiza
-                                    if (detallesExpandidos) {
-                                        detallesExpandidos = false
-                                    } else if (operacion.enEjecucion) {
-                                        GestorProgresoOperaciones.fijarMinimizado(true)
-                                    }
-                                }
-                            }
-                        }
-                    )
-                    .padding(horizontal = 14.dp, vertical = 10.dp)
+                    .padding(horizontal = 14.dp, vertical = 12.dp)
             ) {
-                // Cabecera con barra general y controles (permite arrastre o toque para expandir/plegar)
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable(
-                            interactionSource = remember { MutableInteractionSource() },
-                            indication = null,
-                            onClick = {
-                                if (operacion.itemsActivos.isNotEmpty()) {
-                                    detallesExpandidos = !detallesExpandidos
-                                }
-                            }
-                        )
-                ) {
-                    CabeceraProgresoOperacion(
-                        estado = operacion,
-                        alMinimizar = { GestorProgresoOperaciones.fijarMinimizado(true) },
-                        alCerrar = { GestorProgresoOperaciones.descartar() }
-                    )
-                }
-
-                // Lista de entradas activa: oculta por defecto, solo visible al expandir
-                AnimatedVisibility(
-                    visible = detallesExpandidos && operacion.itemsActivos.isNotEmpty(),
-                    enter = expandVertically() + fadeIn(),
-                    exit = shrinkVertically() + fadeOut()
-                ) {
-                    Column {
-                        Spacer(modifier = Modifier.height(8.dp))
-                        ListaProgresoEntradasActivas(items = operacion.itemsActivos)
-                    }
-                }
+                // Cabecera con barra de progreso global única y controles
+                CabeceraProgresoOperacion(
+                    estado = operacion,
+                    alMinimizar = { GestorProgresoOperaciones.fijarMinimizado(true) },
+                    alCerrar = { GestorProgresoOperaciones.descartar() }
+                )
 
                 // Pie con botones de acción al completar
                 if (operacion.completado) {
@@ -180,7 +127,9 @@ fun HojaProgresoOperaciones(
                             accion?.invoke()
                         },
                         alPulsarSecundario = {
+                            val accion = operacion.accionSecundaria
                             GestorProgresoOperaciones.descartar()
+                            accion?.invoke()
                         }
                     )
                 }

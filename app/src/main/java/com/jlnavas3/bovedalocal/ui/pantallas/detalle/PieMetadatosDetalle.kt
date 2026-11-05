@@ -37,22 +37,29 @@ import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.CurvaturaEsquinas
 import com.jlnavas3.bovedalocal.ui.theme.colorLegibleParaTema
 import com.jlnavas3.bovedalocal.ui.theme.fondoBadgeParaTema
+import androidx.compose.ui.text.font.FontStyle
+import com.jlnavas3.bovedalocal.data.TipoEntrada
+import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
+/**
+ * Microcomponente que presenta las fechas de auditoría (Editada y Último uso)
+ * como texto plano sutil en cursiva, alineado a la derecha y próximo al borde del campo.
+ */
 @Composable
 fun PieMetadatosDetalle(
     creadaEn: Long,
     modificadaEn: Long,
     ultimoUsoEn: Long = 0L,
+    tipo: TipoEntrada? = null,
     modifier: Modifier = Modifier
 ) {
-    val mostrarCreada = creadaEn > 0L
     val mostrarEditada = modificadaEn > 0L && modificadaEn != creadaEn
-    val mostrarUltimoUso = ultimoUsoEn > 0L
+    val mostrarUltimoUso = ultimoUsoEn > 0L && tipo != TipoEntrada.NOTA
 
-    if (!mostrarCreada && !mostrarEditada && !mostrarUltimoUso) return
+    if (!mostrarEditada && !mostrarUltimoUso) return
 
     val formatoFecha = remember {
         SimpleDateFormat("dd/MM/yy HH:mm", Locale.forLanguageTag("es-ES"))
@@ -61,99 +68,29 @@ fun PieMetadatosDetalle(
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = 4.dp, vertical = 8.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+            .padding(horizontal = 4.dp, vertical = 2.dp),
+        horizontalAlignment = Alignment.End,
+        verticalArrangement = Arrangement.spacedBy(2.dp)
     ) {
-        if (mostrarCreada || mostrarEditada) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = when {
-                    mostrarCreada && mostrarEditada -> Arrangement.SpaceBetween
-                    mostrarCreada -> Arrangement.Start
-                    else -> Arrangement.End
-                },
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                if (mostrarCreada) {
-                    EtiquetaFechaMetadato(
-                        titulo = "Creada:",
-                        fecha = formatoFecha.format(Date(creadaEn)),
-                        icono = Icons.Filled.CalendarToday,
-                        colorBase = ColorAcento
-                    )
-                }
-                if (mostrarEditada) {
-                    EtiquetaFechaMetadato(
-                        titulo = "Editada:",
-                        fecha = formatoFecha.format(Date(modificadaEn)),
-                        icono = Icons.Filled.Edit,
-                        colorBase = ColorAcento
-                    )
-                }
-            }
+        if (mostrarEditada) {
+            Text(
+                text = "Editada el ${formatoFecha.format(Date(modificadaEn))}",
+                style = MaterialTheme.typography.bodySmall.copy(
+                    fontStyle = FontStyle.Italic,
+                    fontSize = 11.5.sp
+                ),
+                color = TextoSecundario
+            )
         }
         if (mostrarUltimoUso) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.Start,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                EtiquetaFechaMetadato(
-                    titulo = "Último uso:",
-                    fecha = formatoFecha.format(Date(ultimoUsoEn)),
-                    icono = Icons.Filled.History,
-                    colorBase = ColorAcento
-                )
-            }
-        }
-    }
-}
-
-@Composable
-private fun EtiquetaFechaMetadato(
-    titulo: String,
-    fecha: String,
-    icono: ImageVector,
-    colorBase: Color,
-    modifier: Modifier = Modifier
-) {
-    val formaBadge = RoundedCornerShape((CurvaturaEsquinas * 0.5f).coerceIn(6.dp, 12.dp))
-    Box(
-        modifier = modifier
-            .clip(formaBadge)
-            .background(fondoBadgeParaTema(colorBase))
-            .border(1.dp, colorBase.copy(alpha = 0.35f), formaBadge)
-            .padding(horizontal = 12.dp, vertical = 6.dp)
-    ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            Icon(
-                imageVector = icono,
-                contentDescription = null,
-                tint = colorLegibleParaTema(colorBase),
-                modifier = Modifier.size(15.dp)
+            Text(
+                text = "Usada el ${formatoFecha.format(Date(ultimoUsoEn))}",
+                style = MaterialTheme.typography.bodySmall.copy(
+                    fontStyle = FontStyle.Italic,
+                    fontSize = 11.5.sp
+                ),
+                color = TextoSecundario
             )
-            Column {
-                Text(
-                    text = titulo,
-                    style = MaterialTheme.typography.labelSmall.copy(
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 11.sp,
-                        letterSpacing = 0.5.sp
-                    ),
-                    color = colorLegibleParaTema(colorBase)
-                )
-                Text(
-                    text = fecha,
-                    style = MaterialTheme.typography.labelSmall.copy(
-                        fontSize = 11.5.sp,
-                        fontWeight = FontWeight.Medium
-                    ),
-                    color = colorLegibleParaTema(colorBase).copy(alpha = 0.9f)
-                )
-            }
         }
     }
 }

@@ -24,35 +24,45 @@ object GeneradorAliasCorreo {
             .trim('.', '-', '_')
     }
 
-    fun generarConEtiqueta(correoBase: String, etiqueta: String): String {
+    fun generarConEtiqueta(correoBase: String, etiqueta: String, delimitador: String = "+"): String {
         val partes = correoBase.trim().split("@")
         if (partes.size != 2 || partes[0].isBlank() || partes[1].isBlank()) return correoBase
 
-        val usuarioLimpio = partes[0].substringBefore("+").trim()
+        val usuarioLimpio = when {
+            delimitador != "+" && partes[0].contains(delimitador) -> partes[0].substringBefore(delimitador).trim()
+            partes[0].contains("+") -> partes[0].substringBefore("+").trim()
+            else -> partes[0].trim()
+        }
         val etiquetaLimpia = limpiarEtiqueta(etiqueta)
+        val delimEfectivo = if (delimitador in listOf("+", "-", ".")) delimitador else "+"
 
         return if (etiquetaLimpia.isNotBlank()) {
-            "$usuarioLimpio+$etiquetaLimpia@${partes[1].trim()}"
+            "$usuarioLimpio$delimEfectivo$etiquetaLimpia@${partes[1].trim()}"
         } else {
             correoBase
         }
     }
 
-    fun generarConAleatorio(correoBase: String, longitud: Int = 6): String {
+    fun generarConAleatorio(correoBase: String, longitud: Int = 6, delimitador: String = "+"): String {
         val sufijo = buildString(longitud) {
             repeat(longitud) {
                 append(CARACTERES_ALEATORIOS[random.nextInt(CARACTERES_ALEATORIOS.size)])
             }
         }
-        return generarConEtiqueta(correoBase, sufijo)
+        return generarConEtiqueta(correoBase, sufijo, delimitador)
     }
 
-    fun generarParaSitio(correoBase: String, tituloOSitio: String): String {
+    fun generarParaSitio(
+        correoBase: String,
+        tituloOSitio: String,
+        delimitador: String = "+",
+        longitudAleatorio: Int = 6
+    ): String {
         val etiqueta = limpiarEtiqueta(tituloOSitio)
         return if (etiqueta.isNotBlank()) {
-            generarConEtiqueta(correoBase, etiqueta)
+            generarConEtiqueta(correoBase, etiqueta, delimitador)
         } else {
-            generarConAleatorio(correoBase)
+            generarConAleatorio(correoBase, longitudAleatorio, delimitador)
         }
     }
 }

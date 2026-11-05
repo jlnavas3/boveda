@@ -16,6 +16,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.withContext
 
 val uriBvdaGlobal = MutableStateFlow<Uri?>(null)
+val perfilArgon2SugeridoGlobal = MutableStateFlow<com.jlnavas3.bovedalocal.crypto.PerfilArgon2?>(null)
 
 interface VaultBackupDelegate {
     val repositorio: VaultRepository
@@ -29,6 +30,9 @@ interface VaultBackupDelegate {
     val uriBvdaPendiente: MutableStateFlow<Uri?> get() = uriBvdaGlobal
     fun establecerUriBvdaPendiente(uri: Uri?) { uriBvdaGlobal.value = uri }
     fun descartarUriBvdaPendiente() { uriBvdaGlobal.value = null }
+
+    val perfilArgon2SugeridoReForja: MutableStateFlow<com.jlnavas3.bovedalocal.crypto.PerfilArgon2?> get() = perfilArgon2SugeridoGlobal
+    fun descartarPerfilArgon2SugeridoReForja() { perfilArgon2SugeridoGlobal.value = null }
 
     fun exportar(password: String, escritor: (ByteArray) -> Unit) {
         ejecutar {
@@ -49,8 +53,8 @@ interface VaultBackupDelegate {
                 com.jlnavas3.bovedalocal.ui.progreso.GestorProgresoOperaciones.completar(
                     mensajeExito = "Copia de seguridad exportada y cifrada",
                     totalCuentas = 1,
-                    textoAccionResultado = null,
-                    textoAccionSecundaria = "Aceptar"
+                    textoAccionResultado = "Aceptar",
+                    textoAccionSecundaria = null
                 )
                 avisoInterno.value = "Bóveda exportada y cifrada"
             } catch (e: Exception) {
@@ -81,8 +85,9 @@ interface VaultBackupDelegate {
                 com.jlnavas3.bovedalocal.ui.progreso.GestorProgresoOperaciones.completar(
                     mensajeExito = "${idsEntradas.size} credenciales exportadas",
                     totalCuentas = idsEntradas.size,
-                    textoAccionResultado = null,
-                    textoAccionSecundaria = "Aceptar"
+                    textoAccionResultado = "Aceptar",
+                    textoAccionSecundaria = null,
+                    accionResultado = { irRaiz(Pantalla.Lista) }
                 )
                 avisoInterno.value = "Exportadas ${idsEntradas.size} entradas seleccionadas"
             } catch (e: Exception) {
@@ -115,9 +120,13 @@ interface VaultBackupDelegate {
                     progresoGlobal = 0.50f
                 )
 
-                val nuevas = withContext(Dispatchers.Default) { repositorio.importar(datos, chars) }
+                val resultado = withContext(Dispatchers.Default) { repositorio.importar(datos, chars) }
+                val nuevas = resultado.entradasNuevas
                 val duplicados = withContext(Dispatchers.Default) {
                     AnalizadorDuplicados.analizar(repositorio.entradas()).size
+                }
+                if (resultado.perfilArgon2Sugerido != null) {
+                    perfilArgon2SugeridoGlobal.value = resultado.perfilArgon2Sugerido
                 }
 
                 com.jlnavas3.bovedalocal.ui.progreso.GestorProgresoOperaciones.actualizarFase(
@@ -149,6 +158,78 @@ interface VaultBackupDelegate {
         }
     }
 
+    fun prepararImportacionBvda(
+        password: String,
+        lector: () -> ByteArray
+    ) {
+        ejecutar {
+            val chars = password.toCharArray()
+            try {
+                val datos = withContext(Dispatchers.IO) { lector() }
+                val contenidoDescifrado = withContext(Dispatchers.Default) {
+                    repositorio.descifrarContenidoBvda(datos, chars)
+                }
+                ir(Pantalla.ImportarSelectivo(contenidoDescifrado))
+            } catch (e: Exception) {
+                Diagnostico.apuntar("bóveda", "Fallo al descifrar archivo .bvda: contraseña incorrecta o archivo dañado", e)
+                errorInterno.value = "Contraseña incorrecta o archivo de copia no válido"
+            } finally {
+                Zeroizar.borrar(chars)
+            }
+        }
+    }
+
+    fun ejecutarImportacionSelectiva(
+        contenido: com.jlnavas3.bovedalocal.data.ContenidoBoveda,
+        opciones: com.jlnavas3.bovedalocal.data.OpcionesImportacionBvda
+    ) {
+        ejecutar {
+            try {
+                com.jlnavas3.bovedalocal.ui.progreso.GestorProgresoOperaciones.iniciar(
+                    id = "restaurar_boveda",
+                    titulo = "Importar selección",
+                    faseInicial = "Incorporando datos..."
+                )
+                com.jlnavas3.bovedalocal.ui.progreso.GestorProgresoOperaciones.actualizarFase(
+                    fase = "Deduplicando y guardando...",
+                    progresoGlobal = 0.50f
+                )
+
+                val resultado = withContext(Dispatchers.Default) {
+                    repositorio.importarSelectivo(contenido, opciones)
+                }
+                if (resultado.perfilArgon2Sugerido != null) {
+                    perfilArgon2SugeridoGlobal.value = resultado.perfilArgon2Sugerido
+                }
+
+                com.jlnavas3.bovedalocal.ui.progreso.GestorProgresoOperaciones.actualizarFase(
+                    fase = "Finalizando importación...",
+                    progresoGlobal = 0.95f
+                )
+                kotlinx.coroutines.delay(150)
+
+                val mensaje = if (resultado.duplicados > 0) {
+                    "Se importaron ${resultado.entradasNuevas} entradas (${resultado.duplicados} duplicadas)"
+                } else {
+                    "Se importaron ${resultado.entradasNuevas} entradas con éxito"
+                }
+                avisoInterno.value = mensaje
+
+                com.jlnavas3.bovedalocal.ui.progreso.GestorProgresoOperaciones.completar(
+                    mensajeExito = mensaje,
+                    totalCuentas = resultado.entradasNuevas,
+                    textoAccionResultado = "Ver listado",
+                    textoAccionSecundaria = null,
+                    accionResultado = { irRaiz(Pantalla.Lista) }
+                )
+            } catch (e: Exception) {
+                Diagnostico.apuntar("bóveda", "Error al ejecutar importación selectiva", e)
+                errorInterno.value = "Error al importar: ${e.message}"
+                com.jlnavas3.bovedalocal.ui.progreso.GestorProgresoOperaciones.fallar("Error al importar los datos")
+            }
+        }
+    }
+
     fun importarCsv(
         nombreArchivo: String = "Google Passwords.csv",
         lector: () -> ByteArray,
@@ -169,7 +250,8 @@ interface VaultBackupDelegate {
                 )
 
                 val entradasParseadas = withContext(Dispatchers.Default) {
-                    com.jlnavas3.bovedalocal.data.ImportadorCsv.parsear(datos)
+                    val fallbackDelim = repositorio.ajustes.actual.csvDelimitadorPredeterminado.firstOrNull() ?: ','
+                    com.jlnavas3.bovedalocal.data.ImportadorCsv.parsear(datos, delimitadorFallback = fallbackDelim)
                 }
                 val total = entradasParseadas.size
 
@@ -231,7 +313,10 @@ interface VaultBackupDelegate {
                         } else {
                             irRaiz(Pantalla.Lista)
                         }
-                    }
+                    },
+                    accionSecundaria = if (sugerirNormalizar) {
+                        { irRaiz(Pantalla.Lista) }
+                    } else null
                 )
 
                 onResultado?.invoke(nuevas)
@@ -347,7 +432,10 @@ interface VaultBackupDelegate {
                         } else {
                             irRaiz(Pantalla.Lista)
                         }
-                    }
+                    },
+                    accionSecundaria = if (sugerirNormalizar) {
+                        { irRaiz(Pantalla.Lista) }
+                    } else null
                 )
 
                 onCompletado?.invoke(nuevas)
@@ -390,8 +478,8 @@ interface VaultBackupDelegate {
                 com.jlnavas3.bovedalocal.ui.progreso.GestorProgresoOperaciones.completar(
                     mensajeExito = "Contraseña maestra actualizada con éxito",
                     totalCuentas = 1,
-                    textoAccionResultado = null,
-                    textoAccionSecundaria = "Aceptar"
+                    textoAccionResultado = "Aceptar",
+                    textoAccionSecundaria = null
                 )
                 avisoInterno.value = "Contraseña maestra cambiada. Vuelve a activar la biometría."
             } catch (e: Exception) {

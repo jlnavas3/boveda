@@ -44,6 +44,7 @@ import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorTarjetaAjustes
 import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
 import com.jlnavas3.bovedalocal.ui.theme.EstiloBorde
 import com.jlnavas3.bovedalocal.ui.theme.FormaBoton
+import com.jlnavas3.bovedalocal.ui.theme.FormaPequena
 import com.jlnavas3.bovedalocal.ui.theme.GrosorBorde
 import com.jlnavas3.bovedalocal.ui.theme.colorContraste
 
@@ -105,13 +106,14 @@ fun BarraAccionesDockedLab(
                 )
             }
 
-            // Acción primaria destacada a la derecha: Guardar tema
-            val colorContenidoBoton = colorContraste(colorAcentoActual)
+            // Acción primaria destacada a la derecha: Guardar tema con acento activo del dispositivo
+            val colorBotonGuardar = com.jlnavas3.bovedalocal.ui.theme.ColorAcento
+            val colorContenidoBoton = colorContraste(colorBotonGuardar)
             Box(
                 modifier = Modifier
                     .height(40.dp)
                     .clip(FormaBoton)
-                    .background(colorAcentoActual)
+                    .background(colorBotonGuardar)
                     .then(
                         if (GrosorBorde > 0.dp && EstiloBorde != "ninguno") {
                             Modifier.border(GrosorBorde, ColorBordeActual.copy(alpha = 0.5f), FormaBoton)
@@ -155,11 +157,16 @@ private fun BotonAccionCompactoLab(
     colorTexto: Color,
     modifier: Modifier = Modifier
 ) {
-    val forma = RoundedCornerShape(8.dp)
+    val forma = FormaPequena
     Column(
         modifier = modifier
             .clip(forma)
             .background(ColorCampoAjustes)
+            .then(
+                if (GrosorBorde > 0.dp && EstiloBorde != "ninguno") {
+                    Modifier.border(GrosorBorde, ColorBordeActual.copy(alpha = 0.5f), forma)
+                } else Modifier
+            )
             .clickable { alPulsar() }
             .padding(horizontal = 10.dp, vertical = 6.dp),
         horizontalAlignment = Alignment.CenterHorizontally,

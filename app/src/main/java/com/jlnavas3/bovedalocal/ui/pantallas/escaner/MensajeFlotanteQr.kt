@@ -41,8 +41,7 @@ fun MensajeFlotanteQr(
         enter = fadeIn(),
         exit = fadeOut(),
         modifier = modifier
-            .statusBarsPadding()
-            .padding(top = 80.dp)
+            .padding(top = 74.dp)
     ) {
         mensaje?.let { texto ->
             Box(

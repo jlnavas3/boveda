@@ -15,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjusteGris
 
 /**
@@ -34,6 +35,8 @@ fun ComponenteNavegacion(
     mostrarId: Boolean = false,
     valorTexto: String? = null,
     habilitado: Boolean = true,
+    tamanoFuenteTitulo: androidx.compose.ui.unit.TextUnit = 15.5.sp,
+    paddingVertical: androidx.compose.ui.unit.Dp? = null,
     estadoAlumbrado: EstadoAlumbradoFila? = null
 ) {
     ComponenteFila(
@@ -47,6 +50,8 @@ fun ComponenteNavegacion(
         mostrarId = mostrarId,
         valorTexto = valorTexto,
         habilitado = habilitado,
+        tamanoFuenteTitulo = tamanoFuenteTitulo,
+        paddingVertical = paddingVertical,
         alPulsar = alPulsar,
         estadoAlumbrado = estadoAlumbrado,
         contenidoFinal = {

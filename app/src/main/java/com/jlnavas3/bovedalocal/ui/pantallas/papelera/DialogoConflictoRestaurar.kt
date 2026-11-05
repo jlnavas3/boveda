@@ -24,10 +24,10 @@ import androidx.compose.ui.unit.dp
 import com.jlnavas3.bovedalocal.data.Entrada
 import com.jlnavas3.bovedalocal.ui.componentes.BotonTextoBoveda
 import com.jlnavas3.bovedalocal.ui.componentes.TipoBotonTexto
+import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorModalAjustes
 import com.jlnavas3.bovedalocal.ui.theme.FormaTarjeta
 import com.jlnavas3.bovedalocal.ui.theme.TextoPrincipal
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
-import com.jlnavas3.bovedalocal.ui.theme.esOscuroActivo
 
 /**
  * Diálogo modal para resolver conflictos al restaurar una entrada con el mismo título/usuario.
@@ -39,7 +39,7 @@ fun DialogoConflictoRestaurar(
     alSustituir: () -> Unit,
     alDuplicar: () -> Unit
 ) {
-    val fondoDialogo = if (esOscuroActivo) Color(0xFF212023) else Color(0xFFFFFFFF)
+    val fondoDialogo = ColorModalAjustes
     AlertDialog(
         onDismissRequest = alCerrar,
         shape = FormaTarjeta,

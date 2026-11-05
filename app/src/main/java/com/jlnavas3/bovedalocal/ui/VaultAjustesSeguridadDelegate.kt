@@ -115,7 +115,51 @@ interface VaultAjustesSeguridadDelegate {
         }
     }
 
-    fun restablecerCamara() = ajustarMotorCamara(AjustesDefaults.Seguridad.MOTOR_CAMARA)
+    fun restablecerCamara() {
+        repositorio.ajustes.actualizar {
+            it.copy(
+                motorCamara = AjustesDefaults.Seguridad.MOTOR_CAMARA,
+                escanerQrTamanoVentanaDp = AjustesDefaults.CamaraQr.TAMANO_VENTANA_DP,
+                escanerQrVibracion = AjustesDefaults.CamaraQr.VIBRACION,
+                escanerQrSonido = AjustesDefaults.CamaraQr.SONIDO
+            )
+        }
+    }
+
+    fun ajustarEscanerQrTamanoVentanaDp(tamanoDp: Float) {
+        val valor = tamanoDp.coerceIn(AjustesDefaults.CamaraQr.TAMANO_VENTANA_MIN_DP, AjustesDefaults.CamaraQr.TAMANO_VENTANA_MAX_DP)
+        repositorio.ajustes.actualizar { it.copy(escanerQrTamanoVentanaDp = valor) }
+    }
+
+    fun ajustarEscanerQrVibracion(activo: Boolean) {
+        repositorio.ajustes.actualizar { it.copy(escanerQrVibracion = activo) }
+    }
+
+    fun ajustarEscanerQrSonido(activo: Boolean) {
+        repositorio.ajustes.actualizar { it.copy(escanerQrSonido = activo) }
+    }
+
+    fun ajustarSaludUmbralPuntuacionDebil(umbral: Int) {
+        val valor = umbral.coerceIn(0, 3)
+        repositorio.ajustes.actualizar { it.copy(saludUmbralPuntuacionDebil = valor) }
+        Diagnostico.apuntar("seguridad", "Umbral de debilidad de contraseñas configurado en <= $valor estrellas")
+    }
+
+    fun ajustarSaludLongitudMinimaRecomendada(longitud: Int) {
+        val valor = longitud.coerceIn(6, 24)
+        repositorio.ajustes.actualizar { it.copy(saludLongitudMinimaRecomendada = valor) }
+        Diagnostico.apuntar("seguridad", "Longitud mínima recomendada para salud configurada en $valor caracteres")
+    }
+
+    fun restablecerSaludContrasenas() {
+        repositorio.ajustes.actualizar {
+            it.copy(
+                saludUmbralPuntuacionDebil = AjustesDefaults.SaludContrasenas.UMBRAL_PUNTUACION_DEBIL,
+                saludLongitudMinimaRecomendada = AjustesDefaults.SaludContrasenas.LONGITUD_MINIMA_RECOMENDADA
+            )
+        }
+    }
+
     fun restablecerArgon2() = repositorio.ajustes.actualizar { it.copy(perfilArgon2 = AjustesDefaults.Seguridad.PERFIL_ARGON2) }
 
     fun restablecerHistorialClavesConfig() {

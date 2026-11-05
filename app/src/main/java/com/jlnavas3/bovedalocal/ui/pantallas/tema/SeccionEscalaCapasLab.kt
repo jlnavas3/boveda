@@ -30,7 +30,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.jlnavas3.bovedalocal.ui.componentes.SwitchBoveda
-import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteGrupo
+import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteGrupoColapsable
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.SliderBoveda
 import com.jlnavas3.bovedalocal.ui.componentes.colorAhsv
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjusteGris
@@ -49,6 +49,7 @@ fun SeccionEscalaCapasLab(
     colorFondo: Color,
     colorTarjeta: Color,
     colorCampo: Color,
+    colorModal: Color,
     colorBorde: Color,
     colorTextoPrincipal: Color,
     colorTextoSecundario: Color,
@@ -58,9 +59,11 @@ fun SeccionEscalaCapasLab(
     modifier: Modifier = Modifier
 ) {
     with(estadoLab) {
-        ComponenteGrupo(
-            etiqueta = "Escala de Capas y Tonos (90% Interfaz)",
+        ComponenteGrupoColapsable(
+            etiqueta = "Escala de capas y tonos",
+            subtitulo = "(90% interfaz)",
             icono = Icons.Filled.Palette,
+            expandidoInicial = false,
             modifier = modifier
         ) {
             // Control Maestro de Tono y Switch de Unificación
@@ -102,24 +105,29 @@ fun SeccionEscalaCapasLab(
                 Spacer(Modifier.height(10.dp))
 
                 if (unificarTonos) {
-                    // Slider de Tono Unificado
+                    // Slider de Tono Unificado en formato limpio
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Box(
                             modifier = Modifier
-                                .size(16.dp)
+                                .size(14.dp)
                                 .clip(CircleShape)
                                 .background(Color.hsv(tonoGlobal, 0.8f, 0.9f))
                                 .border(1.dp, colorBorde, CircleShape)
                         )
                         Spacer(Modifier.width(8.dp))
                         Text(
-                            text = "Tono cromático unificado: ${tonoGlobal.toInt()}°",
+                            text = "Tono cromático unificado",
                             style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Medium),
                             color = ColorTextoAjustes,
                             modifier = Modifier.weight(1f)
+                        )
+                        Text(
+                            text = "${tonoGlobal.toInt()}°",
+                            style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Medium),
+                            color = ColorAjusteGris
                         )
                     }
                     SliderBoveda(
@@ -138,12 +146,23 @@ fun SeccionEscalaCapasLab(
                     Spacer(Modifier.height(8.dp))
                 }
 
-                // Slider de Saturación / Intensidad de tinte en grises
-                Text(
-                    text = "Intensidad de tinte en grises: ${(saturacionTinte * 100).toInt()}% ${if (saturacionTinte <= 0.001f) "(Gris puro)" else if (saturacionTinte <= 0.12f) "(Matiz Elegante)" else ""}",
-                    style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Medium),
-                    color = ColorAjusteGris
-                )
+                // Slider de Saturación / Intensidad de tinte en grises en formato limpio
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "Intensidad de tinte en grises",
+                        style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Medium),
+                        color = ColorTextoAjustes,
+                        modifier = Modifier.weight(1f)
+                    )
+                    Text(
+                        text = "${(saturacionTinte * 100).toInt()}%",
+                        style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Medium),
+                        color = ColorAjusteGris
+                    )
+                }
                 SliderBoveda(
                     value = saturacionTinte,
                     onValueChange = {
@@ -208,6 +227,25 @@ fun SeccionEscalaCapasLab(
                 tono = tonoCampo,
                 alCambiarTono = {
                     tonoCampo = it
+                    marcarModificado()
+                }
+            )
+            SeparadorFilaAjuste()
+
+            // Capa 3: Modales, Sheets y Diálogos
+            ControlCapaFila(
+                etiqueta = "Modales y sheets (Capa 3)",
+                colorActual = colorModal,
+                luminancia = lumModal,
+                alCambiarLuminancia = {
+                    lumModal = it
+                    marcarModificado()
+                },
+                rangoLuminancia = rangoLuminanciaParaCapa(modoOscuro, esSuperficie = true),
+                mostrarControlTono = !unificarTonos,
+                tono = tonoModal,
+                alCambiarTono = {
+                    tonoModal = it
                     marcarModificado()
                 }
             )

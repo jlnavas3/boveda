@@ -160,20 +160,13 @@ fun PantallaAvanzada(
                                         mostrarId = ajustes.mostrarIdsAjustes,
                                         alPulsar = { vm.ir(Pantalla.AvanzadaHaptica()) }
                                     )
-                                    "06-SIS-AVZ-TST" -> ComponenteSwitch(
-                                        titulo = "Avisos emergentes descriptivos",
-                                        subtitulo = if (ajustes.toastDescriptivo) "Tarjeta con cabecera, título y botón de cierre (✕)" else "Diseño minimalista compacto con botón de cierre (✕)",
-                                        activo = ajustes.toastDescriptivo,
+                                    "06-SIS-AVZ-TST" -> ComponenteNavegacion(
+                                        titulo = "Avisos emergentes",
+                                        subtitulo = "${if (ajustes.toastDescriptivo) "Descriptivo" else "Minimalista"} • ${ajustes.posicionToast.etiqueta}",
+                                        icono = null,
                                         idFila = "06-SIS-AVZ-TST",
                                         mostrarId = ajustes.mostrarIdsAjustes,
-                                        alCambiar = { nuevoValor ->
-                                            haptica.tic()
-                                            vm.ajustarToastDescriptivo(nuevoValor)
-                                            vm.avisar(
-                                                mensaje = if (nuevoValor) "Avisos descriptivos con cabecera activados" else "Avisos minimalistas compactos activados",
-                                                titulo = "Avisos en pantalla"
-                                            )
-                                        }
+                                        alPulsar = { vm.ir(Pantalla.AjustesAvisosEmergentes("06-SIS-AVZ-TST")) }
                                     )
                                 }
                             }

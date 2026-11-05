@@ -36,11 +36,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjusteGris
+import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorCampoAjustes
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorTextoAjustes
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
@@ -77,6 +79,8 @@ fun ComponenteFila(
     habilitado: Boolean = true,
     alPulsar: (() -> Unit)? = null,
     ejecutarHapticaAlPulsar: Boolean = true,
+    tamanoFuenteTitulo: androidx.compose.ui.unit.TextUnit = 15.5.sp,
+    paddingVertical: androidx.compose.ui.unit.Dp? = null,
     estadoAlumbrado: EstadoAlumbradoFila? = null,
     contenidoFinal: (@Composable () -> Unit)? = null
 ) {
@@ -114,13 +118,14 @@ fun ComponenteFila(
             .then(modifierClick)
             .padding(
                 horizontal = 16.dp,
-                vertical = if (tieneBadgeId || !subtitulo.isNullOrBlank()) 8.dp else 10.dp
+                vertical = paddingVertical ?: if (tieneBadgeId || !subtitulo.isNullOrBlank()) 8.dp else 10.dp
             ),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        // Icono en contenedor squircle redondeado (estilo MagicOS / One UI nativo)
+        // Icono en contenedor squircle redondeado (estilo Google Pixel / Material 3 limpio)
         if (icono != null) {
-            val fondoIcono = colorIcono ?: ColorIconosInternos
+            val fondoIcono = ColorCampoAjustes
+            val tinteEfectivo = if (colorTinteIcono != Color.White) colorTinteIcono else (colorIcono ?: ColorIconosInternos)
             Box(
                 modifier = Modifier
                     .size(30.dp)
@@ -131,7 +136,7 @@ fun ComponenteFila(
                 Icon(
                     imageVector = icono,
                     contentDescription = null,
-                    tint = colorTinteIcono,
+                    tint = tinteEfectivo,
                     modifier = Modifier.size(16.dp)
                 )
             }
@@ -150,7 +155,7 @@ fun ComponenteFila(
                 color = if (habilitado) ColorTextoAjustes else ColorAjusteGris,
                 style = MaterialTheme.typography.bodyLarge.copy(
                     fontWeight = FontWeight.Normal,
-                    fontSize = 15.5.sp
+                    fontSize = tamanoFuenteTitulo
                 ),
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis
@@ -161,7 +166,11 @@ fun ComponenteFila(
                 Text(
                     text = subtitulo,
                     color = ColorAjusteGris,
-                    style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp),
+                    style = MaterialTheme.typography.bodySmall.copy(
+                        fontSize = 11.5.sp,
+                        lineHeight = 15.sp,
+                        fontStyle = FontStyle.Italic
+                    ),
                     maxLines = maxSubtituloLines,
                     overflow = TextOverflow.Ellipsis
                 )
@@ -169,7 +178,7 @@ fun ComponenteFila(
 
             if (tieneBadgeId) {
                 Spacer(Modifier.height(3.dp))
-                InsigniaIdAjuste(id = idFila!!)
+                InsigniaIdAjuste(id = idFila)
             }
         }
 

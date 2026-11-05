@@ -18,6 +18,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountBalance
+import androidx.compose.material.icons.filled.Badge
+import androidx.compose.material.icons.filled.CreditCard
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Person
@@ -36,9 +39,10 @@ import com.jlnavas3.bovedalocal.ui.componentes.TamanoInsignia
 import com.jlnavas3.bovedalocal.ui.componentes.TextoCuerpo
 import com.jlnavas3.bovedalocal.ui.componentes.TextoSubtitulo
 import com.jlnavas3.bovedalocal.ui.componentes.TextoTitulo
+import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorCampoAjustes
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorTarjetaAjustes
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
-import com.jlnavas3.bovedalocal.ui.theme.Peligro
+import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
 import com.jlnavas3.bovedalocal.ui.theme.parsearColorO
 
@@ -58,7 +62,7 @@ fun FilaGestionIdentidad(
     ContenedorTarjeta(
         modifier = modifier,
         colorFondo = ColorTarjetaAjustes,
-        paddingInterno = 14.dp,
+        paddingInterno = 10.dp,
         alPulsar = alEditar
     ) {
         Row(
@@ -74,9 +78,9 @@ fun FilaGestionIdentidad(
                 conBorde = true
             )
 
-            Spacer(Modifier.width(14.dp))
+            Spacer(Modifier.width(12.dp))
 
-            // Bloque central: Nombre, correo principal y badges
+            // Bloque central: Nombre, correo principal, documento y badges
             Column(
                 modifier = Modifier.weight(1f),
                 verticalArrangement = Arrangement.Center
@@ -107,12 +111,31 @@ fun FilaGestionIdentidad(
                     }
                 }
 
-                Spacer(Modifier.height(3.dp))
+                Spacer(Modifier.height(2.dp))
 
-                TextoSubtitulo(
-                    texto = identidad.correoPrincipal,
-                    maxLineas = 1
-                )
+                if (identidad.correoPrincipal.isNotBlank()) {
+                    TextoSubtitulo(
+                        texto = identidad.correoPrincipal,
+                        maxLineas = 1
+                    )
+                }
+
+                if (identidad.tieneDocumento) {
+                    if (identidad.correoPrincipal.isNotBlank()) {
+                        Spacer(Modifier.height(1.dp))
+                    }
+                    TextoCuerpo(
+                        texto = identidad.etiquetaDocumentoCompleta,
+                        tamano = TamanoCuerpo.MINI,
+                        color = if (identidad.correoPrincipal.isBlank()) TextoSecundario else TextoSecundario.copy(alpha = 0.85f),
+                        maxLineas = 1
+                    )
+                } else if (identidad.correoPrincipal.isBlank()) {
+                    TextoSubtitulo(
+                        texto = "Sin identificador asignado",
+                        maxLineas = 1
+                    )
+                }
 
                 if (identidad.correosSecundarios.isNotEmpty()) {
                     Spacer(Modifier.height(2.dp))
@@ -122,6 +145,39 @@ fun FilaGestionIdentidad(
                         color = TextoSecundario.copy(alpha = 0.75f),
                         maxLineas = 1
                     )
+                }
+
+                if (identidad.documentosIds.isNotEmpty() || identidad.tarjetasIds.isNotEmpty() || identidad.cuentasIds.isNotEmpty() || identidad.contactosIds.isNotEmpty()) {
+                    Spacer(Modifier.height(4.dp))
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(6.dp)
+                    ) {
+                        if (identidad.documentosIds.isNotEmpty()) {
+                            InsigniaConteoAsociacionPerfil(
+                                icono = Icons.Filled.Badge,
+                                cantidad = identidad.documentosIds.size
+                            )
+                        }
+                        if (identidad.tarjetasIds.isNotEmpty()) {
+                            InsigniaConteoAsociacionPerfil(
+                                icono = Icons.Filled.CreditCard,
+                                cantidad = identidad.tarjetasIds.size
+                            )
+                        }
+                        if (identidad.cuentasIds.isNotEmpty()) {
+                            InsigniaConteoAsociacionPerfil(
+                                icono = Icons.Filled.AccountBalance,
+                                cantidad = identidad.cuentasIds.size
+                            )
+                        }
+                        if (identidad.contactosIds.isNotEmpty()) {
+                            InsigniaConteoAsociacionPerfil(
+                                icono = Icons.Filled.Person,
+                                cantidad = identidad.contactosIds.size
+                            )
+                        }
+                    }
                 }
             }
 
@@ -135,8 +191,8 @@ fun FilaGestionIdentidad(
                 BotonIconoSuperficie(
                     icono = Icons.Filled.Edit,
                     alPulsar = alEditar,
-                    colorIcono = TextoSecundario,
-                    colorFondo = colorBase.copy(alpha = 0.10f),
+                    colorIcono = ColorIconosInternos,
+                    colorFondo = ColorCampoAjustes,
                     tamano = 34.dp,
                     tamanoIcono = 18.dp,
                     descripcion = "Editar identidad"
@@ -145,8 +201,8 @@ fun FilaGestionIdentidad(
                 BotonIconoSuperficie(
                     icono = Icons.Filled.Delete,
                     alPulsar = alEliminar,
-                    colorIcono = Peligro,
-                    colorFondo = Peligro.copy(alpha = 0.10f),
+                    colorIcono = ColorIconosInternos,
+                    colorFondo = ColorCampoAjustes,
                     tamano = 34.dp,
                     tamanoIcono = 18.dp,
                     descripcion = "Eliminar identidad"

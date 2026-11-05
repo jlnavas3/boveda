@@ -50,6 +50,7 @@ import com.jlnavas3.bovedalocal.ui.componentes.MenuDesplegableBoveda
 import com.jlnavas3.bovedalocal.ui.componentes.SeparadorOpcionMenu
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorTarjetaAjustes
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
+import com.jlnavas3.bovedalocal.ui.theme.ColorFavorito
 import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
 import com.jlnavas3.bovedalocal.ui.theme.EstiloBorde
 import com.jlnavas3.bovedalocal.ui.theme.FormaCampo
@@ -180,7 +181,7 @@ fun SelectorFiltros(
                 desplegado = false
             }
             SeparadorOpcionMenu()
-            OpcionFiltro("Solo favoritos", Icons.Filled.Star, soloFavoritos) {
+            OpcionFiltro("Solo favoritos", Icons.Filled.Star, soloFavoritos, colorIconoActivo = ColorFavorito) {
                 alFavoritos()
                 desplegado = false
             }

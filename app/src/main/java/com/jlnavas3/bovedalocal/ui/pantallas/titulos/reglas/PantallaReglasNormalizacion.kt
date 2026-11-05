@@ -44,6 +44,7 @@ fun PantallaReglasNormalizacion(
     var mostrarDialogoAgregarTld by remember { mutableStateOf(false) }
     var mostrarDialogoAgregarMarca by remember { mutableStateOf(false) }
     var mostrarDialogoAgregarPuerto by remember { mutableStateOf(false) }
+    var mostrarDialogoAgregarRuta by remember { mutableStateOf(false) }
     var mostrarDialogoAgregarOcteto by remember { mutableStateOf(false) }
     var mostrarDialogoRestablecer by remember { mutableStateOf(false) }
 
@@ -96,6 +97,14 @@ fun PantallaReglasNormalizacion(
                 puertosServicios = ajustes.puertosServiciosLocales,
                 alAgregarClick = { mostrarDialogoAgregarPuerto = true },
                 alEliminarPuerto = { vm.eliminarPuertoServicio(it) },
+                mostrarId = ajustes.mostrarIdsAjustes,
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            SeccionRutasRedLocal(
+                rutasServicios = ajustes.rutasServiciosLocales,
+                alAgregarClick = { mostrarDialogoAgregarRuta = true },
+                alEliminarRuta = { vm.eliminarRutaServicio(it) },
                 mostrarId = ajustes.mostrarIdsAjustes,
                 modifier = Modifier.fillMaxWidth()
             )
@@ -167,6 +176,16 @@ fun PantallaReglasNormalizacion(
                 mostrarDialogoAgregarPuerto = false
             },
             alDescartar = { mostrarDialogoAgregarPuerto = false }
+        )
+    }
+
+    if (mostrarDialogoAgregarRuta) {
+        DialogoAgregarRutaServicio(
+            alConfirmar = { ruta, servicio ->
+                vm.agregarRutaServicio(ruta, servicio)
+                mostrarDialogoAgregarRuta = false
+            },
+            alDescartar = { mostrarDialogoAgregarRuta = false }
         )
     }
 

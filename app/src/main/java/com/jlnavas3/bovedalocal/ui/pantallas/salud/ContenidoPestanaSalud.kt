@@ -30,6 +30,7 @@ import com.jlnavas3.bovedalocal.ui.scroll.rememberGruposExpandidosPersistentes
 import com.jlnavas3.bovedalocal.ui.scroll.rememberLazyListStatePersistente
 import com.jlnavas3.bovedalocal.ui.theme.Advertencia
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
+import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
 import com.jlnavas3.bovedalocal.ui.theme.Peligro
 import com.jlnavas3.bovedalocal.ui.theme.calcularEspaciadoFilas
 import com.jlnavas3.bovedalocal.util.MedidorFuerza
@@ -86,7 +87,7 @@ fun ContenidoPestanaSalud(
                             icono = Icons.Filled.SearchOff,
                             titulo = "Sin resultados",
                             subtitulo = "No se encontraron contraseñas caducadas para \"$consulta\".",
-                            colorIcono = ColorAcento
+                            colorIcono = ColorIconosInternos
                         )
                     } else {
                         MensajeExitoPestana(
@@ -164,7 +165,7 @@ fun ContenidoPestanaSalud(
                             icono = Icons.Filled.SearchOff,
                             titulo = "Sin resultados",
                             subtitulo = "No se encontraron contraseñas comunes para \"$consulta\".",
-                            colorIcono = ColorAcento
+                            colorIcono = ColorIconosInternos
                         )
                     } else {
                         MensajeExitoPestana(
@@ -214,7 +215,7 @@ fun ContenidoPestanaSalud(
                             icono = Icons.Filled.SearchOff,
                             titulo = "Sin resultados",
                             subtitulo = "No se encontraron contraseñas débiles para \"$consulta\".",
-                            colorIcono = ColorAcento
+                            colorIcono = ColorIconosInternos
                         )
                     } else {
                         MensajeExitoPestana(
@@ -267,7 +268,7 @@ fun ContenidoPestanaSalud(
                             icono = Icons.Filled.SearchOff,
                             titulo = "Sin resultados",
                             subtitulo = "No se encontraron contraseñas antiguas para \"$consulta\".",
-                            colorIcono = ColorAcento
+                            colorIcono = ColorIconosInternos
                         )
                     } else {
                         MensajeExitoPestana(
@@ -298,7 +299,7 @@ fun ContenidoPestanaSalud(
                         alIgnorar = alIgnorar,
                         infoDetalle = { entrada ->
                             val dias = diasDesde(entrada.modificadaEn, ahora)
-                            "hace $dias d" to ColorAcento
+                            "hace $dias d" to Advertencia
                         },
                         seleccionActiva = seleccionActiva,
                         seleccionados = seleccionados,
@@ -320,7 +321,7 @@ fun ContenidoPestanaSalud(
                             icono = Icons.Filled.SearchOff,
                             titulo = "Sin resultados",
                             subtitulo = "No se encontraron entradas ignoradas para \"$consulta\".",
-                            colorIcono = ColorAcento
+                            colorIcono = ColorIconosInternos
                         )
                     } else {
                         MensajeExitoPestana(

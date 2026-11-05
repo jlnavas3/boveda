@@ -109,11 +109,11 @@ fun PantallaOrganizacionLista(
                     mostrarId = ajustes.mostrarIdsAjustes
                 ) {
                     ComponenteNavegacion(
-                        titulo = "Indicadores de contenido",
+                        titulo = "Indicadores de tarjetas",
                         icono = null,
                         idFila = "02-APA-DES-IND",
                         mostrarId = ajustes.mostrarIdsAjustes,
-                        alPulsar = { vm.ir(Pantalla.OrganizacionIndicadores()) }
+                        alPulsar = { vm.ir(Pantalla.ColoresDatos("02-APA-DES-IND")) }
                     )
                 }
 

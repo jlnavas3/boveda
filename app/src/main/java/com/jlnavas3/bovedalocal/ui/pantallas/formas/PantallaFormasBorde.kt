@@ -90,7 +90,7 @@ fun PantallaFormasBorde(
                 }
 
                 ComponenteRadio(
-                    titulo = if (clave == "ninguno") "$etiqueta (Predeterminado)" else etiqueta,
+                    titulo = if (clave == com.jlnavas3.bovedalocal.data.AjustesDefaults.Formas.ESTILO_BORDE) "$etiqueta (Predeterminado)" else etiqueta,
                     icono = null,
                     seleccionado = activo,
                     alSeleccionar = {

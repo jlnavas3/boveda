@@ -20,6 +20,7 @@ import com.jlnavas3.bovedalocal.ui.componentes.TipoBotonTexto
 import com.jlnavas3.bovedalocal.ui.pantallas.categorias.DialogoAsignarCategorias
 import com.jlnavas3.bovedalocal.ui.pantallas.categorias.DialogoEditarCategoria
 import com.jlnavas3.bovedalocal.ui.pantallas.cxf.DialogoExportacionDirectaCxf
+import com.jlnavas3.bovedalocal.ui.pantallas.lista.unificar.DialogoConfirmarUnificacion
 
 /**
  * Gestor modular de diálogos de acción para la pantalla principal y modo de selección múltiple.
@@ -45,6 +46,7 @@ fun DialogosSeleccionAcciones(
     alDescartarRenombrarSeleccion: () -> Unit,
     entradasParaTransferirCxf: List<Entrada>?,
     alDescartarTransferirCxf: () -> Unit,
+    alAbrirAjustesCxf: (() -> Unit)? = null,
     mostrarDialogoExportarCxf: Boolean,
     estado: EstadoBoveda,
     alDescartarExportarCxf: () -> Unit,
@@ -61,7 +63,10 @@ fun DialogosSeleccionAcciones(
     alDescartarEditarCrearCategoria: () -> Unit,
     categoriaParaEliminar: Categoria?,
     alConfirmarEliminarCategoria: (Categoria) -> Unit,
-    alDescartarEliminarCategoria: () -> Unit
+    alDescartarEliminarCategoria: () -> Unit,
+    entradasParaUnificar: List<Entrada>? = null,
+    alConfirmarUnificar: ((principal: Entrada, secundarias: List<Entrada>) -> Unit)? = null,
+    alDescartarUnificar: (() -> Unit)? = null
 ) {
     if (mostrarDialogoFiltros) {
         DialogoFiltrosLista(
@@ -101,7 +106,20 @@ fun DialogosSeleccionAcciones(
         DialogoExportacionDirectaCxf(
             entradas = entradasSeleccionadas,
             esSeleccionPersonalizada = true,
-            alCerrar = alDescartarTransferirCxf
+            alCerrar = alDescartarTransferirCxf,
+            alAbrirAjustes = alAbrirAjustesCxf
+        )
+    }
+
+    entradasParaUnificar?.let { listaParaUnificar ->
+        DialogoConfirmarUnificacion(
+            entradas = listaParaUnificar,
+            alConfirmar = { principal, secundarias ->
+                alConfirmarUnificar?.invoke(principal, secundarias)
+            },
+            alDescartar = {
+                alDescartarUnificar?.invoke()
+            }
         )
     }
 
@@ -109,7 +127,8 @@ fun DialogosSeleccionAcciones(
         DialogoExportacionDirectaCxf(
             entradas = estado.entradas,
             esSeleccionPersonalizada = false,
-            alCerrar = alDescartarExportarCxf
+            alCerrar = alDescartarExportarCxf,
+            alAbrirAjustes = alAbrirAjustesCxf
         )
     }
 

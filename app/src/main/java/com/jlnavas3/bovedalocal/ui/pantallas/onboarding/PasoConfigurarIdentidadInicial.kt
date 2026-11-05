@@ -4,15 +4,17 @@
  * See LICENSE file in the project root for full license information.
  */
 
+@file:OptIn(androidx.compose.foundation.layout.ExperimentalLayoutApi::class)
+
 package com.jlnavas3.bovedalocal.ui.pantallas.onboarding
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -78,7 +80,7 @@ fun PasoConfigurarIdentidadInicial(
     Scaffold(
         topBar = {
             BarraSuperiorPantalla(
-                titulo = "Tu primera identidad",
+                titulo = "Tu primer perfil",
                 idEtiqueta = "01-ONB-IDE",
                 alVolver = alVolver,
                 conSeparador = scrollState.value > 0,
@@ -111,7 +113,7 @@ fun PasoConfigurarIdentidadInicial(
             )
 
             TextoSubtitulo(
-                texto = "Asocia tu cuenta de correo habitual a esta identidad. Así tus credenciales se vincularán de forma automática y tu correo real no quedará expuesto a miradas indiscretas.",
+                texto = "Asocia tu cuenta de correo habitual a este perfil. Así tus credenciales se vincularán de forma automática y tu correo real no quedará expuesto a miradas indiscretas.",
                 alineacion = TextAlign.Center,
                 modifier = Modifier.padding(horizontal = 8.dp)
             )
@@ -138,18 +140,17 @@ fun PasoConfigurarIdentidadInicial(
                     modifier = Modifier.padding(bottom = 6.dp)
                 )
 
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .horizontalScroll(rememberScrollState()),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                FlowRow(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     PaletaColoresIdentidad.forEach { hex ->
                         val colorActual = parsearColorO(hex, ColorAcento)
                         val seleccionado = colorHex.equals(hex, ignoreCase = true)
                         Box(
                             modifier = Modifier
-                                .size(32.dp)
+                                .size(28.dp)
                                 .clip(CircleShape)
                                 .background(colorActual)
                                 .border(
@@ -165,7 +166,7 @@ fun PasoConfigurarIdentidadInicial(
                                     imageVector = Icons.Filled.Check,
                                     contentDescription = null,
                                     tint = Color.White,
-                                    modifier = Modifier.size(16.dp)
+                                    modifier = Modifier.size(15.dp)
                                 )
                             }
                         }

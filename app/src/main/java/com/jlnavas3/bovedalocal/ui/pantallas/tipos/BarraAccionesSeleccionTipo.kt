@@ -33,6 +33,15 @@ fun BarraAccionesSeleccionTipo(
     val todosSonFavoritos = remember(itemsSeleccionados) {
         itemsSeleccionados.isNotEmpty() && itemsSeleccionados.all { it.favorito }
     }
+    val tieneCredencialesCxf = remember(itemsSeleccionados) {
+        itemsSeleccionados.any {
+            it.tipo == com.jlnavas3.bovedalocal.data.TipoEntrada.LOGIN ||
+            it.tipo == com.jlnavas3.bovedalocal.data.TipoEntrada.PASSKEY ||
+            it.passkey != null ||
+            it.contrasena.isNotBlank() ||
+            !it.secretoTotp.isNullOrBlank()
+        }
+    }
 
     BarraInferiorSeleccion(
         cantidad = seleccionados.size,
@@ -51,11 +60,13 @@ fun BarraAccionesSeleccionTipo(
             val idsParam = seleccionados.joinToString(",")
             alRespaldar(idsParam)
         },
-        alTransferirCxf = {
-            haptica.tic()
-            val copia = itemsSeleccionados.toList()
-            alTransferirCxf(copia)
-        },
+        alTransferirCxf = if (tieneCredencialesCxf) {
+            {
+                haptica.tic()
+                val copia = itemsSeleccionados.toList()
+                alTransferirCxf(copia)
+            }
+        } else null,
         alRenombrar = {
             haptica.tic()
             val primerSeleccionado = todasLasEntradas.find { it.id == seleccionados.firstOrNull() }

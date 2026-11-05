@@ -9,28 +9,27 @@ package com.jlnavas3.bovedalocal.ui.pantallas.duplicados
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.CallMerge
 import androidx.compose.material.icons.automirrored.filled.CompareArrows
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import com.jlnavas3.bovedalocal.ui.componentes.seleccion.ItemAccionSeleccion
-import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorTarjetaAjustes
+import com.jlnavas3.bovedalocal.ui.componentes.seleccion.BotonAccionSeleccionIcono
+import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjustesFondo
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
-import com.jlnavas3.bovedalocal.ui.theme.CurvaturaEsquinas
+import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
 import com.jlnavas3.bovedalocal.ui.theme.EstiloBorde
 import com.jlnavas3.bovedalocal.ui.theme.GrosorBorde
 import com.jlnavas3.bovedalocal.ui.theme.Peligro
@@ -56,63 +55,68 @@ fun BarraAccionesDuplicados(
     val puedeCompararOUnificar = cantidad >= 2
     val puedeEliminar = cantidad >= 1
 
-    Box(
+    Surface(
+        color = ColorAjustesFondo,
         modifier = modifier
             .fillMaxWidth()
-            .navigationBarsPadding()
-            .padding(horizontal = 14.dp, vertical = 6.dp)
-            .shadow(16.dp, RoundedCornerShape(CurvaturaEsquinas))
-            .clip(RoundedCornerShape(CurvaturaEsquinas))
-            .background(ColorTarjetaAjustes)
             .then(
                 if (GrosorBorde > 0.dp && EstiloBorde != "ninguno") {
-                    Modifier.border(GrosorBorde, ColorBordeActual, RoundedCornerShape(CurvaturaEsquinas))
+                    Modifier.border(
+                        width = GrosorBorde,
+                        color = ColorBordeActual.copy(alpha = 0.5f)
+                    )
                 } else Modifier
             )
-            .padding(horizontal = 8.dp, vertical = 5.dp),
-        contentAlignment = Alignment.Center
     ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceEvenly,
-            verticalAlignment = Alignment.CenterVertically
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .navigationBarsPadding()
         ) {
-            // 1. Comparar
-            ItemAccionSeleccion(
-                icono = Icons.AutoMirrored.Filled.CompareArrows,
-                texto = "Comparar",
-                habilitado = puedeCompararOUnificar,
-                colorIcono = ColorAcento,
-                alPulsar = {
-                    haptica.toque()
-                    alComparar()
-                }
-            )
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(48.dp)
+                    .padding(horizontal = 8.dp),
+                horizontalArrangement = Arrangement.SpaceEvenly,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                // 1. Comparar
+                BotonAccionSeleccionIcono(
+                    icono = Icons.AutoMirrored.Filled.CompareArrows,
+                    descripcion = "Comparar",
+                    habilitado = puedeCompararOUnificar,
+                    colorIcono = ColorIconosInternos,
+                    alPulsar = {
+                        haptica.toque()
+                        alComparar()
+                    }
+                )
 
-            // 2. Unificar (Acción principal destacada)
-            ItemAccionSeleccion(
-                icono = Icons.AutoMirrored.Filled.CallMerge,
-                texto = "Unificar",
-                habilitado = puedeCompararOUnificar,
-                colorIcono = ColorAcento,
-                alPulsar = {
-                    haptica.toque()
-                    alUnificar()
-                }
-            )
+                // 2. Unificar
+                BotonAccionSeleccionIcono(
+                    icono = Icons.AutoMirrored.Filled.CallMerge,
+                    descripcion = "Unificar",
+                    habilitado = puedeCompararOUnificar,
+                    colorIcono = ColorIconosInternos,
+                    alPulsar = {
+                        haptica.toque()
+                        alUnificar()
+                    }
+                )
 
-            // 3. Eliminar
-            ItemAccionSeleccion(
-                icono = Icons.Filled.Delete,
-                texto = "Eliminar",
-                habilitado = puedeEliminar,
-                colorIcono = Peligro,
-                colorTexto = Peligro,
-                alPulsar = {
-                    haptica.error()
-                    alEliminar()
-                }
-            )
+                // 3. Eliminar
+                BotonAccionSeleccionIcono(
+                    icono = Icons.Filled.Delete,
+                    descripcion = "Eliminar",
+                    habilitado = puedeEliminar,
+                    colorIcono = ColorIconosInternos,
+                    alPulsar = {
+                        haptica.error()
+                        alEliminar()
+                    }
+                )
+            }
         }
     }
 }

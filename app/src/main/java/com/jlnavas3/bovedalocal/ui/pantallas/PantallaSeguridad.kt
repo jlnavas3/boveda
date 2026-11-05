@@ -29,6 +29,8 @@ import com.jlnavas3.bovedalocal.ui.Pantalla
 import com.jlnavas3.bovedalocal.ui.VaultViewModel
 import com.jlnavas3.bovedalocal.ui.componentes.BarraSuperiorPantalla
 import com.jlnavas3.bovedalocal.ui.componentes.DescripcionPantalla
+import com.jlnavas3.bovedalocal.ui.componentes.ajustes.AccionSaltoGrupo
+import com.jlnavas3.bovedalocal.ui.componentes.ajustes.BotonMenuOpcionesPantalla
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteGrupo
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteNavegacion
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteSeparador
@@ -53,7 +55,7 @@ fun PantallaSeguridad(
     val scrollState = rememberScrollState()
     var dialogoCambioMaestra by remember { mutableStateOf(false) }
 
-    ProveedorResaltadoAjustes(seccionDestino) {
+    ProveedorResaltadoAjustes(seccionDestino, scrollState) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -65,7 +67,15 @@ fun PantallaSeguridad(
                 mostrarId = ajustes.mostrarIdsAjustes,
                 alVolver = { vm.volverAtras() },
                 conSeparador = scrollState.value > 0,
-                colorFondo = ColorAjustesFondo
+                colorFondo = ColorAjustesFondo,
+                acciones = {
+                    BotonMenuOpcionesPantalla(
+                        grupos = listOf(
+                            AccionSaltoGrupo("01-SEG-G01", "Acceso y autenticación"),
+                            AccionSaltoGrupo("01-SEG-G02", "Credenciales y protección")
+                        )
+                    )
+                }
             )
 
             Column(
@@ -80,7 +90,7 @@ fun PantallaSeguridad(
                 // Grupo: Acceso y Bloqueo
                 ComponenteGrupo(
                     etiqueta = "Acceso y autenticación",
-                    idGrupo = "01-SEG-BIO-G01",
+                    idGrupo = "01-SEG-G01",
                     mostrarId = ajustes.mostrarIdsAjustes
                 ) {
                     ComponenteNavegacion(
@@ -129,7 +139,7 @@ fun PantallaSeguridad(
                 // Grupo: Credenciales y Cifrado
                 ComponenteGrupo(
                     etiqueta = "Credenciales y protección",
-                    idGrupo = "01-SEG-BIO-G02",
+                    idGrupo = "01-SEG-G02",
                     mostrarId = ajustes.mostrarIdsAjustes
                 ) {
                     ComponenteNavegacion(

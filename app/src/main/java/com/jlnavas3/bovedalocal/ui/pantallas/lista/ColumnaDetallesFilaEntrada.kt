@@ -6,7 +6,9 @@
 
 package com.jlnavas3.bovedalocal.ui.pantallas.lista
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -14,14 +16,16 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -30,6 +34,7 @@ import com.jlnavas3.bovedalocal.data.Entrada
 import com.jlnavas3.bovedalocal.data.TipoEntrada
 import com.jlnavas3.bovedalocal.ui.componentes.seguridad.TextoSeguroVisual
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
+import com.jlnavas3.bovedalocal.ui.theme.ColorFavorito
 import com.jlnavas3.bovedalocal.ui.theme.TextoPrincipal
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
 
@@ -51,9 +56,13 @@ fun ColumnaDetallesFilaEntrada(
     ocultarUsuario: Boolean,
     ocultarTotp: Boolean,
     estiloOcultamiento: String,
+    seguridadVisualActiva: Boolean = false,
     identidadAsociada: com.jlnavas3.bovedalocal.data.Identidad? = null,
     ocultarEmailIdentidad: Boolean = false,
     mostrarChipIdentidad: Boolean = true,
+    mostrarFavorito: Boolean = false,
+    alFavorito: (() -> Unit)? = null,
+    mostrarIndicadores: Boolean = true,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -70,25 +79,11 @@ fun ColumnaDetallesFilaEntrada(
             ) {
                 Text(
                     text = tituloMostrar,
-                    style = if (compacta) {
-                        MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold)
-                    } else {
-                        MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold, fontSize = 15.sp)
-                    },
+                    style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold),
                     color = if (resaltado) ColorAcento else TextoPrincipal,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
-
-                if (entrada.ignoradaEnSalud) {
-                    Spacer(Modifier.width(4.dp))
-                    Icon(
-                        imageVector = Icons.Filled.VisibilityOff,
-                        contentDescription = "Ignorada en salud",
-                        tint = TextoSecundario.copy(alpha = 0.55f),
-                        modifier = Modifier.size(13.dp)
-                    )
-                }
             }
 
             if (tieneTotp && secreto != null) {
@@ -120,26 +115,33 @@ fun ColumnaDetallesFilaEntrada(
                     )
                 }
             }
+
+            if (mostrarFavorito && alFavorito != null) {
+                Spacer(Modifier.width(6.dp))
+                Box(
+                    modifier = Modifier
+                        .size(if (compacta) 22.dp else 24.dp)
+                        .clip(CircleShape)
+                        .clickable(onClick = alFavorito),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.Star,
+                        contentDescription = "Favorito",
+                        tint = ColorFavorito,
+                        modifier = Modifier.size(if (compacta) 15.dp else 17.dp)
+                    )
+                }
+            }
         }
 
         Spacer(Modifier.height(2.dp))
 
-        val textoSubtitulo = when (entrada.tipo) {
-            TipoEntrada.PASSKEY -> "Passkey · ${entrada.passkey?.rpId ?: ""}"
-            TipoEntrada.NOTA -> "Nota segura"
-            TipoEntrada.LOGIN -> {
-                if (ocultarEmailIdentidad && identidadAsociada != null) {
-                    entrada.urls.firstOrNull() ?: entrada.notas.take(25).ifBlank { "Cuenta vinculada" }
-                } else {
-                    entrada.usuario.ifBlank { entrada.urls.firstOrNull() ?: "Sin usuario" }
-                }
-            }
-            else -> entrada.usuario.ifBlank {
-                entrada.camposPersonalizados.firstOrNull { it.valor.isNotBlank() }?.let {
-                    "${it.etiqueta}: ${if (it.esSensibleEfectivo) "••••" else it.valor}"
-                } ?: entrada.tipo.etiqueta
-            }
-        }
+        val textoSubtitulo = com.jlnavas3.bovedalocal.util.ResolverSubtituloEntrada.resolver(
+            entrada = entrada,
+            identidadAsociada = identidadAsociada,
+            ocultarEmailIdentidad = ocultarEmailIdentidad
+        )
         val esDatoUsuario = entrada.usuario.isNotBlank() && (
             entrada.tipo == TipoEntrada.LOGIN ||
             entrada.tipo == TipoEntrada.PASSKEY ||
@@ -153,34 +155,61 @@ fun ColumnaDetallesFilaEntrada(
             identidadAsociada.correosSecundarios.any { it.trim().equals(usuarioNormalizado, ignoreCase = true) }
         )
 
+        val coincideConDocumentoIdentidad = identidadAsociada != null && (
+            (usuarioNormalizado.isNotBlank() && !identidadAsociada.numeroDocumento.isNullOrBlank() &&
+                com.jlnavas3.bovedalocal.util.esMismoDocumento(identidadAsociada.numeroDocumento, usuarioNormalizado)) ||
+            (entrada.camposPersonalizados.any { cp ->
+                cp.valor.isNotBlank() && !identidadAsociada.numeroDocumento.isNullOrBlank() &&
+                    com.jlnavas3.bovedalocal.util.esMismoDocumento(identidadAsociada.numeroDocumento, cp.valor)
+            })
+        )
+
+        val sustituyeTextoPorInsignia = (coincideConCorreoIdentidad || coincideConDocumentoIdentidad) && mostrarChipIdentidad
+
         Row(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            if (coincideConCorreoIdentidad && mostrarChipIdentidad) {
-                com.jlnavas3.bovedalocal.ui.pantallas.identidades.InsigniaIdentidadEntrada(
-                    identidad = identidadAsociada!!,
-                    compacta = compacta
-                )
-            } else {
-                TextoSeguroVisual(
-                    texto = textoSubtitulo,
-                    oculto = debeOcultarSubtitulo,
-                    estilo = estiloOcultamiento,
-                    estiloTexto = if (compacta) MaterialTheme.typography.labelSmall else MaterialTheme.typography.bodySmall.copy(fontSize = 12.5.sp),
-                    colorTexto = TextoSecundario,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier.weight(1f, fill = false)
-                )
-
-                if (identidadAsociada != null && mostrarChipIdentidad) {
-                    Spacer(Modifier.width(6.dp))
+            Row(
+                modifier = Modifier.weight(1f),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                if (sustituyeTextoPorInsignia && identidadAsociada != null) {
                     com.jlnavas3.bovedalocal.ui.pantallas.identidades.InsigniaIdentidadEntrada(
                         identidad = identidadAsociada,
-                        compacta = compacta
+                        compacta = compacta,
+                        esDocumento = coincideConDocumentoIdentidad,
+                        modifier = Modifier.weight(1f, fill = false)
                     )
+                } else {
+                    TextoSeguroVisual(
+                        texto = textoSubtitulo,
+                        oculto = debeOcultarSubtitulo,
+                        estilo = estiloOcultamiento,
+                        estiloTexto = MaterialTheme.typography.labelSmall,
+                        colorTexto = TextoSecundario,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.weight(1f, fill = false)
+                    )
+
+                    if (identidadAsociada != null && mostrarChipIdentidad) {
+                        Spacer(Modifier.width(6.dp))
+                        com.jlnavas3.bovedalocal.ui.pantallas.identidades.InsigniaIdentidadEntrada(
+                            identidad = identidadAsociada,
+                            compacta = compacta,
+                            esDocumento = false
+                        )
+                    }
                 }
+            }
+
+            if (mostrarIndicadores && (com.jlnavas3.bovedalocal.ui.theme.EstiloIndicadores == "puntos" || com.jlnavas3.bovedalocal.ui.theme.EstiloIndicadores == "iconos")) {
+                Spacer(Modifier.width(8.dp))
+                IndicadorContenidoTarjeta(
+                    entrada = entrada,
+                    estilo = com.jlnavas3.bovedalocal.ui.theme.EstiloIndicadores
+                )
             }
         }
     }

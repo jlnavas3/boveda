@@ -36,7 +36,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteGrupo
+import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteGrupoColapsable
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.SliderBoveda
 import com.jlnavas3.bovedalocal.ui.componentes.colorAhsv
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjusteGris
@@ -65,9 +65,11 @@ fun SeccionAcentoEsencialLab(
     modifier: Modifier = Modifier
 ) {
     with(estadoLab) {
-        ComponenteGrupo(
-            etiqueta = "Acento Esencial (10% Color)",
+        ComponenteGrupoColapsable(
+            etiqueta = "Acento esencial",
+            subtitulo = "(10% interfaz)",
             icono = Icons.Filled.Security,
+            expandidoInicial = false,
             modifier = modifier
         ) {
             Column(modifier = Modifier.padding(16.dp)) {
@@ -79,19 +81,27 @@ fun SeccionAcentoEsencialLab(
 
                 Spacer(Modifier.height(14.dp))
 
-                // Fila 1: Acentos Cromáticos
+                // Sección 1: Acentos Cromáticos (2 filas de 6)
                 Text(
                     text = "Acentos Cromáticos",
                     style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.SemiBold),
                     color = ColorAjusteGris
                 )
                 Spacer(Modifier.height(8.dp))
+
+                val cromFila1 = acentosPredefinidos.take(6)
+                val cromFila2 = acentosPredefinidos.drop(6)
+
+                // Fila 1 de Cromáticos
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    acentosPredefinidos.forEach { (color, nombre) ->
-                        val seleccionado = !esPersonalizadoActivo && colorAcentoActual == color
+                    cromFila1.forEach { (color, nombre) ->
+                        val seleccionado = !esPersonalizadoActivo &&
+                            kotlin.math.abs(colorAcentoActual.red - color.red) < 0.02f &&
+                            kotlin.math.abs(colorAcentoActual.green - color.green) < 0.02f &&
+                            kotlin.math.abs(colorAcentoActual.blue - color.blue) < 0.02f
                         Box(
                             modifier = Modifier
                                 .size(42.dp)
@@ -127,21 +137,126 @@ fun SeccionAcentoEsencialLab(
                     }
                 }
 
+                if (cromFila2.isNotEmpty()) {
+                    Spacer(Modifier.height(10.dp))
+                    // Fila 2 de Cromáticos
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        cromFila2.forEach { (color, nombre) ->
+                            val seleccionado = !esPersonalizadoActivo &&
+                                kotlin.math.abs(colorAcentoActual.red - color.red) < 0.02f &&
+                                kotlin.math.abs(colorAcentoActual.green - color.green) < 0.02f &&
+                                kotlin.math.abs(colorAcentoActual.blue - color.blue) < 0.02f
+                            Box(
+                                modifier = Modifier
+                                    .size(42.dp)
+                                    .clip(CircleShape)
+                                    .background(color)
+                                    .border(
+                                        width = if (seleccionado) 3.dp else 1.dp,
+                                        color = if (seleccionado) ColorTextoAjustes else colorBorde,
+                                        shape = CircleShape
+                                    )
+                                    .clickable {
+                                        haptica.tic()
+                                        colorAcentoActual = color
+                                        esPersonalizadoActivo = false
+                                        val (h, s, v) = colorAhsv(color)
+                                        huePersonalizado = h
+                                        satPersonalizado = s
+                                        valPersonalizado = v
+                                        alfaPersonalizado = color.alpha
+                                        marcarModificado()
+                                    },
+                                contentAlignment = Alignment.Center
+                            ) {
+                                if (seleccionado) {
+                                    Icon(
+                                        imageVector = Icons.Filled.Check,
+                                        contentDescription = nombre,
+                                        tint = colorContraste(color),
+                                        modifier = Modifier.size(20.dp)
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+
                 Spacer(Modifier.height(16.dp))
 
-                // Fila 2: Matices Neutros y Personalizado
+                // Sección 2: Matices Neutros y Personalizado (2 filas de 6)
                 Text(
                     text = "Matices Neutros Sofisticados y Personalizado",
                     style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.SemiBold),
                     color = ColorAjusteGris
                 )
                 Spacer(Modifier.height(8.dp))
+
+                val neutrosFila1 = acentosGrisesNeutros.take(5)
+                val neutrosFila2 = acentosGrisesNeutros.drop(5)
+
+                // Fila 1 de Neutros (5 elementos)
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    acentosGrisesNeutros.forEach { (color, nombre) ->
-                        val seleccionado = !esPersonalizadoActivo && colorAcentoActual == color
+                    neutrosFila1.forEach { (color, nombre) ->
+                        val seleccionado = !esPersonalizadoActivo &&
+                            kotlin.math.abs(colorAcentoActual.red - color.red) < 0.02f &&
+                            kotlin.math.abs(colorAcentoActual.green - color.green) < 0.02f &&
+                            kotlin.math.abs(colorAcentoActual.blue - color.blue) < 0.02f
+                        Box(
+                            modifier = Modifier
+                                .size(42.dp)
+                                .clip(CircleShape)
+                                .background(color)
+                                .border(
+                                    width = if (seleccionado) 3.dp else 1.dp,
+                                    color = if (seleccionado) ColorTextoAjustes else colorBorde,
+                                    shape = CircleShape
+                                )
+                                .clickable {
+                                    haptica.tic()
+                                    colorAcentoActual = color
+                                    esPersonalizadoActivo = false
+                                    val (h, s, v) = colorAhsv(color)
+                                    huePersonalizado = h
+                                    satPersonalizado = s
+                                    valPersonalizado = v
+                                    alfaPersonalizado = color.alpha
+                                    marcarModificado()
+                                },
+                            contentAlignment = Alignment.Center
+                        ) {
+                            if (seleccionado) {
+                                Icon(
+                                    imageVector = Icons.Filled.Check,
+                                    contentDescription = nombre,
+                                    tint = colorContraste(color),
+                                    modifier = Modifier.size(20.dp)
+                                )
+                            }
+                        }
+                    }
+                    // Espaciador equivalente para alinear visualmente a 6 columnas
+                    Spacer(modifier = Modifier.size(42.dp))
+                }
+
+                Spacer(Modifier.height(10.dp))
+
+                // Fila 2 de Neutros (5 elementos + Botón Personalizado = 6)
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    neutrosFila2.forEach { (color, nombre) ->
+                        val seleccionado = !esPersonalizadoActivo &&
+                            kotlin.math.abs(colorAcentoActual.red - color.red) < 0.02f &&
+                            kotlin.math.abs(colorAcentoActual.green - color.green) < 0.02f &&
+                            kotlin.math.abs(colorAcentoActual.blue - color.blue) < 0.02f
                         Box(
                             modifier = Modifier
                                 .size(42.dp)
@@ -176,7 +291,7 @@ fun SeccionAcentoEsencialLab(
                         }
                     }
 
-                    // Botón Personalizado
+                    // Botón Personalizado en el 6º slot
                     val seleccionadoPersonalizado = esPersonalizadoActivo
                     Box(
                         modifier = Modifier

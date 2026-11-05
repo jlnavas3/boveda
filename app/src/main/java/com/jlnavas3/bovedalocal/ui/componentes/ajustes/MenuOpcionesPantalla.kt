@@ -107,8 +107,8 @@ fun BotonMenuOpcionesPantalla(
                 com.jlnavas3.bovedalocal.ui.componentes.ElementoMenuCompacto(
                     texto = textoRestablecer,
                     icono = Icons.Filled.RestartAlt,
-                    colorIcono = Peligro,
-                    colorTexto = Peligro,
+                    colorIcono = ColorIconosInternos,
+                    colorTexto = TextoPrincipal,
                     onClick = {
                         menuAbierto = false
                         Haptica(contexto).tic()

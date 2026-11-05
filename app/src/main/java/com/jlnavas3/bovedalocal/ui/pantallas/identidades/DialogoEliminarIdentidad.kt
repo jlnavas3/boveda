@@ -26,13 +26,13 @@ fun DialogoEliminarIdentidad(
     alDescartar: () -> Unit
 ) {
     val mensaje = if (cantidadEntradasVinculadas > 0) {
-        "¿Deseas eliminar la identidad '${identidad.nombre}'?\n\nHay $cantidadEntradasVinculadas cuenta(s) vinculada(s). Las credenciales no se borrarán, solo quedarán sin identidad asociada."
+        "¿Deseas eliminar el perfil '${identidad.nombre}'?\n\nHay $cantidadEntradasVinculadas cuenta(s) vinculada(s). Las credenciales no se borrarán, solo quedarán sin perfil asociado."
     } else {
-        "¿Deseas eliminar la identidad '${identidad.nombre}'?\n\nEsta acción no se puede deshacer."
+        "¿Deseas eliminar el perfil '${identidad.nombre}'?\n\nEsta acción no se puede deshacer."
     }
 
     DialogoConfirmacionBoveda(
-        titulo = "Eliminar identidad",
+        titulo = "Eliminar perfil",
         mensaje = mensaje,
         textoConfirmar = "Eliminar",
         textoCancelar = "Cancelar",

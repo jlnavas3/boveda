@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
@@ -26,12 +27,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
 import com.jlnavas3.bovedalocal.data.AjustesApp
 import com.jlnavas3.bovedalocal.data.Entrada
-import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
+import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
 import com.jlnavas3.bovedalocal.ui.theme.Peligro
 import com.jlnavas3.bovedalocal.util.claveAgrupacionPorTitulo
 
 /**
  * Microcomponente que gestiona la pestaña de contraseñas repetidas en la auditoría de salud.
+ * Enumera formalmente cada conjunto como Grupo 1, Grupo 2, etc. ordenados por impacto.
  */
 @Composable
 fun PestanaRepetidasSalud(
@@ -71,7 +73,7 @@ fun PestanaRepetidasSalud(
                 icono = Icons.Filled.SearchOff,
                 titulo = "Sin resultados",
                 subtitulo = "No se encontraron contraseñas repetidas para \"$consulta\".",
-                colorIcono = ColorAcento
+                colorIcono = ColorIconosInternos
             )
         } else {
             MensajeExitoPestana(
@@ -81,6 +83,10 @@ fun PestanaRepetidasSalud(
             )
         }
     } else {
+        val gruposOrdenados = remember(gruposFiltrados) {
+            gruposFiltrados.sortedByDescending { it.first.size }
+        }
+
         LazyColumn(
             state = estadoLista,
             modifier = Modifier.fillMaxSize(),
@@ -107,13 +113,17 @@ fun PestanaRepetidasSalud(
                     )
                 }
             } else {
-                items(gruposFiltrados, key = { it.first.first().contrasena }) { (grupoOriginal, entradasVisibles) ->
+                itemsIndexed(
+                    items = gruposOrdenados,
+                    key = { _, item -> item.first.first().contrasena }
+                ) { index, (grupoOriginal, entradasVisibles) ->
                     val claveGrupo = remember(grupoOriginal) { "rep_${grupoOriginal.first().contrasena.hashCode()}" }
                     val entradasOrdenadas = remember(entradasVisibles) {
                         entradasVisibles.sortedBy { claveAgrupacionPorTitulo(it) }
                     }
                     TarjetaGrupoRepetido(
                         grupo = entradasOrdenadas,
+                        nombreGrupo = "Grupo ${index + 1}",
                         totalEnGrupo = grupoOriginal.size,
                         alCambiarClave = { alCambiarClave(it) },
                         alVerDetalle = { alVerDetalle(it) },

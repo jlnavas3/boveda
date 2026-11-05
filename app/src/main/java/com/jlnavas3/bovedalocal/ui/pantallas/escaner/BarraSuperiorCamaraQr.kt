@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -25,6 +26,7 @@ import androidx.compose.material.icons.filled.FlashlightOff
 import androidx.compose.material.icons.filled.FlashlightOn
 import androidx.compose.material.icons.filled.Image
 import androidx.compose.material.icons.filled.Keyboard
+import androidx.compose.material.icons.filled.QrCode
 import androidx.compose.material.icons.filled.Tune
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -53,25 +55,25 @@ fun BarraSuperiorCamaraQr(
     alEscanearImagen: () -> Unit,
     alEntradaManual: () -> Unit,
     alAbrirAjustes: () -> Unit,
+    alMostrarAnfitrion: (() -> Unit)? = null,
     alVolver: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .statusBarsPadding()
-            .padding(horizontal = 16.dp, vertical = 8.dp)
+            .padding(horizontal = 16.dp, vertical = 6.dp)
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
+            verticalAlignment = Alignment.Top,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             // Botón Volver
             IconButton(
                 onClick = alVolver,
                 modifier = Modifier
-                    .size(42.dp)
+                    .size(38.dp)
                     .clip(CircleShape)
                     .background(Color.Black.copy(alpha = 0.5f))
             ) {
@@ -85,7 +87,7 @@ fun BarraSuperiorCamaraQr(
             // Acciones rápidas flotantes: Luz, Escanear imagen, Manual, Ajustes
             Row(
                 horizontalArrangement = Arrangement.spacedBy(6.dp),
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.Top
             ) {
                 // Luz / Flash
                 BotonAccionSuperior(
@@ -110,6 +112,16 @@ fun BarraSuperiorCamaraQr(
                     activo = false,
                     alPulsar = alEntradaManual
                 )
+
+                // Mostrar QR (Anfitrión)
+                if (alMostrarAnfitrion != null) {
+                    BotonAccionSuperior(
+                        icono = Icons.Filled.QrCode,
+                        etiqueta = "Mostrar\nQR",
+                        activo = false,
+                        alPulsar = alMostrarAnfitrion
+                    )
+                }
 
                 // Ajustes de Cámara
                 BotonAccionSuperior(
@@ -156,16 +168,21 @@ private fun BotonAccionSuperior(
             )
         }
         Spacer(Modifier.height(3.dp))
-        Text(
-            text = etiqueta,
-            color = if (activo) ColorAcento else Color.White,
-            style = MaterialTheme.typography.labelSmall.copy(
-                fontSize = 10.sp,
-                fontWeight = FontWeight.Medium,
-                lineHeight = 11.sp
-            ),
-            textAlign = androidx.compose.ui.text.style.TextAlign.Center,
-            maxLines = 2
-        )
+        Box(
+            modifier = Modifier.defaultMinSize(minHeight = 22.dp),
+            contentAlignment = Alignment.TopCenter
+        ) {
+            Text(
+                text = etiqueta,
+                color = if (activo) ColorAcento else Color.White,
+                style = MaterialTheme.typography.labelSmall.copy(
+                    fontSize = 10.sp,
+                    fontWeight = FontWeight.Medium,
+                    lineHeight = 11.sp
+                ),
+                textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+                maxLines = 2
+            )
+        }
     }
 }

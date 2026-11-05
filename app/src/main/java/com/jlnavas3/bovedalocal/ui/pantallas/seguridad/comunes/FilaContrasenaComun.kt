@@ -30,9 +30,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorTarjetaAjustes
+import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
 import com.jlnavas3.bovedalocal.ui.theme.CurvaturaEsquinas
 import com.jlnavas3.bovedalocal.ui.theme.Menta
-import com.jlnavas3.bovedalocal.ui.theme.Peligro
 import com.jlnavas3.bovedalocal.ui.theme.TextoPrincipal
 
 @Composable
@@ -90,7 +90,7 @@ fun FilaContrasenaComun(
                 Icon(
                     imageVector = Icons.Filled.Delete,
                     contentDescription = "Excluir de comunes",
-                    tint = Peligro,
+                    tint = ColorIconosInternos,
                     modifier = Modifier.size(18.dp)
                 )
             }

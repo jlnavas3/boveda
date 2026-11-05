@@ -47,7 +47,7 @@ fun SeccionCategoriasEdicion(
         categoriasDisponibles.filter { categoriasSeleccionadas.contains(it.id) }
     }
 
-    var expandido by remember { mutableStateOf(seleccionadas.isNotEmpty()) }
+    var expandido by remember { mutableStateOf(false) }
 
     val resumen = when {
         seleccionadas.isEmpty() -> "Sin categorías asignadas"

@@ -90,17 +90,50 @@ object FormateadorCampos {
     fun parsearFecha(valor: String, formato: String): Triple<Int, Int, Int>? {
         if (valor.isBlank()) return null
         return try {
-            val delimitador = if (valor.contains("-")) "-" else "/"
+            val delimitador = when {
+                valor.contains("-") -> "-"
+                valor.contains("/") -> "/"
+                valor.contains(".") -> "."
+                else -> return null
+            }
             val partes = valor.split(delimitador).map { it.trim().toInt() }
             if (partes.size != 3) return null
-            when (formato) {
-                FECHA_AAAA_MM_DD -> Triple(partes[0], partes[1] - 1, partes[2])
-                FECHA_MM_DD_AAAA -> Triple(partes[2], partes[0] - 1, partes[1])
-                else -> Triple(partes[2], partes[1] - 1, partes[0]) // DD/MM/AAAA o DD-MM-AAAA
+            if (partes[0] > 1000) {
+                // Formato año primero: AAAA-MM-DD
+                Triple(partes[0], partes[1] - 1, partes[2])
+            } else if (partes[2] > 1000) {
+                // Formato año al final: DD/MM/AAAA o MM/DD/AAAA
+                if (partes[0] > 12) {
+                    // El primer componente es > 12, forzosamente es el día
+                    Triple(partes[2], partes[1] - 1, partes[0])
+                } else if (partes[1] > 12) {
+                    // El segundo componente es > 12, forzosamente es el día
+                    Triple(partes[2], partes[0] - 1, partes[1])
+                } else if (formato == FECHA_MM_DD_AAAA) {
+                    Triple(partes[2], partes[0] - 1, partes[1])
+                } else {
+                    Triple(partes[2], partes[1] - 1, partes[0])
+                }
+            } else {
+                when (formato) {
+                    FECHA_AAAA_MM_DD -> Triple(partes[0], partes[1] - 1, partes[2])
+                    FECHA_MM_DD_AAAA -> Triple(partes[2], partes[0] - 1, partes[1])
+                    else -> Triple(partes[2], partes[1] - 1, partes[0])
+                }
             }
         } catch (_: Exception) {
             null
         }
+    }
+
+    /**
+     * Normaliza una fecha en texto cualquiera y la re-formatea según el formato configurado en ajustes.
+     * Si no puede parsearse, devuelve la cadena original sin alterarla.
+     */
+    fun normalizarYFormatearFecha(valor: String, formatoDestino: String): String {
+        if (valor.isBlank()) return valor
+        val parsed = parsearFecha(valor, formatoDestino) ?: return valor
+        return formatearFecha(parsed.first, parsed.second, parsed.third, formatoDestino)
     }
 
     fun formatearHora(hora: Int, minuto: Int, formato: String): String {
@@ -189,13 +222,27 @@ object FormateadorCampos {
 
     fun aplicarMascaraExpiracion(raw: String, formato: String = EXPIRACION_MMAA): String {
         val soloDigitos = raw.filter { it.isDigit() }
-        val maxDigitos = if (formato == EXPIRACION_MMAAAA) 6 else 4
-        val limitados = soloDigitos.take(maxDigitos)
-        if (limitados.isEmpty()) return ""
-        return if (limitados.length <= 2) {
-            limitados
+        if (soloDigitos.isEmpty()) return ""
+        if (formato == EXPIRACION_MMAA) {
+            val normalizados = if (soloDigitos.length >= 6) {
+                // De MMYYYY a MMAA (ej. 122028 -> 1228)
+                soloDigitos.substring(0, 2) + soloDigitos.substring(soloDigitos.length - 2)
+            } else {
+                soloDigitos.take(4)
+            }
+            return if (normalizados.length <= 2) normalizados
+            else "${normalizados.substring(0, 2)}/${normalizados.substring(2)}"
         } else {
-            "${limitados.substring(0, 2)}/${limitados.substring(2)}"
+            val normalizados = if (soloDigitos.length == 4) {
+                // De MMAA a MMYYYY (ej. 1228 -> 122028)
+                val yy = soloDigitos.substring(2, 4)
+                val anioCompleto = if (yy.toIntOrNull() != null && yy.toInt() < 100) "20$yy" else yy
+                soloDigitos.substring(0, 2) + anioCompleto
+            } else {
+                soloDigitos.take(6)
+            }
+            return if (normalizados.length <= 2) normalizados
+            else "${normalizados.substring(0, 2)}/${normalizados.substring(2)}"
         }
     }
 

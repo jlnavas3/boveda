@@ -26,6 +26,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import com.jlnavas3.bovedalocal.ui.componentes.BotonBoveda
 import com.jlnavas3.bovedalocal.ui.componentes.VarianteBoton
+import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorTarjetaAjustes
 import com.jlnavas3.bovedalocal.ui.preview.BovedaPreview
 import com.jlnavas3.bovedalocal.ui.theme.BovedaTheme
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
@@ -47,8 +48,8 @@ fun BarraInferiorAccionNormalizador(
     val tieneBorde = GrosorBorde > 0.dp && EstiloBorde != "ninguno"
 
     Surface(
-        color = ColorTarjetas,
-        tonalElevation = 8.dp,
+        color = ColorTarjetaAjustes,
+        tonalElevation = 0.dp,
         modifier = modifier
             .fillMaxWidth()
             .clip(formaBarra)

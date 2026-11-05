@@ -10,9 +10,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-
-private val ColorEstrellaFavoritos = Color(0xFFF59E0B)
+import com.jlnavas3.bovedalocal.ui.theme.ColorFavorito
 
 /**
  * Píldora ultra-compacta para el filtro de favoritos activo.
@@ -30,7 +28,8 @@ fun PildoraFavoritos(
         icono = Icons.Filled.Star,
         texto = null,
         activo = true,
-        colorAcento = ColorEstrellaFavoritos,
+        colorAcento = ColorFavorito,
+        descripcionHud = "Solo favoritos",
         alPulsar = alAlternarFavoritos,
         alLimpiar = alAlternarFavoritos,
         modifier = modifier

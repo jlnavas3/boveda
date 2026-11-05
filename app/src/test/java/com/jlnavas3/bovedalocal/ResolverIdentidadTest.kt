@@ -51,7 +51,7 @@ class ResolverIdentidadTest {
             id = "e1",
             titulo = "Servicio X",
             usuario = "juan@empresa.com", // Coincide con Trabajo
-            identidadId = "id-pers"       // Pero tiene asignado Personal explícitamente
+            perfilId = "id-pers"       // Pero tiene asignado Personal explícitamente
         )
         val res = resolverIdentidadParaEntrada(entrada, listaIdentidades)
         assertNotNull(res)
@@ -109,11 +109,11 @@ class ResolverIdentidadTest {
             id = "e1",
             titulo = "Banco",
             usuario = "juan@empresa.com",
-            identidadId = "id-trab"
+            perfilId = "id-trab"
         )
         val boveda = ContenidoBoveda(
             entradas = listOf(entrada),
-            identidades = listaIdentidades
+            perfiles = listaIdentidades
         )
 
         val jsonStr = json.encodeToString(boveda)
@@ -135,7 +135,7 @@ class ResolverIdentidadTest {
         )
         val boveda = ContenidoBoveda(
             entradas = emptyList(),
-            identidades = listOf(identidadInicial)
+            perfiles = listOf(identidadInicial)
         )
         val jsonStr = json.encodeToString(boveda)
         val recuperada = json.decodeFromString<ContenidoBoveda>(jsonStr)

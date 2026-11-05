@@ -14,9 +14,11 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -40,6 +42,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.jlnavas3.bovedalocal.crypto.Wordlist
@@ -308,7 +311,11 @@ fun PantallaDiccionarioPalabras(
                 }
 
                 // Índice lateral posicionado idénticamente a la pantalla principal
-                if (ajustes.mostrarIndiceAlfabetico && palabrasFiltradas.size >= 10 && queryBusqueda.isBlank()) {
+                val insetsIme = WindowInsets.ime
+                val densidad = LocalDensity.current
+                val tecladoVisible = insetsIme.getBottom(densidad) > 0
+
+                if (ajustes.mostrarIndiceAlfabetico && palabrasFiltradas.size >= 10 && queryBusqueda.isBlank() && !tecladoVisible) {
                     IndiceAlfabeticoPalabras(
                         ajustes = ajustes,
                         mapaIndices = mapaIndices,
@@ -322,26 +329,13 @@ fun PantallaDiccionarioPalabras(
             }
         }
 
-        // FAB para añadir palabra
-        FloatingActionButton(
-            onClick = {
+        BarraAccionesDiccionarioPalabras(
+            alAnadirPalabra = {
                 haptica.toque()
                 mostrarDialogoAnadir = true
             },
-            containerColor = ColorAcento,
-            contentColor = ColorSobreAcento,
-            shape = formaBorde,
-            modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .padding(20.dp)
-                .then(
-                    if (GrosorBorde > 0.dp && EstiloBorde != "ninguno") {
-                        Modifier.border(GrosorBorde, ColorBordeActual, formaBorde)
-                    } else Modifier
-                )
-        ) {
-            Icon(Icons.Filled.Add, contentDescription = "Añadir palabra")
-        }
+            modifier = Modifier.align(Alignment.BottomCenter)
+        )
     }
 
     // Diálogos

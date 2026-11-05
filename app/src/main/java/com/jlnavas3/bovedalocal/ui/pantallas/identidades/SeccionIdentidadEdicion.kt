@@ -50,7 +50,7 @@ fun SeccionIdentidadEdicion(
     FilaSeccionColapsableEdicion(
         icono = Icons.Filled.AccountCircle,
         colorIcono = colorBase,
-        titulo = "Identidad",
+        titulo = "Perfil",
         resumen = resumen,
         expandido = expandido,
         alAlternarExpandido = { expandido = !expandido },

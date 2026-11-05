@@ -12,5 +12,7 @@ package com.jlnavas3.bovedalocal.ui
 data class AccionShortcutPendiente(
     val accion: String,
     val tituloInicial: String = "",
-    val urlInicial: String = ""
+    val urlInicial: String = "",
+    val tipoInicial: com.jlnavas3.bovedalocal.data.TipoEntrada? = null,
+    val telefonoInicial: String = ""
 )

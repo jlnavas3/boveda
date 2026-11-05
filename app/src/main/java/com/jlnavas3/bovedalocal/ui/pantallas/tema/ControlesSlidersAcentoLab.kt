@@ -31,7 +31,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.SliderBoveda
 import com.jlnavas3.bovedalocal.ui.theme.CurvaturaEsquinas
+import com.jlnavas3.bovedalocal.ui.theme.EscalaTexto
 import com.jlnavas3.bovedalocal.ui.theme.EstiloMono
+import com.jlnavas3.bovedalocal.ui.theme.GrosorBorde
 import com.jlnavas3.bovedalocal.ui.theme.aHexConAlfa
 
 /**
@@ -48,13 +50,17 @@ fun ControlesSlidersAcentoLab(
     marcarModificado: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val formaControles = if (CurvaturaEsquinas == 0.dp) RoundedCornerShape(0.dp) else RoundedCornerShape((CurvaturaEsquinas - 4.dp).coerceAtLeast(0.dp))
+    val formaMuestra = if (CurvaturaEsquinas == 0.dp) RoundedCornerShape(0.dp) else CircleShape
+    val anchoBorde = if (GrosorBorde > 0.dp) GrosorBorde else 1.dp
+
     with(estadoLab) {
         Column(
             modifier = modifier
                 .fillMaxWidth()
-                .clip(RoundedCornerShape(CurvaturaEsquinas - 4.dp))
+                .clip(formaControles)
                 .background(colorCampo)
-                .border(1.dp, colorBorde, RoundedCornerShape(CurvaturaEsquinas - 4.dp))
+                .border(anchoBorde, colorBorde, formaControles)
                 .padding(14.dp)
         ) {
             Row(
@@ -64,20 +70,26 @@ fun ControlesSlidersAcentoLab(
                 Box(
                     modifier = Modifier
                         .size(22.dp)
-                        .clip(CircleShape)
+                        .clip(formaMuestra)
                         .background(colorAcentoActual)
-                        .border(1.dp, colorBorde, CircleShape)
+                        .border(1.dp, colorBorde, formaMuestra)
                 )
                 Spacer(Modifier.width(8.dp))
                 Text(
                     text = "Acento Personalizado",
-                    style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
+                    style = MaterialTheme.typography.titleSmall.copy(
+                        fontSize = (14 * EscalaTexto).sp,
+                        fontWeight = FontWeight.Bold
+                    ),
                     color = colorTextoPrincipal,
                     modifier = Modifier.weight(1f)
                 )
                 Text(
                     text = colorAcentoActual.aHexConAlfa(),
-                    style = EstiloMono.copy(fontWeight = FontWeight.Bold, fontSize = 12.sp),
+                    style = EstiloMono.copy(
+                        fontWeight = FontWeight.Bold,
+                        fontSize = (12 * EscalaTexto).sp
+                    ),
                     color = colorTextoPrincipal
                 )
             }

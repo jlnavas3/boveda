@@ -24,11 +24,18 @@ import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.SeparadorFilaSimple
 import com.jlnavas3.bovedalocal.ui.theme.ColorExportacion
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
 
+import androidx.compose.material.icons.filled.Code
+import androidx.compose.runtime.remember
+import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteSelectorModal
+import com.jlnavas3.bovedalocal.ui.componentes.ajustes.OpcionSelectorModal
+
 @Composable
 fun GrupoImportacionCsvGoogle(
     mostrarId: Boolean,
     alIniciarImportacion: () -> Unit,
     alAbrirNormalizador: () -> Unit = {},
+    delimitadorPredeterminado: String = ",",
+    alCambiarDelimitador: (String) -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     ComponenteGrupo(
@@ -53,6 +60,28 @@ fun GrupoImportacionCsvGoogle(
             mostrarId = mostrarId,
             alPulsar = alIniciarImportacion
         )
+        SeparadorFilaSimple()
+
+        val opcionesDelimitador = remember {
+            listOf(
+                OpcionSelectorModal(",", "Coma (,)", ",", "Predeterminado estándar (Google Chrome, Bitwarden)", Icons.Filled.Code),
+                OpcionSelectorModal(";", "Punto y coma (;)", ";", "Común en Excel y configuraciones regionales europeas", Icons.Filled.Code),
+                OpcionSelectorModal("\t", "Tabulador (\\t)", "\\t", "Formato TSV separado por tabulaciones", Icons.Filled.Code),
+                OpcionSelectorModal("|", "Pleca / Barra (|)", "|", "Separador tipo barra vertical", Icons.Filled.Code)
+            )
+        }
+
+        ComponenteSelectorModal(
+            titulo = "Delimitador predeterminado CSV",
+            descripcionModal = "Separador usado como fallback preferido si el archivo no contiene cabecera unívoca",
+            icono = null,
+            idFila = "05-COP-CSV-DEL",
+            mostrarId = mostrarId,
+            valorSeleccionado = delimitadorPredeterminado,
+            opciones = opcionesDelimitador,
+            alSeleccionar = alCambiarDelimitador
+        )
+
         SeparadorFilaSimple()
         ComponenteNavegacion(
             titulo = "Asistente de títulos de sitios web",

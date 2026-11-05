@@ -44,6 +44,8 @@ class EstadoLaboratorioTemas(contexto: Context) {
     var lumBordeOscuro by mutableFloatStateOf(guardadoOsc?.lumBorde ?: paramOscuro.lumBorde)
     var lumTextoPrincipalOscuro by mutableFloatStateOf(guardadoOsc?.lumTextoPrincipal ?: paramOscuro.lumTextoPrincipal)
     var lumTextoSecundarioOscuro by mutableFloatStateOf(guardadoOsc?.lumTextoSecundario ?: paramOscuro.lumTextoSecundario)
+    var lumModalOscuro by mutableFloatStateOf(guardadoOsc?.lumModal ?: paramOscuro.lumModal)
+    var tonoModalOscuro by mutableFloatStateOf(guardadoOsc?.tonoModal ?: paramOscuro.tonoGlobal)
     var colorAcentoOscuro by mutableStateOf(paletasGuardadas.first?.acento ?: defOscuro.acento)
     var tonoGlobalOscuro by mutableFloatStateOf(guardadoOsc?.tonoGlobal ?: paramOscuro.tonoGlobal)
     var saturacionTinteOscuro by mutableFloatStateOf(guardadoOsc?.saturacionTinte ?: paramOscuro.saturacionTinte)
@@ -63,6 +65,7 @@ class EstadoLaboratorioTemas(contexto: Context) {
     var lumFondoClaro by mutableFloatStateOf(guardadoCla?.lumFondo ?: paramClaro.lumFondo)
     var lumTarjetaClaro by mutableFloatStateOf(guardadoCla?.lumTarjeta ?: paramClaro.lumTarjeta)
     var lumCampoClaro by mutableFloatStateOf(guardadoCla?.lumCampo ?: paramClaro.lumCampo)
+    var lumModalClaro by mutableFloatStateOf(guardadoCla?.lumModal ?: paramClaro.lumModal)
     var lumBordeClaro by mutableFloatStateOf(guardadoCla?.lumBorde ?: paramClaro.lumBorde)
     var lumTextoPrincipalClaro by mutableFloatStateOf(guardadoCla?.lumTextoPrincipal ?: paramClaro.lumTextoPrincipal)
     var lumTextoSecundarioClaro by mutableFloatStateOf(guardadoCla?.lumTextoSecundario ?: paramClaro.lumTextoSecundario)
@@ -72,6 +75,7 @@ class EstadoLaboratorioTemas(contexto: Context) {
     var tonoFondoClaro by mutableFloatStateOf(guardadoCla?.tonoFondo ?: paramClaro.tonoGlobal)
     var tonoTarjetaClaro by mutableFloatStateOf(guardadoCla?.tonoTarjeta ?: paramClaro.tonoGlobal)
     var tonoCampoClaro by mutableFloatStateOf(guardadoCla?.tonoCampo ?: paramClaro.tonoGlobal)
+    var tonoModalClaro by mutableFloatStateOf(guardadoCla?.tonoModal ?: paramClaro.tonoGlobal)
     var tonoBordeClaro by mutableFloatStateOf(guardadoCla?.tonoBorde ?: paramClaro.tonoGlobal)
     var tonoTextoPrincipalClaro by mutableFloatStateOf(guardadoCla?.tonoTextoPrincipal ?: paramClaro.tonoGlobal)
     var tonoTextoSecundarioClaro by mutableFloatStateOf(guardadoCla?.tonoTextoSecundario ?: paramClaro.tonoGlobal)
@@ -86,6 +90,40 @@ class EstadoLaboratorioTemas(contexto: Context) {
     var modificadoOscuro by mutableStateOf(false)
     var modificadoClaro by mutableStateOf(false)
 
+    var presetActivoIdOscuro by mutableStateOf<String?>(
+        encontrarPresetPorValores(
+            lumFondo = lumFondoOscuro,
+            lumTarjeta = lumTarjetaOscuro,
+            lumCampo = lumCampoOscuro,
+            lumModal = lumModalOscuro,
+            lumBorde = lumBordeOscuro,
+            lumTextoPrincipal = lumTextoPrincipalOscuro,
+            lumTextoSecundario = lumTextoSecundarioOscuro,
+            tonoGlobal = tonoGlobalOscuro,
+            saturacionTinte = saturacionTinteOscuro,
+            esOscuro = true
+        )
+    )
+
+    var presetActivoIdClaro by mutableStateOf<String?>(
+        encontrarPresetPorValores(
+            lumFondo = lumFondoClaro,
+            lumTarjeta = lumTarjetaClaro,
+            lumCampo = lumCampoClaro,
+            lumModal = lumModalClaro,
+            lumBorde = lumBordeClaro,
+            lumTextoPrincipal = lumTextoPrincipalClaro,
+            lumTextoSecundario = lumTextoSecundarioClaro,
+            tonoGlobal = tonoGlobalClaro,
+            saturacionTinte = saturacionTinteClaro,
+            esOscuro = false
+        )
+    )
+
+    var presetActivoId: String?
+        get() = if (modoOscuro) presetActivoIdOscuro else presetActivoIdClaro
+        set(v) { if (modoOscuro) presetActivoIdOscuro = v else presetActivoIdClaro = v }
+
     var lumFondo: Float
         get() = if (modoOscuro) lumFondoOscuro else lumFondoClaro
         set(v) { if (modoOscuro) lumFondoOscuro = v else lumFondoClaro = v }
@@ -97,6 +135,10 @@ class EstadoLaboratorioTemas(contexto: Context) {
     var lumCampo: Float
         get() = if (modoOscuro) lumCampoOscuro else lumCampoClaro
         set(v) { if (modoOscuro) lumCampoOscuro = v else lumCampoClaro = v }
+
+    var lumModal: Float
+        get() = if (modoOscuro) lumModalOscuro else lumModalClaro
+        set(v) { if (modoOscuro) lumModalOscuro = v else lumModalClaro = v }
 
     var lumBorde: Float
         get() = if (modoOscuro) lumBordeOscuro else lumBordeClaro
@@ -134,6 +176,10 @@ class EstadoLaboratorioTemas(contexto: Context) {
         get() = if (modoOscuro) tonoCampoOscuro else tonoCampoClaro
         set(v) { if (modoOscuro) tonoCampoOscuro = v else tonoCampoClaro = v }
 
+    var tonoModal: Float
+        get() = if (modoOscuro) tonoModalOscuro else tonoModalClaro
+        set(v) { if (modoOscuro) tonoModalOscuro = v else tonoModalClaro = v }
+
     var tonoBorde: Float
         get() = if (modoOscuro) tonoBordeOscuro else tonoBordeClaro
         set(v) { if (modoOscuro) tonoBordeOscuro = v else tonoBordeClaro = v }
@@ -170,7 +216,10 @@ class EstadoLaboratorioTemas(contexto: Context) {
         get() = if (modoOscuro) mostrarAjustePersonalizadoOscuro else mostrarAjustePersonalizadoClaro
         set(v) { if (modoOscuro) mostrarAjustePersonalizadoOscuro = v else mostrarAjustePersonalizadoClaro = v }
 
-    fun marcarModificado() {
+    fun marcarModificado(esPreset: Boolean = false) {
+        if (!esPreset) {
+            presetActivoId = null
+        }
         if (modoOscuro) modificadoOscuro = true else modificadoClaro = true
     }
 
@@ -180,17 +229,13 @@ class EstadoLaboratorioTemas(contexto: Context) {
         val effFondo = if (unificarTonos) tonoG else (if (esOscuro) tonoFondoOscuro else tonoFondoClaro)
         val effTarjeta = if (unificarTonos) tonoG else (if (esOscuro) tonoTarjetaOscuro else tonoTarjetaClaro)
         val effCampo = if (unificarTonos) tonoG else (if (esOscuro) tonoCampoOscuro else tonoCampoClaro)
+        val effModal = if (unificarTonos) tonoG else (if (esOscuro) tonoModalOscuro else tonoModalClaro)
         val effBorde = if (unificarTonos) tonoG else (if (esOscuro) tonoBordeOscuro else tonoBordeClaro)
         val effTextoP = if (unificarTonos) tonoG else (if (esOscuro) tonoTextoPrincipalOscuro else tonoTextoPrincipalClaro)
         val effTextoS = if (unificarTonos) tonoG else (if (esOscuro) tonoTextoSecundarioOscuro else tonoTextoSecundarioClaro)
 
         fun calc(tono: Float, lum: Float, esSuperficie: Boolean): Color {
-            val lumRestringida = restringirLuminancia(lum, esOscuro, esSuperficie)
-            return if (sat <= 0.001f) {
-                crearGris(lumRestringida)
-            } else {
-                Color.hsv(tono, sat.coerceIn(0f, 1f), lumRestringida)
-            }
+            return calcularColorCapaLab(tono, lum, sat, esOscuro, esSuperficie)
         }
 
         return PaletaSobria(
@@ -198,6 +243,7 @@ class EstadoLaboratorioTemas(contexto: Context) {
             fondo = calc(effFondo, if (esOscuro) lumFondoOscuro else lumFondoClaro, true),
             tarjeta = calc(effTarjeta, if (esOscuro) lumTarjetaOscuro else lumTarjetaClaro, true),
             campo = calc(effCampo, if (esOscuro) lumCampoOscuro else lumCampoClaro, true),
+            modal = calc(effModal, if (esOscuro) lumModalOscuro else lumModalClaro, true),
             borde = calc(effBorde, if (esOscuro) lumBordeOscuro else lumBordeClaro, true),
             textoPrincipal = calc(effTextoP, if (esOscuro) lumTextoPrincipalOscuro else lumTextoPrincipalClaro, false),
             textoSecundario = calc(effTextoS, if (esOscuro) lumTextoSecundarioOscuro else lumTextoSecundarioClaro, false),
@@ -209,6 +255,7 @@ class EstadoLaboratorioTemas(contexto: Context) {
         lumFondoOscuro = paramOscuro.lumFondo
         lumTarjetaOscuro = paramOscuro.lumTarjeta
         lumCampoOscuro = paramOscuro.lumCampo
+        lumModalOscuro = paramOscuro.lumModal
         lumBordeOscuro = paramOscuro.lumBorde
         lumTextoPrincipalOscuro = paramOscuro.lumTextoPrincipal
         lumTextoSecundarioOscuro = paramOscuro.lumTextoSecundario
@@ -217,6 +264,7 @@ class EstadoLaboratorioTemas(contexto: Context) {
         tonoFondoOscuro = paramOscuro.tonoGlobal
         tonoTarjetaOscuro = paramOscuro.tonoGlobal
         tonoCampoOscuro = paramOscuro.tonoGlobal
+        tonoModalOscuro = paramOscuro.tonoGlobal
         tonoBordeOscuro = paramOscuro.tonoGlobal
         tonoTextoPrincipalOscuro = paramOscuro.tonoGlobal
         tonoTextoSecundarioOscuro = paramOscuro.tonoGlobal
@@ -228,10 +276,12 @@ class EstadoLaboratorioTemas(contexto: Context) {
         esPersonalizadoActivoOscuro = false
         mostrarAjustePersonalizadoOscuro = false
         modificadoOscuro = false
+        presetActivoIdOscuro = "obsidiana"
 
         lumFondoClaro = paramClaro.lumFondo
         lumTarjetaClaro = paramClaro.lumTarjeta
         lumCampoClaro = paramClaro.lumCampo
+        lumModalClaro = paramClaro.lumModal
         lumBordeClaro = paramClaro.lumBorde
         lumTextoPrincipalClaro = paramClaro.lumTextoPrincipal
         lumTextoSecundarioClaro = paramClaro.lumTextoSecundario
@@ -240,6 +290,7 @@ class EstadoLaboratorioTemas(contexto: Context) {
         tonoFondoClaro = paramClaro.tonoGlobal
         tonoTarjetaClaro = paramClaro.tonoGlobal
         tonoCampoClaro = paramClaro.tonoGlobal
+        tonoModalClaro = paramClaro.tonoGlobal
         tonoBordeClaro = paramClaro.tonoGlobal
         tonoTextoPrincipalClaro = paramClaro.tonoGlobal
         tonoTextoSecundarioClaro = paramClaro.tonoGlobal
@@ -251,6 +302,7 @@ class EstadoLaboratorioTemas(contexto: Context) {
         esPersonalizadoActivoClaro = false
         mostrarAjustePersonalizadoClaro = false
         modificadoClaro = false
+        presetActivoIdClaro = "obsidiana_claro"
 
         unificarTonos = true
 

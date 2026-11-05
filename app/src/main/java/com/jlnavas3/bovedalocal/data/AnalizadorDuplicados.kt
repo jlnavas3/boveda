@@ -24,9 +24,50 @@ object AnalizadorDuplicados {
         val resultado = mutableListOf<GrupoDuplicado>()
         val idsProcesados = mutableSetOf<String>()
 
+        // 0. Detección de duplicados para Tipos Nativos Especializados (Wi-Fi, Tarjeta, Cuenta, Documento, Servidor, Wallet)
+        val entradasNativasConClave = activas.mapNotNull { entrada ->
+            val clave = ExtractorClaveDuplicadoNativo.extraer(entrada)
+            if (clave != null) Pair(entrada, clave) else null
+        }
+
+        val gruposNativos = entradasNativasConClave
+            .groupBy { it.second.identificador }
+            .filter { it.value.size > 1 }
+
+        for ((idClave, listaPares) in gruposNativos) {
+            val listaEntradas = listaPares.map { it.first }
+            val primerClave = listaPares.first().second
+            val principal = seleccionarMejorEntrada(listaEntradas)
+
+            val secretosDistintos = listaPares.map { it.second.secretoOClave }.filter { it.isNotBlank() }.distinct()
+            val tipo = if (secretosDistintos.size <= 1) {
+                TipoDuplicado.IDENTICO
+            } else {
+                TipoDuplicado.MISMO_IDENTIFICADOR_DISTINTA_CLAVE
+            }
+
+            resultado.add(
+                GrupoDuplicado(
+                    idGrupo = "nativo_${idClave.hashCode()}",
+                    tipo = tipo,
+                    claveVisual = primerClave.etiquetaVisual,
+                    entradas = listaEntradas,
+                    sugeridaPrincipal = principal,
+                    esAppAndroid = false
+                )
+            )
+            idsProcesados.addAll(listaEntradas.map { it.id })
+        }
+
+        // Las entradas de tipos especializados que no tuvieron coincidencia por su identificador clave
+        // quedan protegidas para no agruparlas erróneamente por coincidencia genérica de títulos vacíos de usuario.
+        val candidatasGenerales = activas
+            .filterNot { it.id in idsProcesados }
+            .filterNot { ExtractorClaveDuplicadoNativo.esTipoEspecializado(it.tipo) }
+
         // 1. Detección de copias idénticas exactas (mismo servicio, mismo usuario literal y misma contraseña)
         // Esto captura de forma infalible las importaciones repetidas del mismo archivo CSV.
-        val gruposIdenticos = activas
+        val gruposIdenticos = candidatasGenerales
             .groupBy { entrada ->
                 val serv = NormalizadorDuplicados.normalizarServicio(entrada)
                 val usr = entrada.usuario.trim().lowercase()
@@ -54,7 +95,7 @@ object AnalizadorDuplicados {
         }
 
         // 2. Detección de duplicados de Passkey (mismo credId o mismo RP ID + usuario)
-        val restantesParaPasskey = activas.filterNot { it.id in idsProcesados }
+        val restantesParaPasskey = candidatasGenerales.filterNot { it.id in idsProcesados }
         val gruposPasskey = restantesParaPasskey
             .filter { it.passkey != null && (it.passkey.credId.isNotBlank() || it.passkey.rpId.isNotBlank()) }
             .groupBy { entrada ->
@@ -86,7 +127,7 @@ object AnalizadorDuplicados {
         }
 
         // 3. Detección de duplicados de TOTP (mismo secreto)
-        val restantesParaTotp = activas.filterNot { it.id in idsProcesados }
+        val restantesParaTotp = candidatasGenerales.filterNot { it.id in idsProcesados }
         val gruposTotp = restantesParaTotp
             .filter { !it.secretoTotp.isNullOrBlank() }
             .groupBy { entrada ->
@@ -112,7 +153,7 @@ object AnalizadorDuplicados {
 
         // 4. Detección de duplicados de la MISMA cuenta (mismo servicio y mismo usuario normalizado)
         // IMPORTANTE: Cuentas con usuarios diferentes NUNCA se agrupan aquí aunque compartan clave y servicio.
-        val restantes = activas.filterNot { it.id in idsProcesados }
+        val restantes = candidatasGenerales.filterNot { it.id in idsProcesados }
         val gruposPorCuenta = restantes
             .filter { it.usuario.isNotBlank() }
             .groupBy { entrada ->
@@ -149,7 +190,7 @@ object AnalizadorDuplicados {
         }
 
         // 5. Entradas sin usuario pero con misma contraseña y servicio (copias anónimas exactas)
-        val restantesSinUsuario = activas.filterNot { it.id in idsProcesados }
+        val restantesSinUsuario = candidatasGenerales.filterNot { it.id in idsProcesados }
         val gruposSinUsuario = restantesSinUsuario
             .filter { it.usuario.isBlank() && it.contrasena.isNotBlank() }
             .groupBy { entrada ->
@@ -178,7 +219,7 @@ object AnalizadorDuplicados {
         }
 
         // 6. Entradas en el mismo servicio con la misma contraseña donde una tiene usuario y la otra está vacía (completar usuario)
-        val restantesParaCompletar = activas.filterNot { it.id in idsProcesados }
+        val restantesParaCompletar = candidatasGenerales.filterNot { it.id in idsProcesados }
         val gruposMismaClaveServicio = restantesParaCompletar
             .filter { it.contrasena.isNotBlank() }
             .groupBy { entrada ->
@@ -216,13 +257,16 @@ object AnalizadorDuplicados {
 
     /**
      * Determina la mejor entrada de un conjunto duplicado para conservarla como principal:
-     * Prioriza la que tenga TOTP, passkey, más campos personalizados, más notas, correo completo (@), longitud o fecha más reciente.
+     * Prioriza la que tenga TOTP, passkey, más datos nativos, más campos personalizados, más notas, correo completo (@), longitud o fecha más reciente.
      */
     fun seleccionarMejorEntrada(entradas: List<Entrada>): Entrada {
         return entradas.maxWithOrNull(
             compareBy<Entrada> { if (it.favorito) 1 else 0 }
                 .thenBy { if (!it.secretoTotp.isNullOrBlank()) 1 else 0 }
                 .thenBy { if (it.passkey != null) 1 else 0 }
+                .thenBy { if (it.tarjetaEfectiva?.numero?.isNotBlank() == true) 1 else 0 }
+                .thenBy { if (it.wifiEfectivo?.contrasena?.isNotBlank() == true) 1 else 0 }
+                .thenBy { if (it.cuentaBancariaEfectiva?.numeroCuenta?.isNotBlank() == true || it.cuentaBancariaEfectiva?.cbuClabe?.isNotBlank() == true) 1 else 0 }
                 .thenBy { it.camposPersonalizados.size }
                 .thenBy { it.notas.length }
                 .thenBy { if (it.usuario.contains("@")) 1 else 0 }

@@ -99,12 +99,15 @@ fun PantallaLicencia(
             TarjetaResumenLicencia()
 
             // Contenedor del texto legal oficial completo
+            val formaContenedor = if (CurvaturaEsquinas == 0.dp) RoundedCornerShape(0.dp) else RoundedCornerShape(CurvaturaEsquinas.coerceAtLeast(16.dp))
+            val formaBoton = if (CurvaturaEsquinas == 0.dp) RoundedCornerShape(0.dp) else RoundedCornerShape(CurvaturaEsquinas.coerceAtLeast(12.dp))
+
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clip(RoundedCornerShape(CurvaturaEsquinas.coerceAtLeast(16.dp)))
+                    .clip(formaContenedor)
                     .background(ColorTarjetaAjustes)
-                    .border(1.dp, ColorBordeActual.copy(alpha = 0.5f), RoundedCornerShape(CurvaturaEsquinas.coerceAtLeast(16.dp)))
+                    .border(1.dp, ColorBordeActual.copy(alpha = 0.5f), formaContenedor)
                     .padding(16.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
@@ -132,7 +135,7 @@ fun PantallaLicencia(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(48.dp),
-                shape = RoundedCornerShape(CurvaturaEsquinas.coerceAtLeast(12.dp)),
+                shape = formaBoton,
                 colors = ButtonDefaults.buttonColors(
                     containerColor = ColorAcento
                 )

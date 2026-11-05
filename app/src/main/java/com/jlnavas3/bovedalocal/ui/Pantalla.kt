@@ -6,6 +6,7 @@
 
 package com.jlnavas3.bovedalocal.ui
 
+import com.jlnavas3.bovedalocal.data.ContenidoBoveda
 import com.jlnavas3.bovedalocal.data.TipoEntrada
 
 sealed interface Pantalla {
@@ -22,7 +23,8 @@ sealed interface Pantalla {
         val contrasenaInicial: String = "",
         val tituloInicial: String = "",
         val urlInicial: String = "",
-        val tipoInicial: TipoEntrada? = null
+        val tipoInicial: TipoEntrada? = null,
+        val telefonoInicial: String = ""
     ) : Pantalla
     object Generador : Pantalla
     open class Passkeys(val seccionId: String? = null) : Pantalla {
@@ -55,6 +57,16 @@ sealed interface Pantalla {
     open class AjustesAvisos(val seccionId: String? = null) : Pantalla {
         companion object : AjustesAvisos(null)
         override fun equals(other: Any?): Boolean = other is AjustesAvisos && other.seccionId == seccionId
+        override fun hashCode(): Int = seccionId?.hashCode() ?: 0
+    }
+    open class AjustesTransiciones(val seccionId: String? = null) : Pantalla {
+        companion object : AjustesTransiciones(null)
+        override fun equals(other: Any?): Boolean = other is AjustesTransiciones && other.seccionId == seccionId
+        override fun hashCode(): Int = seccionId?.hashCode() ?: 0
+    }
+    open class AjustesAvisosEmergentes(val seccionId: String? = null) : Pantalla {
+        companion object : AjustesAvisosEmergentes(null)
+        override fun equals(other: Any?): Boolean = other is AjustesAvisosEmergentes && other.seccionId == seccionId
         override fun hashCode(): Int = seccionId?.hashCode() ?: 0
     }
     open class IndiceOla(val seccionId: String? = null) : Pantalla {
@@ -293,6 +305,11 @@ sealed interface Pantalla {
         override fun equals(other: Any?): Boolean = other is CsvGoogle && other.seccionId == seccionId
         override fun hashCode(): Int = seccionId?.hashCode() ?: 0
     }
+    open class AjustesTransferenciaCxf(val seccionId: String? = null) : Pantalla {
+        companion object : AjustesTransferenciaCxf(null)
+        override fun equals(other: Any?): Boolean = other is AjustesTransferenciaCxf && other.seccionId == seccionId
+        override fun hashCode(): Int = seccionId?.hashCode() ?: 0
+    }
     data class ConfirmarMigracion(val urlMigracion: String) : Pantalla
     data class ConfirmarImportacionCxf(val jsonCxf: String) : Pantalla
     open class ExportarSelectivo(val seccionInicial: String = "todos") : Pantalla {
@@ -300,11 +317,15 @@ sealed interface Pantalla {
         override fun equals(other: Any?): Boolean = other is ExportarSelectivo && other.seccionInicial == seccionInicial
         override fun hashCode(): Int = seccionInicial.hashCode()
     }
-    open class Identidades(val seccionId: String? = null) : Pantalla {
-        companion object : Identidades(null)
-        override fun equals(other: Any?): Boolean = other is Identidades && other.seccionId == seccionId
+    data class ImportarSelectivo(val datos: ContenidoBoveda) : Pantalla
+    open class Perfiles(val seccionId: String? = null) : Pantalla {
+        companion object : Perfiles(null)
+        override fun equals(other: Any?): Boolean = other is Perfiles && other.seccionId == seccionId
         override fun hashCode(): Int = seccionId?.hashCode() ?: 0
     }
+    typealias Identidades = Perfiles
+    data class EditarPerfil(val id: String? = null) : Pantalla
+    typealias EditarIdentidad = EditarPerfil
     open class Categorias(val seccionId: String? = null) : Pantalla {
         companion object : Categorias(null)
         override fun equals(other: Any?): Boolean = other is Categorias && other.seccionId == seccionId

@@ -27,6 +27,8 @@ import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.unit.dp
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorTarjetaAjustes
 import com.jlnavas3.bovedalocal.ui.theme.Advertencia
+import com.jlnavas3.bovedalocal.ui.componentes.desplazarPorAvisoEmergente
+import com.jlnavas3.bovedalocal.ui.theme.Advertencia
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
 import com.jlnavas3.bovedalocal.ui.theme.ColorSobreAcento
@@ -52,7 +54,9 @@ fun ColumnaAccionesFlotantesLista(
     val formaFab = RoundedCornerShape(CurvaturaEsquinas)
 
     Column(
-        modifier = modifier.padding(20.dp),
+        modifier = modifier
+            .desplazarPorAvisoEmergente()
+            .padding(20.dp),
         horizontalAlignment = Alignment.End,
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {

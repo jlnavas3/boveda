@@ -8,6 +8,8 @@ package com.jlnavas3.bovedalocal.ui.pantallas.escaner
 
 import com.jlnavas3.bovedalocal.camara.LectorQr
 import com.jlnavas3.bovedalocal.data.Entrada
+import com.jlnavas3.bovedalocal.sync.ParserSyncQrUri
+import com.jlnavas3.bovedalocal.sync.SyncQrPayload
 import com.jlnavas3.bovedalocal.ui.Pantalla
 import com.jlnavas3.bovedalocal.ui.VaultViewModel
 import com.jlnavas3.bovedalocal.util.Diagnostico
@@ -19,12 +21,14 @@ import com.jlnavas3.bovedalocal.util.ParserWifiQr
 sealed interface ResultadoProcesoQr {
     object Exito : ResultadoProcesoQr
     data class EntradaDetectada(val entrada: Entrada) : ResultadoProcesoQr
+    data class P2pSyncDetectado(val payload: SyncQrPayload) : ResultadoProcesoQr
+    data class TramaOpticaDetectada(val trama: com.jlnavas3.bovedalocal.sync.TramaOpticaQr) : ResultadoProcesoQr
     data class Error(val mensaje: String) : ResultadoProcesoQr
 }
 
 /**
  * Valida y procesa el contenido textual decodificado de un código QR (cámara o imagen).
- * Ahora con soporte universal: Google Auth, Passkeys, Transferencia Bóveda, vCard, Wi-Fi y TOTP.
+ * Ahora con soporte universal: P2P Sync LAN, Óptico bvda-opt, Google Auth, Passkeys, Transferencia Bóveda, vCard, Wi-Fi y TOTP.
  */
 fun procesarLecturaQr(
     texto: String,
@@ -33,6 +37,30 @@ fun procesarLecturaQr(
     vm: VaultViewModel
 ): ResultadoProcesoQr {
     val limpio = texto.trim()
+
+    // 0. Sincronización P2P en red local (bvda-sync://)
+    if (ParserSyncQrUri.esUriSync(limpio)) {
+        val res = ParserSyncQrUri.parsear(limpio)
+        val payload = res.getOrNull()
+        if (payload != null) {
+            Diagnostico.apuntar("sync", "Escaneo detectó QR de sincronización P2P LAN con huella: ${payload.huellaVisual}")
+            return ResultadoProcesoQr.P2pSyncDetectado(payload)
+        } else {
+            val motivo = res.exceptionOrNull()?.message ?: "formato no válido"
+            Diagnostico.apuntar("sync", "Código QR bvda-sync rechazado: $motivo")
+            return ResultadoProcesoQr.Error("Código QR P2P no válido: $motivo")
+        }
+    }
+
+    // 0.1 Sincronización óptica comprimida (bvda-opt://)
+    if (com.jlnavas3.bovedalocal.sync.TramaOpticaQr.esUriOptica(limpio)) {
+        val trama = com.jlnavas3.bovedalocal.sync.TramaOpticaQr.parsearUri(limpio)
+        if (trama != null) {
+            return ResultadoProcesoQr.TramaOpticaDetectada(trama)
+        } else {
+            return ResultadoProcesoQr.Error("Fragmento óptico QR no válido o corrupto.")
+        }
+    }
 
     // 1. Migración de Google Authenticator
     if (GoogleAuthMigration.esEnlaceMigracion(limpio)) {

@@ -56,12 +56,8 @@ fun crearElementosListaAjustes(
     val numIdentidades = vm.repositorio.identidades().size
     val numPapelera = vm.repositorio.papelera().size
     val numCategorias = vm.repositorio.categorias().size
-    val numDuplicadas = AnalizadorDuplicados.analizar(entradas).sumOf { it.entradasSecundarias.size }
-
-    val clavesSalud = entradas.filter { it.tipo == TipoEntrada.LOGIN && it.contrasena.isNotBlank() && !it.ignoradaEnSalud }
-    val clavesRepetidas = clavesSalud.groupBy { it.contrasena }.filter { it.value.size > 1 }.values.flatten().toSet()
-    val clavesDebiles = clavesSalud.filter { MedidorFuerza.medir(it.contrasena).puntuacion <= 1 }.toSet()
-    val numProblemasSalud = (clavesRepetidas + clavesDebiles).size
+    val numDuplicadas = vm.numDuplicadas.value
+    val numProblemasSalud = vm.numProblemasSalud.value
 
     return listOf(
         ElementoMenuAjustes(
@@ -76,7 +72,7 @@ fun crearElementosListaAjustes(
             alPulsar = { vm.ir(Pantalla.EntradasTipo(TipoEntrada.LOGIN)) }
         ),
         ElementoMenuAjustes(
-            titulo = "Llaves de paso",
+            titulo = "Llaves de acceso",
             subtitulo = "Credenciales FIDO2 WebAuthn y passkeys locales",
             icono = Icons.Filled.Fingerprint,
             colorIcono = Color(0xFF10B981),
@@ -186,15 +182,15 @@ fun crearElementosListaAjustes(
             alPulsar = { vm.ir(Pantalla.EntradasTipo(TipoEntrada.WALLET)) }
         ),
         ElementoMenuAjustes(
-            titulo = "Identidades",
+            titulo = "Perfiles",
             subtitulo = "Perfiles de correo y vinculación inteligente",
             icono = Icons.Filled.AccountCircle,
             colorIcono = Color(0xFF0284C7),
             idEtiqueta = "03-LST-IDE",
             grupo = "Lista de cuentas",
-            palabrasClave = "identidades cuentas perfiles correo email alias inteligente vincular personas",
+            palabrasClave = "perfiles cuentas identidades correo email alias inteligente vincular personas",
             valorTexto = "$numIdentidades",
-            alPulsar = { vm.ir(Pantalla.Identidades("03-LST-IDE")) }
+            alPulsar = { vm.ir(Pantalla.Perfiles("03-LST-IDE")) }
         ),
         ElementoMenuAjustes(
             titulo = "Salud de la bóveda",

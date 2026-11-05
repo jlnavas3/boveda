@@ -37,12 +37,12 @@ fun GrupoCopiaAutomaticaLocal(
 
     Column(modifier = modifier) {
         ComponenteGrupo(
-            etiqueta = "Copia automática local",
+            etiqueta = "Respaldo automático local",
             icono = Icons.Filled.Autorenew,
             colorIcono = ColorExportacion,
             idGrupo = "05-COP-ATM-G01",
             mostrarId = ajustes.mostrarIdsAjustes,
-            descripcion = "Copias periódicas cifradas en Descargas con rotación"
+            descripcion = "Respaldos periódicos cifrados en Descargas con rotación"
         ) {
             ComponenteNavegacion(
                 titulo = "Configurar respaldo",

@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -18,23 +17,20 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.QrCode
 import androidx.compose.material.icons.filled.VpnKey
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.jlnavas3.bovedalocal.cxf.ResultadoConversionCxf
+import com.jlnavas3.bovedalocal.ui.componentes.EstiloTitulo
+import com.jlnavas3.bovedalocal.ui.componentes.TextoSubtitulo
+import com.jlnavas3.bovedalocal.ui.componentes.TextoTitulo
 import com.jlnavas3.bovedalocal.ui.theme.Color2FA
 import com.jlnavas3.bovedalocal.ui.theme.ColorPasskeys
-import com.jlnavas3.bovedalocal.ui.theme.ColorTitulos
-import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
 
 /**
  * Microcomponente de resumen para la transferencia entrante CXF:
- * cabecera de proveedor, conteo de entradas encontradas, insignias por tipo y selectores rápidos.
+ * cabecera de proveedor, conteo de entradas encontradas e insignias descriptivas por tipo.
  */
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -42,20 +38,15 @@ fun TarjetaResumenTransferenciaCxf(
     exportadorNombre: String,
     totalItems: Int,
     resultadoCxf: ResultadoConversionCxf,
-    soloNuevasSeleccionadas: Boolean,
-    todasSeleccionadas: Boolean,
-    ningunaSeleccionada: Boolean,
-    alSeleccionarSoloNuevas: () -> Unit,
-    alSeleccionarTodas: () -> Unit,
-    alSeleccionarNinguna: () -> Unit
+    modifier: Modifier = Modifier
 ) {
-    Column(modifier = Modifier.fillMaxWidth()) {
-        com.jlnavas3.bovedalocal.ui.componentes.TextoTitulo(
+    Column(modifier = modifier.fillMaxWidth()) {
+        TextoTitulo(
             texto = "Transferencia directa desde $exportadorNombre",
-            estilo = com.jlnavas3.bovedalocal.ui.componentes.EstiloTitulo.MEDIANO
+            estilo = EstiloTitulo.MEDIANO
         )
         Spacer(Modifier.height(4.dp))
-        com.jlnavas3.bovedalocal.ui.componentes.TextoSubtitulo(
+        TextoSubtitulo(
             texto = "Se encontraron $totalItems credenciales listas para incorporar a tu bóveda:"
         )
 
@@ -70,7 +61,7 @@ fun TarjetaResumenTransferenciaCxf(
             if (resultadoCxf.totalPasskeys > 0) {
                 InsigniaResumenCxf(
                     icono = Icons.Filled.VpnKey,
-                    texto = "${resultadoCxf.totalPasskeys} llaves de paso",
+                    texto = "${resultadoCxf.totalPasskeys} llaves de acceso",
                     color = ColorPasskeys
                 )
             }
@@ -88,31 +79,6 @@ fun TarjetaResumenTransferenciaCxf(
                     color = Color2FA
                 )
             }
-        }
-
-        Spacer(Modifier.height(12.dp))
-
-        // Botones rápidos de selección adaptados al tema
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            BotonSeleccionRapida(
-                texto = "Solo nuevas",
-                activo = soloNuevasSeleccionadas,
-                alPulsar = alSeleccionarSoloNuevas
-            )
-            BotonSeleccionRapida(
-                texto = "Todas ($totalItems)",
-                activo = todasSeleccionadas,
-                alPulsar = alSeleccionarTodas
-            )
-            BotonSeleccionRapida(
-                texto = "Ninguna",
-                activo = ningunaSeleccionada,
-                alPulsar = alSeleccionarNinguna
-            )
         }
     }
 }

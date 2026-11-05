@@ -34,7 +34,7 @@ import com.jlnavas3.bovedalocal.util.Haptica
 
 /**
  * Microcomponente de la barra superior para PantallaSaludBoveda.
- * Contiene controles de búsqueda, visor de auditoría y menú desplegable de herramientas.
+ * Contiene control de búsqueda y menú desplegable con visor de auditoría y herramientas de seguridad.
  */
 @Composable
 fun BarraSuperiorSalud(
@@ -66,15 +66,6 @@ fun BarraSuperiorSalud(
                 descripcion = "Buscar",
                 tint = if (busquedaVisible || textoBusqueda.isNotBlank()) ColorAcento else ColorIconosInternos
             )
-            BotonIconoCabecera(
-                onClick = {
-                    haptica.toque()
-                    alAbrirAuditoria()
-                },
-                icono = Icons.Filled.Analytics,
-                descripcion = "Resumen de auditoría",
-                tint = ColorAcento
-            )
             var menuAbiertoSalud by remember { mutableStateOf(false) }
             Box {
                 BotonIconoCabecera(
@@ -89,9 +80,19 @@ fun BarraSuperiorSalud(
                     modifier = Modifier.widthIn(min = 220.dp, max = 280.dp)
                 ) {
                     ElementoMenuCompacto(
+                        texto = "Resumen de auditoría...",
+                        icono = Icons.Filled.Analytics,
+                        colorIcono = ColorIconosInternos,
+                        onClick = {
+                            menuAbiertoSalud = false
+                            alAbrirAuditoria()
+                        }
+                    )
+                    SeparadorOpcionMenu()
+                    ElementoMenuCompacto(
                         texto = "Duplicados...",
                         icono = Icons.Filled.ContentCopy,
-                        colorIcono = ColorAcento,
+                        colorIcono = ColorIconosInternos,
                         onClick = {
                             menuAbiertoSalud = false
                             alIrDuplicados()
@@ -101,7 +102,7 @@ fun BarraSuperiorSalud(
                     ElementoMenuCompacto(
                         texto = "Ajustes de seguridad...",
                         icono = Icons.Filled.Security,
-                        colorIcono = ColorAcento,
+                        colorIcono = ColorIconosInternos,
                         onClick = {
                             menuAbiertoSalud = false
                             alIrSeguridad()
@@ -111,7 +112,7 @@ fun BarraSuperiorSalud(
                     ElementoMenuCompacto(
                         texto = "Generador de contraseñas...",
                         icono = Icons.Filled.Key,
-                        colorIcono = ColorAcento,
+                        colorIcono = ColorIconosInternos,
                         onClick = {
                             menuAbiertoSalud = false
                             alIrGenerador()
@@ -121,7 +122,7 @@ fun BarraSuperiorSalud(
                     ElementoMenuCompacto(
                         texto = "Contraseñas comunes...",
                         icono = Icons.Filled.Security,
-                        colorIcono = com.jlnavas3.bovedalocal.ui.theme.Peligro,
+                        colorIcono = ColorIconosInternos,
                         onClick = {
                             menuAbiertoSalud = false
                             alIrContrasenasComunes()

@@ -18,5 +18,6 @@ data class DatosPasskey(
     val credId: String,
     val clavePrivada: String,
     val algoritmo: String = "ES256",
-    val usuario: String = ""
+    val usuario: String = "",
+    val creadaEn: Long = 0L
 )

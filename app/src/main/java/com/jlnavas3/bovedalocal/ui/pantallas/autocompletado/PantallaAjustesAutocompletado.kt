@@ -43,7 +43,7 @@ fun PantallaAjustesAutocompletado(
     val ajustes by vm.ajustes.collectAsStateWithLifecycle()
     val scrollState = rememberScrollState()
 
-    ProveedorResaltadoAjustes(seccionId) {
+    ProveedorResaltadoAjustes(seccionId, scrollState = scrollState) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -83,6 +83,7 @@ fun PantallaAjustesAutocompletado(
                     sugerenciasTeclado = ajustes.autofillSugerenciasTeclado,
                     maxSugerencias = ajustes.maxSugerenciasAutofill,
                     copiarTotp = ajustes.autofillCopiarTotpAutomatico,
+                    mostrarDatosTecnicosPasskey = ajustes.mostrarDatosTecnicosPasskey,
                     mostrarIdsAjustes = ajustes.mostrarIdsAjustes,
                     alCambiarSugerenciasTeclado = { valor ->
                         haptica.tic()
@@ -96,10 +97,15 @@ fun PantallaAjustesAutocompletado(
                         haptica.tic()
                         vm.ajustarAutofillCopiarTotp(valor)
                     },
+                    alCambiarMostrarDatosTecnicosPasskey = { valor ->
+                        haptica.tic()
+                        vm.ajustarMostrarDatosTecnicosPasskey(valor)
+                    },
                     alRestablecer = {
                         vm.ajustarAutofillSugerenciasTeclado(true)
-                        vm.ajustarMaxSugerenciasAutofill(5)
+                        vm.ajustarMaxSugerenciasAutofill(0)
                         vm.ajustarAutofillCopiarTotp(true)
+                        vm.ajustarMostrarDatosTecnicosPasskey(false)
                     }
                 )
 

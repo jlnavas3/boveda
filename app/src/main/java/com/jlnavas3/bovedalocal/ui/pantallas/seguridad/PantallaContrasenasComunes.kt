@@ -245,26 +245,13 @@ fun PantallaContrasenasComunes(
             }
         }
 
-        // FAB para añadir contraseña común
-        FloatingActionButton(
-            onClick = {
+        BarraAccionesContrasenasComunes(
+            alAnadirContrasena = {
                 haptica.toque()
                 mostrarDialogoAnadir = true
             },
-            containerColor = ColorAcento,
-            contentColor = ColorSobreAcento,
-            shape = formaBorde,
-            modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .padding(20.dp)
-                .then(
-                    if (GrosorBorde > 0.dp && EstiloBorde != "ninguno") {
-                        Modifier.border(GrosorBorde, ColorBordeActual, formaBorde)
-                    } else Modifier
-                )
-        ) {
-            Icon(Icons.Filled.Add, contentDescription = "Añadir contraseña común")
-        }
+            modifier = Modifier.align(Alignment.BottomCenter)
+        )
     }
 
     // Diálogos

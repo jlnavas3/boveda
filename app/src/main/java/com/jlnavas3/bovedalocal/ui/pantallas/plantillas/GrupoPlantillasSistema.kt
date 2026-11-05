@@ -39,9 +39,9 @@ import com.jlnavas3.bovedalocal.data.PresetsCampos
 import com.jlnavas3.bovedalocal.data.TipoEntrada
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.ComponenteGrupo
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorCampoAjustes
+import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorTarjetaAjustes
 import com.jlnavas3.bovedalocal.ui.preview.BovedaPreview
-import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
-import com.jlnavas3.bovedalocal.ui.theme.ColorSobreAcento
+import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
 import com.jlnavas3.bovedalocal.ui.theme.FormaCampo
 import com.jlnavas3.bovedalocal.ui.theme.FormaPequena
 import com.jlnavas3.bovedalocal.ui.theme.TextoPrincipal
@@ -94,13 +94,13 @@ fun GrupoPlantillasSistema(
                         modifier = Modifier
                             .size(34.dp)
                             .clip(FormaPequena)
-                            .background(ColorAcento),
+                            .background(ColorTarjetaAjustes),
                         contentAlignment = Alignment.Center
                     ) {
                         Icon(
                             imageVector = icono,
                             contentDescription = null,
-                            tint = ColorSobreAcento,
+                            tint = ColorIconosInternos,
                             modifier = Modifier.size(18.dp)
                         )
                     }

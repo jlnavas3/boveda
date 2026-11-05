@@ -19,5 +19,15 @@ val ColorAjusteGris: Color get() = if (esOscuroActivo) (paletaSobriaGuardadaOscu
 val ColorSeparadorAjustes: Color get() = if (esOscuroActivo) (paletaSobriaGuardadaOscura?.borde ?: PaletaSobriaDefaults.OSCURA.borde) else (paletaSobriaGuardadaClara?.borde ?: PaletaSobriaDefaults.CLARA.borde)
 val ColorCampoAjustes: Color get() = if (esOscuroActivo) (paletaSobriaGuardadaOscura?.campo ?: PaletaSobriaDefaults.OSCURA.campo) else (paletaSobriaGuardadaClara?.campo ?: PaletaSobriaDefaults.CLARA.campo)
 
+/**
+ * Capa 3: Color de superficie elevada para Modales, Diálogos y Bottom Sheets.
+ * Garantiza contraste contra el fondo negro velado por el scrim en pantallas AMOLED.
+ */
+val ColorModalAjustes: Color get() = if (esOscuroActivo) {
+    paletaSobriaGuardadaOscura?.modal ?: PaletaSobriaDefaults.OSCURA.modal
+} else {
+    paletaSobriaGuardadaClara?.modal ?: PaletaSobriaDefaults.CLARA.modal
+}
+
 
 

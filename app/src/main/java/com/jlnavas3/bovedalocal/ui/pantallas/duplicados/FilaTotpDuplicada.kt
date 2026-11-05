@@ -85,9 +85,9 @@ fun FilaTotpDuplicada(
             )
             TextoSeguroVisual(
                 texto = textoTotp,
-                oculto = !mostrarTotp,
-                estilo = if (seguridadVisualActiva) estiloOcultamiento else "puntos_fijos",
-                estiloTexto = if (mostrarTotp) {
+                oculto = if (seguridadVisualActiva) !mostrarTotp else false,
+                estilo = estiloOcultamiento,
+                estiloTexto = if (!seguridadVisualActiva || mostrarTotp) {
                     MaterialTheme.typography.bodySmall.copy(
                         fontFamily = FontFamily.Monospace,
                         fontWeight = FontWeight.SemiBold,
@@ -101,21 +101,23 @@ fun FilaTotpDuplicada(
                 overflow = TextOverflow.Ellipsis
             )
         }
-        val contexto = androidx.compose.ui.platform.LocalContext.current
-        val haptica = androidx.compose.runtime.remember { com.jlnavas3.bovedalocal.util.Haptica(contexto) }
-        IconButton(
-            onClick = {
-                haptica.toque()
-                alAlternarMostrarTotp()
-            },
-            modifier = Modifier.size(22.dp)
-        ) {
-            Icon(
-                imageVector = if (mostrarTotp) Icons.Filled.VisibilityOff else Icons.Filled.Visibility,
-                contentDescription = if (mostrarTotp) "Ocultar TOTP" else "Mostrar TOTP",
-                tint = ColorAjusteGris,
-                modifier = Modifier.size(15.dp)
-            )
+        if (seguridadVisualActiva) {
+            val contexto = androidx.compose.ui.platform.LocalContext.current
+            val haptica = androidx.compose.runtime.remember { com.jlnavas3.bovedalocal.util.Haptica(contexto) }
+            IconButton(
+                onClick = {
+                    haptica.toque()
+                    alAlternarMostrarTotp()
+                },
+                modifier = Modifier.size(22.dp)
+            ) {
+                Icon(
+                    imageVector = if (mostrarTotp) Icons.Filled.VisibilityOff else Icons.Filled.Visibility,
+                    contentDescription = if (mostrarTotp) "Ocultar TOTP" else "Mostrar TOTP",
+                    tint = ColorAjusteGris,
+                    modifier = Modifier.size(15.dp)
+                )
+            }
         }
     }
 }

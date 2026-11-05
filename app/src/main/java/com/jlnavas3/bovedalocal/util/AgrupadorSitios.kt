@@ -27,29 +27,33 @@ fun construirItemsAgrupadosPorSitio(
     marcasPersonalizadas: Map<String, String> = emptyMap(),
     puertosConfigurados: Map<String, String> = emptyMap(),
     octetosRouter: List<Int> = listOf(1, 254),
+    fijarAncladosArriba: Boolean = false,
     expandido: (String) -> Boolean
 ): List<ItemAgrupado> {
+    val (ancladas, restantes) = if (fijarAncladosArriba) {
+        entradas.partition { it.anclado }
+    } else {
+        emptyList<Entrada>() to entradas
+    }
+
+    val grupoAnclados = if (ancladas.isNotEmpty()) {
+        ItemAgrupado.Grupo(CLAVE_GRUPO_ANCLADOS, ordenarEntradasInternas(ancladas, criterio))
+    } else null
+
     if (!agrupar) {
-        return entradas.map { ItemAgrupado.Suelto(it) }
+        return buildList {
+            if (grupoAnclados != null) {
+                add(grupoAnclados)
+                if (expandido(grupoAnclados.clave)) {
+                    grupoAnclados.entradas.forEach { add(ItemAgrupado.Hijo(it)) }
+                }
+            }
+            restantes.forEach { add(ItemAgrupado.Suelto(it)) }
+        }
     }
 
-    val porSitio = entradas.groupBy {
+    val claves = restantes.associateWith { entrada ->
         claveAgrupacionSitio(
-            it,
-            prefijosConfigurados,
-            plantillaRouter,
-            plantillaServidor,
-            tldsConfigurados,
-            marcasPersonalizadas,
-            puertosConfigurados,
-            octetosRouter
-        )
-    }
-    val vistos = mutableSetOf<String>()
-    val itemsPrincipales = mutableListOf<ItemAgrupado>()
-
-    entradas.forEach { entrada ->
-        val clave = claveAgrupacionSitio(
             entrada,
             prefijosConfigurados,
             plantillaRouter,
@@ -59,6 +63,13 @@ fun construirItemsAgrupadosPorSitio(
             puertosConfigurados,
             octetosRouter
         )
+    }
+    val porSitio = restantes.groupBy { claves[it] }
+    val vistos = mutableSetOf<String>()
+    val itemsPrincipales = mutableListOf<ItemAgrupado>()
+
+    restantes.forEach { entrada ->
+        val clave = claves[entrada]
         val delMismoSitio = clave?.let { porSitio[it] }
         if (clave != null && delMismoSitio != null && delMismoSitio.size > 1) {
             if (vistos.add(clave)) {
@@ -72,13 +83,7 @@ fun construirItemsAgrupadosPorSitio(
     }
 
     val comparadorTopLevel: Comparator<ItemAgrupado> = when (criterio) {
-        CriterioOrdenacion.NOMBRE_AZ -> compareByDescending<ItemAgrupado> { item ->
-            when (item) {
-                is ItemAgrupado.Grupo -> item.entradas.any { it.favorito }
-                is ItemAgrupado.Suelto -> item.entrada.favorito
-                is ItemAgrupado.Hijo -> false
-            }
-        }.thenBy { item ->
+        CriterioOrdenacion.NOMBRE_AZ -> compareBy<ItemAgrupado> { item ->
             when (item) {
                 is ItemAgrupado.Grupo -> item.clave.lowercase()
                 is ItemAgrupado.Suelto -> item.entrada.titulo.lowercase()
@@ -132,12 +137,6 @@ fun construirItemsAgrupadosPorSitio(
                 is ItemAgrupado.Suelto -> if (item.entrada.ignoradaEnSalud) 1 else 0
                 is ItemAgrupado.Hijo -> 0
             }
-        }.thenByDescending { item ->
-            when (item) {
-                is ItemAgrupado.Grupo -> if (item.entradas.any { it.favorito }) 1 else 0
-                is ItemAgrupado.Suelto -> if (item.entrada.favorito) 1 else 0
-                is ItemAgrupado.Hijo -> 0
-            }
         }.thenBy { item ->
             when (item) {
                 is ItemAgrupado.Grupo -> item.clave.lowercase()
@@ -150,6 +149,12 @@ fun construirItemsAgrupadosPorSitio(
     val principalesOrdenados = itemsPrincipales.sortedWith(comparadorTopLevel)
 
     return buildList {
+        if (grupoAnclados != null) {
+            add(grupoAnclados)
+            if (expandido(grupoAnclados.clave)) {
+                grupoAnclados.entradas.forEach { add(ItemAgrupado.Hijo(it)) }
+            }
+        }
         principalesOrdenados.forEach { item ->
             add(item)
             if (item is ItemAgrupado.Grupo && expandido(item.clave)) {

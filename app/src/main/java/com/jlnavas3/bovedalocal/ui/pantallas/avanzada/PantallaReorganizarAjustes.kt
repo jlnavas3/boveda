@@ -63,6 +63,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -83,12 +84,16 @@ import com.jlnavas3.bovedalocal.ui.VaultViewModel
 import com.jlnavas3.bovedalocal.ui.componentes.BarraSuperiorPantalla
 import com.jlnavas3.bovedalocal.ui.componentes.DescripcionPantalla
 import com.jlnavas3.bovedalocal.ui.componentes.ajustes.InsigniaIdAjuste
+import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.BarraBusquedaAjustes
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjustesFondo
+import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorCampoAjustes
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorTarjetaAjustes
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.MapaAjustes
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.NodoAjuste
 import com.jlnavas3.bovedalocal.ui.theme.BovedaTheme
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
+import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
+import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
 import com.jlnavas3.bovedalocal.util.Haptica
 import kotlin.math.roundToInt
 
@@ -103,7 +108,8 @@ data class ElementoArbolVisible(
     val totalHijos: Int,
     val expandido: Boolean,
     val hermanos: List<String>,
-    val indiceEnHermanos: Int
+    val indiceEnHermanos: Int,
+    val esCoincidenciaBusqueda: Boolean = false
 )
 
 /**
@@ -119,6 +125,7 @@ fun PantallaReorganizarAjustes(
     val haptica = remember { Haptica(contexto) }
     val ajustes by vm.ajustes.collectAsStateWithLifecycle()
 
+    var textoBusqueda by rememberSaveable { mutableStateOf("") }
     var nodosExpandidos by remember { mutableStateOf(setOf<String>()) }
     var nodoSeleccionadoParaMover by remember { mutableStateOf<NodoAjuste?>(null) }
     var menuAbiertoParaId by remember { mutableStateOf<String?>(null) }
@@ -129,12 +136,45 @@ fun PantallaReorganizarAjustes(
     var dragOffsetY by remember { mutableFloatStateOf(0f) }
     var dragOffsetX by remember { mutableFloatStateOf(0f) }
 
-    // Función recursiva para aplanar el árbol jerárquico según el estado de expansión y reparenting
+    val queryLimpia = textoBusqueda.trim().lowercase()
+    val estaFiltrando = queryLimpia.isNotEmpty()
+
+    val idsCoincidentes = remember(queryLimpia) {
+        if (!estaFiltrando) emptySet()
+        else {
+            MapaAjustes.TODOS_LOS_NODOS.filter { nodo ->
+                nodo.titulo.lowercase().contains(queryLimpia) ||
+                nodo.id.lowercase().contains(queryLimpia) ||
+                nodo.subtitulo.lowercase().contains(queryLimpia) ||
+                nodo.palabrasClave.any { it.lowercase().contains(queryLimpia) }
+            }.map { it.id }.toSet()
+        }
+    }
+
+    val ancestrosDeCoincidentes = remember(idsCoincidentes, ajustes.reparentingPersonalizado) {
+        if (idsCoincidentes.isEmpty()) emptySet()
+        else {
+            val ancestros = mutableSetOf<String>()
+            idsCoincidentes.forEach { id ->
+                var actualId: String? = id
+                while (actualId != null) {
+                    val padreId = ajustes.reparentingPersonalizado[actualId] ?: MapaAjustes.buscarPorId(actualId)?.padreId
+                    if (padreId != null && padreId != "00-AJU") {
+                        ancestros.add(padreId)
+                    }
+                    actualId = padreId
+                }
+            }
+            ancestros
+        }
+    }
+
+    // Función recursiva para aplanar el árbol jerárquico según el estado de expansión, reparenting y filtro de búsqueda
     fun construirArbolVisible(): List<ElementoArbolVisible> {
         val resultado = mutableListOf<ElementoArbolVisible>()
 
         fun agregarNodos(padreId: String?, profundidad: Int) {
-            val hijos = if (padreId == null) {
+            val todosHijos = if (padreId == null) {
                 MapaAjustes.obtenerNodosRaiz(
                     ordenPersonalizado = ajustes.ordenAjustesPersonalizado,
                     reparenting = ajustes.reparentingPersonalizado
@@ -147,16 +187,26 @@ fun PantallaReorganizarAjustes(
                 )
             }
 
-            val hermanosIds = hijos.map { it.id }
+            val hijosFiltrados = if (estaFiltrando) {
+                todosHijos.filter { it.id in idsCoincidentes || it.id in ancestrosDeCoincidentes }
+            } else {
+                todosHijos
+            }
 
-            hijos.forEachIndexed { index, nodo ->
+            val hermanosIds = hijosFiltrados.map { it.id }
+
+            hijosFiltrados.forEachIndexed { index, nodo ->
                 val subHijos = MapaAjustes.obtenerHijosDe(
                     padreId = nodo.id,
                     ordenPersonalizado = ajustes.ordenJerarquiaPersonalizado,
                     reparenting = ajustes.reparentingPersonalizado
                 )
                 val tieneHijos = subHijos.isNotEmpty()
-                val estaExpandido = nodosExpandidos.contains(nodo.id)
+                val estaExpandido = if (estaFiltrando) {
+                    nodo.id in ancestrosDeCoincidentes || nodosExpandidos.contains(nodo.id)
+                } else {
+                    nodosExpandidos.contains(nodo.id)
+                }
 
                 resultado.add(
                     ElementoArbolVisible(
@@ -167,7 +217,8 @@ fun PantallaReorganizarAjustes(
                         totalHijos = subHijos.size,
                         expandido = estaExpandido,
                         hermanos = hermanosIds,
-                        indiceEnHermanos = index
+                        indiceEnHermanos = index,
+                        esCoincidenciaBusqueda = estaFiltrando && nodo.id in idsCoincidentes
                     )
                 )
 
@@ -181,7 +232,15 @@ fun PantallaReorganizarAjustes(
         return resultado
     }
 
-    val arbolVisible = remember(ajustes.ordenAjustesPersonalizado, ajustes.ordenJerarquiaPersonalizado, ajustes.reparentingPersonalizado, nodosExpandidos) {
+    val arbolVisible = remember(
+        ajustes.ordenAjustesPersonalizado,
+        ajustes.ordenJerarquiaPersonalizado,
+        ajustes.reparentingPersonalizado,
+        nodosExpandidos,
+        queryLimpia,
+        idsCoincidentes,
+        ancestrosDeCoincidentes
+    ) {
         construirArbolVisible()
     }
 
@@ -219,7 +278,7 @@ fun PantallaReorganizarAjustes(
             raicesActuales.add(targetIdx, nodoId)
             ordenRaiz = raicesActuales
         } else {
-            val destinoId = nuevoPadreId!!
+            val destinoId = nuevoPadreId
             if (padreFabrica == destinoId) {
                 reparenting.remove(nodoId)
             } else {
@@ -305,7 +364,15 @@ fun PantallaReorganizarAjustes(
                 DescripcionPantalla(
                     subtitulo = "Despliega cualquier sección para ver sus subajustes. Arrastra ≡ para mover libremente entre niveles o usa ⋮ para opciones avanzadas."
                 )
-                Spacer(Modifier.height(2.dp))
+                Spacer(Modifier.height(4.dp))
+
+                // Campo de búsqueda / filtro rápido en el árbol
+                BarraBusquedaAjustes(
+                    texto = textoBusqueda,
+                    alCambiarTexto = { textoBusqueda = it },
+                    placeholder = "Filtrar por nombre o ID...",
+                    modifier = Modifier.padding(bottom = 2.dp)
+                )
 
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -324,14 +391,23 @@ fun PantallaReorganizarAjustes(
                             imageVector = Icons.Default.Refresh,
                             contentDescription = "Restablecer todo",
                             modifier = Modifier.size(15.dp),
-                            tint = ColorAcento
+                            tint = ColorIconosInternos
                         )
                         Spacer(Modifier.width(4.dp))
                         Text(
                             text = "Restablecer todo",
-                            color = ColorAcento,
+                            color = TextoSecundario,
                             fontSize = 12.sp,
                             fontWeight = FontWeight.Medium
+                        )
+                    }
+
+                    if (estaFiltrando) {
+                        Text(
+                            text = "${idsCoincidentes.size} resultado${if (idsCoincidentes.size == 1) "" else "s"}",
+                            color = ColorAcento,
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.SemiBold
                         )
                     }
 
@@ -347,12 +423,12 @@ fun PantallaReorganizarAjustes(
                             imageVector = if (nodosExpandidos.isEmpty()) Icons.Default.UnfoldMore else Icons.Default.UnfoldLess,
                             contentDescription = "Expandir/Colapsar",
                             modifier = Modifier.size(15.dp),
-                            tint = ColorAcento
+                            tint = ColorIconosInternos
                         )
                         Spacer(Modifier.width(4.dp))
                         Text(
                             text = if (nodosExpandidos.isEmpty()) "Expandir todo" else "Colapsar todo",
-                            color = ColorAcento,
+                            color = TextoSecundario,
                             fontSize = 12.sp
                         )
                     }
@@ -364,13 +440,13 @@ fun PantallaReorganizarAjustes(
                 key = { _, item -> item.nodo.id }
             ) { itemIndex, item ->
                 val isDragging = item.nodo.id == draggingNodeId
+                val isTargetSlot = (targetVisualIndex == itemIndex && draggingNodeId != null && !isDragging)
                 val elevation = if (isDragging) 16.dp else 0.dp
-                val sangriaDp = (item.profundidad * 12).dp
 
                 val itemActual by rememberUpdatedState(item)
                 val arbolActual by rememberUpdatedState(arbolVisible)
 
-                val filaHeightPx = with(LocalDensity.current) { 34.dp.toPx() }
+                val filaHeightPx = with(LocalDensity.current) { 38.dp.toPx() }
                 val targetShiftY = when {
                     isDragging -> 0f
                     startDragIndex == -1 || targetVisualIndex == -1 -> 0f
@@ -388,15 +464,37 @@ fun PantallaReorganizarAjustes(
                     label = "reactiveSlot"
                 )
 
+                // Indicador de inserción superior cuando se arrastra hacia arriba
+                if (isTargetSlot && targetVisualIndex < startDragIndex) {
+                    val textoDestino = when {
+                        item.nodo.id == itemActual.nodo.id -> "Posición actual"
+                        item.padreId == itemActual.padreId -> "Reordenar aquí"
+                        item.tieneHijos -> "Dentro de ${item.nodo.titulo}"
+                        item.padreId != null -> "En ${MapaAjustes.buscarPorId(item.padreId)?.titulo ?: "Subnivel"}"
+                        else -> "Mover a Ajustes (Raíz)"
+                    }
+                    IndicadorDestinoArrastre(texto = textoDestino)
+                }
+
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .zIndex(if (isDragging) 999f else 1f)
-                        .padding(start = sangriaDp)
+                        .zIndex(if (isDragging) 999f else 1f),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
+                    // Guías visuales de ramas multinivel
+                    if (item.profundidad > 0 && !isDragging) {
+                        GuiaRamaArbol(
+                            profundidad = item.profundidad,
+                            esUltimoHermano = item.indiceEnHermanos == item.hermanos.size - 1,
+                            alturaFila = 38.dp
+                        )
+                        Spacer(Modifier.width(3.dp))
+                    }
+
                     Card(
                         modifier = Modifier
-                            .fillMaxWidth()
+                            .weight(1f)
                             .offset {
                                 if (isDragging) {
                                     IntOffset(dragOffsetX.roundToInt().coerceIn(-40, 60), dragOffsetY.roundToInt())
@@ -406,95 +504,104 @@ fun PantallaReorganizarAjustes(
                             }
                             .shadow(elevation, RoundedCornerShape(8.dp))
                             .then(
-                                if (isDragging) Modifier.border(BorderStroke(1.5.dp, ColorAcento.copy(alpha = 0.6f)), RoundedCornerShape(8.dp))
-                                else Modifier
+                                when {
+                                    isDragging -> Modifier.border(BorderStroke(1.5.dp, ColorAcento.copy(alpha = 0.8f)), RoundedCornerShape(8.dp))
+                                    isTargetSlot -> Modifier.border(BorderStroke(1.5.dp, ColorAcento.copy(alpha = 0.6f)), RoundedCornerShape(8.dp))
+                                    item.esCoincidenciaBusqueda -> Modifier.border(BorderStroke(1.dp, ColorAcento.copy(alpha = 0.5f)), RoundedCornerShape(8.dp))
+                                    else -> Modifier
+                                }
                             ),
                         shape = RoundedCornerShape(8.dp),
-                        colors = CardDefaults.cardColors(containerColor = ColorTarjetaAjustes)
+                        colors = CardDefaults.cardColors(
+                            containerColor = if (item.esCoincidenciaBusqueda) ColorAcento.copy(alpha = 0.08f) else ColorTarjetaAjustes
+                        )
                     ) {
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(horizontal = 6.dp, vertical = 2.dp),
+                                .padding(horizontal = 6.dp, vertical = 3.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            // Asa de arrastre táctil libre entre niveles
+                            // Asa de arrastre táctil libre entre niveles (deshabilitada suavemente durante filtrado)
                             Box(
                                 modifier = Modifier
                                     .size(26.dp)
-                                    .pointerInput(item.nodo.id) {
-                                        detectDragGestures(
-                                            onDragStart = {
-                                                draggingNodeId = itemActual.nodo.id
-                                                val sIdx = arbolActual.indexOfFirst { it.nodo.id == itemActual.nodo.id }
-                                                startDragIndex = sIdx
-                                                targetVisualIndex = sIdx
-                                                dragOffsetY = 0f
-                                                dragOffsetX = 0f
-                                                haptica.tic()
-                                            },
-                                            onDragEnd = {
-                                                val startIdx = arbolActual.indexOfFirst { it.nodo.id == itemActual.nodo.id }
-                                                if (startIdx != -1) {
-                                                    val deltaFilas = (dragOffsetY / filaHeightPx).roundToInt()
-                                                    val targetIdx = (startIdx + deltaFilas).coerceIn(0, arbolActual.size - 1)
+                                    .then(
+                                        if (!estaFiltrando) {
+                                            Modifier.pointerInput(item.nodo.id) {
+                                                detectDragGestures(
+                                                    onDragStart = {
+                                                        draggingNodeId = itemActual.nodo.id
+                                                        val sIdx = arbolActual.indexOfFirst { it.nodo.id == itemActual.nodo.id }
+                                                        startDragIndex = sIdx
+                                                        targetVisualIndex = sIdx
+                                                        dragOffsetY = 0f
+                                                        dragOffsetX = 0f
+                                                        haptica.tic()
+                                                    },
+                                                    onDragEnd = {
+                                                        val startIdx = arbolActual.indexOfFirst { it.nodo.id == itemActual.nodo.id }
+                                                        if (startIdx != -1) {
+                                                            val deltaFilas = (dragOffsetY / filaHeightPx).roundToInt()
+                                                            val targetIdx = (startIdx + deltaFilas).coerceIn(0, arbolActual.size - 1)
 
-                                                    if (deltaFilas == 0 && dragOffsetX > 28.dp.toPx()) {
-                                                        indentarNodo(itemActual)
-                                                    } else if (deltaFilas == 0 && dragOffsetX < -28.dp.toPx()) {
-                                                        outdentarNodo(itemActual)
-                                                    } else if (targetIdx != startIdx) {
-                                                        val destino = arbolActual[targetIdx]
-                                                        haptica.exito()
-                                                        if (destino.padreId == itemActual.padreId) {
-                                                            moverNodoDestino(itemActual.nodo.id, itemActual.padreId, destino.indiceEnHermanos)
-                                                            vm.avisar("Reordenado")
-                                                        } else {
-                                                            if (destino.tieneHijos && destino.expandido && targetIdx > startIdx) {
-                                                                moverNodoDestino(itemActual.nodo.id, destino.nodo.id, 0)
-                                                                vm.avisar("Movido dentro de ${destino.nodo.titulo}")
-                                                            } else {
-                                                                moverNodoDestino(itemActual.nodo.id, destino.padreId, destino.indiceEnHermanos)
-                                                                val nombrePadre = if (destino.padreId != null) MapaAjustes.buscarPorId(destino.padreId)?.titulo ?: "Subnivel" else "Ajustes (Raíz)"
-                                                                vm.avisar("Ubicado en $nombrePadre")
+                                                            if (deltaFilas == 0 && dragOffsetX > 28.dp.toPx()) {
+                                                                indentarNodo(itemActual)
+                                                            } else if (deltaFilas == 0 && dragOffsetX < -28.dp.toPx()) {
+                                                                outdentarNodo(itemActual)
+                                                            } else if (targetIdx != startIdx) {
+                                                                val destino = arbolActual[targetIdx]
+                                                                haptica.exito()
+                                                                if (destino.padreId == itemActual.padreId) {
+                                                                    moverNodoDestino(itemActual.nodo.id, itemActual.padreId, destino.indiceEnHermanos)
+                                                                    vm.avisar("Reordenado")
+                                                                } else if (destino.tieneHijos) {
+                                                                    moverNodoDestino(itemActual.nodo.id, destino.nodo.id, 0)
+                                                                    nodosExpandidos = nodosExpandidos + destino.nodo.id
+                                                                    vm.avisar("Movido dentro de ${destino.nodo.titulo}")
+                                                                } else {
+                                                                    moverNodoDestino(itemActual.nodo.id, destino.padreId, destino.indiceEnHermanos)
+                                                                    val nombrePadre = if (destino.padreId != null) MapaAjustes.buscarPorId(destino.padreId)?.titulo ?: "Subnivel" else "Ajustes (Raíz)"
+                                                                    vm.avisar("Ubicado en $nombrePadre")
+                                                                }
+                                                            }
+                                                        }
+                                                        draggingNodeId = null
+                                                        startDragIndex = -1
+                                                        targetVisualIndex = -1
+                                                        dragOffsetY = 0f
+                                                        dragOffsetX = 0f
+                                                    },
+                                                    onDragCancel = {
+                                                        draggingNodeId = null
+                                                        startDragIndex = -1
+                                                        targetVisualIndex = -1
+                                                        dragOffsetY = 0f
+                                                        dragOffsetX = 0f
+                                                    },
+                                                    onDrag = { change, dragAmount ->
+                                                        change.consume()
+                                                        dragOffsetY += dragAmount.y
+                                                        dragOffsetX += dragAmount.x
+                                                        if (startDragIndex != -1) {
+                                                            val deltaFilas = (dragOffsetY / filaHeightPx).roundToInt()
+                                                            val nuevoTarget = (startDragIndex + deltaFilas).coerceIn(0, arbolActual.size - 1)
+                                                            if (nuevoTarget != targetVisualIndex) {
+                                                                targetVisualIndex = nuevoTarget
+                                                                haptica.tic()
                                                             }
                                                         }
                                                     }
-                                                }
-                                                draggingNodeId = null
-                                                startDragIndex = -1
-                                                targetVisualIndex = -1
-                                                dragOffsetY = 0f
-                                                dragOffsetX = 0f
-                                            },
-                                            onDragCancel = {
-                                                draggingNodeId = null
-                                                startDragIndex = -1
-                                                targetVisualIndex = -1
-                                                dragOffsetY = 0f
-                                                dragOffsetX = 0f
-                                            },
-                                            onDrag = { change, dragAmount ->
-                                                change.consume()
-                                                dragOffsetY += dragAmount.y
-                                                dragOffsetX += dragAmount.x
-                                                if (startDragIndex != -1) {
-                                                    val deltaFilas = (dragOffsetY / filaHeightPx).roundToInt()
-                                                    val nuevoTarget = (startDragIndex + deltaFilas).coerceIn(0, arbolActual.size - 1)
-                                                    if (nuevoTarget != targetVisualIndex) {
-                                                        targetVisualIndex = nuevoTarget
-                                                        haptica.tic()
-                                                    }
-                                                }
+                                                )
                                             }
-                                        )
-                                    },
+                                        } else Modifier
+                                    ),
                                 contentAlignment = Alignment.Center
                             ) {
                                 Icon(
                                     imageVector = Icons.Default.DragHandle,
                                     contentDescription = "Arrastrar para reordenar",
-                                    tint = if (isDragging) ColorAcento else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
+                                    tint = if (isDragging) ColorAcento else if (estaFiltrando) MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.25f) else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
                                     modifier = Modifier.size(16.dp)
                                 )
                             }
@@ -515,7 +622,7 @@ fun PantallaReorganizarAjustes(
                                     Icon(
                                         imageVector = if (item.expandido) Icons.Default.KeyboardArrowDown else Icons.AutoMirrored.Filled.KeyboardArrowRight,
                                         contentDescription = if (item.expandido) "Colapsar" else "Expandir",
-                                        tint = ColorAcento,
+                                        tint = ColorIconosInternos,
                                         modifier = Modifier.size(16.dp)
                                     )
                                 }
@@ -523,7 +630,25 @@ fun PantallaReorganizarAjustes(
                                 Spacer(Modifier.width(6.dp))
                             }
 
-                            Spacer(Modifier.width(4.dp))
+                            Spacer(Modifier.width(2.dp))
+
+                            // Ícono representativo en squircle neutro
+                            val (iconoNodo, _) = remember(item.nodo.id) { MapaAjustes.resolverIconoYColor(item.nodo) }
+                            Box(
+                                modifier = Modifier
+                                    .size(24.dp)
+                                    .background(ColorCampoAjustes, RoundedCornerShape(6.dp)),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Icon(
+                                    imageVector = iconoNodo,
+                                    contentDescription = null,
+                                    tint = ColorIconosInternos,
+                                    modifier = Modifier.size(14.dp)
+                                )
+                            }
+
+                            Spacer(Modifier.width(8.dp))
 
                             // Contenido textual: Título arriba, ID abajo si está activo
                             Column(
@@ -550,12 +675,12 @@ fun PantallaReorganizarAjustes(
                                         Spacer(Modifier.width(5.dp))
                                         Box(
                                             modifier = Modifier
-                                                .background(ColorAcento.copy(alpha = 0.15f), RoundedCornerShape(3.dp))
+                                                .background(ColorCampoAjustes, RoundedCornerShape(3.dp))
                                                 .padding(horizontal = 4.dp, vertical = 0.dp)
                                         ) {
                                             Text(
                                                 text = "${item.totalHijos}",
-                                                color = ColorAcento,
+                                                color = TextoSecundario,
                                                 fontSize = 9.sp,
                                                 lineHeight = 11.sp,
                                                 fontWeight = FontWeight.Bold
@@ -593,7 +718,7 @@ fun PantallaReorganizarAjustes(
                                             Icon(
                                                 imageVector = Icons.AutoMirrored.Filled.DriveFileMove,
                                                 contentDescription = null,
-                                                tint = ColorAcento
+                                                tint = ColorIconosInternos
                                             )
                                         },
                                         onClick = {
@@ -685,6 +810,18 @@ fun PantallaReorganizarAjustes(
                             }
                         }
                     }
+                }
+
+                // Indicador de inserción inferior cuando se arrastra hacia abajo
+                if (isTargetSlot && targetVisualIndex > startDragIndex) {
+                    val textoDestino = when {
+                        item.nodo.id == itemActual.nodo.id -> "Posición actual"
+                        item.padreId == itemActual.padreId -> "Reordenar aquí"
+                        item.tieneHijos -> "Dentro de ${item.nodo.titulo}"
+                        item.padreId != null -> "En ${MapaAjustes.buscarPorId(item.padreId)?.titulo ?: "Subnivel"}"
+                        else -> "Mover a Ajustes (Raíz)"
+                    }
+                    IndicadorDestinoArrastre(texto = textoDestino)
                 }
             }
 

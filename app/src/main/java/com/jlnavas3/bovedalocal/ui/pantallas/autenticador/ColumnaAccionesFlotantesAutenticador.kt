@@ -18,6 +18,7 @@ import androidx.compose.material.icons.filled.QrCodeScanner
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import com.jlnavas3.bovedalocal.ui.componentes.BotonFlotanteSecundario
+import com.jlnavas3.bovedalocal.ui.componentes.desplazarPorAvisoEmergente
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -46,7 +47,9 @@ fun ColumnaAccionesFlotantesAutenticador(
     val formaFab = RoundedCornerShape(CurvaturaEsquinas)
 
     Column(
-        modifier = modifier.padding(20.dp),
+        modifier = modifier
+            .desplazarPorAvisoEmergente()
+            .padding(20.dp),
         horizontalAlignment = Alignment.End,
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {

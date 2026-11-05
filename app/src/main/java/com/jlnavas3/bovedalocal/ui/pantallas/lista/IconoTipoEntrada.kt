@@ -40,7 +40,7 @@ import com.jlnavas3.bovedalocal.data.TipoEntrada
 import com.jlnavas3.bovedalocal.ui.componentes.Monograma
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorCampoAjustes
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorSeparadorAjustes
-import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
+import com.jlnavas3.bovedalocal.ui.theme.TextoPrincipal
 import com.jlnavas3.bovedalocal.util.IconoAppCircular
 import com.jlnavas3.bovedalocal.util.rememberIconoAppInstalada
 import com.jlnavas3.bovedalocal.util.LanzadorEnlaces
@@ -68,7 +68,6 @@ fun IconoTipoEntrada(
             )
         } else {
             when (entrada.tipo) {
-                TipoEntrada.PASSKEY -> IconoTipoCircular(Icons.Filled.Fingerprint, tamanoIcono)
                 TipoEntrada.NOTA -> IconoTipoCircular(Icons.Filled.Description, tamanoIcono)
                 TipoEntrada.TARJETA -> IconoTipoCircular(Icons.Filled.CreditCard, tamanoIcono)
                 TipoEntrada.WIFI -> IconoTipoCircular(Icons.Filled.Wifi, tamanoIcono)
@@ -78,6 +77,7 @@ fun IconoTipoEntrada(
                 TipoEntrada.IDENTIDAD -> IconoTipoCircular(Icons.Filled.Badge, tamanoIcono)
                 TipoEntrada.CONTACTO -> IconoTipoCircular(Icons.Filled.Person, tamanoIcono)
                 else -> {
+                    // Cuentas de acceso (LOGIN, PASSKEY, etc.) usan Monograma con iniciales del servicio
                     Monograma(
                         titulo = entrada.titulo.ifBlank { "?" },
                         semilla = entrada.urls.firstOrNull() ?: entrada.usuario.ifBlank { entrada.titulo },
@@ -105,7 +105,7 @@ private fun IconoTipoCircular(
         Icon(
             imageVector = imageVector,
             contentDescription = null,
-            tint = ColorAcento,
+            tint = TextoPrincipal,
             modifier = Modifier.size((tamanoIcono * 0.52f).dp)
         )
     }

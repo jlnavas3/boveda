@@ -80,4 +80,25 @@ class ModeloPaletaSobriaTest {
         assertEquals(gris.green, gris.blue, 0.001f)
         assertEquals(1.0f, gris.alpha, 0.001f)
     }
+
+    @Test
+    fun calcularColorCapaLab_modoOscuroLuminanciaCero_retornaNegroPuroEstricto() {
+        val negroSuperficie = com.jlnavas3.bovedalocal.ui.pantallas.tema.calcularColorCapaLab(
+            tono = 215f,
+            lum = 0.00f,
+            saturacionTinte = 0.12f,
+            modoOscuro = true,
+            esSuperficie = true
+        )
+        assertEquals(Color(0xFF000000), negroSuperficie)
+
+        val negroBorde = com.jlnavas3.bovedalocal.ui.pantallas.tema.calcularColorCapaLab(
+            tono = 0f,
+            lum = 0.00f,
+            saturacionTinte = 0.00f,
+            modoOscuro = true,
+            esSuperficie = true
+        )
+        assertEquals(Color(0xFF000000), negroBorde)
+    }
 }

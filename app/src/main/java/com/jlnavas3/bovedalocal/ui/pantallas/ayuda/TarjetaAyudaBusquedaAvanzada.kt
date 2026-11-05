@@ -65,11 +65,12 @@ fun TarjetaAyudaBusquedaAvanzada(modifier: Modifier = Modifier) {
                 comandos = listOf(
                     "t:login" to "Contraseñas y accesos",
                     "t:tarjeta" to "Tarjetas de crédito / débito",
+                    "t:identidad" to "Documentos oficiales (DNI, Pasaporte)",
                     "t:wifi" to "Redes Wi-Fi",
                     "t:banco" to "Cuentas bancarias",
                     "t:servidor" to "Servidores y claves SSH",
                     "t:wallet" to "Billeteras de criptomonedas",
-                    "t:passkey" to "Llaves de paso (FIDO2)",
+                    "t:passkey" to "Llaves de acceso (FIDO2)",
                     "t:nota" to "Notas seguras",
                     "t:contacto" to "Contactos seguros"
                 )
@@ -82,6 +83,7 @@ fun TarjetaAyudaBusquedaAvanzada(modifier: Modifier = Modifier) {
                 comandos = listOf(
                     "has:totp" to "Entradas con código 2FA / TOTP",
                     "has:passkey" to "Entradas con llave Passkey",
+                    "has:adjuntos" to "Entradas con archivos adjuntos",
                     "has:nota" to "Entradas que tienen notas",
                     "is:fav" to "Entradas marcadas como favorito",
                     "is:ignorado" to "Entradas excluidas de auditoría"
@@ -110,7 +112,7 @@ fun TarjetaAyudaBusquedaAvanzada(modifier: Modifier = Modifier) {
             )
             Spacer(Modifier.height(6.dp))
 
-            val formaEjemplo = RoundedCornerShape(CurvaturaEsquinas / 2)
+            val formaEjemplo = if (CurvaturaEsquinas == 0.dp) RoundedCornerShape(0.dp) else RoundedCornerShape(CurvaturaEsquinas / 2)
             Column(
                 modifier = Modifier
                     .fillMaxWidth()

@@ -81,6 +81,19 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    flavorDimensions += "aislamiento"
+
+    productFlavors {
+        create("lanSync") {
+            dimension = "aislamiento"
+            buildConfigField("boolean", "PERMITE_RED_LAN", "true")
+        }
+        create("airgapped") {
+            dimension = "aislamiento"
+            buildConfigField("boolean", "PERMITE_RED_LAN", "false")
+        }
+    }
+
     // Argon2 trae una .so nativa por ABI; sin splits, cada APK carga las 4 aunque el
     // móvil solo pueda usar una. Con esto, instalar desde una tienda o vía "bundletool"
     // baja el peso real a ~15 MB; el "universal" de siempre se sigue generando por si

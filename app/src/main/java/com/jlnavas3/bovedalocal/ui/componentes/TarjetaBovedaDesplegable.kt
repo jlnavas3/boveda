@@ -37,6 +37,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -161,8 +162,11 @@ fun TarjetaBovedaDesplegable(
                     Text(
                         text = descripcion,
                         color = TextoSecundario,
-                        style = MaterialTheme.typography.bodySmall,
-                        lineHeight = 16.sp
+                        style = MaterialTheme.typography.bodySmall.copy(
+                            fontSize = 11.5.sp,
+                            lineHeight = 15.sp,
+                            fontStyle = FontStyle.Italic
+                        )
                     )
                 }
             }

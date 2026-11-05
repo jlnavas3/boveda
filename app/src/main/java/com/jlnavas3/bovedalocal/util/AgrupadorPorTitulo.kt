@@ -38,13 +38,7 @@ fun construirItemsAgrupadosPorTitulo(
     }
 
     val comparadorTopLevel: Comparator<ItemAgrupado> = when (criterio) {
-        CriterioOrdenacion.NOMBRE_AZ -> compareByDescending<ItemAgrupado> { item ->
-            when (item) {
-                is ItemAgrupado.Grupo -> item.entradas.any { it.favorito }
-                is ItemAgrupado.Suelto -> item.entrada.favorito
-                is ItemAgrupado.Hijo -> false
-            }
-        }.thenBy { item ->
+        CriterioOrdenacion.NOMBRE_AZ -> compareBy<ItemAgrupado> { item ->
             when (item) {
                 is ItemAgrupado.Grupo -> item.clave.lowercase()
                 is ItemAgrupado.Suelto -> item.entrada.titulo.lowercase()
@@ -96,12 +90,6 @@ fun construirItemsAgrupadosPorTitulo(
             when (item) {
                 is ItemAgrupado.Grupo -> if (item.entradas.any { it.ignoradaEnSalud }) 1 else 0
                 is ItemAgrupado.Suelto -> if (item.entrada.ignoradaEnSalud) 1 else 0
-                is ItemAgrupado.Hijo -> 0
-            }
-        }.thenByDescending { item ->
-            when (item) {
-                is ItemAgrupado.Grupo -> if (item.entradas.any { it.favorito }) 1 else 0
-                is ItemAgrupado.Suelto -> if (item.entrada.favorito) 1 else 0
                 is ItemAgrupado.Hijo -> 0
             }
         }.thenBy { item ->

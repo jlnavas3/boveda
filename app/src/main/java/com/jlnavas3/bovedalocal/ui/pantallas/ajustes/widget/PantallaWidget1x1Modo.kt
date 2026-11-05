@@ -66,6 +66,11 @@ fun PantallaWidget1x1Modo(
         mostrarId = ajustes.mostrarIdsAjustes,
         alVolver = { vm.volverAtras() }
     ) {
+        PreviaResistenciaWidget1x1(
+            ajustes = ajustes,
+            modifier = Modifier.padding(bottom = 12.dp)
+        )
+
         ComponenteGrupo(
             etiqueta = "Estrategia de generación",
             icono = Icons.Filled.Pattern,

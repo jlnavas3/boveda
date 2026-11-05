@@ -34,6 +34,7 @@ import com.jlnavas3.bovedalocal.ui.VaultViewModel
 import com.jlnavas3.bovedalocal.ui.componentes.DescripcionPantalla
 import com.jlnavas3.bovedalocal.ui.componentes.seleccion.BarraSuperiorSeleccion
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjustesFondo
+import com.jlnavas3.bovedalocal.ui.pantallas.passkeys.BarraAccionesPasskeysPrincipal
 import com.jlnavas3.bovedalocal.ui.pantallas.passkeys.BarraAccionesSeleccionPasskeys
 import com.jlnavas3.bovedalocal.ui.pantallas.passkeys.BarraSuperiorPasskeys
 import com.jlnavas3.bovedalocal.ui.pantallas.passkeys.ContenidoListaPasskeys
@@ -42,6 +43,7 @@ import com.jlnavas3.bovedalocal.ui.pantallas.passkeys.filtrarYOrdenarPasskeys
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.shape.RoundedCornerShape
+import com.jlnavas3.bovedalocal.ui.componentes.desplazarPorAvisoEmergente
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.VpnKey
 import androidx.compose.material3.FloatingActionButton
@@ -274,26 +276,10 @@ fun PantallaPasskeys(
         }
 
         if (!modoSeleccion) {
-            val formaFab = RoundedCornerShape(CurvaturaEsquinas)
-            FloatingActionButton(
-                onClick = dispararImportacionPasskeys,
-                containerColor = ColorAcento,
-                contentColor = ColorSobreAcento,
-                shape = formaFab,
-                modifier = Modifier
-                    .align(Alignment.BottomEnd)
-                    .padding(20.dp)
-                    .then(
-                        if (GrosorBorde > 0.dp && EstiloBorde != "ninguno" && ColorBordeActual != Color.Transparent) {
-                            Modifier.border(GrosorBorde, ColorBordeActual, formaFab)
-                        } else Modifier
-                    )
-            ) {
-                Icon(
-                    imageVector = Icons.Filled.VpnKey,
-                    contentDescription = "Importar llaves de paso"
-                )
-            }
+            BarraAccionesPasskeysPrincipal(
+                alImportarPasskeys = dispararImportacionPasskeys,
+                modifier = Modifier.align(Alignment.BottomCenter)
+            )
         }
     }
 

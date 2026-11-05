@@ -32,7 +32,7 @@ fun GrupoModoIdentidadesAjustes(
     modifier: Modifier = Modifier
 ) {
     ComponenteGrupo(
-        etiqueta = "Identidades en lista principal",
+        etiqueta = "Perfiles en lista principal",
         icono = Icons.Filled.AccountCircle,
         colorIcono = Color(0xFF0284C7),
         idGrupo = "02-APA-DES-GID",
@@ -67,7 +67,7 @@ fun GrupoModoIdentidadesAjustes(
         )
         ComponenteSeparador(sangriaInicio = 16.dp)
         ComponenteNavegacion(
-            titulo = "Administrar identidades y perfiles...",
+            titulo = "Administrar perfiles...",
             icono = null,
             idFila = "03-LST-IDE",
             mostrarId = mostrarId,

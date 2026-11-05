@@ -61,6 +61,9 @@ class CoordinadorResaltadoAjustes(
         if (dest == "03-LST-CAM" && (item == "02-APA-FMT" || item == "02-APA-FMT-G01" || item.startsWith("02-APA-FMT") || item == "03-LST-FMT" || item.startsWith("03-LST-FMT"))) return true
         if (dest == "01-SEG-DAT" && (item == "01-SEG-DAT-G01" || item.startsWith("01-SEG-DAT"))) return true
         if (dest == "01-SEG-BIO" && (item == "01-SEG-BIO-G01" || item.startsWith("01-SEG-BIO"))) return true
+        if ((dest == "01-SEG-BIO-BIO" || dest == "01-SEG-BIO-G01") && (item == "01-SEG-BIO-G01" || item == "01-SEG-BIO-SWT")) return true
+        if ((dest == "01-SEG-BIO-APP" || dest == "01-SEG-BIO-G02" || dest == "01-SEG-BIO-INA") && (item == "01-SEG-BIO-G02" || item == "01-SEG-BIO-TIM")) return true
+        if ((dest == "01-SEG-BIO-BRU" || dest == "01-SEG-BIO-G05") && (item == "01-SEG-BIO-G05" || item == "01-SEG-BIO-TRY")) return true
         if (dest == "04-HER-CAM" && (item == "04-HER-CAM-G01" || item.startsWith("04-HER-CAM"))) return true
         if ((dest == "04-HER-HIS" || dest == "04-HER-HST") && (item == "04-HER-HST-G01" || item.startsWith("04-HER-HST"))) return true
         if ((dest == "05-COP-SEG" || dest == "05-COP-MAN") && (item == "05-COP-MAN-G01" || item.startsWith("05-COP-MAN"))) return true

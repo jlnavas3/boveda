@@ -42,8 +42,11 @@ import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjusteGris
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorCampoAjustes
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorSeparadorAjustes
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorTextoAjustes
-import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
+import androidx.compose.ui.graphics.Color
+import com.jlnavas3.bovedalocal.ui.pantallas.lista.IndicadorContenidoTarjeta
+import com.jlnavas3.bovedalocal.ui.theme.EstiloIndicadores
 import com.jlnavas3.bovedalocal.ui.theme.FormaPequena
+import com.jlnavas3.bovedalocal.ui.theme.Peligro
 
 /**
  * Contenido textual y credenciales de la fila de un problema de salud de la bóveda.
@@ -57,6 +60,8 @@ fun ColumnScope.ContenidoDetalleProblemaSalud(
     seguridadVisualActiva: Boolean,
     mostrarUsuario: Boolean = false,
     mostrarContrasena: Boolean,
+    colorDetalle: Color = Peligro,
+    mostrarIndicadores: Boolean = false,
     alAlternarMostrarUsuario: () -> Unit = {},
     alAlternarMostrarContrasena: () -> Unit
 ) {
@@ -84,7 +89,7 @@ fun ColumnScope.ContenidoDetalleProblemaSalud(
         ) {
             Text(
                 text = etiquetaDetalle,
-                color = ColorAcento,
+                color = colorDetalle,
                 style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.SemiBold)
             )
         }
@@ -136,9 +141,9 @@ fun ColumnScope.ContenidoDetalleProblemaSalud(
         } else {
             TextoSeguroVisual(
                 texto = entrada.contrasena,
-                oculto = !mostrarContrasena,
-                estilo = if (seguridadVisualActiva) estiloOcultamiento else "puntos_reales",
-                estiloTexto = if (mostrarContrasena) {
+                oculto = seguridadVisualActiva && !mostrarContrasena,
+                estilo = estiloOcultamiento,
+                estiloTexto = if (mostrarContrasena || !seguridadVisualActiva) {
                     MaterialTheme.typography.bodySmall.copy(
                         fontFamily = FontFamily.Monospace,
                         fontSize = 11.sp
@@ -152,7 +157,7 @@ fun ColumnScope.ContenidoDetalleProblemaSalud(
                 modifier = Modifier.weight(1f, fill = false)
             )
         }
-        if (entrada.contrasena.isNotBlank()) {
+        if (seguridadVisualActiva && entrada.contrasena.isNotBlank()) {
             val contexto = androidx.compose.ui.platform.LocalContext.current
             val haptica = androidx.compose.runtime.remember { com.jlnavas3.bovedalocal.util.Haptica(contexto) }
             IconButton(
@@ -176,13 +181,46 @@ fun ColumnScope.ContenidoDetalleProblemaSalud(
     val urlsLimpias = remember(entrada.urls) { entrada.urls.filter { it.isNotBlank() } }
     if (urlsLimpias.isNotEmpty()) {
         Spacer(Modifier.height(2.dp))
-        urlsLimpias.forEach { url ->
-            Text(
-                text = url,
-                color = ColorAjusteGris,
-                style = MaterialTheme.typography.bodySmall.copy(fontSize = 10.5.sp),
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
+        urlsLimpias.forEachIndexed { index, url ->
+            if (index == urlsLimpias.lastIndex && mostrarIndicadores && (EstiloIndicadores == "puntos" || EstiloIndicadores == "iconos")) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = url,
+                        color = ColorAjusteGris,
+                        style = MaterialTheme.typography.bodySmall.copy(fontSize = 10.5.sp),
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.weight(1f)
+                    )
+                    Spacer(Modifier.width(8.dp))
+                    IndicadorContenidoTarjeta(
+                        entrada = entrada,
+                        estilo = EstiloIndicadores
+                    )
+                }
+            } else {
+                Text(
+                    text = url,
+                    color = ColorAjusteGris,
+                    style = MaterialTheme.typography.bodySmall.copy(fontSize = 10.5.sp),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
+        }
+    } else if (mostrarIndicadores && (EstiloIndicadores == "puntos" || EstiloIndicadores == "iconos")) {
+        Spacer(Modifier.height(3.dp))
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.End,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            IndicadorContenidoTarjeta(
+                entrada = entrada,
+                estilo = EstiloIndicadores
             )
         }
     }

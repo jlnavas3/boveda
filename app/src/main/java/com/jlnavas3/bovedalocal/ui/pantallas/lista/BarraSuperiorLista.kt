@@ -21,6 +21,7 @@ import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Search
+import com.jlnavas3.bovedalocal.ui.componentes.hud.accionConHud
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -57,19 +58,40 @@ fun BarraSuperiorLista(
     agruparPorSitio: Boolean,
     mostrarIndicadoresContenido: Boolean,
     hayFiltrosParaRestablecer: Boolean,
+    criterioOrdenacionActual: com.jlnavas3.bovedalocal.ui.CriterioOrdenacion = com.jlnavas3.bovedalocal.ui.CriterioOrdenacion.NOMBRE_AZ,
+    filtroTipoActual: com.jlnavas3.bovedalocal.data.TipoEntrada? = null,
     alAbrirMenu: () -> Unit,
     alAlternarBusqueda: () -> Unit,
-    alMostrarOrdenacion: () -> Unit,
-    alMostrarFiltros: () -> Unit,
+    alSeleccionarCriterioOrdenacion: (com.jlnavas3.bovedalocal.ui.CriterioOrdenacion) -> Unit = {},
+    alSeleccionarFiltroTipo: (com.jlnavas3.bovedalocal.data.TipoEntrada?) -> Unit = {},
+    alCrearTipo: (com.jlnavas3.bovedalocal.data.TipoEntrada) -> Unit = {},
     alAlternarSoloFavoritos: () -> Unit,
+    alIrNormalizadorTitulos: () -> Unit = {},
+    alIrTema: () -> Unit = {},
+    alIrFormas: () -> Unit = {},
+    alIrTipografia: () -> Unit = {},
     alIrOrganizacionGrupo: () -> Unit,
     alIrOrganizacionIndicadores: () -> Unit,
+    alIrIndiceAz: () -> Unit = {},
+    alIrTransiciones: () -> Unit = {},
     alIrExportarSelectivo: () -> Unit,
     alIrCopiaSeguridadManual: () -> Unit,
     alIrCopiaSeguridad: () -> Unit,
     alIrCsvGoogle: () -> Unit,
+    alImportarGoogleAuthenticator: () -> Unit = {},
     alImportarDirectoCxf: () -> Unit = {},
+    alImportarContactos: () -> Unit = {},
     alExportarDirectoCxf: () -> Unit = {},
+    alIrCopiaRapida: () -> Unit = {},
+    alIrFormatosCampos: () -> Unit = {},
+    alIrSeguridadDatos: () -> Unit = {},
+    alIrColoresIds: () -> Unit = {},
+    alIrDatosTecnicosPasskey: () -> Unit = {},
+    alIrUmbralContrasenas: () -> Unit = {},
+    alIrContrasenasComunes: () -> Unit = {},
+    alIrPlantillasPersonalizadas: () -> Unit = {},
+    alIrAjustesGenerales: () -> Unit = {},
+    alAbrirAyuda: () -> Unit = {},
     alRestablecerFiltros: () -> Unit,
     mostrarCampanaAvisos: Boolean = true,
     cantidadAvisos: Int = 0,
@@ -87,11 +109,17 @@ fun BarraSuperiorLista(
             .padding(start = 12.dp, end = 12.dp, top = 12.dp, bottom = 4.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        IconButton(
-            onClick = { haptica.toque(); alAbrirMenu() },
+        Box(
             modifier = Modifier
                 .size(40.dp)
                 .clip(CircleShape)
+                .accionConHud(
+                    etiqueta = "Menú lateral",
+                    icono = Icons.Filled.Menu,
+                    radioRipple = 20.dp,
+                    alPulsar = { haptica.toque(); alAbrirMenu() }
+                ),
+            contentAlignment = Alignment.Center
         ) {
             Icon(
                 imageVector = Icons.Filled.Menu,
@@ -117,56 +145,8 @@ fun BarraSuperiorLista(
             )
         }
 
-        // Insignia de salud de la bóveda
-        if (totalEntradas > 0) {
-            InsigniaSaludBoveda(
-                alAbrirSalud = {
-                    haptica.tic()
-                    alAbrirSalud()
-                },
-                cantidadProblemas = cantidadProblemasSalud
-            )
-            Spacer(Modifier.width(4.dp))
-        }
-
-        // Botón Campana de Avisos (con badge si hay recomendaciones)
-        if (mostrarCampanaAvisos && cantidadAvisos > 0) {
-            androidx.compose.material3.BadgedBox(
-                badge = {
-                    androidx.compose.material3.Badge(
-                        containerColor = ColorAcento,
-                        contentColor = com.jlnavas3.bovedalocal.ui.theme.ColorSobreAcento
-                    ) {
-                        Text("$cantidadAvisos")
-                    }
-                }
-            ) {
-                IconButton(
-                    onClick = {
-                        haptica.tic()
-                        alAbrirAvisos()
-                    },
-                    modifier = Modifier
-                        .size(40.dp)
-                        .clip(CircleShape)
-                ) {
-                    Icon(
-                        imageVector = Icons.Filled.Notifications,
-                        contentDescription = "Avisos y recomendaciones ($cantidadAvisos)",
-                        tint = ColorAcento,
-                        modifier = Modifier.size(20.dp)
-                    )
-                }
-            }
-            Spacer(Modifier.width(6.dp))
-        }
-
         // Botón Búsqueda (Lupa)
-        IconButton(
-            onClick = {
-                haptica.tic()
-                alAlternarBusqueda()
-            },
+        Box(
             modifier = Modifier
                 .size(40.dp)
                 .clip(CircleShape)
@@ -175,6 +155,16 @@ fun BarraSuperiorLista(
                         Modifier.background(ColorAcento.copy(alpha = 0.16f))
                     } else Modifier
                 )
+                .accionConHud(
+                    etiqueta = "Buscar en la bóveda",
+                    icono = Icons.Filled.Search,
+                    radioRipple = 20.dp,
+                    alPulsar = {
+                        haptica.tic()
+                        alAlternarBusqueda()
+                    }
+                ),
+            contentAlignment = Alignment.Center
         ) {
             Icon(
                 imageVector = Icons.Filled.Search,
@@ -188,11 +178,7 @@ fun BarraSuperiorLista(
 
         // Botón Tres Puntos (Filtros, Ordenación y Ajustes Contextuales)
         Box {
-            IconButton(
-                onClick = {
-                    haptica.tic()
-                    menuOpcionesDesplegado = true
-                },
+            Box(
                 modifier = Modifier
                     .size(40.dp)
                     .clip(CircleShape)
@@ -201,6 +187,16 @@ fun BarraSuperiorLista(
                             Modifier.background(ColorAcento.copy(alpha = 0.16f))
                         } else Modifier
                     )
+                    .accionConHud(
+                        etiqueta = "Más opciones",
+                        icono = Icons.Filled.MoreVert,
+                        radioRipple = 20.dp,
+                        alPulsar = {
+                            haptica.tic()
+                            menuOpcionesDesplegado = true
+                        }
+                    ),
+                contentAlignment = Alignment.Center
             ) {
                 Icon(
                     imageVector = Icons.Filled.MoreVert,
@@ -213,21 +209,33 @@ fun BarraSuperiorLista(
             MenuOpcionesLista(
                 expandido = menuOpcionesDesplegado,
                 soloFavoritos = soloFavoritos,
-                agruparPorSitio = agruparPorSitio,
-                mostrarIndicadoresContenido = mostrarIndicadoresContenido,
                 hayFiltrosParaRestablecer = hayFiltrosParaRestablecer,
+                criterioOrdenacionActual = criterioOrdenacionActual,
+                filtroTipoActual = filtroTipoActual,
                 alDescartar = { menuOpcionesDesplegado = false },
-                alMostrarOrdenacion = alMostrarOrdenacion,
-                alMostrarFiltros = alMostrarFiltros,
+                alCrearTipo = alCrearTipo,
+                alSeleccionarCriterioOrdenacion = alSeleccionarCriterioOrdenacion,
+                alSeleccionarFiltroTipo = alSeleccionarFiltroTipo,
                 alAlternarSoloFavoritos = alAlternarSoloFavoritos,
-                alIrOrganizacionGrupo = alIrOrganizacionGrupo,
-                alIrOrganizacionIndicadores = alIrOrganizacionIndicadores,
+                alIrNormalizadorTitulos = alIrNormalizadorTitulos,
                 alIrExportarSelectivo = alIrExportarSelectivo,
                 alIrCopiaSeguridadManual = alIrCopiaSeguridadManual,
                 alIrCopiaSeguridad = alIrCopiaSeguridad,
                 alIrCsvGoogle = alIrCsvGoogle,
+                alImportarGoogleAuthenticator = alImportarGoogleAuthenticator,
                 alImportarDirectoCxf = alImportarDirectoCxf,
+                alImportarContactos = alImportarContactos,
                 alExportarDirectoCxf = alExportarDirectoCxf,
+                alIrTema = alIrTema,
+                alIrFormas = alIrFormas,
+                alIrTipografia = alIrTipografia,
+                alIrOrganizacionGrupo = alIrOrganizacionGrupo,
+                alIrOrganizacionIndicadores = alIrOrganizacionIndicadores,
+                alIrIndiceAz = alIrIndiceAz,
+                alIrTransiciones = alIrTransiciones,
+                alIrSeguridadDatos = alIrSeguridadDatos,
+                alIrAjustesGenerales = alIrAjustesGenerales,
+                alAbrirAyuda = alAbrirAyuda,
                 alRestablecerFiltros = alRestablecerFiltros
             )
         }
@@ -250,8 +258,6 @@ private fun PreviewBarraSuperiorLista() {
             hayFiltrosParaRestablecer = false,
             alAbrirMenu = {},
             alAlternarBusqueda = {},
-            alMostrarOrdenacion = {},
-            alMostrarFiltros = {},
             alAlternarSoloFavoritos = {},
             alIrOrganizacionGrupo = {},
             alIrOrganizacionIndicadores = {},

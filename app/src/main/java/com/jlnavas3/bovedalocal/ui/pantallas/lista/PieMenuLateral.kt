@@ -30,9 +30,8 @@ import androidx.compose.ui.unit.sp
 import com.jlnavas3.bovedalocal.BuildConfig
 import com.jlnavas3.bovedalocal.crypto.PerfilArgon2
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjusteGris
-import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
-import com.jlnavas3.bovedalocal.ui.theme.colorLegibleParaTema
-import com.jlnavas3.bovedalocal.ui.theme.fondoBadgeParaTema
+import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorCampoAjustes
+import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
 
 /**
  * Pie de página del menú lateral con cápsulas de seguridad (Argon2id, AES-256, 100% Offline) y versión.
@@ -42,8 +41,8 @@ fun PieMenuLateral(
     perfilArgon2: PerfilArgon2 = PerfilArgon2.ESTANDAR,
     modifier: Modifier = Modifier
 ) {
-    val fondoInsignia = fondoBadgeParaTema(ColorAcento)
-    val textoInsignia = colorLegibleParaTema(ColorAcento)
+    val fondoInsignia = ColorCampoAjustes
+    val textoInsignia = TextoSecundario
 
     Column(
         modifier = modifier

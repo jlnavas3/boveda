@@ -89,13 +89,13 @@ fun SeccionCredencialesEdicion(
             ) {
                 Icon(
                     imageVector = Icons.Filled.Fingerprint,
-                    contentDescription = "Llave de paso activa",
+                    contentDescription = "Llave de acceso activa",
                     tint = colorLegibleParaTema(ColorDatosPasskey),
                     modifier = Modifier.size(22.dp)
                 )
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
-                        text = "Llave de paso registrada",
+                        text = "Llave de acceso registrada",
                         style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
                         color = colorLegibleParaTema(ColorDatosPasskey)
                     )

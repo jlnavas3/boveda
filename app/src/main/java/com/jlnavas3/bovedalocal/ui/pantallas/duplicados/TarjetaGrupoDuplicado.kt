@@ -46,6 +46,7 @@ fun TarjetaGrupoDuplicado(
         seleccionado = todosSeleccionados,
         parcialmenteSeleccionado = parcialmenteSeleccionado,
         alPulsarLargo = { alAlternarSeleccionGrupo(idsGrupo) },
+        alAlternarSeleccionGrupo = { alAlternarSeleccionGrupo(idsGrupo) },
         modifier = modifier,
         contenidoEntrada = { entrada, _, _ ->
             FilaEntradaDuplicada(

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+    <!-- Exclusivo para la sincronización directa P2P en red local (LAN) con Bóveda Local Desktop -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <!-- Erradicación defensiva: garantiza cero acceso a la agenda del teléfono en lanSync -->
+    <uses-permission android:name="android.permission.READ_CONTACTS" tools:node="remove" />
+</manifest>

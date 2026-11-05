@@ -128,13 +128,18 @@ class HistorialGeneradorYBackupTest {
         assertTrue(res3.endsWith(".bvda"))
         assertFalse(res3.endsWith(".bvda.bvda"))
 
-        val res4 = GestorBackupAutomatico.resolverNombreArchivo("{99}-boveda-auto-{FECHA}", secuencia = 3, fecha = fechaFija)
+        val res4 = GestorBackupAutomatico.resolverNombreArchivo("{##}-boveda-auto-{FECHA}", secuencia = 3, fecha = fechaFija)
         assertTrue(res4.startsWith("03-boveda-auto-"))
         assertTrue(res4.endsWith(".bvda"))
 
-        val res5 = GestorBackupAutomatico.resolverNombreArchivo("{999}-backup", secuencia = 7, fecha = fechaFija)
-        assertTrue(res5.startsWith("007-backup_"))
+        val res5 = GestorBackupAutomatico.resolverNombreArchivo("{###}-backup", secuencia = 7, fecha = fechaFija)
+        assertTrue(res5.startsWith("007-backup"))
         assertTrue(res5.endsWith(".bvda"))
+
+        val res6 = GestorBackupAutomatico.resolverNombreArchivo("{##}-selectivo-{FECHA}_{HORA}", secuencia = 1, fecha = fechaFija)
+        assertTrue(res6.startsWith("01-selectivo-"))
+        assertTrue(res6.contains("_"))
+        assertTrue(res6.endsWith(".bvda"))
     }
 
     @Test

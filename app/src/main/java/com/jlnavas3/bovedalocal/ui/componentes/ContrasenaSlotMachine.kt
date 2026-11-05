@@ -6,6 +6,10 @@
 
 package com.jlnavas3.bovedalocal.ui.componentes
 
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -31,7 +35,10 @@ fun ContrasenaSlotMachine(
     modifier: Modifier = Modifier
 ) {
     var mostrado by remember { mutableStateOf(objetivo) }
+    val scrollState = rememberScrollState()
+
     LaunchedEffect(generacion, objetivo) {
+        scrollState.scrollTo(0)
         if (objetivo.isEmpty()) {
             mostrado = ""
             return@LaunchedEffect
@@ -59,9 +66,17 @@ fun ContrasenaSlotMachine(
         }
         mostrado = objetivo
     }
-    Text(
-        text = contrasenaColoreada(mostrado),
-        style = if (objetivo.length > 28) EstiloMono else EstiloMonoGrande,
+
+    Box(
         modifier = modifier
-    )
+            .fillMaxWidth()
+            .horizontalScroll(scrollState)
+    ) {
+        Text(
+            text = contrasenaColoreada(mostrado),
+            style = EstiloMono,
+            maxLines = 1,
+            softWrap = false
+        )
+    }
 }

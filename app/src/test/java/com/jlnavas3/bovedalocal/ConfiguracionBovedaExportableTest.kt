@@ -48,13 +48,19 @@ class ConfiguracionBovedaExportableTest {
             plantillaServidorIp = "Servidor Homelab ({IP})",
             formatoColisionTitulos = "{TITULO} ({CONTADOR})",
             respetarTitulosPersonalizados = false,
-            autofillSugerenciasTeclado = true,
-            autofillPistasUsuario = listOf("username", "login", "user"),
-            autofillPistasContrasena = listOf("password", "pass"),
-            autofillPistasOtp = listOf("totp", "otp"),
-            mapeoPaquetesPersonalizados = mapOf("com.example.bank" to "Banco Ejemplo"),
-            navegadoresPersonalizados = listOf("com.custom.browser"),
-            maxSugerenciasAutofill = 7,
+            autocompletado = com.jlnavas3.bovedalocal.data.AjustesAutocompletado(
+                sugerenciasTeclado = true,
+                pistasUsuario = listOf("username", "login", "user"),
+                pistasContrasena = listOf("password", "pass"),
+                pistasOtp = listOf("totp", "otp"),
+                pistasDocumento = listOf("cedula", "dni_test"),
+                paquetesComunicacion = setOf("com.session.privacy"),
+                pistasContactoTelefono = listOf("phone_num"),
+                pistasContactoNombre = listOf("alias_name"),
+                mapeoPaquetesPersonalizados = mapOf("com.example.bank" to "Banco Ejemplo"),
+                navegadoresPersonalizados = listOf("com.custom.browser"),
+                maxSugerenciasAutofill = 7
+            ),
             plantillasCamposPersonalizadas = listOf(plantilla),
             autoBloqueoSegundos = 600,
             portapapelesSegundos = 45,
@@ -78,6 +84,10 @@ class ConfiguracionBovedaExportableTest {
         assertEquals("{TITULO} ({CONTADOR})", exportable.formatoColisionTitulos)
         assertEquals(false, exportable.respetarTitulosPersonalizados)
         assertEquals(listOf(plantilla), exportable.plantillasCamposPersonalizadas)
+        assertEquals(listOf("cedula", "dni_test"), exportable.autofillPistasDocumento)
+        assertEquals(setOf("com.session.privacy"), exportable.autofillPaquetesComunicacion)
+        assertEquals(listOf("phone_num"), exportable.autofillPistasContactoTelefono)
+        assertEquals(listOf("alias_name"), exportable.autofillPistasContactoNombre)
         assertEquals(600, exportable.autoBloqueoSegundos)
         assertEquals(45, exportable.portapapelesSegundos)
         assertEquals(3, exportable.frenoIntentosGratis)

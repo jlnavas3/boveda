@@ -13,8 +13,8 @@ package com.jlnavas3.bovedalocal.ui.scroll
 class GestorGruposExpandidos {
     private val gruposPorLista = mutableMapOf<String, Set<String>>()
 
-    fun obtenerGrupos(clave: String): Set<String> {
-        return gruposPorLista[clave] ?: emptySet()
+    fun obtenerGrupos(clave: String, porDefecto: Set<String> = emptySet()): Set<String> {
+        return gruposPorLista[clave] ?: porDefecto
     }
 
     fun guardarGrupos(clave: String, grupos: Set<String>) {

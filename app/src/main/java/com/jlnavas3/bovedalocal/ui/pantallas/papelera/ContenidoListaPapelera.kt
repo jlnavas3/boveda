@@ -14,6 +14,7 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
@@ -40,7 +41,13 @@ fun ContenidoListaPapelera(
     alRestaurar: (Entrada) -> Unit,
     alBorrarDefinitivo: (Entrada) -> Unit,
     modifier: Modifier = Modifier,
-    estadoLista: LazyListState = rememberLazyListState()
+    estadoLista: LazyListState = rememberLazyListState(),
+    seleccionados: Set<String> = emptySet(),
+    modoSeleccion: Boolean = false,
+    alAlternarSeleccion: (String) -> Unit = {},
+    alPulsarLargo: (String) -> Unit = {},
+    alAlternarSeleccionLote: (Set<String>) -> Unit = {},
+    alEntrarEnSeleccionLote: (Set<String>) -> Unit = {}
 ) {
     if (papelera.isEmpty()) {
         Box(
@@ -69,7 +76,11 @@ fun ContenidoListaPapelera(
                         alBorrarDefinitivo = { alBorrarDefinitivo(entrada) },
                         ajustes = ajustes,
                         mostrarIndicadores = ajustes.mostrarIndicadoresContenido,
-                        enGrupo = false
+                        enGrupo = false,
+                        seleccionado = seleccionados.contains(entrada.id),
+                        seleccionActiva = modoSeleccion,
+                        alAlternarSeleccion = { alAlternarSeleccion(entrada.id) },
+                        alPulsarLargo = { alPulsarLargo(entrada.id) }
                     )
                 }
             } else {
@@ -92,11 +103,34 @@ fun ContenidoListaPapelera(
                 ) { item ->
                     when (item) {
                         is ItemAgrupado.Grupo -> {
+                            val idsHijos = remember(item.entradas) { item.entradas.map { it.id }.toSet() }
+                            val todosHijosSeleccionados = idsHijos.isNotEmpty() && seleccionados.containsAll(idsHijos)
+                            val algunoHijoSeleccionado = idsHijos.any { seleccionados.contains(it) }
+                            val parcialmenteSeleccionado = algunoHijoSeleccionado && !todosHijosSeleccionados
+
                             ComponenteGrupoLista(
                                 clave = item.clave,
                                 entradas = item.entradas,
                                 expandido = gruposExpandidos.contains(item.clave),
-                                alAlternar = { alAlternarGrupo(item.clave) },
+                                seleccionActiva = modoSeleccion,
+                                seleccionado = todosHijosSeleccionados,
+                                parcialmenteSeleccionado = parcialmenteSeleccionado,
+                                alAlternar = {
+                                    if (modoSeleccion) {
+                                        alAlternarSeleccionLote(idsHijos)
+                                    } else {
+                                        alAlternarGrupo(item.clave)
+                                    }
+                                },
+                                alPulsarLargo = {
+                                    if (!modoSeleccion) {
+                                        alEntrarEnSeleccionLote(idsHijos)
+                                    } else {
+                                        alAlternarSeleccionLote(idsHijos)
+                                    }
+                                },
+                                alAlternarExpansion = { alAlternarGrupo(item.clave) },
+                                alAlternarSeleccionGrupo = { alAlternarSeleccionLote(idsHijos) },
                                 contenidoEntrada = { entradaHija, _, _ ->
                                     val diasRestantes = if (ajustes.diasRetencionPapelera <= 0) {
                                         -1L
@@ -110,7 +144,11 @@ fun ContenidoListaPapelera(
                                         alBorrarDefinitivo = { alBorrarDefinitivo(entradaHija) },
                                         ajustes = ajustes,
                                         mostrarIndicadores = ajustes.mostrarIndicadoresContenido,
-                                        enGrupo = true
+                                        enGrupo = true,
+                                        seleccionado = seleccionados.contains(entradaHija.id),
+                                        seleccionActiva = modoSeleccion,
+                                        alAlternarSeleccion = { alAlternarSeleccion(entradaHija.id) },
+                                        alPulsarLargo = { alPulsarLargo(entradaHija.id) }
                                     )
                                 }
                             )
@@ -128,7 +166,11 @@ fun ContenidoListaPapelera(
                                 alBorrarDefinitivo = { alBorrarDefinitivo(item.entrada) },
                                 ajustes = ajustes,
                                 mostrarIndicadores = ajustes.mostrarIndicadoresContenido,
-                                enGrupo = false
+                                enGrupo = false,
+                                seleccionado = seleccionados.contains(item.entrada.id),
+                                seleccionActiva = modoSeleccion,
+                                alAlternarSeleccion = { alAlternarSeleccion(item.entrada.id) },
+                                alPulsarLargo = { alPulsarLargo(item.entrada.id) }
                             )
                         }
                         is ItemAgrupado.Hijo -> Unit

@@ -39,7 +39,8 @@ fun TextoSeguroVisual(
     estiloTexto: TextStyle = LocalTextStyle.current,
     colorTexto: Color = Color.Unspecified,
     maxLines: Int = 1,
-    overflow: TextOverflow = TextOverflow.Ellipsis
+    overflow: TextOverflow = TextOverflow.Ellipsis,
+    softWrap: Boolean = true
 ) {
     val usaBlur = estilo == "desenfoque" && UtilesSeguridadVisual.soportaDesenfoqueHardware()
 
@@ -61,6 +62,7 @@ fun TextoSeguroVisual(
                 color = colorTexto,
                 maxLines = maxLines,
                 overflow = overflow,
+                softWrap = softWrap,
                 modifier = if (radioDesenfoque > 0.dp) Modifier.blur(radioDesenfoque) else Modifier
             )
         }
@@ -84,6 +86,7 @@ fun TextoSeguroVisual(
             color = colorTexto,
             maxLines = maxLines,
             overflow = overflow,
+            softWrap = softWrap,
             modifier = modificadorBlindado
         )
     }

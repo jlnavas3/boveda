@@ -21,7 +21,6 @@ import com.jlnavas3.bovedalocal.ui.componentes.ajustes.OpcionSelectorModal
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjusteGris
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
-import com.jlnavas3.bovedalocal.ui.theme.ColorSobreAcento
 
 /**
  * Tarjeta de ajustes para seleccionar el perfil criptográfico KDF (Argon2id)
@@ -70,7 +69,7 @@ fun TarjetaParametrosDerivacion(
             alPulsar = alForjarBoveda,
             icono = Icons.Filled.Shield,
             colorIcono = if (validaParaForjar) ColorAcento else ColorAjusteGris.copy(alpha = 0.35f),
-            colorTinteIcono = if (validaParaForjar) ColorSobreAcento else ColorAjusteGris,
+            colorTinteIcono = if (validaParaForjar) ColorAcento else ColorAjusteGris,
             habilitado = validaParaForjar
         )
     }

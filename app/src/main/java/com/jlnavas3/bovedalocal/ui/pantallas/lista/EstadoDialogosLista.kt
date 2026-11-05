@@ -25,6 +25,7 @@ class EstadoDialogosLista {
     var borrarSeleccion by mutableStateOf(false)
     var exportarCxf by mutableStateOf(false)
     var entradasParaTransferirCxf by mutableStateOf<List<Entrada>?>(null)
+    var entradasParaUnificar by mutableStateOf<List<Entrada>?>(null)
     var renombrarSeleccion by mutableStateOf(false)
     var textoNuevoTitulo by mutableStateOf("")
     var asignarCategorias by mutableStateOf(false)
@@ -39,6 +40,10 @@ class EstadoDialogosLista {
 
     fun prepararTransferirCxf(entradas: List<Entrada>) {
         entradasParaTransferirCxf = entradas
+    }
+
+    fun prepararUnificar(entradas: List<Entrada>) {
+        entradasParaUnificar = entradas
     }
 }
 

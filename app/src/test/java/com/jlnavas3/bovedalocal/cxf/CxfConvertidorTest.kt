@@ -101,7 +101,7 @@ class CxfConvertidorTest {
     }
 
     @Test
-    fun `parsear CXF con llave de paso (Passkey) en formato PKCS8`() {
+    fun `parsear CXF con llave de acceso (Passkey) en formato PKCS8`() {
         val par = WebAuthn.generarPar()
         val privadaB64 = UtilBase64Cxf.aBase64Url(par.privadaPkcs8)
         val credId = UtilBase64Cxf.aBase64Url(WebAuthn.nuevoCredId())
@@ -158,7 +158,7 @@ class CxfConvertidorTest {
     }
 
     @Test
-    fun `parsear CXF con llave de paso (Passkey) en formato JWK`() {
+    fun `parsear CXF con llave de acceso (Passkey) en formato JWK`() {
         val dBytes = ByteArray(32) { (it + 5).toByte() }
         val dB64Url = UtilBase64Cxf.aBase64Url(dBytes)
         val credId = "cred-jwk-12345"

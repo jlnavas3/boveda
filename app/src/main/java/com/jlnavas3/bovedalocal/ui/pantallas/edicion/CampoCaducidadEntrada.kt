@@ -24,13 +24,16 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Event
 import androidx.compose.material.icons.filled.Timer
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -40,9 +43,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.jlnavas3.bovedalocal.data.EstadoCaducidad
 import com.jlnavas3.bovedalocal.data.EvaluadorCaducidadClaves
-import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorCampoAjustes
+import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorSeparadorAjustes
 import com.jlnavas3.bovedalocal.ui.theme.Advertencia
-import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.FormaPequena
 import com.jlnavas3.bovedalocal.ui.theme.Peligro
 import com.jlnavas3.bovedalocal.ui.theme.TextoPrincipal
@@ -51,12 +53,13 @@ import java.util.Calendar
 
 /**
  * Composable micro desacoplado para configurar la fecha de caducidad y expiración
- * de contraseñas con accesos rápidos (30d, 90d, 1a) o selector de fecha de calendario.
+ * de contraseñas, presentado como fila colapsable homogénea con accesos rápidos.
  */
 @Composable
 fun CampoCaducidadEntrada(
     fechaCaducidad: Long?,
     alCambiarFecha: (Long?) -> Unit,
+    ajustes: com.jlnavas3.bovedalocal.data.AjustesApp = com.jlnavas3.bovedalocal.data.AjustesApp(),
     modifier: Modifier = Modifier
 ) {
     val contexto = LocalContext.current
@@ -64,9 +67,11 @@ fun CampoCaducidadEntrada(
     val colorEstado = when (estado) {
         EstadoCaducidad.EXPIRADA -> Peligro
         EstadoCaducidad.POR_EXPIRAR -> Advertencia
-        EstadoCaducidad.VIGENTE -> ColorAcento
+        EstadoCaducidad.VIGENTE -> TextoPrincipal
         EstadoCaducidad.SIN_CADUCIDAD -> TextoSecundario
     }
+
+    var expandido by remember { mutableStateOf(false) }
 
     fun abrirSelectorFecha() {
         val calendario = Calendar.getInstance()
@@ -90,96 +95,92 @@ fun CampoCaducidadEntrada(
         }, anio, mes, dia).show()
     }
 
-    Column(
+    val textoEstado = when (estado) {
+        EstadoCaducidad.SIN_CADUCIDAD -> "Sin caducidad asignada"
+        EstadoCaducidad.EXPIRADA -> {
+            val dias = -EvaluadorCaducidadClaves.diasRestantes(fechaCaducidad!!)
+            "Expirada hace $dias días (${EvaluadorCaducidadClaves.formatearFecha(fechaCaducidad, ajustes.formatoFecha)})"
+        }
+        EstadoCaducidad.POR_EXPIRAR -> {
+            val dias = EvaluadorCaducidadClaves.diasRestantes(fechaCaducidad!!)
+            "Expira en $dias días (${EvaluadorCaducidadClaves.formatearFecha(fechaCaducidad, ajustes.formatoFecha)})"
+        }
+        EstadoCaducidad.VIGENTE -> {
+            val dias = EvaluadorCaducidadClaves.diasRestantes(fechaCaducidad!!)
+            "Vigente · ${EvaluadorCaducidadClaves.formatearFecha(fechaCaducidad, ajustes.formatoFecha)} (en $dias d)"
+        }
+    }
+
+    val insignia = when (estado) {
+        EstadoCaducidad.EXPIRADA -> "Expirada"
+        EstadoCaducidad.POR_EXPIRAR -> "Por expirar"
+        EstadoCaducidad.VIGENTE -> "Vigente"
+        EstadoCaducidad.SIN_CADUCIDAD -> null
+    }
+
+    FilaSeccionColapsableEdicion(
+        icono = Icons.Filled.Timer,
+        colorIcono = colorEstado,
+        titulo = "Caducidad de contraseña",
+        resumen = textoEstado,
+        insigniaTexto = insignia,
+        expandido = expandido,
+        alAlternarExpandido = { expandido = !expandido },
         modifier = modifier
-            .fillMaxWidth()
-            .clip(FormaPequena)
-            .background(ColorCampoAjustes)
-            .padding(14.dp)
     ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(
-                    imageVector = Icons.Filled.Timer,
-                    contentDescription = null,
-                    tint = colorEstado,
-                    modifier = Modifier.size(20.dp)
-                )
-                Spacer(Modifier.width(10.dp))
-                Column {
-                    Text(
-                        text = "Caducidad de contraseña",
-                        style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.SemiBold),
-                        color = TextoSecundario
-                    )
-                    val textoEstado = when (estado) {
-                        EstadoCaducidad.SIN_CADUCIDAD -> "Sin caducidad asignada"
-                        EstadoCaducidad.EXPIRADA -> {
-                            val dias = -EvaluadorCaducidadClaves.diasRestantes(fechaCaducidad!!)
-                            "Expirada hace $dias días (${EvaluadorCaducidadClaves.formatearFecha(fechaCaducidad)})"
-                        }
-                        EstadoCaducidad.POR_EXPIRAR -> {
-                            val dias = EvaluadorCaducidadClaves.diasRestantes(fechaCaducidad!!)
-                            "Expira en $dias días (${EvaluadorCaducidadClaves.formatearFecha(fechaCaducidad)})"
-                        }
-                        EstadoCaducidad.VIGENTE -> {
-                            val dias = EvaluadorCaducidadClaves.diasRestantes(fechaCaducidad!!)
-                            "Vigente · ${EvaluadorCaducidadClaves.formatearFecha(fechaCaducidad)} (en $dias d)"
-                        }
-                    }
+        Column(modifier = Modifier.fillMaxWidth()) {
+            if (fechaCaducidad != null) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
                     Text(
                         text = textoEstado,
-                        style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Medium),
-                        color = if (estado == EstadoCaducidad.SIN_CADUCIDAD) TextoPrincipal else colorEstado
+                        style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Medium),
+                        color = if (estado == EstadoCaducidad.SIN_CADUCIDAD) TextoPrincipal else colorEstado,
+                        modifier = Modifier.weight(1f)
                     )
+                    IconButton(
+                        onClick = { alCambiarFecha(null) },
+                        modifier = Modifier.size(32.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.Close,
+                            contentDescription = "Quitar caducidad",
+                            tint = TextoSecundario,
+                            modifier = Modifier.size(18.dp)
+                        )
+                    }
                 }
+                Spacer(Modifier.height(8.dp))
             }
 
-            if (fechaCaducidad != null) {
-                IconButton(
-                    onClick = { alCambiarFecha(null) },
-                    modifier = Modifier.size(32.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Filled.Close,
-                        contentDescription = "Quitar caducidad",
-                        tint = TextoSecundario,
-                        modifier = Modifier.size(18.dp)
-                    )
-                }
+            // Fila de accesos rápidos para fijar caducidad
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .horizontalScroll(rememberScrollState()),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                ChipPresetCaducidad(texto = "30 días", alPulsar = {
+                    alCambiarFecha(EvaluadorCaducidadClaves.calcularPreset(30))
+                })
+                ChipPresetCaducidad(texto = "90 días", alPulsar = {
+                    alCambiarFecha(EvaluadorCaducidadClaves.calcularPreset(90))
+                })
+                ChipPresetCaducidad(texto = "180 días", alPulsar = {
+                    alCambiarFecha(EvaluadorCaducidadClaves.calcularPreset(180))
+                })
+                ChipPresetCaducidad(texto = "1 año", alPulsar = {
+                    alCambiarFecha(EvaluadorCaducidadClaves.calcularPreset(365))
+                })
+                ChipPresetCaducidad(
+                    texto = "Elegir fecha…",
+                    icono = Icons.Filled.CalendarMonth,
+                    alPulsar = { abrirSelectorFecha() }
+                )
             }
-        }
-
-        Spacer(Modifier.height(10.dp))
-
-        // Fila de accesos rápidos para fijar caducidad
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .horizontalScroll(rememberScrollState()),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            ChipPresetCaducidad(texto = "30 días", alPulsar = {
-                alCambiarFecha(EvaluadorCaducidadClaves.calcularPreset(30))
-            })
-            ChipPresetCaducidad(texto = "90 días", alPulsar = {
-                alCambiarFecha(EvaluadorCaducidadClaves.calcularPreset(90))
-            })
-            ChipPresetCaducidad(texto = "180 días", alPulsar = {
-                alCambiarFecha(EvaluadorCaducidadClaves.calcularPreset(180))
-            })
-            ChipPresetCaducidad(texto = "1 año", alPulsar = {
-                alCambiarFecha(EvaluadorCaducidadClaves.calcularPreset(365))
-            })
-            ChipPresetCaducidad(
-                texto = "Elegir fecha…",
-                icono = Icons.Filled.CalendarMonth,
-                alPulsar = { abrirSelectorFecha() }
-            )
         }
     }
 }
@@ -194,7 +195,7 @@ private fun ChipPresetCaducidad(
     Box(
         modifier = modifier
             .clip(FormaPequena)
-            .background(ColorAcento.copy(alpha = 0.12f))
+            .background(ColorSeparadorAjustes.copy(alpha = 0.5f))
             .clickable(onClick = alPulsar)
             .padding(horizontal = 10.dp, vertical = 6.dp)
     ) {
@@ -203,7 +204,7 @@ private fun ChipPresetCaducidad(
                 Icon(
                     imageVector = icono,
                     contentDescription = null,
-                    tint = ColorAcento,
+                    tint = TextoSecundario,
                     modifier = Modifier.size(14.dp)
                 )
                 Spacer(Modifier.width(4.dp))
@@ -211,8 +212,8 @@ private fun ChipPresetCaducidad(
             Text(
                 text = texto,
                 fontSize = 12.sp,
-                fontWeight = FontWeight.SemiBold,
-                color = ColorAcento
+                fontWeight = FontWeight.Medium,
+                color = TextoPrincipal
             )
         }
     }

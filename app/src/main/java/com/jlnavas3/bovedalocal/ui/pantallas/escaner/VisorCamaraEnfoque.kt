@@ -10,6 +10,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.key
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import com.jlnavas3.bovedalocal.camara.EstadoCamara
 import com.jlnavas3.bovedalocal.camara.MotorCamara
 import com.jlnavas3.bovedalocal.camara.MotorCameraX
@@ -27,6 +29,9 @@ fun VisorCamaraEnfoque(
     alConmutarMotorCompatible: () -> Unit,
     alErrorCamara: (String) -> Unit,
     alMotorListo: (MotorCameraX) -> Unit,
+    tamanoVentanaDp: androidx.compose.ui.unit.Dp = 260.dp,
+    alCambiarTamano: (androidx.compose.ui.unit.Dp) -> Unit = {},
+    alRestablecerTamano: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     key(motorActual) {
@@ -59,6 +64,9 @@ fun VisorCamaraEnfoque(
 
     VisorMascaraQr(
         codigoDetectado = codigoDetectado,
+        tamanoVentanaDp = tamanoVentanaDp,
+        alCambiarTamano = alCambiarTamano,
+        alRestablecerTamano = alRestablecerTamano,
         modifier = modifier.fillMaxSize()
     )
 }

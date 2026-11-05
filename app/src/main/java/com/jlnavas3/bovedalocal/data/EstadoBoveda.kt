@@ -13,9 +13,10 @@ sealed interface EstadoBoveda {
         val entradas: List<Entrada>,
         val papelera: List<Entrada> = emptyList(),
         val categorias: List<Categoria> = emptyList(),
-        val identidades: List<Identidad> = emptyList()
+        val perfiles: List<Perfil> = emptyList()
     ) : EstadoBoveda {
         /** Alias de compatibilidad hacia atrás */
         val colecciones: List<Categoria> get() = categorias
+        val identidades: List<Perfil> get() = perfiles
     }
 }

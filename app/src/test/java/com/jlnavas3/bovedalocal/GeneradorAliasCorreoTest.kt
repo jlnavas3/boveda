@@ -42,4 +42,18 @@ class GeneradorAliasCorreoTest {
         assertTrue(alias.endsWith("@boveda.com"))
         assertEquals(base.length + 7, alias.length) // "jln" + "+" + 6 chars + "@boveda.com"
     }
+
+    @Test
+    fun testGenerarConDelimitadorPersonalizado() {
+        val base = "usuario@empresa.com"
+        val aliasGuion = GeneradorAliasCorreo.generarConEtiqueta(base, "boletin", delimitador = "-")
+        assertEquals("usuario-boletin@empresa.com", aliasGuion)
+
+        val aliasPunto = GeneradorAliasCorreo.generarConEtiqueta(base, "trabajo", delimitador = ".")
+        assertEquals("usuario.trabajo@empresa.com", aliasPunto)
+
+        val aliasAleatorioGuion = GeneradorAliasCorreo.generarConAleatorio(base, longitud = 8, delimitador = "-")
+        assertTrue(aliasAleatorioGuion.startsWith("usuario-"))
+        assertEquals(base.length + 9, aliasAleatorioGuion.length)
+    }
 }

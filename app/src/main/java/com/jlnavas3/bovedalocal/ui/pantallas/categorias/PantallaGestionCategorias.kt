@@ -37,6 +37,7 @@ import com.jlnavas3.bovedalocal.ui.componentes.TextoCuerpo
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorAjustesFondo
 import com.jlnavas3.bovedalocal.ui.scroll.rememberLazyListStatePersistente
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
+import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
 import com.jlnavas3.bovedalocal.ui.theme.ColorSobreAcento
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
 import com.jlnavas3.bovedalocal.util.Haptica
@@ -177,7 +178,7 @@ fun PantallaGestionCategorias(
                                 ElementoMenuCompacto(
                                     texto = if (ordenarPorCuentas) "Ordenar por nombre (A-Z)" else "Ordenar por cantidad",
                                     icono = if (ordenarPorCuentas) Icons.AutoMirrored.Filled.Sort else Icons.Filled.Numbers,
-                                    colorIcono = ColorAcento,
+                                    colorIcono = ColorIconosInternos,
                                     onClick = {
                                         menuOpcionesDesplegado = false
                                         haptica.tic()
@@ -211,20 +212,13 @@ fun PantallaGestionCategorias(
                 }
             }
         },
-        floatingActionButton = {
-            FloatingActionButton(
-                onClick = {
+        bottomBar = {
+            BarraAccionesGestionCategorias(
+                alCrearCategoria = {
                     haptica.tic()
                     mostrandoDialogoCrear = true
-                },
-                containerColor = ColorAcento,
-                contentColor = ColorSobreAcento
-            ) {
-                Icon(
-                    imageVector = Icons.Filled.Add,
-                    contentDescription = "Nueva categoría"
-                )
-            }
+                }
+            )
         },
         containerColor = ColorAjustesFondo,
         modifier = Modifier.cerrarTecladoAlTocarFuera()

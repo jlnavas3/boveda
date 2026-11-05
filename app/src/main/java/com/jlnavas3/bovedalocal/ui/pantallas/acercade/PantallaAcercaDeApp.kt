@@ -91,10 +91,11 @@ fun PantallaAcercaDeApp(
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             // Emblema e identidad principal
+            val formaEmblema = if (CurvaturaEsquinas == 0.dp) RoundedCornerShape(0.dp) else RoundedCornerShape(CurvaturaEsquinas.coerceAtLeast(18.dp))
             Box(
                 modifier = Modifier
                     .size(80.dp)
-                    .clip(RoundedCornerShape(CurvaturaEsquinas.coerceAtLeast(18.dp)))
+                    .clip(formaEmblema)
                     .background(ColorTarjetaAjustes),
                 contentAlignment = Alignment.Center
             ) {

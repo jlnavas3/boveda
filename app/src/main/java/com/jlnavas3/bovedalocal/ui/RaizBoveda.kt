@@ -8,7 +8,10 @@ package com.jlnavas3.bovedalocal.ui
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.FastOutLinearInEasing
 import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -17,11 +20,15 @@ import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Fingerprint
@@ -35,17 +42,23 @@ import com.jlnavas3.bovedalocal.ui.componentes.LocalAvisador
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.pointerInput
+import kotlinx.coroutines.launch
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentActivity
@@ -85,6 +98,7 @@ import com.jlnavas3.bovedalocal.ui.pantallas.PantallaEdicion
 import com.jlnavas3.bovedalocal.ui.pantallas.PantallaEscaner
 import com.jlnavas3.bovedalocal.ui.pantallas.escaner.DialogoConfirmarImportacionQr
 import com.jlnavas3.bovedalocal.ui.pantallas.PantallaExportarSelectivo
+import com.jlnavas3.bovedalocal.ui.pantallas.importar.PantallaImportarSelectivo
 import com.jlnavas3.bovedalocal.ui.pantallas.PantallaFormas
 import com.jlnavas3.bovedalocal.ui.pantallas.PantallaFormatosCampos
 import com.jlnavas3.bovedalocal.ui.pantallas.PantallaPlantillasCampos
@@ -127,7 +141,6 @@ import com.jlnavas3.bovedalocal.ui.pantallas.tema.PantallaTemaPaletas
 import com.jlnavas3.bovedalocal.ui.pantallas.tema.PantallaAnimacionDesbloqueo
 import com.jlnavas3.bovedalocal.ui.pantallas.organizacion.PantallaOrganizacionEstructura
 import com.jlnavas3.bovedalocal.ui.pantallas.organizacion.PantallaOrganizacionJerarquia
-import com.jlnavas3.bovedalocal.ui.pantallas.organizacion.PantallaOrganizacionIndicadores
 import com.jlnavas3.bovedalocal.ui.pantallas.historial.PantallaHistorialClavesGeneradas
 import com.jlnavas3.bovedalocal.ui.pantallas.historial.PantallaHistorialCredenciales
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.widget.PantallaAjustesWidgetTotp
@@ -146,6 +159,7 @@ import com.jlnavas3.bovedalocal.ui.pantallas.formas.PantallaFormasCurvatura
 import com.jlnavas3.bovedalocal.ui.pantallas.formas.PantallaFormasEspaciado
 import com.jlnavas3.bovedalocal.ui.pantallas.formas.PantallaFormasPresets
 import com.jlnavas3.bovedalocal.ui.pantallas.historial.PantallaAjustesHistorial
+import com.jlnavas3.bovedalocal.ui.pantallas.identidades.PantallaEditarPerfil
 import com.jlnavas3.bovedalocal.ui.pantallas.identidades.PantallaGestionIdentidades
 import com.jlnavas3.bovedalocal.ui.pantallas.indice.PantallaIndiceCresta
 import com.jlnavas3.bovedalocal.ui.pantallas.indice.PantallaIndiceHaptica
@@ -175,15 +189,31 @@ fun RaizBoveda(vm: VaultViewModel, actividad: FragmentActivity) {
     val esRetroceso by vm.navegandoAtras.collectAsStateWithLifecycle()
     val anfitrion = remember { SnackbarHostState() }
 
+    val animProgresoPredictivo = remember { Animatable(0f) }
+    var swipeEdgePredictivo by remember { mutableStateOf(0) }
+    val ambitoPredictivo = rememberCoroutineScope()
+
     // Sin esto, atrás cerraba la app desde generador, passkeys o ajustes.
     // En lista, desbloqueo y onboarding no lo tocamos: ahí atrás sí sale de la app
     // (y desde el desbloqueo jamás debe entrar a la bóveda).
     val esRaiz = pantalla is Pantalla.Lista ||
         pantalla is Pantalla.Desbloqueo ||
         pantalla is Pantalla.Onboarding
-    BackHandler(enabled = !esRaiz) {
-        vm.volverAtras()
-    }
+    ManejadorRetrocesoApp(
+        habilitado = !esRaiz,
+        usarGestoPredictivo = ajustes.gestoPredictivoHabilitado,
+        alProgresoPredictivo = { progreso, edge ->
+            swipeEdgePredictivo = edge
+            ambitoPredictivo.launch { animProgresoPredictivo.snapTo(progreso) }
+        },
+        alCancelarPredictivo = {
+            ambitoPredictivo.launch { animProgresoPredictivo.animateTo(0f, tween(200)) }
+        },
+        alRetroceder = {
+            ambitoPredictivo.launch { animProgresoPredictivo.snapTo(0f) }
+            vm.volverAtras()
+        }
+    )
 
     LaunchedEffect(Unit) { vm.vigilarInactividad() }
 
@@ -217,7 +247,7 @@ fun RaizBoveda(vm: VaultViewModel, actividad: FragmentActivity) {
                 val uri = uriBvda
                 vm.descartarUriBvdaPendiente()
                 if (uri != null) {
-                    vm.importar(clave) {
+                    vm.prepararImportacionBvda(clave) {
                         actividad.contentResolver.openInputStream(uri)?.use { it.readBytes() }
                             ?: throw IllegalStateException("No se pudo leer el archivo")
                     }
@@ -244,6 +274,29 @@ fun RaizBoveda(vm: VaultViewModel, actividad: FragmentActivity) {
         )
     }
 
+    val perfilSugerido by vm.perfilArgon2SugeridoReForja.collectAsStateWithLifecycle()
+    if (perfilSugerido != null && estado is EstadoBoveda.Desbloqueada) {
+        val perfil = perfilSugerido!!
+        DialogoContrasena(
+            titulo = "Elevar cifrado a ${perfil.titulo}",
+            descripcion = "El respaldo importado incluye el perfil Argon2id «${perfil.titulo}» (${perfil.memoriaKiB / 1024} MB RAM). Para re-cifrar y blindar tu bóveda con este perfil, introduce tu contraseña maestra:",
+            textoBoton = "Re-cifrar bóveda",
+            alConfirmar = { clave ->
+                vm.descartarPerfilArgon2SugeridoReForja()
+                vm.reForjarBoveda(clave, perfil) { exito ->
+                    if (exito) {
+                        vm.avisar("Cifrado elevado a ${perfil.titulo} con éxito")
+                    } else {
+                        vm.avisar("Contraseña incorrecta: el cifrado continúa en el perfil actual")
+                    }
+                }
+            },
+            alCancelar = {
+                vm.descartarPerfilArgon2SugeridoReForja()
+            }
+        )
+    }
+
     LaunchedEffect(estado) {
         if (estado is EstadoBoveda.Bloqueada && pantalla !is Pantalla.Desbloqueo) {
             vm.ir(Pantalla.Desbloqueo)
@@ -257,11 +310,17 @@ fun RaizBoveda(vm: VaultViewModel, actividad: FragmentActivity) {
         }
     }
 
+    val desplazamientoFabState = remember { mutableStateOf<Dp>(0.dp) }
+    val gestorHud = remember { com.jlnavas3.bovedalocal.ui.componentes.hud.GestorHudAccion() }
+
     CompositionLocalProvider(
-        LocalAvisador provides { mensaje, titulo -> vm.avisar(mensaje, titulo) }
+        LocalAvisador provides { mensaje, titulo -> vm.avisar(mensaje, titulo) },
+        com.jlnavas3.bovedalocal.ui.componentes.LocalDesplazamientoFabPorAviso provides desplazamientoFabState,
+        com.jlnavas3.bovedalocal.ui.componentes.hud.LocalHudAccion provides gestorHud
     ) {
         Scaffold(
             containerColor = Obsidiana,
+            contentWindowInsets = WindowInsets.statusBars,
             snackbarHost = { SnackbarHost(anfitrion, modifier = Modifier.imePadding()) }
         ) { relleno ->
         Box(
@@ -285,27 +344,46 @@ fun RaizBoveda(vm: VaultViewModel, actividad: FragmentActivity) {
                         }
                     }
                 }
-                .padding(relleno)
+                .padding(top = relleno.calculateTopPadding())
                 .imePadding()
         ) {
+            val progresoPred = animProgresoPredictivo.value
+            val escalaPred = 1f - (progresoPred * 0.08f)
+            val desplazamientoXPred = if (swipeEdgePredictivo == 0) progresoPred * 48f else -progresoPred * 48f
+            val curvaturaPred = (progresoPred * 20).dp
+
+            val pantallaDestino = if (estado !is EstadoBoveda.Desbloqueada && pantalla !is Pantalla.Onboarding) {
+                Pantalla.Desbloqueo
+            } else {
+                pantalla
+            }
+
             AnimatedContent(
-                targetState = pantalla,
+                targetState = pantallaDestino,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .graphicsLayer {
+                        scaleX = escalaPred
+                        scaleY = escalaPred
+                        translationX = desplazamientoXPred
+                    }
+                    .clip(RoundedCornerShape(curvaturaPred))
+                    .background(Obsidiana),
                 transitionSpec = {
-                    // Adelante: la pantalla nueva entra desde la derecha; la actual sale por la izquierda.
-                    // Atrás: la pantalla anterior entra desde la izquierda; la actual sale por la derecha.
-                    val signo = if (esRetroceso) -1 else 1
-                    val animOffset = tween<IntOffset>(durationMillis = 180, easing = FastOutSlowInEasing)
-                    val animFade = tween<Float>(durationMillis = 180, easing = FastOutSlowInEasing)
-                    val entrada = slideInHorizontally(
-                        animationSpec = animOffset
-                    ) { ancho -> signo * (ancho / 4) } + fadeIn(animationSpec = animFade)
-                    val salida = slideOutHorizontally(
-                        animationSpec = animOffset
-                    ) { ancho -> signo * (-ancho / 6) } + fadeOut(animationSpec = animFade)
-                    entrada togetherWith salida
+                    com.jlnavas3.bovedalocal.ui.pantallas.ajustes.transiciones.construirTransicionNavegacion(
+                        ajustes = ajustes,
+                        esRetroceso = esRetroceso,
+                        initialState = initialState,
+                        targetState = targetState
+                    )
                 },
                 label = "navegacion"
             ) { destino ->
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(Obsidiana)
+                ) {
                 when (destino) {
                     Pantalla.Onboarding -> PantallaOnboarding(vm, actividad)
                     Pantalla.Desbloqueo -> PantallaDesbloqueo(vm, actividad)
@@ -317,7 +395,8 @@ fun RaizBoveda(vm: VaultViewModel, actividad: FragmentActivity) {
                         destino.contrasenaInicial,
                         destino.tituloInicial,
                         destino.urlInicial,
-                        destino.tipoInicial
+                        destino.tipoInicial,
+                        destino.telefonoInicial
                     )
                     is Pantalla.EntradasTipo -> PantallaEntradasTipo(tipo = destino.tipo, vm = vm)
                     Pantalla.Generador -> PantallaGenerador(vm)
@@ -328,6 +407,7 @@ fun RaizBoveda(vm: VaultViewModel, actividad: FragmentActivity) {
                     is Pantalla.Ajustes -> PantallaAjustes(vm, actividad, destino.seccionId)
                     is Pantalla.AjustesIndice -> PantallaAjustesIndice(vm, destino.seccionId)
                     is Pantalla.AjustesAvisos -> com.jlnavas3.bovedalocal.ui.pantallas.ajustes.PantallaAjustesAvisos(vm, destino.seccionId)
+                    is Pantalla.AjustesTransiciones -> com.jlnavas3.bovedalocal.ui.pantallas.ajustes.transiciones.PantallaAjustesTransiciones(vm, destino.seccionId)
                     is Pantalla.IndiceOla -> PantallaIndiceOla(vm)
                     is Pantalla.IndiceCresta -> PantallaIndiceCresta(vm)
                     is Pantalla.IndiceHaptica -> PantallaIndiceHaptica(vm)
@@ -378,7 +458,8 @@ fun RaizBoveda(vm: VaultViewModel, actividad: FragmentActivity) {
                     is Pantalla.SaludBoveda -> PantallaSaludBoveda(vm, estado, destino.seccionId)
                     is Pantalla.Duplicados -> PantallaDuplicados(vm, estado, destino.seccionId)
                     is Pantalla.Papelera -> PantallaPapelera(vm, estado, destino.seccionId)
-                    is Pantalla.Identidades -> PantallaGestionIdentidades(vm, destino.seccionId)
+                    is Pantalla.Perfiles -> PantallaGestionIdentidades(vm, destino.seccionId)
+                    is Pantalla.EditarPerfil -> PantallaEditarPerfil(vm, destino.id)
                     is Pantalla.Categorias -> PantallaGestionCategorias(vm, destino.seccionId)
                     is Pantalla.KitEmergencia -> PantallaKitEmergencia(vm, actividad, destino.seccionId)
                     is Pantalla.AjustesCopiaAutomatica -> PantallaCopiaAutomatica(vm, destino.seccionId)
@@ -393,9 +474,9 @@ fun RaizBoveda(vm: VaultViewModel, actividad: FragmentActivity) {
                     is Pantalla.HistorialCredenciales -> PantallaHistorialCredenciales(vm, destino.seccionId)
                     is Pantalla.Seguridad -> PantallaSeguridad(vm, actividad, destino.seccionId)
                     is Pantalla.BloqueoBiometria -> PantallaBloqueoBiometria(vm, actividad, destino.seccionId)
-                    is Pantalla.AjustesBiometria -> PantallaAjustesBiometria(vm, actividad, destino.seccionId)
-                    is Pantalla.BloqueoApp -> PantallaBloqueoApp(vm, destino.seccionId)
-                    is Pantalla.FuerzaBruta -> PantallaFuerzaBruta(vm, destino.seccionId)
+                    is Pantalla.AjustesBiometria -> PantallaBloqueoBiometria(vm, actividad, destino.seccionId ?: "01-SEG-BIO-G01")
+                    is Pantalla.BloqueoApp -> PantallaBloqueoBiometria(vm, actividad, destino.seccionId ?: "01-SEG-BIO-G02")
+                    is Pantalla.FuerzaBruta -> PantallaBloqueoBiometria(vm, actividad, destino.seccionId ?: "01-SEG-BIO-G05")
                     is Pantalla.SeguridadVisualMemoria -> PantallaSeguridadVisualMemoria(vm, destino.seccionId)
                     is Pantalla.SeguridadVisual -> PantallaSeguridadVisual(vm, destino.seccionId)
                     is Pantalla.Portapapeles -> PantallaPortapapeles(vm, destino.seccionId)
@@ -405,7 +486,7 @@ fun RaizBoveda(vm: VaultViewModel, actividad: FragmentActivity) {
                     is Pantalla.AnimacionDesbloqueo -> PantallaAnimacionDesbloqueo(vm, destino.seccionId)
                     is Pantalla.OrganizacionEstructura -> PantallaOrganizacionEstructura(vm, destino.seccionId)
                     is Pantalla.OrganizacionJerarquia -> PantallaOrganizacionJerarquia(vm, destino.seccionId)
-                    is Pantalla.OrganizacionIndicadores -> PantallaOrganizacionIndicadores(vm, destino.seccionId)
+                    is Pantalla.OrganizacionIndicadores -> PantallaColoresDatos(vm, destino.seccionId)
                     is Pantalla.AjustesWidgetTotpSub -> PantallaAjustesWidgetTotp(vm, destino.seccionId)
                     is Pantalla.AjustesWidget1x1Sub -> PantallaAjustesWidget1x1(vm, destino.seccionId)
                     is Pantalla.TileConfiguracion -> PantallaTileConfiguracion(vm, destino.seccionId)
@@ -415,6 +496,7 @@ fun RaizBoveda(vm: VaultViewModel, actividad: FragmentActivity) {
                     is Pantalla.AvanzadaDesarrollo -> PantallaAvanzadaDesarrollo(vm, destino.seccionId)
                     is Pantalla.AvanzadaAlumbrado -> PantallaAvanzadaAlumbrado(vm, destino.seccionId)
                     is Pantalla.AvanzadaHaptica -> PantallaAvanzadaHaptica(vm, destino.seccionId)
+                    is Pantalla.AjustesAvisosEmergentes -> com.jlnavas3.bovedalocal.ui.pantallas.ajustes.PantallaAjustesAvisosEmergentes(vm, destino.seccionId)
                     is Pantalla.AvanzadaZonaPeligro -> PantallaAvanzadaZonaPeligro(vm, destino.seccionId)
                     Pantalla.ReorganizarAjustes -> PantallaReorganizarAjustes(vm)
                     is Pantalla.PersonalizarMenuLateral -> PantallaPersonalizarMenuLateral(vm, destino.seccionId)
@@ -422,7 +504,9 @@ fun RaizBoveda(vm: VaultViewModel, actividad: FragmentActivity) {
                     is Pantalla.CsvGoogle -> PantallaCsvGoogle(vm, destino.seccionId)
                     is Pantalla.ConfirmarMigracion -> PantallaConfirmarMigracion(vm, destino.urlMigracion)
                     is Pantalla.ConfirmarImportacionCxf -> PantallaConfirmarImportacionCxf(vm, destino.jsonCxf)
+                    is Pantalla.AjustesTransferenciaCxf -> com.jlnavas3.bovedalocal.ui.pantallas.cxf.PantallaAjustesTransferenciaCxf(vm, destino.seccionId)
                     is Pantalla.ExportarSelectivo -> PantallaExportarSelectivo(vm, destino.seccionInicial)
+                    is Pantalla.ImportarSelectivo -> PantallaImportarSelectivo(vm, destino.datos)
                     is Pantalla.ColoresDatos -> PantallaColoresDatos(vm, destino.seccionId)
                     is Pantalla.ColoresIdentificadores -> PantallaColoresIds(vm, destino.seccionId)
                     is Pantalla.Argon2id -> PantallaArgon2id(vm, destino.seccionId)
@@ -438,6 +522,7 @@ fun RaizBoveda(vm: VaultViewModel, actividad: FragmentActivity) {
                     is Pantalla.ContrasenasComunes -> PantallaContrasenasComunes(vm, destino.seccionId)
                 }
             }
+        }
 
             if (cuentaAtras > 0) {
                 Box(
@@ -465,14 +550,48 @@ fun RaizBoveda(vm: VaultViewModel, actividad: FragmentActivity) {
                 }
             }
 
-            AvisoFlotanteBoveda(
-                aviso = aviso,
-                toastDescriptivo = ajustes.toastDescriptivo,
-                alCerrar = { vm.limpiarAviso() },
-                modifier = Modifier
-                    .align(Alignment.BottomCenter)
-                    .padding(horizontal = 16.dp, vertical = 20.dp)
-                    .imePadding()
+            val alineacionToast = when (ajustes.posicionToast) {
+                com.jlnavas3.bovedalocal.data.PosicionToast.SUPERIOR -> Alignment.TopCenter
+                com.jlnavas3.bovedalocal.data.PosicionToast.INFERIOR -> Alignment.BottomCenter
+            }
+            val paddingToast = when (ajustes.posicionToast) {
+                com.jlnavas3.bovedalocal.data.PosicionToast.SUPERIOR -> androidx.compose.foundation.layout.PaddingValues(
+                    start = 16.dp,
+                    end = 16.dp,
+                    top = 70.dp,
+                    bottom = 14.dp
+                )
+                com.jlnavas3.bovedalocal.data.PosicionToast.INFERIOR -> androidx.compose.foundation.layout.PaddingValues(
+                    start = 16.dp,
+                    end = 16.dp,
+                    top = 16.dp,
+                    bottom = 74.dp
+                )
+            }
+
+            if (ajustes.avisosEmergentesHabilitados) {
+                AvisoFlotanteBoveda(
+                    aviso = aviso,
+                    toastDescriptivo = ajustes.toastDescriptivo,
+                    alCerrar = { vm.limpiarAviso() },
+                    posicionToast = ajustes.posicionToast,
+                    alMedirAltura = { _ -> },
+                    modifier = Modifier
+                        .align(alineacionToast)
+                        .then(
+                            if (ajustes.posicionToast == com.jlnavas3.bovedalocal.data.PosicionToast.SUPERIOR) {
+                                Modifier
+                            } else {
+                                Modifier.navigationBarsPadding().imePadding()
+                            }
+                        )
+                        .padding(paddingToast)
+                )
+            }
+ 
+            com.jlnavas3.bovedalocal.ui.componentes.hud.HudAccionInferiorFlotante(
+                gestor = gestorHud,
+                modifier = Modifier.align(Alignment.BottomCenter)
             )
 
             com.jlnavas3.bovedalocal.ui.progreso.HojaProgresoOperaciones(

@@ -211,12 +211,9 @@ fun PantallaEntradasTipo(tipo: TipoEntrada, vm: VaultViewModel) {
         }
 
         if (!modoSeleccion) {
-            FabCrearEntradaTipo(
-                infoTipo = infoTipo,
-                alCrear = alCrearEntrada,
-                modifier = Modifier
-                    .align(Alignment.BottomEnd)
-                    .padding(16.dp)
+            BarraAccionesTipoPrincipal(
+                alCrearEntrada = alCrearEntrada,
+                modifier = Modifier.align(Alignment.BottomCenter)
             )
         }
     }

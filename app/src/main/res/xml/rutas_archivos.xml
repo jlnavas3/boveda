@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright (C) 2026 Jose Luis Navas
+  ~ Licensed under the GNU General Public License v3.0 (GPLv3).
+  ~ See LICENSE file in the project root for full license information.
+  -->
+<paths xmlns:android="http://schemas.android.com/apk/res/android">
+    <cache-path
+        name="mensajes_efimeros"
+        path="mensajes_efimeros/" />
+</paths>

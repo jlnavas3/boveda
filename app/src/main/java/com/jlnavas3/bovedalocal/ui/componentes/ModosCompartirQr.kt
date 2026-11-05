@@ -52,17 +52,10 @@ data class EstadoDatosQr(
 object ExtractorModosQr {
 
     fun extraerEstado(entrada: Entrada): EstadoDatosQr {
-        val ssidWifi = GestorCamposBase.valorDeCampo(entrada.camposPersonalizados, "Nombre de red (SSID)")
-            .ifBlank { GestorCamposBase.valorDeCampo(entrada.camposPersonalizados, "SSID") }
-            .ifBlank { entrada.titulo }
-            .trim()
-
-        val claveWifi = GestorCamposBase.valorDeCampo(entrada.camposPersonalizados, "Contraseña Wi-Fi")
-            .ifBlank { GestorCamposBase.valorDeCampo(entrada.camposPersonalizados, "Contraseña") }
-            .ifBlank { entrada.contrasena }
-
-        val esWifi = entrada.tipo == TipoEntrada.WIFI ||
-            GestorCamposBase.valorDeCampo(entrada.camposPersonalizados, "Nombre de red (SSID)").isNotBlank()
+        val wifi = entrada.wifiEfectivo
+        val ssidWifi = wifi?.ssid?.ifBlank { entrada.titulo }?.trim() ?: entrada.titulo.trim()
+        val claveWifi = wifi?.contrasena?.ifBlank { entrada.contrasena } ?: entrada.contrasena
+        val esWifi = entrada.tipo == TipoEntrada.WIFI || !wifi?.ssid.isNullOrBlank()
 
         val esContacto = entrada.tipo == TipoEntrada.CONTACTO
 

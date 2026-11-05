@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
@@ -50,9 +49,9 @@ import com.jlnavas3.bovedalocal.ui.theme.TextoPrincipal
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
 
 /**
- * Microcomponente que renderiza la cabecera superior del panel de operaciones
- * con título general formateado con porcentaje, estado de la fase, barra de progreso global
- * y botones de control (expandir detalles, minimizar y descartar).
+ * Microcomponente que renderiza la cabecera del panel de operaciones
+ * con título general, estado de la fase, contador y porcentaje,
+ * barra de progreso global única y botones de control (minimizar y descartar).
  */
 @Composable
 fun CabeceraProgresoOperacion(
@@ -67,24 +66,11 @@ fun CabeceraProgresoOperacion(
         label = "progresoGlobalOperacion"
     )
 
-    val formaHandle = if (CurvaturaEsquinas == 0.dp) RoundedCornerShape(0.dp) else RoundedCornerShape((CurvaturaEsquinas * 0.5f).coerceAtLeast(2.dp))
     val formaCirculoOEsquina = if (CurvaturaEsquinas == 0.dp) RoundedCornerShape(0.dp) else CircleShape
 
     Column(
         modifier = modifier.fillMaxWidth()
     ) {
-        // Píldora de arrastre / Handle
-        Box(
-            modifier = Modifier
-                .align(Alignment.CenterHorizontally)
-                .width(36.dp)
-                .height(4.dp)
-                .clip(formaHandle)
-                .background(TextoSecundario.copy(alpha = 0.35f))
-        )
-
-        Spacer(modifier = Modifier.height(10.dp))
-
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.fillMaxWidth()
@@ -130,13 +116,29 @@ fun CabeceraProgresoOperacion(
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
-                Text(
-                    text = estado.fase,
-                    color = if (estado.error != null) Peligro else TextoSecundario,
-                    fontSize = 12.sp,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = estado.fase,
+                        color = if (estado.error != null) Peligro else TextoSecundario,
+                        fontSize = 12.sp,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.weight(1f, fill = false)
+                    )
+                    if (estado.totalCuentas > 0 && estado.enEjecucion) {
+                        Spacer(Modifier.width(6.dp))
+                        Text(
+                            text = "${estado.cuentasProcesadas}/${estado.totalCuentas} (${(progresoAnimado * 100).toInt()}%)",
+                            color = TextoSecundario,
+                            fontSize = 11.sp,
+                            fontWeight = FontWeight.Medium
+                        )
+                    }
+                }
             }
 
             Spacer(modifier = Modifier.width(8.dp))

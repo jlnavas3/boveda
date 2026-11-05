@@ -13,7 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
-import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
+import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
 import com.jlnavas3.bovedalocal.ui.theme.colorLegibleParaTema
 
 @Composable
@@ -25,7 +25,7 @@ fun IconoInicioCampoTexto(
     Icon(
         imageVector = icono,
         contentDescription = null,
-        tint = colorLegibleParaTema(colorIcono ?: ColorAcento, esOscuro),
+        tint = colorLegibleParaTema(colorIcono ?: ColorIconosInternos, esOscuro),
         modifier = Modifier.size(20.dp)
     )
 }

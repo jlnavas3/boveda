@@ -15,7 +15,7 @@ import com.jlnavas3.bovedalocal.ui.theme.Peligro
 
 /**
  * Microcomponente contenedor de grupo de contraseñas repetidas.
- * Delega cada elemento a [FilaProblemaAgil].
+ * Muestra el nombre formal del grupo (ej. "Grupo 1") y delega cada elemento a [FilaProblemaAgil].
  */
 @Composable
 fun TarjetaGrupoRepetido(
@@ -34,9 +34,10 @@ fun TarjetaGrupoRepetido(
     alAlternarSeleccion: ((String) -> Unit)? = null,
     alAlternarSeleccionGrupo: ((Set<String>) -> Unit)? = null,
     alPulsarLargo: ((String) -> Unit)? = null,
+    nombreGrupo: String = "",
     modifier: Modifier = Modifier
 ) {
-    val claveTitulo = grupo.firstOrNull()?.titulo?.ifBlank { "Clave repetida" } ?: "Clave repetida"
+    val claveTitulo = nombreGrupo.ifBlank { "Grupo" }
     val idsGrupo = androidx.compose.runtime.remember(grupo) { grupo.map { it.id }.toSet() }
     val todosSeleccionados = idsGrupo.isNotEmpty() && idsGrupo.all { seleccionados.contains(it) }
     val parcialmenteSeleccionado = !todosSeleccionados && idsGrupo.any { seleccionados.contains(it) }
@@ -51,6 +52,7 @@ fun TarjetaGrupoRepetido(
         seleccionado = todosSeleccionados,
         parcialmenteSeleccionado = parcialmenteSeleccionado,
         alPulsarLargo = { alAlternarSeleccionGrupo?.invoke(idsGrupo) ?: alPulsarLargo?.invoke(grupo.firstOrNull()?.id ?: "") },
+        alAlternarSeleccionGrupo = if (alAlternarSeleccionGrupo != null) { { alAlternarSeleccionGrupo(idsGrupo) } } else null,
         modifier = modifier,
         contenidoEntrada = { entrada, _, _ ->
             FilaProblemaAgil(

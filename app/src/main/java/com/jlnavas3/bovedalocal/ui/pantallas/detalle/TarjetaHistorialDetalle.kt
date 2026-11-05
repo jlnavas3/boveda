@@ -33,13 +33,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.jlnavas3.bovedalocal.data.AjustesApp
 import com.jlnavas3.bovedalocal.data.CambioContrasena
 import com.jlnavas3.bovedalocal.data.Entrada
 import com.jlnavas3.bovedalocal.ui.VaultViewModel
 import com.jlnavas3.bovedalocal.ui.componentes.DialogoConfirmacionBoveda
 import com.jlnavas3.bovedalocal.ui.componentes.TipoBotonTexto
 import com.jlnavas3.bovedalocal.ui.componentes.contrasenaColoreada
-import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
+import com.jlnavas3.bovedalocal.ui.componentes.seguridad.TemporizadorAutoOcultar
 import com.jlnavas3.bovedalocal.ui.theme.ColorDatosContrasena
 import com.jlnavas3.bovedalocal.ui.theme.EstiloMono
 import com.jlnavas3.bovedalocal.ui.theme.EstiloMonoGrande
@@ -57,7 +58,8 @@ fun TarjetaHistorialDetalle(
     vm: VaultViewModel? = null,
     haptica: Haptica,
     alCopiarClave: ((String) -> Unit)? = null,
-    alGuardarEntrada: ((Entrada) -> Unit)? = null
+    alGuardarEntrada: ((Entrada) -> Unit)? = null,
+    ajustes: AjustesApp? = null
 ) {
     val historialUnico = remember(entrada.historialContrasenas, entrada.contrasena) {
         entrada.historialContrasenas
@@ -65,6 +67,9 @@ fun TarjetaHistorialDetalle(
             .filterNot { it.contrasena == entrada.contrasena }
     }
     if (historialUnico.isEmpty()) return
+
+    val seguridadVisualActiva = ajustes?.seguridadVisualActiva == true
+    val tiempoAutoOcultar = if (seguridadVisualActiva) ajustes.tiempoAutoOcultarSegundos else 0
 
     val reveladas = remember { mutableStateMapOf<String, Boolean>() }
     var claveCopiadaReciente by remember { mutableStateOf<String?>(null) }
@@ -88,7 +93,13 @@ fun TarjetaHistorialDetalle(
             val estaRevelada = reveladas[cambio.contrasena] == true
             val fueCopiada = claveCopiadaReciente == cambio.contrasena
 
-            FilaHistorialContrasena(
+            TemporizadorAutoOcultar(
+                revelado = estaRevelada && seguridadVisualActiva,
+                tiempoSegundos = tiempoAutoOcultar,
+                alAutoOcultar = { reveladas[cambio.contrasena] = false }
+            )
+
+            FilaHistorialContrasenaDetalle(
                 cambio = cambio,
                 revelada = estaRevelada,
                 copiado = fueCopiada,
@@ -109,7 +120,9 @@ fun TarjetaHistorialDetalle(
                 onSolicitarRestaurar = {
                     haptica.toque()
                     claveARestaurar = cambio.contrasena
-                }
+                },
+                seguridadVisualActiva = seguridadVisualActiva,
+                estiloOcultamiento = ajustes?.estiloOcultamientoVisual ?: "desenfoque"
             )
         }
     }
@@ -155,99 +168,6 @@ fun TarjetaHistorialDetalle(
             },
             alDescartar = { claveAEliminar = null }
         )
-    }
-}
-
-
-@Composable
-private fun FilaHistorialContrasena(
-    cambio: CambioContrasena,
-    revelada: Boolean,
-    copiado: Boolean,
-    onToggleRevelar: () -> Unit,
-    onCopiar: () -> Unit,
-    onEliminar: () -> Unit,
-    onSolicitarRestaurar: () -> Unit
-) {
-    TarjetaDatoDetalle(colorBorde = ColorDatosContrasena) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 16.dp, end = 10.dp, top = 12.dp, bottom = 12.dp)
-        ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Column {
-                    Text(
-                        text = formatearFechaDetalle(cambio.cambiadaEn),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = TextoSecundario,
-                        fontWeight = FontWeight.Medium
-                    )
-                    Text(
-                        text = "${cambio.contrasena.length} caracteres",
-                        style = MaterialTheme.typography.labelSmall,
-                        color = TextoSecundario.copy(alpha = 0.8f)
-                    )
-                }
-
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    BotonIconoDetalle(
-                        icono = Icons.Filled.Delete,
-                        descripcion = "Eliminar contraseña anterior",
-                        alPulsar = onEliminar,
-                        tint = Peligro.copy(alpha = 0.7f)
-                    )
-                    BotonIconoDetalle(
-                        icono = if (revelada) Icons.Filled.VisibilityOff else Icons.Filled.Visibility,
-                        descripcion = if (revelada) "Ocultar" else "Ver contraseña",
-                        alPulsar = onToggleRevelar
-                    )
-                    BotonCopiarDetalle(
-                        copiado = copiado,
-                        alPulsar = onCopiar
-                    )
-                    BotonIconoDetalle(
-                        icono = Icons.Filled.Restore,
-                        descripcion = "Restaurar como activa",
-                        alPulsar = onSolicitarRestaurar,
-                        tint = ColorAcento
-                    )
-                }
-            }
-
-            Spacer(Modifier.height(6.dp))
-
-            if (revelada) {
-                Text(
-                    text = contrasenaColoreada(cambio.contrasena),
-                    style = EstiloMono,
-                    modifier = Modifier.fillMaxWidth()
-                )
-            } else {
-                Text(
-                    text = "•".repeat(cambio.contrasena.length.coerceIn(8, 20)),
-                    style = EstiloMonoGrande.copy(letterSpacing = 2.sp),
-                    color = TextoSecundario,
-                    maxLines = 1,
-                    softWrap = false,
-                    overflow = TextOverflow.Clip,
-                    modifier = Modifier.fillMaxWidth()
-                )
-            }
-        }
-    }
-}
-
-private fun formatearFechaDetalle(milisegundos: Long): String {
-    return try {
-        val sdf = SimpleDateFormat("dd/MM/yy HH:mm", Locale.getDefault())
-        sdf.format(Date(milisegundos))
-    } catch (e: Exception) {
-        "Fecha desconocida"
     }
 }
 

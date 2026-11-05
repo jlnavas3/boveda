@@ -46,7 +46,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.jlnavas3.bovedalocal.data.AvisoInterno
 import com.jlnavas3.bovedalocal.data.TipoAvisoInterno
-import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorTarjetaAjustes
+import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorCampoAjustes
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
 import com.jlnavas3.bovedalocal.ui.theme.ColorBordeActual
 import com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
@@ -115,18 +115,13 @@ fun TarjetaAvisoInterno(
             }
         }
     ) {
-        val icono = when (aviso.tipo) {
-            TipoAvisoInterno.TITULOS_SIN_NORMALIZAR -> Icons.Filled.Spellcheck
-            TipoAvisoInterno.DUPLICADOS_DETECTADOS -> Icons.AutoMirrored.Filled.CompareArrows
-            TipoAvisoInterno.CONTRASENAS_VULNERABLES -> Icons.Filled.Security
-            TipoAvisoInterno.RESPALDO_PENDIENTE -> Icons.Filled.Backup
-        }
+        val icono = iconoParaTipoAviso(aviso.tipo)
 
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(forma)
-                .background(ColorTarjetaAjustes)
+                .background(ColorCampoAjustes)
                 .border(GrosorBorde, ColorBordeActual, forma)
                 .clickable { alEjecutar() }
                 .padding(horizontal = 14.dp, vertical = 12.dp)

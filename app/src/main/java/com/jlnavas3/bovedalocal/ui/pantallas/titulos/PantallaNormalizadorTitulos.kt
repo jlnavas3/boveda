@@ -41,6 +41,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.jlnavas3.bovedalocal.ui.Pantalla
 import com.jlnavas3.bovedalocal.ui.VaultViewModel
 import com.jlnavas3.bovedalocal.ui.componentes.BarraSuperiorPantalla
+import com.jlnavas3.bovedalocal.ui.componentes.BotonIconoCabecera
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.height
@@ -110,28 +111,22 @@ fun PantallaNormalizadorTitulos(
                 colorFondo = ColorAjustesFondo,
                 acciones = {
                     if (!mostrarVistaRapida) {
-                        IconButton(onClick = { soloComprometidos = !soloComprometidos }) {
-                            Icon(
-                                imageVector = if (soloComprometidos) Icons.Filled.FilterList else Icons.Filled.Visibility,
-                                contentDescription = if (soloComprometidos) "Mostrar todos (${grupos.size})" else "Mostrar solo pendientes (${gruposComprometidos.size})",
-                                tint = if (soloComprometidos) ColorAcento else com.jlnavas3.bovedalocal.ui.theme.ColorIconosInternos
-                            )
-                        }
-                        IconButton(onClick = { vm.ir(Pantalla.ReglasNormalizacion(idsEspecificos)) }) {
-                            Icon(
-                                imageVector = Icons.Filled.Tune,
-                                contentDescription = "Reglas de URLs y redes",
-                                tint = ColorAcento
-                            )
-                        }
+                        BotonIconoCabecera(
+                            onClick = { soloComprometidos = !soloComprometidos },
+                            icono = if (soloComprometidos) Icons.Filled.FilterList else Icons.Filled.Visibility,
+                            descripcion = if (soloComprometidos) "Mostrar todos (${grupos.size})" else "Mostrar solo pendientes (${gruposComprometidos.size})"
+                        )
+                        BotonIconoCabecera(
+                            onClick = { vm.ir(Pantalla.ReglasNormalizacion(idsEspecificos)) },
+                            icono = Icons.Filled.Tune,
+                            descripcion = "Reglas de URLs y redes"
+                        )
                     } else {
-                        IconButton(onClick = { modoAvanzado = true }) {
-                            Icon(
-                                imageVector = Icons.Filled.Tune,
-                                contentDescription = "Opciones avanzadas",
-                                tint = ColorAcento
-                            )
-                        }
+                        BotonIconoCabecera(
+                            onClick = { modoAvanzado = true },
+                            icono = Icons.Filled.Tune,
+                            descripcion = "Opciones avanzadas"
+                        )
                     }
                 }
             )
@@ -211,6 +206,7 @@ fun PantallaNormalizadorTitulos(
                         TarjetaGrupoTitulos(
                             grupo = grupo,
                             modo = modo,
+                            respetarManuales = respetarManuales,
                             alCambiarNombre = { nuevoNombre ->
                                 vm.actualizarNombreGrupo(grupo.id, nuevoNombre)
                             },

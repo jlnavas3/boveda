@@ -30,53 +30,60 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.jlnavas3.bovedalocal.data.CampoPersonalizado
-import com.jlnavas3.bovedalocal.data.TipoCampo
+import com.jlnavas3.bovedalocal.data.AjustesApp
+import com.jlnavas3.bovedalocal.data.DatosRedWifi
 import com.jlnavas3.bovedalocal.ui.componentes.CampoBoveda
 import com.jlnavas3.bovedalocal.ui.pantallas.ajustes.ColorCampoAjustes
 import com.jlnavas3.bovedalocal.ui.theme.ColorAcento
+import com.jlnavas3.bovedalocal.ui.theme.ColorDatos2FA
+import com.jlnavas3.bovedalocal.ui.theme.ColorDatosContrasena
+import com.jlnavas3.bovedalocal.ui.theme.ColorDatosWeb
 import com.jlnavas3.bovedalocal.ui.theme.ColorSobreAcento
 import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
 
+/**
+ * Microcomponente desacoplado para edición directa y fuertemente tipada de conexiones Wi-Fi.
+ */
 @Composable
 fun FormularioEdicionWifi(
-    campos: List<CampoPersonalizado>,
-    alCambiarCampos: (List<CampoPersonalizado>) -> Unit
+    datos: DatosRedWifi,
+    alCambiar: (DatosRedWifi) -> Unit,
+    ajustes: AjustesApp = AjustesApp()
 ) {
-    var mostrarClave by remember { mutableStateOf(false) }
-
-    val ssid = GestorCamposBase.valorDeCampo(campos, "Nombre de red (SSID)")
-    val clave = GestorCamposBase.valorDeCampo(campos, "Contraseña Wi-Fi")
-    val seguridad = GestorCamposBase.valorDeCampo(campos, "Tipo de seguridad")
+    val ocultarPorDefecto = ajustes.seguridadVisualActiva && ajustes.ocultarContrasena
+    var mostrarClave by remember(ajustes.seguridadVisualActiva, ajustes.ocultarContrasena) { mutableStateOf(!ocultarPorDefecto) }
 
     Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
         CampoBoveda(
-            valor = ssid,
+            valor = datos.ssid,
             etiqueta = "Nombre de red (SSID)",
             alCambiar = {
-                alCambiarCampos(GestorCamposBase.actualizarValor(campos, "Nombre de red (SSID)", it, TipoCampo.TEXTO))
-            }
+                alCambiar(datos.copy(ssid = it))
+            },
+            colorBordeIzquierdo = ColorDatosWeb
         )
 
         CampoBoveda(
-            valor = clave,
+            valor = datos.contrasena,
             etiqueta = "Contraseña Wi-Fi",
             alCambiar = {
-                alCambiarCampos(GestorCamposBase.actualizarValor(campos, "Contraseña Wi-Fi", it, TipoCampo.TEXTO, sensible = true))
+                alCambiar(datos.copy(contrasena = it))
             },
             esContrasena = true,
             mostrarContrasena = mostrarClave,
             alAlternarMostrarContrasena = { mostrarClave = !mostrarClave },
-            monoespaciada = true
+            monoespaciada = true,
+            colorBordeIzquierdo = ColorDatosContrasena
         )
 
         Column {
             CampoBoveda(
-                valor = seguridad,
+                valor = datos.tipoSeguridad,
                 etiqueta = "Tipo de seguridad (ej. WPA3, WPA2-Personal)",
                 alCambiar = {
-                    alCambiarCampos(GestorCamposBase.actualizarValor(campos, "Tipo de seguridad", it, TipoCampo.TEXTO))
-                }
+                    alCambiar(datos.copy(tipoSeguridad = it))
+                },
+                colorBordeIzquierdo = ColorDatos2FA
             )
             Spacer(Modifier.height(6.dp))
             Row(
@@ -84,13 +91,13 @@ fun FormularioEdicionWifi(
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 listOf("WPA2 / WPA3", "WPA", "WEP", "Sin contraseña (Abierta)").forEach { opcion ->
-                    val seleccionado = seguridad.equals(opcion, ignoreCase = true)
+                    val seleccionado = datos.tipoSeguridad.equals(opcion, ignoreCase = true)
                     Box(
                         modifier = Modifier
                             .clip(RoundedCornerShape(8.dp))
                             .background(if (seleccionado) ColorAcento else ColorCampoAjustes)
                             .clickable {
-                                alCambiarCampos(GestorCamposBase.actualizarValor(campos, "Tipo de seguridad", opcion, TipoCampo.TEXTO))
+                                alCambiar(datos.copy(tipoSeguridad = opcion))
                             }
                             .padding(horizontal = 10.dp, vertical = 6.dp)
                     ) {

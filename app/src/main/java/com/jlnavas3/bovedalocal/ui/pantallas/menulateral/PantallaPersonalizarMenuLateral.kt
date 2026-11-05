@@ -162,9 +162,21 @@ fun PantallaPersonalizarMenuLateral(
         DialogoAnadirItemMenuLateral(
             itemsDisponibles = itemsCandidatos,
             mostrarIds = ajustes.mostrarIdsAjustes,
-            alSeleccionar = { nuevoNodo ->
+            alSeleccionarUnico = { nuevoNodo ->
                 vm.ajustarMenuLateralItemsVisibles(ajustes.menuLateralItemsVisibles + nuevoNodo.id)
                 vm.avisar("Añadido: ${nuevoNodo.titulo}")
+            },
+            alConfirmarMultiples = { seleccionados ->
+                val nuevosIds = seleccionados.map { it.id }.filterNot { ajustes.menuLateralItemsVisibles.contains(it) }
+                if (nuevosIds.isNotEmpty()) {
+                    vm.ajustarMenuLateralItemsVisibles(ajustes.menuLateralItemsVisibles + nuevosIds)
+                    val mensaje = if (nuevosIds.size == 1) {
+                        "Añadido: ${seleccionados.first().titulo}"
+                    } else {
+                        "Añadidos ${nuevosIds.size} accesos directos"
+                    }
+                    vm.avisar(mensaje)
+                }
             },
             alCerrar = { mostrarDialogoAnadir = false }
         )
