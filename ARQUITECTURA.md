@@ -1,5 +1,10 @@
 # Arquitectura Técnica de Bóveda Local
 
+[![Architecture](https://img.shields.io/badge/Architecture-Clean%20%7C%20Micro--Design%20%7C%20MVI-blueviolet)](https://github.com/)
+[![Desktop Companion](https://img.shields.io/badge/Companion%20App-Desktop%20(Rust)-DEA584.svg?logo=rust&logoColor=white)](https://github.com/jlnavas3/boveda-desktop)
+[![Security Standard](https://img.shields.io/badge/Crypto-Argon2id%20%7C%20AES--256--GCM%20%7C%20ChaCha20--Poly1305-red.svg)]()
+[![Tests](https://img.shields.io/badge/Tests-690%20Passed-brightgreen.svg)]()
+
 ## Especificación Formal de Ingeniería y Seguridad Criptográfica
 
 **Bóveda Local** (`com.jlnavas3.bovedalocal`) es una plataforma soberana y offline de gestión de credenciales, autenticación de dos factores (**TOTP RFC 6238**), proveedor nativo de llaves de acceso (**Passkeys / WebAuthn FIDO2**), generador de claves SSH, alias de correo RFC 5233, suite de contactos confidenciales y normalización inteligente de identidades para el sistema operativo Android.
@@ -8,7 +13,7 @@ La aplicación opera bajo el principio de **Confianza Cero en Red (Zero-Network 
 * **Sabor `airgapped`:** Aislamiento total de red (permiso `android.permission.INTERNET` purgado de raíz). Imposibilidad física de emitir tráfico telemático desde el espacio de usuario.
 * **Sabor `lanSync`:** Permite sincronización peer-to-peer cifrada en red local privada (**Wi-Fi / Hotspot RFC 1918**) y transporte óptico de aislamiento físico (**Airgap por ráfagas QR `bvda-opt://`**) con cero dependencias de servidores en la nube.
 
-Este documento detalla la topología de diseño, la orquestación reactiva del estado, la máquina criptográfica formal, los protocolos de sincronización P2P y óptica, los contratos inter-proceso (IPC) con el framework de Android, la parametrización dinámica y el estándar de **Micro-Diseño (1 archivo = 1 composable/clase)** adoptado en el código fuente.
+Este documento detalla la topología de diseño, la orquestación reactiva del estado, la máquina criptográfica formal, los protocolos de sincronización P2P y óptica, los contratos inter-proceso (IPC) con el framework de Android, la parametrización dinámica y el estándar de **Micro-Diseño (1 archivo = 1 composable/clase)** adoptado en el código fuente, garantizando su completa interoperabilidad y simetría con la plataforma de escritorio [**Bóveda Local Desktop**](https://github.com/jlnavas3/boveda-desktop) (escrita en Rust para Linux y Windows).
 
 ---
 
@@ -221,7 +226,7 @@ El cuerpo plano antes de cifrar pasa por `CompresorBoveda.kt`:
 
 ## 6. Topología y Protocolos de Sincronización Cifrada (P2P y Óptica)
 
-Bóveda Local cuenta con un subsistema desacoplado de sincronización soberana en el paquete `com.jlnavas3.bovedalocal.sync`, diseñado bajo la premisa de **Confianza Cero en la Red**:
+Bóveda Local cuenta con un subsistema desacoplado de sincronización soberana en el paquete `com.jlnavas3.bovedalocal.sync`, diseñado bajo la premisa de **Confianza Cero en la Red**, operando con simetría criptográfica y compatibilidad total con la plataforma de escritorio [**Bóveda Local Desktop**](https://github.com/jlnavas3/boveda-desktop):
 
 ```mermaid
 sequenceDiagram

@@ -6,9 +6,12 @@
 [![Tests](https://img.shields.io/badge/Tests-690%2F690%20Passing-brightgreen?logo=gradle)](https://gradle.org/)
 [![Version](https://img.shields.io/badge/Version-v1.14.12-blue?logo=android)](https://github.com/)
 [![Architecture](https://img.shields.io/badge/Architecture-Clean%20%7C%20Micro--Design%20%7C%20MVI-blueviolet)](https://github.com/)
+[![Desktop Companion](https://img.shields.io/badge/Companion%20App-Desktop%20(Rust)-DEA584.svg?logo=rust&logoColor=white)](https://github.com/jlnavas3/boveda-desktop)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 
 **Bóveda Local** (`com.jlnavas3.bovedalocal`) es una plataforma soberana de alta seguridad criptográfica y privacidad absoluta para la custodia local de credenciales, autenticación de dos factores (**TOTP RFC 6238**), proveedor nativo de llaves de acceso (**Passkeys / WebAuthn FIDO2**), generador de pares de claves SSH, alias de correo y normalización inteligente de identidades en Android.
+
+Forma parte del ecosistema soberano de Bóveda Local, operando con paridad binaria y criptográfica simétrica con la aplicación de escritorio oficial [**Bóveda Local Desktop**](https://github.com/jlnavas3/boveda-desktop) (desarrollada en Rust con interfaz Slint para Linux y Windows).
 
 La aplicación opera bajo el principio de **Confianza Cero en Red (Zero-Network Architecture)** y ofrece sincronización peer-to-peer cifrada de extremo a extremo sin servidores intermedios, tanto por red local privada (**Wi-Fi / Hotspot RFC 1918**) como por transporte óptico de aislamiento físico (**Airgap por ráfagas QR**).
 
@@ -83,7 +86,7 @@ Al activar el desbloqueo por huella, la clave maestra se cifra y almacena en el 
 
 ## 📡 Sincronización Soberana P2P y Transporte Óptico Airgap
 
-Bóveda Local cuenta con dos canales criptográficos de sincronización directa entre dispositivos (Android ↔ Android y Android ↔ Desktop), sin requerir servidores remotos ni cuentas en la nube:
+Bóveda Local cuenta con dos canales criptográficos de sincronización directa entre dispositivos (Android ↔ Android y Android ↔ [**Bóveda Local Desktop**](https://github.com/jlnavas3/boveda-desktop)), sin requerir servidores remotos ni cuentas en la nube:
 
 ```mermaid
 flowchart TD
