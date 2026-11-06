@@ -57,7 +57,7 @@ fun PantallaTemaPaletas(
     val haptica = remember { Haptica(contexto) }
     val ajustes by vm.ajustes.collectAsStateWithLifecycle()
 
-    var dialogoConfirmarIcono by remember { mutableStateOf<PaletaAcento?>(null) }
+    var dialogoConfirmarIcono by remember { mutableStateOf<VarianteIconoLauncher?>(null) }
 
     val reqLauncher = remember { BringIntoViewRequester() }
 
@@ -129,9 +129,9 @@ fun PantallaTemaPaletas(
         }
     }
 
-    dialogoConfirmarIcono?.let { paleta ->
+    dialogoConfirmarIcono?.let { variante ->
         DialogoConfirmacionIconoLauncher(
-            paleta = paleta,
+            variante = variante,
             alConfirmar = { elegido ->
                 dialogoConfirmarIcono = null
                 vm.ajustarIconoLauncher(elegido.clave)

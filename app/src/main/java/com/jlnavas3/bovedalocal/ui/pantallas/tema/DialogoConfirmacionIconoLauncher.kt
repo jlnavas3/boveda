@@ -6,26 +6,83 @@
 
 package com.jlnavas3.bovedalocal.ui.pantallas.tema
 
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Palette
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import com.jlnavas3.bovedalocal.ui.componentes.DialogoConfirmacionBoveda
-import com.jlnavas3.bovedalocal.ui.componentes.TipoBotonTexto
-import com.jlnavas3.bovedalocal.ui.theme.PaletaAcento
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.jlnavas3.bovedalocal.ui.componentes.BotonBoveda
+import com.jlnavas3.bovedalocal.ui.componentes.ModalInferiorBoveda
+import com.jlnavas3.bovedalocal.ui.componentes.VarianteBoton
+import com.jlnavas3.bovedalocal.ui.theme.TextoPrincipal
+import com.jlnavas3.bovedalocal.ui.theme.TextoSecundario
 
 @Composable
 fun DialogoConfirmacionIconoLauncher(
-    paleta: PaletaAcento,
-    alConfirmar: (PaletaAcento) -> Unit,
+    variante: VarianteIconoLauncher,
+    alConfirmar: (VarianteIconoLauncher) -> Unit,
     alDescartar: () -> Unit
 ) {
-    DialogoConfirmacionBoveda(
-        titulo = "Cambiar icono a \"${paleta.etiqueta}\"",
-        mensaje = "Android cerrará la aplicación por un instante para que el launcher actualice su icono. Ya quedará guardado antes de cerrarse.",
-        textoConfirmar = "Cambiar y cerrar",
-        tipoConfirmacion = TipoBotonTexto.PRIMARIO,
-        iconoHeader = Icons.Filled.Palette,
-        alConfirmar = { alConfirmar(paleta) },
-        alDescartar = alDescartar
-    )
+    ModalInferiorBoveda(
+        abierto = true,
+        alCerrar = alDescartar,
+        titulo = "Cambiar ícono del launcher",
+        descripcion = "Variante: ${variante.etiqueta}",
+        mostrarBotonCerrar = false
+    ) {
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Spacer(Modifier.height(4.dp))
+            MiniaturaIconoLauncher(
+                variante = variante,
+                seleccionado = true,
+                tamano = 64.dp,
+                mostrarBadgeCheck = false
+            )
+            Spacer(Modifier.height(10.dp))
+            Text(
+                text = variante.etiqueta,
+                color = TextoPrincipal,
+                style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold)
+            )
+            Spacer(Modifier.height(8.dp))
+            Text(
+                text = "Android cerrará la aplicación por un instante para que el launcher actualice su ícono. Ya quedará guardado antes de cerrarse.",
+                color = TextoSecundario,
+                style = MaterialTheme.typography.bodyMedium.copy(lineHeight = 20.sp),
+                textAlign = TextAlign.Center
+            )
+            Spacer(Modifier.height(20.dp))
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(10.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                BotonBoveda(
+                    texto = "Cancelar",
+                    variante = VarianteBoton.SECUNDARIO,
+                    modifier = Modifier.weight(1f),
+                    alPulsar = alDescartar
+                )
+                BotonBoveda(
+                    texto = "Cambiar y cerrar",
+                    variante = VarianteBoton.PRIMARIO,
+                    modifier = Modifier.weight(1f),
+                    alPulsar = { alConfirmar(variante) }
+                )
+            }
+        }
+    }
 }
