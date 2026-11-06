@@ -76,8 +76,9 @@ android {
         applicationId = "com.jlnavas3.bovedalocal"
         minSdk = 29
         targetSdk = 35
-        versionCode = codigoVersion
-        versionName = nombreVersion
+        // Versión canónica para Android y linter estático de F-Droid
+        versionCode = 11412321
+        versionName = "1.14.12"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -180,7 +181,8 @@ dependencies {
     implementation("androidx.autofill:autofill:1.1.0")
     implementation("androidx.credentials:credentials:1.5.0")
     implementation("androidx.credentials.providerevents:providerevents:1.0.0-beta01")
-    implementation("androidx.credentials.providerevents:providerevents-play-services:1.0.0-beta01")
+    // providerevents-play-services removido para compatibilidad estricta con F-Droid FOSS
+
     implementation("com.google.guava:guava:33.4.8-android")
 
     // Cámara solo para leer QR de 2FA. ZXing es Java puro: no habla con ninguna red.
