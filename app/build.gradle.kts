@@ -75,9 +75,9 @@ android {
     defaultConfig {
         applicationId = "com.jlnavas3.bovedalocal"
         minSdk = 29
-        targetSdk = 35
+        targetSdk = 36
         // Versión canónica para Android y linter estático de F-Droid
-        versionCode = 11412321
+        versionCode = 11412322
         versionName = "1.14.12"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
