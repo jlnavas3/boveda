@@ -1,0 +1,1 @@
+Sovereign, airgapped credential manager, 2FA TOTP, Passkeys & private contacts

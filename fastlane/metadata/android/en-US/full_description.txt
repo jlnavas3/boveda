@@ -1,0 +1,13 @@
+Bóveda Local is a sovereign, offline, high-security cryptographic vault designed for strictly local storage of passwords, 2FA two-factor authentication (TOTP RFC 6238), native Passkeys provider (WebAuthn / FIDO2), SSH key generator, RFC 5233 email aliases, and private contacts management with zero network access.
+
+Operating under a strict Zero-Network Architecture, the hermetic airgapped flavor completely purges the INTERNET permission from its manifest, ensuring sensitive credentials never leave device volatile memory.
+
+Core Capabilities:
+* Authenticated AES-256-GCM encryption with Argon2id key derivation (RFC 9106) and Deflate compression.
+* Zero Network Permissions (Airgapped flavor) and Zero Contacts Permissions (SAF storage access framework ingestion).
+* Hardware-backed biometric authentication (Android Keystore StrongBox / TEE).
+* Native support for 9 item types: Credentials, Payment Cards (Luhn), Bank Accounts (IBAN), Identity Documents, Wi-Fi Networks, SSH Servers, Crypto Wallets (BIP-39 seeds), Markdown Notes, and Private Contacts.
+* FIDO2 / Passkeys support on Android 14+ with standard CXF backup and migration interoperability.
+* Optical Airgap physical QR sync: Full screen-to-camera peer vault synchronization using encrypted QR bursts (bvda-opt://) with zero radio signals.
+* Direct P2P Wi-Fi local sync with official companion desktop app (Bóveda Local Desktop written in Rust).
+* Batch trash bin management and zero-loss deduplication merge engine.

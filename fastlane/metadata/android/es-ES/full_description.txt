@@ -1,0 +1,13 @@
+Bóveda Local es una plataforma soberana, offline y de alta seguridad criptográfica para la custodia local de contraseñas, autenticación de dos factores (TOTP RFC 6238), proveedor nativo de llaves de acceso (Passkeys / WebAuthn FIDO2), generador de claves SSH, alias de correo RFC 5233 y libreta de contactos sin permisos de red ni acceso telemático.
+
+La aplicación opera bajo el principio estricto de Confianza Cero en Red (Zero-Network Architecture), careciendo por completo de interfaces telemáticas en su variante hermética y garantizando que ningún dato sensible abandone los confines de la memoria volátil del dispositivo.
+
+Características principales:
+* Cifrado autenticado AES-256-GCM con derivación de clave Argon2id (RFC 9106) y compresión Deflate.
+* Cero permisos de red (Zero-Network hermético) y cero permisos de contactos (ingesta SAF).
+* Autenticación biométrica respaldada por hardware seguro (Android Keystore StrongBox / TEE).
+* Soporte nativo para 9 tipos de datos: Credenciales, Tarjetas (Luhn), Cuentas bancarias (IBAN), Documentos de identidad, Redes Wi-Fi, Servidores SSH, Billeteras cripto (BIP-39), Notas Markdown y Contactos.
+* Soporte FIDO2 / Passkeys en Android 14+ y migración interoperable mediante estándar CXF.
+* Sincronización óptica física por ráfagas QR (Airgap total pantalla a cámara con PIN Argon2id).
+* Sincronización P2P en red local con Bóveda Local Desktop (aplicación compañera en Rust).
+* Operaciones por lotes en papelera y motor de unificación sin pérdidas.

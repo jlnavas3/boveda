@@ -1,0 +1,1 @@
+Gestor soberano de credenciales, TOTP 2FA, Passkeys y contactos sin red
