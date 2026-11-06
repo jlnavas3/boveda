@@ -99,9 +99,12 @@ android {
     // móvil solo pueda usar una. Con esto, instalar desde una tienda o vía "bundletool"
     // baja el peso real a ~15 MB; el "universal" de siempre se sigue generando por si
     // se instala directo sin saber la ABI del móvil.
+    // Nota: AGP prohíbe splits de APK al construir Android App Bundles (.aab) para Google Play
+    // (el AAB ya incluye todas las ABIs y Google Play se encarga de servir el split óptimo).
+    val esTareaBundle = gradle.startParameter.taskNames.any { it.contains("bundle", ignoreCase = true) }
     splits {
         abi {
-            isEnable = true
+            isEnable = !esTareaBundle
             reset()
             include("armeabi-v7a", "arm64-v8a", "x86", "x86_64")
             isUniversalApk = true
