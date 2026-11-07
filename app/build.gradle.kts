@@ -77,7 +77,7 @@ android {
         minSdk = 29
         targetSdk = 36
         // Versión canónica para Android y linter estático de F-Droid
-        versionCode = 11412322
+        versionCode = 11412323
         versionName = "1.14.12"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -184,7 +184,7 @@ dependencies {
     implementation("androidx.autofill:autofill:1.1.0")
     implementation("androidx.credentials:credentials:1.5.0")
     implementation("androidx.credentials.providerevents:providerevents:1.0.0-beta01")
-    // providerevents-play-services removido para compatibilidad estricta con F-Droid FOSS
+    implementation("androidx.credentials.providerevents:providerevents-play-services:1.0.0-beta01")
 
     implementation("com.google.guava:guava:33.4.8-android")
 

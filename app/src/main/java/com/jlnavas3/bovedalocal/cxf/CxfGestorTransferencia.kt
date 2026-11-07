@@ -10,6 +10,7 @@ import android.app.Activity
 import androidx.credentials.providerevents.ProviderEventsManager
 import androidx.credentials.providerevents.exception.ImportCredentialsCancellationException
 import androidx.credentials.providerevents.exception.ImportCredentialsNoExportOptionException
+import androidx.credentials.providerevents.exception.ImportCredentialsProviderConfigurationException
 import androidx.credentials.providerevents.exception.ImportCredentialsUnknownErrorException
 import androidx.credentials.providerevents.transfer.CredentialTypes
 import androidx.credentials.providerevents.transfer.ImportCredentialsRequest
@@ -78,12 +79,23 @@ object CxfGestorTransferencia {
         } catch (e: ImportCredentialsNoExportOptionException) {
             Diagnostico.apuntar("cxf", "No se encontraron gestores con credenciales exportables", e)
             ResultadoImportacionCxf.SinOpciones("No se encontraron gestores de contraseñas con credenciales listas para transferir en este dispositivo.")
+        } catch (e: ImportCredentialsProviderConfigurationException) {
+            Diagnostico.apuntar("cxf", "Transferencia directa CXF no disponible en este dispositivo", e)
+            ResultadoImportacionCxf.Error(
+                "La transferencia directa en vivo no está disponible en este dispositivo. Para importar tus contraseñas de Google de forma rápida y segura, usa la opción 'Google Passwords (.csv)'.",
+                e
+            )
         } catch (e: ImportCredentialsUnknownErrorException) {
             Diagnostico.apuntar("cxf", "El gestor externo o el sistema no completó la transferencia (error desconocido)", e)
             ResultadoImportacionCxf.Error("El gestor externo o el servicio del sistema interrumpió la transferencia sin proporcionar detalles.", e)
         } catch (e: Exception) {
             Diagnostico.apuntar("cxf", "Fallo al importar credenciales: ${e.message ?: "error desconocido"}", e)
-            ResultadoImportacionCxf.Error("Fallo en la transferencia de credenciales: ${e.message ?: "error desconocido"}", e)
+            val mensajeAmigable = if (e.message?.contains("no provider dependencies", ignoreCase = true) == true) {
+                "La transferencia directa en vivo no está disponible en este dispositivo. Para importar tus contraseñas de Google, usa la opción 'Google Passwords (.csv)'."
+            } else {
+                "Fallo en la transferencia de credenciales: ${e.message ?: "error desconocido"}"
+            }
+            ResultadoImportacionCxf.Error(mensajeAmigable, e)
         }
     }
 
